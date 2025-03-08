@@ -27,7 +27,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--device '{"driver":"usb-storage","bus":"usb.0","port":"1","id":"usb-disk1","removable":false}' \
+-device '{"driver":"usb-bot","id":"usb-disk1","bus":"usb.0","port":"1"}' \
+-device '{"driver":"scsi-cd","bus":"usb-disk1.0","scsi-id":0,"lun":0,"id":"usb-disk1-device"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -3183,16 +3183,40 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU doesn't support '-device usb-storage'"));
+        switch (disk->model) {
+        case VIR_DOMAIN_DISK_MODEL_DEFAULT:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("USB disk model was not selected. This QEMU doesn't support 'usb-storage' or 'usb-bot'."));
             return -1;
-        }
 
-        if (disk->model == VIR_DOMAIN_DISK_MODEL_USB_STORAGE &&
-            virStorageSourceIsEmpty(disk->src)) {
+        case VIR_DOMAIN_DISK_MODEL_USB_STORAGE:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support '-device usb-storage'"));
+                return -1;
+            }
+
+            if (virStorageSourceIsEmpty(disk->src)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'usb' disk must not be empty"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_DISK_MODEL_USB_BOT:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_BOT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support '-device usb-bot'"));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO:
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL:
+        case VIR_DOMAIN_DISK_MODEL_LAST:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'usb' disk must not be empty"));
+                           _("USB disk supports only the following models: 'usb-storage', 'usb-bot'"));
             return -1;
         }
 

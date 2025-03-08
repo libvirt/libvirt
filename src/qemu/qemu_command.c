@@ -1626,6 +1626,33 @@ qemuBuildIothreadMappingProps(GSList *iothreads)
     return g_steal_pointer(&ret);
 }
 
+int
+qemuBuildDiskBusProps(const virDomainDef *def,
+                      const virDomainDiskDef *disk,
+                      virJSONValue **propsRet)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    *propsRet = NULL;
+
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_USB ||
+        disk->model != VIR_DOMAIN_DISK_MODEL_USB_BOT)
+        return 0;
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:driver", "usb-bot",
+                              "s:id", disk->info.alias,
+                              "S:serial", disk->serial,
+                              NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceAddressProps(props, def, &disk->info) < 0)
+        return -1;
+
+    *propsRet = g_steal_pointer(&props);
+
+    return 0;
+}
 
 virJSONValue *
 qemuBuildDiskDeviceProps(const virDomainDef *def,
@@ -1652,6 +1679,18 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     const char *rpolicy = NULL;
     const char *model = NULL;
     const char *product = NULL;
+    const char *alias = disk->info.alias;
+    g_autofree char *usbdiskalias = NULL;
+    const virDomainDeviceInfo *deviceinfo = &disk->info;
+    virDomainDeviceInfo usbSCSIinfo = {
+        .type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
+        .addr.drive = { .diskbus = VIR_DOMAIN_DISK_BUS_USB },
+        .effectiveBootIndex = deviceinfo->effectiveBootIndex,
+        .alias = deviceinfo->alias,
+    };
+
+    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+        disk->info.addr.drive.diskbus = disk->bus;
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
@@ -1735,13 +1774,35 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
-        driver = "usb-storage";
+        switch (disk->model) {
+        case VIR_DOMAIN_DISK_MODEL_USB_STORAGE:
+            driver = "usb-storage";
 
-        if (disk->removable == VIR_TRISTATE_SWITCH_ABSENT)
-            removable = VIR_TRISTATE_SWITCH_OFF;
-        else
-            removable = disk->removable;
+            if (disk->removable == VIR_TRISTATE_SWITCH_ABSENT)
+                removable = VIR_TRISTATE_SWITCH_OFF;
+            else
+                removable = disk->removable;
+            break;
 
+        case VIR_DOMAIN_DISK_MODEL_USB_BOT:
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+                driver = "scsi-cd";
+            } else {
+                driver = "scsi-hd";
+                removable = disk->removable;
+            }
+
+            deviceinfo = &usbSCSIinfo;
+            alias = usbdiskalias = g_strdup_printf("%s-device", disk->info.alias);
+            break;
+
+        case VIR_DOMAIN_DISK_MODEL_DEFAULT:
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO:
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL:
+        case VIR_DOMAIN_DISK_MODEL_LAST:
+            break;
+        }
         break;
 
     case VIR_DOMAIN_DISK_BUS_FDC:
@@ -1771,10 +1832,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
             return NULL;
     }
 
-    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
-        disk->info.addr.drive.diskbus = disk->bus;
-
-    if (qemuBuildDeviceAddressProps(props, def, &disk->info) < 0)
+    if (qemuBuildDeviceAddressProps(props, def, deviceinfo) < 0)
         return NULL;
 
     if (disk->src->shared)
@@ -1836,7 +1894,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "T:share-rw", shareRW,
                               "S:drive", drive,
                               "S:chardev", chardev,
-                              "s:id", disk->info.alias,
+                              "s:id", alias,
                               "p:bootindex", bootindex,
                               "S:loadparm", bootLoadparm,
                               "p:logical_block_size", logical_block_size,
@@ -2201,6 +2259,7 @@ qemuBuildDiskCommandLine(virCommand *cmd,
                          virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) devprops = NULL;
+    g_autoptr(virJSONValue) busprops = NULL;
 
     if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
@@ -2214,6 +2273,13 @@ qemuBuildDiskCommandLine(virCommand *cmd,
         return 0;
 
     if (qemuCommandAddExtDevice(cmd, &disk->info, def, qemuCaps) < 0)
+        return -1;
+
+    if (qemuBuildDiskBusProps(def, disk, &busprops) < 0)
+        return -1;
+
+    if (busprops &&
+        qemuBuildDeviceCommandlineFromJSON(cmd, busprops, def, qemuCaps) < 0)
         return -1;
 
     if (!(devprops = qemuBuildDiskDeviceProps(def, disk, qemuCaps)))

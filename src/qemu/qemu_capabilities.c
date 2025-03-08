@@ -6482,7 +6482,8 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
                              VIR_DOMAIN_DISK_BUS_VIRTIO,
                              /* VIR_DOMAIN_DISK_BUS_SD */);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE) ||
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_BOT))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_USB);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI))

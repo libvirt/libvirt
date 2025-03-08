@@ -129,6 +129,11 @@ qemuBuildThrottleFiltersAttachPrepareBlockdev(virDomainDiskDef *disk);
 qemuBlockThrottleFiltersData *
 qemuBuildThrottleFiltersDetachPrepareBlockdev(virDomainDiskDef *disk);
 
+int
+qemuBuildDiskBusProps(const virDomainDef *def,
+                      const virDomainDiskDef *disk,
+                      virJSONValue **propsRet);
+
 virJSONValue *
 qemuBuildDiskDeviceProps(const virDomainDef *def,
                          virDomainDiskDef *disk,

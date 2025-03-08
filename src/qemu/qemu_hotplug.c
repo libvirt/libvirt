@@ -703,8 +703,10 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     g_autoptr(qemuBlockThrottleFiltersData) filterData = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) busprops = NULL;
     g_autoptr(virJSONValue) devprops = NULL;
     bool extensionDeviceAttached = false;
+    bool busAdded = false;
     int rc;
     g_autoptr(qemuSnapshotDiskContext) transientDiskSnapshotCtxt = NULL;
     bool origReadonly = disk->src->readonly;
@@ -774,6 +776,9 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
         }
     }
 
+    if (qemuBuildDiskBusProps(vm->def, disk, &busprops) < 0)
+        goto rollback;
+
     if (!(devprops = qemuBuildDiskDeviceProps(vm->def, disk, priv->qemuCaps)))
         goto rollback;
 
@@ -782,6 +787,10 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
 
     if ((rc = qemuDomainAttachExtensionDevice(priv->mon, &disk->info)) == 0)
         extensionDeviceAttached = true;
+
+    if (rc == 0 && busprops &&
+        (rc = qemuMonitorAddDeviceProps(priv->mon, &busprops)) == 0)
+        busAdded = true;
 
     if (rc == 0)
         rc = qemuMonitorAddDeviceProps(priv->mon, &devprops);
@@ -811,6 +820,11 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
         }
     }
 
+    if (rc == 0 &&
+        disk->bus == VIR_DOMAIN_DISK_BUS_USB &&
+        disk->model == VIR_DOMAIN_DISK_MODEL_USB_BOT)
+        rc = qemuMonitorSetUSBDiskAttached(priv->mon, disk->info.alias);
+
     qemuDomainObjExitMonitor(vm);
 
     if (rc < 0)
@@ -821,6 +835,9 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
  rollback:
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
+
+    if (busAdded)
+        ignore_value(qemuMonitorDelDevice(priv->mon, disk->info.alias));
 
     if (extensionDeviceAttached)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &disk->info));

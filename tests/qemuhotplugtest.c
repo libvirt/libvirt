@@ -746,7 +746,9 @@ mymain(void)
     DO_TEST_ATTACH("x86_64", "base-live", "cdrom-usb", false, true,
                    "blockdev-add", QMP_OK,
                    "device_add", QMP_OK,
-                   "query-block", QMP_EMPTY_ARRAY);
+                   "device_add", QMP_OK,
+                   "query-block", QMP_EMPTY_ARRAY,
+                   "qom-set", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "cdrom-usb", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "cdrom-usb", false, false,

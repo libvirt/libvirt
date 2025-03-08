@@ -268,8 +268,23 @@ qemuAssignDeviceDiskAlias(virDomainDef *def,
             break;
 
         case VIR_DOMAIN_DISK_BUS_USB:
-            diskPriv->qomName = g_strdup_printf("/machine/peripheral/%s/%s.0/legacy[0]",
-                                                disk->info.alias, disk->info.alias);
+            switch (disk->model) {
+            case VIR_DOMAIN_DISK_MODEL_USB_STORAGE:
+                diskPriv->qomName = g_strdup_printf("/machine/peripheral/%s/%s.0/legacy[0]",
+                                                    disk->info.alias, disk->info.alias);
+                break;
+
+            case VIR_DOMAIN_DISK_MODEL_USB_BOT:
+                diskPriv->qomName = g_strdup_printf("%s-device", disk->info.alias);
+                break;
+
+            case VIR_DOMAIN_DISK_MODEL_DEFAULT:
+            case VIR_DOMAIN_DISK_MODEL_VIRTIO:
+            case VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL:
+            case VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL:
+            case VIR_DOMAIN_DISK_MODEL_LAST:
+                break;
+            }
             break;
 
         case VIR_DOMAIN_DISK_BUS_XEN:
