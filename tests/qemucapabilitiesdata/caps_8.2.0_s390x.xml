@@ -116,6 +116,7 @@
   <flag name='netdev.user'/>
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
+  <flag name='usb-bot'/>
   <version>8002000</version>
   <microcodeVersion>39100246</microcodeVersion>
   <package>v8.2.0</package>

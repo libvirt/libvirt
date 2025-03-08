@@ -189,6 +189,7 @@
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
   <flag name='amd-iommu'/>
+  <flag name='usb-bot'/>
   <version>7001000</version>
   <microcodeVersion>43100244</microcodeVersion>
   <package>v7.1.0</package>

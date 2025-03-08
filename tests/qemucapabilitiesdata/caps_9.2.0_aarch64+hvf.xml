@@ -135,6 +135,7 @@
   <flag name='migrate-incoming.exit-on-error'/>
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
+  <flag name='usb-bot'/>
   <version>9002002</version>
   <microcodeVersion>61700247</microcodeVersion>
   <package></package>

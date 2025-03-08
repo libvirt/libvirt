@@ -209,6 +209,7 @@
   <flag name='nvme-ns'/>
   <flag name='amd-iommu'/>
   <flag name='amd-iommu.pci-id'/>
+  <flag name='usb-bot'/>
   <version>10000000</version>
   <microcodeVersion>43100285</microcodeVersion>
   <package>v10.0.0</package>

@@ -169,6 +169,7 @@
   <flag name='acpi-erst'/>
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
+  <flag name='usb-bot'/>
   <version>8002000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>qemu-8.2.0-7.fc39</package>
