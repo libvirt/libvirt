@@ -766,32 +766,6 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
 
 
 static virJSONValue *
-qemuBlockStorageSourceGetSheepdogProps(virStorageSource *src)
-{
-    g_autoptr(virJSONValue) serverprops = NULL;
-    virJSONValue *ret = NULL;
-
-    if (src->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("sheepdog protocol accepts only one host"));
-        return NULL;
-    }
-
-    if (!(serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0])))
-        return NULL;
-
-    /* libvirt does not support the 'snap-id' and 'tag' properties */
-    if (virJSONValueObjectAdd(&ret,
-                              "a:server", &serverprops,
-                              "s:vdi", src->path,
-                              NULL) < 0)
-        return NULL;
-
-    return ret;
-}
-
-
-static virJSONValue *
 qemuBlockStorageSourceGetSshProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) serverprops = NULL;
@@ -1147,12 +1121,6 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
                 return NULL;
             break;
 
-        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-            driver = "sheepdog";
-            if (!(fileprops = qemuBlockStorageSourceGetSheepdogProps(src)))
-                return NULL;
-            break;
-
         case VIR_STORAGE_NET_PROTOCOL_SSH:
             driver = "ssh";
             if (!(fileprops = qemuBlockStorageSourceGetSshProps(src)))
@@ -1164,6 +1132,11 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             if (!(fileprops = qemuBlockStorageSourceGetNFSProps(src)))
                 return NULL;
             break;
+
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unsupported disk protocol"));
+            return NULL;
 
         case VIR_STORAGE_NET_PROTOCOL_NONE:
         case VIR_STORAGE_NET_PROTOCOL_LAST:
@@ -2430,12 +2403,6 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
                 return -1;
             break;
 
-        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-            driver = "sheepdog";
-            if (!(location = qemuBlockStorageSourceGetSheepdogProps(src)))
-                return -1;
-            break;
-
         case VIR_STORAGE_NET_PROTOCOL_SSH:
             if (srcPriv->nbdkitProcess) {
                 /* disk creation not yet supported with nbdkit, and even if it
@@ -2456,6 +2423,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
             break;
 
             /* unsupported/impossible */
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
         case VIR_STORAGE_NET_PROTOCOL_NBD:
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_VXHS:
