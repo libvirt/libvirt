@@ -12,9 +12,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-test/master-key.aes"}' \
 -blockdev '{"driver":"file","filename":"/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
--blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/test_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine virt-4.0,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/test_VARS.fd","node-name":"libvirt-pflash1-storage","read-only":false}' \
+-machine virt-4.0,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-storage,acpi=on \
 -accel hvf \
 -m size=4194304k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":4294967296}' \
@@ -39,7 +38,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.3","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:9a:e6:c6","bus":"pci.1","addr":"0x0"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
@@ -49,5 +48,4 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.4","addr":"0x0"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
 -device '{"driver":"virtio-rng-pci","rng":"objrng0","id":"rng0","bus":"pci.5","addr":"0x0"}' \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
