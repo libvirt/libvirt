@@ -35,7 +35,8 @@
     </disk>
     <graphics supported='no'/>
     <video supported='no'/>
-    <hostdev supported='no'/>
+    <hostdev supported='yes'>
+    </hostdev>
     <console supported='yes'>
       <enum name='type'>
         <value>tcp</value>
