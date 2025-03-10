@@ -1,0 +1,7 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 7,passthru,3/0/0 bhyve

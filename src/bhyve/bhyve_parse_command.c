@@ -6,6 +6,7 @@
  * Copyright (c) 2011 NetApp, Inc.
  * Copyright (C) 2020 Fabian Freyer
  * Copyright (C) 2025 The FreeBSD Foundation
+ * Copyright (C) 2024-2025 Future Crew, LLC
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -667,6 +668,69 @@ bhyveParsePCIRND(virDomainDef *def,
 }
 
 static int
+bhyveParsePassthru(virDomainDef *def G_GNUC_UNUSED,
+                   unsigned pcibus,
+                   unsigned pcislot,
+                   unsigned pcifunction,
+                   char *addr)
+{
+    /* -s slot,bus/slot/function */
+    /* -s slot,pcibus:slot:function */
+    virDomainHostdevDef *hostdev = NULL;
+    g_auto(GStrv) params = NULL;
+    GStrv param;
+    char *p = NULL;
+
+    if (!addr) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("No PCI address provided"));
+        return -1;
+    }
+
+    hostdev = virDomainHostdevDefNew();
+    hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
+    hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+
+    hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    hostdev->info->addr.pci.bus = pcibus;
+    hostdev->info->addr.pci.slot = pcislot;
+    hostdev->info->addr.pci.function = pcifunction;
+
+    if (!(params = g_strsplit(addr, ":", -1))) {
+        virReportError(VIR_ERR_OPERATION_FAILED, _("Failed to parse PCI address %1$s"), addr);
+        goto error;
+    }
+    if (g_str_equal(addr, *params)) {
+        g_free(params);
+        if (!(params = g_strsplit(addr, "/", -1))) {
+            virReportError(VIR_ERR_OPERATION_FAILED, _("Failed to parse PCI address %1$s"), addr);
+            goto error;
+        }
+    }
+    if (g_strv_length(params) != 3) {
+        virReportError(VIR_ERR_OPERATION_FAILED, _("Failed to parse PCI address %1$s"), addr);
+        goto error;
+    }
+    param = params;
+    if (virStrToLong_uip(*param++, &p, 10, &hostdev->source.subsys.u.pci.addr.bus) < 0 ||
+        virStrToLong_uip(*param++, &p, 10, &hostdev->source.subsys.u.pci.addr.slot) < 0 ||
+        virStrToLong_uip(*param++, &p, 10, &hostdev->source.subsys.u.pci.addr.function) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, _("Failed to parse PCI address %1$s"), addr);
+        goto error;
+    }
+
+    hostdev->source.subsys.u.pci.addr.domain = 0;
+    hostdev->managed = false;
+
+    VIR_APPEND_ELEMENT(def->hostdevs, def->nhostdevs, hostdev);
+    return 0;
+
+ error:
+    virDomainHostdevDefFree(hostdev);
+    return -1;
+}
+
+static int
 bhyveParseBhyvePCIArg(virDomainDef *def,
                       virDomainXMLOption *xmlopt,
                       unsigned caps,
@@ -732,6 +796,8 @@ bhyveParseBhyvePCIArg(virDomainDef *def,
         bhyveParsePCIFbuf(def, xmlopt, caps, bus, slot, function, conf);
     else if (STREQ(emulation, "virtio-rnd"))
         bhyveParsePCIRND(def, xmlopt, caps, bus, slot, function, conf);
+    else if (STREQ(emulation, "passthru"))
+        bhyveParsePassthru(def, bus, slot, function, conf);
 
     VIR_FREE(emulation);
     VIR_FREE(slotdef);
