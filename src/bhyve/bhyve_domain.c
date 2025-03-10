@@ -345,6 +345,12 @@ bhyveDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    if (def->nhostdevs && !def->mem.locked) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("using passthrough devices requires locking guest memory"));
+        return -1;
+    }
+
     if (!def->os.loader)
         return 0;
 

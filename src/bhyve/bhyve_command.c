@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2025 The FreeBSD Foundation
+ * Copyright (C) 2024-2025 Future Crew, LLC
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -213,6 +214,33 @@ bhyveBuildRNGArgStr(const virDomainDef *def G_GNUC_UNUSED,
     virCommandAddArgFormat(cmd, "%d:%d,virtio-rnd",
                            rng->info.addr.pci.slot,
                            rng->info.addr.pci.function);
+    return 0;
+}
+
+static int
+bhyveBuildHostdevArgStr(const virDomainDef *def,
+                        virCommand *cmd)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+        virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+            continue;
+        }
+
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:%d,passthru,%d/%d/%d",
+                               hostdev->info->addr.pci.slot,
+                               hostdev->info->addr.pci.function,
+                               subsys->u.pci.addr.bus,
+                               subsys->u.pci.addr.slot,
+                               subsys->u.pci.addr.function);
+    }
+
     return 0;
 }
 
@@ -939,6 +967,9 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         for (i = 0; i < bhyvecmd->num_args; i++)
             virCommandAddArg(cmd, bhyvecmd->args[i]);
     }
+
+    if (bhyveBuildHostdevArgStr(def, cmd) < 0)
+        return NULL;
 
     virCommandAddArg(cmd, def->name);
 
