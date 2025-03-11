@@ -1,1 +1,1 @@
-unsupported configuration: 'interface type="vhostuser" backend type="passt"' requires shared memory
+unsupported configuration: 'interface' requires shared memory

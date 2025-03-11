@@ -1850,12 +1850,6 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         return -1;
     }
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
-        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "interface type=\"vhostuser\" backend type=\"passt\"") < 0)
-            return -1;
-    }
-
     if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1879,6 +1873,9 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            _("'reconnect' attribute is not supported when source mode='server' for <interface type='vhostuser'>"));
             return -1;
         }
+
+        if (qemuValidateDomainDefVhostUserRequireSharedMemory(def, "interface") < 0)
+            return -1;
     }
 
     if (!virDomainNetIsVirtioModel(net)) {
