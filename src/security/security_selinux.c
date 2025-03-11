@@ -2969,7 +2969,7 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
 
     for (i = 0; i < def->nmems; i++) {
         if (virSecuritySELinuxRestoreMemoryLabel(mgr, def, def->mems[i]) < 0)
-            return -1;
+            rc = -1;
     }
 
     for (i = 0; i < def->ntpms; i++) {

@@ -1973,7 +1973,7 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
 
     for (i = 0; i < def->ngraphics; i++) {
         if (virSecurityDACRestoreGraphicsLabel(mgr, def, def->graphics[i]) < 0)
-            return -1;
+            rc = -1;
     }
 
     for (i = 0; i < def->ninputs; i++) {
@@ -2021,7 +2021,7 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
             virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
-            return -1;
+            rc = -1;
         }
     }
 
