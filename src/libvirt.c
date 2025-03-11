@@ -688,7 +688,13 @@ virStateInitialize(bool privileged,
 /**
  * virStateShutdownPrepare:
  *
- * Run each virtualization driver's shutdown prepare method.
+ * Tell each driver to prepare for shutdown of the daemon. This should
+ * trigger any actions required to stop processing background work.
+ *
+ * This method is called directly from the main event loop thread, so
+ * the event loop will not execute while this method is running. After
+ * this method returns, the event loop will continue running until
+ * the virStateShutdownWait method completes.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -709,7 +715,12 @@ virStateShutdownPrepare(void)
 /**
  * virStateShutdownWait:
  *
- * Run each virtualization driver's shutdown wait method.
+ * Tell each driver to finalize any work required to enable
+ * graceful shutdown of the daemon. This method is invoked
+ * from a background thread, and when it completes, the event
+ * loop will terminate. As such drivers can register callbacks
+ * that will prevent the event loop terminating until actions
+ * initiated by virStateShutdownPrepare are complete.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -730,7 +741,12 @@ virStateShutdownWait(void)
 /**
  * virStateCleanup:
  *
- * Run each virtualization driver's cleanup method.
+ * Tell each driver to release all resources it holds in
+ * order to fully shutdown the daemon. When this is called
+ * the event loop will no longer be running. Thus any
+ * cleanup that depends on execution of the event loop
+ * must have been triggered by the virStateShutdownPrepare
+ * method.
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -752,7 +768,8 @@ virStateCleanup(void)
 /**
  * virStateReload:
  *
- * Run each virtualization driver's reload method.
+ * Tell each driver to reload their global configuration
+ * file(s).
  *
  * Returns 0 if all succeed, -1 upon any failure.
  */
@@ -774,7 +791,24 @@ virStateReload(void)
 /**
  * virStateStop:
  *
- * Run each virtualization driver's "stop" method.
+ * Tell each driver to prepare for system/session stop.
+ *
+ * In an unprivileged daemon, this indicates that the
+ * current user's primary login session is about to
+ * be terminated.
+ *
+ * In a privileged daemon, this indicates that the host
+ * OS is about to shutdown.
+ *
+ * This is a signal that the driver should stop and/or
+ * preserve any resources affected by the system/session
+ * stop.
+ *
+ * On host OS stop there is a very short wait for the
+ * stop action to complete. For any prolonged tasks
+ * the driver must acquire inhibitor locks, or send
+ * a request to systemd to extend the shutdown wait
+ * timeout.
  *
  * Returns 0 if successful, -1 on failure
  */
