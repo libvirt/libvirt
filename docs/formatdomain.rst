@@ -6740,7 +6740,7 @@ interaction with the admin.
 
         <graphics type='dbus'/>
 
-      ``p2p`` (accepts ``on`` or ``off``) enables peer-to-peer connections,
+      ``p2p`` (accepts ``yes`` or ``no``) enables peer-to-peer connections,
       established through virDomainOpenGraphics() APIs.
 
       ``address`` (accepts a `D-Bus address
