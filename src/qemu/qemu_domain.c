@@ -5790,7 +5790,7 @@ static void
 qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
                                virDomainObj *vm,
                                virDomainUndefineFlagsValues flags,
-                               bool outgoingMigration)
+                               bool migration)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *snapDir = NULL;
@@ -5816,7 +5816,7 @@ qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
         if (rmdir(chkDir) < 0 && errno != ENOENT)
             VIR_WARN("unable to remove checkpoint directory %s", chkDir);
     }
-    qemuExtDevicesCleanupHost(driver, vm->def, flags, outgoingMigration);
+    qemuExtDevicesCleanupHost(driver, vm->def, flags, migration);
 }
 
 
@@ -5829,14 +5829,14 @@ void
 qemuDomainRemoveInactive(virQEMUDriver *driver,
                          virDomainObj *vm,
                          virDomainUndefineFlagsValues flags,
-                         bool outgoingMigration)
+                         bool migration)
 {
     if (vm->persistent) {
         /* Short-circuit, we don't want to remove a persistent domain */
         return;
     }
 
-    qemuDomainRemoveInactiveCommon(driver, vm, flags, outgoingMigration);
+    qemuDomainRemoveInactiveCommon(driver, vm, flags, migration);
 
     virDomainObjListRemove(driver->domains, vm);
 }

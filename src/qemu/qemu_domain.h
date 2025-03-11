@@ -693,7 +693,7 @@ int qemuDomainMomentDiscardAll(void *payload,
 void qemuDomainRemoveInactive(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virDomainUndefineFlagsValues flags,
-                              bool outgoingMigration);
+                              bool migration);
 
 void
 qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,

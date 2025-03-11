@@ -154,7 +154,7 @@ void
 qemuExtDevicesCleanupHost(virQEMUDriver *driver,
                           virDomainDef *def,
                           virDomainUndefineFlagsValues flags,
-                          bool outgoingMigration)
+                          bool migration)
 {
     size_t i;
 
@@ -165,7 +165,7 @@ qemuExtDevicesCleanupHost(virQEMUDriver *driver,
         virDomainTPMDef *tpm = def->tpms[i];
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            qemuExtTPMCleanupHost(driver, tpm, flags, outgoingMigration);
+            qemuExtTPMCleanupHost(driver, tpm, flags, migration);
     }
 }
 
@@ -280,7 +280,7 @@ qemuExtDevicesStart(virQEMUDriver *driver,
 void
 qemuExtDevicesStop(virQEMUDriver *driver,
                    virDomainObj *vm,
-                   bool outgoingMigration)
+                   bool migration)
 {
     virDomainDef *def = vm->def;
     size_t i;
@@ -297,7 +297,7 @@ qemuExtDevicesStop(virQEMUDriver *driver,
 
     for (i = 0; i < def->ntpms; i++) {
         if (def->tpms[i]->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            qemuExtTPMStop(driver, vm, outgoingMigration);
+            qemuExtTPMStop(driver, vm, migration);
     }
 
     for (i = 0; i < def->nnets; i++) {
