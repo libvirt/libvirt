@@ -82,8 +82,8 @@ ssize_t virNetDaemonGetServers(virNetDaemon *dmn, virNetServer ***servers);
 bool virNetDaemonHasServer(virNetDaemon *dmn,
                            const char *serverName);
 
-typedef int (*virNetDaemonShutdownCallback)(void);
+typedef int (*virNetDaemonLifecycleCallback)(void);
 
-void virNetDaemonSetShutdownCallbacks(virNetDaemon *dmn,
-                                      virNetDaemonShutdownCallback prepareCb,
-                                      virNetDaemonShutdownCallback waitCb);
+void virNetDaemonSetLifecycleCallbacks(virNetDaemon *dmn,
+                                       virNetDaemonLifecycleCallback prepareCb,
+                                       virNetDaemonLifecycleCallback waitCb);

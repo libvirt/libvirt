@@ -65,8 +65,8 @@ struct _virNetDaemon {
     GHashTable *servers;
     virJSONValue *srvObject;
 
-    virNetDaemonShutdownCallback shutdownPrepareCb;
-    virNetDaemonShutdownCallback shutdownWaitCb;
+    virNetDaemonLifecycleCallback shutdownPrepareCb;
+    virNetDaemonLifecycleCallback shutdownWaitCb;
     virThread *stateStopThread;
     int finishTimer;
     bool quit;
@@ -873,9 +873,9 @@ virNetDaemonHasClients(virNetDaemon *dmn)
 }
 
 void
-virNetDaemonSetShutdownCallbacks(virNetDaemon *dmn,
-                                 virNetDaemonShutdownCallback prepareCb,
-                                 virNetDaemonShutdownCallback waitCb)
+virNetDaemonSetLifecycleCallbacks(virNetDaemon *dmn,
+                                  virNetDaemonLifecycleCallback prepareCb,
+                                  virNetDaemonLifecycleCallback waitCb)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
 

@@ -624,9 +624,9 @@ static void daemonRunStateInit(void *opaque)
 
     g_atomic_int_set(&driversInitialized, 1);
 
-    virNetDaemonSetShutdownCallbacks(dmn,
-                                     virStateShutdownPrepare,
-                                     virStateShutdownWait);
+    virNetDaemonSetLifecycleCallbacks(dmn,
+                                      virStateShutdownPrepare,
+                                      virStateShutdownWait);
 
     /* Signal for VM shutdown when desktop session is terminated, in
      * unprivileged daemons */
