@@ -138,9 +138,9 @@
   <flag name='netdev-stream-reconnect-miliseconds'/>
   <flag name='query-cpu-model-expansion.deprecated-props'/>
   <flag name='migrate-incoming.exit-on-error'/>
-  <version>9001050</version>
+  <version>9002000</version>
   <microcodeVersion>39100247</microcodeVersion>
-  <package>v9.1.0-1348-g11b8920ed2</package>
+  <package>v9.2.0</package>
   <arch>s390x</arch>
   <hostCPU type='kvm' model='gen16a-base' migratability='no'>
     <property name='nnpa' type='boolean' value='true'/>
@@ -293,7 +293,7 @@
   <machine type='kvm' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='s390-ccw-virtio-8.2' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
-  <machine type='kvm' name='s390-ccw-virtio-6.2' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
+  <machine type='kvm' name='s390-ccw-virtio-6.2' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='s390-ccw-virtio-7.2' hotplugCpus='yes' maxCpus='248' defaultCPU='host-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
@@ -3743,7 +3743,7 @@
   <machine type='tcg' name='s390-ccw-virtio-2.8' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='s390-ccw-virtio-4.0' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='s390-ccw-virtio-8.2' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
-  <machine type='tcg' name='s390-ccw-virtio-6.2' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
+  <machine type='tcg' name='s390-ccw-virtio-6.2' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='s390-ccw-virtio-3.0' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='s390-ccw-virtio-2.5' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='s390-ccw-virtio-7.2' hotplugCpus='yes' maxCpus='248' defaultCPU='qemu-s390x-cpu' defaultRAMid='s390.ram' acpi='no'/>
