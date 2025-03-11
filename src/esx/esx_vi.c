@@ -4616,7 +4616,6 @@ esxVI_LookupHostScsiTopologyLunListByTargetName
     esxVI_HostScsiTopologyInterface *hostScsiInterfaceList = NULL;
     esxVI_HostScsiTopologyInterface *hostScsiInterface = NULL;
     esxVI_HostScsiTopologyTarget *hostScsiTopologyTarget = NULL;
-    bool found = false;
     esxVI_HostInternetScsiTargetTransport *candidate = NULL;
 
     ESX_VI_CHECK_ARG_LIST(hostScsiTopologyLunList);
@@ -4653,22 +4652,20 @@ esxVI_LookupHostScsiTopologyLunListByTargetName
 
     /* See vSphere API documentation about HostScsiTopologyInterface */
     for (hostScsiInterface = hostScsiInterfaceList;
-         hostScsiInterface && !found;
+         hostScsiInterface && !hostScsiTopologyTarget;
          hostScsiInterface = hostScsiInterface->_next) {
-        for (hostScsiTopologyTarget = hostScsiInterface->target;
-             hostScsiTopologyTarget;
-             hostScsiTopologyTarget = hostScsiTopologyTarget->_next) {
-            candidate = esxVI_HostInternetScsiTargetTransport_DynamicCast
-                          (hostScsiTopologyTarget->transport);
+        esxVI_HostScsiTopologyTarget *target;
+        for (target = hostScsiInterface->target; target; target = target->_next) {
+            candidate = esxVI_HostInternetScsiTargetTransport_DynamicCast(target->transport);
 
             if (candidate && STREQ(candidate->iScsiName, name)) {
-                found = true;
+                hostScsiTopologyTarget = target;
                 break;
             }
         }
     }
 
-    if (!found || !hostScsiTopologyTarget)
+    if (!hostScsiTopologyTarget)
         goto cleanup;
 
     if (!hostScsiTopologyTarget->lun) {
