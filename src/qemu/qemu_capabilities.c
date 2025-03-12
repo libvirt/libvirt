@@ -565,7 +565,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 355 */
               "vhost-user-fs", /* QEMU_CAPS_DEVICE_VHOST_USER_FS */
               "query-named-block-nodes.flat", /* X_QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT */
-              "blockdev-snapshot.allow-write-only-overlay", /* QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY */
+              "blockdev-snapshot.allow-write-only-overlay", /* X_QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY */
               "blockdev-reopen", /* X_QEMU_CAPS_BLOCKDEV_REOPEN */
               "storage.werror", /* X_QEMU_CAPS_STORAGE_WERROR */
 
@@ -1573,7 +1573,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-add/arg-type/+qcow2/discard-no-unref", QEMU_CAPS_QCOW2_DISCARD_NO_UNREF },
     { "blockdev-add/arg-type/+virtio-blk-vhost-vdpa/$fdset", QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA},
-    { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "calc-dirty-rate/arg-type/mode", QEMU_CAPS_DIRTYRATE_MODE },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "chardev-add/arg-type/backend/+socket/data/reconnect-ms", QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS },

@@ -98,7 +98,6 @@
   <flag name='rng-builtin'/>
   <flag name='cpu.kvm-no-adjvtime'/>
   <flag name='vhost-user-fs'/>
-  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='fsdev.multidevs'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>

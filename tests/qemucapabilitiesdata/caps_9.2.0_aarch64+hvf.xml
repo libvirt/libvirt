@@ -75,7 +75,6 @@
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
-  <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='fsdev.multidevs'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='tcg'/>
