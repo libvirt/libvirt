@@ -543,7 +543,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 355 */
     QEMU_CAPS_DEVICE_VHOST_USER_FS, /* -device vhost-user-fs */
-    QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT, /* query-named-block-nodes supports the 'flat' option */
+    X_QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT, /* query-named-block-nodes supports the 'flat' option */
     QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY, /* blockdev-snapshot has the 'allow-write-only-overlay' feature */
     QEMU_CAPS_BLOCKDEV_REOPEN, /* 'blockdev-reopen' qmp command is supported */
     X_QEMU_CAPS_STORAGE_WERROR, /* virtio-blk,scsi-hd.werror */

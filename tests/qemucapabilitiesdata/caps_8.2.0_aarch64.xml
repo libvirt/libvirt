@@ -98,7 +98,6 @@
   <flag name='rng-builtin'/>
   <flag name='cpu.kvm-no-adjvtime'/>
   <flag name='vhost-user-fs'/>
-  <flag name='query-named-block-nodes.flat'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
   <flag name='blockdev-reopen'/>
   <flag name='fsdev.multidevs'/>
