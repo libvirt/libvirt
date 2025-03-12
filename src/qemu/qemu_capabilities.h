@@ -720,6 +720,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 480 */
     QEMU_CAPS_AMD_IOMMU, /* -device amd-iommu */
+    QEMU_CAPS_AMD_IOMMU_PCI_ID, /* amd-iommu.pci-id */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

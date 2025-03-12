@@ -739,6 +739,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 480 */
               "amd-iommu", /* QEMU_CAPS_AMD_IOMMU */
+              "amd-iommu.pci-id", /* QEMU_CAPS_AMD_IOMMU_PCI_ID */
     );
 
 
@@ -1572,6 +1573,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlkCCW[] =
     { "loadparm", QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsAMDIOMMU[] = {
+    { "pci-id", QEMU_CAPS_AMD_IOMMU_PCI_ID, NULL },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
@@ -1733,6 +1738,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-blk-ccw", virQEMUCapsDevicePropsVirtioBlkCCW,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioBlkCCW),
       QEMU_CAPS_VIRTIO_CCW },
+    { "amd-iommu", virQEMUCapsDevicePropsAMDIOMMU,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsAMDIOMMU),
+      QEMU_CAPS_AMD_IOMMU },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {
