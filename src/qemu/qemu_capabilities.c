@@ -622,7 +622,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vnc-power-control", /* QEMU_CAPS_VNC_POWER_CONTROL */
               "audiodev", /* X_QEMU_CAPS_AUDIODEV */
               "blockdev-backup", /* X_QEMU_CAPS_BLOCKDEV_BACKUP */
-              "object.qapified", /* QEMU_CAPS_OBJECT_JSON */
+              "object.qapified", /* X_QEMU_CAPS_OBJECT_JSON */
               "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
 
               /* 400 */
@@ -1590,7 +1590,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "netdev_add/arg-type/type/^dgram", QEMU_CAPS_NETDEV_JSON },
     { "netdev_add/arg-type/+user", QEMU_CAPS_NETDEV_USER },
     { "netdev_add/arg-type/+stream/reconnect-ms", QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS },
-    { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_JSON },
     { "object-add/arg-type/+sev-guest/kernel-hashes", QEMU_CAPS_SEV_GUEST_KERNEL_HASHES },
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
