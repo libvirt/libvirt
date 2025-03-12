@@ -83,39 +83,9 @@ mymain(void)
             ret = -1; \
      } while (0)
 
-#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT) \
-    DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayBitmap, EXPECT)
-
 #define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT) \
     DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayNumbered, EXPECT)
 
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{}", NULL);
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"string\":\"qwer\"}", "string=qwer");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"string\":\"qw,e,r\"}", "string=qw,,e,,r");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"number\":1234}", "number=1234");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":true}", "boolean=on");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":false}", "boolean=off");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[]}", NULL);
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[0]}", "bitmap=0");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[1,3,5]}",
-                                     "bitmap=1,bitmap=3,bitmap=5");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[0,1,2,3]}", "bitmap=0-3");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[1,2,3,5]}",
-                                     "bitmap=1-3,bitmap=5");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"bitmap\":[1,2,3,5,7,8,9]}",
-                                     "bitmap=1-3,bitmap=5,bitmap=7-9");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"array\":[\"bleah\",\"qwerty\",1]}",
-                                     "array=bleah,array=qwerty,array=1");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":true,\"hyphen-name\":1234,\"some_string\":\"bleah\"}",
-                                     "boolean=on,hyphen-name=1234,some_string=bleah");
-    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"nest\": {\"boolean\":true,"
-                                                 "\"hyphen-name\":1234,"
-                                                 "\"some_string\":\"bleah\","
-                                                 "\"bleah\":\"bl,eah\""
-                                                 "}"
-                                     "}",
-                                     "nest.boolean=on,nest.hyphen-name=1234,"
-                                     "nest.some_string=bleah,nest.bleah=bl,,eah");
     DO_TEST_COMMAND_DRIVE_FROM_JSON("{\"driver\":\"gluster\","
                                      "\"volume\":\"test\","
                                      "\"path\":\"img\","

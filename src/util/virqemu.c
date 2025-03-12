@@ -51,42 +51,6 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
 
 
 int
-virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
-                                       virJSONValue *array,
-                                       virBuffer *buf)
-{
-    ssize_t pos = -1;
-    ssize_t end;
-    g_autoptr(virBitmap) bitmap = virBitmapNew(0);
-    size_t i;
-
-    for (i = 0; i < virJSONValueArraySize(array); i++) {
-        virJSONValue *member = virJSONValueArrayGet(array, i);
-        unsigned long long value;
-
-        if (virJSONValueGetNumberUlong(member, &value) < 0)
-            return -1;
-
-        virBitmapSetBitExpand(bitmap, value);
-    }
-
-    while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
-        if ((end = virBitmapNextClearBit(bitmap, pos)) < 0)
-            end = virBitmapLastSetBit(bitmap) + 1;
-
-        if (end - 1 > pos) {
-            virBufferAsprintf(buf, "%s=%zd-%zd,", key, pos, end - 1);
-            pos = end;
-        } else {
-            virBufferAsprintf(buf, "%s=%zd,", key, pos);
-        }
-    }
-
-    return 0;
-}
-
-
-int
 virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virJSONValue *array,
                                          virBuffer *buf)
