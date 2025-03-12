@@ -115,7 +115,6 @@
   <flag name='vhost-user-fs.bootindex'/>
   <flag name='vhost-user-blk'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
-  <flag name='migration-param.block-bitmap-mapping'/>
   <flag name='vnc-power-control'/>
   <flag name='rotation-rate'/>
   <flag name='acpi-index'/>

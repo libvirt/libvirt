@@ -37,7 +37,6 @@
   <flag name='netdev.vhost-vdpa'/>
   <flag name='ncr53c90'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
-  <flag name='migration-param.block-bitmap-mapping'/>
   <flag name='vnc-power-control'/>
   <flag name='rotation-rate'/>
   <flag name='input-linux'/>
