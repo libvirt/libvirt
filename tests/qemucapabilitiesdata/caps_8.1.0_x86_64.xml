@@ -198,6 +198,7 @@
   <flag name='bus-floppy'/>
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
+  <flag name='amd-iommu'/>
   <version>8001000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v8.1.0</package>

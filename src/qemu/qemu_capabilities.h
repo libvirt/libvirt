@@ -718,6 +718,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_NVME, /* -device nvme */
     QEMU_CAPS_DEVICE_NVME_NS, /* -device nvme-ns */
 
+    /* 480 */
+    QEMU_CAPS_AMD_IOMMU, /* -device amd-iommu */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
