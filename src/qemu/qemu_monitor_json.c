@@ -2085,7 +2085,7 @@ qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon)
     g_autoptr(virJSONValue) reply = NULL;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes",
-                                           "B:flat", mon->queryNamedBlockNodesFlat,
+                                           "b:flat", true,
                                            NULL)))
         return NULL;
 
