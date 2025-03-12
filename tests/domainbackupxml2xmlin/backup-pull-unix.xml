@@ -1,0 +1,22 @@
+<domainbackup mode='pull'>
+  <incremental>1525889631</incremental>
+  <server transport='unix' socket='/path/to/server'/>
+  <disks>
+    <disk name='vda' type='file'>
+      <scratch file='/path/to/file'/>
+    </disk>
+    <disk name='hda' backup='no'/>
+    <disk name='vdc' type='file' backupmode='full'>
+      <scratch file='/path/to/file'/>
+    </disk>
+    <disk name='vdd' type='file' backupmode='incremental'>
+      <scratch file='/path/to/file'/>
+    </disk>
+    <disk name='vde' type='file' backupmode='incremental' incremental='blah'>
+      <scratch file='/path/to/file'/>
+    </disk>
+    <disk name='vdf' type='file' incremental='bleh'>
+      <scratch file='/path/to/file'/>
+    </disk>
+  </disks>
+</domainbackup>
