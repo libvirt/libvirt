@@ -26,7 +26,6 @@
   <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
-  <flag name='incremental-backup'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>

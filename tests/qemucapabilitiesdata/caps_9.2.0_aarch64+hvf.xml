@@ -69,7 +69,6 @@
   <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>
   <flag name='dbus-vmstate'/>
-  <flag name='incremental-backup'/>
   <flag name='ramfb'/>
   <flag name='arm-max-cpu'/>
   <flag name='drive-nvme'/>

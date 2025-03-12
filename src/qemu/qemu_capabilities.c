@@ -542,7 +542,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-user-vga", /* QEMU_CAPS_DEVICE_VHOST_USER_VGA */
 
               /* 340 */
-              "incremental-backup", /* QEMU_CAPS_INCREMENTAL_BACKUP */
+              "incremental-backup", /* X_QEMU_CAPS_INCREMENTAL_BACKUP */
               "query-cpu-model-baseline", /* QEMU_CAPS_QUERY_CPU_MODEL_BASELINE */
               "query-cpu-model-comparison", /* QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON */
               "ramfb", /* QEMU_CAPS_DEVICE_RAMFB */
@@ -5590,10 +5590,8 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
  * for libvirt to be able to drive it properly should be processed here.
  */
 void
-virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
+virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
 }
 
 

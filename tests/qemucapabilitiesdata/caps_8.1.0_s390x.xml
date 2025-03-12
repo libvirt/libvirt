@@ -57,7 +57,6 @@
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
-  <flag name='incremental-backup'/>
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>

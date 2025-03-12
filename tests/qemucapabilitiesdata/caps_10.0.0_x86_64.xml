@@ -117,7 +117,6 @@
   <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
-  <flag name='incremental-backup'/>
   <flag name='ramfb'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
