@@ -626,7 +626,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
 
               /* 400 */
-              "compat-deprecated", /* QEMU_CAPS_COMPAT_DEPRECATED */
+              "compat-deprecated", /* X_QEMU_CAPS_COMPAT_DEPRECATED */
               "acpi-index", /* QEMU_CAPS_ACPI_INDEX */
               "input-linux", /* QEMU_CAPS_INPUT_LINUX */
               "virtio-gpu-gl-pci", /* QEMU_CAPS_VIRTIO_GPU_GL_PCI */
@@ -5599,13 +5599,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
-
-    /* The -compat qemu command line argument is implemented using a newer
-     * method which doesn't show up in query-command-line-options. As we'll use
-     * it only for development and testing purposes we can base the capability
-     * on a not entirely related witness. */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED);
 }
 
 

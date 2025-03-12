@@ -150,7 +150,6 @@
   <flag name='vnc-power-control'/>
   <flag name='object.qapified'/>
   <flag name='rotation-rate'/>
-  <flag name='compat-deprecated'/>
   <flag name='acpi-index'/>
   <flag name='input-linux'/>
   <flag name='virtio-gpu-gl-pci'/>
