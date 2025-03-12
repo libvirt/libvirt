@@ -10170,20 +10170,6 @@ qemuDomainDefHasManagedPR(virDomainObj *vm)
 
 
 /**
- * qemuDomainSupportsCheckpointsBlockjobs:
- * @vm: domain object
- *
- * Checks whether a block job is supported in possible combination with
- * checkpoints (qcow2 bitmaps). Returns -1 if unsupported and reports an error
- * 0 in case everything is supported.
- */
-int
-qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm G_GNUC_UNUSED)
-{
-    return 0;
-}
-
-/**
  * qemuDomainInitializePflashStorageSource:
  *
  * This helper converts the specification of the source of the 'loader' in case

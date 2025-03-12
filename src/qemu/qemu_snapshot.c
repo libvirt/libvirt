@@ -1082,7 +1082,6 @@ qemuSnapshotPrepare(virDomainObj *vm,
     }
 
     /* Handle interlocking with 'checkpoints':
-     * - if the VM is online use qemuDomainSupportsCheckpointsBlockjobs
      * - if the VM is offline disallow external snapshots as the support for
      *   propagating bitmaps into the would-be-created overlay is not yet implemented
      */
@@ -1093,9 +1092,6 @@ qemuSnapshotPrepare(virDomainObj *vm,
                            _("support for offline external snapshots while checkpoint exists was not yet implemented"));
             return -1;
         }
-    } else {
-        if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-            return -1;
     }
 
     /* Alter flags to let later users know what we learned.  */

@@ -3592,9 +3592,6 @@ qemuBlockCommit(virDomainObj *vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         return NULL;
 
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        return NULL;
-
     if (topSource == disk->src) {
         /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
         if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {

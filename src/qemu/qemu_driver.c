@@ -13624,9 +13624,6 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        goto endjob;
-
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
@@ -14148,9 +14145,6 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
-    if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto endjob;
 
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
