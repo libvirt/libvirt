@@ -968,10 +968,6 @@ qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObj *vm,
     g_autoptr(virJSONValue) actions = NULL;
     bool active = job->type == QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
 
-    if (!active &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
-        return 0;
-
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
         return -1;
 
@@ -1205,9 +1201,6 @@ qemuBlockJobProcessEventCompletedCopyBitmaps(virDomainObj *vm,
     g_autoptr(virJSONValue) actions = NULL;
     bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
-        return 0;
-
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
         return -1;
 
@@ -1237,7 +1230,6 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriver *driver,
                                            qemuBlockJobData *job,
                                            virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virStorageSource) src = NULL;
 
     VIR_DEBUG("copy job '%s' on VM '%s' pivoted", job->name, vm->def->name);
@@ -1257,8 +1249,7 @@ qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriver *driver,
         !virStorageSourceIsBacking(job->disk->mirror->backingStore))
         job->disk->mirror->backingStore = g_steal_pointer(&job->disk->src->backingStore);
 
-    if (job->disk->src->readonly &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
+    if (job->disk->src->readonly)
         ignore_value(qemuBlockReopenReadOnly(vm, job->disk->mirror, asyncJob));
 
     qemuBlockJobRewriteConfigDiskSource(vm, job->disk, job->disk->mirror);
