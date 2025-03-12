@@ -88,8 +88,6 @@ struct _qemuMonitor {
     void *logOpaque;
     virFreeCallback logDestroy;
 
-    /* true if qemu no longer wants 'props' sub-object of object-add */
-    bool objectAddNoWrap;
     /* query-named-block-nodes supports the 'flat' option */
     bool queryNamedBlockNodesFlat;
     /* use the backing-mask-protocol flag of block-commit/stream */

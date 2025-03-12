@@ -600,7 +600,6 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->cb = cb;
 
     if (priv) {
-        mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_JSON);
         mon->queryNamedBlockNodesFlat = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT);
         mon->blockjobMaskProtocol = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_BACKING_MASK_PROTOCOL);
     }
@@ -2660,7 +2659,6 @@ qemuMonitorAddObject(qemuMonitor *mon,
                      virJSONValue **props,
                      char **alias)
 {
-    g_autoptr(virJSONValue) pr = NULL;
     const char *type = NULL;
     const char *id = NULL;
     g_autofree char *aliasCopy = NULL;
@@ -2688,30 +2686,7 @@ qemuMonitorAddObject(qemuMonitor *mon,
     if (alias)
         aliasCopy = g_strdup(id);
 
-    if (mon->objectAddNoWrap) {
-        pr = g_steal_pointer(props);
-    } else {
-        /* we need to create a wrapper which has the 'qom-type' and 'id' and
-         * store everything else under a 'props' sub-object */
-        g_autoptr(virJSONValue) typeobj = NULL;
-        g_autoptr(virJSONValue) idobj = NULL;
-
-        ignore_value(virJSONValueObjectRemoveKey(*props, "qom-type", &typeobj));
-        ignore_value(virJSONValueObjectRemoveKey(*props, "id", &idobj));
-
-        /* avoid empty 'props' member */
-        if (!virJSONValueObjectGetKey(*props, 0))
-            g_clear_pointer(props, virJSONValueFree);
-
-        if (virJSONValueObjectAdd(&pr,
-                                  "s:qom-type", type,
-                                  "s:id", id,
-                                  "A:props", props,
-                                  NULL) < 0)
-            return -1;
-    }
-
-    if (qemuMonitorJSONAddObject(mon, &pr) < 0)
+    if (qemuMonitorJSONAddObject(mon, props) < 0)
         return -1;
 
     if (alias)
