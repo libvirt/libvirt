@@ -126,7 +126,6 @@
   <flag name='rng-builtin'/>
   <flag name='vhost-user-fs'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
-  <flag name='blockdev-reopen'/>
   <flag name='fsdev.multidevs'/>
   <flag name='pcie-root-port.hotplug'/>
   <flag name='aio.io_uring'/>

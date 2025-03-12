@@ -566,7 +566,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-user-fs", /* QEMU_CAPS_DEVICE_VHOST_USER_FS */
               "query-named-block-nodes.flat", /* X_QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT */
               "blockdev-snapshot.allow-write-only-overlay", /* QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY */
-              "blockdev-reopen", /* QEMU_CAPS_BLOCKDEV_REOPEN */
+              "blockdev-reopen", /* X_QEMU_CAPS_BLOCKDEV_REOPEN */
               "storage.werror", /* X_QEMU_CAPS_STORAGE_WERROR */
 
               /* 360 */
@@ -1241,7 +1241,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
     { "query-cpu-model-comparison", QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON },
     { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
-    { "blockdev-reopen", QEMU_CAPS_BLOCKDEV_REOPEN },
     { "set-action", QEMU_CAPS_SET_ACTION },
     { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
     { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },
@@ -5594,8 +5593,7 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 void
 virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 {
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
 }
 

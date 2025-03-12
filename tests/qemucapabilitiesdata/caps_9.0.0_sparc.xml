@@ -31,7 +31,6 @@
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
   <flag name='blockdev-snapshot.allow-write-only-overlay'/>
-  <flag name='blockdev-reopen'/>
   <flag name='fsdev.multidevs'/>
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
