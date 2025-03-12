@@ -185,25 +185,12 @@ qemuOnOffAuto(virTristateSwitch s)
 static int
 qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
-                                   virQEMUCaps *qemuCaps)
+                                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_autofree char *arg = NULL;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON)) {
-        if (!(arg = virJSONValueToString(props, false)))
-            return -1;
-    } else {
-        const char *type = virJSONValueObjectGetString(props, "qom-type");
-        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-        virBufferAsprintf(&buf, "%s,", type);
-
-        if (virQEMUBuildCommandLineJSON(props, &buf, "qom-type",
-                                        virQEMUBuildCommandLineJSONArrayBitmap) < 0)
-            return -1;
-
-        arg = virBufferContentAndReset(&buf);
-    }
+    if (!(arg = virJSONValueToString(props, false)))
+        return -1;
 
     virCommandAddArgList(cmd, "-object", arg, NULL);
     return 0;
