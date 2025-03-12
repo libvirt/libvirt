@@ -10178,17 +10178,8 @@ qemuDomainDefHasManagedPR(virDomainObj *vm)
  * 0 in case everything is supported.
  */
 int
-qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm)
+qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm G_GNUC_UNUSED)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP) &&
-        virDomainListCheckpoints(vm->checkpoints, NULL, NULL, NULL, 0) > 0) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot perform block operations while checkpoint exists"));
-        return -1;
-    }
-
     return 0;
 }
 

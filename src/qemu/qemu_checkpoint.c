@@ -588,12 +588,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
                            _("cannot create checkpoint for inactive domain"));
             return NULL;
         }
-
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("incremental backup is not supported yet"));
-            return NULL;
-        }
     }
 
     if (!(def = virDomainCheckpointDefParseString(xmlDesc, driver->xmlopt,
@@ -853,12 +847,6 @@ qemuCheckpointDelete(virDomainObj *vm,
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot delete checkpoint for inactive domain"));
-            goto endjob;
-        }
-
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("incremental backup is not supported yet"));
             goto endjob;
         }
     }

@@ -806,24 +806,6 @@ qemuBackupBegin(virDomainObj *vm,
     if (virDomainBackupAlignDisks(def, vm->def, suffix) < 0)
         goto endjob;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP)) {
-        size_t i;
-
-        if (chkdef) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("creating checkpoint for incremental backup is not supported yet"));
-            goto endjob;
-        }
-
-        for (i = 0; i < def->ndisks; i++) {
-            if (def->disks[i].backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("incremental backup is not supported yet"));
-                goto endjob;
-            }
-        }
-    }
-
     if (priv->backup) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("another backup job is already running"));
