@@ -2681,7 +2681,6 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
         return NULL;
 
     if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING) &&
         qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm, migrate_disks) < 0)
         return NULL;
 
@@ -3188,15 +3187,13 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
                                             qemuMigrationParams *migParams,
                                             unsigned int flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virJSONValue) mapping = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     GSList *nextdisk;
 
     if (!mig->nbd ||
         !mig->blockDirtyBitmaps ||
-        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) ||
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
+        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)))
         return 0;
 
     if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(vm->def, mig->blockDirtyBitmaps) < 0)
@@ -4936,10 +4933,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
     if (storageMigration) {
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-
-        if (virQEMUCapsGet(priv->qemuCaps,
-                           QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
-            cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
+        cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
     }
 
     if (virLockManagerPluginUsesState(driver->lockManager) &&
