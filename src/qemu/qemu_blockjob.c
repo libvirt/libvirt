@@ -1268,7 +1268,6 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
                                            qemuBlockJobData *job,
                                            virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virStorageSource) mirror = NULL;
 
     VIR_DEBUG("copy job '%s' on VM '%s' aborted", job->name, vm->def->name);
@@ -1283,12 +1282,10 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
         bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
 
         /* In the special case of a shallow copy with reused image we don't
-         * hotplug the full chain when QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY
-         * is supported. Attempting to delete it would thus result in spurious
-         * errors as we'd attempt to blockdev-del images which were not added
-         * yet */
+         * hotplug the full chain. Attempting to delete it would thus result in
+         * spurious errors as we'd attempt to blockdev-del images which were
+         * not added yet */
         if (reuse && shallow &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
             virStorageSourceHasBacking(job->disk->mirror))
             g_clear_pointer(&job->disk->mirror->backingStore, virObjectUnref);
     }

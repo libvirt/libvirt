@@ -14299,22 +14299,14 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
          * level is being copied. To restore this semantics if
          * blockdev-reopen is supported defer opening of the backing chain
          * of 'mirror' to the pivot step */
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
-            g_autoptr(virStorageSource) terminator = virStorageSourceNew();
+        g_autoptr(virStorageSource) terminator = virStorageSourceNew();
 
-            if (qemuProcessPrepareHostStorageSource(vm, mirror) < 0)
-                goto endjob;
+        if (qemuProcessPrepareHostStorageSource(vm, mirror) < 0)
+            goto endjob;
 
-            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                             terminator)))
-                goto endjob;
-        } else {
-            if (qemuProcessPrepareHostStorageSourceChain(vm, mirror) < 0)
-                goto endjob;
-
-            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror)))
-                goto endjob;
-        }
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
+                                                                         terminator)))
+            goto endjob;
     } else {
         if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
             goto endjob;

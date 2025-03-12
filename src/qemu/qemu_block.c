@@ -3826,7 +3826,6 @@ qemuBlockPivot(virDomainObj *vm,
              * to copy data into the backing chain while the top image is being
              * copied shallow */
             if (reuse && shallow &&
-                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
                 virStorageSourceHasBacking(disk->mirror)) {
 
                 if (qemuProcessPrepareHostStorageSourceChain(vm, disk->mirror->backingStore) < 0)
