@@ -10339,8 +10339,7 @@ VIR_ENUM_IMPL(qemuCommandDeprecationBehavior,
 static void
 qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
                                      virQEMUDriverConfig *cfg,
-                                     virDomainDef *def,
-                                     virQEMUCaps *qemuCaps)
+                                     virDomainDef *def)
 {
     g_autoptr(virJSONValue) props = NULL;
     g_autofree char *propsstr = NULL;
@@ -10364,13 +10363,6 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
 
     if (behavior == QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE)
         return;
-
-    /* we don't try to enable this feature at all if qemu doesn't support it,
-     * so that a downgrade of qemu version doesn't impact startup of the VM */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED)) {
-        VIR_DEBUG("-compat not supported for VM '%s'", def->name);
-        return;
-    }
 
     switch (behavior) {
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT:
@@ -10455,7 +10447,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildNameCommandLine(cmd, cfg, def) < 0)
         return NULL;
 
-    qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def, qemuCaps);
+    qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def);
 
     virCommandAddArg(cmd, "-S"); /* freeze CPUs during startup */
 
