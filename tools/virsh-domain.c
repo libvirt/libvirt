@@ -1070,7 +1070,6 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("No support for %1$s in command 'attach-interface'"),
                  type);
         return false;
-        break;
     }
 
     if (target != NULL)

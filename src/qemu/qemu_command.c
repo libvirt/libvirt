@@ -9704,13 +9704,13 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
     switch (sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
         return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
-        break;
+
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
         return qemuBuildSEVSNPCommandLine(cmd, &sec->data.sev_snp);
-        break;
+
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         return qemuBuildPVCommandLine(cmd);
-        break;
+
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);

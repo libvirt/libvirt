@@ -7268,7 +7268,6 @@ qemuDomainChangeMemoryLiveValidateChange(const virDomainMemoryDef *oldDef,
                        _("cannot modify memory of model '%1$s'"),
                        virDomainMemoryModelTypeToString(oldDef->model));
         return false;
-        break;
     }
 
     if (oldDef->model != newDef->model) {

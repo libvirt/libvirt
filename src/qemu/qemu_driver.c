@@ -11990,7 +11990,6 @@ qemuDomainGetJobInfoDumpStats(virDomainObj *vm,
                        _("dump query failed, status=%1$d"),
                        privJob->stats.dump.status);
         return -1;
-        break;
 
     case QEMU_MONITOR_DUMP_STATUS_ACTIVE:
         jobData->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;

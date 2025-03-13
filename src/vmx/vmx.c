@@ -2250,13 +2250,11 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
                        virDomainDiskBusTypeToString(def->bus),
                        virDomainDiskDeviceTypeToString(def->device));
         return -1;
-        break;
 
     case VIR_DOMAIN_DISK_BUS_NONE:
     case VIR_DOMAIN_DISK_BUS_LAST:
         virReportEnumRangeError(virDomainDiskBus, def->bus);
         return -1;
-        break;
     }
 
     def->dst = virIndexToDiskName(idx, prefix);

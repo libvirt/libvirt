@@ -681,7 +681,6 @@ AppArmorSetInputLabel(virSecurityManager *mgr,
             return -1;
         }
         return reload_profile(mgr, def, input->source.evdev, true);
-        break;
 
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
     case VIR_DOMAIN_INPUT_TYPE_TABLET:

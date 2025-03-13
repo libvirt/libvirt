@@ -1217,7 +1217,6 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, _("CPU described in %1$s is incompatible with host CPU\n"),
                  from);
         return false;
-        break;
 
     case VIR_CPU_COMPARE_IDENTICAL:
         vshPrint(ctl, _("CPU described in %1$s is identical to host CPU\n"),
@@ -1632,7 +1631,6 @@ cmdHypervisorCPUCompare(vshControl *ctl,
                  _("CPU described in %1$s is incompatible with the CPU provided by hypervisor on the host\n"),
                  from);
         return false;
-        break;
 
     case VIR_CPU_COMPARE_IDENTICAL:
         vshPrint(ctl,

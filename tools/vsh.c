@@ -1922,31 +1922,24 @@ vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
     switch (item->type) {
     case VIR_TYPED_PARAM_INT:
         return g_strdup_printf("%d", item->value.i);
-        break;
 
     case VIR_TYPED_PARAM_UINT:
         return g_strdup_printf("%u", item->value.ui);
-        break;
 
     case VIR_TYPED_PARAM_LLONG:
         return g_strdup_printf("%lld", item->value.l);
-        break;
 
     case VIR_TYPED_PARAM_ULLONG:
         return g_strdup_printf("%llu", item->value.ul);
-        break;
 
     case VIR_TYPED_PARAM_DOUBLE:
         return g_strdup_printf("%f", item->value.d);
-        break;
 
     case VIR_TYPED_PARAM_BOOLEAN:
         return g_strdup(item->value.b ? _("yes") : _("no"));
-        break;
 
     case VIR_TYPED_PARAM_STRING:
         return g_strdup(item->value.s);
-        break;
 
     default:
         vshError(ctl, _("unimplemented parameter type %1$d"), item->type);

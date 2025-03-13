@@ -5601,7 +5601,6 @@ int qemuMonitorJSONGetObjectProperty(qemuMonitor *mon,
                        _("qom-get invalid object property type %1$d"),
                        prop->type);
         return -1;
-        break;
     }
 
     if (ret == -1) {

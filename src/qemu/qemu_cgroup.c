@@ -436,7 +436,6 @@ qemuSetupInputCgroup(virDomainObj *vm,
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         return qemuCgroupAllowDevicePath(vm, dev->source.evdev,
                                          VIR_CGROUP_DEVICE_RW, false);
-        break;
     }
 
     return ret;
@@ -457,7 +456,6 @@ qemuTeardownInputCgroup(virDomainObj *vm,
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
         return qemuCgroupDenyDevicePath(vm, dev->source.evdev,
                                         VIR_CGROUP_DEVICE_RWM, false);
-        break;
     }
 
     return 0;
