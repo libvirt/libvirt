@@ -53,13 +53,9 @@ virCHProcessConnectMonitor(virCHDriver *driver,
                            virDomainObj *vm,
                            int logfile)
 {
-    virCHMonitor *monitor = NULL;
-    virCHDriverConfig *cfg = virCHDriverGetConfig(driver);
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
 
-    monitor = virCHMonitorNew(vm, cfg, logfile);
-
-    virObjectUnref(cfg);
-    return monitor;
+    return virCHMonitorNew(vm, cfg, logfile);
 }
 
 static void
