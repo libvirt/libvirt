@@ -1273,7 +1273,6 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
  * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
  *                      (optional)
  * @alias: TLS object alias
- * @qemuCaps: capabilities
  *
  * Create the command line for a TLS object
  *
@@ -1285,8 +1284,7 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
                             bool isListen,
                             bool verifypeer,
                             const char *certEncSecretAlias,
-                            const char *alias,
-                            virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                            const char *alias)
 {
     g_autoptr(virJSONValue) props = NULL;
 
@@ -1334,7 +1332,7 @@ qemuBuildChardevCommand(virCommand *cmd,
                                             dev->data.tcp.listen,
                                             chrSourcePriv->tlsVerify,
                                             tlsCertEncSecAlias,
-                                            objalias, qemuCaps) < 0) {
+                                            objalias) < 0) {
                 return -1;
             }
 
@@ -8025,7 +8023,6 @@ static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                                 const virDomainDef *def,
                                 virCommand *cmd,
-                                virQEMUCaps *qemuCaps,
                                 virDomainGraphicsDef *graphics)
 {
     g_autofree char *audioid = qemuGetAudioIDString(def, graphics->data.vnc.audioId);
@@ -8106,8 +8103,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                                         true,
                                         cfg->vncTLSx509verify,
                                         secretAlias,
-                                        gfxPriv->tlsAlias,
-                                        qemuCaps) < 0)
+                                        gfxPriv->tlsAlias) < 0)
             return -1;
 
         virBufferAsprintf(&opt, ",tls-creds=%s", gfxPriv->tlsAlias);
@@ -8416,7 +8412,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             if (qemuBuildGraphicsVNCCommandLine(cfg, def, cmd,
-                                                qemuCaps, graphics) < 0)
+                                                graphics) < 0)
                 return -1;
 
             break;
