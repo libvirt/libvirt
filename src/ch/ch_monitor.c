@@ -839,6 +839,8 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
     if (responseCode == 200 || responseCode == 204)
         ret = 0;
 
+    curl_slist_free_all(headers);
+
     return ret;
 }
 
@@ -884,6 +886,7 @@ virCHMonitorGet(virCHMonitor *mon, const char *endpoint, virJSONValue **response
 
  cleanup:
     g_free(data.content);
+    curl_slist_free_all(headers);
     /* reset the libcurl handle to avoid leaking a stack pointer to data */
     curl_easy_reset(mon->handle);
 
