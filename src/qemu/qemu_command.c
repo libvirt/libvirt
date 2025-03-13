@@ -7294,8 +7294,7 @@ qemuBuildMemCommandLine(virCommand *cmd,
 
 static int
 qemuBuildIOThreadCommandLine(virCommand *cmd,
-                             const virDomainDef *def,
-                             virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                             const virDomainDef *def)
 {
     size_t i;
 
@@ -10452,7 +10451,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildIOThreadCommandLine(cmd, def) < 0)
         return NULL;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
