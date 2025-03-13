@@ -802,6 +802,8 @@ networkStateCleanup(void)
                           network_driver->lockFD);
     }
 
+    virInhibitorFree(network_driver->inhibitor);
+
     virObjectUnref(network_driver->config);
     virObjectUnref(network_driver->dnsmasqCaps);
 
