@@ -184,8 +184,7 @@ qemuOnOffAuto(virTristateSwitch s)
 
 static int
 qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
-                                   virJSONValue *props,
-                                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                                   virJSONValue *props)
 {
     g_autofree char *arg = NULL;
 
@@ -324,7 +323,7 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -1222,14 +1221,14 @@ qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
 static int
 qemuBuildObjectSecretCommandLine(virCommand *cmd,
                                  qemuDomainSecretInfo *secinfo,
-                                 virQEMUCaps *qemuCaps)
+                                 virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -1289,7 +1288,7 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
                             bool verifypeer,
                             const char *certEncSecretAlias,
                             const char *alias,
-                            virQEMUCaps *qemuCaps)
+                            virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_autoptr(virJSONValue) props = NULL;
 
@@ -1297,7 +1296,7 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
                                      certEncSecretAlias, &props) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -1969,12 +1968,12 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
 static int
 qemuBuildObjectCommandline(virCommand *cmd,
                            virJSONValue *objProps,
-                           virQEMUCaps *qemuCaps)
+                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     if (!objProps)
         return 0;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, objProps, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, objProps) < 0)
         return -1;
 
     return 0;
@@ -3442,11 +3441,10 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
         return -1;
 
     if (tcProps &&
-        qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
-                                           priv->qemuCaps) < 0)
+        qemuBuildObjectCommandlineFromJSON(cmd, tcProps) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -4247,7 +4245,7 @@ qemuBuildInputCommandLine(virCommand *cmd,
             if (!(props = qemuBuildInputEvdevProps(input)))
                 return -1;
 
-            if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+            if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
                 return -1;
         } else {
             g_autoptr(virJSONValue) props = NULL;
@@ -5371,7 +5369,7 @@ qemuBuildRNGCommandLine(virCommand *cmd,
         if (qemuBuildRNGBackendProps(rng, &props) < 0)
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
             return -1;
 
         /* add the device */
@@ -7230,11 +7228,10 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
         return -1;
 
     if (tcProps &&
-        qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
-                                           priv->qemuCaps) < 0)
+        qemuBuildObjectCommandlineFromJSON(cmd, tcProps) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -7304,7 +7301,7 @@ qemuBuildMemCommandLine(virCommand *cmd,
 static int
 qemuBuildIOThreadCommandLine(virCommand *cmd,
                              const virDomainDef *def,
-                             virQEMUCaps *qemuCaps)
+                             virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     size_t i;
 
@@ -7339,7 +7336,7 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
                                   NULL) < 0)
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
             return -1;
     }
 
@@ -7352,7 +7349,7 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
                                          NULL) < 0)
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
             return -1;
     }
 
@@ -7584,12 +7581,10 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
                 goto cleanup;
 
             if (tcProps &&
-                qemuBuildObjectCommandlineFromJSON(cmd, tcProps,
-                                                   priv->qemuCaps) < 0)
+                qemuBuildObjectCommandlineFromJSON(cmd, tcProps) < 0)
                 goto cleanup;
 
-            if (qemuBuildObjectCommandlineFromJSON(cmd, nodeBackends[i],
-                                                   priv->qemuCaps) < 0)
+            if (qemuBuildObjectCommandlineFromJSON(cmd, nodeBackends[i]) < 0)
                 goto cleanup;
         }
 
@@ -9027,7 +9022,7 @@ qemuBuildShmemCommandLine(virCommand *cmd,
         if (!(memProps = qemuBuildShmemBackendMemProps(shmem)))
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(cmd, memProps, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, memProps) < 0)
             return -1;
 
         G_GNUC_FALLTHROUGH;
@@ -9648,7 +9643,7 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -9656,12 +9651,11 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
 
 
 static int
-qemuBuildSEVSNPCommandLine(virDomainObj *vm,
+qemuBuildSEVSNPCommandLine(virDomainObj *vm G_GNUC_UNUSED,
                            virCommand *cmd,
                            virDomainSEVSNPDef *def)
 {
     g_autoptr(virJSONValue) props = NULL;
-    qemuDomainObjPrivate *priv = vm->privateData;
     virTristateBool vcek_disabled = VIR_TRISTATE_BOOL_ABSENT;
 
     VIR_DEBUG("policy=0x%llx cbitpos=%d reduced_phys_bits=%d",
@@ -9688,7 +9682,7 @@ qemuBuildSEVSNPCommandLine(virDomainObj *vm,
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -9696,16 +9690,15 @@ qemuBuildSEVSNPCommandLine(virDomainObj *vm,
 
 
 static int
-qemuBuildPVCommandLine(virDomainObj *vm, virCommand *cmd)
+qemuBuildPVCommandLine(virDomainObj *vm G_GNUC_UNUSED, virCommand *cmd)
 {
     g_autoptr(virJSONValue) props = NULL;
-    qemuDomainObjPrivate *priv = vm->privateData;
 
     if (qemuMonitorCreateObjectProps(&props, "s390-pv-guest", "lsec0",
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -9884,7 +9877,7 @@ qemuBuildManagedPRCommandLine(virCommand *cmd,
     if (!(props = qemuBuildPRManagedManagerInfoProps(priv)))
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     return 0;
@@ -9971,7 +9964,7 @@ qemuBuildDBusVMStateCommandLine(virCommand *cmd,
     if (!(props = qemuBuildDBusVMStateInfoProps(driver, vm)))
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
     priv->dbusVMState = true;
@@ -10221,7 +10214,7 @@ qemuBuildCryptoCommandLine(virCommand *cmd,
         if (qemuBuildCryptoBackendProps(crypto, &props) < 0)
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
             return -1;
 
         /* add the device */
@@ -10278,7 +10271,7 @@ qemuBuildPstoreCommandLine(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(devProps, def, &pstore->info) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(cmd, memProps, qemuCaps) < 0 ||
+    if (qemuBuildObjectCommandlineFromJSON(cmd, memProps) < 0 ||
         qemuBuildDeviceCommandlineFromJSON(cmd, devProps, def, qemuCaps) < 0)
         return -1;
 
