@@ -1209,7 +1209,6 @@ qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
  * qemuBuildObjectSecretCommandLine:
  * @cmd: the command to modify
  * @secinfo: pointer to the secret info object
- * @qemuCaps: qemu capabilities
  *
  * If the secinfo is available and associated with an AES secret,
  * then format the command line for the secret object. This object
@@ -1220,8 +1219,7 @@ qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
  */
 static int
 qemuBuildObjectSecretCommandLine(virCommand *cmd,
-                                 qemuDomainSecretInfo *secinfo,
-                                 virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                                 qemuDomainSecretInfo *secinfo)
 {
     g_autoptr(virJSONValue) props = NULL;
 
@@ -1323,8 +1321,7 @@ qemuBuildChardevCommand(virCommand *cmd,
              * functions can just check the config fields */
             if (chrSourcePriv->secinfo) {
                 if (qemuBuildObjectSecretCommandLine(cmd,
-                                                     chrSourcePriv->secinfo,
-                                                     qemuCaps) < 0)
+                                                     chrSourcePriv->secinfo) < 0)
                     return -1;
 
                 tlsCertEncSecAlias = chrSourcePriv->secinfo->alias;
@@ -8099,8 +8096,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
 
         if (gfxPriv->secinfo) {
             if (qemuBuildObjectSecretCommandLine(cmd,
-                                                 gfxPriv->secinfo,
-                                                 qemuCaps) < 0)
+                                                 gfxPriv->secinfo) < 0)
                 return -1;
             secretAlias = gfxPriv->secinfo->alias;
         }
