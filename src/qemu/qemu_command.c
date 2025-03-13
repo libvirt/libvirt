@@ -1962,8 +1962,7 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
 
 static int
 qemuBuildObjectCommandline(virCommand *cmd,
-                           virJSONValue *objProps,
-                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                           virJSONValue *objProps)
 {
     if (!objProps)
         return 0;
@@ -1983,15 +1982,15 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
     char *tmp;
     size_t i;
 
-    if (qemuBuildObjectCommandline(cmd, data->prmgrProps, qemuCaps) < 0 ||
-        qemuBuildObjectCommandline(cmd, data->authsecretProps, qemuCaps) < 0 ||
-        qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps, qemuCaps) < 0 ||
-        qemuBuildObjectCommandline(cmd, data->tlsKeySecretProps, qemuCaps) < 0 ||
-        qemuBuildObjectCommandline(cmd, data->tlsProps, qemuCaps) < 0)
+    if (qemuBuildObjectCommandline(cmd, data->prmgrProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->authsecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->httpcookiesecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->tlsKeySecretProps) < 0 ||
+        qemuBuildObjectCommandline(cmd, data->tlsProps) < 0)
         return -1;
 
     for (i = 0; i < data->encryptsecretCount; ++i) {
-        if (qemuBuildObjectCommandline(cmd, data->encryptsecretProps[i], qemuCaps) < 0) {
+        if (qemuBuildObjectCommandline(cmd, data->encryptsecretProps[i]) < 0) {
             return -1;
         }
     }
