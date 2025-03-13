@@ -65,6 +65,9 @@ virCHDomainObjPrivateFree(void *data)
 
     virChrdevFree(priv->chrdevs);
     g_free(priv->machineName);
+    virBitmapFree(priv->autoCpuset);
+    virBitmapFree(priv->autoNodeset);
+    virCgroupFree(priv->cgroup);
     g_free(priv);
 }
 
