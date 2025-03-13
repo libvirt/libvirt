@@ -9641,8 +9641,7 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
 
 
 static int
-qemuBuildSEVSNPCommandLine(virDomainObj *vm G_GNUC_UNUSED,
-                           virCommand *cmd,
+qemuBuildSEVSNPCommandLine(virCommand *cmd,
                            virDomainSEVSNPDef *def)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -9707,7 +9706,7 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
         return qemuBuildSEVCommandLine(vm, cmd, &sec->data.sev);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
-        return qemuBuildSEVSNPCommandLine(vm, cmd, &sec->data.sev_snp);
+        return qemuBuildSEVSNPCommandLine(cmd, &sec->data.sev_snp);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
         return qemuBuildPVCommandLine(vm, cmd);
