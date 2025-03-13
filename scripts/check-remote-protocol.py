@@ -36,6 +36,9 @@ targetname = sys.argv[2]
 libpath = sys.argv[3]
 pdwtags = sys.argv[4]
 expected = sys.argv[5]
+regen = False
+if len(sys.argv) == 7 and sys.argv[6] == "--regenerate":
+    regen = True
 
 builddir = os.path.dirname(libpath)
 libname = os.path.basename(libpath)
@@ -128,7 +131,29 @@ actualstr = "\n".join(actual) + "\n"
 # know our RPC structs are suitably aligned to not need
 # packing, so we can just trim the attribute.
 actualstr = re.sub(r'''} __attribute__\(\(__packed__\)\);''', "};", actualstr)
+actualstr = re.sub(r'''([A-Z0-9]+)\s+=\s+(\d)''', r'''\1 = \2''', actualstr)
 
 diff.communicate(input=actualstr.encode("utf-8"))
 
-sys.exit(diff.returncode)
+if diff.returncode != 0:
+    if regen:
+        with open(expected, "w") as fh:
+            print(actualstr, file=fh, end='')
+
+        print("")
+        print("WARNING: reference output was re-generated to apply")
+        print("WARNING: the above diff. Validate the changes are")
+        print("WARNING: expected and correct before committing")
+        print("")
+        sys.exit(0)
+    else:
+        print("")
+        print("WARNING: validate the above protocol changes are")
+        print("WARNING: expected and correct. To re-generate the")
+        print("WARNING: reference output invoke")
+        print("")
+        print("  $ ninja regen-%s" % name)
+
+        sys.exit(diff.returncode)
+else:
+    sys.exit(0)

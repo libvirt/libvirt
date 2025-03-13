@@ -1088,6 +1088,20 @@ if tests_enabled[0]
         depends: [ lib ],
         suite: 'script'
       )
+
+      run_target(
+          'regen-@0@'.format(proto['name']),
+          command: [python3_prog,
+                    check_remote_protocol_prog.full_path(),
+                    proto['name'],
+                    lib.name(),
+                    lib.full_path(),
+                    pdwtags_prog.full_path(),
+                    files('@0@-structs'.format(proto['name'])),
+                    '--regenerate',
+                   ],
+          env: runutf8,
+          depends: [ lib ])
     endforeach
   endif
 endif
