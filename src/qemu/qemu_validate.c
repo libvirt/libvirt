@@ -4578,7 +4578,6 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 static int
 qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                               const virDomainDef *def,
-                              virQEMUDriver *driver G_GNUC_UNUSED,
                               virQEMUCaps *qemuCaps)
 {
     if (fs->type != VIR_DOMAIN_FS_TYPE_MOUNT) {
@@ -5544,7 +5543,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         return qemuValidateDomainDeviceDefIOMMU(dev->data.iommu, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_FS:
-        return qemuValidateDomainDeviceDefFS(dev->data.fs, def, driver, qemuCaps);
+        return qemuValidateDomainDeviceDefFS(dev->data.fs, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_NVRAM:
         return qemuValidateDomainDeviceDefNVRAM(dev->data.nvram, def, qemuCaps);
