@@ -10075,7 +10075,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
 static int
 qemuBuildSeccompSandboxCommandLine(virCommand *cmd,
                                    virQEMUDriverConfig *cfg,
-                                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                                   virQEMUCaps *qemuCaps)
 {
     if (cfg->seccompSandbox == 0) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX))
