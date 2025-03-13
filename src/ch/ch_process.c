@@ -344,6 +344,7 @@ virCHProcessSetupIOThreads(virDomainObj *vm)
     virDomainIOThreadInfo **iothreads = NULL;
     size_t i;
     int niothreads;
+    int ret = -1;
 
     if ((niothreads = virCHMonitorGetIOThreads(priv->monitor, &iothreads)) < 0)
         return -1;
@@ -351,9 +352,16 @@ virCHProcessSetupIOThreads(virDomainObj *vm)
     for (i = 0; i < niothreads; i++) {
         VIR_DEBUG("IOThread index = %zu , tid = %d", i, iothreads[i]->iothread_id);
         if (virCHProcessSetupIOThread(vm, iothreads[i]) < 0)
-            return -1;
+            goto cleanup;
     }
-    return 0;
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < niothreads; i++) {
+        virDomainIOThreadInfoFree(iothreads[i]);
+    }
+    g_free(iothreads);
+    return ret;
 }
 
 static int
