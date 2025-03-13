@@ -9679,7 +9679,7 @@ qemuBuildSEVSNPCommandLine(virCommand *cmd,
 
 
 static int
-qemuBuildPVCommandLine(virDomainObj *vm G_GNUC_UNUSED, virCommand *cmd)
+qemuBuildPVCommandLine(virCommand *cmd)
 {
     g_autoptr(virJSONValue) props = NULL;
 
@@ -9709,7 +9709,7 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
         return qemuBuildSEVSNPCommandLine(cmd, &sec->data.sev_snp);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
-        return qemuBuildPVCommandLine(vm, cmd);
+        return qemuBuildPVCommandLine(cmd);
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
