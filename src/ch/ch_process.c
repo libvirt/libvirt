@@ -997,11 +997,11 @@ virCHProcessStop(virCHDriver *driver,
                  virDomainObj *vm,
                  virDomainShutoffReason reason)
 {
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
     int ret;
     int retries = 0;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     virCHDomainObjPrivate *priv = vm->privateData;
-    virCHDriverConfig *cfg = virCHDriverGetConfig(driver);
     virDomainDef *def = vm->def;
     size_t i;
 
