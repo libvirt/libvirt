@@ -569,7 +569,7 @@ struct remote_domain_save_params_args {
                 u_int              params_len;
                 remote_typed_param * params_val;
         } params;
-    u_int                      flags;
+        u_int                      flags;
 };
 struct remote_domain_restore_args {
         remote_nonnull_string      from;
@@ -1115,7 +1115,7 @@ struct remote_network_create_xml_ret {
 };
 struct remote_network_create_xml_flags_args {
         remote_nonnull_string      xml;
-        u_int                    flags;
+        u_int                      flags;
 };
 struct remote_network_create_xml_flags_ret {
         remote_nonnull_network     net;
@@ -1128,7 +1128,7 @@ struct remote_network_define_xml_ret {
 };
 struct remote_network_define_xml_flags_args {
         remote_nonnull_string      xml;
-        u_int                    flags;
+        u_int                      flags;
 };
 struct remote_network_define_xml_flags_ret {
         remote_nonnull_network     net;
