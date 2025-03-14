@@ -945,6 +945,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
                 return virtioFlags | VIR_PCI_CONNECT_INTEGRATED;
 
+            case VIR_DOMAIN_IOMMU_MODEL_AMD:
+                return pciFlags | VIR_PCI_CONNECT_INTEGRATED;
+
             case VIR_DOMAIN_IOMMU_MODEL_INTEL:
             case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
             case VIR_DOMAIN_IOMMU_MODEL_LAST:
@@ -2364,6 +2367,7 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
 
         switch (iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+        case VIR_DOMAIN_IOMMU_MODEL_AMD:
             if (virDeviceInfoPCIAddressIsWanted(&iommu->info) &&
                 qemuDomainPCIAddressReserveNextAddr(addrs, &iommu->info) < 0) {
                 return -1;

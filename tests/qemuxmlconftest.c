@@ -2750,6 +2750,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("acpi-table");
     DO_TEST_CAPS_LATEST("acpi-table-many");
 
+    DO_TEST_CAPS_LATEST("amd-iommu");
+
     DO_TEST_CAPS_LATEST("intel-iommu");
     DO_TEST_CAPS_LATEST("intel-iommu-caching-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-eim");

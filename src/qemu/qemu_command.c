@@ -6165,6 +6165,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                           virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) wrapperProps = NULL;
     const virDomainIOMMUDef *iommu = def->iommu;
 
     if (!iommu)
@@ -6207,6 +6208,32 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
         /* There is no -device for SMMUv3, so nothing to be done here */
+        return 0;
+
+    case VIR_DOMAIN_IOMMU_MODEL_AMD:
+        if (virJSONValueObjectAdd(&wrapperProps,
+                                  "s:driver", "AMDVI-PCI",
+                                  "s:id", iommu->info.alias,
+                                  NULL) < 0)
+            return -1;
+
+        if (qemuBuildDeviceAddressProps(wrapperProps, def, &iommu->info) < 0)
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, wrapperProps, def, qemuCaps) < 0)
+            return -1;
+
+        if (virJSONValueObjectAdd(&props,
+                                  "s:driver", "amd-iommu",
+                                  "s:pci-id", iommu->info.alias,
+                                  "S:intremap", qemuOnOffAuto(iommu->intremap),
+                                  "T:device-iotlb", iommu->iotlb,
+                                  NULL) < 0)
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+            return -1;
+
         return 0;
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
@@ -7041,6 +7068,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+        case VIR_DOMAIN_IOMMU_MODEL_AMD:
             /* These IOMMUs are formatted in qemuBuildIOMMUCommandLine */
             break;
 

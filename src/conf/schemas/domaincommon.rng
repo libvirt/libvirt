@@ -6201,6 +6201,7 @@
           <value>intel</value>
           <value>smmuv3</value>
           <value>virtio</value>
+          <value>amd</value>
         </choice>
       </attribute>
       <interleave>
