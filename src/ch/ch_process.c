@@ -999,10 +999,13 @@ virCHProcessStop(virCHDriver *driver,
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     virCHDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
+    virErrorPtr orig_err = NULL;
     size_t i;
 
     VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
               vm->def->name, (int)vm->pid, (int)reason);
+
+    virErrorPreserveLast(&orig_err);
 
     if (priv->monitor) {
         g_clear_pointer(&priv->monitor, virCHMonitorClose);
@@ -1036,6 +1039,8 @@ virCHProcessStop(virCHDriver *driver,
 
     virHostdevReAttachDomainDevices(driver->hostdevMgr, CH_DRIVER_NAME, def,
                                     hostdev_flags);
+
+    virErrorRestore(&orig_err);
     return 0;
 }
 
