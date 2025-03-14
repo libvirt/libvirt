@@ -3095,6 +3095,15 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+        if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("iommu model '%1$s' doesn't support some additional attributes"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
     }

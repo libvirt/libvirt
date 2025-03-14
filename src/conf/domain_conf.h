@@ -3025,6 +3025,8 @@ struct _virDomainIOMMUDef {
     unsigned int aw_bits;
     virDomainDeviceInfo info;
     virTristateSwitch dma_translation;
+    virTristateSwitch xtsup;
+    virTristateSwitch pt;
 };
 
 typedef enum {

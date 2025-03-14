@@ -14360,6 +14360,14 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropTristateSwitch(driver, "dma_translation", VIR_XML_PROP_NONE,
                                      &iommu->dma_translation) < 0)
             return NULL;
+
+        if (virXMLPropTristateSwitch(driver, "xtsup", VIR_XML_PROP_NONE,
+                                     &iommu->xtsup) < 0)
+            return NULL;
+
+        if (virXMLPropTristateSwitch(driver, "passthrough", VIR_XML_PROP_NONE,
+                                     &iommu->pt) < 0)
+            return NULL;
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt,
@@ -21994,6 +22002,20 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
                        virTristateSwitchTypeToString(src->dma_translation));
         return false;
     }
+    if (src->pt != dst->pt) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->pt),
+                       virTristateSwitchTypeToString(src->pt));
+        return false;
+    }
+    if (src->xtsup != dst->xtsup) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->xtsup),
+                       virTristateSwitchTypeToString(src->xtsup));
+        return false;
+    }
 
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
@@ -28260,6 +28282,14 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " dma_translation='%s'",
                           virTristateSwitchTypeToString(iommu->dma_translation));
+    }
+    if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " passthrough='%s'",
+                          virTristateSwitchTypeToString(iommu->pt));
+    }
+    if (iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " xtsup='%s'",
+                          virTristateSwitchTypeToString(iommu->xtsup));
     }
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);

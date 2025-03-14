@@ -6237,6 +6237,16 @@
                 <ref name="virOnOff"/>
               </attribute>
             </optional>
+            <optional>
+              <attribute name="xtsup">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="passthrough">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
         <optional>

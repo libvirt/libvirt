@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"AMDVI-PCI","id":"iommu0","bus":"pcie.0","addr":"0x1"}' \
--device '{"driver":"amd-iommu","pci-id":"iommu0","intremap":"on","device-iotlb":true}' \
+-device '{"driver":"amd-iommu","pci-id":"iommu0","intremap":"on","pt":true,"xtsup":true,"device-iotlb":true}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \

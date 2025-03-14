@@ -9104,6 +9104,14 @@ Example:
       example to efficiently enable more than 255 vCPUs.
       :since:`Since 10.7.0` (QEMU/KVM and ``intel`` model only)
 
+   ``passthrough``
+      Enable passthrough. In this mode, DMA read/writes are not translated.
+      :since:`Since 11.5.0` (QEMU/KVM and ``amd`` model only)
+
+   ``xtsup``
+      Enable x2APIC mode. Useful for higher number of guest CPUs.
+      :since:`Since 11.5.0` (QEMU/KVM and ``amd`` model only)
+
 The ``virtio`` IOMMU devices can further have ``address`` element as described
 in `Device addresses`_ (address has to by type of ``pci``).
 

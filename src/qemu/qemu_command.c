@@ -6227,6 +6227,8 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                   "s:driver", "amd-iommu",
                                   "s:pci-id", iommu->info.alias,
                                   "S:intremap", qemuOnOffAuto(iommu->intremap),
+                                  "T:pt", iommu->pt,
+                                  "T:xtsup", iommu->xtsup,
                                   "T:device-iotlb", iommu->iotlb,
                                   NULL) < 0)
             return -1;
