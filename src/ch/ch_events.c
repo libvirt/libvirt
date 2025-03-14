@@ -287,8 +287,9 @@ virCHEventHandlerLoop(void *data)
     }
 
     g_clear_pointer(&mon->event_buffer.buffer, g_free);
-    virObjectUnref(vm);
     VIR_DEBUG("%s: Event handler loop thread exiting", vm->def->name);
+    virObjectUnref(vm);
+    virObjectUnref(mon);
     return;
 }
 
@@ -308,7 +309,6 @@ virCHStartEventHandler(virCHMonitor *mon)
         virObjectUnref(mon);
         return -1;
     }
-    virObjectUnref(mon);
 
     g_atomic_int_set(&mon->event_handler_stop, 0);
     return 0;
