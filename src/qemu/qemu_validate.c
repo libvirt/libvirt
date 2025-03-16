@@ -4485,6 +4485,29 @@ qemuValidateDomainDeviceDefDBusGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
+qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics)
+{
+    if (graphics->data.rdp.replaceUser) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("RDP doesn't support 'replaceUser'"));
+        return -1;
+    }
+    if (graphics->data.rdp.multiUser) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("RDP doesn't support 'multiUser'"));
+        return -1;
+    }
+    if (graphics->data.rdp.auth.expires) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("RDP password expiration isn't supported"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     const virDomainDef *def,
                                     virQEMUDriver *driver,
@@ -4555,8 +4578,13 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if (qemuValidateDomainDeviceDefRDPGraphics(graphics) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
