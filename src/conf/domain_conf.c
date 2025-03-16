@@ -1994,6 +1994,7 @@ virDomainGraphicsAuthDefClear(virDomainGraphicsAuthDef *def)
     if (!def)
         return;
 
+    VIR_FREE(def->username);
     VIR_FREE(def->passwd);
 
     /* Don't free def */
@@ -11319,6 +11320,8 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
     if (!def->passwd)
         return 0;
 
+    def->username = virXMLPropString(node, "username");
+
     validTo = virXMLPropString(node, "passwdValidTo");
     if (validTo) {
         g_autoptr(GDateTime) then = NULL;
@@ -11707,6 +11710,10 @@ virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDef *def,
 
     if (STREQ_NULLABLE(multiUser, "yes"))
         def->data.rdp.multiUser = true;
+
+    if (virDomainGraphicsAuthDefParseXML(node, &def->data.rdp.auth,
+                                         def->type) < 0)
+        return -1;
 
     return 0;
 }
@@ -26306,6 +26313,10 @@ virDomainGraphicsAuthDefFormatAttr(virBuffer *buf,
     if (!def->passwd)
         return;
 
+    if (def->username)
+        virBufferEscapeString(buf, " username='%s'",
+                              def->username);
+
     if (flags & VIR_DOMAIN_DEF_FORMAT_SECURE)
         virBufferEscapeString(buf, " passwd='%s'",
                               def->passwd);
@@ -26579,6 +26590,8 @@ virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
         virBufferAddLit(attrBuf, " multiUser='yes'");
 
     virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
+
+    virDomainGraphicsAuthDefFormatAttr(attrBuf, &def->data.rdp.auth, flags);
 
     virDomainGraphicsDefFormatListnes(childBuf, def, flags);
 }

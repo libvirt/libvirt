@@ -1903,6 +1903,7 @@ typedef enum {
 } virDomainGraphicsAuthConnectedType;
 
 struct _virDomainGraphicsAuthDef {
+    char *username;
     char *passwd;
     bool expires; /* Whether there is an expiry time set */
     time_t validTo;  /* seconds since epoch */
@@ -2027,6 +2028,7 @@ struct _virDomainGraphicsDef {
             bool autoport;
             bool replaceUser;
             bool multiUser;
+            virDomainGraphicsAuthDef auth;
         } rdp;
         struct {
             char *display;

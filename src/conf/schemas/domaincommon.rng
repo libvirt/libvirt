@@ -4540,6 +4540,16 @@
               <ref name="addrIPorName"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="username">
+              <text/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="passwd">
+              <text/>
+            </attribute>
+          </optional>
           <ref name="listenElements"/>
         </group>
         <group>
