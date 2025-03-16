@@ -122,7 +122,7 @@ findMACs(const char *file,
     char line[1024];
     json_object *jobj = NULL;
     json_tokener *tok = NULL;
-    enum json_tokener_error jerr;
+    enum json_tokener_error jerr = json_tokener_error_parse_eof;
     int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
     size_t nreadTotal = 0;
     int rv;
