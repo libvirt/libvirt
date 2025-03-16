@@ -411,3 +411,14 @@ qemuRdpSetCredentials(virDomainObj *vm,
                               "SetCredentials",
                               args);
 }
+
+
+bool
+qemuRdpAvailable(const char *helper)
+{
+    g_autoptr(qemuRdp) rdp = NULL;
+
+    rdp = qemuRdpNewForHelper(helper);
+
+    return rdp && qemuRdpHasFeature(rdp, QEMU_RDP_FEATURE_DBUS_ADDRESS);
+}

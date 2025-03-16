@@ -876,7 +876,8 @@ int virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
 void virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
                                             virDomainCapsMemoryBacking *memoryBacking);
 
-void virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCaps *qemuCaps,
+void virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUDriverConfig *cfg,
+                                             virQEMUCaps *qemuCaps,
                                              virDomainCapsDeviceGraphics *dev);
 
 void virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCaps *qemuCaps,

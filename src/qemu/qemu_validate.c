@@ -4513,9 +4513,10 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     virQEMUDriver *driver,
                                     virQEMUCaps *qemuCaps)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainCapsDeviceGraphics graphicsCaps = { 0 };
 
-    virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, &graphicsCaps);
+    virQEMUCapsFillDomainDeviceGraphicsCaps(cfg, qemuCaps, &graphicsCaps);
 
     if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(graphicsCaps.type, graphics->type)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

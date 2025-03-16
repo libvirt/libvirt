@@ -6475,7 +6475,8 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
 
 
 void
-virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCaps *qemuCaps,
+virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUDriverConfig *cfg,
+                                        virQEMUCaps *qemuCaps,
                                         virDomainCapsDeviceGraphics *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
@@ -6489,8 +6490,14 @@ virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCaps *qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_SPICE);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_EGL_HEADLESS))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISPLAY_DBUS))
-        VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_DBUS);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISPLAY_DBUS)) {
+        VIR_DOMAIN_CAPS_ENUM_SET(dev->type,
+                                 VIR_DOMAIN_GRAPHICS_TYPE_DBUS);
+        if (qemuRdpAvailable(cfg->qemuRdpName)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(dev->type,
+                                     VIR_DOMAIN_GRAPHICS_TYPE_RDP);
+        }
+    }
 }
 
 
@@ -6974,7 +6981,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
     virQEMUCapsFillDomainCPUCaps(qemuCaps, hostarch, domCaps);
     virQEMUCapsFillDomainMemoryBackingCaps(qemuCaps, memoryBacking);
     virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk);
-    virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics);
+    virQEMUCapsFillDomainDeviceGraphicsCaps(cfg, qemuCaps, graphics);
     virQEMUCapsFillDomainDeviceVideoCaps(qemuCaps, video);
     virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
     virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng);

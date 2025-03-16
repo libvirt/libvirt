@@ -1666,6 +1666,7 @@
       <enum name='type'>
         <value>sdl</value>
         <value>vnc</value>
+        <value>rdp</value>
         <value>spice</value>
         <value>egl-headless</value>
         <value>dbus</value>

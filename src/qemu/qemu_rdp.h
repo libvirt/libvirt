@@ -42,6 +42,8 @@ struct _qemuRdp {
     guint leaving_id;
 };
 
+bool qemuRdpAvailable(const char *helper);
+
 qemuRdp *qemuRdpNew(void);
 
 qemuRdp *qemuRdpNewForHelper(const char *helper);

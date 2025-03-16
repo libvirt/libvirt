@@ -52,6 +52,12 @@ bool virTPMHasSwtpm(void)
 }
 
 
+/* Enough to tell capabilities code that qemu-rdp is usable */
+bool qemuRdpAvailable(const char *helper G_GNUC_UNUSED)
+{
+    return true;
+}
+
 
 bool
 virTPMSwtpmSetupCapsGet(virTPMSwtpmSetupFeature cap)

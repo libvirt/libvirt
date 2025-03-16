@@ -72,6 +72,7 @@
       <enum name='type'>
         <value>sdl</value>
         <value>vnc</value>
+        <value>rdp</value>
         <value>spice</value>
         <value>dbus</value>
       </enum>

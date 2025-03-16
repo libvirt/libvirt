@@ -118,6 +118,7 @@
     <graphics supported='yes'>
       <enum name='type'>
         <value>vnc</value>
+        <value>rdp</value>
         <value>dbus</value>
       </enum>
     </graphics>
