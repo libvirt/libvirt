@@ -75,19 +75,6 @@ qemuVirtioFSCreateSocketFilename(virDomainObj *vm,
 }
 
 
-static char *
-qemuVirtioFSCreateLogFilename(virQEMUDriverConfig *cfg,
-                              const virDomainDef *def,
-                              const char *alias)
-{
-    g_autofree char *name = NULL;
-
-    name = g_strdup_printf("%s-%s", def->name, alias);
-
-    return virFileBuildPath(cfg->logDir, name, "-virtiofsd.log");
-}
-
-
 static int
 qemuVirtioFSOpenChardev(virQEMUDriver *driver,
                         virDomainObj *vm,
@@ -244,10 +231,11 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *socket_path = NULL;
     g_autofree char *pidfile = NULL;
-    g_autofree char *logpath = NULL;
+    g_autofree char *logname = NULL;
     pid_t pid = (pid_t) -1;
     VIR_AUTOCLOSE fd = -1;
-    VIR_AUTOCLOSE logfd = -1;
+    int logfd = -1;
+    g_autoptr(domainLogContext) logContext = NULL;
     int rc;
 
     if (!virFileIsExecutable(fs->binary)) {
@@ -272,34 +260,17 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     if ((fd = qemuVirtioFSOpenChardev(driver, vm, socket_path)) < 0)
         goto error;
 
-    logpath = qemuVirtioFSCreateLogFilename(cfg, vm->def, fs->info.alias);
 
-    if (cfg->stdioLogD) {
-        g_autoptr(virLogManager) logManager = virLogManagerNew(driver->privileged);
-
-        if (!logManager)
-            goto error;
-
-        if ((logfd = virLogManagerDomainOpenLogFile(logManager,
-                                                    "qemu",
-                                                    vm->def->uuid,
-                                                    vm->def->name,
-                                                    logpath,
-                                                    0,
-                                                    NULL, NULL)) < 0)
-            goto error;
-    } else {
-        if ((logfd = open(logpath, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
-            virReportSystemError(errno, _("failed to create logfile %1$s"),
-                                 logpath);
-            goto error;
-        }
-        if (virSetCloseExec(logfd) < 0) {
-            virReportSystemError(errno, _("failed to set close-on-exec flag on %1$s"),
-                                 logpath);
-            goto error;
-        }
+    logname = g_strdup_printf("%s-%s-virtiofsd", vm->def->name, fs->info.alias);
+    if (!(logContext = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
+                                           QEMU_DRIVER_NAME,
+                                           vm, driver->privileged,
+                                           logname))) {
+        virLastErrorPrefixMessage("%s", _("can't open log context"));
+        goto error;
     }
+
+    logfd = domainLogContextGetWriteFD(logContext);
 
     if (!(cmd = qemuVirtioFSBuildCommandLine(cfg, fs, &fd)))
         goto error;
