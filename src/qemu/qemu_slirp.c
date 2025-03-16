@@ -99,12 +99,6 @@ qemuSlirpNewForHelper(const char *helper)
     size_t i, nfeatures;
 
     slirp = qemuSlirpNew();
-    if (!slirp) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to allocate slirp for '%1$s'"), helper);
-        return NULL;
-    }
-
     cmd = virCommandNewArgList(helper, "--print-capabilities", NULL);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0)
