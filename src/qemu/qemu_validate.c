@@ -2153,7 +2153,7 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        if (!virDomainDefHasSpiceGraphics(vmdef)) {
+        if (!virDomainDefHasGraphics(vmdef, VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("chardev '%1$s' not supported without spice graphics"),
                            virDomainChrTypeToString(def->type));
@@ -4737,7 +4737,7 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SPICE:
-        if (!virDomainDefHasSpiceGraphics(def)) {
+        if (!virDomainDefHasGraphics(def, VIR_DOMAIN_GRAPHICS_TYPE_SPICE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Spice audio is not supported without spice graphics"));
             return -1;

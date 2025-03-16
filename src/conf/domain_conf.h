@@ -4631,4 +4631,4 @@ virDomainObjGetMessages(virDomainObj *vm,
                         unsigned int flags);
 
 bool
-virDomainDefHasSpiceGraphics(const virDomainDef *def);
+virDomainDefHasGraphics(const virDomainDef *def, virDomainGraphicsType type);

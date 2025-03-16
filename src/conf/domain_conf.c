@@ -31771,15 +31771,24 @@ virDomainObjGetMessages(virDomainObj *vm,
 
 }
 
+
+/**
+ * virDomainDefHasGraphics:
+ * @def: domain definition
+ * @type: a graphics type
+ *
+ * Returns true if domain has a graphics of given type.
+ */
 bool
-virDomainDefHasSpiceGraphics(const virDomainDef *def)
+virDomainDefHasGraphics(const virDomainDef *def, virDomainGraphicsType type)
 {
     size_t i = 0;
 
     for (i = 0; i < def->ngraphics; i++) {
-        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        virDomainGraphicsDef *graphics = def->graphics[i];
+
+        if (graphics->type == type)
             return true;
-        }
     }
 
     return false;
