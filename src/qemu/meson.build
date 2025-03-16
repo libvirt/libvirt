@@ -34,6 +34,7 @@ qemu_driver_sources = [
   'qemu_postparse.c',
   'qemu_process.c',
   'qemu_qapi.c',
+  'qemu_rdp.c',
   'qemu_saveimage.c',
   'qemu_security.c',
   'qemu_snapshot.c',

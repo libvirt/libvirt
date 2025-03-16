@@ -1038,6 +1038,7 @@ qemuDomainGraphicsPrivateDispose(void *obj)
 
     g_free(priv->tlsAlias);
     g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
+    g_clear_pointer(&priv->rdp, qemuRdpFree);
 }
 
 

@@ -195,6 +195,7 @@ src/qemu/qemu_passt.c
 src/qemu/qemu_postparse.c
 src/qemu/qemu_process.c
 src/qemu/qemu_qapi.c
+src/qemu/qemu_rdp.c
 src/qemu/qemu_saveimage.c
 src/qemu/qemu_slirp.c
 src/qemu/qemu_snapshot.c

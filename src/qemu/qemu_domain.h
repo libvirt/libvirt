@@ -35,6 +35,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_migration_params.h"
 #include "qemu_nbdkit.h"
+#include "qemu_rdp.h"
 #include "qemu_slirp.h"
 #include "qemu_fd.h"
 #include "virchrdev.h"
@@ -419,6 +420,7 @@ struct _qemuDomainGraphicsPrivate {
 
     char *tlsAlias;
     qemuDomainSecretInfo *secinfo;
+    qemuRdp *rdp;
 };
 
 
