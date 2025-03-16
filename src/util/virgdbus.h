@@ -54,7 +54,11 @@ virGDBusCallMethod(GDBusConnection *conn,
                    const char *objectPath,
                    const char *ifaceName,
                    const char *method,
-                   GVariant *data);
+                   GVariant *data)
+    ATTRIBUTE_NONNULL(1)
+    ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(7)
+    ATTRIBUTE_NONNULL(8);
 
 int
 virGDBusCallMethodWithFD(GDBusConnection *conn,
@@ -67,7 +71,12 @@ virGDBusCallMethodWithFD(GDBusConnection *conn,
                          const char *ifaceName,
                          const char *method,
                          GVariant *data,
-                         GUnixFDList *dataFD);
+                         GUnixFDList *dataFD)
+    ATTRIBUTE_NONNULL(1)
+    ATTRIBUTE_NONNULL(7)
+    ATTRIBUTE_NONNULL(8)
+    ATTRIBUTE_NONNULL(9);
+
 
 int
 virGDBusIsServiceEnabled(const char *name);
