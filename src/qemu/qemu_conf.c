@@ -1623,10 +1623,11 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
     if (!(domCaps = virDomainCapsNew(path, machine, arch, virttype)))
         return NULL;
 
-    if (virQEMUCapsFillDomainCaps(qemuCaps, driver->hostarch,
-                                  domCaps, driver->privileged,
-                                  cfg->firmwares,
-                                  cfg->nfirmwares) < 0)
+    if (virQEMUCapsFillDomainCaps(cfg,
+                                  qemuCaps,
+                                  driver->hostarch,
+                                  domCaps,
+                                  driver->privileged) < 0)
         return NULL;
 
     return g_steal_pointer(&domCaps);

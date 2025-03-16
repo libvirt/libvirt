@@ -99,10 +99,9 @@ fillQemuCaps(virDomainCaps *domCaps,
     if (!domCaps->machine)
         domCaps->machine = g_strdup(virQEMUCapsGetPreferredMachine(qemuCaps, virtType));
 
-    if (virQEMUCapsFillDomainCaps(qemuCaps, domCaps->arch, domCaps,
-                                  false,
-                                  cfg->firmwares,
-                                  cfg->nfirmwares) < 0)
+    if (virQEMUCapsFillDomainCaps(cfg,
+                                  qemuCaps, domCaps->arch, domCaps,
+                                  false) < 0)
         return -1;
 
     /* The function above tries to query host's VFIO capabilities by calling

@@ -28,6 +28,8 @@
 #include "virfilecache.h"
 #include "virenum.h"
 
+typedef struct _virQEMUDriverConfig virQEMUDriverConfig;
+
 /*
  * Internal flags to keep track of qemu command line capabilities
  *
@@ -865,12 +867,11 @@ void virQEMUCapsInitGuestFromBinary(virCaps *caps,
                                     virQEMUCaps *qemuCaps,
                                     virArch guestarch);
 
-int virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
+int virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
+                              virQEMUCaps *qemuCaps,
                               virArch hostarch,
                               virDomainCaps *domCaps,
-                              bool privileged,
-                              virFirmware **firmwares,
-                              size_t nfirmwares);
+                              bool privileged);
 
 void virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
                                             virDomainCapsMemoryBacking *memoryBacking);

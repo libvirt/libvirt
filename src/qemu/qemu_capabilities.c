@@ -6926,12 +6926,11 @@ virQEMUCapsFillDomainFeatureHypervCaps(virQEMUCaps *qemuCaps,
 
 
 int
-virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
+virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
+                          virQEMUCaps *qemuCaps,
                           virArch hostarch,
                           virDomainCaps *domCaps,
-                          bool privileged,
-                          virFirmware **firmwares,
-                          size_t nfirmwares)
+                          bool privileged)
 {
     virDomainCapsOS *os = &domCaps->os;
     virDomainCapsDeviceDisk *disk = &domCaps->disk;
@@ -6948,6 +6947,8 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsLaunchSecurity *launchSecurity = &domCaps->launchSecurity;
     virDomainCapsDeviceNet *net = &domCaps->net;
     virDomainCapsDevicePanic *panic = &domCaps->panic;
+    virFirmware **firmwares = cfg->firmwares;
+    size_t nfirmwares = cfg->nfirmwares;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
 
