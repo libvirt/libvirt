@@ -1753,6 +1753,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-dbus-chardev");
     DO_TEST_CAPS_LATEST("graphics-dbus-usbredir");
 
+    DO_TEST_CAPS_LATEST("graphics-rdp");
+
     DO_TEST_CAPS_LATEST("input-usbmouse");
     DO_TEST_CAPS_LATEST("input-usbtablet");
 
