@@ -65,6 +65,9 @@ VIR_LOG_INIT("qemu.qemu_conf");
 #define QEMU_REMOTE_PORT_MIN 5900
 #define QEMU_REMOTE_PORT_MAX 65535
 
+#define QEMU_RDP_PORT_MIN 3389
+#define QEMU_RDP_PORT_MAX 65535
+
 #define QEMU_WEBSOCKET_PORT_MIN 5700
 #define QEMU_WEBSOCKET_PORT_MAX 65535
 
@@ -247,6 +250,9 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
+
+    cfg->rdpPortMin = QEMU_RDP_PORT_MIN;
+    cfg->rdpPortMax = QEMU_RDP_PORT_MAX;
 
     cfg->webSocketPortMin = QEMU_WEBSOCKET_PORT_MIN;
     cfg->webSocketPortMax = QEMU_WEBSOCKET_PORT_MAX;

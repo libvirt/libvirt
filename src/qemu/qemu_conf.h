@@ -169,6 +169,9 @@ struct _virQEMUDriverConfig {
     unsigned int remotePortMin;
     unsigned int remotePortMax;
 
+    unsigned int rdpPortMin;
+    unsigned int rdpPortMax;
+
     unsigned int webSocketPortMin;
     unsigned int webSocketPortMax;
 
@@ -311,6 +314,9 @@ struct _virQEMUDriver {
 
     /* Immutable pointer, immutable object */
     virPortAllocatorRange *webSocketPorts;
+
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRange *rdpPorts;
 
     /* Immutable pointer, immutable object */
     virPortAllocatorRange *migrationPorts;

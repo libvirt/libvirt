@@ -701,6 +701,13 @@ qemuStateInitialize(bool privileged,
                                   cfg->webSocketPortMax)) == NULL)
         goto error;
 
+    if ((qemu_driver->rdpPorts =
+         virPortAllocatorRangeNew(_("rdp"),
+                                  cfg->rdpPortMin,
+                                  cfg->rdpPortMax)) == NULL)
+        goto error;
+
+
     if ((qemu_driver->migrationPorts =
          virPortAllocatorRangeNew(_("migration"),
                                   cfg->migrationPortMin,
@@ -1050,6 +1057,7 @@ qemuStateCleanup(void)
     virSysinfoDefFree(qemu_driver->hostsysinfo);
     virPortAllocatorRangeFree(qemu_driver->migrationPorts);
     virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
+    virPortAllocatorRangeFree(qemu_driver->rdpPorts);
     virPortAllocatorRangeFree(qemu_driver->remotePorts);
     virObjectUnref(qemu_driver->hostdevMgr);
     virObjectUnref(qemu_driver->securityManager);
