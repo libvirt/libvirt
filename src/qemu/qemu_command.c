@@ -8432,6 +8432,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+            break;
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
             return -1;
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -9981,6 +9982,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
     int spice = 0;
     int egl_headless = 0;
     int dbus = 0;
+    int rdp = 0;
 
     if (!driver->privileged) {
         /* If we have no cgroups then we can have no tunings that
@@ -10029,15 +10031,17 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
             ++dbus;
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+            ++rdp;
+            break;
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
             break;
         }
     }
 
-    if (sdl > 1 || vnc > 1 || spice > 1 || egl_headless > 1 || dbus > 1) {
+    if (sdl > 1 || vnc > 1 || spice > 1 || egl_headless > 1 || dbus > 1 || rdp > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is supported"));
+                       _("only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) is supported"));
         return -1;
     }
 
