@@ -382,6 +382,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->vncTLSx509certdir = g_strdup("/etc/pki/libvirt-vnc");
     VIR_FREE(cfg->spiceTLSx509certdir);
     cfg->spiceTLSx509certdir = g_strdup("/etc/pki/libvirt-spice");
+    VIR_FREE(cfg->rdpTLSx509certdir);
+    cfg->rdpTLSx509certdir = g_strdup("/etc/pki/libvirt-rdp");
     VIR_FREE(cfg->chardevTLSx509certdir);
     cfg->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
     VIR_FREE(cfg->vxhsTLSx509certdir);

@@ -104,6 +104,7 @@ VIR_ONCE_GLOBAL_INIT(virQEMUConfig);
 
 #define QEMU_BRIDGE_HELPER "qemu-bridge-helper"
 #define QEMU_PR_HELPER "qemu-pr-helper"
+#define QEMU_RDP "qemu-rdp"
 #define QEMU_DBUS_DAEMON "dbus-daemon"
 
 
@@ -241,6 +242,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     }
 
     cfg->vncListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
+    cfg->rdpListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
     cfg->spiceListen = g_strdup(VIR_LOOPBACK_IPV4_ADDR);
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
@@ -266,6 +268,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     cfg->prHelperName = g_strdup(QEMU_PR_HELPER);
     cfg->slirpHelperName = g_strdup(QEMU_SLIRP_HELPER);
     cfg->dbusDaemonName = g_strdup(QEMU_DBUS_DAEMON);
+    cfg->qemuRdpName = g_strdup(QEMU_RDP);
 
     cfg->securityDefaultConfined = true;
     cfg->securityRequireConfined = false;
@@ -352,6 +355,11 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->spicePassword);
     g_free(cfg->spiceSASLdir);
 
+    g_free(cfg->rdpTLSx509certdir);
+    g_free(cfg->rdpListen);
+    g_free(cfg->rdpUsername);
+    g_free(cfg->rdpPassword);
+
     g_free(cfg->chardevTLSx509certdir);
     g_free(cfg->chardevTLSx509secretUUID);
 
@@ -376,6 +384,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->prHelperName);
     g_free(cfg->slirpHelperName);
     g_free(cfg->dbusDaemonName);
+    g_free(cfg->qemuRdpName);
 
     g_free(cfg->autoDumpPath);
 
@@ -500,6 +509,21 @@ virQEMUDriverConfigLoadSPICEEntry(virQEMUDriverConfig *cfg,
     return 0;
 }
 
+static int
+virQEMUDriverConfigLoadRDPEntry(virQEMUDriverConfig *cfg,
+                                virConf *conf)
+{
+    if (virConfGetValueString(conf, "rdp_tls_x509_cert_dir", &cfg->rdpTLSx509certdir) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "rdp_listen", &cfg->rdpListen) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "rdp_username", &cfg->rdpUsername) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "rdp_password", &cfg->rdpPassword) < 0)
+        return -1;
+
+    return 0;
+}
 
 static int
 virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfig *cfg,
@@ -712,6 +736,9 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
         return -1;
 
     if (virConfGetValueString(conf, "dbus_daemon", &cfg->dbusDaemonName) < 0)
+        return -1;
+
+    if (virConfGetValueString(conf, "qemu_rdp", &cfg->qemuRdpName) < 0)
         return -1;
 
     if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
@@ -1184,6 +1211,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
     if (virQEMUDriverConfigLoadSPICEEntry(cfg, conf) < 0)
         return -1;
 
+    if (virQEMUDriverConfigLoadRDPEntry(cfg, conf) < 0)
+        return -1;
+
     if (virQEMUDriverConfigLoadSpecificTLSEntry(cfg, conf) < 0)
         return -1;
 
@@ -1268,6 +1298,14 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("spice_tls_x509_cert_dir directory '%1$s' does not exist"),
                        cfg->spiceTLSx509certdir);
+        return -1;
+    }
+
+    if (cfg->rdpTLSx509certdir &&
+        !virFileExists(cfg->rdpTLSx509certdir)) {
+        virReportError(VIR_ERR_CONF_SYNTAX,
+                       _("rdp_tls_x509_cert_dir directory '%1$s' does not exist"),
+                       cfg->rdpTLSx509certdir);
         return -1;
     }
 
@@ -1356,6 +1394,7 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfig *cfg)
 
     SET_TLS_X509_CERT_DEFAULT(vnc);
     SET_TLS_X509_CERT_DEFAULT(spice);
+    SET_TLS_X509_CERT_DEFAULT(rdp);
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
     SET_TLS_X509_CERT_DEFAULT(backup);

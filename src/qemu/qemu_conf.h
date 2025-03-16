@@ -136,6 +136,11 @@ struct _virQEMUDriverConfig {
     char *spicePassword;
     bool spiceAutoUnixSocket;
 
+    char *rdpTLSx509certdir;
+    char *rdpListen;
+    char *rdpUsername;
+    char *rdpPassword;
+
     bool chardevTLS;
     char *chardevTLSx509certdir;
     bool chardevTLSx509verify;
@@ -174,6 +179,7 @@ struct _virQEMUDriverConfig {
     char *prHelperName;
     char *slirpHelperName;
     char *dbusDaemonName;
+    char *qemuRdpName;
 
     bool macFilter;
 

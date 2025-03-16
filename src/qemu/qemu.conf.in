@@ -229,6 +229,31 @@
 #
 #spice_sasl_dir = "/some/directory/sasl2"
 
+# RDP is configured to listen on 127.0.0.1 by default.
+# To make it listen on all public interfaces, uncomment
+# this next option.
+#
+#rdp_listen = "0.0.0.0"
+
+# In order to override the default TLS certificate location for
+# RDP certificates, supply a valid path to the certificate directory.
+# If the path is not provided, then the default_tls_x509_cert_dir path
+# will be used.
+#
+#rdp_tls_x509_cert_dir = "/etc/pki/libvirt-rdp"
+
+# The default RDP username. This parameter is only used if the
+# per-domain XML config does not already provide a username.
+#
+#rdp_username = "user"
+
+# The default RDP password. This parameter is only used if the
+# per-domain XML config does not already provide a password.
+# By default, RDP server will not allow password-less connections.
+# Obviously change this example here before you set this.
+#
+#rdp_password = "RDP12345"
+
 # Enable use of TLS encryption on the chardev TCP transports.
 #
 # It is necessary to setup CA and issue a server certificate
@@ -922,6 +947,12 @@
 
 # Path to the SLIRP networking helper.
 #slirp_helper = "/usr/bin/slirp-helper"
+
+
+# Path to qemu-rdp
+# If this is not an absolute path, the program will be searched for
+# in $PATH.
+#qemu_rdp = "qemu-rdp"
 
 # Path to the dbus-daemon
 # If this is not an absolute path, the program will be searched for
