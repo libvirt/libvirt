@@ -330,6 +330,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->passtStateDir = g_strdup("/var/run/libvirt/qemu/passt");
     VIR_FREE(cfg->dbusStateDir);
     cfg->dbusStateDir = g_strdup("/var/run/libvirt/qemu/dbus");
+    VIR_FREE(cfg->rdpStateDir);
+    cfg->rdpStateDir = g_strdup("/var/run/libvirt/qemu/rdp");
 
     if (!g_mkdtemp(statedir)) {
         fprintf(stderr, "Cannot create fake stateDir");

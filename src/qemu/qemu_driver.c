@@ -648,6 +648,11 @@ qemuStateInitialize(bool privileged,
                              cfg->dbusStateDir);
         goto error;
     }
+    if (g_mkdir_with_parents(cfg->rdpStateDir, 0777) < 0) {
+        virReportSystemError(errno, _("Failed to create rdp state dir %1$s"),
+                             cfg->rdpStateDir);
+        goto error;
+    }
 
     qemu_driver->inhibitor = virInhibitorNew(
         VIR_INHIBITOR_WHAT_SHUTDOWN,
@@ -790,6 +795,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->passtStateDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->rdpStateDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
+                                 cfg->rdpStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }

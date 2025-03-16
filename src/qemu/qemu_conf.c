@@ -226,6 +226,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
     cfg->configDir = g_strdup_printf("%s/qemu", cfg->configBaseDir);
     cfg->autostartDir = g_strdup_printf("%s/qemu/autostart", cfg->configBaseDir);
     cfg->slirpStateDir = g_strdup_printf("%s/slirp", cfg->stateDir);
+    cfg->rdpStateDir = g_strdup_printf("%s/rdp", cfg->stateDir);
     cfg->passtStateDir = g_strdup_printf("%s/passt", cfg->stateDir);
     cfg->dbusStateDir = g_strdup_printf("%s/dbus", cfg->stateDir);
 
@@ -327,6 +328,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->slirpStateDir);
     g_free(cfg->passtStateDir);
     g_free(cfg->dbusStateDir);
+    g_free(cfg->rdpStateDir);
 
     g_free(cfg->libDir);
     g_free(cfg->cacheDir);
