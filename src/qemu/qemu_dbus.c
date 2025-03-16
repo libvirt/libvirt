@@ -24,6 +24,7 @@
 #include "virlog.h"
 #include "virtime.h"
 #include "virpidfile.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -212,9 +213,12 @@ qemuDBusStart(virQEMUDriver *driver,
     g_autofree char *pidfile = NULL;
     g_autofree char *configfile = NULL;
     g_autofree char *sockpath = NULL;
+    g_autofree char *logpath = NULL;
     virTimeBackOffVar timebackoff;
     const unsigned long long timeout = 500 * 1000; /* ms */
-    VIR_AUTOCLOSE errfd = -1;
+    int logfd = -1;
+    g_autoptr(domainLogContext) logContext = NULL;
+
     pid_t cpid = -1;
     int ret = -1;
 
@@ -246,10 +250,21 @@ qemuDBusStart(virQEMUDriver *driver,
     if (qemuSecurityDomainSetPathLabel(driver, vm, configfile, false) < 0)
         goto cleanup;
 
+    if (!(logContext = domainLogContextNew(cfg->stdioLogD, cfg->dbusStateDir,
+                                           QEMU_DRIVER_NAME,
+                                           vm, driver->privileged,
+                                           shortName))) {
+        virLastErrorPrefixMessage("%s", _("can't open log context"));
+        goto cleanup;
+    }
+
+    logfd = domainLogContextGetWriteFD(logContext);
+
     cmd = virCommandNew(dbusDaemonPath);
     virCommandClearCaps(cmd);
     virCommandSetPidFile(cmd, pidfile);
-    virCommandSetErrorFD(cmd, &errfd);
+    virCommandSetOutputFD(cmd, &logfd);
+    virCommandSetErrorFD(cmd, &logfd);
     virCommandDaemonize(cmd);
     virCommandAddArgFormat(cmd, "--config-file=%s", configfile);
 
@@ -266,7 +281,7 @@ qemuDBusStart(virQEMUDriver *driver,
     if (virTimeBackOffStart(&timebackoff, 1, timeout) < 0)
         goto cleanup;
     while (virTimeBackOffWait(&timebackoff)) {
-        char errbuf[1024] = { 0 };
+        g_autofree char *msg = NULL;
 
         if (virFileExists(sockpath))
             break;
@@ -274,15 +289,12 @@ qemuDBusStart(virQEMUDriver *driver,
         if (virProcessKill(cpid, 0) == 0)
             continue;
 
-        if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
-            virReportSystemError(errno,
-                                 _("dbus-daemon %1$s died unexpectedly"),
-                                 dbusDaemonPath);
-        } else {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           _("dbus-daemon died and reported: %1$s"), errbuf);
-        }
+        if (domainLogContextReadFiltered(logContext, &msg, 1024) < 0)
+            VIR_WARN("Unable to read from dbus-daemon log");
 
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("dbus-daemon died and reported:\n%1$s"),
+                       NULLSTR(msg));
         goto cleanup;
     }
 
