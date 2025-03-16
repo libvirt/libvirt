@@ -9405,6 +9405,9 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainObjStartWorker(obj) < 0)
         goto error;
 
+    if (priv->dbusDaemonRunning && !qemuDBusConnect(driver, obj))
+        goto error;
+
     VIR_DEBUG("Reconnect monitor to def=%p name='%s'", obj, obj->def->name);
 
     tryMonReconn = true;

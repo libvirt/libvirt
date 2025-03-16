@@ -84,6 +84,36 @@ qemuDBusGetAddress(virQEMUDriver *driver,
 }
 
 
+bool
+qemuDBusConnect(virQEMUDriver *driver,
+                virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(GError) gerr = NULL;
+    g_autofree char *address = NULL;
+
+    if (priv->dbusConnection)
+        return true;
+
+    address = qemuDBusGetAddress(driver, vm);
+    if (!address)
+        return false;
+
+    priv->dbusConnection =
+        g_dbus_connection_new_for_address_sync(address,
+                                               G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT|
+                                               G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION,
+                                               NULL, NULL, &gerr);
+    if (!priv->dbusConnection) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                      _("Failed to connect to dbus-daemon: %1$s"), gerr->message);
+        return false;
+    }
+
+    return true;
+}
+
+
 static int
 qemuDBusWriteConfig(const char *filename, const char *path)
 {
@@ -140,6 +170,8 @@ qemuDBusStop(virQEMUDriver *driver,
     } else {
         priv->dbusDaemonRunning = false;
     }
+
+    g_clear_object(&priv->dbusConnection);
 }
 
 
@@ -262,6 +294,9 @@ qemuDBusStart(virQEMUDriver *driver,
     }
 
     if (qemuSecurityDomainSetPathLabel(driver, vm, sockpath, false) < 0)
+        goto cleanup;
+
+    if (!qemuDBusConnect(driver, vm))
         goto cleanup;
 
     priv->dbusDaemonRunning = true;

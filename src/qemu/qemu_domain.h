@@ -39,6 +39,7 @@
 #include "qemu_fd.h"
 #include "virchrdev.h"
 #include "virobject.h"
+#include "virgdbus.h"
 #include "virdomainmomentobjlist.h"
 #include "virenum.h"
 #include "vireventthread.h"
@@ -240,6 +241,7 @@ struct _qemuDomainObjPrivate {
     /* running backup job */
     virDomainBackupDef *backup;
 
+    GDBusConnection *dbusConnection;
     bool dbusDaemonRunning;
 
     /* list of Ids to migrate */

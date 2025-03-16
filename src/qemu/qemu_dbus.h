@@ -24,6 +24,9 @@
 char *qemuDBusGetAddress(virQEMUDriver *driver,
                          virDomainObj *vm);
 
+bool qemuDBusConnect(virQEMUDriver *driver,
+                     virDomainObj *vm);
+
 int qemuDBusStart(virQEMUDriver *driver,
                   virDomainObj *vm);
 
