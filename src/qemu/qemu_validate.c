@@ -4491,8 +4491,6 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     virQEMUCaps *qemuCaps)
 {
     virDomainCapsDeviceGraphics graphicsCaps = { 0 };
-    bool have_egl_headless = false;
-    size_t i;
 
     virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, &graphicsCaps);
 
@@ -4503,18 +4501,11 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
         return -1;
     }
 
-    for (i = 0; i < def->ngraphics; i++) {
-        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS) {
-            have_egl_headless = true;
-            break;
-        }
-    }
-
     /* Only VNC and SPICE can be paired with egl-headless, the other types
      * either don't make sense to pair with egl-headless or aren't even
      * supported by QEMU.
      */
-    if (have_egl_headless) {
+    if (virDomainDefHasGraphics(def, VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS)) {
         if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS &&
             graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
             graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
