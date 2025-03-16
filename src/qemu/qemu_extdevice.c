@@ -238,14 +238,28 @@ qemuExtDevicesStart(virQEMUDriver *driver,
     for (i = 0; i < def->ngraphics; i++) {
         virDomainGraphicsDef *graphics = def->graphics[i];
 
-        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_DBUS)
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS: {
+            if (graphics->data.dbus.p2p || graphics->data.dbus.fromConfig)
+                continue;
+            if (qemuDBusStart(driver, vm) < 0)
+                return -1;
             continue;
-
-        if (graphics->data.dbus.p2p || graphics->data.dbus.fromConfig)
+        }
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP: {
+            if (qemuRdpStart(vm, graphics) < 0)
+                return -1;
             continue;
-
-        if (qemuDBusStart(driver, vm) < 0)
-            return -1;
+        }
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        default:
+            continue;
+        }
     }
 
     for (i = 0; i < def->ndisks; i++) {
@@ -309,6 +323,26 @@ qemuExtDevicesStop(virQEMUDriver *driver,
         if (!fs->sock &&
             fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
             qemuVirtioFSStop(driver, vm, fs);
+    }
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDef *graphics = def->graphics[i];
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP: {
+            qemuRdpStop(vm, graphics);
+            continue;
+        }
+        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        default:
+            continue;
+        }
     }
 
     for (i = 0; i < def->ndisks; i++) {

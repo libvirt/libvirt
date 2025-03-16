@@ -2025,6 +2025,7 @@ struct _virDomainGraphicsDef {
         } sdl;
         struct {
             int port;
+            bool portReserved;
             bool autoport;
             bool replaceUser;
             bool multiUser;

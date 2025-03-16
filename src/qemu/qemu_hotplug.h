@@ -57,6 +57,7 @@ int
 qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
                                   int type,
                                   virDomainGraphicsAuthDef *auth,
+                                  const char *defaultUsername,
                                   const char *defaultPasswd,
                                   int asyncJob);
 

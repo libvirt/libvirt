@@ -4423,6 +4423,7 @@ int
 qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
                                   int type,
                                   virDomainGraphicsAuthDef *auth,
+                                  const char *defaultUsername,
                                   const char *defaultPasswd,
                                   int asyncJob)
 {
@@ -4432,12 +4433,20 @@ qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
     g_autofree char *validTo = NULL;
     const char *connected = NULL;
     const char *password;
+    const char *username;
     int ret = -1;
 
     if (!auth->passwd && !defaultPasswd)
         return 0;
 
+    username = auth->username ? auth->username : defaultUsername;
     password = auth->passwd ? auth->passwd : defaultPasswd;
+
+    if (type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
+        if (!password)
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Missing password"));
+        return qemuRdpSetCredentials(vm, username, password, "");
+    }
 
     if (auth->connected)
         connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
@@ -4568,6 +4577,7 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
             if (qemuDomainChangeGraphicsPasswords(vm,
                                                   VIR_DOMAIN_GRAPHICS_TYPE_VNC,
                                                   &dev->data.vnc.auth,
+                                                  NULL,
                                                   cfg->vncPassword,
                                                   VIR_ASYNC_JOB_NONE) < 0)
                 return -1;
@@ -4615,6 +4625,7 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
             if (qemuDomainChangeGraphicsPasswords(vm,
                                                   VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
                                                   &dev->data.spice.auth,
+                                                  NULL,
                                                   cfg->spicePassword,
                                                   VIR_ASYNC_JOB_NONE) < 0)
                 return -1;
@@ -4630,8 +4641,46 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
         }
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if ((olddev->data.rdp.autoport != dev->data.rdp.autoport) ||
+            (!dev->data.rdp.autoport &&
+             (olddev->data.rdp.port != dev->data.rdp.port))) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("cannot change port settings on rdp graphics"));
+            return -1;
+        }
+
+        /* If a password lifetime was, or is set, or action if connected has
+         * changed, then we must always run, even if new password matches
+         * old password */
+        if (olddev->data.rdp.auth.expires ||
+            dev->data.rdp.auth.expires ||
+            olddev->data.rdp.auth.connected != dev->data.rdp.auth.connected ||
+            STRNEQ_NULLABLE(olddev->data.rdp.auth.username,
+                            dev->data.rdp.auth.username) ||
+            STRNEQ_NULLABLE(olddev->data.rdp.auth.passwd,
+                            dev->data.rdp.auth.passwd)) {
+            VIR_DEBUG("Updating password on RDP server %p %p",
+                      dev->data.rdp.auth.passwd, cfg->rdpPassword);
+            if (qemuDomainChangeGraphicsPasswords(vm,
+                                                  VIR_DOMAIN_GRAPHICS_TYPE_RDP,
+                                                  &dev->data.rdp.auth,
+                                                  cfg->rdpUsername,
+                                                  cfg->rdpPassword,
+                                                  VIR_ASYNC_JOB_NONE) < 0)
+                return -1;
+
+            /* Steal the new dev's  char * reference */
+            VIR_FREE(olddev->data.rdp.auth.username);
+            olddev->data.rdp.auth.username = g_steal_pointer(&dev->data.rdp.auth.username);
+            VIR_FREE(olddev->data.rdp.auth.passwd);
+            olddev->data.rdp.auth.passwd = g_steal_pointer(&dev->data.rdp.auth.passwd);
+            olddev->data.rdp.auth.validTo = dev->data.rdp.auth.validTo;
+            olddev->data.rdp.auth.expires = dev->data.rdp.auth.expires;
+            olddev->data.rdp.auth.connected = dev->data.rdp.auth.connected;
+        }
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:

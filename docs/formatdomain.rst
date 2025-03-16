@@ -6552,7 +6552,7 @@ interaction with the admin.
      <graphics type='vnc' port='5904' sharePolicy='allow-exclusive'>
        <listen type='address' address='1.2.3.4'/>
      </graphics>
-     <graphics type='rdp' autoport='yes' multiUser='yes' />
+     <graphics type='rdp' autoport='yes' multiUser='yes'/>
      <graphics type='desktop' fullscreen='yes'/>
      <graphics type='spice'>
        <listen type='network' network='rednet'/>
@@ -6715,14 +6715,21 @@ interaction with the admin.
       Starts a RDP server. The ``port`` attribute specifies the TCP port number
       (with -1 as legacy syntax indicating that it should be auto-allocated).
       The ``autoport`` attribute is the new preferred syntax for indicating
-      auto-allocation of the TCP port to use. In the VirtualBox driver, the
-      ``autoport`` will make the hypervisor pick available port from 3389-3689
-      range when the VM is started. The chosen port will be reflected in the
-      ``port`` attribute. The ``multiUser`` attribute is a boolean deciding
-      whether multiple simultaneous connections to the VM are permitted. The
-      ``replaceUser`` attribute is a boolean deciding whether the existing
-      connection must be dropped and a new connection must be established by the
-      VRDP server, when a new client connects in single connection mode.
+      auto-allocation of the TCP port to use.
+
+      A non-p2p ``dbus`` graphics is required to enable the QEMU RDP support (it
+      uses an external "qemu-rdp" helper process). The ``username`` and
+      ``passwd`` attributes set the credentials (when they are not set, the RDP
+      access may be disabled by the helper). :since:`Since 11.1.0`
+
+      In the VirtualBox driver, the ``autoport`` will make the hypervisor pick
+      available port from 3389-3689 range when the VM is started. The chosen
+      port will be reflected in the ``port`` attribute. The ``multiUser``
+      attribute is a boolean deciding whether multiple simultaneous connections
+      to the VM are permitted. The ``replaceUser`` attribute is a boolean
+      deciding whether the existing connection must be dropped and a new
+      connection must be established by the VRDP server, when a new client
+      connects in single connection mode.
 
    ``desktop``
       This value is reserved for VirtualBox domains for the moment. It displays

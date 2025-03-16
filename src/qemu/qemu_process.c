@@ -2969,18 +2969,29 @@ qemuProcessInitPasswords(virQEMUDriver *driver,
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDef *graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            ret = qemuDomainChangeGraphicsPasswords(vm,
-                                                    VIR_DOMAIN_GRAPHICS_TYPE_VNC,
-                                                    &graphics->data.vnc.auth,
-                                                    cfg->vncPassword,
-                                                    asyncJob);
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            ret = qemuDomainChangeGraphicsPasswords(vm,
-                                                    VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
-                                                    &graphics->data.spice.auth,
-                                                    cfg->spicePassword,
-                                                    asyncJob);
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            ret = qemuDomainChangeGraphicsPasswords(
+                vm, VIR_DOMAIN_GRAPHICS_TYPE_VNC, &graphics->data.vnc.auth, NULL,
+                cfg->vncPassword, asyncJob);
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            ret = qemuDomainChangeGraphicsPasswords(
+                vm, VIR_DOMAIN_GRAPHICS_TYPE_SPICE, &graphics->data.spice.auth,
+                NULL, cfg->spicePassword, asyncJob);
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+            ret = qemuDomainChangeGraphicsPasswords(
+                vm, VIR_DOMAIN_GRAPHICS_TYPE_RDP, &graphics->data.rdp.auth,
+                cfg->rdpUsername, cfg->rdpPassword, asyncJob);
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
         }
 
         if (ret < 0)
@@ -4259,6 +4270,30 @@ qemuProcessSPICEAllocatePorts(virQEMUDriver *driver,
     return 0;
 }
 
+static int
+qemuProcessRDPAllocatePorts(virQEMUDriver *driver,
+                            virDomainGraphicsDef *graphics,
+                            bool allocate)
+{
+    unsigned short port;
+
+    if (!allocate) {
+        if (graphics->data.rdp.autoport)
+            graphics->data.rdp.port = 3389;
+
+        return 0;
+    }
+
+    if (graphics->data.rdp.autoport) {
+        if (virPortAllocatorAcquire(driver->rdpPorts, &port) < 0)
+            return -1;
+        graphics->data.rdp.port = port;
+        graphics->data.rdp.portReserved = true;
+    }
+
+    return 0;
+}
+
 
 static int
 qemuProcessVerifyHypervFeatures(virDomainDef *def,
@@ -4967,8 +5002,16 @@ qemuProcessGraphicsReservePorts(virDomainGraphicsDef *graphics,
         }
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if (!graphics->data.rdp.autoport ||
+            reconnect) {
+            if (virPortAllocatorSetUsed(graphics->data.rdp.port) < 0)
+                return -1;
+            graphics->data.rdp.portReserved = true;
+        }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
@@ -5007,8 +5050,12 @@ qemuProcessGraphicsAllocatePorts(virQEMUDriver *driver,
             return -1;
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        if (qemuProcessRDPAllocatePorts(driver, graphics, allocate) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
@@ -5175,8 +5222,11 @@ qemuProcessGraphicsSetupListen(virQEMUDriver *driver,
         listenAddr = cfg->spiceListen;
         break;
 
-    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        listenAddr = cfg->rdpListen;
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
     case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
@@ -5409,6 +5459,23 @@ qemuProcessMakeDir(virQEMUDriver *driver,
 }
 
 
+static bool
+virDomainDefHasDBus(const virDomainDef *def, bool p2p)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDef *graphics = def->graphics[i];
+
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_DBUS) {
+            return graphics->data.dbus.p2p == p2p;
+        }
+    }
+
+    return false;
+}
+
+
 static int
 qemuProcessStartValidateGraphics(virDomainObj *vm)
 {
@@ -5427,8 +5494,30 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
             }
             break;
 
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+            if (graphics->nListens > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("qemu-rdp does not support multiple listens for one graphics device."));
+                return -1;
+            }
+            if (graphics->data.rdp.multiUser) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("qemu-rdp doesn't support the 'multiUser' attribute."));
+                return -1;
+            }
+            if (graphics->data.rdp.replaceUser) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("qemu-rdp doesn't support the 'replaceUser' attribute."));
+                return -1;
+            }
+            if (!virDomainDefHasDBus(vm->def, false)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("qemu-rdp support requires a D-Bus bus graphics device."));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
@@ -5931,6 +6020,41 @@ qemuProcessPrepareHostNetwork(virDomainObj *vm)
             if (qemuInterfacePrepareSlirp(priv->driver, net) < 0)
                 return -1;
         }
+
+    }
+
+    return 0;
+}
+
+
+static int
+qemuPrepareGraphicsRdp(virQEMUDriver *driver,
+                       virDomainGraphicsDef *gfx)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuRdp *rdp;
+
+    if (!(rdp = qemuRdpNewForHelper(cfg->qemuRdpName)))
+        return -1;
+
+    QEMU_DOMAIN_GRAPHICS_PRIVATE(gfx)->rdp = rdp;
+
+    return 0;
+}
+
+
+static int
+qemuProcessPrepareGraphics(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    size_t i;
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDef *gfx = vm->def->graphics[i];
+
+        if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP &&
+            qemuPrepareGraphicsRdp(priv->driver, gfx) < 0)
+            return -1;
 
     }
 
@@ -7407,6 +7531,10 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     }
     VIR_DEBUG("Preparing network devices");
     if (qemuProcessPrepareHostNetwork(vm) < 0)
+        return -1;
+
+    VIR_DEBUG("Preparing graphics");
+    if (qemuProcessPrepareGraphics(vm) < 0)
         return -1;
 
     /* Must be run before security labelling */
@@ -8979,6 +9107,12 @@ void qemuProcessStop(virQEMUDriver *driver,
             if (graphics->data.spice.tlsPortReserved) {
                 virPortAllocatorRelease(graphics->data.spice.tlsPort);
                 graphics->data.spice.tlsPortReserved = false;
+            }
+        }
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
+            if (graphics->data.rdp.portReserved) {
+                virPortAllocatorRelease(graphics->data.rdp.port);
+                graphics->data.rdp.portReserved = false;
             }
         }
     }
