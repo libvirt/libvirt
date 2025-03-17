@@ -462,8 +462,8 @@ qemuHotplugAttachManagedPR(virDomainObj *vm,
 
 /**
  * qemuHotplugRemoveManagedPR:
- * @driver: QEMU driver object
  * @vm: domain object
+ * @src: storage source that is being removed
  * @asyncJob: asynchronous job identifier
  *
  * Removes the managed PR object from @vm if the configuration does not require
@@ -471,10 +471,14 @@ qemuHotplugAttachManagedPR(virDomainObj *vm,
  */
 void
 qemuHotplugRemoveManagedPR(virDomainObj *vm,
+                           virStorageSource *src,
                            virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virErrorPtr orig_err;
+
+    if (!virStorageSourceChainHasManagedPR(src))
+        return;
 
     if (qemuDomainDefHasManagedPR(vm))
         return;
@@ -647,8 +651,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 
     ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, oldsrc));
 
-    if (virStorageSourceChainHasManagedPR(oldsrc))
-        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
+    qemuHotplugRemoveManagedPR(vm, oldsrc, VIR_ASYNC_JOB_NONE);
 
     /* media was changed, so we can remove the old media definition now */
     g_clear_pointer(&oldsrc, virObjectUnref);
@@ -657,8 +660,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
  rollback:
     ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
 
-    if (virStorageSourceChainHasManagedPR(newsrc))
-        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
+    qemuHotplugRemoveManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE);
 
     /* revert old image do the disk definition */
     disk->src = oldsrc;
@@ -1089,8 +1091,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         if (releaseSeclabel)
             ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
 
-        if (virStorageSourceChainHasManagedPR(disk->src))
-            qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
+        qemuHotplugRemoveManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE);
     }
     qemuDomainSecretDiskDestroy(disk);
     qemuDomainCleanupStorageSourceFD(disk->src);
@@ -4779,8 +4780,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     if (diskBackend)
         qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
 
-    if (virStorageSourceChainHasManagedPR(disk->src))
-        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
+    qemuHotplugRemoveManagedPR(vm, disk->src, VIR_ASYNC_JOB_NONE);
 
     qemuNbdkitStopStorageSource(disk->src, vm, true);
 

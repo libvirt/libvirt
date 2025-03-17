@@ -709,7 +709,7 @@ qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriver *driver,
 
     qemuDomainStorageSourceChainAccessRevoke(driver, vm, chain);
 
-    qemuHotplugRemoveManagedPR(vm, asyncJob);
+    qemuHotplugRemoveManagedPR(vm, chain, asyncJob);
 }
 
 
