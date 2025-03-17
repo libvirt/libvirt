@@ -613,9 +613,6 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virStorageSource *oldsrc = disk->src;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    bool managedpr = virStorageSourceChainHasManagedPR(oldsrc) ||
-                     virStorageSourceChainHasManagedPR(newsrc);
-    int ret = -1;
     int rc;
 
     if (diskPriv->blockjob && qemuBlockJobIsRunning(diskPriv->blockjob)) {
@@ -627,49 +624,45 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     disk->src = newsrc;
 
     if (virDomainDiskTranslateSourcePool(disk) < 0)
-        goto cleanup;
+        goto rollback;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
-        goto cleanup;
+        goto rollback;
 
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
-        goto cleanup;
+        goto rollback;
 
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, newsrc) < 0)
-        goto cleanup;
+        goto rollback;
 
     if (qemuHotplugAttachManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE) < 0)
-        goto cleanup;
+        goto rollback;
 
     rc = qemuDomainChangeMediaBlockdev(vm, disk, oldsrc, newsrc, force);
 
     virDomainAuditDisk(vm, oldsrc, newsrc, "update", rc >= 0);
 
     if (rc < 0)
-        goto cleanup;
+        goto rollback;
 
     ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, oldsrc));
 
+    if (virStorageSourceChainHasManagedPR(oldsrc))
+        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
+
     /* media was changed, so we can remove the old media definition now */
     g_clear_pointer(&oldsrc, virObjectUnref);
+    return 0;
 
-    ret = 0;
+ rollback:
+    ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
 
- cleanup:
-    /* undo changes to the new disk */
-    if (ret < 0) {
-        ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
-    }
-
-    /* remove PR manager object if unneeded */
-    if (managedpr)
+    if (virStorageSourceChainHasManagedPR(newsrc))
         qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
 
     /* revert old image do the disk definition */
-    if (oldsrc)
-        disk->src = oldsrc;
-
-    return ret;
+    disk->src = oldsrc;
+    return -1;
 }
 
 
