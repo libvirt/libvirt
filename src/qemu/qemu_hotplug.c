@@ -469,31 +469,29 @@ qemuHotplugAttachManagedPR(virDomainObj *vm,
  * Removes the managed PR object from @vm if the configuration does not require
  * it any more.
  */
-int
+void
 qemuHotplugRemoveManagedPR(virDomainObj *vm,
                            virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virErrorPtr orig_err;
-    int ret = -1;
 
     if (qemuDomainDefHasManagedPR(vm))
-        return 0;
+        return;
 
     virErrorPreserveLast(&orig_err);
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         goto cleanup;
+
     ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias(),
                                       false));
     qemuDomainObjExitMonitor(vm);
 
     qemuProcessKillManagedPRDaemon(vm);
 
-    ret = 0;
  cleanup:
     virErrorRestore(&orig_err);
-    return ret;
 }
 
 
@@ -665,7 +663,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 
     /* remove PR manager object if unneeded */
     if (managedpr)
-        ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
+        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
 
     /* revert old image do the disk definition */
     if (oldsrc)
@@ -1099,7 +1097,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
             ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src));
 
         if (virStorageSourceChainHasManagedPR(disk->src))
-            ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
+            qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
     }
     qemuDomainSecretDiskDestroy(disk);
     qemuDomainCleanupStorageSourceFD(disk->src);
@@ -4788,9 +4786,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     if (diskBackend)
         qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
 
-    if (virStorageSourceChainHasManagedPR(disk->src) &&
-        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE) < 0)
-        goto cleanup;
+    if (virStorageSourceChainHasManagedPR(disk->src))
+        qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE);
 
     qemuNbdkitStopStorageSource(disk->src, vm, true);
 

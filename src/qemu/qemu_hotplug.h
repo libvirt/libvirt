@@ -131,6 +131,6 @@ int
 qemuHotplugAttachManagedPR(virDomainObj *vm,
                            virStorageSource *src,
                            virDomainAsyncJob asyncJob);
-int
+void
 qemuHotplugRemoveManagedPR(virDomainObj *vm,
                            virDomainAsyncJob asyncJob);
