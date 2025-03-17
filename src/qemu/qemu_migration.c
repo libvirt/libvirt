@@ -1213,6 +1213,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
         mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), diskAlias, true,
                                             qemuDomainDiskGetTopNodename(disk),
                                             qemuBlockStorageSourceGetEffectiveNodename(copysrc),
+                                            NULL,
                                             mirror_speed, 0, 0, mirror_shallow,
                                             syncWrites);
 

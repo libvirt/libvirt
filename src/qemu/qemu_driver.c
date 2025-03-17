@@ -14383,6 +14383,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
                                     qemuDomainDiskGetTopNodename(disk),
                                     qemuBlockStorageSourceGetEffectiveNodename(mirror),
+                                    NULL,
                                     bandwidth,
                                     granularity, buf_size, mirror_shallow,
                                     syncWrites);

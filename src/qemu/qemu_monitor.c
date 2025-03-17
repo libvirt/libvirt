@@ -2784,20 +2784,21 @@ qemuMonitorBlockdevMirror(qemuMonitor *mon,
                           bool persistjob,
                           const char *device,
                           const char *target,
+                          const char *replaces,
                           unsigned long long bandwidth,
                           unsigned int granularity,
                           unsigned long long buf_size,
                           bool shallow,
                           bool syncWrite)
 {
-    VIR_DEBUG("jobname=%s, persistjob=%d, device=%s, target=%s, bandwidth=%lld, "
+    VIR_DEBUG("jobname=%s, persistjob=%d, device=%s, target=%s, replaces=%s, bandwidth=%lld, "
               "granularity=%#x, buf_size=%lld, shallow=%d syncWrite=%d",
-              NULLSTR(jobname), persistjob, device, target, bandwidth, granularity,
-              buf_size, shallow, syncWrite);
+              NULLSTR(jobname), persistjob, device, target, NULLSTR(replaces),
+              bandwidth, granularity, buf_size, shallow, syncWrite);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockdevMirror(mon, jobname, persistjob, device, target,
+    return qemuMonitorJSONBlockdevMirror(mon, jobname, persistjob, device, target, replaces,
                                          bandwidth, granularity, buf_size, shallow,
                                          syncWrite);
 }
