@@ -43,21 +43,7 @@ series of two or more patches needs a cover letter.
 Note that the ``git send-email`` subcommand may not be in the
 main git package and using it may require installation of a
 separate package, for example the "git-email" package in Fedora
-and Debian. If this is your first time using
-``git send-email``, you might need to configure it to point it
-to your SMTP server with something like:
-
-::
-
-  $ git config --global sendemail.smtpServer stmp.youremailprovider.net
-
-If you get tired of typing ``--to=devel@lists.libvirt.org`` all
-the time, you can configure that to be automatically handled as
-well:
-
-::
-
-  $ git config sendemail.to devel@lists.libvirt.org
+and Debian.
 
 Avoid using mail clients for sending patches, as most of them
 will mangle the messages in some way, making them unusable for
@@ -87,6 +73,56 @@ Moreover, such patch needs to be prefixed correctly with
 ``--subject-prefix=PATCHv2`` appended to
 ``git send-email`` (substitute ``v2`` with the
 correct version if needed though).
+
+Git Configuration
+-----------------
+
+If this is your first time using ``git send-email``, you will probably
+need to setup your global git configuration, to point to your outgoing
+SMTP server with something like:
+
+::
+
+  $ git config --global sendemail.smtpServer stmp.youremailprovider.net
+
+If your email provider (often your employer) has configured a DMARC
+policy for their domain, there are some additional settings that will
+be required. Before doing this, check the DMARC policy with
+
+::
+
+  $ host -t txt _dmarc.$YOURDOMAIN.COM
+
+If this returns no output, or contains ``p=none`` then no configuration
+is required. If it reports ``p=quarantine`` or ``p=reject``, then the
+libvirt lists will apply DMARC countermeasures to your email. To ensure
+that git authorship is preserved add
+
+::
+
+  $ git config --global format.from "Your Name <your@email.com>"
+  $ git config --global format.forceInBodyFrom true
+
+This will force git to always add an additional line
+
+::
+
+   From: Your Name <your@email.com>
+
+in the body of the patch, guaranteeing correct author records even
+when the main ``From`` header is rewritten by mailman.
+
+If you get tired of typing ``--to=devel@lists.libvirt.org`` all
+the time, you can configure that to be automatically handled by
+adding a local repository setting:
+
+::
+
+  $ git config sendemail.to devel@lists.libvirt.org
+
+This last setting is not required if using ``git-publish`` to send
+patches, as that auto-identifies the mailing list address from its
+config file stored in git.
 
 Review process
 --------------
