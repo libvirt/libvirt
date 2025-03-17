@@ -19,7 +19,7 @@ Array operations
 
    https://developer.gnome.org/glib/stable/glib-Arrays.html
 
-   Instead of using plain C arrays, it is preferrable to use one of
+   Instead of using plain C arrays, it is preferable to use one of
    the GLib types, ``GArray``, ``GPtrArray`` or ``GByteArray``.
    These all use a struct to track the array memory and size
    together and efficiently resize.

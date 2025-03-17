@@ -39,7 +39,7 @@ The ``<host/>`` element consists of the following child elements:
    The host CPU architecture and features.
 
    Note that, while this element contains a ``topology`` sub-element,
-   the information contained therein is farily high-level and likely
+   the information contained therein is fairly high-level and likely
    not very useful when it comes to optimizing guest vCPU placement.
    Look into the ``topology`` *element*, described below, for more
    detailed information.

@@ -3468,7 +3468,7 @@ paravirtualized driver is specified via the ``disk`` element.
       automatically distributed among the configured iothreads.
 
       Optionally the ``iothread`` element can have multiple ``queue``
-      subelements with mandatory ``id`` atribute specifying that the iothread
+      subelements with mandatory ``id`` attribute specifying that the iothread
       should be used to handle given virt queue. If queue mapping is present
       the ``queues`` attribute of  ``driver`` must be configured and all
       configured virt queues must be included in the mapping. The
@@ -8423,7 +8423,7 @@ Example: usage of external TPM emulator :since:`Since 9.0.0`
 
    This element does not work with the ``passthrough`` backend.
 
-   When specified, it is the user's responsability to prevent files from being
+   When specified, it is the user's responsibility to prevent files from being
    used by multiple VMs or emulators (swtpm will also use advisory locking). If
    not specified, the storage configuration is left to libvirt discretion.
 
