@@ -2032,6 +2032,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDef *def)
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        virDomainGraphicsAuthDefClear(&def->data.rdp.auth);
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
