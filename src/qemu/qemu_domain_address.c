@@ -3077,12 +3077,10 @@ qemuDomainAssignMemoryDeviceSlot(virDomainObj *vm,
             return -1;
 
         return qemuAssignMemoryDeviceSlot(mem, slotmap);
-        break;
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         return qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev);
-        break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
