@@ -3067,6 +3067,7 @@ qemuDomainAssignMemoryDeviceSlot(virDomainObj *vm,
                                  virDomainMemoryDef *mem)
 {
     g_autoptr(virBitmap) slotmap = NULL;
+    bool releaseaddr = false;
     virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_MEMORY, .data.memory = mem};
 
     switch (mem->model) {
@@ -3080,7 +3081,7 @@ qemuDomainAssignMemoryDeviceSlot(virDomainObj *vm,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        return qemuDomainEnsurePCIAddress(vm, &dev);
+        return qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
