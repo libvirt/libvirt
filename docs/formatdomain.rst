@@ -9076,14 +9076,15 @@ Example:
    ``caching_mode``
       The ``caching_mode`` attribute with possible values ``on`` and ``off`` can
       be used to turn on the VT-d caching mode (useful for assigned devices).
-      :since:`Since 3.4.0` (QEMU/KVM only)
+      :since:`Since 3.4.0` (QEMU/KVM and ``intel`` model only)
 
    ``eim``
       The ``eim`` attribute (with possible values ``on`` and ``off``) can be
       used to configure Extended Interrupt Mode. A q35 domain with split I/O
       APIC (as described in `Hypervisor features`_), and
       both interrupt remapping and EIM turned on for the IOMMU, will be able to
-      use more than 255 vCPUs. :since:`Since 3.4.0` (QEMU/KVM only)
+      use more than 255 vCPUs. :since:`Since 3.4.0` (QEMU/KVM and ``intel`` model
+      only)
 
    ``iotlb``
       The ``iotlb`` attribute with possible values ``on`` and ``off`` can be
@@ -9093,14 +9094,14 @@ Example:
    ``aw_bits``
       The ``aw_bits`` attribute can be used to set the address width to allow
       mapping larger iova addresses in the guest. :since:`Since 6.5.0` (QEMU/KVM
-      only)
+      and ``intel`` model only)
 
    ``dma_translation``
       The ``dma_translation`` attribute with possible values ``on`` and ``off`` can
       be used to turn off the dma translation for IOMMU. It is useful when only
       interrupt remapping is required but dma translation overhead is unwanted, for
       example to efficiently enable more than 255 vCPUs.
-      :since:`Since 10.7.0` (QEMU/KVM only)
+      :since:`Since 10.7.0` (QEMU/KVM and ``intel`` model only)
 
 The ``virtio`` IOMMU devices can further have ``address`` element as described
 in `Device addresses`_ (address has to by type of ``pci``).
