@@ -41,8 +41,8 @@ v11.2.0 (unreleased)
     managed save, graceful shutdown, or hard poweroff on running VMs, when a
     host shutdown is requested. This feature is intended to eventually replace
     usage of the libvirt-guests script. The new approach improves on the
-    libvirt-guests script, by proactively monitor logind for a signal that a
-    host shutdown has been requested. It will initiate the chosen action on
+    libvirt-guests script, by proactively monitoring logind for a signal that
+    a host shutdown has been requested. It will initiate the chosen action on
     running guests immediately, allowing shutdown inhibitors to be released
     sooner. The new solution is also able to iteratively try multiple actions
     until one of them succeeeds in shutting down the VM.
