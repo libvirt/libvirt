@@ -5666,10 +5666,6 @@ static const vshCmdOptDef opts_restore[] = {
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when restoring")
     },
-    {.name = "parallel",
-     .type = VSH_OT_BOOL,
-     .help = N_("enable parallel restore")
-    },
     {.name = "parallel-channels",
      .type = VSH_OT_INT,
      .help = N_("number of IO channels to use for parallel restore")
@@ -5706,13 +5702,11 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
-    int nchannels = 1;
+    int nchannels = 0;
     int rc;
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
-    if (vshCommandOptBool(cmd, "parallel"))
-        flags |= VIR_DOMAIN_SAVE_PARALLEL;
     if (vshCommandOptBool(cmd, "running"))
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
@@ -5738,13 +5732,14 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
                                 VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
         return false;
 
-    if (flags & VIR_DOMAIN_SAVE_PARALLEL) {
-        if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
-            return false;
-
+    if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
+        return false;
+    if (rc == 1) {
         if (virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
             return false;
+
+        flags |= VIR_DOMAIN_SAVE_PARALLEL;
     }
 
     if (flags || xml) {
