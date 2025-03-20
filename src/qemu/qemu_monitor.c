@@ -2259,8 +2259,8 @@ qemuMonitorMigrateToFdSet(virDomainObj *vm,
         qemuFDPassAddFD(fdPassMigrate, directFd, "-directio-fd");
     qemuFDPassTransferMonitor(fdPassMigrate, mon);
 
-    uri = g_strdup_printf("file:%s,offset=%#lx",
-                          qemuFDPassGetPath(fdPassMigrate), offset);
+    uri = g_strdup_printf("file:%s,offset=%#jx",
+                          qemuFDPassGetPath(fdPassMigrate), (uintmax_t)offset);
     ret = qemuMonitorJSONMigrate(mon, flags, uri);
 
     return ret;

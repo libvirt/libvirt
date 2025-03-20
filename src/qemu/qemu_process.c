@@ -4917,7 +4917,7 @@ qemuProcessIncomingDefNew(virQEMUDriver *driver,
         } else {
             qemuFDPassAddFD(inc->fdPassMigrate, fd, "-buffered-fd");
         }
-        inc->uri = g_strdup_printf("file:%s,offset=%#lx",
+        inc->uri = g_strdup_printf("file:%s,offset=%#zx",
                                    qemuFDPassGetPath(inc->fdPassMigrate), offset);
     } else {
         inc->uri = qemuMigrationDstGetURI(migrateFrom, *fd);
