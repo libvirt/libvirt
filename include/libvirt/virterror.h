@@ -351,6 +351,8 @@ typedef enum {
     VIR_ERR_NO_NETWORK_METADATA = 111,  /* Network metadata is not present (Since: 9.7.0) */
     VIR_ERR_AGENT_COMMAND_TIMEOUT = 112,/* guest agent didn't respond to a non-sync
                                            command within timeout (Since: 11.2.0) */
+    VIR_ERR_AGENT_COMMAND_FAILED = 113, /* guest agent responded with failure
+                                           to a command (Since: 11.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_NUMBER_LAST /* (Since: 5.0.0) */
