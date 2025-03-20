@@ -14,13 +14,14 @@
 # Sergey A. <sw@atrus.ru>, 2022, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2023.
 # "Sergey A." <sw@atrus.ru>, 2023, 2024.
+# "Sergey A." <Ser82-png@yandex.ru>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2024-06-02 15:35+0000\n"
-"Last-Translator: \"Sergey A.\" <sw@atrus.ru>\n"
+"PO-Revision-Date: 2025-03-16 17:56+0000\n"
+"Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
 "Language: ru\n"
@@ -29,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.10.2\n"
 
 msgid ""
 "\n"
@@ -1702,7 +1703,7 @@ msgstr "--%1$s <строка>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <строка>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -1788,7 +1789,7 @@ msgstr ""
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<active_pcr_banks/> требует TPM версии '%1$s'"
 
 #, c-format
 msgid ""
@@ -1818,11 +1819,11 @@ msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr "атрибут «display» <hostdev> поддерживается только для model='vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> не поддерживается с bus='sd'"
 
 #, c-format
 msgid "<profile/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<profile/> требует TPM версии '%1$s'"
 
 msgid "<reservations/> allowed only for lun devices"
 msgstr "<reservations/> разрешено только для устройств lun"
@@ -2024,7 +2025,7 @@ msgid "Accessing the connection requires authorization"
 msgstr ""
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "Для доступа к домену требуется авторизация"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -16182,7 +16183,7 @@ msgstr "Недопустимый путь к устройству TPM: %1$s"
 
 #, c-format
 msgid "TPM version '%1$s' is not supported"
-msgstr ""
+msgstr "TPM версии '%1$s' не поддерживается"
 
 msgid "Table row cannot be empty"
 msgstr "Строка таблицы не может быть пустой"
