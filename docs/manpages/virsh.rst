@@ -4179,7 +4179,7 @@ save
 ::
 
    save domain state-file [--bypass-cache] [--xml file]
-      [--parallel] [--parallel-channels channels]
+      [--parallel-channels channels]
       [{--running | --paused}] [--verbose]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
@@ -4213,11 +4213,10 @@ based on the state the domain was in when the save was done; passing
 either the *--running* or *--paused* flag will allow overriding which
 state the ``restore`` should use.
 
-*--parallel* option will cause the save data to be written to file
-over multiple parallel IO channels. The number of channels can be
-specified using *--parallel-channels*. Using parallel IO channels
-requires the use of ``sparse`` image save format. Parallel save may
-significantly reduce the time required to save large memory domains.
+*--parallel-channels* option can specify number of parallel IO channels
+to be used when saving memory to file. Using parallel IO channels requires
+the use of ``sparse`` image save format. Parallel save may significantly
+reduce the time required to save large memory domains.
 
 Domain saved state files assume that disk images will be unchanged
 between the creation and restore point.  For a more complete system

@@ -4530,13 +4530,9 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when saving")
     },
-    {.name = "parallel",
-     .type = VSH_OT_BOOL,
-     .help = N_("enable parallel save")
-    },
     {.name = "parallel-channels",
      .type = VSH_OT_INT,
-     .help = N_("number of extra IO channels to use for parallel save")
+     .help = N_("number of IO channels to use for parallel save")
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
@@ -4571,8 +4567,7 @@ doSave(void *opaque)
     virTypedParameterPtr params = NULL;
     int nparams = 0;
     int maxparams = 0;
-    int nchannels = 1;
-    int rv = -1;
+    int nchannels = 0;
     unsigned int flags = 0;
     const char *xmlfile = NULL;
     g_autofree char *xml = NULL;
@@ -4592,8 +4587,6 @@ doSave(void *opaque)
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SAVE_PAUSED;
-    if (vshCommandOptBool(cmd, "parallel"))
-        flags |= VIR_DOMAIN_SAVE_PARALLEL;
 
     if (vshCommandOptString(ctl, cmd, "file", &to) < 0)
         goto out;
@@ -4602,13 +4595,14 @@ doSave(void *opaque)
                                 VIR_DOMAIN_SAVE_PARAM_FILE, to) < 0)
         goto out;
 
-    if (flags & VIR_DOMAIN_SAVE_PARALLEL) {
-        if ((rv = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
-            goto out;
-
+    if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
+        goto out;
+    if (rc == 1) {
         if (virTypedParamsAddInt(&params, &nparams, &maxparams,
                                  VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
             goto out;
+
+        flags |= VIR_DOMAIN_SAVE_PARALLEL;
     }
 
     if (vshCommandOptString(ctl, cmd, "xml", &xmlfile) < 0)
