@@ -1764,6 +1764,75 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
 }
 
 
+/*
+ * "hypervisor-cpu-models" command
+ */
+static const vshCmdInfo info_hypervisor_cpu_models = {
+    .help = N_("Hypervisor reported CPU models"),
+    .desc = N_("Get the CPU models reported by the hypervisor."),
+};
+
+static const vshCmdOptDef opts_hypervisor_cpu_models[] = {
+    {.name = "virttype",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainVirtTypeCompleter,
+     .help = N_("virtualization type (/domain/@type)"),
+    },
+    {.name = "emulator",
+     .type = VSH_OT_STRING,
+     .help = N_("path to emulator binary (/domain/devices/emulator)"),
+    },
+    {.name = "arch",
+     .type = VSH_OT_STRING,
+     .completer = virshArchCompleter,
+     .help = N_("CPU architecture (/domain/os/type/@arch)"),
+    },
+    {.name = "machine",
+     .type = VSH_OT_STRING,
+     .help = N_("machine type (/domain/os/type/@machine)"),
+    },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .help = N_("include all CPU models known to the hypervisor for the architecture")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdHypervisorCPUModelNames(vshControl *ctl,
+                           const vshCmd *cmd)
+{
+    g_autofree char *caps_xml = NULL;
+    const char *virttype = NULL;
+    const char *emulator = NULL;
+    const char *arch = NULL;
+    const char *machine = NULL;
+    const char *xpath = NULL;
+    virshControl *priv = ctl->privData;
+
+    if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
+        vshCommandOptString(ctl, cmd, "emulator", &emulator) < 0 ||
+        vshCommandOptString(ctl, cmd, "arch", &arch) < 0 ||
+        vshCommandOptString(ctl, cmd, "machine", &machine) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "all"))
+        xpath = "//cpu//model[@usable]/text()";
+    else
+        xpath = "//cpu//model[@usable='yes']/text()";
+
+    caps_xml = virConnectGetDomainCapabilities(priv->conn, emulator, arch,
+                                               machine, virttype, 0);
+
+    if (!caps_xml) {
+        vshError(ctl, "%s", _("failed to get hypervisor CPU model names"));
+        return false;
+    }
+
+    return virshDumpXML(ctl, caps_xml, "domcapabilities", xpath, false);
+}
+
+
 const vshCmdDef hostAndHypervisorCmds[] = {
     {.name = "allocpages",
      .handler = cmdAllocpages,
@@ -1829,6 +1898,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdHypervisorCPUCompare,
      .opts = opts_hypervisor_cpu_compare,
      .info = &info_hypervisor_cpu_compare,
+     .flags = 0
+    },
+    {.name = "hypervisor-cpu-models",
+     .handler = cmdHypervisorCPUModelNames,
+     .opts = opts_hypervisor_cpu_models,
+     .info = &info_hypervisor_cpu_models,
      .flags = 0
     },
     {.name = "maxvcpus",

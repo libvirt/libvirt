@@ -1034,6 +1034,31 @@ listed in the XML description. If *--migratable* is specified, features that
 block migration will not be included in the resulting CPU.
 
 
+hypervisor-cpu-models
+---------------------
+
+**Syntax:**
+
+::
+
+   hypervisor-cpu-models [--virttype virttype] [--emulator emulator]
+      [--arch arch] [--machine machine] [--all]
+
+Print the list of CPU models known by the hypervisor for the specified architecture.
+It is not guaranteed that a listed CPU will run on the host. To determine CPU
+model compatibility with the host, see ``virsh hypervisor-cpu-baseline`` and
+``virsh hypervisor-cpu-compare``.
+
+The *virttype* option specifies the virtualization type (usable in the 'type'
+attribute of the <domain> top level element from the domain XML). *emulator*
+specifies the path to the emulator, *arch* specifies the CPU architecture, and
+*machine* specifies the machine type.
+
+By default, only the models that are claimed to be "usable" by the hypervisor
+on the host are reported. The option *--all* will report every CPU model known
+to the hypervisor, including ones that are not supported on the hypervisor (e.g.
+newer generation models).
+
 DOMAIN COMMANDS
 ===============
 
