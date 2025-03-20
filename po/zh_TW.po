@@ -7,13 +7,14 @@
 # Chester Cheng <ccheng@redhat.com>, 2006, 2007
 # Daniel  <veillard@redhat.com>, 2011
 # "Daniel P. Berrange" <berrange@redhat.com>, 2025.
+# hsu zangmen <chzang55@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2025-01-30 11:38+0000\n"
-"Last-Translator: \"Daniel P. Berrange\" <berrange@redhat.com>\n"
+"PO-Revision-Date: 2025-03-20 05:28+0000\n"
+"Last-Translator: hsu zangmen <chzang55@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_TW/>\n"
 "Language: zh_TW\n"
@@ -21,18 +22,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10.4\n"
 
+#, fuzzy
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
+"\n"
+"  (有關 <command> 的詳細資訊，請<command>指定說明）\n"
+"\n"
 
+#, fuzzy
 msgid ""
 "\n"
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
+"\n"
+"  (specify help <group> for details about the commands in the group)\n"
 
 msgid ""
 "\n"
