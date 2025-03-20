@@ -52,6 +52,21 @@ v11.2.0 (unreleased)
     /etc/libvirt/qemu.conf configuration file. The libvirt-guests script must
     be disabled before doing this.
 
+  * qemu: Add 'sparse' as a new save image format
+
+    QEMU's ``file`` migration has been supplemented with the new stream format
+    ``mapped-ram``, where RAM pages are mapped directly to offsets in the
+    migration file. ``mapped-ram`` is now supported by augmenting the existing
+    save image formats with the ``sparse`` format.
+
+  * qemu: Add support for parallel save/restore
+
+    The ``sparse`` image format can support reading and writing by multiple
+    channels. ``virDomainSaveParams`` and ``virDomainRestoreParams`` now
+    support specifying the number of IO channels used for parallel save and
+    restore. Using multiple channels can reduce the time required to save
+    and restore domains.
+
 * **Improvements**
 
 * **Bug fixes**
