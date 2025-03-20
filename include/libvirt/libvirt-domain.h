@@ -1655,7 +1655,6 @@ typedef enum {
     VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused (Since: 0.9.5) */
     VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running (Since: 0.9.5) */
     VIR_DOMAIN_SAVE_RESET_NVRAM  = 1 << 3, /* Re-initialize NVRAM from template (Since: 8.1.0) */
-    VIR_DOMAIN_SAVE_PARALLEL     = 1 << 4, /* Save and restore using parallel channels (Since: 10.6.0) */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,

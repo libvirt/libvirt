@@ -2822,8 +2822,7 @@ qemuDomainSaveParams(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED |
-                  VIR_DOMAIN_SAVE_PARALLEL, -1);
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_SAVE_PARAM_FILE,
@@ -5762,8 +5761,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED |
-                  VIR_DOMAIN_SAVE_RESET_NVRAM |
-                  VIR_DOMAIN_SAVE_PARALLEL, -1);
+                  VIR_DOMAIN_SAVE_RESET_NVRAM, -1);
 
     if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
         reset_nvram = true;
