@@ -707,6 +707,7 @@ void qemuAgentClose(qemuAgent *agent)
  * @msg: Message
  * @seconds: number of seconds to wait for the result, it can be either
  *           -2, -1, 0 or positive.
+ * @report_sync: On timeout; report synchronization error instead of the normal error
  *
  * Send @msg to agent @agent. If @seconds is equal to
  * VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK(-2), this function will block forever
@@ -720,9 +721,11 @@ void qemuAgentClose(qemuAgent *agent)
  *          -2 on timeout,
  *          -1 otherwise
  */
-static int qemuAgentSend(qemuAgent *agent,
-                         qemuAgentMessage *msg,
-                         int seconds)
+static int
+qemuAgentSend(qemuAgent *agent,
+              qemuAgentMessage *msg,
+              int seconds,
+              bool report_sync)
 {
     int ret = -1;
     unsigned long long then = 0;
@@ -751,8 +754,15 @@ static int qemuAgentSend(qemuAgent *agent,
         if ((then && virCondWaitUntil(&agent->notify, &agent->parent.lock, then) < 0) ||
             (!then && virCondWait(&agent->notify, &agent->parent.lock) < 0)) {
             if (errno == ETIMEDOUT) {
-                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                               _("Guest agent not available for now"));
+                if (report_sync) {
+                    virReportError(VIR_ERR_AGENT_UNRESPONSIVE,
+                                   _("guest agent didn't respond to synchronization within '%1$d' seconds"),
+                                   seconds);
+                } else {
+                    virReportError(VIR_ERR_AGENT_COMMAND_TIMEOUT,
+                                   _("guest agent didn't respond to command within '%1$d' seconds"),
+                                   seconds);
+                }
                 ret = -2;
             } else {
                 virReportSystemError(errno, "%s",
@@ -817,7 +827,7 @@ qemuAgentGuestSyncSend(qemuAgent *agent,
 
     VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
 
-    rc = qemuAgentSend(agent, &sync_msg, timeout);
+    rc = qemuAgentSend(agent, &sync_msg, timeout, true);
     rxObj = g_steal_pointer(&sync_msg.rxObject);
 
     VIR_DEBUG("qemuAgentSend returned: %d", rc);
@@ -1040,7 +1050,7 @@ qemuAgentCommandFull(qemuAgent *agent,
 
     VIR_DEBUG("Send command '%s' for write, seconds = %d", cmdstr, seconds);
 
-    ret = qemuAgentSend(agent, &msg, seconds);
+    ret = qemuAgentSend(agent, &msg, seconds, false);
 
     VIR_DEBUG("Receive command reply ret=%d rxObject=%p",
               ret, msg.rxObject);
