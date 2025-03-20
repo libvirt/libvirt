@@ -69,6 +69,16 @@ v11.2.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Improved guest agent corner case error reporting
+
+    The APIs using the guest agent now report two specific error codes aimed at
+    helping management applications/users to differentiate between timeout
+    while libvirt was synchronizing with the guest agent and timeout after a
+    command was already sent.
+
+    The new error codes are ``VIR_ERR_AGENT_COMMAND_TIMEOUT`` and
+    ``VIR_ERR_AGENT_COMMAND_FAILED``.
+
 * **Bug fixes**
 
   * qemu: attach virtio-mem with CCW address
