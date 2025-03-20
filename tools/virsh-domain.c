@@ -4590,10 +4590,6 @@ doSave(void *opaque)
 
     if (vshCommandOptString(ctl, cmd, "file", &to) < 0)
         goto out;
-    if (to &&
-        virTypedParamsAddString(&params, &nparams, &maxparams,
-                                VIR_DOMAIN_SAVE_PARAM_FILE, to) < 0)
-        goto out;
 
     if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
         goto out;
@@ -4613,13 +4609,21 @@ doSave(void *opaque)
         vshReportError(ctl);
         goto out;
     }
-    if (xml &&
-        virTypedParamsAddString(&params, &nparams, &maxparams,
-                                VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
-        goto out;
 
-    if (flags || xml) {
+    if (nparams > 0) {
+        if (to &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_SAVE_PARAM_FILE, to) < 0)
+            goto out;
+
+        if (xml &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
+            goto out;
+
         rc = virDomainSaveParams(dom, params, nparams, flags);
+    } else if (flags || xml) {
+        rc = virDomainSaveFlags(dom, to, xml, flags);
     } else {
         rc = virDomainSave(dom, to);
     }
