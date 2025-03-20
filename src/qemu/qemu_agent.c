@@ -985,7 +985,7 @@ qemuAgentCheckError(virJSONValue *cmd,
 
         /* Only send the user the command name + friendly error */
         if (!error) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
+            virReportError(VIR_ERR_AGENT_COMMAND_FAILED,
                            _("unable to execute QEMU agent command '%1$s'"),
                            qemuAgentCommandName(cmd));
             return -1;
@@ -999,7 +999,7 @@ qemuAgentCheckError(virJSONValue *cmd,
                 return -2;
         }
 
-        virReportError(VIR_ERR_INTERNAL_ERROR,
+        virReportError(VIR_ERR_AGENT_COMMAND_FAILED,
                        _("unable to execute QEMU agent command '%1$s': %2$s"),
                        qemuAgentCommandName(cmd),
                        qemuAgentStringifyError(error));
