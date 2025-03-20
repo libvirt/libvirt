@@ -349,6 +349,8 @@ typedef enum {
     VIR_ERR_CHECKPOINT_INCONSISTENT = 109, /* checkpoint can't be used (Since: 6.10.0) */
     VIR_ERR_MULTIPLE_DOMAINS = 110,     /* more than one matching domain found (Since: 7.1.0) */
     VIR_ERR_NO_NETWORK_METADATA = 111,  /* Network metadata is not present (Since: 9.7.0) */
+    VIR_ERR_AGENT_COMMAND_TIMEOUT = 112,/* guest agent didn't respond to a non-sync
+                                           command within timeout (Since: 11.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_NUMBER_LAST /* (Since: 5.0.0) */
