@@ -116,7 +116,7 @@ qemuDBusConnect(virQEMUDriver *driver,
 
 
 static int
-qemuDBusWriteConfig(const char *filename, const char *path)
+qemuDBusWriteConfig(const char *filename, const char *path, bool privileged)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *config = NULL;
@@ -138,6 +138,9 @@ qemuDBusWriteConfig(const char *filename, const char *path)
     virBufferAddLit(&buf, "<allow eavesdrop='true'/>\n");
     virBufferAddLit(&buf, "<!-- Allow anyone to own anything -->\n");
     virBufferAddLit(&buf, "<allow own='*'/>\n");
+    if (privileged)
+        virBufferAddLit(&buf, "<allow user='root'/>\n");
+
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</policy>\n");
 
@@ -242,7 +245,7 @@ qemuDBusStart(virQEMUDriver *driver,
     configfile = qemuDBusCreateConfPath(cfg, shortName);
     sockpath = qemuDBusCreateSocketPath(cfg, shortName);
 
-    if (qemuDBusWriteConfig(configfile, sockpath) < 0) {
+    if (qemuDBusWriteConfig(configfile, sockpath, driver->privileged) < 0) {
         virReportSystemError(errno, _("Failed to write '%1$s'"), configfile);
         return -1;
     }
