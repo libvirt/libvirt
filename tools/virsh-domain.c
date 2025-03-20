@@ -4534,6 +4534,10 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_INT,
      .help = N_("number of IO channels to use for parallel save")
     },
+    {.name = "image-format",
+     .type = VSH_OT_STRING,
+     .help = N_("format of the save image file")
+    },
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
@@ -4570,6 +4574,7 @@ doSave(void *opaque)
     int nchannels = 0;
     unsigned int flags = 0;
     const char *xmlfile = NULL;
+    const char *format = NULL;
     g_autofree char *xml = NULL;
     int rc;
 #ifndef WIN32
@@ -4596,6 +4601,13 @@ doSave(void *opaque)
     if (rc == 1 &&
         virTypedParamsAddInt(&params, &nparams, &maxparams,
                              VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
+        goto out;
+
+    if (vshCommandOptString(ctl, cmd, "image-format", &format) < 0)
+        goto out;
+    if (format &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT, format) < 0)
         goto out;
 
     if (vshCommandOptString(ctl, cmd, "xml", &xmlfile) < 0)

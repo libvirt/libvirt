@@ -4179,6 +4179,7 @@ save
 ::
 
    save domain state-file [--bypass-cache] [--xml file]
+      [--image-format format]
       [--parallel-channels channels]
       [{--running | --paused}] [--verbose]
 
@@ -4212,6 +4213,10 @@ Normally, restoring a saved image will decide between running or paused
 based on the state the domain was in when the save was done; passing
 either the *--running* or *--paused* flag will allow overriding which
 state the ``restore`` should use.
+
+*--image-format* option can change the default image format used to
+save data into file. For more details consult the qemu.conf configuration
+file.
 
 *--parallel-channels* option can specify number of parallel IO channels
 to be used when saving memory to file. Using parallel IO channels requires
