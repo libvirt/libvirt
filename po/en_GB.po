@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-02-24 10:18+0000\n"
-"PO-Revision-Date: 2025-02-13 08:08+0000\n"
+"PO-Revision-Date: 2025-03-17 18:31+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.10.2\n"
 
 msgid ""
 "\n"
@@ -828,19 +828,19 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
-msgstr ""
+msgstr "%1$s: Failed to open the event monitor FIFO(%2$s) read end!"
 
 #, c-format
 msgid "%1$s: Failed to parse and process events"
-msgstr ""
+msgstr "%1$s: Failed to parse and process events"
 
 #, c-format
 msgid "%1$s: Failed to process JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: Failed to process JSON event doc: %2$s"
 
 #, c-format
 msgid "%1$s: Failed to read ch events!: %2$s"
-msgstr ""
+msgstr "%1$s: Failed to read ch events!: %2$s"
 
 #, c-format
 msgid "%1$s: File '%2$s' is too large\n"
@@ -860,7 +860,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Invalid JSON event doc: %2$s"
-msgstr ""
+msgstr "%1$s: Invalid JSON event doc: %2$s"
 
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
@@ -1281,15 +1281,20 @@ msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', "
+"'--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 msgstr ""
+"'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', "
+"'--copy-storage-inc'"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1464,7 +1469,7 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' and 'volume' must be specified together for 'pool' type source"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
-msgstr ""
+msgstr "'queue' count must be configured for explicit iothread to queue mapping"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' is only supported by virtio-scsi controller"
@@ -1473,6 +1478,8 @@ msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
 "<interface type='vhostuser'>"
 msgstr ""
+"'reconnect' attribute is not supported when source mode='server' for "
+"<interface type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1489,7 +1496,7 @@ msgstr ""
 "in memnode element"
 
 msgid "'return' member missing"
-msgstr ""
+msgstr "'return' member missing"
 
 #, c-format
 msgid ""
@@ -2711,11 +2718,10 @@ msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "Can't add host USB device: USB is disabled in this host"
 
 msgid "Can't apply empty firewall command"
-msgstr ""
+msgstr "Can't apply empty firewall command"
 
-#, fuzzy
 msgid "Can't change domain configuration in managed save state"
-msgstr "mark inactive domains with managed save state"
+msgstr "Can't change domain configuration in managed save state"
 
 msgid "Can't change domain state."
 msgstr "Can't change domain state."
