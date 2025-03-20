@@ -1066,7 +1066,7 @@ qemuAgentCommandFull(qemuAgent *agent,
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Missing agent reply object"));
             } else {
-                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                virReportError(VIR_ERR_AGENT_COMMAND_TIMEOUT, "%s",
                                _("Guest agent disappeared while executing command"));
             }
             ret = -1;
