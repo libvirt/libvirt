@@ -3068,6 +3068,9 @@ values:
   libvirt daemon),
 * 0 - do not wait at all,
 
+In all guest-agent based APIs when a timeout happens if an actual command was
+send to the guest agent the returned error code will be
+VIR_ERR_AGENT_COMMAND_TIMEOUT.
 
 guestinfo
 ---------
