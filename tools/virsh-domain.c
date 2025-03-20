@@ -5707,20 +5707,12 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
         return false;
-    if (from &&
-        virTypedParamsAddString(&params, &nparams, &maxparams,
-                                VIR_DOMAIN_SAVE_PARAM_FILE, from) < 0)
-        return false;
 
     if (vshCommandOptString(ctl, cmd, "xml", &xmlfile) < 0)
         return false;
 
     if (xmlfile &&
         virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
-        return false;
-    if (xml &&
-        virTypedParamsAddString(&params, &nparams, &maxparams,
-                                VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
         return false;
 
     if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
@@ -5730,8 +5722,20 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
                              VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
         return false;
 
-    if (flags || xml) {
+    if (nparams > 0) {
+        if (from &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_SAVE_PARAM_FILE, from) < 0)
+            return false;
+
+        if (xml &&
+            virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
+            return false;
+
         rc = virDomainRestoreParams(priv->conn, params, nparams, flags);
+    } else if (flags || xml) {
+        rc = virDomainRestoreFlags(priv->conn, from, xml, flags);
     } else {
         rc = virDomainRestore(priv->conn, from);
     }
