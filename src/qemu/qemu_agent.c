@@ -1013,7 +1013,7 @@ qemuAgentCheckError(virJSONValue *cmd,
         VIR_DEBUG("Neither 'return' nor 'error' is set in the JSON reply %s: %s",
                   NULLSTR(cmdstr), NULLSTR(replystr));
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to execute QEMU agent command '%1$s'"),
+                       _("QEMU agent command '%1$s' returned neither error nor success"),
                        qemuAgentCommandName(cmd));
         return -1;
     }
