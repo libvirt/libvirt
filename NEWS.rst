@@ -48,7 +48,7 @@ v11.2.0 (unreleased)
     until one of them succeeds in shutting down the VM.
 
     Since it must be mutually exclusive with the libvirt-guests script, this
-    feature currently requires an manual opt-in through editing of the
+    feature currently requires a manual opt-in through editing of the
     /etc/libvirt/qemu.conf configuration file. The libvirt-guests script must
     be disabled before doing this.
 
