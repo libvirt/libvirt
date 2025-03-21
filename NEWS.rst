@@ -31,7 +31,7 @@ v11.2.0 (unreleased)
 
   * qemu: Add support for multiple iothreads for ``virtio-scsi`` controller
 
-    It's now possible to map multiple iotreads to the ``virtio-scsi`` controller
+    It's now possible to map multiple iothreads to the ``virtio-scsi`` controller
     or even map them to specific virtqueues similarly to the ``virtio-blk``
     device allowing for better performance in certain scenarios.
 
@@ -45,10 +45,10 @@ v11.2.0 (unreleased)
     a host shutdown has been requested. It will initiate the chosen action on
     running guests immediately, allowing shutdown inhibitors to be released
     sooner. The new solution is also able to iteratively try multiple actions
-    until one of them succeeeds in shutting down the VM.
+    until one of them succeeds in shutting down the VM.
 
     Since it must be mutually exclusive with the libvirt-guests script, this
-    feature currently requires an manual opt-in through editting of the
+    feature currently requires an manual opt-in through editing of the
     /etc/libvirt/qemu.conf configuration file. The libvirt-guests script must
     be disabled before doing this.
 
