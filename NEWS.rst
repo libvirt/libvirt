@@ -71,6 +71,12 @@ v11.2.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: attach virtio-mem with CCW address
+
+    Attaching a virtio-mem device on s390 without an address type now gets a
+    default type CCW address assigned. A specified CCW address is now used for
+    the virtio-mem device instead of getting overwritten by a PCI address.
+
 
 v11.1.0 (2025-03-03)
 ====================
