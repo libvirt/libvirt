@@ -3499,11 +3499,24 @@ static int
 virCPUx86DataAddFeature(virCPUData *cpuData,
                         const char *name)
 {
-    virCPUx86Feature *feature;
+    virCPUx86DataItem cpuid_waitpkg_item = CPUID_EMPTY;
     virCPUx86Map *map;
+    virCPUx86Feature *feature;
 
     if (!(map = virCPUx86GetMap()))
         return -1;
+
+    if (STREQ(name, "waitpkg")) {
+        /* The waitpkg feature requires CPUID.07H:ECX.waitpkg [bit 5] */
+        VIR_DEBUG("Adding CPU dependency for waitpkg feature");
+        
+        /* Define the CPU feature bit needed for waitpkg */
+        cpuid_waitpkg_item.type = VIR_CPU_X86_DATA_CPUID;
+        cpuid_waitpkg_item.data.cpuid.eax_in = 0x00000007;
+        cpuid_waitpkg_item.data.cpuid.ecx_in = 0x00000000;
+        cpuid_waitpkg_item.data.cpuid.ecx = 0x00000020;  /* Bit 5 in ECX */
+        virCPUx86DataAdd(cpuData, &cpuid_waitpkg_item);
+    }
 
     /* ignore unknown features */
     if (!(feature = x86FeatureFind(map, name)) &&
@@ -3767,7 +3780,6 @@ virCPUx86GetCanonicalModel(const char *modelName)
 
     return model->canonical->name;
 }
-
 
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
