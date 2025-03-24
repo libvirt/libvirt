@@ -5244,15 +5244,7 @@ network address by including an ``ip`` element specifying an IPv4
 address in its one mandatory attribute, ``address``. Optionally, a
 second ``ip`` element with a ``family`` attribute set to "ipv6" can be
 specified to add an IPv6 address to the interface. ``address``.
-Optionally, an address ``prefix`` can be specified. These settings are
-surprisingly **not** used by SLIRP to set the exact IP address;
-instead they are used to determine what network/subnet the guest's IP
-address should be on, and the guest will be given an address in that
-subnet, but the host portion of the address will still be "2.15". In
-the example below, for example, the guest will be given the IP address
-172.17.2.15 (**note that the '1.1' in the host portion of the address
-has been ignored**), default route of 172.17.2.2, and DNS server
-172.17.2.3.
+Optionally, an address ``prefix`` can be specified.
 
 ::
 
@@ -5267,6 +5259,59 @@ has been ignored**), default route of 172.17.2.2, and DNS server
      </interface>
    </devices>
    ...
+
+These settings are surprisingly **not** used by SLIRP to set the exact
+IP address; instead they are used to determine what **network/subnet**
+the guest's IP address should be on, and the guest will be given an
+address in that subnet, but the host portion of the address will still
+be the host portion of "10.0.2.15" (based on the configured prefix (or
+a prefix of 24 if no prefix is specified). The DNS and default gateway
+addresses given to the guest will be similarly based on the network
+portion of the configuration-provided <ip> combined with the host
+portion of SLIRPs default settings for DNS/gateway
+(10.0.2.3/10.0.2.2). To help resolve the confusion of the previous
+sentences, the table below shows examples of the settings that will be
+provided to the guest (via a DHCP response) to use for its interface
+config (ip/prefix, DNS, default gateway) for various settings of <ip>
+element address and prefix in libvirt's <interface type='user'>
+config:
+
+.. list-table::
+   :header-rows: 1
+
+   * - libvirt <ip> element
+     - guest ip/prefix
+     - guest DNS
+     - guest default gateway
+
+   * - (unspecified)
+     - 10.0.2.15/24
+     - 10.0.2.3
+     - 10.0.2.2
+
+   * - address='172.17.1.1'
+       prefix='16'
+     - 172.17.2.15/16
+     - 172.17.2.3
+     - 172.17.2.2
+
+   * - address='172.17.1.1'
+       prefix='24'
+     - 172.17.1.15/24
+     - 172.17.1.3
+     - 172.17.1.2
+
+   * - address='172.17.1.1'
+       prefix='8'
+     - 172.0.2.15/16
+     - 172.0.2.3
+     - 172.0.2.2
+
+   * - address='172.17.1.1'
+       prefix='23'
+     - 172.17.0.15/23
+     - 172.17.0.3
+     - 172.17.0.2
 
 Userspace connection using passt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5309,8 +5354,10 @@ any conflict).
 Also different from SLIRP's behavior: if you do specify IP
 address(es), the exact address and netmask/prefix you specify will be
 provided to the guest (i.e. passt doesn't interpret the <ip> settings
-as a network address like SLIRP does, but as a host address). In
-example given above, the guest IP would be set to exactly 172.17.1.1.
+as a network address like SLIRP does, but as a host address). In the
+table of examples given above, the guest IP would be set to exactly
+172.17.1.1 in all cases (the DNS and default gateway will be set
+the same as they are on the host).
 
 Just as with SLIRP, though, once traffic from the guest leaves the
 host towards the rest of the network, it will always appear as if it
