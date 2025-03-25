@@ -1153,7 +1153,6 @@ virStorageFileFeatureTypeFromString;
 virStorageFileFeatureTypeToString;
 virStorageFileFormatTypeFromString;
 virStorageFileFormatTypeToString;
-virStorageNetHostDefClear;
 virStorageNetHostDefCopy;
 virStorageNetHostDefFree;
 virStorageNetHostTransportTypeFromString;

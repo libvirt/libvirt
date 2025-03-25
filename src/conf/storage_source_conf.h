@@ -506,9 +506,6 @@ virStorageSourceGetSecurityLabelDef(virStorageSource *src,
                                     const char *model);
 
 void
-virStorageNetHostDefClear(virStorageNetHostDef *def);
-
-void
 virStorageNetHostDefFree(size_t nhosts,
                          virStorageNetHostDef *hosts);
 

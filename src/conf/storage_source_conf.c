@@ -143,18 +143,6 @@ virStorageSourceHasBacking(const virStorageSource *src)
 
 
 void
-virStorageNetHostDefClear(virStorageNetHostDef *def)
-{
-    if (!def)
-        return;
-
-    VIR_FREE(def->name);
-    VIR_FREE(def->socket);
-    VIR_FREE(def->fdgroup);
-}
-
-
-void
 virStorageNetHostDefFree(size_t nhosts,
                          virStorageNetHostDef *hosts)
 {
@@ -163,8 +151,11 @@ virStorageNetHostDefFree(size_t nhosts,
     if (!hosts)
         return;
 
-    for (i = 0; i < nhosts; i++)
-        virStorageNetHostDefClear(&hosts[i]);
+    for (i = 0; i < nhosts; i++) {
+        g_free(hosts[i].name);
+        g_free(hosts[i].socket);
+        g_free(hosts[i].fdgroup);
+    }
 
     g_free(hosts);
 }
