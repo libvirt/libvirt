@@ -2132,32 +2132,34 @@ are:
    based virtualization drivers, such as LXC.
 ``hyperv``
    Enable various features improving behavior of guests running Microsoft
-   Windows.
+   Windows. :since:`Since 11.3.0` some of these flags are also available for
+   Xen domains running Microsoft Windows.
 
    =============== ====================================================================== ============================================ ========================================================================
    Feature         Description                                                            Value                                        Since
    =============== ====================================================================== ============================================ ========================================================================
-   relaxed         Relax constraints on timers                                            on, off                                      :since:`1.0.0 (QEMU 2.0)`
-   vapic           Enable virtual APIC                                                    on, off                                      :since:`1.1.0 (QEMU 2.0)`
+   relaxed         Relax constraints on timers                                            on, off                                      :since:`1.0.0 (QEMU 2.0), 11.3.0 (Xen, always on)`
+   vapic           Enable virtual APIC                                                    on, off                                      :since:`1.1.0 (QEMU 2.0), 11.3.0 (Xen)`
    spinlocks       Enable spinlock support                                                on, off; retries - at least 4095             :since:`1.1.0 (QEMU 2.0)`
-   vpindex         Virtual processor index                                                on, off                                      :since:`1.3.3 (QEMU 2.5)`
+   vpindex         Virtual processor index                                                on, off                                      :since:`1.3.3 (QEMU 2.5), 11.3.0 (Xen, always on)`
    runtime         Processor time spent on running guest code and on behalf of guest code on, off                                      :since:`1.3.3 (QEMU 2.5)`
-   synic           Enable Synthetic Interrupt Controller (SynIC)                          on, off                                      :since:`1.3.3 (QEMU 2.6)`
-   stimer          Enable SynIC timers, optionally with Direct Mode support               on, off; direct - on,off                     :since:`1.3.3 (QEMU 2.6), direct mode 5.7.0 (QEMU 4.1)`
+   synic           Enable Synthetic Interrupt Controller (SynIC)                          on, off                                      :since:`1.3.3 (QEMU 2.6), 11.3.0 (Xen)`
+   stimer          Enable SynIC timers, optionally with Direct Mode support               on, off; direct - on,off                     :since:`1.3.3 (QEMU 2.6), direct mode 5.7.0 (QEMU 4.1), 11.3.0 (Xen, on/off only)`
    reset           Enable hypervisor reset                                                on, off                                      :since:`1.3.3 (QEMU 2.5)`
    vendor_id       Set hypervisor vendor id                                               on, off; value - string, up to 12 characters :since:`1.3.3 (QEMU 2.5)`
-   frequencies     Expose frequency MSRs                                                  on, off                                      :since:`4.7.0 (QEMU 2.12)`
+   frequencies     Expose frequency MSRs                                                  on, off                                      :since:`4.7.0 (QEMU 2.12), 11.3.0 (Xen)`
    reenlightenment Enable re-enlightenment notification on migration                      on, off                                      :since:`4.7.0 (QEMU 3.0)`
-   tlbflush        Enable PV TLB flush support                                            on, off; direct - on,off; extended - on,off  :since:`4.7.0 (QEMU 3.0), direct and extended modes 11.0.0 (QEMU 7.1.0)`
-   ipi             Enable PV IPI support                                                  on, off                                      :since:`4.10.0 (QEMU 3.1)`
+   tlbflush        Enable PV TLB flush support                                            on, off; direct - on,off; extended - on,off  :since:`4.7.0 (QEMU 3.0), direct and extended modes 11.0.0 (QEMU 7.1.0), 11.3.0 (Xen, on/off only)`
+   ipi             Enable PV IPI support                                                  on, off                                      :since:`4.10.0 (QEMU 3.1), 11.3.0 (Xen)`
    evmcs           Enable Enlightened VMCS                                                on, off                                      :since:`4.10.0 (QEMU 3.1)`
    avic            Enable use Hyper-V SynIC with hardware APICv/AVIC                      on, off                                      :since:`8.10.0 (QEMU 6.2)`
    emsr_bitmap     Avoid unnecessary updates to L2 MSR Bitmap upon vmexits.               on, off                                      :since:`10.7.0 (QEMU 7.1)`
    xmm_input       Enable XMM Fast Hypercall Input                                        on, off                                      :since:`10.7.0 (QEMU 7.1)`
    =============== ====================================================================== ============================================ ========================================================================
 
-   :since:`Since 8.0.0`, the hypervisor can be configured further by setting
-   the ``mode`` attribute to one of the following values:
+   :since:`Since 8.0.0 (QEMU) Since 11.3.0 (Xen)`, the hypervisor can be
+   configured further by setting the ``mode`` attribute to one of the following
+   values:
 
    ``custom``
       Set exactly the specified features.

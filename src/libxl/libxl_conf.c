@@ -582,6 +582,107 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                           VIR_TRISTATE_SWITCH_ON);
 #endif
 
+#ifdef LIBXL_HAVE_BUILDINFO_HVM_VIRIDIAN_ENABLE_DISABLE
+        if (def->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_NONE) {
+            libxl_bitmap_alloc(ctx, &b_info->u.hvm.viridian_enable,
+                               LIBXL_BUILDINFO_HVM_VIRIDIAN_ENABLE_DISABLE_WIDTH);
+
+            switch ((virDomainHyperVMode) def->features[VIR_DOMAIN_FEATURE_HYPERV]) {
+            case VIR_DOMAIN_HYPERV_MODE_CUSTOM:
+                /* Base is required by Xen to enable any other flag */
+                libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                 LIBXL_VIRIDIAN_ENLIGHTENMENT_BASE);
+                /* Enable crash ctl register by default to allow guest logs to reach Xen */
+                libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                 LIBXL_VIRIDIAN_ENLIGHTENMENT_CRASH_CTL);
+                break;
+            case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
+                libxl_bitmap_set_any(&b_info->u.hvm.viridian_enable);
+                break;
+            case VIR_DOMAIN_HYPERV_MODE_NONE:
+            case VIR_DOMAIN_HYPERV_MODE_LAST:
+            default:
+                virReportEnumRangeError(virDomainHyperVMode,
+                                        def->features[VIR_DOMAIN_FEATURE_HYPERV]);
+                return -1;
+            }
+
+            for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+                switch ((virDomainHyperv) i) {
+                case VIR_DOMAIN_HYPERV_VPINDEX:
+                case VIR_DOMAIN_HYPERV_RELAXED:
+                    /* Already set by base flag */
+                    break;
+                case VIR_DOMAIN_HYPERV_SYNIC:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_SYNIC);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_STIMER:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        /* STIMER implies synic and clock features */
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_STIMER);
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_SYNIC);
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_TIME_REF_COUNT);
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_REFERENCE_TSC);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_VAPIC:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_APIC_ASSIST);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_FREQUENCIES:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_FREQ);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_TLBFLUSH:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_HCALL_REMOTE_TLB_FLUSH);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_IPI:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        libxl_bitmap_set(&b_info->u.hvm.viridian_enable,
+                                         LIBXL_VIRIDIAN_ENLIGHTENMENT_HCALL_IPI);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_SPINLOCKS:
+                case VIR_DOMAIN_HYPERV_VENDOR_ID:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        const char *name = virDomainHypervTypeToString(i);
+                        VIR_WARN("Hyper-v flag '%s' specified per-domain but is a global Xen setting and will be ignored.", name);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_RUNTIME:
+                case VIR_DOMAIN_HYPERV_RESET:
+                case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+                case VIR_DOMAIN_HYPERV_EVMCS:
+                case VIR_DOMAIN_HYPERV_AVIC:
+                case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
+                case VIR_DOMAIN_HYPERV_XMM_INPUT:
+                    if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                        const char *name = virDomainHypervTypeToString(i);
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                            _("Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."), name);
+                    }
+                    break;
+                case VIR_DOMAIN_HYPERV_LAST:
+                    break;
+                }
+            }
+        }
+#endif
+
         /* copy the table path to acpi_firmware */
         if (def->os.nacpiTables)
             b_info->u.hvm.acpi_firmware = g_strdup(def->os.acpiTables[0]->path);

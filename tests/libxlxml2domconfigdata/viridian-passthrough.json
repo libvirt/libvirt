@@ -1,0 +1,155 @@
+{
+    "c_info": {
+        "type": "hvm",
+        "name": "test-hvm",
+        "uuid": "2147d599-9cc6-c0dc-92ab-4064b5446e9b"
+    },
+    "b_info": {
+        "max_vcpus": 4,
+        "avail_vcpus": [
+            0,
+            1,
+            2,
+            3
+        ],
+        "max_memkb": 1048576,
+        "target_memkb": 1048576,
+        "video_memkb": 8192,
+        "shadow_memkb": 1234,
+        "device_model_version": "qemu_xen",
+        "device_model": "/bin/true",
+        "sched_params": {
+
+        },
+        "apic": "True",
+        "acpi": "True",
+        "type.hvm": {
+            "pae": "True",
+            "viridian_enable": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59,
+                60,
+                61,
+                62,
+                63
+            ],
+            "vga": {
+                "kind": "cirrus"
+            },
+            "vnc": {
+                "enable": "True",
+                "listen": "0.0.0.0",
+                "findunused": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            },
+            "spice": {
+
+            },
+            "boot": "c",
+            "rdm": {
+
+            }
+        },
+        "arch_arm": {
+
+        }
+    },
+    "disks": [
+        {
+            "pdev_path": "/var/lib/xen/images/test-hvm.img",
+            "vdev": "hda",
+            "backend": "qdisk",
+            "format": "raw",
+            "removable": 1,
+            "readwrite": 1
+        }
+    ],
+    "nics": [
+        {
+            "devid": 0,
+            "mac": "00:16:3e:66:12:b4",
+            "bridge": "br0",
+            "script": "/etc/xen/scripts/vif-bridge",
+            "nictype": "vif_ioemu"
+        }
+    ],
+    "vfbs": [
+        {
+	    "devid": -1,
+            "vnc": {
+                "enable": "True",
+                "listen": "0.0.0.0",
+                "findunused": "False"
+            },
+            "sdl": {
+                "enable": "False"
+            }
+        }
+    ],
+    "vkbs": [
+        {
+            "devid": -1
+        }
+    ],
+    "on_reboot": "restart"
+}
