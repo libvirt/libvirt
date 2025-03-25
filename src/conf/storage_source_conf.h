@@ -157,6 +157,7 @@ struct _virStorageNetHostDef {
     char *socket;  /* path to unix socket */
 
     char *fdgroup;
+    char *qemu_fdname; /* name used with 'getfd' to pass to qemu - internal */
 };
 
 

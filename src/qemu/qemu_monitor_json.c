@@ -6323,6 +6323,24 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
 }
 
 
+static virJSONValue *
+qemuMonitorJSONBuildFDSocketAddress(const char *name)
+{
+    g_autoptr(virJSONValue) addr = NULL;
+    g_autoptr(virJSONValue) data = NULL;
+
+    if (virJSONValueObjectAdd(&data, "s:str", name, NULL) < 0)
+        return NULL;
+
+    if (virJSONValueObjectAdd(&addr,
+                              "s:type", "fd",
+                              "a:data", &data, NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&addr);
+}
+
+
 int
 qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
                               const virStorageNetHostDef *server,
@@ -6341,8 +6359,10 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
     case VIR_STORAGE_NET_HOST_TRANS_UNIX:
         addr = qemuMonitorJSONBuildUnixSocketAddress(server->socket);
         break;
-    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
     case VIR_STORAGE_NET_HOST_TRANS_FD:
+        addr = qemuMonitorJSONBuildFDSocketAddress(server->qemu_fdname);
+        break;
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
     case VIR_STORAGE_NET_HOST_TRANS_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid server address"));

@@ -155,6 +155,7 @@ virStorageNetHostDefFree(size_t nhosts,
         g_free(hosts[i].name);
         g_free(hosts[i].socket);
         g_free(hosts[i].fdgroup);
+        g_free(hosts[i].qemu_fdname);
     }
 
     g_free(hosts);
