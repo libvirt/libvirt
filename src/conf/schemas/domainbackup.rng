@@ -90,6 +90,12 @@
                       <ref name="absFilePath"/>
                     </attribute>
                   </group>
+                  <group>
+                    <attribute name="transport">
+                      <value>fd</value>
+                    </attribute>
+                    <attribute name="fdgroup"/>
+                  </group>
                 </choice>
               </element>
               <ref name="backupDisksPull"/>

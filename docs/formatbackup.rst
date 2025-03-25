@@ -1,3 +1,5 @@
+ .. role:: since
+
 Backup XML format
 =================
 
@@ -41,6 +43,25 @@ were supplied). The following child elements and attributes are supported:
    via NBD in the domain (such as transport, socket, name, port, or tls),
    necessary to set up an NBD server that exposes the content of each disk at
    the time the backup is started.
+
+   In addition to the above the NBD server used for backups allows using
+   ``transport='fd' fdgroup='NAME'`` where ``NAME`` is the name used with
+   ``virDomainFDAssociate()`` to pass a pre-opened server socket file descriptor
+   to qemu. :since:`Since 11.3.0`
+
+   Example code to pass a socket with libvirt-python bindings::
+
+     import socket
+     import libvirt
+
+     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+     s.bind("/path/to/socket")
+
+     fdlist = [ s.fileno() ]
+
+     conn = libvirt.open()
+     dom = conn.lookupByName("VMNAME")
+     dom.FDAssociate("NAME", fdlist)
 
    Note that for the QEMU hypervisor the TLS environment in controlled using
    ``backup_tls_x509_cert_dir``, ``backup_tls_x509_verify``, and

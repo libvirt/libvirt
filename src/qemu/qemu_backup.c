@@ -761,6 +761,7 @@ qemuBackupBegin(virDomainObj *vm,
     bool reuse = (flags & VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL);
     int rc = 0;
     int ret = -1;
+    g_autoptr(qemuFDPassDirect) fdpass = NULL;
 
     virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL, -1);
 
@@ -847,6 +848,29 @@ qemuBackupBegin(virDomainObj *vm,
 
     priv->backup = g_steal_pointer(&def);
 
+    if (pull && priv->backup->server->fdgroup) {
+        virStorageSourceFDTuple *fdt = NULL;
+        VIR_AUTOCLOSE fdcopy = -1;
+
+        if (!(fdt = virHashLookup(priv->fds, priv->backup->server->fdgroup))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("file descriptor group '%1$s' was not associated with the domain"),
+                           priv->backup->server->fdgroup);
+            goto endjob;
+        }
+
+        if (fdt->nfds != 1) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("file descriptor group '%1$s' must contain only 1 file descriptor for NBD server"),
+                           priv->backup->server->fdgroup);
+            goto endjob;
+        }
+
+        priv->backup->server->qemu_fdname = g_strdup("libvirt-backup-nbd");
+        fdcopy = dup(fdt->fds[0]);
+        fdpass = qemuFDPassDirectNew(priv->backup->server->qemu_fdname, &fdcopy);
+    }
+
     if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_BACKUP) < 0)
         goto endjob;
 
@@ -856,6 +880,9 @@ qemuBackupBegin(virDomainObj *vm,
 
         if (rc == 0 && tlsProps)
             rc = qemuMonitorAddObject(priv->mon, &tlsProps, &tlsAlias);
+
+        if (rc == 0 && fdpass)
+            rc = qemuFDPassDirectTransferMonitor(fdpass, priv->mon);
 
         if (rc == 0) {
             if ((rc = qemuMonitorNBDServerStart(priv->mon, priv->backup->server, tlsAlias)) == 0)
