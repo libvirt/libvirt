@@ -4792,18 +4792,20 @@ esxConnectListAllDomains(virConnectPtr conn,
          virtualMachine = virtualMachine->_next) {
         g_autofree char *name = NULL;
 
-        if (needIdentity) {
-            if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id,
-                                                &name, uuid) < 0) {
-                goto cleanup;
-            }
-        }
+        /* If the lookup of the required properties fails for some of the machines
+         * in the list it's preferrable to return the valid objects instead of
+         * failing outright */
+        if ((needIdentity && esxVI_GetVirtualMachineIdentity(virtualMachine, &id, &name, uuid) < 0) ||
+            (needPowerState && esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0)) {
 
-        if (needPowerState) {
-            if (esxVI_GetVirtualMachinePowerState(virtualMachine,
-                                                  &powerState) < 0) {
+            /* Raise error only if we didn't successfuly fill any domain */
+            if (count == 0 && !virtualMachine->_next)
                 goto cleanup;
-            }
+
+            /* failure to fetch information of a single VM must not interrupt
+             * the lookup of the rest */
+            virResetLastError();
+            continue;
         }
 
         /* filter by active state */
