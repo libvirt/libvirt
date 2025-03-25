@@ -92,6 +92,14 @@ v11.2.0 (unreleased)
 
     Cloud Hypervisor guests can be now started with SEV SNP enabled.
 
+  * qemu: Support for Block Disk Along with Throttle Filters
+
+    Introduce support for multiple throttle groups per block disk in QEMU,
+    enhancing I/O control and performance optimization. This update builds
+    on the existing throttling functionality by allowing more granular control
+    with the ability to assign different throttle groups to multiple block
+    devices, improving shared throttling across devices.
+
 * **Improvements**
 
   * qemu: Improved guest agent corner case error reporting
