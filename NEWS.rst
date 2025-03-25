@@ -67,6 +67,14 @@ v11.2.0 (unreleased)
     restore. Using multiple channels can reduce the time required to save
     and restore domains.
 
+  * virsh: Introduce new hypervisor-cpu-models command
+
+    Added a new virsh command ``hypervisor-cpu-models``. The command pulls from
+    the existing domcapabilities XML and uses xpath to parse CPU model strings.
+    By default, only models reported as usable by the hypervisor on the host
+    system are printed. A user may specify ``--all`` to also print models which
+    are not supported on the host.
+
 * **Improvements**
 
   * qemu: Improved guest agent corner case error reporting
