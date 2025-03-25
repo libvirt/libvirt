@@ -97,7 +97,6 @@ virCHProcessEvent(virCHMonitor *mon,
     case VIR_CH_EVENT_VM_BOOTING:
     case VIR_CH_EVENT_VM_BOOTED:
     case VIR_CH_EVENT_VM_REBOOTING:
-    case VIR_CH_EVENT_VM_REBOOTED:
     case VIR_CH_EVENT_VM_PAUSING:
     case VIR_CH_EVENT_VM_PAUSED:
     case VIR_CH_EVENT_VM_RESUMING:
@@ -118,6 +117,11 @@ virCHProcessEvent(virCHMonitor *mon,
     case VIR_CH_EVENT_VM_SHUTDOWN:
         virObjectLock(vm);
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
+        virObjectUnlock(vm);
+        break;
+    case VIR_CH_EVENT_VM_REBOOTED:
+        virObjectLock(vm);
+        virCHProcessUpdateInfo(vm);
         virObjectUnlock(vm);
         break;
     case VIR_CH_EVENT_LAST:

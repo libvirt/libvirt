@@ -131,7 +131,7 @@ virCHProcessUpdateConsole(virDomainObj *vm,
         virCHProcessUpdateConsoleDevice(vm, config, "serial");
 }
 
-static int
+int
 virCHProcessUpdateInfo(virDomainObj *vm)
 {
     g_autoptr(virJSONValue) info = NULL;
