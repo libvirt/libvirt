@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-02-24 10:18+0000\n"
+"POT-Creation-Date: 2025-03-25 10:52+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -1054,6 +1054,10 @@ msgstr ""
 msgid "'%1$s' is not a suitable pr helper"
 msgstr ""
 
+#, c-format
+msgid "'%1$s' is not a suitable qemu-rdp helper name"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "এই QEMU বাইনারি দ্বারা SATA সমর্থিত হয় না"
@@ -1076,6 +1080,10 @@ msgstr ""
 
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' vanished unexpectedly"
 msgstr ""
 
 msgid ""
@@ -1288,6 +1296,9 @@ msgid ""
 msgstr ""
 
 msgid "'return' member missing"
+msgstr ""
+
+msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
 msgstr ""
 
 #, c-format
@@ -1695,6 +1706,14 @@ msgid "ACPI requires UEFI on this architecture"
 msgstr ""
 
 #, c-format
+msgid "ACPI table type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "ACPI table type '%1$s' may only appear once"
+msgstr ""
+
+#, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
 msgstr ""
 
@@ -1810,6 +1829,12 @@ msgid "Add an IOThread to the guest domain."
 msgstr "উদ্দিষ্ট ডোমেইনের মধ্যে reboot কমান্ড প্রয়োগ করুন।"
 
 msgid "Add or remove vcpus"
+msgstr ""
+
+msgid "Add or update a throttling group."
+msgstr ""
+
+msgid "Add or updte a throttling group."
 msgstr ""
 
 msgid "Added"
@@ -2007,6 +2032,9 @@ msgstr ""
 
 msgid "Autostart"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ"
+
+msgid "Autostart Once:"
+msgstr ""
 
 msgid "Autostart:"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ:"
@@ -2854,7 +2882,7 @@ msgid "Cannot find 'iothread' : %1$u"
 msgstr "নিরাপত্তা ড্রাইভার '%s' খুঁজে পাওয়া যাচ্ছে না"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%1$03llx"
+msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
 msgstr ""
 
 #, c-format
@@ -4014,9 +4042,6 @@ msgstr "ফাইল নাম '%1$s' ব্যবস্থাপনা কর�
 msgid "Could not add CDATA to doc root"
 msgstr ""
 
-msgid "Could not add IDE controller"
-msgstr ""
-
 msgid "Could not add attribute to XML node"
 msgstr ""
 
@@ -4765,9 +4790,6 @@ msgstr "'%s' এর জন্য পেরেন্ট ডিভাইস খু
 msgid "Could not parse MTU value '%1$s'"
 msgstr "usb ফাইল %1$s পার্স করতে ব্যর্থ"
 
-msgid "Could not parse SCSI controller"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Could not parse UUID from '%1$s'"
 msgstr "VPS ID %1$s পার্স করতে ব্যর্থ"
@@ -5320,6 +5342,9 @@ msgstr "চিহ্নিত পুল মুছে ফেলা হবে।"
 msgid "Delete a given vol."
 msgstr "চিহ্নিত ভলিউম মুছে ফেলা হবে।"
 
+msgid "Delete a throttling group."
+msgstr ""
+
 msgid "Delete an IOThread from the guest domain."
 msgstr ""
 
@@ -5773,6 +5798,10 @@ msgid "Domain '%1$s' marked as autostarted\n"
 msgstr ""
 
 #, c-format
+msgid "Domain '%1$s' marked as autostarted on next boot\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$s' resumed\n"
 msgstr ""
 
@@ -5798,6 +5827,10 @@ msgstr ""
 
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
 msgstr ""
 
 #, c-format
@@ -6681,10 +6714,6 @@ msgid "Failed to acquire pid file '%1$s'"
 msgstr "'%1$s' ফাইল পড়তে ব্যর্থ"
 
 #, fuzzy, c-format
-msgid "Failed to add %1$s controller type definition"
-msgstr "চিহ্নিত অবস্থায় অপেক্ষা করতে ব্যর্থ"
-
-#, fuzzy, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr "ইন্টারফেস %s বন্ধ করতে ব্যর্থ"
 
@@ -6726,10 +6755,6 @@ msgstr "PCI ডিভাইস পুনরায় নির্ধারণ ক�
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML বাফার বরাদ্দ করতে ব্যর্থ"
-
-#, fuzzy, c-format
-msgid "Failed to allocate slirp for '%1$s'"
-msgstr "'%s' সিমলিংক '%s'-এ নির্মাণ করতে ব্যর্থ"
 
 msgid "Failed to allocate tty"
 msgstr "tty বরাদ্দ করতে ব্যর্থ"
@@ -6906,6 +6931,10 @@ msgstr "regex %s কম্পাইল করতে ব্যর্থ"
 #, fuzzy, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "গোপনীয় তথ্য '%1$s' প্রাপ্ত করতে ব্যর্থ"
+
+#, c-format
+msgid "Failed to connect to dbus-daemon: %1$s"
+msgstr ""
 
 msgid "Failed to connect to mon socket"
 msgstr ""
@@ -7101,6 +7130,10 @@ msgstr "%1$s পুল নির্মাণ করতে ব্যর্থ"
 #, c-format
 msgid "Failed to create pool from %1$s"
 msgstr "%1$s থেকে পুল নির্মাণ করতে ব্যর্থ"
+
+#, c-format
+msgid "Failed to create rdp state dir %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to create reboot thread, killing domain"
@@ -7909,6 +7942,10 @@ msgstr "root-কে গোপনীয় ধার্য করতে ব্যর
 
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
+msgstr ""
+
+#, c-format
+msgid "Failed to mark domain '%1$s' as autostarted on next boot"
 msgstr ""
 
 #, c-format
@@ -8866,6 +8903,10 @@ msgstr ""
 msgid "Failed to unmark domain '%1$s' as autostarted"
 msgstr ""
 
+#, c-format
+msgid "Failed to unmark domain '%1$s' as autostarted on next boot"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to unmarshall reply: %1$s"
 msgstr "পুল %1$s নতুন করে নির্মাণ করতে ব্যর্থ"
@@ -9239,6 +9280,9 @@ msgstr "GET কর্ম বিফল: %1$s"
 msgid "GNUTLS call error"
 msgstr "GNUTLS কল সংক্রান্ত ত্রুটি"
 
+msgid "Get a throttling group."
+msgstr ""
+
 #, fuzzy
 msgid "Get block device size info for a domain."
 msgstr "কোনো ডোমেইনের জন্য ডিভাইস ব্লকের পরিসংখ্যান প্রাপ্ত করুন"
@@ -9321,6 +9365,9 @@ msgstr "ধারাবাহিক কনফিগারেশন প্রা�
 msgid "Get the CPU models for an arch."
 msgstr ""
 
+msgid "Get the CPU models reported by the hypervisor."
+msgstr ""
+
 msgid "Get the launch security parameters for a guest domain"
 msgstr ""
 
@@ -9340,6 +9387,9 @@ msgstr ""
 #, fuzzy
 msgid "Get the summary of block devices for a domain."
 msgstr "কোনো ডোমেইনের জন্য ডিভাইস ব্লকের পরিসংখ্যান প্রাপ্ত করুন"
+
+msgid "Get the summary of throttle groups for a domain."
+msgstr ""
 
 #, fuzzy
 msgid "Get the summary of virtual interfaces for a domain."
@@ -9395,9 +9445,6 @@ msgstr "ডোমেইন বর্তমানে সক্রিয় নয়"
 
 #, c-format
 msgid "Guest agent is not responding: %1$s"
-msgstr ""
-
-msgid "Guest agent not available for now"
 msgstr ""
 
 msgid "Guest networking is not supported by this version of ch"
@@ -9579,6 +9626,9 @@ msgid ""
 "'%2$s'"
 msgstr ""
 
+msgid "Hypervisor reported CPU models"
+msgstr ""
+
 #, fuzzy
 msgid "I/O Error"
 msgstr "I/O সমস্যা"
@@ -9685,6 +9735,11 @@ msgstr ""
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
+
+msgid ""
+"IOThread mapping for virtio-scsi controllers is not available with this QEMU "
+"binary"
 msgstr ""
 
 #, fuzzy
@@ -9929,10 +9984,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
 msgstr "অবৈধ মোড অ্যাট্রিবিউট '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid %1$s image format specified in configuration file"
-msgstr "কনফিগারেশন ফাইল পার্স করতে ব্যর্থ"
 
 msgid "Invalid 'cpu.max' data."
 msgstr ""
@@ -10313,6 +10364,10 @@ msgstr ""
 msgid "Invalid driver type: %1$d"
 msgstr "অবৈধ ধরনের ডোমেইন %s"
 
+#, c-format
+msgid "Invalid dump_image_format '%1$s'"
+msgstr ""
+
 #, fuzzy
 msgid "Invalid duration"
 msgstr "পার্টিশনের ধরন বৈধ নয়"
@@ -10385,9 +10440,17 @@ msgstr "অবৈধ পোর্ট সংখ্যা: %s"
 msgid "Invalid host key verification method: '%1$s'"
 msgstr ""
 
+#, c-format
+msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "অবৈধ মোড অ্যাট্রিবিউট '%1$s'"
+
+#, c-format
+msgid "Invalid image_format '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -10609,6 +10672,10 @@ msgstr "পাথ '%1$s' নির্মাণ করতে ব্যর্থ"
 msgid "Invalid resctrl monitor"
 msgstr "গোপনীয় তথ্য বৈধ নয়"
 
+#, c-format
+msgid "Invalid save_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid secret"
 msgstr "গোপনীয় তথ্য বৈধ নয়"
 
@@ -10629,6 +10696,10 @@ msgstr ""
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid snapshot_image_format '%1$s'"
 msgstr ""
 
 #, c-format
@@ -10909,6 +10980,9 @@ msgid "Kernel doesn't support user namespace"
 msgstr "xen bus দ্বারা %s ইনপুট ডিভাইস সমর্থিত হবে না"
 
 msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
+msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -11677,10 +11751,6 @@ msgstr ""
 msgid "Missing XPath expression"
 msgstr ""
 
-#, fuzzy
-msgid "Missing acpi table type"
-msgstr "ক্ষমতার প্রকৃতি অনুপস্থিত"
-
 #, fuzzy, c-format
 msgid "Missing actual data for interface '%1$s'"
 msgstr "ইন্টারফেস '%1$s' প্রাপ্ত করতে ব্যর্থ"
@@ -11736,6 +11806,10 @@ msgstr "টাইমার নাম অনুপস্থিত"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "ক্ষমতার প্রকৃতি অনুপস্থিত"
+
+#, c-format
+msgid "Missing certificate file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
@@ -11812,6 +11886,10 @@ msgid "Missing keepaliveCount data in JSON document"
 msgstr ""
 
 msgid "Missing keepaliveInterval data in JSON document"
+msgstr ""
+
+#, c-format
+msgid "Missing key file '%1$s'"
 msgstr ""
 
 #, fuzzy
@@ -11968,6 +12046,9 @@ msgid "Missing ownerPid data in JSON document"
 msgstr ""
 
 msgid "Missing ownerUUID data in JSON document"
+msgstr ""
+
+msgid "Missing password"
 msgstr ""
 
 #, fuzzy
@@ -13192,6 +13273,9 @@ msgstr "শুধুমাত্র একটি ফাইল-সিস্টে
 msgid "Only VNC supported"
 msgstr "সমর্থিত নয়"
 
+msgid "Only a single ACPI table is supported"
+msgstr ""
+
 #, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "অপর একটি USB কন্ট্রোলার যোগ করা যাবে না: এই ডোমেনের জন্য USB নিষ্ক্রিয়"
@@ -13268,10 +13352,6 @@ msgstr ""
 
 msgid "Only one IPv6 address per interface is allowed"
 msgstr ""
-
-#, fuzzy
-msgid "Only one acpi table is supported"
-msgstr "শুধুমাত্র একটি numatune সমর্থিত হবে"
 
 msgid "Only one argument from --table and --uuid may be specified."
 msgstr ""
@@ -13617,6 +13697,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "typeid এর মান রেঞ্জের বাইরে"
+
+msgid "Parallel save is only supported with the 'sparse' save image format"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -13972,6 +14055,10 @@ msgid "QEMU NBD server does not support TLS transport"
 msgstr ""
 
 #, c-format
+msgid "QEMU agent command '%1$s' returned neither error nor success"
+msgstr ""
+
+#, c-format
 msgid "QEMU binary %1$s is not executable"
 msgstr ""
 
@@ -14093,6 +14180,15 @@ msgstr ""
 #, c-format
 msgid ""
 "RBD image %1$s is old format. Does not support extended features and striping"
+msgstr ""
+
+msgid "RDP doesn't support 'multiUser'"
+msgstr ""
+
+msgid "RDP doesn't support 'replaceUser'"
+msgstr ""
+
+msgid "RDP password expiration isn't supported"
 msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
@@ -16700,6 +16796,11 @@ msgstr ""
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
 msgstr "কমান্ড '%1$s'-র দ্বারা --%2$s বিকল্প সমর্থিত হয় না"
 
+msgid ""
+"The 'dev' attribute of the <source> element can only be used with "
+"<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
+msgstr ""
+
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
@@ -17173,6 +17274,12 @@ msgstr "'%s' ডিস্ক ডিভাইসের ধরন হট-প্ল
 
 msgid "Thread(s) per core:"
 msgstr "প্রতি কোরে থ্রেড সংখ্যা:"
+
+msgid "Throttle group deleted successfully\n"
+msgstr ""
+
+msgid "Throttle group set successfully\n"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -19161,6 +19268,10 @@ msgstr "এই প্ল্যাটফর্মের জন্য নোড �
 msgid "Unable to read pidfile '%1$s'"
 msgstr ""
 
+#, c-format
+msgid "Unable to read qemu-rdp pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "'%1$s' ফাইল পড়তে ব্যর্থ"
@@ -19578,6 +19689,9 @@ msgstr "ডোমেইনের অবস্থা প্রাপ্ত কর
 #, fuzzy
 msgid "Unable to set thread local variable"
 msgstr "লগ ফাইলের মধ্যে লিখতে ব্যর্থ"
+
+msgid "Unable to set throttle group"
+msgstr ""
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
@@ -20076,10 +20190,6 @@ msgstr "অজানা ধরনের কনট্রোলার '%1$s'"
 #, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "অজানা মডেল ধরন '%1$s'"
-
-#, fuzzy, c-format
-msgid "Unknown acpi table type: %1$s"
-msgstr "অজানা ধরনের ইন্টারফেস %1$s"
 
 #, fuzzy, c-format
 msgid "Unknown adapter type: %1$X"
@@ -20666,6 +20776,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Unsupported object type %1$d"
 msgstr "অসমর্থিত ডিভাইস ধরন '%s'"
+
+msgid "Unsupported qemu-rdp listen type"
+msgstr ""
 
 #, fuzzy
 msgid "Unsupported resctrl monitor type"
@@ -22012,6 +22125,16 @@ msgid "block"
 msgstr "অবরুদ্ধ"
 
 #, c-format
+msgid ""
+"block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr ""
 
@@ -22360,6 +22483,9 @@ msgstr ""
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
 msgstr ""
 
+msgid "can't open log context"
+msgstr ""
+
 #, c-format
 msgid "can't open session to the domain with id %1$d"
 msgstr ""
@@ -22582,6 +22708,9 @@ msgstr "একটি ট্র্যানজিয়েন্ট নেটও�
 
 msgid "cannot change persistent config of a transient network"
 msgstr "একটি ট্র্যানজিয়েন্ট নেটওয়ার্কের ধারাবাহিক config পরিবর্তন করা যাবে না"
+
+msgid "cannot change port settings on rdp graphics"
+msgstr ""
 
 #, fuzzy
 msgid "cannot change port settings on spice graphics"
@@ -23443,9 +23572,6 @@ msgstr "vnc পোর্ট %1$s পার্স করতে ব্যর্থ
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "টানেল করা মাইগ্রেশন"
 
-msgid "cannot perform block operations while checkpoint exists"
-msgstr ""
-
 #, fuzzy
 msgid "cannot perform disk backup for inactive domain"
 msgstr "নিষ্ক্রিয় ডোমেইনের মধ্যে vcpu-র তালিকা নির্মাণ করা সম্ভব নয়"
@@ -23923,6 +24049,9 @@ msgstr ""
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
 
+msgid "cdrom device with throttle filters isn't supported"
+msgstr ""
+
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
@@ -24212,6 +24341,9 @@ msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
 
+msgid "comma separated list of throttle groups to be applied"
+msgstr ""
+
 msgid "command"
 msgstr ""
 
@@ -24418,6 +24550,9 @@ msgstr "ডোমেইন কনফিগ অনুপস্থিত"
 msgid "control domain's outgoing traffics"
 msgstr ""
 
+msgid "control next boot state"
+msgstr ""
+
 msgid "control or query domain emulator affinity"
 msgstr ""
 
@@ -24427,6 +24562,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "controller %1$s:%2$d not found"
 msgstr "CPU ভেন্ডার %s খুঁজে পাওয়া যায়নি"
+
+msgid ""
+"controller driver 'iothread' attribute can't be used together with "
+"'iothreads' subelement"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "controller index='%1$d' already exists"
@@ -24488,10 +24628,6 @@ msgstr ""
 
 msgid "copy destination is block device instead of regular file"
 msgstr ""
-
-#, fuzzy
-msgid "copy of read-only disks is not supported"
-msgstr "cpu অ্যাফিনিটি সমর্থিত নয়"
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr ""
@@ -25014,9 +25150,6 @@ msgid ""
 "supported"
 msgstr ""
 
-msgid "creating checkpoint for incremental backup is not supported yet"
-msgstr ""
-
 #, fuzzy
 msgid "creating snapshot"
 msgstr "domainsnapshot"
@@ -25147,11 +25280,9 @@ msgid "dbus-daemon %1$s didn't show up"
 msgstr ""
 
 #, c-format
-msgid "dbus-daemon %1$s died unexpectedly"
-msgstr ""
-
-#, c-format
-msgid "dbus-daemon died and reported: %1$s"
+msgid ""
+"dbus-daemon died and reported:\n"
+"%1$s"
 msgstr ""
 
 msgid "default"
@@ -26232,6 +26363,14 @@ msgid "duplicate domain '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "duplicate filter name '%1$s' found"
+msgstr ""
+
+#, c-format
+msgid "duplicate group name '%1$s' found"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
 msgstr ""
 
@@ -26722,6 +26861,14 @@ msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"event 'nic-mac-change' for domain '%1$s':\n"
+"alias: %2$s\n"
+"oldMAC: %3$s\n"
+"newMAC: %4$s\n"
 msgstr ""
 
 #, c-format
@@ -27438,6 +27585,9 @@ msgstr "ডোমেইনের জন্য মেমরি নির্ধা
 msgid "failed to get hostname"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
 
+msgid "failed to get hypervisor CPU model names"
+msgstr ""
+
 msgid "failed to get hypervisor type"
 msgstr "হাইপার-ভাইসরের প্রকৃতি প্রাপ্ত করতে ব্যর্থ"
 
@@ -28025,6 +28175,9 @@ msgstr "বিষয়বস্তু সংরক্ষণ করতে ব্য
 msgid "failed to seek in log file %1$s"
 msgstr "%1$s লগ-ফাইল নির্মাণ করতে ব্যর্থ"
 
+msgid "failed to seek on file descriptor"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to seek to end of %1$s"
 msgstr "ভলিউম %1$s মুছে ফেলতে ব্যর্থ"
@@ -28595,6 +28748,9 @@ msgstr ""
 msgid "format of the destination file"
 msgstr "অনুমোদন বিফল"
 
+msgid "format of the save image file"
+msgstr ""
+
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
 msgstr "formatter %1$s %2$s এর জন, ত্রুটি জানিয়েছে"
@@ -28829,6 +28985,28 @@ msgstr ""
 
 #, c-format
 msgid "guest CPU doesn't match specification: missing features: %1$s"
+msgstr ""
+
+msgid "guest agent command failed"
+msgstr ""
+
+#, c-format
+msgid "guest agent command failed: %1$s"
+msgstr ""
+
+msgid "guest agent command timed out"
+msgstr ""
+
+#, c-format
+msgid "guest agent command timed out: %1$s"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to command within '%1$d' seconds"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
 msgstr ""
 
 msgid "guest agent replied with wrong id to guest-sync command"
@@ -29250,6 +29428,9 @@ msgstr "নিষ্ক্রিয়"
 msgid "inbound rate larger than maximum %1$u"
 msgstr ""
 
+msgid "include all CPU models known to the hypervisor for the architecture"
+msgstr ""
+
 #, fuzzy
 msgid "include backup size estimate in XML dump"
 msgstr "XML ডাম্পের মধ্যে নিরাপত্তা সংক্রান্ত সংবেদনশীল তথ্য অন্তর্ভুক্ত করা হবে"
@@ -29284,9 +29465,6 @@ msgstr ""
 #, c-format
 msgid "incomplete save header in '%1$s'"
 msgstr "'%1$s'-র মধ্যে সংরক্ষণের অসম্পূর্ণ হেডার"
-
-msgid "incremental backup is not supported yet"
-msgstr ""
 
 msgid "individual CPU state configuration is not supported"
 msgstr ""
@@ -30654,6 +30832,9 @@ msgstr "নিষ্ক্রিয় পুলের তালিকা"
 msgid "list all domain blocks"
 msgstr "ডোমেইনের তালিকা"
 
+msgid "list all domain throttlegroups."
+msgstr ""
+
 #, fuzzy
 msgid "list all domain virtual interfaces"
 msgstr "প্রকৃত হোস্টের ইন্টারফেসের তালিকা"
@@ -31285,6 +31466,9 @@ msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
 msgid "malformed/missing slot in dimm memory info"
+msgstr ""
+
+msgid "managed save cannot be requested for transient domains"
 msgstr ""
 
 #, fuzzy
@@ -32176,6 +32360,9 @@ msgstr ""
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "প্রমাণীকরণের জন্য ব্যবহারকারী নাম অনুপস্থিত"
 
+msgid "missing group name"
+msgstr ""
+
 #, c-format
 msgid "missing group_device value for '%1$s'"
 msgstr ""
@@ -32271,9 +32458,8 @@ msgstr "<interface> উপাদানে dev অ্যাট্রিবিউ�
 msgid "missing listen element"
 msgstr "root সামগ্রী অনুপস্থিত"
 
-#, fuzzy
-msgid "missing listen element for graphics"
-msgstr "লিজের ক্ষেত্রে 'কী' উপাদান অনুপস্থিত"
+msgid "missing listen element for VNC graphics"
+msgstr ""
 
 #, fuzzy
 msgid "missing listen element for spice graphics"
@@ -33321,6 +33507,9 @@ msgstr "কোনো সকেট পাওয়া যায়নি"
 msgid "no CPUs given"
 msgstr ""
 
+msgid "no D-Bus address"
+msgstr ""
+
 msgid "no FLR, PM reset or bus reset available"
 msgstr "কোনো FLR, PM reset অথবা bus reset উপলব্ধ নয়"
 
@@ -33997,6 +34186,12 @@ msgstr "SASL প্রণালী %s, সার্ভার দ্বারা 
 msgid "numad is not available on this host"
 msgstr "এই হোস্টের মধ্যে উপস্থিত ডিভাইসের সংখ্যা নির্ধারণ করুন"
 
+msgid "number of IO channels to use for parallel restore"
+msgstr ""
+
+msgid "number of IO channels to use for parallel save"
+msgstr ""
+
 msgid "number of bytes read:"
 msgstr ""
 
@@ -34021,6 +34216,9 @@ msgid ""
 msgstr ""
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
+msgstr ""
+
+msgid "number of parallel save channels cannot be less than 1"
 msgstr ""
 
 #, fuzzy
@@ -34168,8 +34366,8 @@ msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
-"supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
+"is supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -34579,6 +34777,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "parameter %1$s too big for destination"
 msgstr "গন্তব্যের ক্ষেত্রে Type %1$s অত্যাধিক বড়"
+
+#, c-format
+msgid "parameter '%1$s' is missing in reply of guest-get-load"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "parameter '%1$s' not supported"
@@ -35030,6 +35232,9 @@ msgstr "ipset নাম অত্যন্ত দীর্ঘ"
 msgid "preserve sparseness of volume"
 msgstr ""
 
+msgid "preserve state before shutting down"
+msgstr ""
+
 msgid "pretty-print any JSON output"
 msgstr ""
 
@@ -35221,6 +35426,9 @@ msgstr ""
 msgid "qemu agent didn't return an array of keys"
 msgstr ""
 
+msgid "qemu agent didn't return an array of loads"
+msgstr ""
+
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr ""
@@ -35276,6 +35484,24 @@ msgstr ""
 
 msgid "qemu state driver is not active"
 msgstr "qemu state ড্রাইভার সক্রিয় নয়"
+
+#, c-format
+msgid ""
+"qemu-rdp died and reported:\n"
+"%1$s"
+msgstr ""
+
+msgid "qemu-rdp does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp support requires a D-Bus bus graphics device."
+msgstr ""
 
 #, fuzzy, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -35517,6 +35743,13 @@ msgstr ""
 #, fuzzy
 msgid "rawio is only supported for scsi host device"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
+
+msgid "rdp"
+msgstr ""
+
+#, c-format
+msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
+msgstr ""
 
 msgid "re-initialize NVRAM from its pristine template"
 msgstr ""
@@ -35795,6 +36028,9 @@ msgid "report hypervisor-specific statistics"
 msgstr ""
 
 msgid "report interface information"
+msgstr ""
+
+msgid "report load averages information"
 msgstr ""
 
 msgid "report only stats that are accessible instantly"
@@ -36105,6 +36341,10 @@ msgid "save a domain state to a file"
 msgstr "ডোমেইনের অবস্থা একটি ফাইলে সংরক্ষণ করুন"
 
 msgid "save canceled"
+msgstr ""
+
+#, c-format
+msgid "save image format %1$s is not supported by this QEMU binary"
 msgstr ""
 
 #, fuzzy
@@ -36492,7 +36732,10 @@ msgstr ""
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
 msgstr ""
 
-msgid "sheepdog protocol accepts only one host"
+msgid "shim is not supported by this QEMU binary"
+msgstr ""
+
+msgid "shim only allowed with kernel option"
 msgstr ""
 
 #, c-format
@@ -36719,6 +36962,12 @@ msgstr "অন্তর্নিহিত সংগ্রহস্থলের �
 
 #, c-format
 msgid ""
+"source disk for '%1$s' is not a regular file, reverting to snapshot is not "
+"supported"
+msgstr ""
+
+#, c-format
+msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
@@ -36870,6 +37119,9 @@ msgstr "ncpus অত্যধিক বড়"
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "প্রোগ্রামে গরমিল (প্রকৃত %1$x, প্রত্যাশিত %2$x)"
+
+msgid "stop the daemon"
+msgstr ""
 
 msgid "stopped, with no saved guests"
 msgstr ""
@@ -37565,6 +37817,21 @@ msgid "thread_pool_min must be smaller or equal to thread_pool_max"
 msgstr ""
 
 msgid "threshold as a scaled number (by default bytes)"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' is still being used by disk %2$s"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' not found"
+msgstr ""
+
+#, c-format
+msgid "throttle group field '%1$s' must be an integer"
+msgstr ""
+
+msgid "throttle group name"
 msgstr ""
 
 msgid "time to set"
@@ -38823,6 +39090,10 @@ msgstr "অপ্রত্যাশিত তথ্য '%1$s'"
 msgid "unexpected filesystem type %1$d"
 msgstr "অপ্রত্যাশিত প্রকৃতির ফাইল-সিস্টেম %1$d"
 
+#, c-format
+msgid "unexpected graphics type '%1$d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "%1$s আর্কিটেকচারের জন্য CPU-র জন্য ডি-কোড করা সম্ভব নয়"
@@ -39115,6 +39386,18 @@ msgstr "অজানা অনুমোদনের ধরন '%1$s'"
 #, c-format
 msgid "unknown authentication type %1$s"
 msgstr "অজানা প্রকৃতির অনুমোদন প্রণালী %1$s"
+
+#, c-format
+msgid "unknown auto_shutdown_poweroff '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_save '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_shutdown '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
@@ -39696,6 +39979,9 @@ msgstr "%s ধরনের ডিস্ক সমর্থিত নয়"
 #, fuzzy, c-format
 msgid "unsupported disk driver %1$s"
 msgstr "%1$s ধরনের ডিস্ক সমর্থিত নয়"
+
+msgid "unsupported disk protocol"
+msgstr ""
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
@@ -41000,6 +41286,38 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to add %1$s controller type definition"
+#~ msgstr "চিহ্নিত অবস্থায় অপেক্ষা করতে ব্যর্থ"
+
+#, fuzzy, c-format
+#~ msgid "Failed to allocate slirp for '%1$s'"
+#~ msgstr "'%s' সিমলিংক '%s'-এ নির্মাণ করতে ব্যর্থ"
+
+#, fuzzy, c-format
+#~ msgid "Invalid %1$s image format specified in configuration file"
+#~ msgstr "কনফিগারেশন ফাইল পার্স করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "Missing acpi table type"
+#~ msgstr "ক্ষমতার প্রকৃতি অনুপস্থিত"
+
+#, fuzzy
+#~ msgid "Only one acpi table is supported"
+#~ msgstr "শুধুমাত্র একটি numatune সমর্থিত হবে"
+
+#, fuzzy, c-format
+#~ msgid "Unknown acpi table type: %1$s"
+#~ msgstr "অজানা ধরনের ইন্টারফেস %1$s"
+
+#, fuzzy
+#~ msgid "copy of read-only disks is not supported"
+#~ msgstr "cpu অ্যাফিনিটি সমর্থিত নয়"
+
+#, fuzzy
+#~ msgid "missing listen element for graphics"
+#~ msgstr "লিজের ক্ষেত্রে 'কী' উপাদান অনুপস্থিত"
 
 #~ msgid "Could not find matching device"
 #~ msgstr "সমতূল্য ডিভাইস অনুসন্ধান করতে ব্যর্থ"

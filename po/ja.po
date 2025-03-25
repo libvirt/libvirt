@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-02-24 10:18+0000\n"
+"POT-Creation-Date: 2025-03-25 10:52+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1281,6 +1281,10 @@ msgid "'%1$s' is not a suitable pr helper"
 msgstr "'%1$s' は適切な pr ヘルパーではありません"
 
 #, c-format
+msgid "'%1$s' is not a suitable qemu-rdp helper name"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "この QEMU バイナリーでは、'%1$s' はサポートされません"
 
@@ -1303,6 +1307,10 @@ msgstr "'%1$s' スケジューラービットマップ '%2$s' は空です"
 #, fuzzy, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "%2$llu から始まる '%1$s' が利用できるのは %3$zd バイトのみです"
+
+#, c-format
+msgid "'%1$s' vanished unexpectedly"
+msgstr ""
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1518,6 +1526,9 @@ msgid ""
 msgstr ""
 
 msgid "'return' member missing"
+msgstr ""
+
+msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
 msgstr ""
 
 #, c-format
@@ -1929,6 +1940,14 @@ msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI には、このアーキテクチャーで UEFI が必要です"
 
 #, c-format
+msgid "ACPI table type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "ACPI table type '%1$s' may only appear once"
+msgstr ""
+
+#, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
 msgstr "AES256CBC 暗号化が無効 keylen=%1$zu"
 
@@ -2045,6 +2064,12 @@ msgstr "ゲストドメインに IOThread を追加します。"
 
 msgid "Add or remove vcpus"
 msgstr "vcpus を追加または削除します"
+
+msgid "Add or update a throttling group."
+msgstr ""
+
+msgid "Add or updte a throttling group."
+msgstr ""
 
 msgid "Added"
 msgstr "追加済み"
@@ -2251,6 +2276,9 @@ msgstr ""
 
 msgid "Autostart"
 msgstr "自動起動"
+
+msgid "Autostart Once:"
+msgstr ""
 
 msgid "Autostart:"
 msgstr "自動起動:"
@@ -3131,8 +3159,8 @@ msgid "Cannot find 'iothread' : %1$u"
 msgstr "'iothread' を見つけることができません: %1$u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%1$03llx"
-msgstr "PVR 0x%1$03llx の CPU モデルが見つかりません"
+msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%1$08x"
@@ -4271,9 +4299,6 @@ msgstr "次の名前を持つボリュームを見つけられませんでした
 msgid "Could not add CDATA to doc root"
 msgstr "CDATA をドキュメント root に追加できませんでした"
 
-msgid "Could not add IDE controller"
-msgstr "IDE コントローラーを追加できませんでした"
-
 msgid "Could not add attribute to XML node"
 msgstr "XML ノードに属性を追加できませんでした"
 
@@ -4995,9 +5020,6 @@ msgstr "'bridge/stp_state' '%1$s' ('%2$s' 向け) を解析できませんでし
 msgid "Could not parse MTU value '%1$s'"
 msgstr "MTU 値 '%1$s' を解析できませんでした"
 
-msgid "Could not parse SCSI controller"
-msgstr "SCSI コントローラーを解析できませんでした"
-
 #, c-format
 msgid "Could not parse UUID from '%1$s'"
 msgstr "'%1$s' から UUID を解析できませんでした"
@@ -5540,6 +5562,9 @@ msgstr "任意のプールを削除します。"
 msgid "Delete a given vol."
 msgstr "任意のボリュームを削除します。"
 
+msgid "Delete a throttling group."
+msgstr ""
+
 msgid "Delete an IOThread from the guest domain."
 msgstr "ゲストドメインから IOThread を削除します。"
 
@@ -6000,6 +6025,10 @@ msgid "Domain '%1$s' marked as autostarted\n"
 msgstr "ドメイン '%1$s' は自動起動としてマークされています\n"
 
 #, c-format
+msgid "Domain '%1$s' marked as autostarted on next boot\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$s' resumed\n"
 msgstr "ドメイン '%1$s' が再開されました\n"
 
@@ -6026,6 +6055,10 @@ msgstr "ドメイン '%1$s' のシステム情報が利用可能ではありま�
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
 msgstr "ドメイン '%1$s' の自動起動マークが解除されました\n"
+
+#, c-format
+msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$s' was reset\n"
@@ -6946,10 +6979,6 @@ msgid "Failed to acquire pid file '%1$s'"
 msgstr "PID ファイル '%1$s' の取得に失敗しました"
 
 #, c-format
-msgid "Failed to add %1$s controller type definition"
-msgstr "%1$s コントローラータイプの定義の追加に失敗しました"
-
-#, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr ""
 "IP アドレス %1$s をインターフェイス %2$s の IP アドレスキャッシュに追加できま"
@@ -6992,10 +7021,6 @@ msgstr "PCI デバイス一覧の割り当てに失敗しました: %1$s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "XML バッファの割り当てに失敗しました"
-
-#, c-format
-msgid "Failed to allocate slirp for '%1$s'"
-msgstr "'%1$s' の slirp の割り当てに失敗しました"
 
 msgid "Failed to allocate tty"
 msgstr "TTY の割り当てに失敗しました"
@@ -7166,6 +7191,10 @@ msgstr "ツリーの一覧化が完了できませんでした"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "ソケットの '%1$s' への接続に失敗しました"
+
+#, c-format
+msgid "Failed to connect to dbus-daemon: %1$s"
+msgstr ""
 
 msgid "Failed to connect to mon socket"
 msgstr ""
@@ -7356,6 +7385,10 @@ msgstr "プール %1$s の作成に失敗しました"
 #, c-format
 msgid "Failed to create pool from %1$s"
 msgstr "%1$s からのプール作成に失敗しました"
+
+#, c-format
+msgid "Failed to create rdp state dir %1$s"
+msgstr ""
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr "再起動スレッドの作成に失敗しました、ドメインを強制停止します"
@@ -8119,6 +8152,10 @@ msgstr "root プライベートの作成に失敗しました"
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
 msgstr "ドメイン '%1$s' を自動起動済みとしてマークすることに失敗しました"
+
+#, c-format
+msgid "Failed to mark domain '%1$s' as autostarted on next boot"
+msgstr ""
 
 #, c-format
 msgid "Failed to mkdir %1$s"
@@ -9068,6 +9105,10 @@ msgid "Failed to unmark domain '%1$s' as autostarted"
 msgstr "ドメイン '%1$s' を自動起動済みとしてマークを解除することに失敗しました"
 
 #, c-format
+msgid "Failed to unmark domain '%1$s' as autostarted on next boot"
+msgstr ""
+
+#, c-format
 msgid "Failed to unmarshall reply: %1$s"
 msgstr "返信のアンマーシャルに失敗しました: %1$s"
 
@@ -9450,6 +9491,9 @@ msgstr "GET 操作は失敗しました: %1$s"
 msgid "GNUTLS call error"
 msgstr "GNUTLS 呼び出しエラー"
 
+msgid "Get a throttling group."
+msgstr ""
+
 msgid "Get block device size info for a domain."
 msgstr "ドメインのブロックデバイスの容量情報を取得します。"
 
@@ -9524,6 +9568,9 @@ msgstr "永続的なインターフェイス状態の取得"
 msgid "Get the CPU models for an arch."
 msgstr "アーキテクチャーの CPU モデルを取得します。"
 
+msgid "Get the CPU models reported by the hypervisor."
+msgstr ""
+
 msgid "Get the launch security parameters for a guest domain"
 msgstr "ゲストドメインの起動セキュリティーパラメーターを取得します"
 
@@ -9541,6 +9588,9 @@ msgstr "スナップショットの親の名前の取得"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "ドメインのブロックデバイスの概要を取得します。"
+
+msgid "Get the summary of throttle groups for a domain."
+msgstr ""
 
 msgid "Get the summary of virtual interfaces for a domain."
 msgstr "ドメインの仮想インターフェイスの概要を取得します。"
@@ -9599,9 +9649,6 @@ msgstr "ゲストエージェントが応答しません"
 #, c-format
 msgid "Guest agent is not responding: %1$s"
 msgstr "ゲストエージェントが応答しません: %1$s"
-
-msgid "Guest agent not available for now"
-msgstr "ゲストエージェントが今のところ利用できません"
 
 msgid "Guest networking is not supported by this version of ch"
 msgstr ""
@@ -9789,6 +9836,9 @@ msgstr ""
 "アーキテクチャー '%1$s' またはマシンタイプ '%2$s' では、Hyperv 機能はサポート"
 "されません"
 
+msgid "Hypervisor reported CPU models"
+msgstr ""
+
 msgid "I/O Error"
 msgstr "I/O エラー"
 
@@ -9897,6 +9947,11 @@ msgstr "IOThread ID 番号"
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
+
+msgid ""
+"IOThread mapping for virtio-scsi controllers is not available with this QEMU "
+"binary"
 msgstr ""
 
 msgid "IOThread to be used by supported device"
@@ -10149,10 +10204,6 @@ msgstr ""
 #, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
 msgstr "無効な %1$s 属性 'vcpus' 値 '%2$s'"
-
-#, c-format
-msgid "Invalid %1$s image format specified in configuration file"
-msgstr "設定ファイルで指定された無効な %1$s イメージ形式"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "無効な 'cpu.max' データ。"
@@ -10554,6 +10605,10 @@ msgstr ""
 msgid "Invalid driver type: %1$d"
 msgstr "無効なドライバータイプ: %1$d"
 
+#, c-format
+msgid "Invalid dump_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid duration"
 msgstr "無効な間隔"
 
@@ -10630,8 +10685,16 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "無効なホスト鍵検証方式: '%1$s'"
 
 #, c-format
+msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgstr ""
+
+#, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "無効な hostdev プロトコル '%1$s'"
+
+#, c-format
+msgid "Invalid image_format '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -10849,6 +10912,10 @@ msgstr "無効な相対パス '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "無効な resctrl モニター"
 
+#, c-format
+msgid "Invalid save_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid secret"
 msgstr "無効なシークレット"
 
@@ -10869,6 +10936,10 @@ msgstr "HPT サイズ変更の無効な設定"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid snapshot_image_format '%1$s'"
 msgstr ""
 
 #, c-format
@@ -11159,6 +11230,9 @@ msgstr "カーネルがユーザー名前空間をサポートしません"
 
 msgid "Kernel image path in this domain is not defined"
 msgstr "このドメインのカーネルイメージパスが定義されていません"
+
+msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "秘密鍵認証用に鍵ファイルパスを指定する必要があります"
@@ -11937,9 +12011,6 @@ msgstr "XPath コンテキストがありません"
 msgid "Missing XPath expression"
 msgstr "XPath 式がありません"
 
-msgid "Missing acpi table type"
-msgstr "acpi テーブルタイプがありません"
-
 #, c-format
 msgid "Missing actual data for interface '%1$s'"
 msgstr "インターフェイス '%1$s' の実際のデータがありません"
@@ -11989,6 +12060,10 @@ msgstr "ブリッジ名がありません"
 
 msgid "Missing capability type"
 msgstr "ケイパビリティータイプがありません"
+
+#, c-format
+msgid "Missing certificate file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
@@ -12065,6 +12140,10 @@ msgstr "JSON ドキュメントに keepaliveCount データがありません"
 
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "JSON ドキュメントに keepaliveInterval データがありません"
+
+#, c-format
+msgid "Missing key file '%1$s'"
+msgstr ""
 
 msgid "Missing listen element"
 msgstr "リッスン要素がありません"
@@ -12216,6 +12295,9 @@ msgstr "JSON ドキュメントに ownerPid データがありません"
 
 msgid "Missing ownerUUID data in JSON document"
 msgstr "JSON ドキュメントに ownerUUID データがありません"
+
+msgid "Missing password"
+msgstr ""
 
 msgid "Missing path or lockspace for lease resource"
 msgstr "リースリソース向けのパスまたはロック空間がありません"
@@ -13410,6 +13492,9 @@ msgstr "PTY タイプのみがサポートされます"
 msgid "Only VNC supported"
 msgstr "VNC のみがサポートされます"
 
+msgid "Only a single ACPI table is supported"
+msgstr ""
+
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "このマシンタイプでは、単一の IDE コントローラーのみがサポートされます"
 
@@ -13495,9 +13580,6 @@ msgstr "インターフェイスごとに 1 つの IPv4 アドレスのみが許
 
 msgid "Only one IPv6 address per interface is allowed"
 msgstr "インターフェイスごとに 1 つの IPv6 アドレスのみが許可されます"
-
-msgid "Only one acpi table is supported"
-msgstr "1 つの acpi テーブルのみがサポートされます"
 
 msgid "Only one argument from --table and --uuid may be specified."
 msgstr "--table および --uuid から 1 つの引数のみを指定できます。"
@@ -13859,6 +13941,9 @@ msgstr "パラレルデバイスは libxl によりサポートされません"
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "パラレルポートのインデックス %1$d が [0..2] の範囲にありません"
+
+msgid "Parallel save is only supported with the 'sparse' save image format"
+msgstr ""
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -14225,6 +14310,10 @@ msgid "QEMU NBD server does not support TLS transport"
 msgstr "QEMU NBD サーバーは、TLS トランスポートをサポートしません"
 
 #, c-format
+msgid "QEMU agent command '%1$s' returned neither error nor success"
+msgstr ""
+
+#, c-format
 msgid "QEMU binary %1$s is not executable"
 msgstr "QEMU バイナリー %1$s が実行可能ではありません"
 
@@ -14364,6 +14453,15 @@ msgid ""
 "RBD image %1$s is old format. Does not support extended features and striping"
 msgstr ""
 "RBD イメージ %1$s は古い形式です。拡張機能とストライピングをサポートしません"
+
+msgid "RDP doesn't support 'multiUser'"
+msgstr ""
+
+msgid "RDP doesn't support 'replaceUser'"
+msgstr ""
+
+msgid "RDP password expiration isn't supported"
+msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "RDT メモリー帯域幅の割り当てはサポートされません"
@@ -17064,6 +17162,11 @@ msgstr "'%1$s' タイマーを無効にすることはできません"
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
 msgstr "'%1$s' タイマーは tickpolicy '%2$s' をサポートしていません"
 
+msgid ""
+"The 'dev' attribute of the <source> element can only be used with "
+"<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
+msgstr ""
+
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
@@ -17569,6 +17672,12 @@ msgstr "このタイプのディスクはホットプラグで抜けません"
 
 msgid "Thread(s) per core:"
 msgstr "コアあたりのスレッド:"
+
+msgid "Throttle group deleted successfully\n"
+msgstr ""
+
+msgid "Throttle group set successfully\n"
+msgstr ""
 
 #, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -19426,6 +19535,10 @@ msgid "Unable to read pidfile '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Unable to read qemu-rdp pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "slirp pidfile '%1$s' を読み取れません"
 
@@ -19817,6 +19930,9 @@ msgstr "スレッドローカル識別子を設定できません"
 
 msgid "Unable to set thread local variable"
 msgstr "スレッドローカル変数を設定できません"
+
+msgid "Unable to set throttle group"
+msgstr ""
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
@@ -20302,10 +20418,6 @@ msgstr "不明な SCSI コントローラーモデル %1$s"
 #, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "不明な URI パラメーター '%1$s'"
-
-#, c-format
-msgid "Unknown acpi table type: %1$s"
-msgstr "不明な acpi テーブルタイプ: %1$s"
 
 #, c-format
 msgid "Unknown adapter type: %1$X"
@@ -20901,6 +21013,9 @@ msgstr ""
 #, c-format
 msgid "Unsupported object type %1$d"
 msgstr "サポートされないオブジェクトタイプ %1$d"
+
+msgid "Unsupported qemu-rdp listen type"
+msgstr ""
 
 msgid "Unsupported resctrl monitor type"
 msgstr "サポートされない resctrl モニタータイプ"
@@ -22284,6 +22399,16 @@ msgid "block"
 msgstr "ブロック"
 
 #, c-format
+msgid ""
+"block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr ""
 "ブロック I/O スロットル制限は、QEMU を使用する %1$llu 以内でなければなりませ"
@@ -22651,6 +22776,9 @@ msgstr "相対的なバッキング関係を維持することはできません
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
 msgstr "ディスク '%1$s' の非アクティブなスナップショットを操作できません"
 
+msgid "can't open log context"
+msgstr ""
+
 #, c-format
 msgid "can't open session to the domain with id %1$d"
 msgstr "ID %1$d のドメインにセッションを開けません"
@@ -22878,6 +23006,9 @@ msgstr "一時ドメインの永続的な設定を変更できません"
 
 msgid "cannot change persistent config of a transient network"
 msgstr "一時的なネットワークの永続的な設定を変更できません"
+
+msgid "cannot change port settings on rdp graphics"
+msgstr ""
 
 msgid "cannot change port settings on spice graphics"
 msgstr "SPICE グラフィックにおいて設定されているポートを変更できません"
@@ -23705,9 +23836,6 @@ msgstr "vnc port %1$s を解析できません"
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "トンネルマイグレーションのパイプを渡せません"
 
-msgid "cannot perform block operations while checkpoint exists"
-msgstr "チェックポイントが存在する間はブロック操作を実行できません"
-
 msgid "cannot perform disk backup for inactive domain"
 msgstr "非アクティブなドメインのディスクバックアップを実行できません"
 
@@ -24179,6 +24307,9 @@ msgstr "仮想マシンの状態以外のディスク状態のキャプチャー
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
 
+msgid "cdrom device with throttle filters isn't supported"
+msgstr ""
+
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "virtio バス搭載の cdrom デバイスはサポートされていません"
 
@@ -24449,6 +24580,9 @@ msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
 
+msgid "comma separated list of throttle groups to be applied"
+msgstr ""
+
 msgid "command"
 msgstr "コマンド"
 
@@ -24654,6 +24788,9 @@ msgstr "ドメインの入力トラフィックの制御"
 msgid "control domain's outgoing traffics"
 msgstr "ドメインの出力トラフィックの制御"
 
+msgid "control next boot state"
+msgstr ""
+
 msgid "control or query domain emulator affinity"
 msgstr "ドメインのエミュレーターアフィニティーの制御またはクエリー"
 
@@ -24663,6 +24800,11 @@ msgstr "ドメインの仮想 CPU アフィニティーの制御またはクエ�
 #, c-format
 msgid "controller %1$s:%2$d not found"
 msgstr "コントローラー %1$s:%2$d が見つかりません"
+
+msgid ""
+"controller driver 'iothread' attribute can't be used together with "
+"'iothreads' subelement"
+msgstr ""
 
 #, c-format
 msgid "controller index='%1$d' already exists"
@@ -24722,9 +24864,6 @@ msgstr "クッキー名は空であってはなりません"
 
 msgid "copy destination is block device instead of regular file"
 msgstr "コピー先は通常のファイルではなくブロックデバイスです"
-
-msgid "copy of read-only disks is not supported"
-msgstr "読み取り専用ディスクのコピーはサポートされていません"
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr "FD でパスされたディスクソースへのコピーはまだサポートされていません"
@@ -25235,9 +25374,6 @@ msgstr ""
 "すべての調整パラメーターをゼロにして、新しいグループを作成したり、既存のグ"
 "ループを更新することはサポートされていません"
 
-msgid "creating checkpoint for incremental backup is not supported yet"
-msgstr "増分バックアップのチェックポイントの作成は、まだサポートされていません"
-
 msgid "creating snapshot"
 msgstr "スナップショットの作成中"
 
@@ -25370,12 +25506,10 @@ msgid "dbus-daemon %1$s didn't show up"
 msgstr "dbus-daemon %1$s が表示されませんでした"
 
 #, c-format
-msgid "dbus-daemon %1$s died unexpectedly"
-msgstr "dbus-daemon %1$s が予期せずに終了しました"
-
-#, c-format
-msgid "dbus-daemon died and reported: %1$s"
-msgstr "dbus-daemon が終了し、報告されました: %1$s"
+msgid ""
+"dbus-daemon died and reported:\n"
+"%1$s"
+msgstr ""
 
 msgid "default"
 msgstr "デフォルト"
@@ -26453,6 +26587,14 @@ msgid "duplicate domain '%1$s'"
 msgstr "ドメイン '%1$s' を複製します"
 
 #, c-format
+msgid "duplicate filter name '%1$s' found"
+msgstr ""
+
+#, c-format
+msgid "duplicate group name '%1$s' found"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
 msgstr "見つかった iothread id '%1$u' を複製します"
 
@@ -26947,6 +27089,14 @@ msgstr ""
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
 msgstr "ドメイン '%1$s' のイベント'migration-iteration': 反復: '%2$d'\n"
+
+#, c-format
+msgid ""
+"event 'nic-mac-change' for domain '%1$s':\n"
+"alias: %2$s\n"
+"oldMAC: %3$s\n"
+"newMAC: %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
@@ -27649,6 +27799,9 @@ msgstr "NUMA ノード番号の空きメモリーを取得できませんでし�
 msgid "failed to get hostname"
 msgstr "ホスト名を取得できませんでした"
 
+msgid "failed to get hypervisor CPU model names"
+msgstr ""
+
 msgid "failed to get hypervisor type"
 msgstr "ハイパーバイザータイプの取得に失敗しました"
 
@@ -28209,6 +28362,9 @@ msgstr "内容の保存に失敗しました"
 #, c-format
 msgid "failed to seek in log file %1$s"
 msgstr "ログファイル %1$s のシークに失敗しました"
+
+msgid "failed to seek on file descriptor"
+msgstr ""
 
 #, c-format
 msgid "failed to seek to end of %1$s"
@@ -28775,6 +28931,9 @@ msgstr "スナップショットを撮る場合のバッキングボリューム
 msgid "format of the destination file"
 msgstr "宛先ファイルの形式"
 
+msgid "format of the save image file"
+msgstr ""
+
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
 msgstr "%1$s %2$s のフォーマッターがエラーを報告しました"
@@ -29009,6 +29168,28 @@ msgstr "ゲスト CPU が仕様と一致しません: 追加機能:%1$s、不足
 #, c-format
 msgid "guest CPU doesn't match specification: missing features: %1$s"
 msgstr "ゲスト CPU が仕様と一致しません: 不足している機能: %1$s"
+
+msgid "guest agent command failed"
+msgstr ""
+
+#, c-format
+msgid "guest agent command failed: %1$s"
+msgstr ""
+
+msgid "guest agent command timed out"
+msgstr ""
+
+#, c-format
+msgid "guest agent command timed out: %1$s"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to command within '%1$d' seconds"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
+msgstr ""
 
 msgid "guest agent replied with wrong id to guest-sync command"
 msgstr "ゲストエージェントが guest-sync コマンドに間違った ID で応答しました"
@@ -29421,6 +29602,9 @@ msgstr "停止状態"
 msgid "inbound rate larger than maximum %1$u"
 msgstr "インバウンドレートが最大値 %1$u より大きいです"
 
+msgid "include all CPU models known to the hypervisor for the architecture"
+msgstr ""
+
 msgid "include backup size estimate in XML dump"
 msgstr "XML ダンプにバックアップサイズの推定値を含めます"
 
@@ -29453,9 +29637,6 @@ msgstr "結果が不完全で、ステータス文字列 '%1$s' が不明です"
 #, c-format
 msgid "incomplete save header in '%1$s'"
 msgstr "'%1$s' に不完全な保存ヘッダーがあります"
-
-msgid "incremental backup is not supported yet"
-msgstr "増分バックアップはまだサポートされていません"
 
 msgid "individual CPU state configuration is not supported"
 msgstr "個々の CPU 状態の設定はサポートされていません"
@@ -30829,6 +31010,9 @@ msgstr "アクティブなプールの UUID のみを一覧表示します"
 msgid "list all domain blocks"
 msgstr "ドメインの全ブロックの一覧表示"
 
+msgid "list all domain throttlegroups."
+msgstr ""
+
 msgid "list all domain virtual interfaces"
 msgstr "すべてのドメインの仮想インターフェイスの取得"
 
@@ -31411,6 +31595,9 @@ msgstr "virtio メモリー情報の不正な形式/欠落したサイズ"
 
 msgid "malformed/missing slot in dimm memory info"
 msgstr "dimm メモリー情報の不正な形式/欠落したスロット"
+
+msgid "managed save cannot be requested for transient domains"
+msgstr ""
 
 msgid "managed save of a domain state"
 msgstr "ドメインの状態の管理保存"
@@ -32282,6 +32469,9 @@ msgstr "QEMU ケイパビリティーキャッシュにフラグ名がありま�
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "パス '%1$s' の gluster ボリューム名がありません"
 
+msgid "missing group name"
+msgstr ""
+
 #, c-format
 msgid "missing group_device value for '%1$s'"
 msgstr ""
@@ -32371,8 +32561,8 @@ msgstr "マイグレーションのデータに listen 属性がありません"
 msgid "missing listen element"
 msgstr "listen 要素がありません"
 
-msgid "missing listen element for graphics"
-msgstr "グラフィックの listen 要素がありません"
+msgid "missing listen element for VNC graphics"
+msgstr ""
 
 msgid "missing listen element for spice graphics"
 msgstr "spice グラフィックの listen 要素がありません"
@@ -33428,6 +33618,9 @@ msgstr "CPU が見つかりません"
 msgid "no CPUs given"
 msgstr "CPU が指定されていません"
 
+msgid "no D-Bus address"
+msgstr ""
+
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR や PM リセットや バスリセットができません"
 
@@ -34092,6 +34285,12 @@ msgstr "numa パラメーターは vz ドライバーではサポートされま
 msgid "numad is not available on this host"
 msgstr "numad はこのホストにおいて利用可能ではありません"
 
+msgid "number of IO channels to use for parallel restore"
+msgstr ""
+
+msgid "number of IO channels to use for parallel save"
+msgstr ""
+
 msgid "number of bytes read:"
 msgstr "読み込みバイト数:"
 
@@ -34116,6 +34315,9 @@ msgstr "共有メモリーサービスが次回のスキャン前に休止する
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr "共有メモリーサービスが休止する前にスキャンするページの数"
+
+msgid "number of parallel save channels cannot be less than 1"
+msgstr ""
 
 msgid "number of read operations:"
 msgstr "読み込み回数:"
@@ -34254,11 +34456,9 @@ msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
-"supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
+"is supported"
 msgstr ""
-"各タイプ (SDL、VNC、Spice、Headless、Dbus) のグラフィックスデバイスは 1 つだ"
-"けサポートされています"
 
 msgid "only JSON objects can be top level"
 msgstr "JSON オブジェクトのみが最上位レベルになります"
@@ -34648,6 +34848,10 @@ msgstr "パラレルコンテナーは入力バス %1$s をサポートしませ
 #, c-format
 msgid "parameter %1$s too big for destination"
 msgstr "パラメーター %1$s が宛先に対して大きすぎます"
+
+#, c-format
+msgid "parameter '%1$s' is missing in reply of guest-get-load"
+msgstr ""
 
 #, c-format
 msgid "parameter '%1$s' not supported"
@@ -35109,6 +35313,9 @@ msgstr "接頭辞が長すぎます"
 msgid "preserve sparseness of volume"
 msgstr "ボリュームのスパースを維持します"
 
+msgid "preserve state before shutting down"
+msgstr ""
+
 msgid "pretty-print any JSON output"
 msgstr "JSON 出力を整形表示します"
 
@@ -35297,6 +35504,9 @@ msgstr "qemu エージェントはインターフェイスの配列を返しま�
 msgid "qemu agent didn't return an array of keys"
 msgstr "qemu エージェントはキーの配列を返しませんでした"
 
+msgid "qemu agent didn't return an array of loads"
+msgstr ""
+
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr "qemu は vcpu '%1$zu' のスレッド ID を報告しませんでした"
@@ -35359,6 +35569,24 @@ msgstr "qemu が不正な時刻を返しました"
 
 msgid "qemu state driver is not active"
 msgstr "QEMU 状態ドライバーが活動中ではありません"
+
+#, c-format
+msgid ""
+"qemu-rdp died and reported:\n"
+"%1$s"
+msgstr ""
+
+msgid "qemu-rdp does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp support requires a D-Bus bus graphics device."
+msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -35601,6 +35829,13 @@ msgstr "rawio は device='lun' とのみ使用できます"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "rawio は scsi ホストデバイスでのみサポートされます"
+
+msgid "rdp"
+msgstr ""
+
+#, c-format
+msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
+msgstr ""
 
 msgid "re-initialize NVRAM from its pristine template"
 msgstr "元のテンプレートから NVRAM を再初期化します"
@@ -35873,6 +36108,9 @@ msgstr "ハイパーバイザー固有の統計を報告します"
 
 msgid "report interface information"
 msgstr "インターフェイス情報を報告します"
+
+msgid "report load averages information"
+msgstr ""
 
 msgid "report only stats that are accessible instantly"
 msgstr "すぐにアクセスできる統計のみを報告します"
@@ -36173,6 +36411,10 @@ msgstr "ドメインの状態をファイルに保存します"
 
 msgid "save canceled"
 msgstr "保存が取り消されました"
+
+#, c-format
+msgid "save image format %1$s is not supported by this QEMU binary"
+msgstr ""
 
 msgid "save image is incomplete"
 msgstr "保存イメージが不完全です"
@@ -36561,8 +36803,11 @@ msgstr "virtio-pmem デバイスに必要な共有アクセスモード"
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
 msgstr "共有 '%1$llu' は範囲 [%2$llu, %3$llu] 内にある必要があります"
 
-msgid "sheepdog protocol accepts only one host"
-msgstr "sheepdog プロトコルは 1 つのホストのみを受け入れます"
+msgid "shim is not supported by this QEMU binary"
+msgstr ""
+
+msgid "shim only allowed with kernel option"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -36790,6 +37035,12 @@ msgstr "基盤となるストレージのソースデバイス"
 
 #, c-format
 msgid ""
+"source disk for '%1$s' is not a regular file, reverting to snapshot is not "
+"supported"
+msgstr ""
+
+#, c-format
+msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
@@ -36949,6 +37200,9 @@ msgstr "統計値が大きすぎます"
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr ""
 "イベントでのステータスの不一致 (0x%1$x を予想していましたが、実際は 0x%2$x)"
+
+msgid "stop the daemon"
+msgstr ""
 
 msgid "stopped, with no saved guests"
 msgstr "停止済み、ゲストの保存なし"
@@ -37653,6 +37907,21 @@ msgstr ""
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "スケーリングされた数値としてのしきい値 (デフォルトではバイト)"
+
+#, c-format
+msgid "throttle group '%1$s' is still being used by disk %2$s"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' not found"
+msgstr ""
+
+#, c-format
+msgid "throttle group field '%1$s' must be an integer"
+msgstr ""
+
+msgid "throttle group name"
+msgstr ""
 
 msgid "time to set"
 msgstr "設定する時間"
@@ -38934,6 +39203,10 @@ msgid "unexpected filesystem type %1$d"
 msgstr "予期しないファイルシステムタイプ %1$d"
 
 #, c-format
+msgid "unexpected graphics type '%1$d'"
+msgstr ""
+
+#, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "%1$s アーキテクチャーの予期しないホストモデル CPU"
 
@@ -39221,6 +39494,18 @@ msgstr "不明な認証タイプ %1$s"
 #, c-format
 msgid "unknown authentication type %1$s"
 msgstr "不明な認証タイプ: %1$s"
+
+#, c-format
+msgid "unknown auto_shutdown_poweroff '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_save '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_shutdown '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
@@ -39800,6 +40085,9 @@ msgstr "サポートされないディスクデバイス"
 #, c-format
 msgid "unsupported disk driver %1$s"
 msgstr "サポートされないディスクドライバー %1$s"
+
+msgid "unsupported disk protocol"
+msgstr ""
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
@@ -41134,6 +41422,75 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#, c-format
+#~ msgid "Cannot find CPU model with PVR 0x%1$03llx"
+#~ msgstr "PVR 0x%1$03llx の CPU モデルが見つかりません"
+
+#~ msgid "Could not add IDE controller"
+#~ msgstr "IDE コントローラーを追加できませんでした"
+
+#~ msgid "Could not parse SCSI controller"
+#~ msgstr "SCSI コントローラーを解析できませんでした"
+
+#, c-format
+#~ msgid "Failed to add %1$s controller type definition"
+#~ msgstr "%1$s コントローラータイプの定義の追加に失敗しました"
+
+#, c-format
+#~ msgid "Failed to allocate slirp for '%1$s'"
+#~ msgstr "'%1$s' の slirp の割り当てに失敗しました"
+
+#~ msgid "Guest agent not available for now"
+#~ msgstr "ゲストエージェントが今のところ利用できません"
+
+#, c-format
+#~ msgid "Invalid %1$s image format specified in configuration file"
+#~ msgstr "設定ファイルで指定された無効な %1$s イメージ形式"
+
+#~ msgid "Missing acpi table type"
+#~ msgstr "acpi テーブルタイプがありません"
+
+#~ msgid "Only one acpi table is supported"
+#~ msgstr "1 つの acpi テーブルのみがサポートされます"
+
+#, c-format
+#~ msgid "Unknown acpi table type: %1$s"
+#~ msgstr "不明な acpi テーブルタイプ: %1$s"
+
+#~ msgid "cannot perform block operations while checkpoint exists"
+#~ msgstr "チェックポイントが存在する間はブロック操作を実行できません"
+
+#~ msgid "copy of read-only disks is not supported"
+#~ msgstr "読み取り専用ディスクのコピーはサポートされていません"
+
+#~ msgid "creating checkpoint for incremental backup is not supported yet"
+#~ msgstr ""
+#~ "増分バックアップのチェックポイントの作成は、まだサポートされていません"
+
+#, c-format
+#~ msgid "dbus-daemon %1$s died unexpectedly"
+#~ msgstr "dbus-daemon %1$s が予期せずに終了しました"
+
+#, c-format
+#~ msgid "dbus-daemon died and reported: %1$s"
+#~ msgstr "dbus-daemon が終了し、報告されました: %1$s"
+
+#~ msgid "incremental backup is not supported yet"
+#~ msgstr "増分バックアップはまだサポートされていません"
+
+#~ msgid "missing listen element for graphics"
+#~ msgstr "グラフィックの listen 要素がありません"
+
+#~ msgid ""
+#~ "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+#~ "supported"
+#~ msgstr ""
+#~ "各タイプ (SDL、VNC、Spice、Headless、Dbus) のグラフィックスデバイスは 1 つ"
+#~ "だけサポートされています"
+
+#~ msgid "sheepdog protocol accepts only one host"
+#~ msgstr "sheepdog プロトコルは 1 つのホストのみを受け入れます"
 
 #~ msgid ""
 #~ "'reconnect' attribute unsupported 'server' mode for <interface "

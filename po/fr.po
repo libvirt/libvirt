@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-02-24 10:18+0000\n"
+"POT-Creation-Date: 2025-03-25 10:52+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1316,6 +1316,10 @@ msgid "'%1$s' is not a suitable pr helper"
 msgstr "'%1$s' n'est pas un auxiliaire pr approprié"
 
 #, c-format
+msgid "'%1$s' is not a suitable qemu-rdp helper name"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "'%1$s' n'est pas pris en charge dans ce binaire QEMU"
 
@@ -1338,6 +1342,10 @@ msgstr "'%1$s' bitmap du planificateur '%2$s' est vide"
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' en partant de %2$llu n'a que %3$zd octets disponibles"
+
+#, c-format
+msgid "'%1$s' vanished unexpectedly"
+msgstr ""
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1566,6 +1574,9 @@ msgid ""
 msgstr ""
 
 msgid "'return' member missing"
+msgstr ""
+
+msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
 msgstr ""
 
 #, c-format
@@ -1986,6 +1997,14 @@ msgid "ACPI requires UEFI on this architecture"
 msgstr "L'ACPI nécessite l'UEFI sur cette architecture"
 
 #, c-format
+msgid "ACPI table type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "ACPI table type '%1$s' may only appear once"
+msgstr ""
+
+#, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
 msgstr "Cryptage AES256CBC keylen= non valide%1$zu"
 
@@ -2102,6 +2121,12 @@ msgstr "Ajouter un IOThread au domaine invité."
 
 msgid "Add or remove vcpus"
 msgstr "Ajouter ou supprimer des vcpus"
+
+msgid "Add or update a throttling group."
+msgstr ""
+
+msgid "Add or updte a throttling group."
+msgstr ""
 
 msgid "Added"
 msgstr "Ajouté"
@@ -2316,6 +2341,9 @@ msgstr ""
 
 msgid "Autostart"
 msgstr "Démarrage automatique"
+
+msgid "Autostart Once:"
+msgstr ""
 
 msgid "Autostart:"
 msgstr "Démarrage automatique :"
@@ -3239,8 +3267,8 @@ msgid "Cannot find 'iothread' : %1$u"
 msgstr "Impossible de trouver 'iothread' : %1$u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%1$03llx"
-msgstr "Impossible de trouver le modèle de CPU avec PVR 0x%1$03llx"
+msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%1$08x"
@@ -4443,9 +4471,6 @@ msgstr "Impossible de trouver le volume avec le nom : %1$s"
 msgid "Could not add CDATA to doc root"
 msgstr "Impossible d'ajouter CDATA à la racine du document"
 
-msgid "Could not add IDE controller"
-msgstr "Impossible d'ajouter un contrôleur IDE"
-
 msgid "Could not add attribute to XML node"
 msgstr "Impossible d'ajouter un attribut au nœud XML"
 
@@ -5175,9 +5200,6 @@ msgstr "Impossible d'analyser 'bridge/stp_state' '%1$s' pour '%2$s'"
 msgid "Could not parse MTU value '%1$s'"
 msgstr "Impossible d'analyser la valeur MTU '%1$s'"
 
-msgid "Could not parse SCSI controller"
-msgstr "Impossible d'analyser le contrôleur SCSI"
-
 #, c-format
 msgid "Could not parse UUID from '%1$s'"
 msgstr "Impossible d’analyser l’UUID depuis ’%1$s’"
@@ -5739,6 +5761,9 @@ msgstr "Détruire le pool indiqué."
 msgid "Delete a given vol."
 msgstr "Détruire le volume indiqué."
 
+msgid "Delete a throttling group."
+msgstr ""
+
 msgid "Delete an IOThread from the guest domain."
 msgstr "Supprime un IOThread du domaine invité."
 
@@ -6214,6 +6239,10 @@ msgid "Domain '%1$s' marked as autostarted\n"
 msgstr "Domaine '%1$s' marqué comme autodémarré\n"
 
 #, c-format
+msgid "Domain '%1$s' marked as autostarted on next boot\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$s' resumed\n"
 msgstr "Domaine '%1$s' repris\n"
 
@@ -6240,6 +6269,10 @@ msgstr "Les sysinfo du domaine '%1$s' ne sont pas disponibles"
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
 msgstr "Domaine '%1$s' non marqué comme autostarted\n"
+
+#, c-format
+msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$s' was reset\n"
@@ -7172,10 +7205,6 @@ msgid "Failed to acquire pid file '%1$s'"
 msgstr "Impossible d'acquérir le fichier pid '%1$s'"
 
 #, c-format
-msgid "Failed to add %1$s controller type definition"
-msgstr "Échec de l'ajout de la définition du type de contrôleur %1$s"
-
-#, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr ""
 "Échec de l'ajout de l'adresse IP %1$s au cache d'adresses IP pour "
@@ -7220,10 +7249,6 @@ msgstr "Échec de l'allocation de la liste des périphériques PCI : %1$s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "Échec de l'allocation du tampon XML"
-
-#, c-format
-msgid "Failed to allocate slirp for '%1$s'"
-msgstr "Échec de l'allocation de slirp pour '%1$s'"
 
 msgid "Failed to allocate tty"
 msgstr "Échec de l'allocation du tty"
@@ -7398,6 +7423,10 @@ msgstr "Échec de l'établissement de la liste d’arborescence"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Échec de la connexion du socket à '%1$s'"
+
+#, c-format
+msgid "Failed to connect to dbus-daemon: %1$s"
+msgstr ""
 
 msgid "Failed to connect to mon socket"
 msgstr ""
@@ -7590,6 +7619,10 @@ msgstr "Impossible de créer le pool %1$s"
 #, c-format
 msgid "Failed to create pool from %1$s"
 msgstr "Impossible de créer le pool depuis %1$s"
+
+#, c-format
+msgid "Failed to create rdp state dir %1$s"
+msgstr ""
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr "Impossible de créer un fil de redémarrage, ce qui tue le domaine"
@@ -8367,6 +8400,10 @@ msgstr "Impossible de rendre la racine privée"
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
 msgstr "Impossible de marquer le domaine '%1$s' comme autodémarré"
+
+#, c-format
+msgid "Failed to mark domain '%1$s' as autostarted on next boot"
+msgstr ""
 
 #, c-format
 msgid "Failed to mkdir %1$s"
@@ -9335,6 +9372,10 @@ msgid "Failed to unmark domain '%1$s' as autostarted"
 msgstr "Échec de la désactivation du domaine '%1$s' comme étant autodémarré"
 
 #, c-format
+msgid "Failed to unmark domain '%1$s' as autostarted on next boot"
+msgstr ""
+
+#, c-format
 msgid "Failed to unmarshall reply: %1$s"
 msgstr "Échec de la réponse de dé-marquage : %1$s"
 
@@ -9723,6 +9764,9 @@ msgstr "Opération GET échouée : %1$s"
 msgid "GNUTLS call error"
 msgstr "Erreur lors de l’appel système GNUTLS"
 
+msgid "Get a throttling group."
+msgstr ""
+
 msgid "Get block device size info for a domain."
 msgstr ""
 "Obtenir des informations sur la taille du périphérique de bloc pour un "
@@ -9806,6 +9850,9 @@ msgstr "Obtenir l'état persistant de l'interface"
 msgid "Get the CPU models for an arch."
 msgstr "Obtenez les modèles de CPU pour une arch."
 
+msgid "Get the CPU models reported by the hypervisor."
+msgstr ""
+
 msgid "Get the launch security parameters for a guest domain"
 msgstr "Obtenir les paramètres de sécurité de lancement pour un domaine invité"
 
@@ -9824,6 +9871,9 @@ msgstr "Obtenir le nom du parent d'un instantané"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "Obtenez le résumé des périphériques de bloc pour un domaine."
+
+msgid "Get the summary of throttle groups for a domain."
+msgstr ""
 
 msgid "Get the summary of virtual interfaces for a domain."
 msgstr "Obtenir le résumé des interfaces virtuelles pour un domaine."
@@ -9885,9 +9935,6 @@ msgstr "L'agent invité ne répond pas"
 #, c-format
 msgid "Guest agent is not responding: %1$s"
 msgstr "L'agent d'accueil ne répond pas : %1$s"
-
-msgid "Guest agent not available for now"
-msgstr "Agent invité non disponible pour le moment"
 
 msgid "Guest networking is not supported by this version of ch"
 msgstr ""
@@ -10079,6 +10126,9 @@ msgstr ""
 "Les fonctions Hyperv ne sont pas prises en charge pour l'architecture '%1$s' "
 "ou le type de machine '%2$s'"
 
+msgid "Hypervisor reported CPU models"
+msgstr ""
+
 msgid "I/O Error"
 msgstr "Erreur E/S"
 
@@ -10192,6 +10242,11 @@ msgstr "Numéro d'identification de l'IOThread"
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
+
+msgid ""
+"IOThread mapping for virtio-scsi controllers is not available with this QEMU "
+"binary"
 msgstr ""
 
 msgid "IOThread to be used by supported device"
@@ -10447,11 +10502,6 @@ msgstr ""
 #, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
 msgstr "Valeur non valide de l'attribut 'vcpus' de %1$s:%2$s"
-
-#, c-format
-msgid "Invalid %1$s image format specified in configuration file"
-msgstr ""
-"Format d'image %1$s non valide spécifié dans le fichier de configuration"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "Données 'cpu.max' non valides."
@@ -10856,6 +10906,10 @@ msgstr ""
 msgid "Invalid driver type: %1$d"
 msgstr "Type de pilote non valide : %1$d"
 
+#, c-format
+msgid "Invalid dump_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid duration"
 msgstr "Durée non valide"
 
@@ -10935,8 +10989,16 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "Méthode de vérification de la clé de l'hôte non valide : '%1$s'"
 
 #, c-format
+msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgstr ""
+
+#, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "Protocole hostdev non valide '%1$s'"
+
+#, c-format
+msgid "Invalid image_format '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -11158,6 +11220,10 @@ msgstr "Chemin relatif non valide '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "Moniteur resctrl non valide"
 
+#, c-format
+msgid "Invalid save_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid secret"
 msgstr "Secret non valide"
 
@@ -11178,6 +11244,10 @@ msgstr "Paramètre non valide pour le redimensionnement du HPT"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid snapshot_image_format '%1$s'"
 msgstr ""
 
 #, c-format
@@ -11483,6 +11553,9 @@ msgstr "Le noyau ne prend pas en charge l'espace de noms d'utilisateur"
 
 msgid "Kernel image path in this domain is not defined"
 msgstr "Le chemin de l'image du noyau dans ce domaine n'est pas défini"
+
+msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -12291,9 +12364,6 @@ msgstr "Contexte XPath manquant"
 msgid "Missing XPath expression"
 msgstr "Expression XPath manquante"
 
-msgid "Missing acpi table type"
-msgstr "Type de table acpi manquant"
-
 #, c-format
 msgid "Missing actual data for interface '%1$s'"
 msgstr "Données réelles manquantes pour l'interface '%1$s'"
@@ -12343,6 +12413,10 @@ msgstr "Nom du pont manquant"
 
 msgid "Missing capability type"
 msgstr "Type de capacité manquante"
+
+#, c-format
+msgid "Missing certificate file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
@@ -12420,6 +12494,10 @@ msgstr "Données keepaliveCount manquantes dans le document JSON"
 
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "Données keepaliveInterval manquantes dans le document JSON"
+
+#, c-format
+msgid "Missing key file '%1$s'"
+msgstr ""
 
 msgid "Missing listen element"
 msgstr "Élément d'écoute manquant"
@@ -12587,6 +12665,9 @@ msgstr "Données ownerPid manquantes dans le document JSON"
 
 msgid "Missing ownerUUID data in JSON document"
 msgstr "Données ownerUUID manquantes dans le document JSON"
+
+msgid "Missing password"
+msgstr ""
 
 msgid "Missing path or lockspace for lease resource"
 msgstr ""
@@ -13831,6 +13912,9 @@ msgstr "Seuls les types de console PTY sont pris en charge"
 msgid "Only VNC supported"
 msgstr "Seulement VNC pris en charge"
 
+msgid "Only a single ACPI table is supported"
+msgstr ""
+
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Un seul contrôleur IDE est pris en charge pour ce type de machine"
 
@@ -13918,9 +14002,6 @@ msgstr "Une seule adresse IPv4 par interface est autorisée"
 
 msgid "Only one IPv6 address per interface is allowed"
 msgstr "Une seule adresse IPv6 par interface est autorisée"
-
-msgid "Only one acpi table is supported"
-msgstr "Une seule table acpi est prise en charge"
 
 msgid "Only one argument from --table and --uuid may be specified."
 msgstr "Un seul argument parmi --table et --uuid peut être spécifié."
@@ -14293,6 +14374,9 @@ msgstr "Les périphériques parallèles ne sont pas pris en charge par libxl"
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "Index du port parallèle %1$d hors de la plage [0..2]"
+
+msgid "Parallel save is only supported with the 'sparse' save image format"
+msgstr ""
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -14674,6 +14758,10 @@ msgid "QEMU NBD server does not support TLS transport"
 msgstr "Le serveur QEMU NBD ne prend pas en charge le transport TLS"
 
 #, c-format
+msgid "QEMU agent command '%1$s' returned neither error nor success"
+msgstr ""
+
+#, c-format
 msgid "QEMU binary %1$s is not executable"
 msgstr "Le binaire de QEMU %1$s n'est pas exécutable"
 
@@ -14820,6 +14908,15 @@ msgid ""
 msgstr ""
 "L'image RBD %1$s est un ancien format Il ne prend pas en charge les "
 "fonctions étendues et le striping"
+
+msgid "RDP doesn't support 'multiUser'"
+msgstr ""
+
+msgid "RDP doesn't support 'replaceUser'"
+msgstr ""
+
+msgid "RDP password expiration isn't supported"
+msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "Allocation de la bande passante de la mémoire RDT non prise en charge"
@@ -17696,6 +17793,11 @@ msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
 msgstr ""
 "La minuterie '%1$s' ne prend pas en charge la politique de tic-tac '%2$s'"
 
+msgid ""
+"The 'dev' attribute of the <source> element can only be used with "
+"<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
+msgstr ""
+
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
@@ -18208,6 +18310,12 @@ msgstr "Ce type de disque ne peut pas être débranché à chaud"
 
 msgid "Thread(s) per core:"
 msgstr "Thread(s) par coeur :"
+
+msgid "Throttle group deleted successfully\n"
+msgstr ""
+
+msgid "Throttle group set successfully\n"
+msgstr ""
 
 #, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -20108,6 +20216,10 @@ msgid "Unable to read pidfile '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Unable to read qemu-rdp pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "Impossible de lire le fichier pid de slirp '%1$s'"
 
@@ -20527,6 +20639,9 @@ msgstr "Impossible de définir l'identité locale du fil"
 
 msgid "Unable to set thread local variable"
 msgstr "Impossible de définir la variable locale du thread"
+
+msgid "Unable to set throttle group"
+msgstr ""
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
@@ -21020,10 +21135,6 @@ msgstr "Modèle de contrôleur SCSI inconnu %1$s"
 #, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "Paramètre URI inconnu '%1$s'"
-
-#, c-format
-msgid "Unknown acpi table type: %1$s"
-msgstr "Type de table acpi inconnu : %1$s"
 
 #, c-format
 msgid "Unknown adapter type: %1$X"
@@ -21623,6 +21734,9 @@ msgstr ""
 #, c-format
 msgid "Unsupported object type %1$d"
 msgstr "Type d'objet non pris en charge %1$d"
+
+msgid "Unsupported qemu-rdp listen type"
+msgstr ""
 
 msgid "Unsupported resctrl monitor type"
 msgstr "Type de moniteur resctrl non pris en charge"
@@ -23075,6 +23189,16 @@ msgid "block"
 msgstr "bloc"
 
 #, c-format
+msgid ""
+"block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr ""
 "la limite d'accélération des E/S du bloc ne doit pas être supérieure à "
@@ -23460,6 +23584,9 @@ msgstr "ne peut pas maintenir une relation de soutien relatif"
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
 msgstr "ne peut pas manipuler les instantanés inactifs du disque '%1$s'"
 
+msgid "can't open log context"
+msgstr ""
+
 #, c-format
 msgid "can't open session to the domain with id %1$d"
 msgstr "Impossible d'ouvrir une session sur le domaine avec l'id %1$d"
@@ -23711,6 +23838,9 @@ msgstr ""
 msgid "cannot change persistent config of a transient network"
 msgstr ""
 "ne peut pas changer la configuration persistante d'un réseau transitoire"
+
+msgid "cannot change port settings on rdp graphics"
+msgstr ""
 
 msgid "cannot change port settings on spice graphics"
 msgstr "ne peut pas changer les paramètres du port sur les graphiques spice"
@@ -24588,11 +24718,6 @@ msgstr "impossible d’analyser le port vnc %1$s"
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "ne peut pas passer le tuyau pour la migration en tunnel"
 
-msgid "cannot perform block operations while checkpoint exists"
-msgstr ""
-"ne peut pas effectuer d'opérations de blocage tant que le point de contrôle "
-"existe"
-
 msgid "cannot perform disk backup for inactive domain"
 msgstr "ne peut pas effectuer de sauvegarde de disque pour un domaine inactif"
 
@@ -25084,6 +25209,9 @@ msgstr "capture de l'état du disque mais pas de l'état du vm"
 msgid "cd: %1$s: %2$s"
 msgstr "cd : %1$s : %2$s"
 
+msgid "cdrom device with throttle filters isn't supported"
+msgstr ""
+
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "Le périphérique cdrom avec le bus virtio n'est pas pris en charge"
 
@@ -25386,6 +25514,9 @@ msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
 
+msgid "comma separated list of throttle groups to be applied"
+msgstr ""
+
 msgid "command"
 msgstr "commande"
 
@@ -25598,6 +25729,9 @@ msgstr "contrôler les trafics entrants du domaine"
 msgid "control domain's outgoing traffics"
 msgstr "contrôler les trafics sortants du domaine"
 
+msgid "control next boot state"
+msgstr ""
+
 msgid "control or query domain emulator affinity"
 msgstr "affinité de l'émulateur de domaine de contrôle ou d'interrogation"
 
@@ -25607,6 +25741,11 @@ msgstr "affinité vcpu du domaine de contrôle ou d'interrogation"
 #, c-format
 msgid "controller %1$s:%2$d not found"
 msgstr "contrôleur %1$s:%2$d introuvable"
+
+msgid ""
+"controller driver 'iothread' attribute can't be used together with "
+"'iothreads' subelement"
+msgstr ""
 
 #, c-format
 msgid "controller index='%1$d' already exists"
@@ -25668,9 +25807,6 @@ msgid "copy destination is block device instead of regular file"
 msgstr ""
 "la destination de la copie est un périphérique de bloc au lieu d'un fichier "
 "normal"
-
-msgid "copy of read-only disks is not supported"
-msgstr "la copie de disques en lecture seule n'est pas prise en charge"
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr ""
@@ -26193,11 +26329,6 @@ msgstr ""
 "La création d'un nouveau groupe ou la mise à jour d'un groupe existant avec "
 "tous les paramètres de réglage à zéro n'est pas prise en charge"
 
-msgid "creating checkpoint for incremental backup is not supported yet"
-msgstr ""
-"la création de points de contrôle pour la sauvegarde incrémentale n'est pas "
-"encore prise en charge"
-
 msgid "creating snapshot"
 msgstr "création d'un instantané"
 
@@ -26338,12 +26469,10 @@ msgid "dbus-daemon %1$s didn't show up"
 msgstr "dbus-daemon %1$s ne s'est pas présenté"
 
 #, c-format
-msgid "dbus-daemon %1$s died unexpectedly"
-msgstr "dbus-daemon %1$s est mort de manière inattendue"
-
-#, c-format
-msgid "dbus-daemon died and reported: %1$s"
-msgstr "dbus-daemon est mort et a été signalé : %1$s"
+msgid ""
+"dbus-daemon died and reported:\n"
+"%1$s"
+msgstr ""
 
 msgid "default"
 msgstr "par défaut"
@@ -27446,6 +27575,14 @@ msgid "duplicate domain '%1$s'"
 msgstr "domaine en double '%1$s'"
 
 #, c-format
+msgid "duplicate filter name '%1$s' found"
+msgstr ""
+
+#, c-format
+msgid "duplicate group name '%1$s' found"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
 msgstr "doublon id iothread '%1$u' trouvé"
 
@@ -27946,6 +28083,14 @@ msgstr ""
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
 msgstr ""
 "événement 'migration-iteration' pour le domaine '%1$s' : itération : '%2$d'\n"
+
+#, c-format
+msgid ""
+"event 'nic-mac-change' for domain '%1$s':\n"
+"alias: %2$s\n"
+"oldMAC: %3$s\n"
+"newMAC: %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
@@ -28657,6 +28802,9 @@ msgstr ""
 msgid "failed to get hostname"
 msgstr "impossible de récupérer le nom de l’hôte"
 
+msgid "failed to get hypervisor CPU model names"
+msgstr ""
+
 msgid "failed to get hypervisor type"
 msgstr "impossible de récupérer le type d’hyperviseur"
 
@@ -29224,6 +29372,9 @@ msgstr "échec à enregistrer le contenu"
 #, c-format
 msgid "failed to seek in log file %1$s"
 msgstr "échec de la recherche dans le fichier journal %1$s"
+
+msgid "failed to seek on file descriptor"
+msgstr ""
 
 #, c-format
 msgid "failed to seek to end of %1$s"
@@ -29800,6 +29951,9 @@ msgstr "format du volume de sauvegarde en cas de prise d'un instantané"
 msgid "format of the destination file"
 msgstr "format du fichier de destination"
 
+msgid "format of the save image file"
+msgstr ""
+
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
 msgstr "Le formateur pour %1$s %2$s a signalé une erreur"
@@ -30045,6 +30199,28 @@ msgid "guest CPU doesn't match specification: missing features: %1$s"
 msgstr ""
 "L'unité centrale invitée ne correspond pas aux spécifications : fonctions "
 "manquantes : %1$s"
+
+msgid "guest agent command failed"
+msgstr ""
+
+#, c-format
+msgid "guest agent command failed: %1$s"
+msgstr ""
+
+msgid "guest agent command timed out"
+msgstr ""
+
+#, c-format
+msgid "guest agent command timed out: %1$s"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to command within '%1$d' seconds"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
+msgstr ""
 
 msgid "guest agent replied with wrong id to guest-sync command"
 msgstr ""
@@ -30472,6 +30648,9 @@ msgstr "inactif"
 msgid "inbound rate larger than maximum %1$u"
 msgstr "taux d'entrée supérieur au maximum %1$u"
 
+msgid "include all CPU models known to the hypervisor for the architecture"
+msgstr ""
+
 msgid "include backup size estimate in XML dump"
 msgstr "inclure l'estimation de la taille de la sauvegarde dans le dump XML"
 
@@ -30506,9 +30685,6 @@ msgstr "résultat incomplet, statut inconnu chaîne '%1$s'"
 #, c-format
 msgid "incomplete save header in '%1$s'"
 msgstr "entête de sauvegarde incomplète dans '%1$s'"
-
-msgid "incremental backup is not supported yet"
-msgstr "la sauvegarde incrémentale n'est pas encore prise en charge"
 
 msgid "individual CPU state configuration is not supported"
 msgstr ""
@@ -31912,6 +32088,9 @@ msgstr "liste des UUID des pools actifs uniquement"
 msgid "list all domain blocks"
 msgstr "liste de tous les blocs de domaine"
 
+msgid "list all domain throttlegroups."
+msgstr ""
+
 msgid "list all domain virtual interfaces"
 msgstr "liste toutes les interfaces virtuelles du domaine"
 
@@ -32519,6 +32698,9 @@ msgstr "taille malformée/manquante dans l'info mémoire de virtio"
 
 msgid "malformed/missing slot in dimm memory info"
 msgstr "slot malformé/manquant dans l'info mémoire dimm"
+
+msgid "managed save cannot be requested for transient domains"
+msgstr ""
 
 msgid "managed save of a domain state"
 msgstr "sauvegarde gérée de l'état d'un domaine"
@@ -33429,6 +33611,9 @@ msgstr "Nom d’indicateur manquant dans le cache des capacités de QEMU"
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "Nom de volume gluster manquant pour le chemin '%1$s'"
 
+msgid "missing group name"
+msgstr ""
+
 #, c-format
 msgid "missing group_device value for '%1$s'"
 msgstr ""
@@ -33523,8 +33708,8 @@ msgstr "attribut listen manquant dans les données de migration"
 msgid "missing listen element"
 msgstr "élément d'écoute manquant"
 
-msgid "missing listen element for graphics"
-msgstr "élément d'écoute manquant pour les graphiques"
+msgid "missing listen element for VNC graphics"
+msgstr ""
 
 msgid "missing listen element for spice graphics"
 msgstr "l'élément d'écoute manquant pour les graphiques spice"
@@ -34609,6 +34794,9 @@ msgstr "aucun processeur trouvé"
 msgid "no CPUs given"
 msgstr "pas de CPUs donnés"
 
+msgid "no D-Bus address"
+msgstr ""
+
 msgid "no FLR, PM reset or bus reset available"
 msgstr ""
 "pas de FLR, de réinitialisation PM ou de réinitialisation bus disponible"
@@ -35278,6 +35466,12 @@ msgstr "Les paramètres numa ne sont pas pris en charge par le pilote vz"
 msgid "numad is not available on this host"
 msgstr "numad n'est pas disponible sur cet hôte"
 
+msgid "number of IO channels to use for parallel restore"
+msgstr ""
+
+msgid "number of IO channels to use for parallel save"
+msgstr ""
+
 msgid "number of bytes read:"
 msgstr "nombre d'octets lus :"
 
@@ -35306,6 +35500,9 @@ msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr ""
 "nombre de pages à scanner avant que le service de mémoire partagée ne se "
 "mette en sommeil"
+
+msgid "number of parallel save channels cannot be less than 1"
+msgstr ""
 
 msgid "number of read operations:"
 msgstr "nombre d'opérations de lecture :"
@@ -35459,11 +35656,9 @@ msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
-"supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
+"is supported"
 msgstr ""
-"seulement 1 périphérique graphique de chaque type (sdl, vnc, spice, "
-"headless, dbus) est pris en charge"
 
 msgid "only JSON objects can be top level"
 msgstr "seuls les objets JSON peuvent être de premier niveau"
@@ -35870,6 +36065,10 @@ msgstr ""
 #, c-format
 msgid "parameter %1$s too big for destination"
 msgstr "paramètre %1$s trop grand pour la destination"
+
+#, c-format
+msgid "parameter '%1$s' is missing in reply of guest-get-load"
+msgstr ""
 
 #, c-format
 msgid "parameter '%1$s' not supported"
@@ -36350,6 +36549,9 @@ msgstr "préfixe trop long"
 msgid "preserve sparseness of volume"
 msgstr "préserver la rareté du volume"
 
+msgid "preserve state before shutting down"
+msgstr ""
+
 msgid "pretty-print any JSON output"
 msgstr "imprimer n'importe quelle sortie JSON"
 
@@ -36546,6 +36748,9 @@ msgstr "l'agent qemu ne retournait pas un tableau d'interfaces"
 msgid "qemu agent didn't return an array of keys"
 msgstr "L'agent qemu ne retourne pas un tableau de clés"
 
+msgid "qemu agent didn't return an array of loads"
+msgstr ""
+
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr "qemu n'a pas rapporté l'id du fil pour vcpu '%1$zu'"
@@ -36611,6 +36816,24 @@ msgstr "qemu a retourné un temps malformé"
 
 msgid "qemu state driver is not active"
 msgstr "Le pilote d'état de qemu n'est pas actif"
+
+#, c-format
+msgid ""
+"qemu-rdp died and reported:\n"
+"%1$s"
+msgstr ""
+
+msgid "qemu-rdp does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp support requires a D-Bus bus graphics device."
+msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -36875,6 +37098,13 @@ msgstr "rawio ne peut être utilisé qu'avec device='lun'"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "rawio n'est pris en charge que pour le périphérique hôte scsi"
+
+msgid "rdp"
+msgstr ""
+
+#, c-format
+msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
+msgstr ""
 
 msgid "re-initialize NVRAM from its pristine template"
 msgstr "réinitialiser la NVRAM à partir de son modèle vierge"
@@ -37171,6 +37401,9 @@ msgstr "rapport sur les statistiques spécifiques à l'hyperviseur"
 
 msgid "report interface information"
 msgstr "rapporter les informations sur l'interface"
+
+msgid "report load averages information"
+msgstr ""
 
 msgid "report only stats that are accessible instantly"
 msgstr "ne signaler que les statistiques accessibles instantanément"
@@ -37483,6 +37716,10 @@ msgstr "enregistrer l’état du domaine dans un fichier"
 
 msgid "save canceled"
 msgstr "sauvegarde annulée"
+
+#, c-format
+msgid "save image format %1$s is not supported by this QEMU binary"
+msgstr ""
 
 msgid "save image is incomplete"
 msgstr "l'image de sauvegarde est incomplète"
@@ -37900,8 +38137,11 @@ msgstr ""
 "les actions '%1$llu' doivent être comprises dans l'intervalle [%2$llu, "
 "%3$llu]"
 
-msgid "sheepdog protocol accepts only one host"
-msgstr "le protocole sheepdog n'accepte qu'un seul hôte"
+msgid "shim is not supported by this QEMU binary"
+msgstr ""
+
+msgid "shim only allowed with kernel option"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -38128,6 +38368,12 @@ msgstr "périphérique source pour le stockage sous-jacent"
 
 #, c-format
 msgid ""
+"source disk for '%1$s' is not a regular file, reverting to snapshot is not "
+"supported"
+msgstr ""
+
+#, c-format
+msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
@@ -38289,6 +38535,9 @@ msgstr "valeur de la statistique trop grande"
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "erreur d'état dans l'événement (réel 0x%1$x, attendu 0x%2$x)"
+
+msgid "stop the daemon"
+msgstr ""
 
 msgid "stopped, with no saved guests"
 msgstr "arrêté, sans aucun invité sauvegardé"
@@ -39015,6 +39264,21 @@ msgstr "thread_pool_min doit être inférieur ou égal à thread_pool_max"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "seuil sous forme de nombre mis à l'échelle (par défaut, octets)"
+
+#, c-format
+msgid "throttle group '%1$s' is still being used by disk %2$s"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' not found"
+msgstr ""
+
+#, c-format
+msgid "throttle group field '%1$s' must be an integer"
+msgstr ""
+
+msgid "throttle group name"
+msgstr ""
 
 msgid "time to set"
 msgstr "le temps de mettre en place"
@@ -40342,6 +40606,10 @@ msgid "unexpected filesystem type %1$d"
 msgstr "type de système de fichiers %1$d inattendu"
 
 #, c-format
+msgid "unexpected graphics type '%1$d'"
+msgstr ""
+
+#, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "CPU modèle d'hôte inattendu pour l'architecture %1$s"
 
@@ -40629,6 +40897,18 @@ msgstr "type auth '%1$s' inconnu"
 #, c-format
 msgid "unknown authentication type %1$s"
 msgstr "type d'authentification inconnu %1$s"
+
+#, c-format
+msgid "unknown auto_shutdown_poweroff '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_save '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_shutdown '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
@@ -41213,6 +41493,9 @@ msgstr "périphérique disque non pris en charge"
 #, c-format
 msgid "unsupported disk driver %1$s"
 msgstr "Pilote de disque non pris en charge %1$s"
+
+msgid "unsupported disk protocol"
+msgstr ""
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
@@ -42581,6 +42864,79 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+#~ msgid "Cannot find CPU model with PVR 0x%1$03llx"
+#~ msgstr "Impossible de trouver le modèle de CPU avec PVR 0x%1$03llx"
+
+#~ msgid "Could not add IDE controller"
+#~ msgstr "Impossible d'ajouter un contrôleur IDE"
+
+#~ msgid "Could not parse SCSI controller"
+#~ msgstr "Impossible d'analyser le contrôleur SCSI"
+
+#, c-format
+#~ msgid "Failed to add %1$s controller type definition"
+#~ msgstr "Échec de l'ajout de la définition du type de contrôleur %1$s"
+
+#, c-format
+#~ msgid "Failed to allocate slirp for '%1$s'"
+#~ msgstr "Échec de l'allocation de slirp pour '%1$s'"
+
+#~ msgid "Guest agent not available for now"
+#~ msgstr "Agent invité non disponible pour le moment"
+
+#, c-format
+#~ msgid "Invalid %1$s image format specified in configuration file"
+#~ msgstr ""
+#~ "Format d'image %1$s non valide spécifié dans le fichier de configuration"
+
+#~ msgid "Missing acpi table type"
+#~ msgstr "Type de table acpi manquant"
+
+#~ msgid "Only one acpi table is supported"
+#~ msgstr "Une seule table acpi est prise en charge"
+
+#, c-format
+#~ msgid "Unknown acpi table type: %1$s"
+#~ msgstr "Type de table acpi inconnu : %1$s"
+
+#~ msgid "cannot perform block operations while checkpoint exists"
+#~ msgstr ""
+#~ "ne peut pas effectuer d'opérations de blocage tant que le point de "
+#~ "contrôle existe"
+
+#~ msgid "copy of read-only disks is not supported"
+#~ msgstr "la copie de disques en lecture seule n'est pas prise en charge"
+
+#~ msgid "creating checkpoint for incremental backup is not supported yet"
+#~ msgstr ""
+#~ "la création de points de contrôle pour la sauvegarde incrémentale n'est "
+#~ "pas encore prise en charge"
+
+#, c-format
+#~ msgid "dbus-daemon %1$s died unexpectedly"
+#~ msgstr "dbus-daemon %1$s est mort de manière inattendue"
+
+#, c-format
+#~ msgid "dbus-daemon died and reported: %1$s"
+#~ msgstr "dbus-daemon est mort et a été signalé : %1$s"
+
+#~ msgid "incremental backup is not supported yet"
+#~ msgstr "la sauvegarde incrémentale n'est pas encore prise en charge"
+
+#~ msgid "missing listen element for graphics"
+#~ msgstr "élément d'écoute manquant pour les graphiques"
+
+#~ msgid ""
+#~ "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+#~ "supported"
+#~ msgstr ""
+#~ "seulement 1 périphérique graphique de chaque type (sdl, vnc, spice, "
+#~ "headless, dbus) est pris en charge"
+
+#~ msgid "sheepdog protocol accepts only one host"
+#~ msgstr "le protocole sheepdog n'accepte qu'un seul hôte"
 
 #~ msgid ""
 #~ "'reconnect' attribute unsupported 'server' mode for <interface "

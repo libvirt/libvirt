@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-02-24 10:18+0000\n"
+"POT-Creation-Date: 2025-03-25 10:52+0000\n"
 "PO-Revision-Date: 2025-03-17 18:31+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
@@ -1254,6 +1254,10 @@ msgid "'%1$s' is not a suitable pr helper"
 msgstr "'%1$s' is not a suitable pr helper"
 
 #, c-format
+msgid "'%1$s' is not a suitable qemu-rdp helper name"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "'%1$s' is not supported in this QEMU binary"
 
@@ -1277,12 +1281,16 @@ msgstr "'%1$s' scheduler bitmap '%2$s' is empty"
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' starting from %2$llu has only %3$zd bytes available"
 
+#, c-format
+msgid "'%1$s' vanished unexpectedly"
+msgstr ""
+
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
-"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', "
-"'--copy-storage-inc'"
+"'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
@@ -1293,8 +1301,8 @@ msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
-"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', "
-"'--copy-storage-inc'"
+"'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
+"copy-storage-inc'"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1469,7 +1477,8 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' and 'volume' must be specified together for 'pool' type source"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
-msgstr "'queue' count must be configured for explicit iothread to queue mapping"
+msgstr ""
+"'queue' count must be configured for explicit iothread to queue mapping"
 
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr "'queues' is only supported by virtio-scsi controller"
@@ -1497,6 +1506,9 @@ msgstr ""
 
 msgid "'return' member missing"
 msgstr "'return' member missing"
+
+msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1901,6 +1913,14 @@ msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI requires UEFI on this architecture"
 
 #, c-format
+msgid "ACPI table type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "ACPI table type '%1$s' may only appear once"
+msgstr ""
+
+#, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
 msgstr "AES256CBC encryption invalid keylen=%1$zu"
 
@@ -2013,6 +2033,12 @@ msgstr "Add an IOThread to the guest domain."
 
 msgid "Add or remove vcpus"
 msgstr "Add or remove vCPUs"
+
+msgid "Add or update a throttling group."
+msgstr ""
+
+msgid "Add or updte a throttling group."
+msgstr ""
 
 msgid "Added"
 msgstr "Added"
@@ -2223,6 +2249,9 @@ msgstr "Automatic disk lease mode enabled, but no host ID is set"
 
 msgid "Autostart"
 msgstr "Autostart"
+
+msgid "Autostart Once:"
+msgstr ""
 
 msgid "Autostart:"
 msgstr "Autostart:"
@@ -3074,7 +3103,7 @@ msgid "Cannot find 'iothread' : %1$u"
 msgstr "Cannot find start time in %s"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%1$03llx"
+msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
 msgstr ""
 
 #, c-format
@@ -4227,9 +4256,6 @@ msgstr "Could find volume with name: %1$s"
 msgid "Could not add CDATA to doc root"
 msgstr ""
 
-msgid "Could not add IDE controller"
-msgstr ""
-
 #, fuzzy
 msgid "Could not add attribute to XML node"
 msgstr "Could not copy an XML node"
@@ -4964,9 +4990,6 @@ msgstr "Could not parse 'bridge/stp_state' '%1$s' for '%2$s'"
 msgid "Could not parse MTU value '%1$s'"
 msgstr "Could not parse MTU value '%1$s'"
 
-msgid "Could not parse SCSI controller"
-msgstr ""
-
 #, c-format
 msgid "Could not parse UUID from '%1$s'"
 msgstr "Could not parse UUID from '%1$s'"
@@ -5512,6 +5535,9 @@ msgstr "Delete a given pool."
 msgid "Delete a given vol."
 msgstr "Delete a given vol."
 
+msgid "Delete a throttling group."
+msgstr ""
+
 #, fuzzy
 msgid "Delete an IOThread from the guest domain."
 msgstr "Inject NMI to the guest domain."
@@ -5962,6 +5988,10 @@ msgid "Domain '%1$s' marked as autostarted\n"
 msgstr ""
 
 #, c-format
+msgid "Domain '%1$s' marked as autostarted on next boot\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$s' resumed\n"
 msgstr ""
 
@@ -5987,6 +6017,10 @@ msgstr "Domain '%1$s' sysinfo are not available"
 
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
+msgstr ""
+
+#, c-format
+msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
 msgstr ""
 
 #, c-format
@@ -6894,10 +6928,6 @@ msgstr "Failed to acquire lock"
 msgid "Failed to acquire pid file '%1$s'"
 msgstr "Failed to acquire pid file '%1$s'"
 
-#, fuzzy, c-format
-msgid "Failed to add %1$s controller type definition"
-msgstr "Failed to disconnect from the hypervisor"
-
 #, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr "Failed to add IP address %1$s to IP address cache for interface %2$s"
@@ -6938,10 +6968,6 @@ msgstr "Failed to allocate PCI device list: %1$s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "Failed to allocate XML buffer"
-
-#, fuzzy, c-format
-msgid "Failed to allocate slirp for '%1$s'"
-msgstr "Failed to pre-allocate space for file '%1$s'"
 
 msgid "Failed to allocate tty"
 msgstr "Failed to allocate tty"
@@ -7114,6 +7140,10 @@ msgstr "Failed to complete tree listing"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Failed to connect socket to '%1$s'"
+
+#, c-format
+msgid "Failed to connect to dbus-daemon: %1$s"
+msgstr ""
 
 msgid "Failed to connect to mon socket"
 msgstr ""
@@ -7303,6 +7333,10 @@ msgstr "Failed to create pool %1$s"
 #, c-format
 msgid "Failed to create pool from %1$s"
 msgstr "Failed to create pool from %1$s"
+
+#, c-format
+msgid "Failed to create rdp state dir %1$s"
+msgstr ""
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr "Failed to create reboot thread, killing domain"
@@ -8068,6 +8102,10 @@ msgstr "Failed to make root private"
 
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
+msgstr ""
+
+#, c-format
+msgid "Failed to mark domain '%1$s' as autostarted on next boot"
 msgstr ""
 
 #, c-format
@@ -9006,6 +9044,10 @@ msgstr ""
 msgid "Failed to unmark domain '%1$s' as autostarted"
 msgstr ""
 
+#, c-format
+msgid "Failed to unmark domain '%1$s' as autostarted on next boot"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to unmarshall reply: %1$s"
 msgstr "Failed to refresh pool %1$s"
@@ -9369,6 +9411,9 @@ msgstr "GET operation failed: %1$s"
 msgid "GNUTLS call error"
 msgstr "GNUTLS call error"
 
+msgid "Get a throttling group."
+msgstr ""
+
 msgid "Get block device size info for a domain."
 msgstr "Get block device size info for a domain."
 
@@ -9447,6 +9492,9 @@ msgstr "Get persistent interface state"
 msgid "Get the CPU models for an arch."
 msgstr "Get the CPU models for an arch."
 
+msgid "Get the CPU models reported by the hypervisor."
+msgstr ""
+
 msgid "Get the launch security parameters for a guest domain"
 msgstr ""
 
@@ -9465,6 +9513,9 @@ msgstr "Get the name of the parent of a snapshot"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "Get the summary of block devices for a domain."
+
+msgid "Get the summary of throttle groups for a domain."
+msgstr ""
 
 msgid "Get the summary of virtual interfaces for a domain."
 msgstr "Get the summary of virtual interfaces for a domain."
@@ -9525,9 +9576,6 @@ msgstr "Guest agent is not responding"
 #, c-format
 msgid "Guest agent is not responding: %1$s"
 msgstr "Guest agent is not responding: %1$s"
-
-msgid "Guest agent not available for now"
-msgstr "Guest agent not available for now"
 
 msgid "Guest networking is not supported by this version of ch"
 msgstr ""
@@ -9708,6 +9756,9 @@ msgid ""
 "'%2$s'"
 msgstr "scripts are not supported on interfaces of type %s"
 
+msgid "Hypervisor reported CPU models"
+msgstr ""
+
 #, fuzzy
 msgid "I/O Error"
 msgstr "I/O error"
@@ -9814,6 +9865,11 @@ msgstr ""
 
 #, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
+msgstr ""
+
+msgid ""
+"IOThread mapping for virtio-scsi controllers is not available with this QEMU "
+"binary"
 msgstr ""
 
 #, fuzzy
@@ -10068,10 +10124,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
 msgstr "Invalid mode attribute '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid %1$s image format specified in configuration file"
-msgstr "failed to parse configuration file"
 
 #, fuzzy
 msgid "Invalid 'cpu.max' data."
@@ -10447,6 +10499,10 @@ msgstr ""
 msgid "Invalid driver type: %1$d"
 msgstr "Invalid driver type: %1$d"
 
+#, c-format
+msgid "Invalid dump_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid duration"
 msgstr "Invalid duration"
 
@@ -10521,9 +10577,17 @@ msgstr "Invalid hook name for #%1$d"
 msgid "Invalid host key verification method: '%1$s'"
 msgstr "Invalid host key verification method: '%1$s'"
 
+#, c-format
+msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "Invalid mode attribute '%1$s'"
+
+#, c-format
+msgid "Invalid image_format '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -10745,6 +10809,10 @@ msgstr "Invalid relative path '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "Invalid network filter"
 
+#, c-format
+msgid "Invalid save_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid secret"
 msgstr "Invalid secret"
 
@@ -10766,6 +10834,10 @@ msgstr "Invalid state for this operation"
 
 #, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "Invalid snapshot_image_format '%1$s'"
 msgstr ""
 
 #, c-format
@@ -11044,6 +11116,9 @@ msgid "Kernel doesn't support user namespace"
 msgstr "Kernel doesn't support user namespace"
 
 msgid "Kernel image path in this domain is not defined"
+msgstr ""
+
+msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr ""
 
 #, fuzzy
@@ -11827,10 +11902,6 @@ msgstr ""
 msgid "Missing XPath expression"
 msgstr ""
 
-#, fuzzy
-msgid "Missing acpi table type"
-msgstr "missing capability type"
-
 #, fuzzy, c-format
 msgid "Missing actual data for interface '%1$s'"
 msgstr "Job submission failed on interface '%1$s'"
@@ -11886,6 +11957,10 @@ msgstr "missing timer name"
 #, fuzzy
 msgid "Missing capability type"
 msgstr "missing capability type"
+
+#, c-format
+msgid "Missing certificate file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
@@ -11965,6 +12040,10 @@ msgstr "Missing keepaliveCount data in JSON document"
 
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "Missing keepaliveInterval data in JSON document"
+
+#, c-format
+msgid "Missing key file '%1$s'"
+msgstr ""
 
 #, fuzzy
 msgid "Missing listen element"
@@ -12121,6 +12200,9 @@ msgstr "Missing ownerPid data in JSON document"
 
 msgid "Missing ownerUUID data in JSON document"
 msgstr "Missing ownerUUID data in JSON document"
+
+msgid "Missing password"
+msgstr ""
 
 msgid "Missing path or lockspace for lease resource"
 msgstr "Missing path or lockspace for lease resource"
@@ -13342,6 +13424,9 @@ msgstr "Only PTY console types are supported"
 msgid "Only VNC supported"
 msgstr "Not supported"
 
+msgid "Only a single ACPI table is supported"
+msgstr ""
+
 #, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Can't add another USB controller: USB is disabled for this domain"
@@ -13425,10 +13510,6 @@ msgstr ""
 #, fuzzy
 msgid "Only one IPv6 address per interface is allowed"
 msgstr "Only IPv4 or IPv6 addresses can be used with iptables"
-
-#, fuzzy
-msgid "Only one acpi table is supported"
-msgstr "only one numatune is supported"
 
 #, fuzzy
 msgid "Only one argument from --table and --uuid may be specified."
@@ -13785,6 +13866,9 @@ msgstr "Parallel devices are not supported by libxl"
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "Parallel port index %1$d out of [0..2] range"
+
+msgid "Parallel save is only supported with the 'sparse' save image format"
+msgstr ""
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -14152,6 +14236,10 @@ msgid "QEMU NBD server does not support TLS transport"
 msgstr "nbd does not support transport '%s'"
 
 #, c-format
+msgid "QEMU agent command '%1$s' returned neither error nor success"
+msgstr ""
+
+#, c-format
 msgid "QEMU binary %1$s is not executable"
 msgstr "QEMU binary %1$s is not executable"
 
@@ -14285,6 +14373,15 @@ msgstr "Compressed migration is not supported by QEMU binary"
 #, c-format
 msgid ""
 "RBD image %1$s is old format. Does not support extended features and striping"
+msgstr ""
+
+msgid "RDP doesn't support 'multiUser'"
+msgstr ""
+
+msgid "RDP doesn't support 'replaceUser'"
+msgstr ""
+
+msgid "RDP password expiration isn't supported"
 msgstr ""
 
 #, fuzzy
@@ -16918,6 +17015,11 @@ msgstr ""
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
 msgstr "nbd does not support transport '%s'"
 
+msgid ""
+"The 'dev' attribute of the <source> element can only be used with "
+"<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
+msgstr ""
+
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
@@ -17400,6 +17502,12 @@ msgstr "This type of disk cannot be hot unplugged"
 
 msgid "Thread(s) per core:"
 msgstr "Thread(s) per core:"
+
+msgid "Throttle group deleted successfully\n"
+msgstr ""
+
+msgid "Throttle group set successfully\n"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -19316,6 +19424,10 @@ msgstr "Unable to check interface config on this platform"
 msgid "Unable to read pidfile '%1$s'"
 msgstr ""
 
+#, c-format
+msgid "Unable to read qemu-rdp pidfile '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "Unable to read from '%1$s'"
@@ -19726,6 +19838,9 @@ msgstr "Unable to set thread local identity"
 #, fuzzy
 msgid "Unable to set thread local variable"
 msgstr "Unable to set thread local identity"
+
+msgid "Unable to set throttle group"
+msgstr ""
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
@@ -20219,10 +20334,6 @@ msgstr "Unknown controller type '%1$s'"
 #, fuzzy, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "Unknown model type '%1$s'"
-
-#, fuzzy, c-format
-msgid "Unknown acpi table type: %1$s"
-msgstr "Unknown async job type %1$s"
 
 #, fuzzy, c-format
 msgid "Unknown adapter type: %1$X"
@@ -20806,6 +20917,9 @@ msgstr ""
 #, c-format
 msgid "Unsupported object type %1$d"
 msgstr "Unsupported object type %1$d"
+
+msgid "Unsupported qemu-rdp listen type"
+msgstr ""
 
 #, fuzzy
 msgid "Unsupported resctrl monitor type"
@@ -22147,6 +22261,16 @@ msgid "block"
 msgstr "block"
 
 #, c-format
+msgid ""
+"block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr ""
 
@@ -22494,6 +22618,9 @@ msgstr "Manage active block operations"
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
 msgstr ""
 
+msgid "can't open log context"
+msgstr ""
+
 #, c-format
 msgid "can't open session to the domain with id %1$d"
 msgstr "can't open session to the domain with id %1$d"
@@ -22717,6 +22844,9 @@ msgstr "cannot change persistent config of a transient domain"
 
 msgid "cannot change persistent config of a transient network"
 msgstr "cannot change persistent config of a transient network"
+
+msgid "cannot change port settings on rdp graphics"
+msgstr ""
 
 msgid "cannot change port settings on spice graphics"
 msgstr "cannot change port settings on spice graphics"
@@ -23563,9 +23693,6 @@ msgstr "cannot parse vnc port %1$s"
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "cannot pass pipe for tunnelled migration"
 
-msgid "cannot perform block operations while checkpoint exists"
-msgstr ""
-
 #, fuzzy
 msgid "cannot perform disk backup for inactive domain"
 msgstr "cannot list vcpus for an inactive domain"
@@ -24037,6 +24164,9 @@ msgstr "capture disk state but not vm state"
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
 
+msgid "cdrom device with throttle filters isn't supported"
+msgstr ""
+
 msgid "cdrom device with virtio bus isn't supported"
 msgstr ""
 
@@ -24322,6 +24452,9 @@ msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
 
+msgid "comma separated list of throttle groups to be applied"
+msgstr ""
+
 msgid "command"
 msgstr "command"
 
@@ -24531,6 +24664,9 @@ msgstr "control domain's incoming traffics"
 msgid "control domain's outgoing traffics"
 msgstr "control domain's outgoing traffics"
 
+msgid "control next boot state"
+msgstr ""
+
 msgid "control or query domain emulator affinity"
 msgstr "control or query domain emulator affinity"
 
@@ -24540,6 +24676,11 @@ msgstr "control or query domain vcpu affinity"
 #, c-format
 msgid "controller %1$s:%2$d not found"
 msgstr "controller %1$s:%2$d not found"
+
+msgid ""
+"controller driver 'iothread' attribute can't be used together with "
+"'iothreads' subelement"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "controller index='%1$d' already exists"
@@ -24600,10 +24741,6 @@ msgstr ""
 
 msgid "copy destination is block device instead of regular file"
 msgstr ""
-
-#, fuzzy
-msgid "copy of read-only disks is not supported"
-msgstr "fs driver %s is not supported"
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr ""
@@ -25104,9 +25241,6 @@ msgid ""
 "supported"
 msgstr ""
 
-msgid "creating checkpoint for incremental backup is not supported yet"
-msgstr ""
-
 msgid "creating snapshot"
 msgstr "creating snapshot"
 
@@ -25241,11 +25375,9 @@ msgid "dbus-daemon %1$s didn't show up"
 msgstr "Domain %1$s didn't show up"
 
 #, c-format
-msgid "dbus-daemon %1$s died unexpectedly"
-msgstr ""
-
-#, c-format
-msgid "dbus-daemon died and reported: %1$s"
+msgid ""
+"dbus-daemon died and reported:\n"
+"%1$s"
 msgstr ""
 
 msgid "default"
@@ -26318,6 +26450,14 @@ msgid "duplicate domain '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "duplicate filter name '%1$s' found"
+msgstr ""
+
+#, c-format
+msgid "duplicate group name '%1$s' found"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
 msgstr ""
 
@@ -26806,6 +26946,14 @@ msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
+msgstr ""
+
+#, c-format
+msgid ""
+"event 'nic-mac-change' for domain '%1$s':\n"
+"alias: %2$s\n"
+"oldMAC: %3$s\n"
+"newMAC: %4$s\n"
 msgstr ""
 
 #, c-format
@@ -27516,6 +27664,9 @@ msgstr "failed to get free memory for NUMA node number: %1$lu"
 msgid "failed to get hostname"
 msgstr "failed to get hostname"
 
+msgid "failed to get hypervisor CPU model names"
+msgstr ""
+
 msgid "failed to get hypervisor type"
 msgstr "failed to get hypervisor type"
 
@@ -28092,6 +28243,9 @@ msgstr "failed to save content"
 msgid "failed to seek in log file %1$s"
 msgstr "failed to open logfile %1$s"
 
+msgid "failed to seek on file descriptor"
+msgstr ""
+
 #, c-format
 msgid "failed to seek to end of %1$s"
 msgstr "failed to seek to end of %1$s"
@@ -28660,6 +28814,9 @@ msgstr "format of backing volume if taking a snapshot"
 msgid "format of the destination file"
 msgstr "authentication failed"
 
+msgid "format of the save image file"
+msgstr ""
+
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
 msgstr "formatter for %1$s %2$s reported error"
@@ -28891,6 +29048,28 @@ msgstr ""
 
 #, c-format
 msgid "guest CPU doesn't match specification: missing features: %1$s"
+msgstr ""
+
+msgid "guest agent command failed"
+msgstr ""
+
+#, c-format
+msgid "guest agent command failed: %1$s"
+msgstr ""
+
+msgid "guest agent command timed out"
+msgstr ""
+
+#, c-format
+msgid "guest agent command timed out: %1$s"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to command within '%1$d' seconds"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
 msgstr ""
 
 msgid "guest agent replied with wrong id to guest-sync command"
@@ -29310,6 +29489,9 @@ msgstr "inactive"
 msgid "inbound rate larger than maximum %1$u"
 msgstr "start_cpu %d larger than maximum of %d"
 
+msgid "include all CPU models known to the hypervisor for the architecture"
+msgstr ""
+
 #, fuzzy
 msgid "include backup size estimate in XML dump"
 msgstr "include security sensitive information in XML dump"
@@ -29344,10 +29526,6 @@ msgstr "incomplete metadata in '%1$s'"
 #, c-format
 msgid "incomplete save header in '%1$s'"
 msgstr "incomplete save header in '%1$s'"
-
-#, fuzzy
-msgid "incremental backup is not supported yet"
-msgstr "transient disks not supported yet"
 
 #, fuzzy
 msgid "individual CPU state configuration is not supported"
@@ -30704,6 +30882,9 @@ msgstr "list inactive pools"
 msgid "list all domain blocks"
 msgstr "list all domain blocks"
 
+msgid "list all domain throttlegroups."
+msgstr ""
+
 msgid "list all domain virtual interfaces"
 msgstr "list all domain virtual interfaces"
 
@@ -31309,6 +31490,9 @@ msgid "malformed/missing size in virtio memory info"
 msgstr ""
 
 msgid "malformed/missing slot in dimm memory info"
+msgstr ""
+
+msgid "managed save cannot be requested for transient domains"
 msgstr ""
 
 msgid "managed save of a domain state"
@@ -32200,6 +32384,9 @@ msgstr "missing migration capability name"
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "missing username for auth"
 
+msgid "missing group name"
+msgstr ""
+
 #, c-format
 msgid "missing group_device value for '%1$s'"
 msgstr ""
@@ -32291,9 +32478,8 @@ msgstr "missing listen attribute in migration data"
 msgid "missing listen element"
 msgstr "missing root element"
 
-#, fuzzy
-msgid "missing listen element for graphics"
-msgstr "Missing 'key' element for lease"
+msgid "missing listen element for VNC graphics"
+msgstr ""
 
 #, fuzzy
 msgid "missing listen element for spice graphics"
@@ -33343,6 +33529,9 @@ msgstr "no CPUs found"
 msgid "no CPUs given"
 msgstr "no CPUs found"
 
+msgid "no D-Bus address"
+msgstr ""
+
 msgid "no FLR, PM reset or bus reset available"
 msgstr "no FLR, PM reset or bus reset available"
 
@@ -34016,6 +34205,12 @@ msgstr "Parameter '%s' is not supported by this kernel"
 msgid "numad is not available on this host"
 msgstr "numad is not available on this host"
 
+msgid "number of IO channels to use for parallel restore"
+msgstr ""
+
+msgid "number of IO channels to use for parallel save"
+msgstr ""
+
 msgid "number of bytes read:"
 msgstr "number of bytes read:"
 
@@ -34041,6 +34236,9 @@ msgstr ""
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr "number of pages to scan before the shared memory service goes to sleep"
+
+msgid "number of parallel save channels cannot be less than 1"
+msgstr ""
 
 msgid "number of read operations:"
 msgstr "number of read operations:"
@@ -34181,8 +34379,8 @@ msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
-"supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
+"is supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -34589,6 +34787,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "parameter %1$s too big for destination"
 msgstr "Type %1$s too big for destination"
+
+#, c-format
+msgid "parameter '%1$s' is missing in reply of guest-get-load"
+msgstr ""
 
 #, c-format
 msgid "parameter '%1$s' not supported"
@@ -35042,6 +35244,9 @@ msgstr "ipset name is too long"
 msgid "preserve sparseness of volume"
 msgstr ""
 
+msgid "preserve state before shutting down"
+msgstr ""
+
 #, fuzzy
 msgid "pretty-print any JSON output"
 msgstr "pretty-print the output"
@@ -35231,6 +35436,9 @@ msgstr ""
 msgid "qemu agent didn't return an array of keys"
 msgstr ""
 
+msgid "qemu agent didn't return an array of loads"
+msgstr ""
+
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr ""
@@ -35286,6 +35494,24 @@ msgstr ""
 
 msgid "qemu state driver is not active"
 msgstr "qemu state driver is not active"
+
+#, c-format
+msgid ""
+"qemu-rdp died and reported:\n"
+"%1$s"
+msgstr ""
+
+msgid "qemu-rdp does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp support requires a D-Bus bus graphics device."
+msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -35533,6 +35759,13 @@ msgstr ""
 #, fuzzy
 msgid "rawio is only supported for scsi host device"
 msgstr "sgio is only supported for scsi host device"
+
+msgid "rdp"
+msgstr ""
+
+#, c-format
+msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
+msgstr ""
 
 msgid "re-initialize NVRAM from its pristine template"
 msgstr ""
@@ -35820,6 +36053,9 @@ msgid "report hypervisor-specific statistics"
 msgstr ""
 
 msgid "report interface information"
+msgstr ""
+
+msgid "report load averages information"
 msgstr ""
 
 msgid "report only stats that are accessible instantly"
@@ -36124,6 +36360,10 @@ msgstr "save a domain state to a file"
 
 msgid "save canceled"
 msgstr "save cancelled"
+
+#, c-format
+msgid "save image format %1$s is not supported by this QEMU binary"
+msgstr ""
 
 msgid "save image is incomplete"
 msgstr "save image is incomplete"
@@ -36505,7 +36745,10 @@ msgstr ""
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
 msgstr ""
 
-msgid "sheepdog protocol accepts only one host"
+msgid "shim is not supported by this QEMU binary"
+msgstr ""
+
+msgid "shim only allowed with kernel option"
 msgstr ""
 
 #, c-format
@@ -36729,6 +36972,12 @@ msgstr "source device for underlying storage"
 
 #, c-format
 msgid ""
+"source disk for '%1$s' is not a regular file, reverting to snapshot is not "
+"supported"
+msgstr ""
+
+#, c-format
+msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr ""
@@ -36884,6 +37133,9 @@ msgstr "value too large: %llu%s"
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "program mismatch (actual %1$x, expected %2$x)"
+
+msgid "stop the daemon"
+msgstr ""
 
 msgid "stopped, with no saved guests"
 msgstr "stopped, with no saved guests"
@@ -37586,6 +37838,21 @@ msgstr ""
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "size of the vol, as scaled integer (default bytes)"
+
+#, c-format
+msgid "throttle group '%1$s' is still being used by disk %2$s"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' not found"
+msgstr ""
+
+#, c-format
+msgid "throttle group field '%1$s' must be an integer"
+msgstr ""
+
+msgid "throttle group name"
+msgstr ""
 
 #, fuzzy
 msgid "time to set"
@@ -38829,6 +39096,10 @@ msgstr "unexpected data '%1$s'"
 msgid "unexpected filesystem type %1$d"
 msgstr "unexpected filesystem type %1$d"
 
+#, c-format
+msgid "unexpected graphics type '%1$d'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "cannot decode CPU data for %1$s architecture"
@@ -39121,6 +39392,18 @@ msgstr "unknown auth type '%1$s'"
 #, c-format
 msgid "unknown authentication type %1$s"
 msgstr "unknown authentication type %1$s"
+
+#, c-format
+msgid "unknown auto_shutdown_poweroff '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_save '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_shutdown '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
@@ -39694,6 +39977,9 @@ msgstr "Unsupported disk device type '%s'"
 #, fuzzy, c-format
 msgid "unsupported disk driver %1$s"
 msgstr "unsupported disk type %1$s"
+
+msgid "unsupported disk protocol"
+msgstr ""
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
@@ -40997,6 +41283,45 @@ msgstr "zero-copy is only available for parallel migration"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s requested for network %2$s but firewalld is not active"
+
+#, fuzzy, c-format
+#~ msgid "Failed to add %1$s controller type definition"
+#~ msgstr "Failed to disconnect from the hypervisor"
+
+#, fuzzy, c-format
+#~ msgid "Failed to allocate slirp for '%1$s'"
+#~ msgstr "Failed to pre-allocate space for file '%1$s'"
+
+#~ msgid "Guest agent not available for now"
+#~ msgstr "Guest agent not available for now"
+
+#, fuzzy, c-format
+#~ msgid "Invalid %1$s image format specified in configuration file"
+#~ msgstr "failed to parse configuration file"
+
+#, fuzzy
+#~ msgid "Missing acpi table type"
+#~ msgstr "missing capability type"
+
+#, fuzzy
+#~ msgid "Only one acpi table is supported"
+#~ msgstr "only one numatune is supported"
+
+#, fuzzy, c-format
+#~ msgid "Unknown acpi table type: %1$s"
+#~ msgstr "Unknown async job type %1$s"
+
+#, fuzzy
+#~ msgid "copy of read-only disks is not supported"
+#~ msgstr "fs driver %s is not supported"
+
+#, fuzzy
+#~ msgid "incremental backup is not supported yet"
+#~ msgstr "transient disks not supported yet"
+
+#, fuzzy
+#~ msgid "missing listen element for graphics"
+#~ msgstr "Missing 'key' element for lease"
 
 #~ msgid ""
 #~ "'reconnect' attribute unsupported 'server' mode for <interface "

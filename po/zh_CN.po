@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-02-24 10:18+0000\n"
+"POT-Creation-Date: 2025-03-25 10:52+0000\n"
 "PO-Revision-Date: 2025-02-20 14:49+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1245,6 +1245,10 @@ msgid "'%1$s' is not a suitable pr helper"
 msgstr "'%1$s' 不是一个合适的 pr 帮助程序"
 
 #, c-format
+msgid "'%1$s' is not a suitable qemu-rdp helper name"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件中不支持 '%1$s'"
 
@@ -1267,6 +1271,10 @@ msgstr "'%1$s' 调度程序位图 '%2$s' 为空"
 #, c-format
 msgid "'%1$s' starting from %2$llu has only %3$zd bytes available"
 msgstr "'%1$s' 从 %2$llu 开始仅有 %3$zd 个字节可用"
+
+#, c-format
+msgid "'%1$s' vanished unexpectedly"
+msgstr ""
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1477,6 +1485,9 @@ msgstr ""
 "当 memnode 元素中的模式为 'restrictive' 时，内存元素中需要 'restrictive' 模式"
 
 msgid "'return' member missing"
+msgstr ""
+
+msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
 msgstr ""
 
 #, c-format
@@ -1863,6 +1874,14 @@ msgid "ACPI requires UEFI on this architecture"
 msgstr "在此构架上 ACPI 需要 UEFI"
 
 #, c-format
+msgid "ACPI table type '%1$s' is not supported"
+msgstr ""
+
+#, c-format
+msgid "ACPI table type '%1$s' may only appear once"
+msgstr ""
+
+#, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
 msgstr "AES256CBC 加密无效的 keylen=%1$zu"
 
@@ -1975,6 +1994,12 @@ msgstr "向客户机域中添加一个 IOThread。"
 
 msgid "Add or remove vcpus"
 msgstr "添加或删除 vcpus"
+
+msgid "Add or update a throttling group."
+msgstr ""
+
+msgid "Add or updte a throttling group."
+msgstr ""
 
 msgid "Added"
 msgstr "已添加的"
@@ -2170,6 +2195,9 @@ msgstr "已弃用自动磁盘租赁模式但未设定主机 ID"
 
 msgid "Autostart"
 msgstr "自动开始"
+
+msgid "Autostart Once:"
+msgstr ""
 
 msgid "Autostart:"
 msgstr "自动启动："
@@ -2995,8 +3023,8 @@ msgid "Cannot find 'iothread' : %1$u"
 msgstr "无法找到 'iothread' : %1$u"
 
 #, c-format
-msgid "Cannot find CPU model with PVR 0x%1$03llx"
-msgstr "无法找到具有 PVR 0x%1$03llx 的 CPU 型号"
+msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
+msgstr ""
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%1$08x"
@@ -4132,9 +4160,6 @@ msgstr "无法找到名为 %1$s 的卷"
 msgid "Could not add CDATA to doc root"
 msgstr "无法将 CDATA 添加到 doc root"
 
-msgid "Could not add IDE controller"
-msgstr "无法添加 IDE 控制器"
-
 msgid "Could not add attribute to XML node"
 msgstr "无法向 XML 节点添加属性"
 
@@ -4833,9 +4858,6 @@ msgstr "无法为 '%1$s' 解析 'bonding/stp_state' '%2$s'"
 msgid "Could not parse MTU value '%1$s'"
 msgstr "无法解析 MTU 值 '%1$s'"
 
-msgid "Could not parse SCSI controller"
-msgstr "无法解析 SCSI 控制器"
-
 #, c-format
 msgid "Could not parse UUID from '%1$s'"
 msgstr "无法解析 '%1$s' 的 UUID"
@@ -5371,6 +5393,9 @@ msgstr "删除一个给定的池。"
 msgid "Delete a given vol."
 msgstr "删除一个给定的卷。"
 
+msgid "Delete a throttling group."
+msgstr ""
+
 msgid "Delete an IOThread from the guest domain."
 msgstr "从 guest 域中删除 IOThread。"
 
@@ -5812,6 +5837,10 @@ msgid "Domain '%1$s' marked as autostarted\n"
 msgstr "域 '%1$s' 标记为自动启动\n"
 
 #, c-format
+msgid "Domain '%1$s' marked as autostarted on next boot\n"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$s' resumed\n"
 msgstr "域 '%1$s' 已恢复\n"
 
@@ -5838,6 +5867,10 @@ msgstr "域 '%1$s' sysinfo 不可用"
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted\n"
 msgstr "域 '%1$s' 未标记为自动启动\n"
+
+#, c-format
+msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$s' was reset\n"
@@ -6693,10 +6726,6 @@ msgid "Failed to acquire pid file '%1$s'"
 msgstr "无法请求 pid 文件 '%1$s' 状态"
 
 #, c-format
-msgid "Failed to add %1$s controller type definition"
-msgstr "添加 %1$s 控制器类型定义失败"
-
-#, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
 msgstr "无法为接口 %1$s 在 IP 地址缓存中添加 IP 地址 %2$s"
 
@@ -6737,10 +6766,6 @@ msgstr "分配 PCI 设备列表失败：%1$s"
 
 msgid "Failed to allocate XML buffer"
 msgstr "分配 XML 缓冲失败"
-
-#, c-format
-msgid "Failed to allocate slirp for '%1$s'"
-msgstr "为 '%1$s' 分配 slirp 失败"
 
 msgid "Failed to allocate tty"
 msgstr "分配 tty 失败"
@@ -6912,6 +6937,10 @@ msgstr "显示树形列表失败"
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "将插槽连接到 '%1$s' 失败"
+
+#, c-format
+msgid "Failed to connect to dbus-daemon: %1$s"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to connect to mon socket"
@@ -7099,6 +7128,10 @@ msgstr "创建池 %1$s 失败"
 #, c-format
 msgid "Failed to create pool from %1$s"
 msgstr "从 %1$s 创建池失败"
+
+#, c-format
+msgid "Failed to create rdp state dir %1$s"
+msgstr ""
 
 msgid "Failed to create reboot thread, killing domain"
 msgstr "生成重启线程失败，正在杀死域。"
@@ -7846,6 +7879,10 @@ msgstr "使 root 成为专用失败"
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
 msgstr "将域 '%1$s' 标记为自动启动失败"
+
+#, c-format
+msgid "Failed to mark domain '%1$s' as autostarted on next boot"
+msgstr ""
 
 #, c-format
 msgid "Failed to mkdir %1$s"
@@ -8775,6 +8812,10 @@ msgid "Failed to unmark domain '%1$s' as autostarted"
 msgstr "取消域 '%1$s' 的自动启动标记失败"
 
 #, c-format
+msgid "Failed to unmark domain '%1$s' as autostarted on next boot"
+msgstr ""
+
+#, c-format
 msgid "Failed to unmarshall reply: %1$s"
 msgstr "解压缩回复失败：%1$s"
 
@@ -9136,6 +9177,9 @@ msgstr "GET操作失败: %1$s"
 msgid "GNUTLS call error"
 msgstr "GNUTLS调用错误"
 
+msgid "Get a throttling group."
+msgstr ""
+
 msgid "Get block device size info for a domain."
 msgstr "获取域块设备大小信息"
 
@@ -9211,6 +9255,9 @@ msgstr "获取持续接口状态"
 msgid "Get the CPU models for an arch."
 msgstr "获取架构的 CPU 型号。"
 
+msgid "Get the CPU models reported by the hypervisor."
+msgstr ""
+
 msgid "Get the launch security parameters for a guest domain"
 msgstr "获取 guest 域的启动安全参数"
 
@@ -9228,6 +9275,9 @@ msgstr "获取快照的上级快照名称"
 
 msgid "Get the summary of block devices for a domain."
 msgstr "获取域块设备小结"
+
+msgid "Get the summary of throttle groups for a domain."
+msgstr ""
 
 msgid "Get the summary of virtual interfaces for a domain."
 msgstr "获取域虚拟接口小结"
@@ -9285,9 +9335,6 @@ msgstr "虚拟机代理不响应"
 #, c-format
 msgid "Guest agent is not responding: %1$s"
 msgstr "虚拟机代理不响应：%1$s"
-
-msgid "Guest agent not available for now"
-msgstr "现在无法使用虚拟机代理"
 
 #, fuzzy
 msgid "Guest networking is not supported by this version of ch"
@@ -9462,6 +9509,9 @@ msgid ""
 "'%2$s'"
 msgstr "构架 '%1$s' 或机器类型 '%2$s' 不支持 HyperV 功能"
 
+msgid "Hypervisor reported CPU models"
+msgstr ""
+
 msgid "I/O Error"
 msgstr "I/O 错误"
 
@@ -9568,6 +9618,11 @@ msgstr "IOThread ID 号"
 #, fuzzy, c-format
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不提供磁盘“%1$s”的 IOThread 映射"
+
+msgid ""
+"IOThread mapping for virtio-scsi controllers is not available with this QEMU "
+"binary"
+msgstr ""
 
 msgid "IOThread to be used by supported device"
 msgstr "支持的设备使用的 IOThread"
@@ -9802,10 +9857,6 @@ msgstr "只有 SR-IOV Virtual Functions 目前支持接口类型 hostdev"
 #, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
 msgstr "无效的 %1$s 属性 'vcpus' 值 '%2$s'"
-
-#, c-format
-msgid "Invalid %1$s image format specified in configuration file"
-msgstr "配置文件中指定的无效的 %1$s 镜像格式"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "无效的 'cpu.max' 数据。"
@@ -10176,6 +10227,10 @@ msgstr "磁盘 %1$s 的无效的驱动器地址，vz 驱动程序只支持 IDE �
 msgid "Invalid driver type: %1$d"
 msgstr "无效的驱动程序类型：%1$d"
 
+#, c-format
+msgid "Invalid dump_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid duration"
 msgstr "无效阶段"
 
@@ -10249,8 +10304,16 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "无效主机密钥认证方法：'%1$s'"
 
 #, c-format
+msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgstr ""
+
+#, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "无效的 hostdev 协议 '%1$s'"
+
+#, c-format
+msgid "Invalid image_format '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -10464,6 +10527,10 @@ msgstr "无效间接路径 '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "无效的 resctrl 监控"
 
+#, c-format
+msgid "Invalid save_image_format '%1$s'"
+msgstr ""
+
 msgid "Invalid secret"
 msgstr "无效 secret"
 
@@ -10485,6 +10552,10 @@ msgstr "HPT 调整大小的无效的设置"
 #, fuzzy, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
 msgstr "pseries 功能“%1$s”的设置无效"
+
+#, c-format
+msgid "Invalid snapshot_image_format '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid source mode: %1$s"
@@ -10756,6 +10827,9 @@ msgstr "内核不支持用户名称空间"
 
 msgid "Kernel image path in this domain is not defined"
 msgstr "此域中的内核镜像路径未定义"
+
+msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "必须为私钥身份验证提供密钥文件路径"
@@ -11492,9 +11566,6 @@ msgstr "缺少 XPath 上下文"
 msgid "Missing XPath expression"
 msgstr "缺少 XPath 表达式"
 
-msgid "Missing acpi table type"
-msgstr "缺少 acpi 表类型"
-
 #, c-format
 msgid "Missing actual data for interface '%1$s'"
 msgstr "缺少接口 '%1$s' 的实际数据"
@@ -11544,6 +11615,10 @@ msgstr "缺少网桥名称"
 
 msgid "Missing capability type"
 msgstr "缺少功能类型"
+
+#, c-format
+msgid "Missing certificate file '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Missing check/@partial in CPU model %1$s"
@@ -11618,6 +11693,10 @@ msgstr "JSON 文件中缺少 keepaliveCount 数据"
 
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "JSON 文件中缺少 keepaliveInterval 数据"
+
+#, c-format
+msgid "Missing key file '%1$s'"
+msgstr ""
 
 msgid "Missing listen element"
 msgstr "缺少 listen 元素"
@@ -11764,6 +11843,9 @@ msgstr "JSON 文件中缺少 ownerPid 数据"
 
 msgid "Missing ownerUUID data in JSON document"
 msgstr "JSON 文件中缺少 ownerUUID 数据"
+
+msgid "Missing password"
+msgstr ""
 
 msgid "Missing path or lockspace for lease resource"
 msgstr "租赁资源缺少路径或者锁空间"
@@ -12935,6 +13017,9 @@ msgstr "只支持 PTY 控制台类型"
 msgid "Only VNC supported"
 msgstr "仅支持 VNC"
 
+msgid "Only a single ACPI table is supported"
+msgstr ""
+
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "此机器类型只支持一个 IDE 控制器"
 
@@ -13009,9 +13094,6 @@ msgstr "每个接口只允许一个 IPv4 地址"
 
 msgid "Only one IPv6 address per interface is allowed"
 msgstr "每个接口只允许一个 IPv6 地址"
-
-msgid "Only one acpi table is supported"
-msgstr "只支持一个 acpi 表"
 
 msgid "Only one argument from --table and --uuid may be specified."
 msgstr "只能指定 --table 和 --uuid 中的一个参数。"
@@ -13350,6 +13432,9 @@ msgstr "libxl 不支持并行设备"
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "并口索引 %1$d 超出范围 [0..2]"
+
+msgid "Parallel save is only supported with the 'sparse' save image format"
+msgstr ""
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -13697,6 +13782,10 @@ msgid "QEMU NBD server does not support TLS transport"
 msgstr "QEMU NBD 服务器不支持 TLS 传输"
 
 #, c-format
+msgid "QEMU agent command '%1$s' returned neither error nor success"
+msgstr ""
+
+#, c-format
 msgid "QEMU binary %1$s is not executable"
 msgstr "QEMU 二进制文件 %1$s 不能执行"
 
@@ -13818,6 +13907,15 @@ msgstr "QEMU 二进制文件不支持查询迁移停机时间"
 msgid ""
 "RBD image %1$s is old format. Does not support extended features and striping"
 msgstr "RBD 镜像 %1$s 是旧格式的。不支持扩展功能和条带"
+
+msgid "RDP doesn't support 'multiUser'"
+msgstr ""
+
+msgid "RDP doesn't support 'replaceUser'"
+msgstr ""
+
+msgid "RDP password expiration isn't supported"
+msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "不支持 RDT 内存带宽分配"
@@ -16340,6 +16438,11 @@ msgstr "'%1$s' 计时器不能被禁用"
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
 msgstr "'%1$s' 计时器不支持 tickpolicy '%2$s'"
 
+msgid ""
+"The 'dev' attribute of the <source> element can only be used with "
+"<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
+msgstr ""
+
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
@@ -16825,6 +16928,12 @@ msgstr "无法热插拔此类磁盘"
 
 msgid "Thread(s) per core:"
 msgstr "每个内核的线程数："
+
+msgid "Throttle group deleted successfully\n"
+msgstr ""
+
+msgid "Throttle group set successfully\n"
+msgstr ""
 
 #, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -18648,6 +18757,10 @@ msgid "Unable to read pidfile '%1$s'"
 msgstr ""
 
 #, c-format
+msgid "Unable to read qemu-rdp pidfile '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to read slirp pidfile '%1$s'"
 msgstr "无法读取 slirp pidfile '%1$s'"
 
@@ -19036,6 +19149,9 @@ msgstr "无法设定线程本地身份"
 
 msgid "Unable to set thread local variable"
 msgstr "无法设置线程本地变量"
+
+msgid "Unable to set throttle group"
+msgstr ""
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
@@ -19516,10 +19632,6 @@ msgstr "未知的 SCSI 控制器型号 %1$s"
 #, c-format
 msgid "Unknown URI parameter '%1$s'"
 msgstr "未知的 URI 参数 '%1$s'"
-
-#, c-format
-msgid "Unknown acpi table type: %1$s"
-msgstr "未知的 acpi 表类型：%1$s"
 
 #, c-format
 msgid "Unknown adapter type: %1$X"
@@ -20097,6 +20209,9 @@ msgstr ""
 #, c-format
 msgid "Unsupported object type %1$d"
 msgstr "不支持的对象类型 %1$d"
+
+msgid "Unsupported qemu-rdp listen type"
+msgstr ""
 
 msgid "Unsupported resctrl monitor type"
 msgstr "不支持的 resctrl 监控类型"
@@ -21404,6 +21519,16 @@ msgid "block"
 msgstr "块"
 
 #, c-format
+msgid ""
+"block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
+msgstr ""
+
+#, c-format
+msgid ""
+"block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "block I/O throttle limit must be no more than %1$llu using QEMU"
 msgstr "块 I/O 节流限制不能超过使用 QEMU 的 %1$llu"
 
@@ -21742,6 +21867,9 @@ msgstr "无法保持相对的后备关系"
 msgid "can't manipulate inactive snapshots of disk '%1$s'"
 msgstr "无法操作磁盘 '%1$s' 的非活动快照"
 
+msgid "can't open log context"
+msgstr ""
+
 #, c-format
 msgid "can't open session to the domain with id %1$d"
 msgstr "无法使用 id %1$d 在该域中打开会话"
@@ -21955,6 +22083,9 @@ msgstr "无法永久更改临时域的配置"
 
 msgid "cannot change persistent config of a transient network"
 msgstr "无法更改临时网络的永久配置"
+
+msgid "cannot change port settings on rdp graphics"
+msgstr ""
 
 msgid "cannot change port settings on spice graphics"
 msgstr "无法在 spice 图形中更改端口设置"
@@ -22771,9 +22902,6 @@ msgstr "无法解析 vnc 端口 %1$s"
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "无法为管道迁移传递通道"
 
-msgid "cannot perform block operations while checkpoint exists"
-msgstr "无法在检查点存在期间执行块操作"
-
 msgid "cannot perform disk backup for inactive domain"
 msgstr "无法为不活跃的域执行磁盘备份"
 
@@ -23228,6 +23356,9 @@ msgstr "捕获磁盘状态而不是 vm 状态"
 msgid "cd: %1$s: %2$s"
 msgstr "cd: %1$s: %2$s"
 
+msgid "cdrom device with throttle filters isn't supported"
+msgstr ""
+
 msgid "cdrom device with virtio bus isn't supported"
 msgstr "不支持带有 virtio 总线的 cdrom 设备"
 
@@ -23493,6 +23624,9 @@ msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
 msgstr ""
 
+msgid "comma separated list of throttle groups to be applied"
+msgstr ""
+
 msgid "command"
 msgstr "命令"
 
@@ -23693,6 +23827,9 @@ msgstr "控制域的进入流量"
 msgid "control domain's outgoing traffics"
 msgstr "控制域的外出流量"
 
+msgid "control next boot state"
+msgstr ""
+
 #, fuzzy
 msgid "control or query domain emulator affinity"
 msgstr "控制或者查询域模拟器亲和性"
@@ -23703,6 +23840,11 @@ msgstr "控制或者查询域 vcpu 亲和性"
 #, c-format
 msgid "controller %1$s:%2$d not found"
 msgstr "未找到控制器 %1$s:%2$d"
+
+msgid ""
+"controller driver 'iothread' attribute can't be used together with "
+"'iothreads' subelement"
+msgstr ""
 
 #, c-format
 msgid "controller index='%1$d' already exists"
@@ -23762,9 +23904,6 @@ msgstr "Cookie 名称不能为空"
 
 msgid "copy destination is block device instead of regular file"
 msgstr "复制目的地是块设备而不是常规文件"
-
-msgid "copy of read-only disks is not supported"
-msgstr "不支持只读磁盘的复制"
 
 msgid "copy to a FD passed disk source is not yet supported"
 msgstr "复制到一个 FD 所传递的磁盘源还不被支持"
@@ -24252,9 +24391,6 @@ msgid ""
 "supported"
 msgstr "不支持使用所有调优参数 0 创建新组/更新现有组"
 
-msgid "creating checkpoint for incremental backup is not supported yet"
-msgstr "尚不支持为增量备份创建检查点"
-
 msgid "creating snapshot"
 msgstr "正在生成快照"
 
@@ -24382,12 +24518,10 @@ msgid "dbus-daemon %1$s didn't show up"
 msgstr "dbus-daemon %1$s 没有显示"
 
 #, c-format
-msgid "dbus-daemon %1$s died unexpectedly"
-msgstr "dbus-daemon %1$s 意外终止"
-
-#, c-format
-msgid "dbus-daemon died and reported: %1$s"
-msgstr "dbus-daemon 终止并报告：%1$s"
+msgid ""
+"dbus-daemon died and reported:\n"
+"%1$s"
+msgstr ""
 
 msgid "default"
 msgstr "默认"
@@ -25415,6 +25549,14 @@ msgid "duplicate domain '%1$s'"
 msgstr "重复的域 '%1$s'"
 
 #, c-format
+msgid "duplicate filter name '%1$s' found"
+msgstr ""
+
+#, c-format
+msgid "duplicate group name '%1$s' found"
+msgstr ""
+
+#, c-format
 msgid "duplicate iothread id '%1$u' found"
 msgstr "发现重复的 iothread id '%1$u'"
 
@@ -25896,6 +26038,14 @@ msgstr ""
 #, c-format
 msgid "event 'migration-iteration' for domain '%1$s': iteration: '%2$d'\n"
 msgstr "域 '%1$s' 的事件 'migration-iteration' : 迭代: '%2$d'\n"
+
+#, c-format
+msgid ""
+"event 'nic-mac-change' for domain '%1$s':\n"
+"alias: %2$s\n"
+"oldMAC: %3$s\n"
+"newMAC: %4$s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'rtc-change' for domain '%1$s': %2$lld\n"
@@ -26570,6 +26720,9 @@ msgstr "无法为 NUMA 节点号获得可用内存：%1$lu"
 msgid "failed to get hostname"
 msgstr "无法获得主机名称"
 
+msgid "failed to get hypervisor CPU model names"
+msgstr ""
+
 msgid "failed to get hypervisor type"
 msgstr "无法获得 hypervisor 类型"
 
@@ -27122,6 +27275,9 @@ msgstr "无法保存内容"
 msgid "failed to seek in log file %1$s"
 msgstr "无法在日志文件 %1$s 中查找"
 
+msgid "failed to seek on file descriptor"
+msgstr ""
+
 #, c-format
 msgid "failed to seek to end of %1$s"
 msgstr "无法查找 %1$s 的结尾"
@@ -27667,6 +27823,9 @@ msgstr "提取快照时的后端卷格式"
 msgid "format of the destination file"
 msgstr "目标文件的格式"
 
+msgid "format of the save image file"
+msgstr ""
+
 #, c-format
 msgid "formatter for %1$s %2$s reported error"
 msgstr "%1$s%2$s 的格式化程序报错"
@@ -27892,6 +28051,28 @@ msgstr "客户机 CPU 与规范不匹配：额外的功能：%1$s，缺失的功
 #, c-format
 msgid "guest CPU doesn't match specification: missing features: %1$s"
 msgstr "客户机 CPU 与规范不匹配：缺失的功能：%1$s"
+
+msgid "guest agent command failed"
+msgstr ""
+
+#, c-format
+msgid "guest agent command failed: %1$s"
+msgstr ""
+
+msgid "guest agent command timed out"
+msgstr ""
+
+#, c-format
+msgid "guest agent command timed out: %1$s"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to command within '%1$d' seconds"
+msgstr ""
+
+#, c-format
+msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
+msgstr ""
 
 msgid "guest agent replied with wrong id to guest-sync command"
 msgstr "客户机代理用错误的 id 回复 guest-sync 命令"
@@ -28293,6 +28474,9 @@ msgstr "不活跃"
 msgid "inbound rate larger than maximum %1$u"
 msgstr "入站率大于最大值 %1$u"
 
+msgid "include all CPU models known to the hypervisor for the architecture"
+msgstr ""
+
 msgid "include backup size estimate in XML dump"
 msgstr "在 XML 转储中包含估计的备份大小"
 
@@ -28325,9 +28509,6 @@ msgstr "不完整的结果，未知状态字符串 '%1$s'"
 #, c-format
 msgid "incomplete save header in '%1$s'"
 msgstr "没有完成在 '%1$s' 中保存标题"
-
-msgid "incremental backup is not supported yet"
-msgstr "尚未支持增量备份"
 
 msgid "individual CPU state configuration is not supported"
 msgstr "不支持单个 CPU 状态配置"
@@ -29630,6 +29811,9 @@ msgstr "仅列出活跃池的 UUID"
 msgid "list all domain blocks"
 msgstr "列出所有域块"
 
+msgid "list all domain throttlegroups."
+msgstr ""
+
 msgid "list all domain virtual interfaces"
 msgstr "列出所有域虚拟接口"
 
@@ -30204,6 +30388,9 @@ msgstr "virtio 内存信息中格式错误的/丢失的的大小"
 
 msgid "malformed/missing slot in dimm memory info"
 msgstr "dimm 内存信息中格式错误的/丢失的槽"
+
+msgid "managed save cannot be requested for transient domains"
+msgstr ""
 
 msgid "managed save of a domain state"
 msgstr "管理的域状态的保存"
@@ -31032,6 +31219,9 @@ msgstr "QEMU 功能 XML 中缺少标签名称"
 msgid "missing gluster volume name for path '%1$s'"
 msgstr "缺少路径 '%1$s' 的 gluster 卷名称"
 
+msgid "missing group name"
+msgstr ""
+
 #, c-format
 msgid "missing group_device value for '%1$s'"
 msgstr ""
@@ -31116,8 +31306,8 @@ msgstr "迁移数据中缺少 listen 属性"
 msgid "missing listen element"
 msgstr "缺少 listen 元素"
 
-msgid "missing listen element for graphics"
-msgstr "缺少图形的 listen 元素"
+msgid "missing listen element for VNC graphics"
+msgstr ""
 
 msgid "missing listen element for spice graphics"
 msgstr "缺少 spice 图形的 listen 元素"
@@ -32103,6 +32293,9 @@ msgstr "没有找到 CPUs"
 msgid "no CPUs given"
 msgstr "没有给定的 CPU"
 
+msgid "no D-Bus address"
+msgstr ""
+
 msgid "no FLR, PM reset or bus reset available"
 msgstr "没有可用 FLR、PM 重置 或者总线重置"
 
@@ -32751,6 +32944,12 @@ msgstr "vz 驱动程序不支持 numa 参数"
 msgid "numad is not available on this host"
 msgstr "这个主机中的 numad 不可用"
 
+msgid "number of IO channels to use for parallel restore"
+msgstr ""
+
+msgid "number of IO channels to use for parallel save"
+msgstr ""
+
 msgid "number of bytes read:"
 msgstr "读取字节数："
 
@@ -32775,6 +32974,9 @@ msgstr "下一次扫描前共享内存服务应出于睡眠状态的毫秒数"
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr "共享内存服务进入睡眠状态前要扫描的页数"
+
+msgid "number of parallel save channels cannot be less than 1"
+msgstr ""
 
 msgid "number of read operations:"
 msgstr "读取操作数："
@@ -32908,9 +33110,9 @@ msgid "only 'raw' images supported as <dataStore>"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
-"supported"
-msgstr "仅支持每种类型（sdl、vnc、spice、headless、dbus）的 1 个图形设备"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
+"is supported"
+msgstr ""
 
 msgid "only JSON objects can be top level"
 msgstr "只有 JSON 对象可以位于顶级"
@@ -33286,6 +33488,10 @@ msgstr "并行容器不支持输入总线 %1$s"
 #, c-format
 msgid "parameter %1$s too big for destination"
 msgstr "参数 %1$s 对于目的地而言过大"
+
+#, c-format
+msgid "parameter '%1$s' is missing in reply of guest-get-load"
+msgstr ""
 
 #, c-format
 msgid "parameter '%1$s' not supported"
@@ -33723,6 +33929,9 @@ msgstr "前缀太长"
 msgid "preserve sparseness of volume"
 msgstr "保留卷的稀疏性"
 
+msgid "preserve state before shutting down"
+msgstr ""
+
 msgid "pretty-print any JSON output"
 msgstr "正确打印任何 JSON 输出"
 
@@ -33903,6 +34112,9 @@ msgstr "QEMU 代理没有返回一个接口数组"
 msgid "qemu agent didn't return an array of keys"
 msgstr "QEMU 代理没有返回一个键数组"
 
+msgid "qemu agent didn't return an array of loads"
+msgstr ""
+
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
 msgstr "QEMU 没有报告 vcpu '%1$zu' 的线程 id"
@@ -33960,6 +34172,24 @@ msgstr "QEMU 返回了格式错误的时间"
 
 msgid "qemu state driver is not active"
 msgstr "qemu 状态驱动程序不活跃"
+
+#, c-format
+msgid ""
+"qemu-rdp died and reported:\n"
+"%1$s"
+msgstr ""
+
+msgid "qemu-rdp does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+msgstr ""
+
+msgid "qemu-rdp support requires a D-Bus bus graphics device."
+msgstr ""
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -34193,6 +34423,13 @@ msgstr "rawio 只能与 device='lun' 一起使用"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "只有 scsi 主机设备支持 rawio"
+
+msgid "rdp"
+msgstr ""
+
+#, c-format
+msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
+msgstr ""
 
 msgid "re-initialize NVRAM from its pristine template"
 msgstr "从其 pristine 模板重新初始化 NVRAM"
@@ -34456,6 +34693,9 @@ msgstr "报告特定于虚拟机监控程序的统计信息"
 
 msgid "report interface information"
 msgstr "报告接口信息"
+
+msgid "report load averages information"
+msgstr ""
 
 msgid "report only stats that are accessible instantly"
 msgstr "仅报告可立即访问的统计"
@@ -34747,6 +34987,10 @@ msgstr "把一个域的状态保存到一个文件"
 
 msgid "save canceled"
 msgstr "取消保存"
+
+#, c-format
+msgid "save image format %1$s is not supported by this QEMU binary"
+msgstr ""
 
 msgid "save image is incomplete"
 msgstr "保存映像不完整"
@@ -35110,8 +35354,11 @@ msgstr "virtio-pmem 设备需要共享访问模式"
 msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
 msgstr "共享 '%1$llu' 必须在 [%2$llu, %3$llu]范围内"
 
-msgid "sheepdog protocol accepts only one host"
-msgstr "sheepdog 协议只接受一个主机"
+msgid "shim is not supported by this QEMU binary"
+msgstr ""
+
+msgid "shim only allowed with kernel option"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -35327,6 +35574,12 @@ msgstr "基本存储的源设备"
 
 #, c-format
 msgid ""
+"source disk for '%1$s' is not a regular file, reverting to snapshot is not "
+"supported"
+msgstr ""
+
+#, c-format
+msgid ""
 "source for disk '%1$s' is not a regular file; refusing to generate external "
 "snapshot name"
 msgstr "磁盘 '%1$s' 的源不是常规文件；拒绝生产外部快照名"
@@ -35470,6 +35723,9 @@ msgstr "统计值太大"
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "事件中的状态不匹配（实际 0x%1$x，期望 0x%2$x）"
+
+msgid "stop the daemon"
+msgstr ""
 
 msgid "stopped, with no saved guests"
 msgstr "停止，无保存的虚拟机"
@@ -36129,6 +36385,21 @@ msgstr "thread_pool_min 必须变小或等于 thread_pool_max"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "阈值作为扩展的数字（默认为字节数）"
+
+#, c-format
+msgid "throttle group '%1$s' is still being used by disk %2$s"
+msgstr ""
+
+#, c-format
+msgid "throttle group '%1$s' not found"
+msgstr ""
+
+#, c-format
+msgid "throttle group field '%1$s' must be an integer"
+msgstr ""
+
+msgid "throttle group name"
+msgstr ""
 
 msgid "time to set"
 msgstr "要设置的时间"
@@ -37380,6 +37651,10 @@ msgid "unexpected filesystem type %1$d"
 msgstr "意外的文件系统类型 %1$d"
 
 #, c-format
+msgid "unexpected graphics type '%1$d'"
+msgstr ""
+
+#, c-format
 msgid "unexpected host-model CPU for %1$s architecture"
 msgstr "意外的 %1$s 架构的 host-model CPU"
 
@@ -37665,6 +37940,18 @@ msgstr "未知的 auth 类型 '%1$s'"
 #, c-format
 msgid "unknown authentication type %1$s"
 msgstr "未知的验证类型 %1$s"
+
+#, c-format
+msgid "unknown auto_shutdown_poweroff '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_save '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "unknown auto_shutdown_try_shutdown '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "unknown backend source type '%1$s' for external TPM"
@@ -38235,6 +38522,9 @@ msgstr "不支持的磁盘设备"
 #, c-format
 msgid "unsupported disk driver %1$s"
 msgstr "不支持的磁盘驱动程序 %1$s"
+
+msgid "unsupported disk protocol"
+msgstr ""
 
 #, c-format
 msgid "unsupported disk snapshot type '%1$s'"
@@ -39502,6 +39792,72 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#, c-format
+#~ msgid "Cannot find CPU model with PVR 0x%1$03llx"
+#~ msgstr "无法找到具有 PVR 0x%1$03llx 的 CPU 型号"
+
+#~ msgid "Could not add IDE controller"
+#~ msgstr "无法添加 IDE 控制器"
+
+#~ msgid "Could not parse SCSI controller"
+#~ msgstr "无法解析 SCSI 控制器"
+
+#, c-format
+#~ msgid "Failed to add %1$s controller type definition"
+#~ msgstr "添加 %1$s 控制器类型定义失败"
+
+#, c-format
+#~ msgid "Failed to allocate slirp for '%1$s'"
+#~ msgstr "为 '%1$s' 分配 slirp 失败"
+
+#~ msgid "Guest agent not available for now"
+#~ msgstr "现在无法使用虚拟机代理"
+
+#, c-format
+#~ msgid "Invalid %1$s image format specified in configuration file"
+#~ msgstr "配置文件中指定的无效的 %1$s 镜像格式"
+
+#~ msgid "Missing acpi table type"
+#~ msgstr "缺少 acpi 表类型"
+
+#~ msgid "Only one acpi table is supported"
+#~ msgstr "只支持一个 acpi 表"
+
+#, c-format
+#~ msgid "Unknown acpi table type: %1$s"
+#~ msgstr "未知的 acpi 表类型：%1$s"
+
+#~ msgid "cannot perform block operations while checkpoint exists"
+#~ msgstr "无法在检查点存在期间执行块操作"
+
+#~ msgid "copy of read-only disks is not supported"
+#~ msgstr "不支持只读磁盘的复制"
+
+#~ msgid "creating checkpoint for incremental backup is not supported yet"
+#~ msgstr "尚不支持为增量备份创建检查点"
+
+#, c-format
+#~ msgid "dbus-daemon %1$s died unexpectedly"
+#~ msgstr "dbus-daemon %1$s 意外终止"
+
+#, c-format
+#~ msgid "dbus-daemon died and reported: %1$s"
+#~ msgstr "dbus-daemon 终止并报告：%1$s"
+
+#~ msgid "incremental backup is not supported yet"
+#~ msgstr "尚未支持增量备份"
+
+#~ msgid "missing listen element for graphics"
+#~ msgstr "缺少图形的 listen 元素"
+
+#~ msgid ""
+#~ "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+#~ "supported"
+#~ msgstr "仅支持每种类型（sdl、vnc、spice、headless、dbus）的 1 个图形设备"
+
+#~ msgid "sheepdog protocol accepts only one host"
+#~ msgstr "sheepdog 协议只接受一个主机"
 
 #~ msgid ""
 #~ "'reconnect' attribute unsupported 'server' mode for <interface "
