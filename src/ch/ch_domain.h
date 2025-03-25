@@ -36,6 +36,7 @@ struct _virCHDomainObjPrivate {
     virBitmap *autoCpuset;
     virBitmap *autoNodeset;
     virCgroup *cgroup;
+    char *pidfile;
 };
 
 #define CH_DOMAIN_PRIVATE(vm) \

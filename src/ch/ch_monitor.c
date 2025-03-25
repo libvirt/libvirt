@@ -27,6 +27,7 @@
 
 #include "datatypes.h"
 #include "ch_conf.h"
+#include "ch_domain.h"
 #include "ch_events.h"
 #include "ch_interface.h"
 #include "ch_monitor.h"
@@ -37,6 +38,7 @@
 #include "virfile.h"
 #include "virjson.h"
 #include "virlog.h"
+#include "virpidfile.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
@@ -582,10 +584,12 @@ chMonitorCreateSocket(const char *socket_path)
 virCHMonitor *
 virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
 {
+    virCHDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCHMonitor) mon = NULL;
     g_autoptr(virCommand) cmd = NULL;
     int socket_fd = 0;
     int event_monitor_fd;
+    int rv;
 
     if (virCHMonitorInitialize() < 0)
         return NULL;
@@ -644,6 +648,7 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
     virCommandSetErrorFD(cmd, &logfile);
     virCommandNonblockingFDs(cmd);
     virCommandSetUmask(cmd, 0x002);
+
     socket_fd = chMonitorCreateSocket(mon->socketpath);
     if (socket_fd < 0) {
         virReportSystemError(errno,
@@ -655,13 +660,26 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
     virCommandAddArg(cmd, "--api-socket");
     virCommandAddArgFormat(cmd, "fd=%d", socket_fd);
     virCommandPassFD(cmd, socket_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-
     virCommandAddArg(cmd, "--event-monitor");
     virCommandAddArgFormat(cmd, "path=%s", mon->eventmonitorpath);
+    virCommandSetPidFile(cmd, priv->pidfile);
+    virCommandDaemonize(cmd);
 
     /* launch Cloud-Hypervisor socket */
-    if (virCommandRunAsync(cmd, &mon->pid) < 0)
+    if (virCommandRun(cmd, NULL) < 0) {
+        VIR_DEBUG("CH vm=%p name=%s failed to spawn",
+                  vm, vm->def->name);
         return NULL;
+    }
+
+    if ((rv = virPidFileReadPath(priv->pidfile, &mon->pid)) < 0) {
+        virReportSystemError(-rv,
+                             _("Domain  %1$s didn't show up"),
+                             vm->def->name);
+        return NULL;
+    }
+    VIR_DEBUG("CH vm=%p name=%s running with pid=%lld",
+              vm, vm->def->name, (long long)mon->pid);
 
     /* open the reader end of fifo before start Event Handler */
     while ((event_monitor_fd = open(mon->eventmonitorpath, O_RDONLY)) < 0) {
