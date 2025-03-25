@@ -6016,55 +6016,59 @@ int
 virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
                                  virStorageNetHostDef *host)
 {
-    int ret = -1;
-    g_autofree char *port = NULL;
-
-    memset(host, 0, sizeof(*host));
+    g_autofree char *socket = NULL;
 
     if (virXMLPropEnumDefault(hostnode, "transport",
                               virStorageNetHostTransportTypeFromString,
                               VIR_XML_PROP_NONE,
                               &host->transport,
-                              VIR_STORAGE_NET_HOST_TRANS_TCP) < 0) {
-        goto cleanup;
-    }
+                              VIR_STORAGE_NET_HOST_TRANS_TCP) < 0)
+        return -1;
 
-    host->socket = virXMLPropString(hostnode, "socket");
+    socket = virXMLPropString(hostnode, "socket");
 
-    if (host->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX &&
-        host->socket == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing socket for unix transport"));
-        goto cleanup;
-    }
+    switch (host->transport) {
+    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+        if (!socket) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing socket for unix transport"));
+            return -1;
+        }
 
-    if (host->transport != VIR_STORAGE_NET_HOST_TRANS_UNIX &&
-        host->socket != NULL) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("transport '%1$s' does not support socket attribute"),
-                       virStorageNetHostTransportTypeToString(host->transport));
-        goto cleanup;
-    }
+        host->socket = g_steal_pointer(&socket);
+        break;
 
-    if (host->transport != VIR_STORAGE_NET_HOST_TRANS_UNIX) {
+    case VIR_STORAGE_NET_HOST_TRANS_TCP:
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA: {
+        g_autofree char *portstr = NULL;
+        unsigned int port = 0;
+
+        if (socket) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("transport '%1$s' does not support socket attribute"),
+                           virStorageNetHostTransportTypeToString(host->transport));
+            return -1;
+        }
+
+        if ((portstr = virXMLPropString(hostnode, "port")) &&
+            virStringParsePort(portstr, &port) < 0)
+            return -1;
+
         if (!(host->name = virXMLPropString(hostnode, "name"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing name for host"));
-            goto cleanup;
+            return -1;
         }
 
-        if ((port = virXMLPropString(hostnode, "port"))) {
-            if (virStringParsePort(port, &host->port) < 0)
-                goto cleanup;
-        }
+        host->port = port;
+    }
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+        break;
     }
 
-    ret = 0;
-
- cleanup:
-    if (ret < 0)
-        virStorageNetHostDefClear(host);
-    return ret;
+    return 0;
 }
 
 
