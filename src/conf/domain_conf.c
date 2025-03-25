@@ -6017,7 +6017,6 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
                                  virStorageNetHostDef *host)
 {
     int ret = -1;
-    g_autofree char *transport = NULL;
     g_autofree char *port = NULL;
 
     memset(host, 0, sizeof(*host));
@@ -6043,7 +6042,7 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
         host->socket != NULL) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("transport '%1$s' does not support socket attribute"),
-                       transport);
+                       virStorageNetHostTransportTypeToString(host->transport));
         goto cleanup;
     }
 
