@@ -19,6 +19,11 @@ v11.3.0 (unreleased)
 
 * **New features**
 
+  * xen: Support configuration of ``<hyperv/>`` flags for Xen domains.
+
+    The following flags are now configurable for Xen: ``vapic``, ``synic``,
+    ``stimer``, ``frequencies``, ``tlbflush`` and ``ipi``.
+
 * **Improvements**
 
 * **Bug fixes**
