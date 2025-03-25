@@ -4024,7 +4024,8 @@ virDomainDiskByTarget(virDomainDef *def,
 
 void virDomainDiskInsert(virDomainDef *def, virDomainDiskDef *disk);
 int virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
-                                     virStorageNetHostDef *host);
+                                     virStorageNetHostDef *host,
+                                     bool allow_fd);
 int virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt,
                                   virDomainDiskDef *def,
                                   const virDomainDef *vmdef);

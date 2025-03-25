@@ -6014,7 +6014,8 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
 
 int
 virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
-                                 virStorageNetHostDef *host)
+                                 virStorageNetHostDef *host,
+                                 bool allow_fd)
 {
     g_autofree char *socket = NULL;
 
@@ -6064,6 +6065,25 @@ virDomainStorageNetworkParseHost(xmlNodePtr hostnode,
     }
         break;
 
+    case VIR_STORAGE_NET_HOST_TRANS_FD:
+        if (!allow_fd) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("transport 'fd' is now allowed"));
+            return -1;
+        }
+
+        if (socket) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("transport '%1$s' does not support socket attribute"),
+                           virStorageNetHostTransportTypeToString(host->transport));
+            return -1;
+        }
+
+        if (!(host->fdgroup = virXMLPropStringRequired(hostnode, "fdgroup")))
+            return -1;
+
+        break;
+
     case VIR_STORAGE_NET_HOST_TRANS_LAST:
         break;
     }
@@ -6092,7 +6112,7 @@ virDomainStorageNetworkParseHosts(xmlNodePtr node,
     *nhosts = nhostnodes;
 
     for (i = 0; i < nhostnodes; i++) {
-        if (virDomainStorageNetworkParseHost(hostnodes[i], *hosts + i) < 0)
+        if (virDomainStorageNetworkParseHost(hostnodes[i], *hosts + i, false) < 0)
             return -1;
     }
 

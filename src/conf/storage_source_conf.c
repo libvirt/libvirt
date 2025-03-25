@@ -97,6 +97,7 @@ VIR_ENUM_IMPL(virStorageNetHostTransport,
               "tcp",
               "unix",
               "rdma",
+              "fd",
 );
 
 
@@ -149,6 +150,7 @@ virStorageNetHostDefClear(virStorageNetHostDef *def)
 
     VIR_FREE(def->name);
     VIR_FREE(def->socket);
+    VIR_FREE(def->fdgroup);
 }
 
 

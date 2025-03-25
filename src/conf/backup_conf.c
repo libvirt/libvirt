@@ -228,7 +228,7 @@ virDomainBackupDefParseXML(xmlXPathContextPtr ctxt,
 
         def->server = g_new0(virStorageNetHostDef, 1);
 
-        if (virDomainStorageNetworkParseHost(node, def->server) < 0)
+        if (virDomainStorageNetworkParseHost(node, def->server, false) < 0)
             return NULL;
 
         if (def->server->transport == VIR_STORAGE_NET_HOST_TRANS_RDMA) {

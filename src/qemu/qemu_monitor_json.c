@@ -6342,6 +6342,7 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
         addr = qemuMonitorJSONBuildUnixSocketAddress(server->socket);
         break;
     case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+    case VIR_STORAGE_NET_HOST_TRANS_FD:
     case VIR_STORAGE_NET_HOST_TRANS_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid server address"));
