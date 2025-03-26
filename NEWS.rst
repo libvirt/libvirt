@@ -15,6 +15,11 @@ v11.2.0 (unreleased)
 
 * **Removed features**
 
+  * Remove support for qemu-6.1 and older
+
+    Libvirt now requires *qemu-6.2* or newer based on our platform support
+    policy.
+
 * **New features**
 
   * qemu: Add new 'image_format' parameter to virDomainSaveParams
@@ -86,6 +91,20 @@ v11.2.0 (unreleased)
 
     The new error codes are ``VIR_ERR_AGENT_COMMAND_TIMEOUT`` and
     ``VIR_ERR_AGENT_COMMAND_FAILED``.
+
+  * qemu: Use common check for shared memory use for ``vhost-user`` network devices
+
+    Historically libvirt printed only a warning if the ``vhost-user`` network
+    was misconfigured. Since we enforce proper configuration for other device
+    types using ``vhost-user`` it is now enforced also for network devices and
+    prints an actual error on misconfiguration.
+
+  * Introduce constants for discoverability of entries in bulk stats APIs
+
+    Libvirt introduced constants exposed by our API description XML which allows
+    discoverability of new entries in typed parameter names returned by
+    ``virConnectGetAllDomainStats``, ``virDomainListGetStats``, and
+    ``virDomainGetGuestInfo``.
 
 * **Bug fixes**
 
