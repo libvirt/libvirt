@@ -5309,8 +5309,7 @@ qemuMigrationSrcResume(virDomainObj *vm,
 }
 
 
-/* Perform migration using QEMU's native migrate support,
- * not encrypted obviously
+/* Perform migration using QEMU's native migrate support.
  */
 static int
 qemuMigrationSrcPerformNative(virQEMUDriver *driver,
