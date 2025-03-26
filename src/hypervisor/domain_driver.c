@@ -652,9 +652,7 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
                 cpumask = bitmap;
             }
         }
-        if (virBitmapToData(cpumask, &info_ret[i]->cpumap,
-                            &info_ret[i]->cpumaplen) < 0)
-            goto cleanup;
+        virBitmapToData(cpumask, &info_ret[i]->cpumap, &info_ret[i]->cpumaplen);
     }
 
     *info = g_steal_pointer(&info_ret);

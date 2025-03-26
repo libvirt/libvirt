@@ -91,7 +91,7 @@ virBitmap *virBitmapNewCopy(virBitmap *src) ATTRIBUTE_NONNULL(1);
 
 virBitmap *virBitmapNewData(const void *data, int len) ATTRIBUTE_NONNULL(1);
 
-int virBitmapToData(virBitmap *bitmap, unsigned char **data, int *dataLen)
+void virBitmapToData(virBitmap *bitmap, unsigned char **data, int *dataLen)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 void virBitmapToDataBuf(virBitmap *bitmap, unsigned char *data, size_t len)

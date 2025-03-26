@@ -7420,8 +7420,7 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
         }
     }
 
-    if (virBitmapToData(map, &cpumap, cpumaplen) < 0)
-        return NULL;
+    virBitmapToData(map, &cpumap, cpumaplen);
 
     return cpumap;
 }

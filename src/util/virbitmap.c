@@ -637,10 +637,8 @@ virBitmapNewData(const void *data,
  * Convert a bitmap to a chunk of data containing bits information.
  * Data consists of sequential bytes, with lower bytes containing
  * lower bits. This function allocates @data.
- *
- * Returns 0 on success, -1 otherwise.
  */
-int
+void
 virBitmapToData(virBitmap *bitmap,
                 unsigned char **data,
                 int *dataLen)
@@ -656,8 +654,6 @@ virBitmapToData(virBitmap *bitmap,
     *dataLen = len;
 
     virBitmapToDataBuf(bitmap, *data, *dataLen);
-
-    return 0;
 }
 
 

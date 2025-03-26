@@ -794,8 +794,7 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
         if (!(onlineVcpus = virBitmapParseUnlimited(onlineVcpuStr)))
             goto cleanup;
 
-        if (virBitmapToData(onlineVcpus, &onlineVcpumap, &dummy) < 0)
-            goto cleanup;
+        virBitmapToData(onlineVcpus, &onlineVcpumap, &dummy);
 
         if (enable) {
             offlinableVcpuStr = vshGetTypedParamValue(ctl, &params[2]);
@@ -803,8 +802,7 @@ virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
             if (!(offlinableVcpus = virBitmapParseUnlimited(offlinableVcpuStr)))
                 goto cleanup;
 
-            if (virBitmapToData(offlinableVcpus, &offlinableVcpumap, &dummy) < 0)
-                goto cleanup;
+            virBitmapToData(offlinableVcpus, &offlinableVcpumap, &dummy);
 
             lastcpu = virBitmapLastSetBit(offlinableVcpus);
             cpulist = g_new0(char *, nvcpus - virBitmapCountBits(onlineVcpus) + 1);

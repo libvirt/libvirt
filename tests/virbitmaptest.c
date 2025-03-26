@@ -339,8 +339,7 @@ test5(const void *v G_GNUC_UNUSED)
     ignore_value(virBitmapSetBit(bitmap, 2));
     ignore_value(virBitmapSetBit(bitmap, 15));
 
-    if (virBitmapToData(bitmap, &data2, &len2) < 0)
-        return -1;
+    virBitmapToData(bitmap, &data2, &len2);
 
     if (len2 != sizeof(data) ||
         data2[0] != 0x05 ||

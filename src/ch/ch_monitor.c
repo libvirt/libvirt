@@ -1208,10 +1208,7 @@ virCHMonitorGetIOThreads(virCHMonitor *mon,
             if (!(map = virProcessGetAffinity(iothreadinfo->iothread_id)))
                 goto error;
 
-            if (virBitmapToData(map, &(iothreadinfo->cpumap),
-                                &(iothreadinfo->cpumaplen)) < 0) {
-                goto error;
-            }
+            virBitmapToData(map, &(iothreadinfo->cpumap), &(iothreadinfo->cpumaplen));
 
             /* Append to iothreadinfolist */
             iothreadinfolist[niothreads] = g_steal_pointer(&iothreadinfo);

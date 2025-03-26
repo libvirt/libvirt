@@ -4803,8 +4803,7 @@ qemuDomainGetIOThreadsLive(virDomainObj *vm,
         if (!(map = virProcessGetAffinity(iothreads[i]->thread_id)))
             goto endjob;
 
-        if (virBitmapToData(map, &info_ret[i]->cpumap, &info_ret[i]->cpumaplen) < 0)
-            goto endjob;
+        virBitmapToData(map, &info_ret[i]->cpumap, &info_ret[i]->cpumaplen);
     }
 
     *info = g_steal_pointer(&info_ret);

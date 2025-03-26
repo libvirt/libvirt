@@ -1101,8 +1101,8 @@ virHostCPUGetMap(unsigned char **cpumap,
     if (!(cpus = virHostCPUGetOnlineBitmap()))
         goto cleanup;
 
-    if (cpumap && virBitmapToData(cpus, cpumap, &dummy) < 0)
-        goto cleanup;
+    if (cpumap)
+        virBitmapToData(cpus, cpumap, &dummy);
     if (online)
         *online = virBitmapCountBits(cpus);
 
