@@ -562,7 +562,7 @@ virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
             return -1;
         }
 
-        if (src->dataFileStore->dataFileStore || src->backingStore) {
+        if (src->dataFileStore->dataFileStore || src->dataFileStore->backingStore) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("The <source> of <dataStore> can't have another nested <dataStore> or <backingStore> element"));
             return -1;

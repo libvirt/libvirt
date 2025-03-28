@@ -62,6 +62,25 @@
       </backingStore>
       <target dev='vdd' bus='virtio'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none' io='native' discard='unmap'/>
+      <source file='/var/lib/libvirt/images/datastore.qcow2'>
+        <dataStore type='file'>
+          <format type='raw'/>
+          <source file='/var/lib/libvirt/images/datastore_2'/>
+        </dataStore>
+      </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/base-with-data-file.qcow'>
+          <dataStore type='file'>
+            <format type='raw'/>
+            <source file='/var/lib/libvirt/images/datastore_1'/>
+          </dataStore>
+        </source>
+      </backingStore>
+      <target dev='vde' bus='virtio'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <memballoon model='virtio'/>

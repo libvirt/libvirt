@@ -69,6 +69,26 @@
       <target dev='vdd' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' cache='none' io='native' discard='unmap'/>
+      <source file='/var/lib/libvirt/images/datastore.qcow2'>
+        <dataStore type='file'>
+          <format type='raw'/>
+          <source file='/var/lib/libvirt/images/datastore_2'/>
+        </dataStore>
+      </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/base-with-data-file.qcow'>
+          <dataStore type='file'>
+            <format type='raw'/>
+            <source file='/var/lib/libvirt/images/datastore_1'/>
+          </dataStore>
+        </source>
+      </backingStore>
+      <target dev='vde' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
     <controller type='usb' index='0' model='piix3-uhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
@@ -77,7 +97,7 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </memballoon>
   </devices>
 </domain>
