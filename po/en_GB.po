@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-03-25 10:52+0000\n"
-"PO-Revision-Date: 2025-03-17 18:31+0000\n"
+"PO-Revision-Date: 2025-03-29 02:07+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.2\n"
+"X-Generator: Weblate 5.10.4\n"
 
 msgid ""
 "\n"
@@ -1255,7 +1255,7 @@ msgstr "'%1$s' is not a suitable pr helper"
 
 #, c-format
 msgid "'%1$s' is not a suitable qemu-rdp helper name"
-msgstr ""
+msgstr "'%1$s' is not a suitable qemu-rdp helper name"
 
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
@@ -1283,7 +1283,7 @@ msgstr "'%1$s' starting from %2$llu has only %3$zd bytes available"
 
 #, c-format
 msgid "'%1$s' vanished unexpectedly"
-msgstr ""
+msgstr "'%1$s' vanished unexpectedly"
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1508,7 +1508,7 @@ msgid "'return' member missing"
 msgstr "'return' member missing"
 
 msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
-msgstr ""
+msgstr "'sheepdog' protocol is no longer supported by any hypervisor driver"
 
 #, c-format
 msgid ""
@@ -1914,11 +1914,11 @@ msgstr "ACPI requires UEFI on this architecture"
 
 #, c-format
 msgid "ACPI table type '%1$s' is not supported"
-msgstr ""
+msgstr "ACPI table type '%1$s' is not supported"
 
 #, c-format
 msgid "ACPI table type '%1$s' may only appear once"
-msgstr ""
+msgstr "ACPI table type '%1$s' may only appear once"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
@@ -2035,10 +2035,10 @@ msgid "Add or remove vcpus"
 msgstr "Add or remove vCPUs"
 
 msgid "Add or update a throttling group."
-msgstr ""
+msgstr "Add or update a throttling group."
 
 msgid "Add or updte a throttling group."
-msgstr ""
+msgstr "Add or update a throttling group."
 
 msgid "Added"
 msgstr "Added"
@@ -2251,7 +2251,7 @@ msgid "Autostart"
 msgstr "Autostart"
 
 msgid "Autostart Once:"
-msgstr ""
+msgstr "Autostart Once:"
 
 msgid "Autostart:"
 msgstr "Autostart:"
@@ -2767,7 +2767,7 @@ msgid "Can't create initial configuration"
 msgstr "Can't create initial configuration"
 
 msgid "Can't define NWFilter bindings in session mode"
-msgstr ""
+msgstr "Can't define NWFilter bindings in session mode"
 
 msgid "Can't define NWFilters in session mode"
 msgstr ""
