@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-03-25 10:52+0000\n"
-"PO-Revision-Date: 2025-03-01 03:12+0000\n"
+"PO-Revision-Date: 2025-03-30 07:26+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10.2\n"
+"X-Generator: Weblate 5.10.4\n"
 
 msgid ""
 "\n"
@@ -1253,7 +1253,7 @@ msgstr "'%1$s' 는 알맞는 도우미가 아닙니다"
 
 #, c-format
 msgid "'%1$s' is not a suitable qemu-rdp helper name"
-msgstr ""
+msgstr "'%1$s' 는 적합한 qemu-rdp helper 이름이 없습니다"
 
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
@@ -1281,7 +1281,7 @@ msgstr "'%1$s' 시작은(%2$llu에서) 사용 가능한 %3$zd 바이트만을 �
 
 #, c-format
 msgid "'%1$s' vanished unexpectedly"
-msgstr ""
+msgstr "'%1$s' 가 예상치 못하게 사라졌습니다"
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1485,6 +1485,8 @@ msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
 "<interface type='vhostuser'>"
 msgstr ""
+"'reconnect' 속성은 <interface type='vhostuser'> 를 위한 source mode='server' "
+"일 때에 지원되지 않습니다"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -1501,10 +1503,11 @@ msgstr ""
 "니다"
 
 msgid "'return' member missing"
-msgstr ""
+msgstr "'return' 구성이 누락됨"
 
 msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
-msgstr ""
+msgstr "'sheepdog' 통신규약은 모든 하이퍼바이저 드라이버에서 더 이상 지원되지 "
+"않습니다"
 
 #, c-format
 msgid ""
@@ -1922,11 +1925,11 @@ msgstr "ACPI는 이 구조(아키텍쳐)에서 UEFI가 필요합니다"
 
 #, c-format
 msgid "ACPI table type '%1$s' is not supported"
-msgstr ""
+msgstr "ACPI 테이블 유형 '%1$s'는 지원되지 않습니다"
 
 #, c-format
 msgid "ACPI table type '%1$s' may only appear once"
-msgstr ""
+msgstr "ACPI 테이블 유형 '%1$s' 는 한 번만 나타날 것입니다"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
@@ -2045,10 +2048,10 @@ msgid "Add or remove vcpus"
 msgstr "vcpus를 추가하거나 제거하기"
 
 msgid "Add or update a throttling group."
-msgstr ""
+msgstr "제한 그룹을 추가하거나 최신화합니다."
 
 msgid "Add or updte a throttling group."
-msgstr ""
+msgstr "제한 그룹을 추가하거나 최신화합니다."
 
 msgid "Added"
 msgstr "추가됨"
@@ -2262,7 +2265,7 @@ msgid "Autostart"
 msgstr "자동 시작"
 
 msgid "Autostart Once:"
-msgstr ""
+msgstr "한 번 자동시작:"
 
 msgid "Autostart:"
 msgstr "Autostart:"
@@ -3030,7 +3033,7 @@ msgid "Cannot create macvlan devices on this platform"
 msgstr "이 기술환경에서 macvlan 장치를 생성 할 수 없음"
 
 msgid "Cannot create monitor FIFO"
-msgstr ""
+msgstr "monitor FIFO를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Cannot create resctrl directory '%1$s'"
