@@ -117,6 +117,4 @@
   deny /sys/fs/cgroup?*{,/**} wklx,
   deny /sys/fs?*{,/**} wklx,
 
-@BEGIN_APPARMOR_3@
   include if exists <abstractions/libvirt-lxc.d>
-@END_APPARMOR_3@

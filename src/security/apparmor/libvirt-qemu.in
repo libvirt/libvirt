@@ -190,7 +190,6 @@
   /usr/{lib,lib64}/libswtpm_libtpms.so mr,
   /usr/lib/@{multiarch}/libswtpm_libtpms.so mr,
 
-@BEGIN_APPARMOR_3@
   # support for passt network back-end
   /usr/bin/passt Cx -> passt,
 
@@ -206,7 +205,6 @@
 
     include if exists <abstractions/passt>
   }
-@END_APPARMOR_3@
 
   # for save and resume
   /{usr/,}bin/dash rmix,
@@ -281,6 +279,4 @@
   owner /var/lib/libvirt/qemu/nvram/*_VARS.fd rwk,
   owner /var/lib/libvirt/qemu/nvram/*_VARS.ms.fd rwk,
 
-@BEGIN_APPARMOR_3@
   include if exists <abstractions/libvirt-qemu.d>
-@END_APPARMOR_3@
