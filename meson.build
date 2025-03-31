@@ -931,7 +931,6 @@ apparmor_dep = dependency('libapparmor', version: '>=' + apparmor_version,
                           required: get_option('apparmor'))
 if apparmor_dep.found()
   conf.set('WITH_APPARMOR', 1)
-  conf.set('WITH_APPARMOR_3', 1)
   conf.set_quoted('APPARMOR_DIR', sysconfdir / 'apparmor.d')
   conf.set_quoted('APPARMOR_PROFILES_PATH', '/sys/kernel/security/apparmor/profiles')
 endif
