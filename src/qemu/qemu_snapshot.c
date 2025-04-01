@@ -554,12 +554,12 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
                                  virDomainMomentObj *snap,
                                  unsigned int flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     virObjectEvent *event = NULL;
     bool resume = false;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     int ret = -1;
     int rv = 0;
+    g_autoptr(qemuBlockJobData) job = NULL;
 
     if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
         goto cleanup;
@@ -581,26 +581,11 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         }
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
-        g_autoptr(qemuBlockJobData) job = NULL;
+    if (!(job = qemuSnapshotCreateActiveInternalStart(vm, snapdef)))
+        goto cleanup;
 
-        if (!(job = qemuSnapshotCreateActiveInternalStart(vm, snapdef)))
-            goto cleanup;
-
-        while ((rv = qemuSnapshotCreateActiveInternalDone(vm, job)) != 1) {
-            if (rv < 0 || qemuDomainObjWait(vm) < 0)
-                goto cleanup;
-        }
-
-    } else {
-        if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0) {
-            resume = false;
-            goto cleanup;
-        }
-
-        rv = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
-        qemuDomainObjExitMonitor(vm);
-        if (rv < 0)
+    while ((rv = qemuSnapshotCreateActiveInternalDone(vm, job)) != 1) {
+        if (rv < 0 || qemuDomainObjWait(vm) < 0)
             goto cleanup;
     }
 
@@ -944,7 +929,6 @@ qemuSnapshotPrepare(virDomainObj *vm,
                     bool *has_manual,
                     unsigned int *flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     bool active = virDomainObjIsActive(vm);
     bool reuse = (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
@@ -1065,13 +1049,6 @@ qemuSnapshotPrepare(virDomainObj *vm,
      * varstore is in qcow2 format.
      */
     if (active && found_internal) {
-        if (virDomainDefHasOldStyleUEFI(vm->def) &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("internal snapshots of a VM with pflash based firmware are not supported with this qemu"));
-            return -1;
-        }
-
         if (vm->def->os.loader &&
             vm->def->os.loader->nvram &&
             vm->def->os.loader->nvram->format != VIR_STORAGE_FILE_QCOW2) {
@@ -4120,22 +4097,13 @@ qemuSnapshotDiscardImpl(virDomainObj *vm,
                     return -1;
             } else {
                 virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
-                qemuDomainObjPrivate *priv = vm->privateData;
 
                 /* Similarly as internal snapshot creation we would use a regular job
                  * here so set a mask to forbid any other job. */
                 qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_NONE);
 
-                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
-                    if (qemuSnapshotDiscardActiveInternal(vm, snapdef) < 0)
-                        return -1;
-                } else {
-                    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
-                        return -1;
-                    /* we continue on even in the face of error */
-                    qemuMonitorDeleteSnapshot(qemuDomainGetMonitor(vm), snap->def->name);
-                    qemuDomainObjExitMonitor(vm);
-                }
+                if (qemuSnapshotDiscardActiveInternal(vm, snapdef) < 0)
+                    return -1;
 
                 qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_DEFAULT_MASK);
             }
