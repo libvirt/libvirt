@@ -2,6 +2,7 @@
  * bhyve_process.c: bhyve process management
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,18 +72,23 @@ static void
 bhyveNetCleanup(virDomainObj *vm)
 {
     size_t i;
+    g_autoptr(virConnect) conn = NULL;
 
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDef *net = vm->def->nets[i];
         virDomainNetType actualType = virDomainNetGetActualType(net);
 
-        if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-            if (net->ifname) {
-                ignore_value(virNetDevBridgeRemovePort(
-                                virDomainNetGetActualBridgeName(net),
-                                net->ifname));
-                ignore_value(virNetDevTapDelete(net->ifname, NULL));
-            }
+        if (net->ifname) {
+            ignore_value(virNetDevBridgeRemovePort(
+                             virDomainNetGetActualBridgeName(net),
+                             net->ifname));
+            ignore_value(virNetDevTapDelete(net->ifname, NULL));
+        }
+        if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK) {
+            if (conn || (conn = virGetConnectNetwork()))
+                virDomainNetReleaseActualDevice(conn, net);
+            else
+                VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }
     }
 }
@@ -437,6 +443,8 @@ virBhyveProcessReconnect(virDomainObj *vm,
     char **proc_argv;
     char *expected_proctitle = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virConnect) conn = NULL;
+    size_t i;
     int ret = -1;
 
     if (!virDomainObjIsActive(vm))
@@ -467,6 +475,14 @@ virBhyveProcessReconnect(virDomainObj *vm,
                  }
              }
          }
+    }
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDef *net = vm->def->nets[i];
+        if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK && !conn)
+            conn = virGetConnectNetwork();
+
+        virDomainNetNotifyActualDevice(conn, vm->def, net);
     }
 
  cleanup:

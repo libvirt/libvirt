@@ -27,6 +27,7 @@
 #include "bhyve_domain.h"
 #include "bhyve_conf.h"
 #include "bhyve_driver.h"
+#include "domain_validate.h"
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -41,7 +42,7 @@
 VIR_LOG_INIT("bhyve.bhyve_command");
 
 static int
-bhyveBuildNetArgStr(const virDomainDef *def,
+bhyveBuildNetArgStr(virDomainDef *def,
                     virDomainNetDef *net,
                     struct _bhyveConn *driver,
                     virCommand *cmd,
@@ -53,6 +54,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     char *nic_model = NULL;
     int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
+    g_autoptr(virConnect) netconn = NULL;
 
     if (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO) {
         nic_model = g_strdup("virtio-net");
@@ -70,12 +72,43 @@ bhyveBuildNetArgStr(const virDomainDef *def,
         return -1;
     }
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
+        if (!netconn && !(netconn = virGetConnectNetwork()))
+            goto cleanup;
+        if (virDomainNetAllocateActualDevice(netconn, def, net) < 0)
+            goto cleanup;
+    }
+    /* final validation now that actual type is known */
+    if (virDomainActualNetDefValidate(net) < 0)
+        return -1;
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
         brname = g_strdup(virDomainNetGetActualBridgeName(net));
-    } else {
+        if (!brname) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No bridge name specified"));
+            goto cleanup;
+        }
+        break;
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_NULL:
+    case VIR_DOMAIN_NET_TYPE_VDS:
+    case VIR_DOMAIN_NET_TYPE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Network type %1$d is not supported"),
-                       virDomainNetGetActualType(net));
+                       _("Unsupported network type %1$s"),
+                       virDomainNetTypeToString(actualType));
         goto cleanup;
     }
 
