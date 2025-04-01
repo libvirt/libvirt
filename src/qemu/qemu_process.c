@@ -8239,8 +8239,7 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainVcpuPersistOrder(vm->def);
 
-    if (snapshot &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SNAPSHOT_INTERNAL_QMP)) {
+    if (snapshot) {
         VIR_DEBUG("reverting internal snapshot via QMP");
         if (qemuSnapshotInternalRevert(vm, snapshot, asyncJob) < 0)
             goto cleanup;
