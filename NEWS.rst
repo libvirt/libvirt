@@ -15,6 +15,8 @@ v11.3.0 (unreleased)
 
 * **Removed features**
 
+  * Support for AppArmor versions prior to 3.0.0 has been dropped.
+
 * **New features**
 
 * **Improvements**
