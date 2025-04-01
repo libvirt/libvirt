@@ -8,10 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v11.2.0 (unreleased)
+v11.2.0 (2025-04-01)
 ====================
-
-* **Security**
 
 * **Removed features**
 
