@@ -28,7 +28,6 @@
 
 #include "qemu_alias.h"
 #include "qemu_monitor.h"
-#include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_domain.h"
 #include "qemu_capabilities.h"
@@ -2742,30 +2741,6 @@ qemuMonitorDelObject(qemuMonitor *mon,
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONDelObject(mon, objalias, report_error);
-}
-
-
-int
-qemuMonitorCreateSnapshot(qemuMonitor *mon, const char *name)
-{
-    VIR_DEBUG("name=%s", name);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* there won't ever be a direct QMP replacement for this function */
-    return qemuMonitorTextCreateSnapshot(mon, name);
-}
-
-
-int
-qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name)
-{
-    VIR_DEBUG("name=%s", name);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* there won't ever be a direct QMP replacement for this function */
-    return qemuMonitorTextDeleteSnapshot(mon, name);
 }
 
 

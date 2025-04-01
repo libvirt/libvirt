@@ -976,9 +976,6 @@ int qemuMonitorDelObject(qemuMonitor *mon,
                          const char *objalias,
                          bool report_error);
 
-int qemuMonitorCreateSnapshot(qemuMonitor *mon, const char *name);
-int qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name);
-
 int qemuMonitorTransaction(qemuMonitor *mon, virJSONValue **actions)
     ATTRIBUTE_NONNULL(2);
 int qemuMonitorBlockdevMirror(qemuMonitor *mon,

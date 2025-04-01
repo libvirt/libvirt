@@ -188,7 +188,6 @@ src/qemu/qemu_migration_cookie.c
 src/qemu/qemu_migration_params.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
-src/qemu/qemu_monitor_text.c
 src/qemu/qemu_namespace.c
 src/qemu/qemu_nbdkit.c
 src/qemu/qemu_passt.c
