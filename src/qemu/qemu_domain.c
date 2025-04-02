@@ -5321,8 +5321,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
          */
         if (origCPU) {
             virCPUDefFree(def->cpu);
-            if (!(def->cpu = virCPUDefCopy(origCPU)))
-                return -1;
+            def->cpu = virCPUDefCopy(origCPU);
         }
 
         if (def->cpu &&
@@ -9354,8 +9353,8 @@ qemuDomainSaveCookieNew(virDomainObj *vm)
     if (!(cookie = virObjectNew(qemuDomainSaveCookieClass)))
         return NULL;
 
-    if (priv->origCPU && !(cookie->cpu = virCPUDefCopy(vm->def->cpu)))
-        return NULL;
+    if (priv->origCPU)
+        cookie->cpu = virCPUDefCopy(vm->def->cpu);
 
     cookie->slirpHelper = qemuDomainGetSlirpHelperOk(vm);
 
