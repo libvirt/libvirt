@@ -223,6 +223,7 @@ mymain(void)
     DO_TEST("localtime");
     DO_TEST("net-e1000");
     DO_TEST("passthru");
+    DO_TEST("passthru-multiple-devs");
     DO_TEST("uefi");
     DO_TEST("uefi-nvram");
     DO_TEST("uefi-nvram-template-set");

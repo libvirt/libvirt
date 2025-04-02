@@ -1,0 +1,12 @@
+bhyve \
+-c 1 \
+-m 214 \
+-S \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,ahci,hd:/tmp/freebsd.img \
+-s 7:1,passthru,3/0/4 \
+-s 3:0,passthru,4/0/0 \
+-s 4:0,passthru,5/2/0 \
+bhyve

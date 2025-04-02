@@ -196,6 +196,16 @@ bhyveAssignDevicePCISlots(virDomainDef *def,
             return -1;
     }
 
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (!virDeviceInfoPCIAddressIsWanted(def->hostdevs[i]->info))
+            continue;
+        if (virDomainPCIAddressReserveNextAddr(addrs,
+                                               def->hostdevs[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
