@@ -717,7 +717,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "machine-i8042-opt", /* QEMU_CAPS_MACHINE_I8042_OPT */
 
               /* 465 */
-              "snapshot-internal-qmp", /* QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
+              "snapshot-internal-qmp", /* X_QEMU_CAPS_SNAPSHOT_INTERNAL_QMP */
               "chardev-reconnect-miliseconds", /* QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS */
               "virtio-ccw.loadparm", /* QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM */
               "netdev-stream-reconnect-miliseconds", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS */
@@ -1251,7 +1251,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-stats", QEMU_CAPS_QUERY_STATS },
     { "query-stats-schemas", QEMU_CAPS_QUERY_STATS_SCHEMAS },
     { "display-reload", QEMU_CAPS_DISPLAY_RELOAD },
-    { "snapshot-save", QEMU_CAPS_SNAPSHOT_INTERNAL_QMP },
     { "blockdev-set-active", QEMU_CAPS_BLOCKDEV_SET_ACTIVE },
 };
 

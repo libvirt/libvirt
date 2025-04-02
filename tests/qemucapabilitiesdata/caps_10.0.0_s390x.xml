@@ -128,7 +128,6 @@
   <flag name='usb-mtp'/>
   <flag name='virtio-sound'/>
   <flag name='netdev.user'/>
-  <flag name='snapshot-internal-qmp'/>
   <flag name='chardev-reconnect-miliseconds'/>
   <flag name='virtio-ccw.loadparm'/>
   <flag name='netdev-stream-reconnect-miliseconds'/>

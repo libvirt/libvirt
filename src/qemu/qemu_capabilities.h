@@ -698,7 +698,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MACHINE_I8042_OPT, /* -machine xxx,i8042=on/off; use virQEMUCapsSupportsI8042Toggle() to query this capability */
 
     /* 465 */
-    QEMU_CAPS_SNAPSHOT_INTERNAL_QMP, /* internal snapshot support via QMP commands 'snapshot-save'/'snapshot-delete' */
+    X_QEMU_CAPS_SNAPSHOT_INTERNAL_QMP, /* internal snapshot support via QMP commands 'snapshot-save'/'snapshot-delete' */
     QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS, /* 'reconnect-ms' option for chardevs supported */
     QEMU_CAPS_VIRTIO_CCW_DEVICE_LOADPARM, /* loadparm available on CCW device for multi device boot */
     QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS, /* 'reconnect-ms' option for netdev stream supported */
