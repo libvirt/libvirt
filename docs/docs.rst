@@ -60,41 +60,46 @@ Application development
 -----------------------
 
 `API reference <html/index.html>`__
-   Reference manual for the C public API, split in
-   `common <html/libvirt-libvirt-common.html>`__,
-   `domain <html/libvirt-libvirt-domain.html>`__,
-   `domain checkpoint <html/libvirt-libvirt-domain-checkpoint.html>`__,
-   `domain snapshot <html/libvirt-libvirt-domain-snapshot.html>`__,
-   `error <html/libvirt-virterror.html>`__,
-   `event <html/libvirt-libvirt-event.html>`__,
-   `host <html/libvirt-libvirt-host.html>`__,
-   `interface <html/libvirt-libvirt-interface.html>`__,
-   `network <html/libvirt-libvirt-network.html>`__,
-   `node device <html/libvirt-libvirt-nodedev.html>`__,
-   `network filter <html/libvirt-libvirt-nwfilter.html>`__,
-   `secret <html/libvirt-libvirt-secret.html>`__,
-   `storage <html/libvirt-libvirt-storage.html>`__,
-   `stream <html/libvirt-libvirt-stream.html>`__ and
-   `admin <html/libvirt-libvirt-admin.html>`__,
-   `QEMU <html/libvirt-libvirt-qemu.html>`__,
-   `LXC <html/libvirt-libvirt-lxc.html>`__ libs
+   Reference manual for the C public API, split in:
+
+   * `common <html/libvirt-libvirt-common.html>`__
+   * `domain <html/libvirt-libvirt-domain.html>`__
+   * `domain checkpoint <html/libvirt-libvirt-domain-checkpoint.html>`__
+   * `domain snapshot <html/libvirt-libvirt-domain-snapshot.html>`__
+   * `error <html/libvirt-virterror.html>`__
+   * `event <html/libvirt-libvirt-event.html>`__
+   * `host <html/libvirt-libvirt-host.html>`__
+   * `interface <html/libvirt-libvirt-interface.html>`__
+   * `network <html/libvirt-libvirt-network.html>`__
+   * `node device <html/libvirt-libvirt-nodedev.html>`__
+   * `network filter <html/libvirt-libvirt-nwfilter.html>`__
+   * `secret <html/libvirt-libvirt-secret.html>`__
+   * `storage <html/libvirt-libvirt-storage.html>`__
+   * `stream <html/libvirt-libvirt-stream.html>`__
+
+   and the documentation for the API of the additional libs:
+
+   * `admin <html/libvirt-libvirt-admin.html>`__
+   * `QEMU <html/libvirt-libvirt-qemu.html>`__
+   * `LXC <html/libvirt-libvirt-lxc.html>`__
 
 `XML schemas <format.html>`__
    Description of the XML schemas for
-   `domains <formatdomain.html>`__,
-   `networks <formatnetwork.html>`__,
-   `network ports <formatnetworkport.html>`__,
-   `network filtering <formatnwfilter.html>`__,
-   `storage <formatstorage.html>`__,
-   `storage encryption <formatstorageencryption.html>`__,
-   `capabilities <formatcaps.html>`__,
-   `domain capabilities <formatdomaincaps.html>`__,
-   `storage pool capabilities <formatstoragecaps.html>`__,
-   `node devices <formatnode.html>`__,
-   `secrets <formatsecret.html>`__,
-   `snapshots <formatsnapshot.html>`__,
-   `checkpoints <formatcheckpoint.html>`__,
-   `backup jobs <formatbackup.html>`__
+
+   * `domains <formatdomain.html>`__
+   * `networks <formatnetwork.html>`__
+   * `network ports <formatnetworkport.html>`__
+   * `network filtering <formatnwfilter.html>`__
+   * `storage <formatstorage.html>`__
+   * `storage encryption <formatstorageencryption.html>`__
+   * `capabilities <formatcaps.html>`__
+   * `domain capabilities <formatdomaincaps.html>`__
+   * `storage pool capabilities <formatstoragecaps.html>`__
+   * `node devices <formatnode.html>`__
+   * `secrets <formatsecret.html>`__
+   * `snapshots <formatsnapshot.html>`__
+   * `checkpoints <formatcheckpoint.html>`__
+   * `backup jobs <formatbackup.html>`__
 
 `Language bindings and API modules <bindings.html>`__
    Bindings of the libvirt API for

@@ -123,6 +123,17 @@ img.diagram {
     margin-bottom: 1em;
 }
 
+#documentation #application-development ul li p {
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+#documentation #application-development ul {
+    margin-left: 2em;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
 .removedhv {
     color: darkred;
 }
