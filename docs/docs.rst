@@ -79,19 +79,6 @@ Application development
    `QEMU <html/libvirt-libvirt-qemu.html>`__,
    `LXC <html/libvirt-libvirt-lxc.html>`__ libs
 
-`Language bindings and API modules <bindings.html>`__
-   Bindings of the libvirt API for
-   `c# <csharp.html>`__,
-   `go <https://pkg.go.dev/libvirt.org/go/libvirt>`__ (`all go modules <golang.html>`__),
-   `java <https://java.libvirt.org/>`__,
-   `ocaml <https://ocaml.libvirt.org/>`__,
-   `perl <https://search.cpan.org/dist/Sys-Virt/>`__,
-   `python <python.html>`__,
-   `php <https://php.libvirt.org>`__,
-   `ruby <https://ruby.libvirt.org/>`__
-   and integration API modules for
-   `D-Bus <dbus.html>`__
-
 `XML schemas <format.html>`__
    Description of the XML schemas for
    `domains <formatdomain.html>`__,
@@ -108,6 +95,19 @@ Application development
    `snapshots <formatsnapshot.html>`__,
    `checkpoints <formatcheckpoint.html>`__,
    `backup jobs <formatbackup.html>`__
+
+`Language bindings and API modules <bindings.html>`__
+   Bindings of the libvirt API for
+   `c# <csharp.html>`__,
+   `go <https://pkg.go.dev/libvirt.org/go/libvirt>`__ (`all go modules <golang.html>`__),
+   `java <https://java.libvirt.org/>`__,
+   `ocaml <https://ocaml.libvirt.org/>`__,
+   `perl <https://search.cpan.org/dist/Sys-Virt/>`__,
+   `python <python.html>`__,
+   `php <https://php.libvirt.org>`__,
+   `ruby <https://ruby.libvirt.org/>`__
+   and integration API modules for
+   `D-Bus <dbus.html>`__
 
 `URI format <uri.html>`__
    The URI formats used for connecting to libvirt
