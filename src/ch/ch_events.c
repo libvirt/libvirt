@@ -54,7 +54,7 @@ static int
 virCHEventStopProcess(virDomainObj *vm,
                       virDomainShutoffReason reason)
 {
-    virCHDriver *driver =  ((virCHDomainObjPrivate *)vm->privateData)->driver;
+    virCHDriver *driver = CH_DOMAIN_PRIVATE(vm)->driver;
 
     virObjectLock(vm);
     if (virDomainObjBeginJob(vm, VIR_JOB_DESTROY))

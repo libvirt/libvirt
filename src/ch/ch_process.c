@@ -430,8 +430,8 @@ virCHProcessSetupVcpus(virDomainObj *vm)
     size_t i;
 
     if ((vm->def->cputune.period || vm->def->cputune.quota) &&
-        !virCgroupHasController(((virCHDomainObjPrivate *) vm->privateData)->
-                                cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        !virCgroupHasController(CH_DOMAIN_PRIVATE(vm)->cgroup,
+                                VIR_CGROUP_CONTROLLER_CPU)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("cgroup cpu is required for scheduler tuning"));
         return -1;
