@@ -672,14 +672,14 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
         return NULL;
     }
 
-    if ((rv = virPidFileReadPath(priv->pidfile, &mon->pid)) < 0) {
+    if ((rv = virPidFileReadPath(priv->pidfile, &vm->pid)) < 0) {
         virReportSystemError(-rv,
                              _("Domain  %1$s didn't show up"),
                              vm->def->name);
         return NULL;
     }
     VIR_DEBUG("CH vm=%p name=%s running with pid=%lld",
-              vm, vm->def->name, (long long)mon->pid);
+              vm, vm->def->name, (long long)vm->pid);
 
     /* open the reader end of fifo before start Event Handler */
     while ((event_monitor_fd = open(mon->eventmonitorpath, O_RDONLY)) < 0) {
@@ -726,12 +726,6 @@ void virCHMonitorClose(virCHMonitor *mon)
 {
     if (!mon)
         return;
-
-    if (mon->pid > 0) {
-        /* try cleaning up the Cloud-Hypervisor process */
-        virProcessAbort(mon->pid);
-        mon->pid = 0;
-    }
 
     if (mon->handle)
         curl_easy_cleanup(mon->handle);

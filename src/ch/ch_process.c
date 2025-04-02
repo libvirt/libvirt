@@ -957,7 +957,6 @@ virCHProcessStart(virCHDriver *driver,
         }
     }
 
-    vm->pid = priv->monitor->pid;
     vm->def->id = vm->pid;
     priv->machineName = virCHDomainGetMachineName(vm);
 
@@ -1024,6 +1023,7 @@ virCHProcessStop(virCHDriver *driver,
     virErrorPreserveLast(&orig_err);
 
     if (priv->monitor) {
+        virProcessAbort(vm->pid);
         g_clear_pointer(&priv->monitor, virCHMonitorClose);
     }
 
@@ -1117,7 +1117,6 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
         }
     }
 
-    vm->pid = priv->monitor->pid;
     vm->def->id = vm->pid;
     priv->machineName = virCHDomainGetMachineName(vm);
 

@@ -297,7 +297,7 @@ int
 virCHStartEventHandler(virCHMonitor *mon)
 {
     g_autofree char *name = NULL;
-    name = g_strdup_printf("ch-evt-%d", mon->pid);
+    name = g_strdup_printf("ch-evt-%d", mon->vm->pid);
 
     virObjectRef(mon);
     if (virThreadCreateFull(&mon->event_handler_thread,
