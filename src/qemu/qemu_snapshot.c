@@ -592,16 +592,15 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
                 goto cleanup;
         }
 
-        ret = 0;
     } else {
         if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0) {
             resume = false;
             goto cleanup;
         }
 
-        ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
+        rv = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
         qemuDomainObjExitMonitor(vm);
-        if (ret < 0)
+        if (rv < 0)
             goto cleanup;
     }
 
@@ -616,6 +615,8 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
     }
+
+    ret = 0;
 
  cleanup:
     if (resume && virDomainObjIsActive(vm) &&
