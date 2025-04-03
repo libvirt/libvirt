@@ -156,7 +156,7 @@ virCHMonitorBuildPayloadJson(virJSONValue *content, virDomainDef *vmdef)
             buf = g_base64_decode(vmdef->sec->data.sev_snp.host_data, &len);
             if (len != host_data_len) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Invalid host_data provided. Expected '%1$ld' bytes"),
+                               _("Invalid host_data provided. Expected '%1$zu' bytes"),
                                host_data_len);
                 return -1;
             }
@@ -1139,7 +1139,7 @@ virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
         g_autoptr(virJSONValue) nets = virJSONValueNewArray();
         for (i = 0; i < vmdef->nnets; i++) {
             g_autoptr(virJSONValue) net_json = virJSONValueNewObject();
-            g_autofree char *id = g_strdup_printf("%s_%ld", CH_NET_ID_PREFIX, i);
+            g_autofree char *id = g_strdup_printf("%s_%zu", CH_NET_ID_PREFIX, i);
             if (virJSONValueObjectAppendString(net_json, "id", id) < 0)
                 return -1;
             if (virJSONValueObjectAppendNumberInt(net_json, "num_fds", vmdef->nets[i]->driver.virtio.queues))
