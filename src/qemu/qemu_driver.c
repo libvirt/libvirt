@@ -3612,7 +3612,6 @@ processNetdevStreamDisconnectedEvent(virDomainObj *vm,
 {
     virDomainDeviceDef dev;
     virDomainNetDef *def;
-    virQEMUCaps *qemuCaps = QEMU_DOMAIN_PRIVATE(vm)->qemuCaps;
     const char *devAlias = STRSKIP(netdevId, "host");
 
     /* The event sends us the "netdev-id", but we don't store the
@@ -3654,12 +3653,6 @@ processNetdevStreamDisconnectedEvent(virDomainObj *vm,
 
     if (def->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
         VIR_DEBUG("ignore NETDEV_STREAM_DISCONNECTED event for non-passt network device %s in domain %s",
-                  def->info.alias, vm->def->name);
-        goto endjob;
-    }
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT)) {
-        VIR_WARN("ignore NETDEV_STREAM_DISCONNECTED event for passt network device %s in domain %s - QEMU binary does not support reconnect",
                   def->info.alias, vm->def->name);
         goto endjob;
     }
