@@ -4553,6 +4553,122 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
     return ret;
 }
 
+
+static int
+vboxSnapshotReplaceRWDisks(struct _vboxDriver *data,
+                           virVBoxSnapshotConfMachine *snapshotMachineDesc,
+                           char *currentSnapshotXmlFilePath)
+{
+    g_auto(GStrv) realReadWriteDisksPath = NULL;
+    g_auto(GStrv) realReadOnlyDisksPath = NULL;
+    int realReadWriteDisksPathSize = 0;
+    int realReadOnlyDisksPathSize = 0;
+    int it = 0;
+
+    /*
+     * We have created fake disks, so we have to remove them and replace them with
+     * the read-write disks if there are any. The fake disks will be closed during
+     * the machine unregistration.
+     */
+    if (virVBoxSnapshotConfRemoveFakeDisks(snapshotMachineDesc) < 0) {
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Unable to remove Fake Disks"));
+        return -1;
+    }
+
+    realReadWriteDisksPathSize = virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(currentSnapshotXmlFilePath,
+                                                                                  &realReadWriteDisksPath);
+    realReadOnlyDisksPathSize = virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(currentSnapshotXmlFilePath,
+                                                                                 &realReadOnlyDisksPath);
+    /* The read-only disk number is necessarily greater or equal to the
+     * read-write disk number */
+    if (realReadOnlyDisksPathSize < realReadWriteDisksPathSize) {
+        vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("The read only disk number must be greater or equal to the read write disk number"));
+        return -1;
+    }
+
+    for (it = 0; it < realReadWriteDisksPathSize; it++) {
+        virVBoxSnapshotConfHardDisk *readWriteDisk = NULL;
+        PRUnichar *locationUtf = NULL;
+        IMedium *readWriteMedium = NULL;
+        char *uuid = NULL;
+        PRUnichar *formatUtf = NULL;
+        char *format = NULL;
+        const char *parentUuid = NULL;
+        vboxIID iid;
+        nsresult rc;
+
+        VBOX_IID_INITIALIZE(&iid);
+        VBOX_UTF8_TO_UTF16(realReadWriteDisksPath[it], &locationUtf);
+        rc = gVBoxAPI.UIVirtualBox.OpenMedium(data->vboxObj,
+                                              locationUtf,
+                                              DeviceType_HardDisk,
+                                              AccessMode_ReadWrite,
+                                              &readWriteMedium);
+        if (NS_FAILED(rc)) {
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to open HardDisk"));
+            VBOX_UTF16_FREE(locationUtf);
+            return -1;
+        }
+        VBOX_UTF16_FREE(locationUtf);
+
+        rc = gVBoxAPI.UIMedium.GetId(readWriteMedium, &iid);
+        if (NS_FAILED(rc)) {
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to get the read write medium id"));
+            return -1;
+        }
+        gVBoxAPI.UIID.vboxIIDToUtf8(data, &iid, &uuid);
+        vboxIIDUnalloc(&iid);
+
+        rc = gVBoxAPI.UIMedium.GetFormat(readWriteMedium, &formatUtf);
+        if (NS_FAILED(rc)) {
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to get the read write medium format"));
+            return -1;
+        }
+        VBOX_UTF16_TO_UTF8(formatUtf, &format);
+        VBOX_UTF16_FREE(formatUtf);
+
+        readWriteDisk = g_new0(virVBoxSnapshotConfHardDisk, 1);
+
+        readWriteDisk->format = format;
+        readWriteDisk->uuid = uuid;
+        readWriteDisk->location = realReadWriteDisksPath[it];
+        /*
+         * We get the current snapshot's read-only disk uuid in order to add the
+         * read-write disk to the media registry as its child. The read-only disk
+         * is already in the media registry because it is the fake disk's parent.
+         */
+        parentUuid = virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,
+                                                               realReadOnlyDisksPath[it]);
+        if (parentUuid == NULL) {
+            VIR_FREE(readWriteDisk);
+            return -1;
+        }
+
+        if (virVBoxSnapshotConfAddHardDiskToMediaRegistry(readWriteDisk,
+                                                          snapshotMachineDesc->mediaRegistry,
+                                                          parentUuid) < 0) {
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to add hard disk to media Registry"));
+            VIR_FREE(readWriteDisk);
+            return -1;
+        }
+        rc = gVBoxAPI.UIMedium.Close(readWriteMedium);
+        if (NS_FAILED(rc)) {
+            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                            _("Unable to close HardDisk"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 vboxSnapshotRedefine(virDomainPtr dom,
                      virDomainSnapshotDef *def,
@@ -4596,10 +4712,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
     char *currentSnapshotXmlFilePath = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     char *machineName = NULL;
-    g_auto(GStrv) realReadWriteDisksPath = NULL;
-    int realReadWriteDisksPathSize = 0;
-    g_auto(GStrv) realReadOnlyDisksPath = NULL;
-    int realReadOnlyDisksPathSize = 0;
     virVBoxSnapshotConfSnapshot *newSnapshotPtr = NULL;
     unsigned char snapshotUuid[VIR_UUID_BUFLEN];
     virVBoxSnapshotConfHardDisk **hardDiskToOpen = NULL;
@@ -4668,102 +4780,10 @@ vboxSnapshotRedefine(virDomainPtr dom,
     }
 
     if (snapshotFileExists) {
-        /*
-         * We have created fake disks, so we have to remove them and replace them with
-         * the read-write disks if there are any. The fake disks will be closed during
-         * the machine unregistration.
-         */
-        if (virVBoxSnapshotConfRemoveFakeDisks(snapshotMachineDesc) < 0) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("Unable to remove Fake Disks"));
+        if (vboxSnapshotReplaceRWDisks(data, snapshotMachineDesc,
+                                       currentSnapshotXmlFilePath) < 0)
             goto cleanup;
-        }
-        realReadWriteDisksPathSize = virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(currentSnapshotXmlFilePath,
-                                                             &realReadWriteDisksPath);
-        realReadOnlyDisksPathSize = virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(currentSnapshotXmlFilePath,
-                                                                         &realReadOnlyDisksPath);
-        /* The read-only disk number is necessarily greater or equal to the
-         * read-write disk number */
-        if (realReadOnlyDisksPathSize < realReadWriteDisksPathSize) {
-            vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                            _("The read only disk number must be greater or equal to the  read write disk number"));
-            goto cleanup;
-        }
-        for (it = 0; it < realReadWriteDisksPathSize; it++) {
-            virVBoxSnapshotConfHardDisk *readWriteDisk = NULL;
-            PRUnichar *locationUtf = NULL;
-            IMedium *readWriteMedium = NULL;
-            char *uuid = NULL;
-            PRUnichar *formatUtf = NULL;
-            char *format = NULL;
-            const char *parentUuid = NULL;
-            vboxIID iid;
 
-            VBOX_IID_INITIALIZE(&iid);
-            VBOX_UTF8_TO_UTF16(realReadWriteDisksPath[it], &locationUtf);
-            rc = gVBoxAPI.UIVirtualBox.OpenMedium(data->vboxObj,
-                                                  locationUtf,
-                                                  DeviceType_HardDisk,
-                                                  AccessMode_ReadWrite,
-                                                  &readWriteMedium);
-            if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to open HardDisk"));
-                VBOX_UTF16_FREE(locationUtf);
-                goto cleanup;
-            }
-            VBOX_UTF16_FREE(locationUtf);
-
-            rc = gVBoxAPI.UIMedium.GetId(readWriteMedium, &iid);
-            if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to get the read write medium id"));
-                goto cleanup;
-            }
-            gVBoxAPI.UIID.vboxIIDToUtf8(data, &iid, &uuid);
-            vboxIIDUnalloc(&iid);
-
-            rc = gVBoxAPI.UIMedium.GetFormat(readWriteMedium, &formatUtf);
-            if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to get the read write medium format"));
-                goto cleanup;
-            }
-            VBOX_UTF16_TO_UTF8(formatUtf, &format);
-            VBOX_UTF16_FREE(formatUtf);
-
-            readWriteDisk = g_new0(virVBoxSnapshotConfHardDisk, 1);
-
-            readWriteDisk->format = format;
-            readWriteDisk->uuid = uuid;
-            readWriteDisk->location = realReadWriteDisksPath[it];
-            /*
-             * We get the current snapshot's read-only disk uuid in order to add the
-             * read-write disk to the media registry as its child. The read-only disk
-             * is already in the media registry because it is the fake disk's parent.
-             */
-            parentUuid = virVBoxSnapshotConfHardDiskUuidByLocation(snapshotMachineDesc,
-                                                                   realReadOnlyDisksPath[it]);
-            if (parentUuid == NULL) {
-                VIR_FREE(readWriteDisk);
-                goto cleanup;
-            }
-
-            if (virVBoxSnapshotConfAddHardDiskToMediaRegistry(readWriteDisk,
-                                           snapshotMachineDesc->mediaRegistry,
-                                           parentUuid) < 0) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to add hard disk to media Registry"));
-                VIR_FREE(readWriteDisk);
-                goto cleanup;
-            }
-            rc = gVBoxAPI.UIMedium.Close(readWriteMedium);
-            if (NS_FAILED(rc)) {
-                vboxReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                _("Unable to close HardDisk"));
-                goto cleanup;
-            }
-        }
         /*
          * Now we have done this swap, we remove the snapshot xml file from the
          * current machine location.
