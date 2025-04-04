@@ -258,11 +258,6 @@ alloc_max = run_command(
 
 stack_frame_size = 2048
 
-# clang without optimization enlarges stack frames in certain corner cases
-if cc.get_id() == 'clang' and get_option('optimization') == '0'
-    stack_frame_size = 4096
-endif
-
 # sanitizer instrumentation may enlarge stack frames
 if get_option('b_sanitize') != 'none'
   stack_frame_size = 32768
