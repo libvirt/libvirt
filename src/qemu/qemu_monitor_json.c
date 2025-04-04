@@ -85,6 +85,7 @@ static void qemuMonitorJSONHandleMemoryFailure(qemuMonitor *mon, virJSONValue *d
 static void qemuMonitorJSONHandleMemoryDeviceSizeChange(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleDeviceUnplugErr(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleNetdevStreamDisconnected(qemuMonitor *mon, virJSONValue *data);
+static void qemuMonitorJSONHandleNetdevVhostUserDisconnected(qemuMonitor *mon, virJSONValue *data);
 
 typedef struct {
     const char *type;
@@ -108,6 +109,7 @@ static qemuEventHandler eventHandlers[] = {
     { "MIGRATION", qemuMonitorJSONHandleMigrationStatus, },
     { "MIGRATION_PASS", qemuMonitorJSONHandleMigrationPass, },
     { "NETDEV_STREAM_DISCONNECTED", qemuMonitorJSONHandleNetdevStreamDisconnected, },
+    { "NETDEV_VHOST_USER_DISCONNECTED", qemuMonitorJSONHandleNetdevVhostUserDisconnected, },
     { "NIC_RX_FILTER_CHANGED", qemuMonitorJSONHandleNicRxFilterChanged, },
     { "PR_MANAGER_STATUS_CHANGED", qemuMonitorJSONHandlePRManagerStatusChanged, },
     { "RDMA_GID_STATUS_CHANGED", qemuMonitorJSONHandleRdmaGidStatusChanged, },
@@ -1041,6 +1043,20 @@ qemuMonitorJSONHandleNetdevStreamDisconnected(qemuMonitor *mon, virJSONValue *da
     }
 
     qemuMonitorEmitNetdevStreamDisconnected(mon, name);
+}
+
+
+static void
+qemuMonitorJSONHandleNetdevVhostUserDisconnected(qemuMonitor *mon, virJSONValue *data)
+{
+    const char *name;
+
+    if (!(name = virJSONValueObjectGetString(data, "netdev-id"))) {
+        VIR_WARN("missing device in NETDEV_VHOST_USER_DISCONNECTED event");
+        return;
+    }
+
+    qemuMonitorEmitNetdevVhostUserDisconnected(mon, name);
 }
 
 

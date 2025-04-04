@@ -3681,6 +3681,14 @@ processNetdevStreamDisconnectedEvent(virDomainObj *vm,
 
 
 static void
+processNetdevVhostUserDisconnectedEvent(virDomainObj *vm,
+                                        const char *netdevId)
+{
+    processNetdevDisconnectedEvent(vm, netdevId, "NETDEV_VHOST_USER_DISCONNECTED");
+}
+
+
+static void
 processNicRxFilterChangedEvent(virQEMUDriver *driver,
                                virDomainObj *vm,
                                const char *devAlias)
@@ -4080,6 +4088,9 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         break;
     case QEMU_PROCESS_EVENT_NETDEV_STREAM_DISCONNECTED:
         processNetdevStreamDisconnectedEvent(vm, processEvent->data);
+        break;
+    case QEMU_PROCESS_EVENT_NETDEV_VHOST_USER_DISCONNECTED:
+        processNetdevVhostUserDisconnectedEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED:
         processNicRxFilterChangedEvent(driver, vm, processEvent->data);

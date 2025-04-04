@@ -1265,6 +1265,17 @@ qemuMonitorEmitNetdevStreamDisconnected(qemuMonitor *mon,
 
 
 void
+qemuMonitorEmitNetdevVhostUserDisconnected(qemuMonitor *mon,
+                                           const char *devAlias)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, domainNetdevVhostUserDisconnected,
+                          mon->vm, devAlias);
+}
+
+
+void
 qemuMonitorEmitSerialChange(qemuMonitor *mon,
                             const char *devAlias,
                             bool connected)
