@@ -742,6 +742,42 @@ remoteConnectFormatURI(virURI *uri,
 }
 
 
+static int
+remoteCallOpen(virConnectPtr conn,
+               struct private_data *priv,
+               const char *name,
+               unsigned int flags)
+{
+    remote_connect_open_args args = { (char**) &name, flags };
+
+    VIR_DEBUG("Trying to open URI '%s'", name);
+    if (call(conn, priv, 0, REMOTE_PROC_CONNECT_OPEN,
+             (xdrproc_t) xdr_remote_connect_open_args, (char *) &args,
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    /* Now try and find out what URI the daemon used */
+    if (conn->uri == NULL) {
+        remote_connect_get_uri_ret uriret = { 0 };
+
+        VIR_DEBUG("Trying to query remote URI");
+        if (call(conn, priv, 0,
+                 REMOTE_PROC_CONNECT_GET_URI,
+                 (xdrproc_t) xdr_void, (char *) NULL,
+                 (xdrproc_t) xdr_remote_connect_get_uri_ret, (char *) &uriret) < 0)
+            return -1;
+
+        VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
+        conn->uri = virURIParse(uriret.uri);
+        VIR_FREE(uriret.uri);
+        if (!conn->uri)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /* helper macro to ease extraction of arguments from the URI */
 #define EXTRACT_URI_ARG_STR(ARG_NAME, ARG_VAR) \
     if (STRCASEEQ(var->name, ARG_NAME)) { \
@@ -1241,33 +1277,8 @@ doRemoteOpen(virConnectPtr conn,
     }
 
     /* Finally we can call the remote side's open function. */
-    {
-        remote_connect_open_args args = { &name, flags };
-
-        VIR_DEBUG("Trying to open URI '%s'", name);
-        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_OPEN,
-                 (xdrproc_t) xdr_remote_connect_open_args, (char *) &args,
-                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
-            goto error;
-    }
-
-    /* Now try and find out what URI the daemon used */
-    if (conn->uri == NULL) {
-        remote_connect_get_uri_ret uriret = { 0 };
-
-        VIR_DEBUG("Trying to query remote URI");
-        if (call(conn, priv, 0,
-                 REMOTE_PROC_CONNECT_GET_URI,
-                 (xdrproc_t) xdr_void, (char *) NULL,
-                 (xdrproc_t) xdr_remote_connect_get_uri_ret, (char *) &uriret) < 0)
-            goto error;
-
-        VIR_DEBUG("Auto-probed URI is %s", uriret.uri);
-        conn->uri = virURIParse(uriret.uri);
-        VIR_FREE(uriret.uri);
-        if (!conn->uri)
-            goto error;
-    }
+    if (remoteCallOpen(conn, priv, name, flags) < 0)
+        goto error;
 
     /* Set up events */
     if (!(priv->eventState = virObjectEventStateNew()))
