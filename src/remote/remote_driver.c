@@ -1063,7 +1063,7 @@ doRemoteOpen(virConnectPtr conn,
 
     VIR_DEBUG("Connecting with transport %d", transport);
 
-    switch ((remoteDriverTransport)transport) {
+    switch (transport) {
     case REMOTE_DRIVER_TRANSPORT_UNIX:
     case REMOTE_DRIVER_TRANSPORT_SSH:
     case REMOTE_DRIVER_TRANSPORT_LIBSSH:
@@ -1088,7 +1088,7 @@ doRemoteOpen(virConnectPtr conn,
     VIR_DEBUG("Chosen UNIX socket %s", NULLSTR(sockname));
 
     /* Connect to the remote service. */
-    switch ((remoteDriverTransport)transport) {
+    switch (transport) {
     case REMOTE_DRIVER_TRANSPORT_TLS:
         if (conf && !tls_priority &&
             virConfGetValueString(conf, "tls_priority", &tls_priority) < 0)
