@@ -1,5 +1,7 @@
 cpumap_data = [
   'arm_a64fx.xml',
+  'arm_Ampere-1a.xml',
+  'arm_Ampere-1.xml',
   'arm_cortex-a53.xml',
   'arm_cortex-a57.xml',
   'arm_cortex-a72.xml',
