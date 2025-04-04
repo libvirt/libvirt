@@ -1,0 +1,4 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>cortex-a57</model>
+  <feature name='pauth' policy='require'/>
+</cpu>

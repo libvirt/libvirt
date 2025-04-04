@@ -408,6 +408,34 @@ cpuTestHasFeature(const void *arg)
 }
 
 
+static int
+cpuTestValidateFeatures(const void *arg)
+{
+    const struct data *data = arg;
+    g_autoptr(virCPUDef) cpu = NULL;
+    int result;
+
+    if (!(cpu = cpuTestLoadXML(data->arch, data->name)))
+        return -1;
+
+    result = virCPUValidateFeatures(data->arch, cpu);
+
+    if (data->result == -1)
+        virResetLastError();
+
+    if (data->result != result) {
+        VIR_TEST_VERBOSE("\nExpected result %s, got %s",
+            cpuTestBoolWithErrorStr(data->result),
+            cpuTestBoolWithErrorStr(result));
+        /* Pad to line up with test name ... in virTestRun */
+        VIR_TEST_VERBOSE("%74s", "... ");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 typedef enum {
     /* No JSON data from QEMU. */
     JSON_NONE,
@@ -986,6 +1014,10 @@ mymain(void)
             host "/" feature " (" #result ")", \
             host, feature, NULL, 0, NULL, 0, result)
 
+#define DO_TEST_VALIDATEFEATURES(arch, name, result) \
+    DO_TEST(arch, cpuTestValidateFeatures, name, \
+            NULL, name, NULL, 0, NULL, 0, result)
+
 #define DO_TEST_GUESTCPU(arch, host, cpu, models, result) \
     DO_TEST(arch, cpuTestGuestCPU, \
             host "/" cpu " (" #models ")", \
@@ -1235,6 +1267,9 @@ mymain(void)
                            "Xeon-E5-2609-v3", "Xeon-E5-2650-v4");
     DO_TEST_CPUID_BASELINE(VIR_ARCH_X86_64, "Haswell+Skylake",
                            "Xeon-E7-8890-v3", "Xeon-Gold-5115");
+
+    DO_TEST_VALIDATEFEATURES(VIR_ARCH_AARCH64, "guest", 0);
+
  cleanup:
 #if WITH_QEMU
     qemuTestDriverFree(&driver);
