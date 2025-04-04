@@ -165,6 +165,25 @@ qemuPasstSetupCgroup(virDomainObj *vm,
 }
 
 
+void
+qemuPasstPrepareVhostUser(virDomainObj *vm,
+                          virDomainNetDef *net)
+{
+    /* There are some options on the QEMU commandline for a vhost-user
+     * chr device that are normally configurable, but when it is passt
+     * speaking to the vhost-user device those things are
+     * derived/fixed. This function, which is called prior to
+     * generating the QEMU commandline, sets thos derived/fixed things
+     * in the chr device object.
+     */
+
+    /* The socket path is not user-configurable for passt - it is
+     * derived from other info
+     */
+    g_free(net->data.vhostuser->data.nix.path);
+    net->data.vhostuser->data.nix.path = qemuPasstCreateSocketPath(vm, net);
+}
+
 int
 qemuPasstStart(virDomainObj *vm,
                virDomainNetDef *net)

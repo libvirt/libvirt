@@ -6022,13 +6022,8 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
 
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
             if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
-                /* when using the passt backend, the path of the
-                 * unix socket is always derived from other info
-                 * *not* manually given in the config, but all the
-                 * vhostuser code looks for it there.
-                 */
-                g_free(net->data.vhostuser->data.nix.path);
-                net->data.vhostuser->data.nix.path = qemuPasstCreateSocketPath(vm, net);
+                /* some extra setup of internal data for passt vhostuser mode */
+                qemuPasstPrepareVhostUser(vm, net);
             }
             break;
 

@@ -37,5 +37,8 @@ int qemuPasstSetupCgroup(virDomainObj *vm,
                          virDomainNetDef *net,
                          virCgroup *cgroup);
 
+void qemuPasstPrepareVhostUser(virDomainObj *vm,
+                               virDomainNetDef *net);
+
 char *qemuPasstCreateSocketPath(virDomainObj *vm,
                                 virDomainNetDef *net);
