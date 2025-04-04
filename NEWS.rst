@@ -28,6 +28,12 @@ v11.3.0 (unreleased)
 
 * **Bug fixes**
 
+  * cpu_map: Install Ampere-1 ARM CPU models
+
+    The Ampere-1 CPU models added in the previous release were not properly
+    installed and thus every attempt to start an ARM domain with custom
+    CPU definition would fail.
+
 
 v11.2.0 (2025-04-01)
 ====================
