@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-passtvhostuu/.config \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/home/laine/libvirt/images/fedora-34.img","node-name":"libvirt-1-storage","read-only":false}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","multifunction":true,"addr":"0x3","drive":"libvirt-1-storage","id":"virtio-disk0","bootindex":1}' \
--chardev socket,id=charnet0,path=/var/run/libvirt/qemu/passt/-1-passtvhostuu-net0.socket \
+-chardev socket,id=charnet0,path=/var/run/libvirt/qemu/passt/-1-passtvhostuu-net0.socket,reconnect-ms=5000 \
 -netdev '{"type":"vhost-user","chardev":"charnet0","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:21:de:6c","bus":"pci.0","addr":"0x2"}' \
 -chardev pty,id=charserial0 \

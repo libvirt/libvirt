@@ -28,13 +28,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
--chardev socket,id=charnet0,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net0.socket \
+-chardev socket,id=charnet0,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net0.socket,reconnect-ms=5000 \
 -netdev '{"type":"vhost-user","chardev":"charnet0","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x2"}' \
--chardev socket,id=charnet1,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net1.socket \
+-chardev socket,id=charnet1,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net1.socket,reconnect-ms=5000 \
 -netdev '{"type":"vhost-user","chardev":"charnet1","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:11","bus":"pci.0","addr":"0x3"}' \
--chardev socket,id=charnet2,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net2.socket \
+-chardev socket,id=charnet2,path=/var/run/libvirt/qemu/passt/-1-QEMUGuest1-net2.socket,reconnect-ms=5000 \
 -netdev '{"type":"vhost-user","chardev":"charnet2","id":"hostnet2"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet2","id":"net2","mac":"00:11:22:33:44:11","bus":"pci.0","addr":"0x4"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
