@@ -3607,8 +3607,9 @@ processDeviceDeletedEvent(virQEMUDriver *driver,
 
 
 static void
-processNetdevStreamDisconnectedEvent(virDomainObj *vm,
-                                     const char *netdevId)
+processNetdevDisconnectedEvent(virDomainObj *vm,
+                               const char *netdevId,
+                               const char *eventName)
 {
     virDomainDeviceDef dev;
     virDomainNetDef *def;
@@ -3623,13 +3624,13 @@ processNetdevStreamDisconnectedEvent(virDomainObj *vm,
      */
 
     if (!devAlias) {
-        VIR_WARN("Received NETDEV_STREAM_DISCONNECTED event for unrecognized netdev %s from domain %p %s",
-                  netdevId, vm, vm->def->name);
+        VIR_WARN("Received %s event for unrecognized netdev %s from domain %p %s",
+                 eventName, netdevId, vm, vm->def->name);
         return;
     }
 
-    VIR_DEBUG("Received NETDEV_STREAM_DISCONNECTED event for device %s from domain %p %s",
-              devAlias, vm, vm->def->name);
+    VIR_DEBUG("Received %s event for device %s from domain %p %s",
+              eventName, devAlias, vm, vm->def->name);
 
     if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return;
@@ -3640,34 +3641,42 @@ processNetdevStreamDisconnectedEvent(virDomainObj *vm,
     }
 
     if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0) {
-        VIR_WARN("NETDEV_STREAM_DISCONNECTED event received for non-existent device %s in domain %s",
-                 devAlias, vm->def->name);
+        VIR_WARN("%s event received for non-existent device %s in domain %s",
+                 eventName, devAlias, vm->def->name);
         goto endjob;
     }
     if (dev.type != VIR_DOMAIN_DEVICE_NET) {
-        VIR_WARN("NETDEV_STREAM_DISCONNECTED event received for non-network device %s in domain %s",
-                 devAlias, vm->def->name);
+        VIR_WARN("%s event received for non-network device %s in domain %s",
+                 eventName, devAlias, vm->def->name);
         goto endjob;
     }
     def = dev.data.net;
 
     if (def->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
-        VIR_DEBUG("ignore NETDEV_STREAM_DISCONNECTED event for non-passt network device %s in domain %s",
-                  def->info.alias, vm->def->name);
+        VIR_DEBUG("ignore %s event for non-passt network device %s in domain %s",
+                  eventName, def->info.alias, vm->def->name);
         goto endjob;
     }
 
     /* handle the event - restart the passt process with its original
      * parameters
      */
-    VIR_DEBUG("process NETDEV_STREAM_DISCONNECTED event for network device %s in domain %s",
-              def->info.alias, vm->def->name);
+    VIR_DEBUG("process %s event for network device %s in domain %s",
+              eventName, def->info.alias, vm->def->name);
 
     if (qemuPasstStart(vm, def) < 0)
         goto endjob;
 
  endjob:
     virDomainObjEndJob(vm);
+}
+
+
+static void
+processNetdevStreamDisconnectedEvent(virDomainObj *vm,
+                                     const char *netdevId)
+{
+    processNetdevDisconnectedEvent(vm, netdevId, "NETDEV_STREAM_DISCONNECTED");
 }
 
 
