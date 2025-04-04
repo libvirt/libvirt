@@ -758,12 +758,73 @@ remoteConnectFormatURI(virURI *uri,
             virReportError(VIR_ERR_INVALID_ARG, \
                            _("Failed to parse value of URI component %1$s"), \
                            var->name); \
-            goto error; \
+            return -1; \
         } \
         ARG_VAR = tmp == 0; \
         var->ignore = 1; \
         continue; \
     }
+
+static int
+doRemoteOpenExtractURIArgs(virConnectPtr conn,
+                           char **name,
+                           char **command,
+                           char **sockname,
+                           char **authtype,
+                           char **sshauth,
+                           char **netcat,
+                           char **keyfile,
+                           char **pkipath,
+                           char **knownHosts,
+                           char **knownHostsVerify,
+                           char **tls_priority,
+                           char **mode_str,
+                           char **proxy_str,
+#ifndef WIN32
+                           bool *tty,
+#endif
+                           bool *sanity,
+                           bool *verify)
+{
+    size_t i;
+
+    for (i = 0; i < conn->uri->paramsCount; i++) {
+        virURIParam *var = &conn->uri->params[i];
+
+        EXTRACT_URI_ARG_STR("name", *name);
+        EXTRACT_URI_ARG_STR("command", *command);
+        EXTRACT_URI_ARG_STR("socket", *sockname);
+        EXTRACT_URI_ARG_STR("auth", *authtype);
+        EXTRACT_URI_ARG_STR("sshauth", *sshauth);
+        EXTRACT_URI_ARG_STR("netcat", *netcat);
+        EXTRACT_URI_ARG_STR("keyfile", *keyfile);
+        EXTRACT_URI_ARG_STR("pkipath", *pkipath);
+        EXTRACT_URI_ARG_STR("known_hosts", *knownHosts);
+        EXTRACT_URI_ARG_STR("known_hosts_verify", *knownHostsVerify);
+        EXTRACT_URI_ARG_STR("tls_priority", *tls_priority);
+        EXTRACT_URI_ARG_STR("mode", *mode_str);
+        EXTRACT_URI_ARG_STR("proxy", *proxy_str);
+        EXTRACT_URI_ARG_BOOL("no_sanity", *sanity);
+        EXTRACT_URI_ARG_BOOL("no_verify", *verify);
+#ifndef WIN32
+        EXTRACT_URI_ARG_BOOL("no_tty", *tty);
+#endif
+
+        if (STRCASEEQ(var->name, "authfile")) {
+            /* Strip this param, used by virauth.c */
+            var->ignore = 1;
+            continue;
+        }
+
+        VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
+                  var->name, var->value);
+    }
+
+    return 0;
+}
+
+#undef EXTRACT_URI_ARG_STR
+#undef EXTRACT_URI_ARG_BOOL
 
 
 /*
@@ -818,7 +879,6 @@ doRemoteOpen(virConnectPtr conn,
     bool tty = true;
 #endif
     int mode;
-    size_t i;
     int proxy;
 
     /* We handle *ALL* URIs here. The caller has rejected any
@@ -844,35 +904,28 @@ doRemoteOpen(virConnectPtr conn,
      * although that won't be the case for now).
      */
     if (conn->uri) {
-        for (i = 0; i < conn->uri->paramsCount; i++) {
-            virURIParam *var = &conn->uri->params[i];
-            EXTRACT_URI_ARG_STR("name", name);
-            EXTRACT_URI_ARG_STR("command", command);
-            EXTRACT_URI_ARG_STR("socket", sockname);
-            EXTRACT_URI_ARG_STR("auth", authtype);
-            EXTRACT_URI_ARG_STR("sshauth", sshauth);
-            EXTRACT_URI_ARG_STR("netcat", netcat);
-            EXTRACT_URI_ARG_STR("keyfile", keyfile);
-            EXTRACT_URI_ARG_STR("pkipath", pkipath);
-            EXTRACT_URI_ARG_STR("known_hosts", knownHosts);
-            EXTRACT_URI_ARG_STR("known_hosts_verify", knownHostsVerify);
-            EXTRACT_URI_ARG_STR("tls_priority", tls_priority);
-            EXTRACT_URI_ARG_STR("mode", mode_str);
-            EXTRACT_URI_ARG_STR("proxy", proxy_str);
-            EXTRACT_URI_ARG_BOOL("no_sanity", sanity);
-            EXTRACT_URI_ARG_BOOL("no_verify", verify);
+        /* This really needs to be a separate function to keep
+         * the stack size at sane levels. */
+        if (doRemoteOpenExtractURIArgs(conn,
+                                       &name,
+                                       &command,
+                                       &sockname,
+                                       &authtype,
+                                       &sshauth,
+                                       &netcat,
+                                       &keyfile,
+                                       &pkipath,
+                                       &knownHosts,
+                                       &knownHostsVerify,
+                                       &tls_priority,
+                                       &mode_str,
+                                       &proxy_str,
 #ifndef WIN32
-            EXTRACT_URI_ARG_BOOL("no_tty", tty);
+                                       &tty,
 #endif
-
-            if (STRCASEEQ(var->name, "authfile")) {
-                /* Strip this param, used by virauth.c */
-                var->ignore = 1;
-                continue;
-            }
-
-            VIR_DEBUG("passing through variable '%s' ('%s') to remote end",
-                       var->name, var->value);
+                                       &sanity,
+                                       &verify) < 0) {
+            goto error;
         }
 
         /* Construct the original name. */
@@ -1248,8 +1301,6 @@ doRemoteOpen(virConnectPtr conn,
     VIR_FREE(priv->hostname);
     return VIR_DRV_OPEN_ERROR;
 }
-#undef EXTRACT_URI_ARG_STR
-#undef EXTRACT_URI_ARG_BOOL
 
 static struct private_data *
 remoteAllocPrivateData(void)
