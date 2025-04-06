@@ -244,6 +244,9 @@ mymain(void)
     driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_9P;
     DO_TEST_FAILURE("fs-9p");
     DO_TEST("virtio-rnd");
+    DO_TEST_FAILURE("virtio-rnd-backend-random-non-default-file");
+    DO_TEST_FAILURE("virtio-rnd-backend-builtin");
+    DO_TEST_FAILURE("virtio-rnd-transitional");
     driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_RND;
     DO_TEST_FAILURE("virtio-rnd");
 

@@ -2,6 +2,7 @@
  * bhyve_domain.c: bhyve domain private state
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -241,6 +242,26 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
         dev->data.controller->idx != 0) {
         return -1;
+    }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_RNG) {
+        if (dev->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO) {
+            if (dev->data.rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
+                if (STRNEQ(dev->data.rng->source.file, "/dev/random")) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Only /dev/random source is supported"));
+                    return -1;
+                }
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only 'random' backend model is supported"));
+                return -1;
+            }
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 'virio' RNG device model is supported"));
+            return -1;
+        }
     }
 
     return 0;
