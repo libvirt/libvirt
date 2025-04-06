@@ -114,6 +114,7 @@ mymain(void)
     DO_TEST_DIFFERENT("sound");
     DO_TEST_DIFFERENT("isa-controller");
     DO_TEST_DIFFERENT("fs-9p");
+    DO_TEST_DIFFERENT("virtio-rnd");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

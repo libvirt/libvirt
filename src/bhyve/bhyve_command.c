@@ -2,6 +2,7 @@
  * bhyve_command.c: bhyve command generation
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -149,6 +150,24 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
     virCommandAddArgFormat(cmd, "com%d,%s",
                            chr->target.port + 1, chr->source->data.file.path);
 
+    return 0;
+}
+
+static int
+bhyveBuildRNGArgStr(const virDomainDef *def G_GNUC_UNUSED,
+                    virDomainRNGDef *rng,
+                    virCommand *cmd)
+{
+    if (rng->backend != VIR_DOMAIN_RNG_BACKEND_RANDOM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("RNG backend is not supported"));
+        return -1;
+    }
+
+    virCommandAddArg(cmd, "-s");
+    virCommandAddArgFormat(cmd, "%d:%d,virtio-rnd",
+                           rng->info.addr.pci.slot,
+                           rng->info.addr.pci.function);
     return 0;
 }
 
@@ -806,6 +825,10 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     if (bhyveBuildConsoleArgStr(def, cmd) < 0)
         return NULL;
+
+    for (i = 0; i < def->nrngs; i++)
+        if (bhyveBuildRNGArgStr(def, def->rngs[i], cmd) < 0)
+            return NULL;
 
     if (def->namespaceData) {
         bhyveDomainCmdlineDef *bhyvecmd;

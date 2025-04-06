@@ -4,6 +4,7 @@
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2014 Semihalf
  * Copyright (C) 2020 Fabian Freyer
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -327,6 +328,17 @@ bhyveProbeCapsVirtio9p(unsigned int *caps, char *binary)
 }
 
 
+static int
+bhyveProbeCapsVirtioRnd(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,virtio-rnd",
+                                      "pci slot 0:0: unknown device \"virtio-rnd\"",
+                                      BHYVE_CAP_VIRTIO_RND);
+}
+
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -362,6 +374,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsVirtio9p(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsVirtioRnd(caps, binary)))
         goto out;
 
  out:

@@ -243,6 +243,9 @@ mymain(void)
     DO_TEST_FAILURE("fs-9p-unsupported-accessmode");
     driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_9P;
     DO_TEST_FAILURE("fs-9p");
+    DO_TEST("virtio-rnd");
+    driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_RND;
+    DO_TEST_FAILURE("virtio-rnd");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

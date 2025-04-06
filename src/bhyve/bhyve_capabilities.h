@@ -2,6 +2,7 @@
  * bhyve_capabilities.h: bhyve capabilities module
  *
  * Copyright (C) 2014 Semihalf
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,6 +53,7 @@ typedef enum {
     BHYVE_CAP_SOUND_HDA = 1 << 7,
     BHYVE_CAP_VNC_PASSWORD = 1 << 8,
     BHYVE_CAP_VIRTIO_9P = 1 << 9,
+    BHYVE_CAP_VIRTIO_RND = 1 << 10,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

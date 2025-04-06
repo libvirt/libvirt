@@ -2,6 +2,7 @@
  * bhyve_device.c: bhyve device management
  *
  * Copyright (C) 2014 Roman Bogorodskiy
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -179,6 +180,16 @@ bhyveAssignDevicePCISlots(virDomainDef *def,
             continue;
         if (virDomainPCIAddressReserveNextAddr(addrs,
                                                &def->fss[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < def->nrngs; i++) {
+        if (!virDeviceInfoPCIAddressIsWanted(&def->rngs[i]->info))
+            continue;
+        if (virDomainPCIAddressReserveNextAddr(addrs,
+                                               &def->rngs[i]->info,
                                                VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
                                                -1) < 0)
             return -1;
