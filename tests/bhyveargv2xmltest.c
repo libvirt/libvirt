@@ -188,6 +188,7 @@ mymain(void)
     DO_TEST("vnc-vga-io");
     DO_TEST("vnc-resolution");
     DO_TEST("vnc-password");
+    DO_TEST("virtio-rnd");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

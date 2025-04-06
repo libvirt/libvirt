@@ -5,6 +5,7 @@
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (c) 2011 NetApp, Inc.
  * Copyright (C) 2020 Fabian Freyer
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -640,6 +641,32 @@ bhyveParsePCIFbuf(virDomainDef *def,
 }
 
 static int
+bhyveParsePCIRND(virDomainDef *def,
+                 virDomainXMLOption *xmlopt G_GNUC_UNUSED,
+                 unsigned caps G_GNUC_UNUSED,
+                 unsigned bus,
+                 unsigned slot,
+                 unsigned function,
+                 const char *config G_GNUC_UNUSED)
+{
+    /* -s slot,virtio-rnd */
+    virDomainRNGDef *rng = g_new0(virDomainRNGDef, 1);
+
+    rng->model = VIR_DOMAIN_RNG_MODEL_VIRTIO;
+    rng->backend = VIR_DOMAIN_RNG_BACKEND_RANDOM;
+
+    rng->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    rng->info.addr.pci.bus = bus;
+    rng->info.addr.pci.slot = slot;
+    rng->info.addr.pci.function = function;
+    rng->source.file = g_strdup("/dev/random");
+
+    VIR_APPEND_ELEMENT(def->rngs, def->nrngs, rng);
+
+    return 0;
+}
+
+static int
 bhyveParseBhyvePCIArg(virDomainDef *def,
                       virDomainXMLOption *xmlopt,
                       unsigned caps,
@@ -703,6 +730,8 @@ bhyveParseBhyvePCIArg(virDomainDef *def,
                          VIR_DOMAIN_NET_MODEL_E1000, conf);
     else if (STREQ(emulation, "fbuf"))
         bhyveParsePCIFbuf(def, xmlopt, caps, bus, slot, function, conf);
+    else if (STREQ(emulation, "virtio-rnd"))
+        bhyveParsePCIRND(def, xmlopt, caps, bus, slot, function, conf);
 
     VIR_FREE(emulation);
     VIR_FREE(slotdef);
