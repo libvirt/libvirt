@@ -427,10 +427,25 @@ nodeinfo
    nodeinfo
 
 Returns basic information about the node, like number and type of CPU,
-and size of the physical memory. The output corresponds to virNodeInfo
-structure. Specifically, the "CPU socket(s)" field means number of CPU
-sockets per NUMA cell. The information libvirt displays is dependent
-upon what each architecture may provide.
+and size of the physical memory.
+
+Use of this command is strongly discouraged as the information provided
+is not guaranteed to be accurate on all hardware platforms.
+
+The *CPU frequency* value merely reflects the speed that the first CPU in the
+machine is currently running at. This speed may vary across CPUs and changes
+continually as the host OS throttles.
+
+The data structure used to fetch the data is not extensible thus only supports
+global nodes/sockets/cores/threads (sockets/cores/threads is per NUMA node)
+topology information. If the host CPU has any further groupings (e.g.
+dies, clusters, etc) or the NUMA topology is non-symmetrical the data structure
+can't faithfully represent the system. In such cases a fake topology
+(nodes = 1, sockets = 1, cores = number of host cpus, threads = 1) which
+only correctly represents the total host CPU count is reported.
+
+Recommended replacement is to use the *capabilities* command which reports
+the data (except frequency) under ``/capabilities/host/topology`` XPath.
 
 
 nodecpumap
