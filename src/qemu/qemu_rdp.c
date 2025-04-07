@@ -413,12 +413,25 @@ qemuRdpSetCredentials(virDomainObj *vm,
 }
 
 
+/**
+ * qemuRdpAvailable:
+ * @helper: name (or path to) 'qemu-rdp' binary
+ *
+ * Returns whether 'qemu-rdp' is available.
+ *
+ * Important:
+ * This function is called from 'virQEMUDriverGetDomainCapabilities'. It must
+ * not report any errors and must not add any additional checks.
+ *
+ * This function is mocked from 'tests/testutilsqemu.c'
+ *
+ */
 bool
 qemuRdpAvailable(const char *helper)
 {
-    g_autoptr(qemuRdp) rdp = NULL;
+    g_autofree char *helperPath = NULL;
 
-    rdp = qemuRdpNewForHelper(helper);
-
-    return rdp && qemuRdpHasFeature(rdp, QEMU_RDP_FEATURE_DBUS_ADDRESS);
+    /* This function was added corresponding to the first release of 'qemu-rdp'
+     * thus checking existance of the helper binary is sufficient. */
+    return !!(helperPath = virFindFileInPath(helper));
 }
