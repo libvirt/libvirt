@@ -414,10 +414,13 @@ virConnectGetMaxVcpus(virConnectPtr conn,
  * speed that the first CPU in the machine is currently running at. This speed
  * may vary across CPUs and changes continually as the host OS throttles.
  *
- * The nodes/sockets/cores/threads data is potentially inaccurate as
- * it assumes a symmetric installation. If one NUMA node has more
- * sockets populated that another NUMA node this information will be
- * wrong. It is also not able to report about CPU dies.
+ * The virNodeInfo structure is not extensible thus only supports global
+ * nodes/sockets/cores/threads (sockets/cores/threads is per NUMA node)
+ * topology information. If the host CPU has any further groupings (e.g.
+ * dies, clusters, etc) or the NUMA topology is non-symmetrical the structure
+ * can't faithfully represent the system. In such cases a fake topology
+ * (nodes = 1, sockets = 1, cores = number of host cpus, threads = 1) which
+ * only correctly represents the total host CPU count is reported.
  *
  * Applications are recommended to use the virConnectGetCapabilities()
  * call instead, which provides all the information except CPU frequency,
