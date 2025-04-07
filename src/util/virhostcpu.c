@@ -644,8 +644,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     int threads_per_subcore = 0;
     unsigned int node;
     int ret = -1;
-    char *sysfs_nodedir = NULL;
-    char *sysfs_cpudir = NULL;
+    g_autofree char *sysfs_nodedir = NULL;
+    g_autofree char *sysfs_cpudir_fallback = NULL;
     int direrr;
 
     *mhz = 0;
@@ -707,6 +707,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
         threads_per_subcore = 0;
 
     while ((direrr = virDirRead(nodedir, &nodedirent, sysfs_nodedir)) > 0) {
+        g_autofree char *sysfs_cpudir = NULL;
+
         if (sscanf(nodedirent->d_name, "node%u", &node) != 1)
             continue;
 
@@ -722,8 +724,6 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                             &nodesockets, &nodecores,
                                             &nodethreads, &offline)) < 0)
             goto cleanup;
-
-        VIR_FREE(sysfs_cpudir);
 
         *cpus += nodecpus;
 
@@ -744,11 +744,9 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
         goto done;
 
  fallback:
-    VIR_FREE(sysfs_cpudir);
+    sysfs_cpudir_fallback = g_strdup_printf("%s/cpu", SYSFS_SYSTEM_PATH);
 
-    sysfs_cpudir = g_strdup_printf("%s/cpu", SYSFS_SYSTEM_PATH);
-
-    if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
+    if ((nodecpus = virHostCPUParseNode(sysfs_cpudir_fallback, arch,
                                         present_cpus_map,
                                         online_cpus_map,
                                         threads_per_subcore,
@@ -799,8 +797,6 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     ret = 0;
 
  cleanup:
-    VIR_FREE(sysfs_nodedir);
-    VIR_FREE(sysfs_cpudir);
     return ret;
 }
 
