@@ -3642,9 +3642,6 @@ qemuBlockExportGetNBDProps(const char *nodename,
  * @writable: whether the NBD export allows writes
  * @bitmap: (optional) block dirty bitmap to export along
  *
- * This function automatically selects the proper invocation of exporting a
- * block backend via NBD in qemu.
- *
  * This function must be called while in the monitor context.
  */
 int
@@ -3657,10 +3654,6 @@ qemuBlockExportAddNBD(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virJSONValue) nbdprops = NULL;
     const char *bitmaps[2] = { bitmap, NULL };
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_EXPORT_ADD))
-        return qemuMonitorNBDServerAdd(priv->mon, qemuBlockStorageSourceGetEffectiveNodename(src),
-                                       exportname, writable, bitmap);
 
     if (!(nbdprops = qemuBlockExportGetNBDProps(qemuBlockStorageSourceGetEffectiveNodename(src),
                                                 exportname, writable, bitmaps)))
