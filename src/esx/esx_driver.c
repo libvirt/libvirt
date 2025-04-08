@@ -687,7 +687,9 @@ esxConnectToVCenter(esxPrivate *priv,
     g_autofree char *url = NULL;
 
     if (!hostSystemIPAddress &&
-        (!priv->parsedUri->path || STREQ(priv->parsedUri->path, "/"))) {
+        (!priv->parsedUri->path ||
+         STREQ(priv->parsedUri->path, "") ||
+         STREQ(priv->parsedUri->path, "/"))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Path has to specify the datacenter and compute resource"));
         return -1;
@@ -799,6 +801,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
     if (STRCASENEQ(conn->uri->scheme, "vpx") &&
+        STRNEQ(conn->uri->path, "") &&
         STRNEQ(conn->uri->path, "/")) {
         VIR_WARN("Ignoring unexpected path '%s' for non-vpx scheme '%s'",
                  conn->uri->path, conn->uri->scheme);
