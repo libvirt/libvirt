@@ -108,7 +108,6 @@
   <flag name='numa.hmat'/>
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
-  <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>

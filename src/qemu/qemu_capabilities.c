@@ -600,7 +600,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 380 */
               "usb-host.hostdevice", /* QEMU_CAPS_USB_HOST_HOSTDEVICE */
               "virtio-balloon.free-page-reporting", /* QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING */
-              "block-export-add", /* QEMU_CAPS_BLOCK_EXPORT_ADD */
+              "block-export-add", /* X_QEMU_CAPS_BLOCK_EXPORT_ADD */
               "netdev.vhost-vdpa", /* QEMU_CAPS_NETDEV_VHOST_VDPA */
               "fsdev.createmode", /* X_QEMU_CAPS_FSDEV_CREATEMODE */
 
@@ -1243,7 +1243,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },
     { "query-cpu-model-comparison", QEMU_CAPS_QUERY_CPU_MODEL_COMPARISON },
-    { "block-export-add", QEMU_CAPS_BLOCK_EXPORT_ADD },
     { "set-action", QEMU_CAPS_SET_ACTION },
     { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
     { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },
