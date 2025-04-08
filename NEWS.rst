@@ -40,6 +40,16 @@ v11.3.0 (unreleased)
     vol-create`` with ``--validate`` option and/or ``virStorageVolCreateXML()``
     with ``VIR_VOL_XML_PARSE_VALIDATE`` flag.
 
+  * Don't spam logs with error about ``qemu-rdp`` when starting a qemu VM
+
+    On hosts where the ``qemu-rdp`` binary is not installed a start of a VM
+    would cause an error such as ::
+
+      error : qemuRdpNewForHelper:103 : 'qemu-rdp' is not a suitable qemu-rdp helper name: No such file or directory
+
+    to be logged in the system log. It is safe to ignore the error. The code
+    was fixed to avoid the message when probing for support.
+
 
 v11.2.0 (2025-04-01)
 ====================
