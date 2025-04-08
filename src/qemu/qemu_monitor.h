@@ -1218,11 +1218,6 @@ int qemuMonitorNBDServerStart(qemuMonitor *mon,
                               const virStorageNetHostDef *server,
                               const char *tls_alias)
     ATTRIBUTE_NONNULL(2);
-int qemuMonitorNBDServerAdd(qemuMonitor *mon,
-                            const char *deviceID,
-                            const char *export,
-                            bool writable,
-                            const char *bitmap);
 int qemuMonitorNBDServerStop(qemuMonitor *mon);
 
 int qemuMonitorBlockExportAdd(qemuMonitor *mon,

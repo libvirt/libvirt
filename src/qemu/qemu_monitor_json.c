@@ -6387,34 +6387,6 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
 }
 
 int
-qemuMonitorJSONNBDServerAdd(qemuMonitor *mon,
-                            const char *deviceID,
-                            const char *export,
-                            bool writable,
-                            const char *bitmap)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    /* Note: bitmap must be NULL if QEMU_CAPS_NBD_BITMAP is lacking */
-    if (!(cmd = qemuMonitorJSONMakeCommand("nbd-server-add",
-                                           "s:device", deviceID,
-                                           "S:name", export,
-                                           "b:writable", writable,
-                                           "S:bitmap", bitmap,
-                                           NULL)))
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        return -1;
-
-    return 0;
-}
-
-int
 qemuMonitorJSONNBDServerStop(qemuMonitor *mon)
 {
     g_autoptr(virJSONValue) cmd = NULL;

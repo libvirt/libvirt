@@ -541,12 +541,6 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
                               const virStorageNetHostDef *server,
                               const char *tls_alias);
 int
-qemuMonitorJSONNBDServerAdd(qemuMonitor *mon,
-                            const char *deviceID,
-                            const char *export,
-                            bool writable,
-                            const char *bitmap);
-int
 qemuMonitorJSONNBDServerStop(qemuMonitor *mon);
 
 int

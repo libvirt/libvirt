@@ -1160,7 +1160,6 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockStream, "vdb", "jobname", "backingnode", "back
 GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "jobname", "topnode", "basenode", "backingfilename", 1024, VIR_TRISTATE_BOOL_YES)
 GEN_TEST_FUNC(qemuMonitorJSONScreendump, "devicename", 1, NULL, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONOpenGraphics, "spice", "spicefd", false)
-GEN_TEST_FUNC(qemuMonitorJSONNBDServerAdd, "vda", "export", true, "bitmap")
 GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayOpen, "foodev", true)
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevTrayClose, "foodev")
@@ -3042,7 +3041,6 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONBlockCommit);
     DO_TEST_GEN(qemuMonitorJSONScreendump);
     DO_TEST_GEN(qemuMonitorJSONOpenGraphics);
-    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONNBDServerAdd, true);
     DO_TEST_GEN(qemuMonitorJSONDetachCharDev);
     DO_TEST_GEN(qemuMonitorJSONBlockdevTrayOpen);
     DO_TEST_GEN(qemuMonitorJSONBlockdevTrayClose);
