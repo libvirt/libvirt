@@ -529,7 +529,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 330 */
               "bitmap-merge", /* X_QEMU_CAPS_BITMAP_MERGE */
-              "nbd-bitmap", /* QEMU_CAPS_NBD_BITMAP */
+              "nbd-bitmap", /* X_QEMU_CAPS_NBD_BITMAP */
               "x86-max-cpu", /* QEMU_CAPS_X86_MAX_CPU */
               "cpu-unavailable-features", /* QEMU_CAPS_CPU_UNAVAILABLE_FEATURES */
               "canonical-cpu-features", /* QEMU_CAPS_CANONICAL_CPU_FEATURES */
@@ -1581,7 +1581,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+qemu-vdagent", QEMU_CAPS_CHARDEV_QEMU_VDAGENT },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
-    { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },
     { "netdev_add/arg-type/+stream", QEMU_CAPS_NETDEV_STREAM },
     { "netdev_add/arg-type/+stream/reconnect", QEMU_CAPS_NETDEV_STREAM_RECONNECT },
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },

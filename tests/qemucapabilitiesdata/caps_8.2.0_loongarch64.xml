@@ -79,7 +79,6 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='virtio-pci-non-transitional'/>
-  <flag name='nbd-bitmap'/>
   <flag name='bochs-display'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>

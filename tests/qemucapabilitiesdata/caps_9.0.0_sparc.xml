@@ -23,7 +23,6 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.pmem'/>
-  <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
   <flag name='drive-nvme'/>

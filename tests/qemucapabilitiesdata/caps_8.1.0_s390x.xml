@@ -53,7 +53,6 @@
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='egl-headless.rendernode'/>
   <flag name='virtio-pci-non-transitional'/>
-  <flag name='nbd-bitmap'/>
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
