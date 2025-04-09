@@ -34,6 +34,12 @@ v11.3.0 (unreleased)
     installed and thus every attempt to start an ARM domain with custom
     CPU definition would fail.
 
+  * storage: Fix new volume creation
+
+    No more errors occur when new storage volume is being created using ``virsh
+    vol-create`` with ``--validate`` option and/or ``virStorageVolCreateXML()``
+    with ``VIR_VOL_XML_PARSE_VALIDATE`` flag.
+
 
 v11.2.0 (2025-04-01)
 ====================
