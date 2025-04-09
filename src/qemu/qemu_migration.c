@@ -3609,7 +3609,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
          * and there is no 'goto cleanup;' in the middle of those */
         VIR_FREE(priv->origname);
         virDomainObjRemoveTransientDef(vm);
-        qemuDomainRemoveInactive(driver, vm, 0, false);
+        qemuDomainRemoveInactive(driver, vm, 0, true);
     }
     virDomainObjEndAPI(&vm);
     virErrorRestore(&origErr);
@@ -6977,7 +6977,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     }
 
     if (!qemuDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm, VIR_DOMAIN_UNDEFINE_TPM, false);
+        qemuDomainRemoveInactive(driver, vm, VIR_DOMAIN_UNDEFINE_TPM, true);
 
     virErrorRestore(&orig_err);
     return NULL;
@@ -7113,7 +7113,7 @@ qemuMigrationProcessUnattended(virQEMUDriver *driver,
     qemuMigrationJobFinish(vm);
 
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm, 0, false);
+        qemuDomainRemoveInactive(driver, vm, 0, true);
 }
 
 

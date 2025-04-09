@@ -3845,6 +3845,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
     const char *auditReason = "shutdown";
     unsigned int stopFlags = 0;
     virObjectEvent *event = NULL;
+    bool migration;
 
     if (vm->def->id != domid) {
         VIR_DEBUG("Domain %s was restarted, ignoring EOF",
@@ -3854,6 +3855,8 @@ processMonitorEOFEvent(virQEMUDriver *driver,
 
     if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, true) < 0)
         return;
+
+    migration = vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN;
 
     if (!virDomainObjIsActive(vm)) {
         VIR_DEBUG("Domain %p '%s' is not active, ignoring EOF",
@@ -3869,7 +3872,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
         auditReason = "failed";
     }
 
-    if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN) {
+    if (migration) {
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
         qemuMigrationDstErrorSave(driver, vm->def->name,
                                   qemuMonitorLastError(priv->mon));
@@ -3882,7 +3885,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
     virObjectEventStateQueue(driver->domainEventState, event);
 
  endjob:
-    qemuDomainRemoveInactive(driver, vm, 0, false);
+    qemuDomainRemoveInactive(driver, vm, 0, migration);
     qemuProcessEndStopJob(vm);
 }
 
