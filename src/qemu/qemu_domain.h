@@ -757,11 +757,6 @@ int qemuDomainStorageSourceAccessAllow(virQEMUDriver *driver,
                                        bool newSource,
                                        bool chainTop);
 
-int qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
-                                                   virStorageSource *src,
-                                                   const char *nodenameprefix,
-                                                   qemuDomainObjPrivate *priv,
-                                                   virQEMUDriverConfig *cfg);
 int qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
                                            virStorageSource *src,
                                            qemuDomainObjPrivate *priv,

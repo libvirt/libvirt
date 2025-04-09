@@ -9694,7 +9694,7 @@ qemuDomainPrepareStorageSourceFDs(virStorageSource *src,
 }
 
 
-int
+static int
 qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                virStorageSource *src,
                                                const char *nodenameprefix,
