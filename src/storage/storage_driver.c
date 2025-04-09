@@ -1939,6 +1939,7 @@ storageVolCreateXML(virStoragePoolPtr pool,
     if (backend->buildVol) {
         int buildret;
         virStorageVolDef *buildvoldef = NULL;
+        unsigned int buildFlags = flags;
 
         buildvoldef = g_new0(virStorageVolDef, 1);
 
@@ -1953,7 +1954,8 @@ storageVolCreateXML(virStoragePoolPtr pool,
         voldef->building = true;
         virObjectUnlock(obj);
 
-        buildret = backend->buildVol(obj, buildvoldef, flags);
+        buildFlags &= ~VIR_STORAGE_VOL_CREATE_VALIDATE;
+        buildret = backend->buildVol(obj, buildvoldef, buildFlags);
 
         VIR_FREE(buildvoldef);
 

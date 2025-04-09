@@ -1409,6 +1409,8 @@ virStorageVolDefParse(virStoragePoolDef *pool,
                             "volume", &ctxt, "storagevol.rng", validate)))
         return NULL;
 
+    flags &= ~VIR_VOL_XML_PARSE_VALIDATE;
+
     return virStorageVolDefParseXML(pool, ctxt, flags);
 }
 
