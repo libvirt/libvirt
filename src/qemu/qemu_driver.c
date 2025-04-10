@@ -14387,13 +14387,6 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
      * as read-write for the duration of the copy job */
     mirror->readonly = false;
 
-    /* we must initialize XML-provided chain prior to detecting to keep semantics
-     * with VM startup */
-    for (n = mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
-            goto endjob;
-    }
-
     /* 'qemuDomainPrepareStorageSourceBlockdev' calls
      * 'qemuDomainPrepareDiskSourceData' which propagates 'detect_zeroes'
      * into the topmost virStorage source of the disk chain.
@@ -14403,6 +14396,13 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
      * Same for discard_no_unref */
     mirror->detect_zeroes = disk->detect_zeroes;
     mirror->discard_no_unref = disk->discard_no_unref;
+
+    /* we must initialize XML-provided chain prior to detecting to keep semantics
+     * with VM startup */
+    for (n = mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+            goto endjob;
+    }
 
     /* If reusing an external image that includes a backing file but the user
      * did not enumerate the chain in the XML we need to detect the chain */
