@@ -14500,10 +14500,8 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(vm);
-    if (ret < 0) {
-        qemuDomainStorageSourceChainAccessRevoke(driver, vm, mirror);
+    if (ret < 0)
         goto endjob;
-    }
 
     /* Update vm in place to match changes.  */
     need_unlink = false;
