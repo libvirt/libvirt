@@ -31002,7 +31002,7 @@ virDomainNetTypeSharesHostView(const virDomainNetDef *net)
 }
 
 virNetworkPortDef *
-virDomainNetDefToNetworkPort(virDomainDef *dom,
+virDomainNetDefToNetworkPort(const virDomainDef *dom,
                              virDomainNetDef *iface)
 {
     g_autoptr(virNetworkPortDef) port = NULL;
@@ -31128,7 +31128,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
 }
 
 virNetworkPortDef *
-virDomainNetDefActualToNetworkPort(virDomainDef *dom,
+virDomainNetDefActualToNetworkPort(const virDomainDef *dom,
                                    virDomainNetDef *iface)
 {
     virDomainActualNetDef *actual;
@@ -31240,7 +31240,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
 
 static int
 virDomainNetCreatePort(virConnectPtr conn,
-                       virDomainDef *dom,
+                       const virDomainDef *dom,
                        virDomainNetDef *iface,
                        unsigned int flags)
 {
@@ -31305,7 +31305,7 @@ virDomainNetCreatePort(virConnectPtr conn,
 
 int
 virDomainNetAllocateActualDevice(virConnectPtr conn,
-                                 virDomainDef *dom,
+                                 const virDomainDef *dom,
                                  virDomainNetDef *iface)
 {
     return virDomainNetCreatePort(conn, dom, iface, 0);
@@ -31313,7 +31313,7 @@ virDomainNetAllocateActualDevice(virConnectPtr conn,
 
 void
 virDomainNetNotifyActualDevice(virConnectPtr conn,
-                               virDomainDef *dom,
+                               const virDomainDef *dom,
                                virDomainNetDef *iface)
 {
     virDomainNetType actualType = virDomainNetGetActualType(iface);
