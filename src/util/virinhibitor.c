@@ -70,10 +70,13 @@ virInhibitorAcquire(const char *what,
     VIR_DEBUG("what=%s who=%s why=%s mode=%s",
               NULLSTR(what), NULLSTR(who), NULLSTR(why), NULLSTR(mode));
 
-    if (!(systemBus = virGDBusGetSystemBus())) {
+    if (!virGDBusHasSystemBus()) {
         VIR_DEBUG("system dbus not available, skipping system inhibitor");
         return 0;
     }
+
+    if (!(systemBus = virGDBusGetSystemBus()))
+        return 0;
 
     if (virSystemdHasLogind() < 0) {
         VIR_DEBUG("logind not available, skipping system inhibitor");
