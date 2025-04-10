@@ -710,7 +710,8 @@ networkStateInitialize(bool privileged,
     network_driver->networkEventState = virObjectEventStateNew();
 
 #ifdef WITH_FIREWALLD
-    if (!(sysbus = virGDBusGetSystemBus())) {
+    if (!virGDBusHasSystemBus() ||
+        !(sysbus = virGDBusGetSystemBus())) {
         VIR_WARN("DBus not available, disabling firewalld support "
                  "in bridge_network_driver: %s", virGetLastErrorMessage());
     } else {
