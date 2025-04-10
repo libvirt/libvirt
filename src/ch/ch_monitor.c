@@ -674,7 +674,7 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
 
     if ((rv = virPidFileReadPath(priv->pidfile, &vm->pid)) < 0) {
         virReportSystemError(-rv,
-                             _("Domain  %1$s didn't show up"),
+                             _("Domain %1$s didn't show up"),
                              vm->def->name);
         return NULL;
     }
