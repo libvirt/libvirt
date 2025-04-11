@@ -24,6 +24,20 @@ v11.3.0 (unreleased)
     The following flags are now configurable for Xen: ``vapic``, ``synic``,
     ``stimer``, ``frequencies``, ``tlbflush`` and ``ipi``.
 
+  * bhyve: Support virtio random number generator devices
+
+    Domain XMLs can now include virtio random number generator devices.
+    They are configured with::
+
+     <rng model='virtio'>
+       <backend model='random'/>
+     </rng>
+
+  * bhyve: Support ``<interface type='network'>``
+
+    At the moment it doesn't provide any new features compared to
+    ``<interface type='bridge'>``, but allows a more flexible configuration.
+
 * **Improvements**
 
 * **Bug fixes**
