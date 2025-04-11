@@ -2875,6 +2875,9 @@ qemuBlockThrottleFiltersDetach(qemuMonitor *mon,
 {
     size_t i;
 
+    if (!data)
+        return;
+
     for (i = data->nfilterdata; i > 0; i--)
         qemuBlockThrottleFilterAttachRollback(mon, data->filterdata[i-1]);
 }
