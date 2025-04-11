@@ -3204,6 +3204,7 @@ vshDeinit(vshControl *ctl)
      * interactive mode. */
     vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
+    g_clear_pointer(&ctl->cmd, vshCommandFree);
 }
 
 /* -----------------------------------------------
