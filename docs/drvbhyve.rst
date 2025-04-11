@@ -7,8 +7,10 @@ Bhyve driver
 .. contents::
 
 Bhyve is a FreeBSD hypervisor. It first appeared in FreeBSD 10.0. However, it's
-recommended to keep tracking FreeBSD 10-STABLE to make sure all new features of
-bhyve are supported. In order to enable bhyve on your FreeBSD host, you'll need
+recommended to use the
+`latest supported release <https://www.freebsd.org/releases/>`__
+to make sure all new features of bhyve are supported.
+In order to enable bhyve on your FreeBSD host, you'll need
 to load the ``vmm`` kernel module. Additionally, ``if_tap`` and ``if_bridge``
 modules should be loaded for networking support. Also, :since:`since 3.2.0` the
 ``virt-host-validate(1)`` supports the bhyve host validation and could be used
@@ -582,3 +584,18 @@ Note that these extensions are for testing and development purposes only. They
 are **unsupported**, using them may result in inconsistent state, and upgrading
 either bhyve or libvirtd maybe break behavior of a domain that was relying on a
 specific commands pass-through.
+
+Random number generator device
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:since:`Since 11.3.0` it's possible to use the virtio random number generator devices.
+
+Example:
+
+::
+
+   ...
+     <rng model='virtio'>
+       <backend model='random'/>
+     </rng>
+   ...
