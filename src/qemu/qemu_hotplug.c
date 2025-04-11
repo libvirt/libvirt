@@ -740,10 +740,15 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
         if (rc < 0)
             goto rollback;
 
-        if ((filterData = qemuBuildThrottleFiltersAttachPrepareBlockdev(disk))) {
+        if (!(filterData = qemuBuildThrottleFiltersAttachPrepareBlockdev(disk)))
+            return -1;
+
+        if (filterData->nfilterdata > 0) {
             if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
                 return -1;
+
             rc = qemuBlockThrottleFiltersAttach(priv->mon, filterData);
+
             qemuDomainObjExitMonitor(vm);
             if (rc < 0)
                 goto rollback;
