@@ -50,6 +50,11 @@ v11.3.0 (unreleased)
     to be logged in the system log. It is safe to ignore the error. The code
     was fixed to avoid the message when probing for support.
 
+  * Fix libvirt daemon crash on failure to hotplug a disk into a ``qemu`` VM
+
+    Some failures of disk hotplug could cause the libvirt daemon to crash due
+    to a bug when rolling back disk throttling filters.
+
 
 v11.2.0 (2025-04-01)
 ====================
