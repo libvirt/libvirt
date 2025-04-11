@@ -194,7 +194,7 @@ struct _vshControl {
                                  * to program name */
     const char *env_prefix;     /* hardcoded environment variable prefix */
     char *connname;             /* connection name */
-    char *progname;             /* program name */
+    const char *progname;       /* program name */
     vshCmd *cmd;                /* the current command */
     char *cmdstr;               /* string with command */
     bool imode;                 /* interactive mode? */
