@@ -42,7 +42,7 @@
 VIR_LOG_INIT("bhyve.bhyve_command");
 
 static int
-bhyveBuildNetArgStr(virDomainDef *def,
+bhyveBuildNetArgStr(const virDomainDef *def,
                     virDomainNetDef *net,
                     struct _bhyveConn *driver,
                     virCommand *cmd,
