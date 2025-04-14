@@ -109,6 +109,16 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
         VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
     }
 
+    if (bhyvecaps & BHYVE_CAP_VIRTIO_RND) {
+        caps->rng.supported = VIR_TRISTATE_BOOL_YES;
+        caps->rng.model.report = true;
+        caps->rng.backendModel.report = true;
+
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->rng.model, VIR_DOMAIN_RNG_MODEL_VIRTIO);
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->rng.backendModel,
+                                 VIR_DOMAIN_RNG_BACKEND_RANDOM);
+    }
+
     caps->hostdev.supported = VIR_TRISTATE_BOOL_NO;
     caps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS] = VIR_TRISTATE_BOOL_NO;
     caps->features[VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO] = VIR_TRISTATE_BOOL_NO;
