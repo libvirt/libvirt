@@ -5056,8 +5056,8 @@ MAC address is outside of the reserved VMWare ranges.
 
 :since:`Since 11.2.0`, the ``<mac/>`` element can optionally contain
 ``currentAddress`` attribute (output only), which contains new MAC address if the
-guest changed it. This is currently implemented only for QEMU/KVM and requires
-setting ``trustGuestRxFilters`` to ``yes``.
+guest changed it. This is currently implemented only for the model type ``virtio``
+in QEMU/KVM and requires setting ``trustGuestRxFilters`` to ``yes``.
 
 :since:`Since 7.3.0`, one can set the ACPI index against network interfaces.
 With some operating systems (eg Linux with systemd), the ACPI index is used
