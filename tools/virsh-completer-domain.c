@@ -891,7 +891,7 @@ virshDomainConsoleCompleter(vshControl *ctl,
             ctxt->node = parallels[i - nserials];
 
         type = virXPathString("string(./@type)", ctxt);
-        if (STRNEQ(type, "pty"))
+        if (STRNEQ_NULLABLE(type, "pty"))
             continue;
 
         tmp[offset++] = virXPathString("string(./alias/@name)", ctxt);
