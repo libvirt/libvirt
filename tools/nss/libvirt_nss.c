@@ -137,13 +137,15 @@ findLease(const char *name,
 
         if (dlen >= 7 && !strcmp(entry->d_name + dlen - 7, ".status")) {
             char **tmpLease;
-            if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
-                goto cleanup;
 
             tmpLease = realloc(leaseFiles, sizeof(char *) * (nleaseFiles + 1));
             if (!tmpLease)
                 goto cleanup;
             leaseFiles = tmpLease;
+
+            if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
+                goto cleanup;
+
             leaseFiles[nleaseFiles++] = path;
 #if defined(LIBVIRT_NSS_GUEST)
         } else if (dlen >= 5 && !strcmp(entry->d_name + dlen - 5, ".macs")) {
