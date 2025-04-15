@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-03-25 10:52+0000\n"
-"PO-Revision-Date: 2025-03-24 16:13+0000\n"
+"PO-Revision-Date: 2025-04-07 03:11+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -1310,7 +1310,7 @@ msgstr "Ruta '%1$s' no es accesible"
 
 #, c-format
 msgid "'%1$s' is not a suitable qemu-rdp helper name"
-msgstr ""
+msgstr "'%1$s' no es un nombre de ayudante de QEMU-RDP adecuado"
 
 #, fuzzy, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
@@ -1338,7 +1338,7 @@ msgstr "'%1$s' a partir de %2$llu solo tiene %3$zd bytes disponibles"
 
 #, c-format
 msgid "'%1$s' vanished unexpectedly"
-msgstr ""
+msgstr "'%1$s' desapareció inesperadamente"
 
 msgid ""
 "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', '--"
@@ -1591,6 +1591,8 @@ msgstr "no se encuentra el miembro 'return'"
 
 msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
 msgstr ""
+"el protocolo 'sheepdog' ya no es compatible con ningún controlador de "
+"hipervisor"
 
 #, c-format
 msgid ""
@@ -1600,7 +1602,7 @@ msgstr ""
 "%2$d' de NUMA"
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
-msgstr ""
+msgstr "el atributo 'socket' solo es válido para el tipo de escucha 'socket'"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "«target» hace referencia a un nodo NUMA inexistente"
@@ -1609,10 +1611,10 @@ msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "El protocolo «tftp» no se admite con este binario de QEMU"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
-msgstr ""
+msgstr "el campo 'tlshostName' no es compatible con este QEMU"
 
 msgid "'tlsHostname' field is supported only with NBD disks"
-msgstr ""
+msgstr "el campo 'tlshostName' solo se admite con discos NBD"
 
 msgid "'trim' algorithm not supported"
 msgstr "El algoritmo «trim» no se admite"
@@ -1621,7 +1623,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "Falta «type» en la respuesta de guest-get-fsinfo"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "el disco 'usb' no debería estar vacío"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "Falta «user» en la respuesta de guest-get-users"
@@ -1629,20 +1631,21 @@ msgstr "Falta «user» en la respuesta de guest-get-users"
 #, c-format
 msgid "'value %1$d' is invalid for 'sibling id %2$d' under NUMA 'cell id %3$d'"
 msgstr ""
+"'value %1$d' no es válido para 'sibling id %2$d' bajo 'cell id %3$d' de NUMA"
 
 #, fuzzy
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "vhost-net solamente tiene soporte para interfaces de red virtio"
 
 msgid "'virtio-s390' addresses are no longer supported"
-msgstr ""
+msgstr "las direcciones 'virtio-s390' ya no son compatibles"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr ""
 "'wwnn' y 'wwpn' deben ser especificados para el tipo de adaptador 'fchost'"
 
 msgid "(<null>)"
-msgstr ""
+msgstr "(<null>)"
 
 msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
@@ -1689,7 +1692,7 @@ msgid "(esx execute response)"
 msgstr "(esx execute response)"
 
 msgid "(gluster_cli_output)"
-msgstr ""
+msgstr "(gluster_cli_output)"
 
 msgid "(interface definition)"
 msgstr "(definición de interfaz)"
@@ -1732,7 +1735,7 @@ msgid "(re)connect to hypervisor"
 msgstr "(re)conectarse con el hipervisor"
 
 msgid "(save cookie)"
-msgstr ""
+msgstr "(save cookie)"
 
 #, fuzzy
 msgid "(snapshot_tree)"
@@ -1748,7 +1751,7 @@ msgid "(storage_volume_definition)"
 msgstr "(storage_volume_definition)"
 
 msgid "(test driver)"
-msgstr ""
+msgstr "(test driver)"
 
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
@@ -1766,7 +1769,7 @@ msgstr "--%1$s <string>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <cadena>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -1781,19 +1784,23 @@ msgid "--%1$s or --current is required"
 msgstr "--%1$s o --current se requieren"
 
 msgid "------------------------------"
-msgstr ""
+msgstr "------------------------------"
 
 msgid "-------------------------------------------------"
-msgstr ""
+msgstr "-------------------------------------------------"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--async requiere al menos uno de los siguientes parámetros: --timeout, --"
+"wait, --pivot o --finish"
 
 msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--async requiere al menos uno de los siguientes parámetros: --timeout, --"
+"wait, --pivot o --keep-overlay"
 
 #, fuzzy
 msgid "--descendants requires --from"
@@ -1803,12 +1810,14 @@ msgid "--descendants requires either --from or --current"
 msgstr "--descendants requiere --from o --current"
 
 msgid "--format only works with --memory-only"
-msgstr ""
+msgstr "--format solo funciona con --memory-only"
 
 msgid ""
 "--listen parameter not permitted with systemd activation sockets, see 'man "
 "libvirtd' for further guidance"
 msgstr ""
+"el parámetro --listen no se permite con sockets de activación de systemd, "
+"consulte 'man libvirtd' para obtener más orientación"
 
 #, fuzzy
 msgid "--max-unauth-clients must be less than or equal to --max-clients"
@@ -1819,32 +1828,37 @@ msgid "--min-workers must be less than or equal to --max-workers"
 msgstr "cellNum en %s debe ser menor que o igual a %d"
 
 msgid "--source-protocol option requires --sourcetype network"
-msgstr ""
+msgstr "la opción --source-protocol requiere una red del tipo --sourcetype"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
 msgstr ""
+"--verbose requiere al menos uno de los siguientes parámetros: --timeout, --"
+"wait, --pivot o --finish"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
+"--verbose requiere al menos uno de los siguientes parámetros: --timeout, --"
+"wait, --pivot o --keep-overlay"
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proc/net/dev: No se encontró interfaz"
 
 msgid "3d acceleration is not supported by this QEMU binary"
-msgstr ""
+msgstr "la aceleración 3d no es compatible con este binario de QEMU"
 
 msgid "3d acceleration is supported only with 'virtio' video device"
-msgstr ""
+msgstr "la aceleración 3D solo es compatible con dispositivos de video 'virtio'"
 
 msgid "64-bit PCI hole setting is only for root PCI controllers"
 msgstr ""
+"la configuración de PCI hole de 64 bits es solo para controladores PCI raíz"
 
 #, c-format
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<active_pcr_banks/> requiere la versión '%1$s' de TPM"
 
 #, fuzzy, c-format
 msgid ""
@@ -1853,13 +1867,13 @@ msgid ""
 msgstr "Se encontró elemento <interface> no válido en <forward> de red %1$s"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "el elemento <config> solo es admitido actualmente con discos 'rbd'"
 
 msgid "<dataStore> feature available only with qcow2 images"
-msgstr ""
+msgstr "la característica <dataStore> solo está disponible para imágenes qcow2"
 
 msgid "<domainbackup> must specify TCP port for now"
-msgstr ""
+msgstr "por ahora <domainbackup> debe especificar un puerto TCP"
 
 #, c-format
 msgid ""
@@ -1870,19 +1884,20 @@ msgstr ""
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
 msgstr ""
+"el atributo 'display' de <hostdev> solo es compatible con model = 'vfio-pci'"
 
 msgid "<iotune> is not supported with bus='sd'"
-msgstr ""
+msgstr "<iotune> no es compatible con bus='sd'"
 
 #, c-format
 msgid "<profile/> requires TPM version '%1$s'"
-msgstr ""
+msgstr "<profile/> requiere la versión '%1$s' de TPM"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr ""
+msgstr "<reservations/> solo está permitido para dispositivos lun"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
-msgstr ""
+msgstr "el elemento <snapshot> solo se admite actualmente con discos 'rbd'"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%1$s'"
@@ -1954,6 +1969,8 @@ msgstr "Un callback diferente fue solicitado"
 msgid ""
 "A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
+"una definición de dominio no puede tener más de un nodo de cifrado con el "
+"nombre %1$s"
 
 #, fuzzy
 msgid "A interface driver is already registered"
@@ -1987,38 +2004,41 @@ msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
 msgstr ""
+"solo se espera un único elemento <secret type='passphrase'...> en la "
+"descripción del cifrado"
 
 #, fuzzy
 msgid "A storage driver is already registered"
 msgstr "Un close callback ya está registrado"
 
 msgid "ACPI ERST device must reside on a PCI bus"
-msgstr ""
+msgstr "el dispositivo ACPI ERST debe residir en un bus PCI"
 
+#, fuzzy
 msgid "ACPI index is not supported with this QEMU"
-msgstr ""
+msgstr "el índice de ACPI no es compatible con este binario de QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr ""
+msgstr "el índice de ACPI solo es compatible con dispositivos PCI"
 
 msgid "ACPI requires UEFI on this architecture"
-msgstr ""
+msgstr "ACPI requiere UEFI en esta arquitectura"
 
 #, c-format
 msgid "ACPI table type '%1$s' is not supported"
-msgstr ""
+msgstr "el tipo de tabla ACPI '%1$s' no es compatible"
 
 #, c-format
 msgid "ACPI table type '%1$s' may only appear once"
-msgstr ""
+msgstr "el tipo de tabla ACPI '%1$s' puede solo aparecer una vez"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%1$zu"
-msgstr ""
+msgstr "keylen=%1$zu no válido para cifrado AES256CBC"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%1$zu"
-msgstr ""
+msgstr "len=%1$zu no válido para vector de inicialización de AES256CBC"
 
 #, fuzzy
 msgid "API error"
@@ -2032,68 +2052,78 @@ msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr ""
 "¿Acepta clave de host SSH con hash '%1$s' para host '%2$s:%3$d' (%4$s/%5$s)?"
 
+#, fuzzy
 msgid "Access connection"
-msgstr ""
+msgstr "Acceder a la conexión"
 
 msgid "Access denied"
 msgstr "Acceso denegado"
 
+#, fuzzy
 msgid "Access domain"
-msgstr ""
+msgstr "Acceder al dominio"
 
+#, fuzzy
 msgid "Access interface"
-msgstr ""
+msgstr "Acceder a la interfaz"
 
+#, fuzzy
 msgid "Access network"
-msgstr ""
+msgstr "Acceder a la red"
 
+#, fuzzy
 msgid "Access network filter"
-msgstr ""
+msgstr "Acceder al filtro de red"
 
+#, fuzzy
 msgid "Access network port"
-msgstr ""
+msgstr "Acceder al puerto de red"
 
+#, fuzzy
 msgid "Access node device"
-msgstr ""
+msgstr "Acceder al dispositivo de nodo"
 
+#, fuzzy
 msgid "Access secret"
-msgstr ""
+msgstr "Acceder al secreto"
 
+#, fuzzy
 msgid "Access storage pool"
-msgstr ""
+msgstr "Acceder al grupo de almacenamiento"
 
+#, fuzzy
 msgid "Access storage volume"
-msgstr ""
+msgstr "Acceder al volumen de almacenamiento"
 
 msgid "Accessing interface requires authorization"
-msgstr ""
+msgstr "El acceso a la interfaz requiere autorización"
 
 msgid "Accessing network filter requires authorization"
-msgstr ""
+msgstr "El acceso al filtro de red requiere autorización"
 
 msgid "Accessing network port requires authorization"
-msgstr ""
+msgstr "El acceso al puerto de red requiere autorización"
 
 msgid "Accessing network requires authorization"
-msgstr ""
+msgstr "El acceso a la red requiere autorización"
 
 msgid "Accessing node device requires authorization"
-msgstr ""
+msgstr "El acceso al dispositivo de nodo requiere autorización"
 
 msgid "Accessing secret requires authorization"
-msgstr ""
+msgstr "El acceso al secreto requiere autorización"
 
 msgid "Accessing storage pool requires authorization"
-msgstr ""
+msgstr "El acceso al grupo de almacenamiento requiere autorización"
 
 msgid "Accessing storage volume requires authorization"
-msgstr ""
+msgstr "El acceso al volumen de almacenamiento requiere autorización"
 
 msgid "Accessing the connection requires authorization"
-msgstr ""
+msgstr "El acceso a la conexión requiere autorización"
 
 msgid "Accessing the domain requires authorization"
-msgstr ""
+msgstr "El acceso al dominio requiere autorización"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%1$s'"
@@ -2130,16 +2160,17 @@ msgid "Add an IOThread to the guest domain."
 msgstr "Inyectar NMI al dominio de huésped."
 
 msgid "Add or remove vcpus"
-msgstr ""
+msgstr "Añadir o eliminar vCPUs"
 
+#, fuzzy
 msgid "Add or update a throttling group."
-msgstr ""
+msgstr "Agregar o actualizar un grupo de limitación."
 
 msgid "Add or updte a throttling group."
-msgstr ""
+msgstr "Agregar o actualizar un grupo de limitación."
 
 msgid "Added"
-msgstr ""
+msgstr "Añadido"
 
 #, fuzzy
 msgid "Address"
@@ -2147,6 +2178,7 @@ msgstr "dirección MAC"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
+"Se necesita el asesoramiento de numad en caso de ubicación automática de numa"
 
 #, c-format
 msgid "After dumping core, failed to resume domain '%1$d' with libxenlight"
@@ -2154,10 +2186,10 @@ msgstr ""
 "Después de vaciar núcleo, no se pudo reanudar dominio '%1$d' con libxenlight"
 
 msgid "Agent authentication is not supported on this host"
-msgstr ""
+msgstr "La autenticación del agente no es compatible con este host"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr ""
+msgstr "No hay nadie que haya oído hablar de tanto nivel de caché"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Todas las identidades provistas por el agente SSH fueron rechazadas"
@@ -2170,7 +2202,7 @@ msgstr ""
 "rechazados por el servidor"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr ""
+msgstr "Asigne o libere algunas páginas en el grupo para la celda NUMA."
 
 msgid "Allocation"
 msgstr "Alojamiento"
@@ -2183,13 +2215,13 @@ msgstr ""
 "Permite establecer o modificar la descripción o el título de un dominio."
 
 msgid "Allows setting or modifying the description or title of a network."
-msgstr ""
+msgstr "Permite configurar o modificar la descripción o el título de una red."
 
 msgid "An error occurred, but the cause is unknown"
 msgstr "Ha ocurrido un error, pero la causa es desconocida"
 
 msgid "An event loop implementation must be registered"
-msgstr ""
+msgstr "Se debe registrar una implementación de bucle de eventos"
 
 msgid "An explicit disk format must be specified"
 msgstr "Debe especificarse un formato de disco explícito"
@@ -2210,15 +2242,19 @@ msgid ""
 "Append, reset or remove specified key from the authorized keys file for "
 "given user"
 msgstr ""
+"Anexar, restablecer o eliminar la clave especificada del archivo de claves "
+"autorizadas para un usuario determinado"
 
 msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
 msgstr ""
+"El argumento 'cellid' en el elemento memnode debe corresponder a una celda "
+"NUMA del huésped existente"
 
 #, c-format
 msgid "Argument 'node' %1$zu outranges defined number of NUMA nodes"
-msgstr ""
+msgstr "El argumento 'node' %1$zu supera el número definido de nodos NUMA"
 
 msgid "Arguments must be non null"
 msgstr "Los argumentos no deben ser nulos"
@@ -2227,9 +2263,11 @@ msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr ""
+"Los argumentos bajo el elemento memnode no se corresponden con la celda NUMA "
+"del invitado existente"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "Al menos un nodo NUMA debe tener CPUs"
 
 #, fuzzy
 msgid "At least one PTY console is required"
@@ -2241,21 +2279,29 @@ msgstr "Por lo menos se requiere un controlador de cgroup"
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
+"Se debe configurar al menos un nodo numa al habilitar la conexión en "
+"caliente de memoria"
 
 #, c-format
 msgid ""
 "At least one of name, mac, or ip attribute must be specified for static host "
 "definition in network '%1$s'"
 msgstr ""
+"Se debe especificar al menos uno de los atributos name, mac o ip para la "
+"definición de host estático en la red '%1$s'"
 
 msgid ""
 "At least one of options --max-clients, --max-unauth-clients is mandatory"
 msgstr ""
+"Al menos una de las opciones --max-clients o --max-unauth-clients es "
+"obligatoria"
 
 msgid ""
 "At least one of options --min-workers, --max-workers, --priority-workers is "
 "mandatory"
 msgstr ""
+"Al menos una de las opciones --min-workers, --max-workers o --priority-"
+"workers es obligatoria"
 
 #, fuzzy
 msgid "At least one tty is required"
@@ -2276,13 +2322,15 @@ msgstr "El dispositivo conectado %1$s no tiene tipo"
 
 #, c-format
 msgid "Attaching devices of type %1$d is not implemented"
-msgstr ""
+msgstr "No se ha implementado la conexión de dispositivos del tipo %1$d"
 
 #, c-format
 msgid ""
 "Attaching memory device with size '%1$llu' would exceed domain's maxMemory "
 "config size '%2$llu'"
 msgstr ""
+"La conexión de un dispositivo de memoria con el tamaño '%1$llu' superaría el "
+"tamaño de configuración maxMemory del dominio '%2$llu'"
 
 #, c-format
 msgid "Attempt to create %1$s without specifying mode"
@@ -2298,7 +2346,7 @@ msgstr "Intente migrar huésped al mismo host %1$s"
 
 #, c-format
 msgid "Attempt to overwrite resctrlid='%1$s' with id='%2$s'"
-msgstr ""
+msgstr "Intento de sobrescribir resctrlid='%1$s' con id='%2$s'"
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr "Intente enviar un mensaje de no bloqueo con respuesta sincronizada"
@@ -2308,15 +2356,17 @@ msgstr "Intente enviar un mensaje asíncrono con una respuesta sincronizada"
 
 #, c-format
 msgid "Attempted double use of PCI Address %1$s"
-msgstr ""
+msgstr "Intento de doble uso de la dirección PCI %1$s"
 
 msgid "Attempting to start nbdkit twice"
-msgstr ""
+msgstr "Intentando iniciar nbdkit dos veces"
 
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
 "mode"
 msgstr ""
+"El atributo migrable solo se permite para el modo de CPU 'host-passthrough' /"
+" 'maximum'"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "El modo de atributo solo es permitido para la CPU del huésped"
@@ -2332,8 +2382,9 @@ msgstr ""
 "Asignación automática de puerto TLS de SPICE fue solicitada, pero TLS spice "
 "está inactiva en qemu.conf"
 
+#, fuzzy
 msgid "Auto converge throttle:"
-msgstr ""
+msgstr "Limitación automática de convergencia:"
 
 msgid "Automatic disk lease mode enabled, but no host ID is set"
 msgstr "Modo automático de arriendo de disco, pero no se especifica ID de host"
@@ -2342,7 +2393,7 @@ msgid "Autostart"
 msgstr "Inicio automático"
 
 msgid "Autostart Once:"
-msgstr ""
+msgstr "Iniciar automáticamente una vez:"
 
 msgid "Autostart:"
 msgstr "Autoinicio:"
@@ -2354,15 +2405,18 @@ msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
 "'virtproxyd'."
 msgstr ""
+"Servidores disponibles en un demonio. Actualmente solo se admite 'libvirtd' "
+"o 'virtproxyd'."
 
 msgid "Available:"
 msgstr "Disponible:"
 
 msgid "BIOS serial console only supported on x86 architectures"
-msgstr ""
+msgstr "La consola en serie de BIOS solo es compatible con arquitecturas x86"
 
+#, fuzzy
 msgid "Backup"
-msgstr ""
+msgstr "Respaldo"
 
 #, fuzzy
 msgid "Backup Dump XML"
@@ -2389,10 +2443,10 @@ msgstr ""
 
 #, c-format
 msgid "Bad prefix name '%1$s' for resctrl monitor"
-msgstr ""
+msgstr "Nombre de prefijo '%1$s' incorrecto para el monitor de resctrl"
 
 msgid "Bad usage"
-msgstr ""
+msgstr "Mal uso"
 
 msgid "Bad value for nativeMode"
 msgstr "Valor errado para nativMode"
@@ -2464,9 +2518,12 @@ msgstr "'adapter' y 'address' deben especificarse para fuente scsi hostdev"
 msgid ""
 "Both port and URI requested for disk migration while being mutually exclusive"
 msgstr ""
+"Tanto el puerto como el URI solicitados para la migración de disco son "
+"mutuamente excluyentes"
 
+#, fuzzy
 msgid "Both secret and the secret header are required"
-msgstr ""
+msgstr "Tanto el secreto como el encabezado secreto son necesarios"
 
 msgid "Bounded"
 msgstr "Ligado"
@@ -2525,23 +2582,25 @@ msgstr "Certificado CA:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
-msgstr ""
+msgstr "Las direcciones CCW no son compatibles con el tipo de máquina '%1$s'"
 
 #, c-format
 msgid "CH does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "CH no es compatible con el modo '%1$s' de asignación de dispositivos"
 
 #, c-format
 msgid "CHS geometry can not be set for '%1$s' bus"
-msgstr ""
+msgstr "No se puede establecer la geometría CHS para el bus '%1$s'"
 
 #, c-format
 msgid "CHS translation mode can only be set for 'ide' bus not '%1$s'"
 msgstr ""
+"El modo de traducción CHS solo se puede establecer para el bus 'ide', no "
+"para '%1$s'"
 
 #, c-format
 msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
-msgstr ""
+msgstr "La CPU %1$d en cpulist '%2$s' supera a maxcpu %3$d"
 
 msgid "CPU Affinity"
 msgstr "Afinidad de CPU"
@@ -2561,16 +2620,18 @@ msgstr "El modelo de CPU %1$s es demasiado grande para el destino"
 msgid "CPU arch %1$s does not match host arch"
 msgstr "CPU arch %1$s no coincide con host arch"
 
+#, fuzzy
 msgid "CPU architecture (/domain/os/type/@arch)"
-msgstr ""
+msgstr "Arquitectura de CPU (/domain/os/type/@arch)"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with '%2$s' / '%3$s' CPUs"
 msgstr ""
+"El modo de caché de CPU '%1$s' solo se puede usar con CPUs '%2$s' / '%3$s'"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with level='3'"
-msgstr ""
+msgstr "El modo de caché de CPU '%1$s' solo se puede usar con level='3'"
 
 #, fuzzy, c-format
 msgid "CPU cache specification is not supported for '%1$s' architecture"
@@ -2615,9 +2676,11 @@ msgstr "orden de arranque '%1$s' se utiliza más que una de dispositivo"
 msgid "CPU features not supported by hypervisor for %1$s architecture"
 msgstr "Modelo de CPU %1$s no está admitido por el hipervisor"
 
-#, c-format
+#, c-format, fuzzy
 msgid "CPU flags requested but can't determine default CPU for arch %1$s"
 msgstr ""
+"Se han solicitado flags de CPU pero no se pudo determinar la CPU "
+"predeterminada para la arch %1$s"
 
 msgid "CPU frequency:"
 msgstr "Frecuencia de la CPU:"
@@ -2630,12 +2693,16 @@ msgid ""
 "CPU maximum physical address bits number specification cannot be used with "
 "mode='%1$s'"
 msgstr ""
+"La especificación del número de bits de dirección física máxima de la CPU no "
+"se puede utilizar con mode='%1$s'"
 
 #, c-format
 msgid ""
 "CPU maximum physical address bits specification is not supported for '%1$s' "
 "architecture"
 msgstr ""
+"La especificación de bits de dirección física máxima de CPU no es compatible "
+"con la arquitectura '%1$s'"
 
 #, c-format
 msgid ""
@@ -2659,11 +2726,11 @@ msgstr "Modelo de CPU es demasiado largo %1$s para el destino"
 
 #, c-format
 msgid "CPU model '%1$s'"
-msgstr ""
+msgstr "CPU modelo '%1$s'"
 
 #, c-format
 msgid "CPU model '%1$s' not supported by hypervisor"
-msgstr ""
+msgstr "El modelo de CPU '%1$s' no es compatible con el hipervisor"
 
 msgid "CPU model:"
 msgstr "Modelo de la CPU:"
@@ -2677,8 +2744,10 @@ msgstr "Ha cambiado la topología de conexión de CPU"
 msgid "CPU socket(s):"
 msgstr "Socket(s) de la CPU:"
 
+#, fuzzy
 msgid "CPU throttling rate increment for auto-convergence"
 msgstr ""
+"Incremento de la tasa de limitación de la CPU para la convergencia automática"
 
 msgid "CPU time"
 msgstr "Tiempo de CPU"
@@ -2691,7 +2760,7 @@ msgid "CPU topology doesn't match maximum vcpu count"
 msgstr "No se pudo recuperar la cuenta máxima de vcpu"
 
 msgid "CPU topology doesn't match the desired vcpu count"
-msgstr ""
+msgstr "La topología de la CPU no coincide con el número de vCPU deseado"
 
 #, fuzzy
 msgid "CPU tuning is not available in session mode"
@@ -2717,7 +2786,7 @@ msgstr "Se ha indicado un vendedor sin modelo de CPU"
 
 #, c-format
 msgid "CPU vendor value 0x%1$2llx already defined"
-msgstr ""
+msgstr "El valor 0x%1$2llx del proveedor de CPU ya fue definido"
 
 msgid "CPU vendors do not match"
 msgstr "Los vendedores de las CPU no coinciden"
@@ -2752,16 +2821,22 @@ msgid ""
 "Cache allocation for the whole cache is not possible, specify size smaller "
 "than %1$llu"
 msgstr ""
+"La asignación de caché para toda la caché no es posible, especifique un "
+"tamaño menor que %1$llu"
 
 #, c-format
 msgid "Cache allocation of size %1$llu is not divisible by granularity %2$llu"
 msgstr ""
+"El tamaño %1$llu de asignación de caché no es divisible por la granularidad "
+"%2$llu"
 
 #, c-format
 msgid ""
 "Cache allocation of size %1$llu is smaller than the minimum allowed "
 "allocation %2$llu"
 msgstr ""
+"El tamaño %1$llu de asignación de caché es menor que la asignación mínima "
+"permitida %2$llu"
 
 #, c-format
 msgid "Cache level %1$d does not support tuning"
@@ -2778,21 +2853,27 @@ msgstr ""
 
 #, c-format
 msgid "Cache level '%1$u' already defined"
-msgstr ""
+msgstr "Nivel de caché '%1$u' ya definido"
 
 #, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
-msgstr ""
+msgstr "La caché con id %1$u no existe para el nivel %2$d"
 
+#, fuzzy
 msgid "Calculate a vm's memory dirty rate"
-msgstr ""
+msgstr "Calcular la tasa de páginas sucias para la memoria de una mv"
 
+#, fuzzy
 msgid ""
 "Calculate memory dirty rate of a domain in order to decide whether it's "
 "proper to be migrated out or not.\n"
 "The calculated dirty rate information is available by calling 'domstats --"
 "dirtyrate'."
 msgstr ""
+"Calcular la tasa de páginas sucias en la memoria de un dominio para decidir "
+"si es adecuado migrarlo o no. \n"
+"La información acerca de la tasa de páginas sucias calculada está disponible "
+"a través de 'domstats --dirtyrate'."
 
 #, c-format
 msgid "Call to %1$s for unexpected type '%2$s'"
@@ -2829,6 +2910,7 @@ msgstr "No se puede modificar cuota de disco"
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %1$s"
 msgstr ""
+"Solo se puede abrir backends de gráficos p2p VNC, SPICE o D-Bus, no %1$s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
