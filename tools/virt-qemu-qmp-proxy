@@ -278,7 +278,6 @@ class QMPProxy(object):
             else:
                 error = True
         except Exception as e:
-            global debug
             if debug:
                 print("%s: %s" % (sys.argv[0], str(e)))
                 print(traceback.format_exc())

@@ -818,8 +818,6 @@ class CParser:
     # Parse a comment block associate to a macro
     #
     def parseMacroComment(self, name, quiet=0):
-        global ignored_macros
-
         if name[0:2] == '__':
             quiet = 1
         if name in ignored_macros:
@@ -895,8 +893,6 @@ class CParser:
     # as possible
     #
     def mergeFunctionComment(self, name, description, quiet=0):
-        global ignored_functions
-
         if name == 'main':
             quiet = 1
         if name[0:2] == '__':
@@ -1135,8 +1131,6 @@ class CParser:
         self.lexer.push(tok)
 
     def token(self):
-        global ignored_words
-
         token = self.lexer.token()
         while token is not None:
             if token[0] == 'comment':
