@@ -432,6 +432,6 @@ qemuRdpAvailable(const char *helper)
     g_autofree char *helperPath = NULL;
 
     /* This function was added corresponding to the first release of 'qemu-rdp'
-     * thus checking existance of the helper binary is sufficient. */
+     * thus checking existence of the helper binary is sufficient. */
     return !!(helperPath = virFindFileInPath(helper));
 }
