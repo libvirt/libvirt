@@ -203,12 +203,12 @@ virNWFilterInstReset(virNWFilterInst *inst)
 
     for (i = 0; i < inst->nfilters; i++)
         virNWFilterObjUnlock(inst->filters[i]);
-    g_clear_pointer(inst->filters, g_free);
+    g_clear_pointer(&inst->filters, g_free);
     inst->nfilters = 0;
 
     for (i = 0; i < inst->nrules; i++)
         virNWFilterRuleInstFree(inst->rules[i]);
-    g_clear_pointer(inst->rules, g_free);
+    g_clear_pointer(&inst->rules, g_free);
     inst->nrules = 0;
 }
 
