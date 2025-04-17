@@ -317,7 +317,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     VIR_DEBUG("Choosing remote socket for transport=%s mode=%s driver=%s flags=0x%x",
               remoteDriverTransportTypeToString(transport),
               remoteDriverModeTypeToString(mode),
-              driver, flags);
+              NULLSTR(driver), flags);
 
 #ifdef REMOTE_DRIVER_AUTOSTART_DIRECT
     if (!driver && mode != REMOTE_DRIVER_MODE_LEGACY) {
@@ -342,6 +342,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
                 return NULL;
         }
         driver = guessdriver;
+        VIR_DEBUG("Guessed driver %s", NULLSTR(driver));
     }
 #endif
 
@@ -354,6 +355,9 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
     legacy_sock_name = remoteGetUNIXSocketHelper(transport, "libvirt", flags);
 
     if (mode == REMOTE_DRIVER_MODE_AUTO) {
+        VIR_DEBUG("Resolving mode=auto direct_daemon=%s direct_sock=%s legacy_daemon=%s legacy_sock=%s",
+                  NULLSTR(direct_daemon), NULLSTR(direct_sock_name),
+                  NULLSTR(legacy_daemon), NULLSTR(legacy_sock_name));
         if (transport == REMOTE_DRIVER_TRANSPORT_UNIX) {
             /*
              * When locally accessing libvirtd, we pick legacy or
@@ -380,6 +384,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
              */
             mode = REMOTE_DRIVER_MODE_LEGACY;
         }
+        VIR_DEBUG("Resolved mode=%s", remoteDriverModeTypeToString(mode));
     }
 
     switch ((remoteDriverMode)mode) {
