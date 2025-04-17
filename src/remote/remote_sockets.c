@@ -398,7 +398,7 @@ remoteGetUNIXSocket(remoteDriverTransport transport,
 
         if (!direct_sock_name) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("Cannot use direct socket mode if no URI is set. For more information see https://libvirt.org/kbase/failed_connection_after_install.html"));
+                           _("No URI is provided and cannot identify any listening daemon socket path to attempt to connect to. Please ensure the expected daemon sockets are active and/or provide an explicit URI. For more information see https://libvirt.org/kbase/failed_connection_after_install.html"));
             return NULL;
         }
 
