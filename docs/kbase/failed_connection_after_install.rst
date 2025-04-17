@@ -28,6 +28,16 @@ not work when run as root:
    error: Operation not supported: Cannot use direct socket mode if no URI is set.
    For more information see https://libvirt.org/kbase/failed_connection_after_install.html
 
+Or
+
+::
+
+   # virsh list
+   error: failed to connect to the hypervisor
+   error: Operation not supported: No URI is provided and cannot identify any listening
+   daemon socket path to attempt to connect to. For more information see
+   https://libvirt.org/kbase/failed_connection_after_install.html
+
 Root cause
 ==========
 
