@@ -30,6 +30,7 @@
 #define IPTABLES "iptables"
 #define IP6TABLES "ip6tables"
 #define NFT "nft"
+#define PFCTL "pfctl"
 #define TC "tc"
 
 typedef struct _virFirewall virFirewall;
@@ -49,6 +50,7 @@ typedef enum {
     VIR_FIREWALL_BACKEND_NONE, /* Always fails */
     VIR_FIREWALL_BACKEND_IPTABLES,
     VIR_FIREWALL_BACKEND_NFTABLES,
+    VIR_FIREWALL_BACKEND_PF,
 
     VIR_FIREWALL_BACKEND_LAST,
 } virFirewallBackend;

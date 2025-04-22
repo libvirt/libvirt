@@ -129,6 +129,10 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
             break;
         }
 
+        case VIR_FIREWALL_BACKEND_PF: {
+            break;
+        }
+
         case VIR_FIREWALL_BACKEND_LAST:
             virReportEnumRangeError(virFirewallBackend, fwBackends[i]);
             return -1;

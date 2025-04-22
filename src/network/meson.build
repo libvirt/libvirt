@@ -6,6 +6,10 @@ network_driver_sources = [
   'network_nftables.c',
 ]
 
+if host_machine.system() == 'freebsd'
+  network_driver_sources += 'network_pf.c'
+endif
+
 driver_source_files += files(network_driver_sources)
 stateful_driver_source_files += files(network_driver_sources)
 

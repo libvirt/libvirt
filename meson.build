@@ -1606,6 +1606,8 @@ if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD')
   if firewall_backend_priority.length() == 0
       if host_machine.system() == 'linux'
           firewall_backend_priority = ['nftables', 'iptables']
+      elif host_machine.system() == 'freebsd'
+          firewall_backend_priority = ['pf']
       else
           # No firewall impl on non-Linux so far, so force 'none'
           # as placeholder

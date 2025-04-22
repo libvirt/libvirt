@@ -151,6 +151,7 @@ src/network/bridge_driver_nop.c
 src/network/leaseshelper.c
 src/network/network_iptables.c
 src/network/network_nftables.c
+src/network/network_pf.c
 src/node_device/node_device_driver.c
 src/node_device/node_device_udev.c
 src/nwfilter/nwfilter_dhcpsnoop.c
