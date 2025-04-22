@@ -130,6 +130,10 @@ virNetworkLoadDriverConfig(virNetworkDriverConfig *cfg G_GNUC_UNUSED,
         }
 
         case VIR_FIREWALL_BACKEND_PF: {
+            g_autofree char *pfctlInPath = virFindFileInPath(PFCTL);
+
+            if (pfctlInPath)
+                fwBackendSelected = true;
             break;
         }
 

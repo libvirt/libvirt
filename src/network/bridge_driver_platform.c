@@ -25,6 +25,8 @@
 
 #if defined(__linux__)
 # include "bridge_driver_linux.c"
+#elif defined(__FreeBSD__)
+# include "bridge_driver_bsd.c"
 #else
 # include "bridge_driver_nop.c"
 #endif
