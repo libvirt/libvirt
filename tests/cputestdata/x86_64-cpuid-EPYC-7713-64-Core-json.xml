@@ -1,0 +1,22 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>EPYC-Milan</model>
+  <vendor>AMD</vendor>
+  <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='tsc-deadline'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='vaes'/>
+  <feature policy='require' name='vpclmulqdq'/>
+  <feature policy='require' name='spec-ctrl'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='arch-capabilities'/>
+  <feature policy='require' name='ssbd'/>
+  <feature policy='require' name='cmp_legacy'/>
+  <feature policy='require' name='virt-ssbd'/>
+  <feature policy='require' name='rdctl-no'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
+  <feature policy='require' name='mds-no'/>
+  <feature policy='require' name='pschange-mc-no'/>
+  <feature policy='disable' name='ibrs'/>
+  <feature policy='disable' name='svme-addr-chk'/>
+</cpu>

@@ -1,0 +1,44 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>EPYC-Milan</model>
+  <vendor>AMD</vendor>
+  <feature policy='require' name='monitor'/>
+  <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='osxsave'/>
+  <feature policy='require' name='ht'/>
+  <feature policy='require' name='cmt'/>
+  <feature policy='require' name='ospke'/>
+  <feature policy='require' name='vaes'/>
+  <feature policy='require' name='vpclmulqdq'/>
+  <feature policy='require' name='mbm_total'/>
+  <feature policy='require' name='mbm_local'/>
+  <feature policy='require' name='cmp_legacy'/>
+  <feature policy='require' name='extapic'/>
+  <feature policy='require' name='ibs'/>
+  <feature policy='require' name='skinit'/>
+  <feature policy='require' name='wdt'/>
+  <feature policy='require' name='tce'/>
+  <feature policy='require' name='topoext'/>
+  <feature policy='require' name='perfctr_nb'/>
+  <feature policy='require' name='overflow-recov'/>
+  <feature policy='require' name='succor'/>
+  <feature policy='require' name='invtsc'/>
+  <feature policy='require' name='stibp-always-on'/>
+  <feature policy='require' name='amd-psfd'/>
+  <feature policy='require' name='lbrv'/>
+  <feature policy='require' name='svm-lock'/>
+  <feature policy='require' name='tsc-scale'/>
+  <feature policy='require' name='vmcb-clean'/>
+  <feature policy='require' name='flushbyasid'/>
+  <feature policy='require' name='decodeassists'/>
+  <feature policy='require' name='pause-filter'/>
+  <feature policy='require' name='pfthreshold'/>
+  <feature policy='require' name='v-vmsave-vmload'/>
+  <feature policy='require' name='vgif'/>
+  <feature policy='require' name='no-nested-data-bp'/>
+  <feature policy='require' name='lfence-always-serializing'/>
+  <feature policy='require' name='null-sel-clr-base'/>
+  <feature policy='require' name='rdctl-no'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
+  <feature policy='require' name='mds-no'/>
+  <feature policy='require' name='pschange-mc-no'/>
+</cpu>
