@@ -2087,9 +2087,6 @@ virCPUx86Compare(virCPUDef *host,
 }
 
 
-/* Base penalty for disabled features. */
-#define BASE_PENALTY 2
-
 struct virCPUx86Weight {
     size_t total;
     size_t enabled;
@@ -2100,26 +2097,25 @@ static void
 virCPUx86WeightFeatures(const virCPUDef *cpu,
                         struct virCPUx86Weight *weight)
 {
-    int penalty = BASE_PENALTY;
     size_t i;
+    size_t half; /* half of disabled features rounded up */
 
     weight->enabled = cpu->nfeatures;
-    weight->disabled = 0;
 
     if (cpu->type == VIR_CPU_TYPE_HOST) {
+        weight->disabled = 0;
         weight->total = cpu->nfeatures;
         return;
     }
 
-    for (i = 0; i < weight->enabled; i++) {
-        if (cpu->features[i].policy == VIR_CPU_FEATURE_DISABLE) {
+    for (i = 0; i < cpu->nfeatures; i++) {
+        if (cpu->features[i].policy == VIR_CPU_FEATURE_DISABLE)
             weight->enabled--;
-            weight->disabled += penalty;
-            penalty++;
-        }
     }
 
-    weight->total = weight->enabled + weight->disabled;
+    half = (cpu->nfeatures - weight->enabled + 1) / 2;
+    weight->disabled = half * (half + 3) / 2;
+    weight->total = cpu->nfeatures - half + weight->disabled;
 }
 
 
