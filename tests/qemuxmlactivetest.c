@@ -88,6 +88,45 @@ testRunStatus(const char *name,
 
 
 static int
+testqemuActiveXML2XMLCommonPrepare(testQemuInfo *info)
+{
+    if (info->prepared)
+        return 0;
+
+    if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
+        goto error;
+
+    virFileCacheClear(driver.qemuCapsCache);
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+        goto error;
+
+    if (!(info->def = virDomainDefParseFile(info->infile,
+                                            driver.xmlopt, NULL,
+                                            info->parseFlags)))
+        goto error;
+
+    if (!virDomainDefCheckABIStability(info->def, info->def, driver.xmlopt)) {
+        VIR_TEST_DEBUG("ABI stability check failed on %s", info->infile);
+        goto error;
+    }
+
+    /* make sure that the XML definition looks active, by setting an ID
+     * as otherwise the XML formatter will simply assume that it's inactive */
+    if (info->def->id == -1)
+        info->def->id = 1337;
+
+    info->prepared = true;
+    return 0;
+
+ error:
+    info->prep_skip = true;
+    info->prepared = true;
+    return -1;
+}
+
+
+static int
 testqemuActiveXML2XMLCommon(testQemuInfo *info,
                             bool live)
 {
@@ -95,31 +134,11 @@ testqemuActiveXML2XMLCommon(testQemuInfo *info,
     const char *outfile = info->out_xml_active;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
 
-    /* Prepare the test data and parse the input just once */
-    if (!info->def) {
-        if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
-            return -1;
+    if (info->prep_skip)
+        return EXIT_AM_SKIP;
 
-        virFileCacheClear(driver.qemuCapsCache);
-
-        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
-            return -1;
-
-        if (!(info->def = virDomainDefParseFile(info->infile,
-                                                driver.xmlopt, NULL,
-                                                info->parseFlags)))
-            return -1;
-
-        if (!virDomainDefCheckABIStability(info->def, info->def, driver.xmlopt)) {
-            VIR_TEST_DEBUG("ABI stability check failed on %s", info->infile);
-            return -1;
-        }
-
-        /* make sure that the XML definition looks active, by setting an ID
-         * as otherwise the XML formatter will simply assume that it's inactive */
-        if (info->def->id == -1)
-            info->def->id = 1337;
-    }
+    if (testqemuActiveXML2XMLCommonPrepare(info) < 0)
+        return -1;
 
     if (!live) {
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
