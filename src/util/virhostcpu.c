@@ -1148,28 +1148,26 @@ virHostCPUGetMap(unsigned char **cpumap,
                  unsigned int flags)
 {
     g_autoptr(virBitmap) cpus = NULL;
-    int ret = -1;
-    int dummy;
+    int ncpus = virHostCPUGetCount();
 
     virCheckFlags(0, -1);
 
     if (!cpumap && !online)
-        return virHostCPUGetCount();
+        return ncpus;
 
     if (!(cpus = virHostCPUGetOnlineBitmap()))
-        goto cleanup;
+        return -1;
 
-    if (cpumap)
-        virBitmapToData(cpus, cpumap, &dummy);
+    if (cpumap) {
+        int len = (ncpus + CHAR_BIT) / CHAR_BIT;
+        *cpumap = g_new0(unsigned char, len);
+        virBitmapToDataBuf(cpus, *cpumap, len);
+    }
+
     if (online)
         *online = virBitmapCountBits(cpus);
 
-    ret = virHostCPUGetCount();
-
- cleanup:
-    if (ret < 0 && cpumap)
-        VIR_FREE(*cpumap);
-    return ret;
+    return ncpus;
 }
 
 
