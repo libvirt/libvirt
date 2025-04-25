@@ -1,0 +1,19 @@
+<!-- Features enabled by QEMU -->
+<cpudata arch='x86'>
+  <cpuid eax_in='0x00000001' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0xc7f8a223' edx='0x0f8bfbff'/>
+  <cpuid eax_in='0x00000006' ecx_in='0x00' eax='0x00000004' ebx='0x00000000' ecx='0x00000000' edx='0x00000000'/>
+  <cpuid eax_in='0x00000007' ecx_in='0x00' eax='0x00000000' ebx='0x21940283' ecx='0x1a400124' edx='0xbc000400'/>
+  <cpuid eax_in='0x0000000d' ecx_in='0x01' eax='0x0000000f' ebx='0x00000000' ecx='0x00000000' edx='0x00000000'/>
+  <cpuid eax_in='0x80000001' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x00000101' edx='0x2c100800'/>
+  <cpuid eax_in='0x80000008' ecx_in='0x00' eax='0x00000000' ebx='0x0100d000' ecx='0x00000000' edx='0x00000000'/>
+  <msr index='0x10a' edx='0x00000000' eax='0x0400006b'/>
+  <msr index='0x480' edx='0x00c00000' eax='0x00000000'/>
+  <msr index='0x485' edx='0x00000000' eax='0x20000160'/>
+  <msr index='0x48b' edx='0x00000000' eax='0x06136bff'/>
+  <msr index='0x48c' edx='0x00000d01' eax='0x06330041'/>
+  <msr index='0x48d' edx='0x00000000' eax='0x000000e9'/>
+  <msr index='0x48e' edx='0x00000000' eax='0xfbf99e8c'/>
+  <msr index='0x48f' edx='0x00000000' eax='0x007c8004'/>
+  <msr index='0x490' edx='0x00000000' eax='0x0000c204'/>
+  <msr index='0x491' edx='0x00000000' eax='0x00000001'/>
+</cpudata>
