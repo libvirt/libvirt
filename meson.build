@@ -864,7 +864,6 @@ foreach name : optional_programs
     missing_optional_programs += [ name ]
   endif
 
-  conf.set_quoted(varname.to_upper(), prog_path)
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
