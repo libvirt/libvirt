@@ -744,14 +744,14 @@ nodeDeviceGetMdevctlCommand(virNodeDeviceDef *def,
     case MDEVCTL_CMD_CREATE:
         /* now is the time to make sure "create" is replaced with "start" on
          * mdevctl cmdline */
-        cmd = virCommandNewArgList(MDEVCTL, "start", NULL);
+        cmd = virCommandNewArgList("mdevctl", "start", NULL);
         break;
     case MDEVCTL_CMD_STOP:
     case MDEVCTL_CMD_START:
     case MDEVCTL_CMD_DEFINE:
     case MDEVCTL_CMD_UNDEFINE:
     case MDEVCTL_CMD_MODIFY:
-        cmd = virCommandNewArgList(MDEVCTL, subcommand, NULL);
+        cmd = virCommandNewArgList("mdevctl", subcommand, NULL);
         break;
     case MDEVCTL_CMD_LAST:
     default:
@@ -901,7 +901,7 @@ nodeDeviceGetMdevctlModifySupportCheck(void)
     g_autoptr(virCommand) cmd = NULL;
     const char *subcommand = virMdevctlCommandTypeToString(MDEVCTL_CMD_MODIFY);
 
-    cmd = virCommandNewArgList(MDEVCTL,
+    cmd = virCommandNewArgList("mdevctl",
                                subcommand,
                                "--defined",
                                "--live",
@@ -1130,7 +1130,7 @@ nodeDeviceGetMdevctlSetAutostartCommand(virNodeDeviceDef *def,
                                         bool autostart,
                                         char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+    virCommand *cmd = virCommandNewArgList("mdevctl",
                                            "modify",
                                            "--uuid",
                                            def->caps->data.mdev.uuid,
@@ -1176,7 +1176,7 @@ nodeDeviceGetMdevctlListCommand(bool defined,
                                 char **output,
                                 char **errmsg)
 {
-    virCommand *cmd = virCommandNewArgList(MDEVCTL,
+    virCommand *cmd = virCommandNewArgList("mdevctl",
                                            "list",
                                            "--dumpjson",
                                            NULL);
@@ -1894,8 +1894,8 @@ nodeDeviceUpdateMediatedDevices(virNodeDeviceDriverState *node_driver)
     virMdevctlForEachData data = { 0, };
     size_t i;
 
-    if (!(mdevctl = virFindFileInPath(MDEVCTL))) {
-        VIR_DEBUG(MDEVCTL " not found. Skipping update of mediated devices.");
+    if (!(mdevctl = virFindFileInPath("mdevctl"))) {
+        VIR_DEBUG("'mdevctl' not found. Skipping update of mediated devices.");
         return 0;
     }
 
