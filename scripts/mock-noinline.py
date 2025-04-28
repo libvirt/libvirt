@@ -63,7 +63,8 @@ def scan_overrides(filename):
                     mocked[name] = "%s:%d" % (filename, lineno)
 
 
-for filename in sys.stdin.readlines():
+for filename in sys.stdin:
+    filename = filename.rstrip()
     if filename.endswith(".h"):
         scan_annotations(filename)
     elif filename.endswith("mock.c"):
