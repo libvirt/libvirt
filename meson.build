@@ -840,7 +840,6 @@ required_programs = [
 foreach name : required_programs
   prog = find_program(name, dirs: libvirt_sbin_path)
   varname = name.underscorify()
-  conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
