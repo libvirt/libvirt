@@ -63,7 +63,7 @@ testKModLoad(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    if (checkOutput(&buf, MODPROBE " -b " MODNAME "\n") < 0)
+    if (checkOutput(&buf, "modprobe -b " MODNAME "\n") < 0)
         return -1;
 
     return 0;
@@ -85,7 +85,7 @@ testKModUnload(const void *args G_GNUC_UNUSED)
         return -1;
     }
 
-    if (checkOutput(&buf, RMMOD " " MODNAME "\n") < 0)
+    if (checkOutput(&buf, "rmmod " MODNAME "\n") < 0)
         return -1;
 
     return 0;
