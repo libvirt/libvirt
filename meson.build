@@ -854,7 +854,6 @@ optional_test_programs = [
 ]
 
 optional_programs = [
-  'iscsiadm',
   'mdevctl',
   'mm-ctl',
   'modprobe',
@@ -1825,11 +1824,11 @@ if conf.has('WITH_LIBVIRTD')
     error('Need glusterfs (libgfapi) for gluster storage driver')
   endif
 
-  if not get_option('storage_iscsi').disabled() and iscsiadm_prog.found()
+  if not get_option('storage_iscsi').disabled() and host_machine.system() == 'linux'
     use_storage = true
     conf.set('WITH_STORAGE_ISCSI', 1)
   elif get_option('storage_iscsi').enabled()
-    error('We need iscsiadm for iSCSI storage driver')
+    error('Linux host needed for iSCSI storage driver using iscsiadm')
   endif
 
   if not get_option('storage_iscsi_direct').disabled() and libiscsi_dep.found()

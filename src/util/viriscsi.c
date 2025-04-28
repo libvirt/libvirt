@@ -88,8 +88,8 @@ virISCSIGetSession(const char *devpath,
     int exitstatus = 0;
     g_autofree char *error = NULL;
 
-    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM, "--mode",
-                                                       "session", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("iscsiadm", "--mode",
+                                                     "session", NULL);
     virCommandSetErrorBuffer(cmd, &error);
 
     if (virCommandRunRegex(cmd,
@@ -123,8 +123,8 @@ virStorageBackendIQNFound(const char *initiatoriqn,
     g_autofree char *outbuf = NULL;
     g_autofree char *iface = NULL;
     g_autofree char *iqn = NULL;
-    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
-                                                       "--mode", "iface", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("iscsiadm",
+                                                     "--mode", "iface", NULL);
 
     *ifacename = NULL;
 
@@ -193,8 +193,8 @@ virStorageBackendIQNFound(const char *initiatoriqn,
 
  error:
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("malformed output of %1$s: %2$s"),
-                   ISCSIADM, line);
+                   _("malformed output of 'iscsiadm': %1$s"),
+                   line);
     goto cleanup;
 }
 
@@ -215,7 +215,7 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               temp_ifacename, initiatoriqn);
 
-    newcmd = virCommandNewArgList(ISCSIADM,
+    newcmd = virCommandNewArgList("iscsiadm",
                                   "--mode", "iface",
                                   "--interface", temp_ifacename,
                                   "--op", "new",
@@ -225,13 +225,12 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * We will just rely on whether the interface got created
      * properly. */
     if (virCommandRun(newcmd, &exitstatus) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to run command '%1$s' to create new iscsi interface"),
-                       ISCSIADM);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to run command 'iscsiadm' to create new iscsi interface"));
         return -1;
     }
 
-    updatecmd = virCommandNewArgList(ISCSIADM,
+    updatecmd = virCommandNewArgList("iscsiadm",
                                      "--mode", "iface",
                                      "--interface", temp_ifacename,
                                      "--op", "update",
@@ -244,8 +243,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
      * rely on whether iface file got updated properly. */
     if (virCommandRun(updatecmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"),
-                       ISCSIADM, initiatoriqn);
+                       _("Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"),
+                       initiatoriqn);
         return -1;
     }
 
@@ -273,7 +272,7 @@ virISCSIConnection(const char *portal,
                    const char **extraargv)
 {
     const char *const baseargv[] = {
-        ISCSIADM,
+        "iscsiadm",
         "--mode", "node",
         "--portal", portal,
         "--targetname", target,
@@ -343,11 +342,11 @@ virISCSIConnectionLogout(const char *portal,
 int
 virISCSIRescanLUNs(const char *session)
 {
-    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
-                                                       "--mode", "session",
-                                                       "-r", session,
-                                                       "-R",
-                                                       NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("iscsiadm",
+                                                     "--mode", "session",
+                                                     "-r", session,
+                                                     "-R",
+                                                     NULL);
     return virCommandRun(cmd, NULL);
 }
 
@@ -396,11 +395,11 @@ virISCSIScanTargetsInternal(const char *portal,
     int vars[] = { 2 };
     struct virISCSITargetList list = { 0 };
     size_t i;
-    g_autoptr(virCommand) cmd = virCommandNewArgList(ISCSIADM,
-                                                       "--mode", "discovery",
-                                                       "--type", "sendtargets",
-                                                       "--portal", portal,
-                                                       NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("iscsiadm",
+                                                     "--mode", "discovery",
+                                                     "--type", "sendtargets",
+                                                     "--portal", portal,
+                                                     NULL);
 
     if (!persist) {
         virCommandAddArgList(cmd,
@@ -512,7 +511,7 @@ virISCSINodeNew(const char *portal,
     g_autoptr(virCommand) cmd = NULL;
     int status;
 
-    cmd = virCommandNewArgList(ISCSIADM,
+    cmd = virCommandNewArgList("iscsiadm",
                                "--mode", "node",
                                "--portal", portal,
                                "--targetname", target,
@@ -528,8 +527,8 @@ virISCSINodeNew(const char *portal,
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%1$s failed new mode for target '%2$s' with status '%3$d'"),
-                       ISCSIADM, target, status);
+                       _("'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"),
+                       target, status);
         return -1;
     }
 
@@ -546,7 +545,7 @@ virISCSINodeUpdate(const char *portal,
     g_autoptr(virCommand) cmd = NULL;
     int status;
 
-    cmd = virCommandNewArgList(ISCSIADM,
+    cmd = virCommandNewArgList("iscsiadm",
                                "--mode", "node",
                                "--portal", portal,
                                "--target", target,

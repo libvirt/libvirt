@@ -82,7 +82,7 @@ static void testIscsiadmCb(const char *const*args,
 {
     struct testIscsiadmCbData *data = opaque;
 
-    if (args[0] && STREQ(args[0], ISCSIADM) &&
+    if (args[0] && STREQ(args[0], "iscsiadm") &&
         args[1] && STREQ(args[1], "--mode") &&
         args[2] && STREQ(args[2], "session") &&
         args[3] == NULL) {
@@ -90,7 +90,7 @@ static void testIscsiadmCb(const char *const*args,
             *output = g_strdup(iscsiadmSessionOutputNonFlash);
         else
             *output = g_strdup(iscsiadmSessionOutput);
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "discovery") &&
                args[3] && STREQ(args[3], "--type") &&
@@ -101,7 +101,7 @@ static void testIscsiadmCb(const char *const*args,
                args[8] && STREQ(args[8], "nonpersistent") &&
                args[9] == NULL) {
         *output = g_strdup(iscsiadmSendtargetsOutput);
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "node") &&
                args[3] && STREQ(args[3], "--portal") &&
@@ -120,7 +120,7 @@ static void testIscsiadmCb(const char *const*args,
          *           target: iqn.2004-06.example:example1:iscsi.test, \
          *           portal: 10.20.30.40:3260,1] successful.
          */
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "iface") &&
                args[3] == NULL) {
@@ -128,7 +128,7 @@ static void testIscsiadmCb(const char *const*args,
             *output = g_strdup(iscsiadmIfaceIfaceOutput);
         else
             *output = g_strdup(iscsiadmIfaceDefaultOutput);
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "iface") &&
                args[3] && STREQ(args[3], "--interface") &&
@@ -142,7 +142,7 @@ static void testIscsiadmCb(const char *const*args,
          * New interface libvirt-iface-03020100 added
          */
         data->iface_created = true;
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "iface") &&
                args[3] && STREQ(args[3], "--interface") &&
@@ -160,7 +160,7 @@ static void testIscsiadmCb(const char *const*args,
          *
          * libvirt-iface-03020100 updated.
          */
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "discovery") &&
                args[3] && STREQ(args[3], "--type") &&
@@ -172,7 +172,7 @@ static void testIscsiadmCb(const char *const*args,
                args[9] == NULL &&
                data->iface_created) {
         *output = g_strdup(iscsiadmSendtargetsOutput);
-    } else if (args[0] && STREQ(args[0], ISCSIADM) &&
+    } else if (args[0] && STREQ(args[0], "iscsiadm") &&
                args[1] && STREQ(args[1], "--mode") &&
                args[2] && STREQ(args[2], "node") &&
                args[3] && STREQ(args[3], "--portal") &&
