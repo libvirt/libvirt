@@ -633,7 +633,7 @@ analysis tools understand the code better:
 ``G_GNUC_FALLTHROUGH``
    allow code reuse by multiple switch cases
 
-``G_NO_INLINE``
+``ATTRIBUTE_MOCKABLE``
    the function is mocked in the test suite
 
 ``G_GNUC_NORETURN``

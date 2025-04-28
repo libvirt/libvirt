@@ -21,6 +21,7 @@
 
 #pragma once
 
+#define ATTRIBUTE_MOCKABLE
 #define ATTRIBUTE_NONNULL(x)
 #define ATTRIBUTE_PACKED
 

@@ -177,6 +177,28 @@
 # endif
 #endif
 
+/**
+ *
+ * ATTRIBUTE_MOCKABLE
+ *
+ * Force compiler to disable interprocedural optimizations between the
+ * function with this attribute and its callers. On compilers that
+ * support it (gcc), this expands to noipa attribute which implies
+ * noinline attribute and some others and allows us to mock functions
+ * even if they are pure.
+ *
+ * On compilers which don't support the noipa attribute (clang) this
+ * expands to noinline attribute which in combination with the
+ * -fsemantic-interposition option does roughly the same.
+ */
+#ifndef ATTRIBUTE_MOCKABLE
+# if defined(__has_attribute) && __has_attribute(noipa)
+#  define ATTRIBUTE_MOCKABLE __attribute__((noipa))
+# else
+#  define ATTRIBUTE_MOCKABLE G_NO_INLINE
+# endif
+#endif
+
 #define VIR_WARNINGS_NO_CAST_ALIGN \
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wcast-align\"")
