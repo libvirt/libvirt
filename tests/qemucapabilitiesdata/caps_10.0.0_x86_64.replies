@@ -5582,6 +5582,10 @@
       "tag": "type",
       "variants": [
         {
+          "case": "gtk",
+          "type": "422"
+        },
+        {
           "case": "curses",
           "type": "424"
         },
@@ -13702,6 +13706,9 @@
           "name": "none"
         },
         {
+          "name": "gtk"
+        },
+        {
           "name": "sdl"
         },
         {
@@ -13721,6 +13728,7 @@
       "values": [
         "default",
         "none",
+        "gtk",
         "sdl",
         "egl-headless",
         "curses",
