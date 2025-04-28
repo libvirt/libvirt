@@ -29,7 +29,7 @@ scripts = [
   'meson-install-web.py',
   'meson-python.sh',
   'meson-timestamp.py',
-  'mock-noinline.py',
+  'mockable-attribute.py',
   'prohibit-duplicate-header.py',
   'qemu-replies-tool.py',
 ]

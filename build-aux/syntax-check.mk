@@ -1326,9 +1326,9 @@ sc_spacing-check:
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl || \
 	  { echo 'incorrect formatting' 1>&2; exit 1; }
 
-sc_mock-noinline:
+sc_mockable-attribute:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | $(RUNUTF8) \
-	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
+	$(PYTHON) $(top_srcdir)/scripts/mockable-attribute.py
 
 sc_header-ifdef:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[h]$$' | $(RUNUTF8) xargs \

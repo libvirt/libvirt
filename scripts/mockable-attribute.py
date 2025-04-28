@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2017-2019 Red Hat, Inc.
+# Copyright (C) 2017-2025 Red Hat, Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@ import sys
 noninlined = {}
 mocked = {}
 
-# Functions in public header don't get the noinline annotation
+# Functions in public header don't get the noipa annotation
 noninlined["virEventAddTimeout"] = True
 # This one confuses the script as its defined in the mock file
 # but is actually just a local helper
@@ -43,7 +43,7 @@ def scan_annotations(filename):
             elif line.isspace():
                 func = None
 
-            if "G_NO_INLINE" in line:
+            if "ATTRIBUTE_MOCKABLE" in line:
                 if func is not None:
                     noninlined[func] = True
 
@@ -74,7 +74,7 @@ warned = False
 for func in mocked.keys():
     if func not in noninlined:
         warned = True
-        print("%s is mocked at %s but missing 'G_NO_INLINE' annotation" %
+        print("%s is mocked at %s but missing 'ATTRIBUTE_MOCKABLE' annotation" %
               (func, mocked[func]), file=sys.stderr)
 
 if warned:
