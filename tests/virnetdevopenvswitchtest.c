@@ -259,22 +259,22 @@ mymain(void)
     DO_TEST_SET(("<bandwidth>"
                  "  <inbound average='20000'/>"
                  "</bandwidth>"),
-                (OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 set port tap-fake qos=@qos1"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'"
-                           " -- --id=@qos1 create qos type=linux-htb other_config:min-rate=160000000"
-                           " queues:0=@queue0 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'"
-                           " -- --id=@queue0 create queue other_config:min-rate=160000000 "
-                           "'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 set Interface tap-fake ingress_policing_rate=0 ingress_policing_burst=0\n"));
+                ("ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 set port tap-fake qos=@qos1"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'"
+                          " -- --id=@qos1 create qos type=linux-htb other_config:min-rate=160000000"
+                          " queues:0=@queue0 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'"
+                          " -- --id=@queue0 create queue other_config:min-rate=160000000 "
+                          "'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 set Interface tap-fake ingress_policing_rate=0 ingress_policing_burst=0\n"));
 
     DO_TEST_SET(NULL, NULL);
 
@@ -283,25 +283,25 @@ mymain(void)
     DO_TEST_SET(("<bandwidth>"
                  "  <inbound average='0' />"
                  "</bandwidth>"),
-                (OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 set Interface tap-fake ingress_policing_rate=0 ingress_policing_burst=0\n"));
+                ("ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 set Interface tap-fake ingress_policing_rate=0 ingress_policing_burst=0\n"));
 
     DO_TEST_SET(("<bandwidth>"
                  "  <inbound average='0' />"
                  "  <outbound average='5000' />"
                  "</bandwidth>"),
-                (OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos"
-                           " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                           " 'external-ids:ifname=\"tap-fake\"'\n"
-                 OVS_VSCTL " --timeout=5 set Interface tap-fake ingress_policing_rate=40000\n"));
+                ("ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos"
+                          " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                          " 'external-ids:ifname=\"tap-fake\"'\n"
+                 "ovs-vsctl --timeout=5 set Interface tap-fake ingress_policing_rate=40000\n"));
 
 #define DO_TEST_CLEAR_QOS(Iface, Vmid, Exp_cmd, ...) \
     do { \
@@ -316,13 +316,13 @@ mymain(void)
     } while (0)
 
     DO_TEST_CLEAR_QOS(("fake-iface"), vm_id,
-                      (OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue"
-                                 " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                                 " 'external-ids:ifname=\"fake-iface\"'\n"
-                       OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos"
-                                 " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
-                                 " 'external-ids:ifname=\"fake-iface\"'\n"
-                       OVS_VSCTL " --timeout=5 set Interface fake-iface ingress_policing_rate=0 ingress_policing_burst=0\n"));
+                      ("ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue"
+                                " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                                " 'external-ids:ifname=\"fake-iface\"'\n"
+                       "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos"
+                                " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
+                                " 'external-ids:ifname=\"fake-iface\"'\n"
+                       "ovs-vsctl --timeout=5 set Interface fake-iface ingress_policing_rate=0 ingress_policing_burst=0\n"));
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

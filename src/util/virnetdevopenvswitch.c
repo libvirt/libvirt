@@ -56,7 +56,7 @@ virNetDevOpenvswitchSetTimeout(unsigned int timeout)
 static virCommand *
 virNetDevOpenvswitchCreateCmd(char **errbuf)
 {
-    virCommand *cmd = virCommandNew(OVS_VSCTL);
+    virCommand *cmd = virCommandNew("ovs-vsctl");
 
     virCommandAddArgFormat(cmd, "--timeout=%u", virNetDevOpenvswitchTimeout);
     if (errbuf)
@@ -552,7 +552,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     g_autofree char *absoluteOvsVsctlPath = NULL;
     int status;
 
-    if (!(absoluteOvsVsctlPath = virFindFileInPath(OVS_VSCTL))) {
+    if (!(absoluteOvsVsctlPath = virFindFileInPath("ovs-vsctl"))) {
         /* If there is no 'ovs-vsctl' then the interface is
          * probably not an OpenVSwitch interface and the @path to
          * socket was created by some DPDK testing script (e.g.

@@ -152,13 +152,13 @@ mymain(void)
                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps quantum 87\n"
                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
                 TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n",
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@qos1 create qos type=linux-htb other_config:min-rate=8192000 queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"'"
-                            " 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@queue0 create queue other_config:min-rate=8192000 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set Interface eth0 ingress_policing_rate=0 ingress_policing_burst=0\n");
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@qos1 create qos type=linux-htb other_config:min-rate=8192000 queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"'"
+                           " 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@queue0 create queue other_config:min-rate=8192000 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set Interface eth0 ingress_policing_rate=0 ingress_policing_burst=0\n");
 
     DO_TEST_SET("<bandwidth>"
                 "  <outbound average='1024'/>"
@@ -168,9 +168,9 @@ mymain(void)
                 TC " qdisc add dev eth0 ingress\n"
                 TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0"
                    " police rate 1024kbps burst 1024kb mtu 64kb drop flowid :1\n",
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set Interface eth0 ingress_policing_rate=8192\n");
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set Interface eth0 ingress_policing_rate=8192\n");
 
     DO_TEST_SET("<bandwidth>"
                 "  <inbound average='1' peak='2' floor='3' burst='4'/>"
@@ -186,14 +186,14 @@ mymain(void)
                 TC " qdisc add dev eth0 ingress\n"
                 TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0"
                    " police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n",
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@qos1 create qos type=linux-htb other_config:min-rate=8000 other_config:burst=32768 other_config:max-rate=16000"
-                            " queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@queue0 create queue other_config:min-rate=8000 other_config:burst=32768 other_config:max-rate=16000"
-                            " 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set Interface eth0 ingress_policing_rate=40 ingress_policing_burst=56\n");
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@qos1 create qos type=linux-htb other_config:min-rate=8000 other_config:burst=32768 other_config:max-rate=16000"
+                           " queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@queue0 create queue other_config:min-rate=8000 other_config:burst=32768 other_config:max-rate=16000"
+                           " 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set Interface eth0 ingress_policing_rate=40 ingress_policing_burst=56\n");
 
     DO_TEST_SET("<bandwidth>"
                 "  <inbound average='4294967295'/>"
@@ -210,14 +210,14 @@ mymain(void)
                 TC " filter add dev eth0 parent ffff: protocol all u32 match"
                    " u32 0 0 police rate 4294967295kbps burst 4194303kb mtu 64kb"
                    " drop flowid :1\n",
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@qos1 create qos type=linux-htb other_config:min-rate=34359738360000"
-                            " queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
-                          " --id=@queue0 create queue other_config:min-rate=34359738360000 'external-ids:vm-id=\"" VMUUID "\"'"
-                            " 'external-ids:ifname=\"eth0\"'\n"
-                OVS_VSCTL " --timeout=5 set Interface eth0 ingress_policing_rate=34359738360\n");
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find queue 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 --no-heading --columns=_uuid find qos 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set port eth0 qos=@qos1 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@qos1 create qos type=linux-htb other_config:min-rate=34359738360000"
+                           " queues:0=@queue0 'external-ids:vm-id=\"" VMUUID "\"' 'external-ids:ifname=\"eth0\"' --"
+                         " --id=@queue0 create queue other_config:min-rate=34359738360000 'external-ids:vm-id=\"" VMUUID "\"'"
+                           " 'external-ids:ifname=\"eth0\"'\n"
+                "ovs-vsctl --timeout=5 set Interface eth0 ingress_policing_rate=34359738360\n");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

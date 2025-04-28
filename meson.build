@@ -854,7 +854,6 @@ optional_test_programs = [
 ]
 
 optional_programs = [
-  'ovs-vsctl',
   'tc',
 ] + optional_test_programs
 
