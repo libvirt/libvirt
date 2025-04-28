@@ -83,7 +83,7 @@ int virNetDevBandwidthUpdateFilter(const char *ifname,
 
 int virNetDevBandwidthSetRootQDisc(const char *ifname,
                                    const char *qdisc)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virNetDevBandWidthAddTxFilterParentQdisc(const char *ifname,
                                              bool hierarchical_class);

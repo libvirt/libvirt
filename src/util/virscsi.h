@@ -34,7 +34,7 @@ char *virSCSIDeviceGetSgName(const char *sysfs_prefix,
                              const char *adapter,
                              unsigned int bus,
                              unsigned int target,
-                             unsigned long long unit) G_NO_INLINE;
+                             unsigned long long unit) ATTRIBUTE_MOCKABLE;
 char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
                               const char *adapter,
                               unsigned int bus,

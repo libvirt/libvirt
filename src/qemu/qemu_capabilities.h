@@ -940,10 +940,10 @@ virSGXCapability *
 virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps);
 
 bool
-virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_NO_INLINE;
+virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) ATTRIBUTE_MOCKABLE;
 
 bool
-virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE;
+virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) ATTRIBUTE_MOCKABLE;
 
 virArch virQEMUCapsArchFromString(const char *arch);
 const char *virQEMUCapsArchToString(virArch arch);

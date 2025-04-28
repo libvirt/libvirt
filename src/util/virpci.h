@@ -124,7 +124,7 @@ int virPCIDeviceReset(virPCIDevice *dev,
                       virPCIDeviceList *activeDevs,
                       virPCIDeviceList *inactiveDevs);
 
-int virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev, char **moduleName) G_NO_INLINE;
+int virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev, char **moduleName) ATTRIBUTE_MOCKABLE;
 
 void virPCIDeviceSetManaged(virPCIDevice *dev,
                             bool managed);

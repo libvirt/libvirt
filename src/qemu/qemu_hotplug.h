@@ -116,7 +116,7 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
                           bool state);
 
 unsigned long long
-qemuDomainGetUnplugTimeout(virDomainObj *vm) G_NO_INLINE;
+qemuDomainGetUnplugTimeout(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
 
 int
 qemuHotplugAttachDBusVMState(virQEMUDriver *driver,

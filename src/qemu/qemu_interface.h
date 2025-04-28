@@ -33,7 +33,7 @@ int qemuInterfaceDirectConnect(virDomainDef *def,
                                virNetDevVPortProfileOp vmop);
 
 int qemuInterfaceOpenVhostNet(virDomainObj *def,
-                              virDomainNetDef *net) G_NO_INLINE;
+                              virDomainNetDef *net) ATTRIBUTE_MOCKABLE;
 
 int qemuInterfacePrepareSlirp(virQEMUDriver *driver,
                               virDomainNetDef *net);

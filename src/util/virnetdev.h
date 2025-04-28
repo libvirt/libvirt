@@ -168,11 +168,11 @@ int virNetDevSetupControl(const char *ifname,
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevExists(const char *brname)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 
 int virNetDevSetOnline(const char *ifname,
                        bool online)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 int virNetDevGetOnline(const char *ifname,
                       bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
@@ -180,7 +180,7 @@ int virNetDevGetOnline(const char *ifname,
 
 int virNetDevSetMAC(const char *ifname,
                     const virMacAddr *macaddr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 int virNetDevGetMAC(const char *ifname,
                     virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
@@ -192,7 +192,7 @@ int virNetDevSetCoalesce(const char *ifname,
 
 int virNetDevSetMTU(const char *ifname,
                     int mtu)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 int virNetDevSetMTUFromDevice(const char *ifname,
                               const char *otherifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
@@ -314,10 +314,10 @@ int virNetDevSysfsFile(char **pf_sysfs_device_link,
                        const char *ifname,
                        const char *file)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+    G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 
 int virNetDevRunEthernetScript(const char *ifname, const char *script)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virNetDevVFInterfaceStats(virPCIDeviceAddress *vfAddr,
                               virDomainInterfaceStatsPtr stats)

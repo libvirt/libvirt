@@ -26,7 +26,7 @@
 
 bool
 virCgroupV2DevicesAvailable(virCgroup *group)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int
 virCgroupV2DevicesDetectProg(virCgroup *group);

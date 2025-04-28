@@ -30,4 +30,4 @@
 #include "internal.h"
 
 uint32_t virHashCodeGen(const void *key, size_t len, uint32_t seed)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;

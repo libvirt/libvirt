@@ -31,7 +31,7 @@ int
 qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
                              const char *line,
                              qemuMonitorMessage *msg)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int
 qemuMonitorJSONIOProcess(qemuMonitor *mon,

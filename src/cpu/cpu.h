@@ -233,7 +233,7 @@ virCPUGetHost(virArch arch,
               virDomainCapsCPUModels *models);
 
 virCPUDef *
-virCPUProbeHost(virArch arch) G_NO_INLINE;
+virCPUProbeHost(virArch arch) ATTRIBUTE_MOCKABLE;
 
 virCPUDef *
 virCPUBaseline(virArch arch,

@@ -82,7 +82,7 @@ virQEMUCapsGetCPUModelX86Data(virQEMUCaps *qemuCaps,
 
 virCPUDef *
 virQEMUCapsProbeHostCPU(virArch hostArch,
-                        virDomainCapsCPUModels *models) G_NO_INLINE;
+                        virDomainCapsCPUModels *models) ATTRIBUTE_MOCKABLE;
 
 void
 virQEMUCapsSetGICCapabilities(virQEMUCaps *qemuCaps,

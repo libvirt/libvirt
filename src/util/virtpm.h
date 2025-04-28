@@ -20,7 +20,7 @@
 
 #pragma once
 
-char *virTPMCreateCancelPath(const char *devpath) G_NO_INLINE;
+char *virTPMCreateCancelPath(const char *devpath) ATTRIBUTE_MOCKABLE;
 
 char *virTPMGetSwtpm(void);
 char *virTPMGetSwtpmSetup(void);

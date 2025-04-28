@@ -132,7 +132,7 @@ int qemuProcessOpenVhostVsock(virDomainVsockDef *vsock);
 
 int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
                                                 virDomainDeviceDef *dev)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 
 int qemuProcessPrepareHost(virQEMUDriver *driver,
@@ -219,9 +219,9 @@ int qemuProcessRefreshBalloonState(virDomainObj *vm,
 int qemuProcessRefreshDisks(virDomainObj *vm,
                             virDomainAsyncJob asyncJob);
 
-int qemuProcessStartManagedPRDaemon(virDomainObj *vm) G_NO_INLINE;
+int qemuProcessStartManagedPRDaemon(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
 
-void qemuProcessKillManagedPRDaemon(virDomainObj *vm) G_NO_INLINE;
+void qemuProcessKillManagedPRDaemon(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
 
 typedef struct _qemuProcessQMP qemuProcessQMP;
 struct _qemuProcessQMP {

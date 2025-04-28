@@ -5657,7 +5657,7 @@ qemuDomainResetDeviceRemoval(virDomainObj *vm)
 }
 
 
-unsigned long long G_NO_INLINE
+unsigned long long ATTRIBUTE_MOCKABLE
 qemuDomainGetUnplugTimeout(virDomainObj *vm)
 {
     if (qemuDomainIsPSeries(vm->def))

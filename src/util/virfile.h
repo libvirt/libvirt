@@ -124,9 +124,9 @@ int virFileWrapperFdClose(virFileWrapperFd *dfd);
 void virFileWrapperFdFree(virFileWrapperFd *dfd);
 
 int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 int virFileUnlock(int fd, off_t start, off_t len)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 typedef int (*virFileRewriteFunc)(int fd,
                                   const char *path,
@@ -193,10 +193,10 @@ int virFileIsLink(const char *linkpath)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virFindFileInPath(const char *file)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 char *virFindFileInPathFull(const char *file,
                             const char *const *extraDirs)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 char *virFileFindResource(const char *filename,
                           const char *builddir,
@@ -215,7 +215,7 @@ void virFileActivateDirOverrideForLib(void);
 
 off_t virFileLength(const char *path, int fd) ATTRIBUTE_NONNULL(1);
 bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
-bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) G_NO_INLINE;
+bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1) ATTRIBUTE_MOCKABLE;
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsRegular(const char *file) ATTRIBUTE_NONNULL(1);
 
@@ -254,7 +254,7 @@ int virFileGetMountReverseSubtree(const char *mtabpath,
                                   size_t *nmountsret) G_GNUC_WARN_UNUSED_RESULT;
 
 char *virFileSanitizePath(const char *path);
-char *virFileCanonicalizePath(const char *path) G_NO_INLINE;
+char *virFileCanonicalizePath(const char *path) ATTRIBUTE_MOCKABLE;
 
 enum {
     VIR_FILE_OPEN_NONE        = 0,
@@ -376,21 +376,21 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFileWrapperFd, virFileWrapperFdFree);
 int virFileGetXAttr(const char *path,
                     const char *name,
                     char **value)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virFileGetXAttrQuiet(const char *path,
                          const char *name,
                          char **value)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virFileSetXAttr(const char *path,
                     const char *name,
                     const char *value)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virFileRemoveXAttr(const char *path,
                        const char *name)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int virFileDataSync(int fd);
 

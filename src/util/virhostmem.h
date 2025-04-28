@@ -57,4 +57,4 @@ int virHostMemAllocPages(unsigned int npages,
                          bool add);
 
 int virHostMemGetTHPSize(unsigned long long *size)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;

@@ -47,4 +47,4 @@ libxlMakeDomainCapabilities(virDomainCaps *domCaps,
 
 int
 libxlDomainGetEmulatorType(const virDomainDef *def)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;

@@ -46,7 +46,7 @@ virBitmap *virHostCPUGetAvailableCPUsBitmap(void);
 int virHostCPUGetIsolated(virBitmap **isolated);
 
 int virHostCPUGetCount(void);
-int virHostCPUGetThreadsPerSubcore(virArch arch) G_NO_INLINE;
+int virHostCPUGetThreadsPerSubcore(virArch arch) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUGetMap(unsigned char **cpumap,
                      unsigned int *online,
@@ -60,7 +60,7 @@ int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *threads);
 
 
-int virHostCPUGetKVMMaxVCPUs(void) G_NO_INLINE;
+int virHostCPUGetKVMMaxVCPUs(void) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,
@@ -78,7 +78,7 @@ virBitmap *virHostCPUGetSiblingsList(unsigned int cpu);
 int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
 unsigned int
-virHostCPUGetMicrocodeVersion(virArch hostArch) G_NO_INLINE;
+virHostCPUGetMicrocodeVersion(virArch hostArch) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
@@ -90,7 +90,7 @@ virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 int virHostCPUGetSignature(char **signature);
 
 int virHostCPUGetPhysAddrSize(const virArch hostArch,
-                              unsigned int *size) G_NO_INLINE;
+                              unsigned int *size) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUGetHaltPollTime(pid_t pid,
                               unsigned long long *haltPollSuccess,

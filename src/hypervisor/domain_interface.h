@@ -57,4 +57,4 @@ int virDomainInterfaceBridgeConnect(virDomainDef *def,
                                     ebtablesContext *ebtables,
                                     bool macFilter,
                                     const char *bridgeHelperName)
-    ATTRIBUTE_NONNULL(2) G_NO_INLINE;
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_MOCKABLE;

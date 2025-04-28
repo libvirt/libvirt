@@ -75,7 +75,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 /* Open a UNIX socket for chardev FD passing */
 int
 qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 virJSONValue *
 qemuBuildChrDeviceProps(const virDomainDef *vmdef,
@@ -270,7 +270,7 @@ int
 qemuBuildTPMOpenBackendFDs(const char *tpmdev,
                            int *tpmfd,
                            int *cancelfd)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) G_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_MOCKABLE;
 
 const char *
 qemuAudioDriverTypeToString(virDomainAudioType type);
@@ -279,4 +279,4 @@ qemuAudioDriverTypeFromString(const char *str);
 
 int
 qemuVDPAConnect(const char *devicepath)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;

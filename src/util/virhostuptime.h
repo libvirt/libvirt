@@ -24,7 +24,7 @@
 
 int
 virHostGetBootTime(unsigned long long *when)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
 
 int
 virHostBootTimeInit(void);

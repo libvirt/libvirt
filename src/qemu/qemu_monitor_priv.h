@@ -101,4 +101,4 @@ qemuMonitorIOWriteWithFD(qemuMonitor *mon,
                          const char *data,
                          size_t len,
                          int fd)
-    G_NO_INLINE;
+    ATTRIBUTE_MOCKABLE;
