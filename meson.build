@@ -854,7 +854,6 @@ optional_test_programs = [
 ]
 
 optional_programs = [
-  'ip',
   'iscsiadm',
   'mdevctl',
   'mm-ctl',

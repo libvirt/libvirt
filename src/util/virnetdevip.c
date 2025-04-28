@@ -404,7 +404,7 @@ virNetDevIPAddrAdd(const char *ifname,
         virCommandAddArgList(cmd, "broadcast", bcaststr, NULL);
     virCommandAddArg(cmd, "alias");
 # else
-    cmd = virCommandNew(IP);
+    cmd = virCommandNew("ip");
     virCommandAddArgList(cmd, "addr", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     if (peerstr)
@@ -441,7 +441,7 @@ virNetDevIPAddrDel(const char *ifname,
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArg(cmd, "-alias");
 # else
-    cmd = virCommandNew(IP);
+    cmd = virCommandNew("ip");
     virCommandAddArgList(cmd, "addr", "del", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArgList(cmd, "dev", ifname, NULL);
@@ -469,7 +469,7 @@ virNetDevIPRouteAdd(const char *ifname,
         return -1;
     if (!(gatewaystr = virSocketAddrFormat(gateway)))
         return -1;
-    cmd = virCommandNew(IP);
+    cmd = virCommandNew("ip");
     virCommandAddArgList(cmd, "route", "add", NULL);
     virCommandAddArgFormat(cmd, "%s/%u", addrstr, prefix);
     virCommandAddArgList(cmd, "via", gatewaystr, "dev", ifname,
