@@ -1828,22 +1828,9 @@ if conf.has('WITH_LIBVIRTD')
     endif
 
     if fs_enable
-      mount_prog = find_program('mount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
-      umount_prog = find_program('umount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
-      mkfs_prog = find_program('mkfs', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
-
-      if not mount_prog.found() or not umount_prog.found() or not mkfs_prog.found()
-        fs_enable = false
-      endif
-    endif
-
-    if fs_enable
       use_storage = true
 
       conf.set('WITH_STORAGE_FS', 1)
-      conf.set_quoted('MOUNT', mount_prog.full_path())
-      conf.set_quoted('UMOUNT', umount_prog.full_path())
-      conf.set_quoted('MKFS', mkfs_prog.full_path())
     endif
   endif
 
