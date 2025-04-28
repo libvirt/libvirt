@@ -1495,16 +1495,7 @@ if not get_option('driver_libvirtd').disabled()
 endif
 
 if not get_option('driver_bhyve').disabled() and host_machine.system() == 'freebsd'
-  bhyve_prog = find_program('bhyve', required: get_option('driver_bhyve'))
-  bhyvectl_prog = find_program('bhyvectl', required: get_option('driver_bhyve'))
-  bhyveload_prog = find_program('bhyveload', required: get_option('driver_bhyve'))
-
-  if bhyve_prog.found() and bhyvectl_prog.found() and bhyveload_prog.found()
-    conf.set('WITH_BHYVE', 1)
-    conf.set_quoted('BHYVE', bhyve_prog.full_path())
-    conf.set_quoted('BHYVECTL', bhyvectl_prog.full_path())
-    conf.set_quoted('BHYVELOAD', bhyveload_prog.full_path())
-  endif
+  conf.set('WITH_BHYVE', 1)
 elif get_option('driver_bhyve').enabled()
   error('The bhyve driver cannot be enabled')
 endif

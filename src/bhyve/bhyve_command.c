@@ -711,7 +711,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
      *            -S 31,uart,stdio \
      *            vm0
      */
-    g_autoptr(virCommand) cmd = virCommandNew(BHYVE);
+    g_autoptr(virCommand) cmd = virCommandNew("bhyve");
     size_t i;
     unsigned nusbcontrollers = 0;
     unsigned nisacontrollers = 0;
@@ -884,7 +884,7 @@ virCommand *
 virBhyveProcessBuildDestroyCmd(struct _bhyveConn *driver G_GNUC_UNUSED,
                                virDomainDef *def)
 {
-    virCommand *cmd = virCommandNew(BHYVECTL);
+    virCommand *cmd = virCommandNew("bhyvectl");
 
     virCommandAddArg(cmd, "--destroy");
     virCommandAddArgPair(cmd, "--vm", def->name);
@@ -907,7 +907,7 @@ virBhyveProcessBuildBhyveloadCmd(virDomainDef *def, virDomainDiskDef *disk)
 {
     virCommand *cmd;
 
-    cmd = virCommandNew(BHYVELOAD);
+    cmd = virCommandNew("bhyveload");
 
     if (def->os.bootloaderArgs == NULL) {
         VIR_DEBUG("bhyveload with default arguments");
