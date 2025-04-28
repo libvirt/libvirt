@@ -894,7 +894,7 @@ virSysinfoDMIDecodeOEMString(unsigned int idx,
                              char **str)
 {
     g_autofree char *err = NULL;
-    g_autoptr(virCommand) cmd = virCommandNewArgList(DMIDECODE, "--dump",
+    g_autoptr(virCommand) cmd = virCommandNewArgList("dmidecode", "--dump",
                                                      "--oem-string", NULL);
     virCommandAddArgFormat(cmd, "%u", idx);
     virCommandSetOutputBuffer(cmd, str);
@@ -1199,7 +1199,7 @@ virSysinfoReadDMI(void)
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNewArgList(DMIDECODE, "-q", "-t", "0,1,2,3,4,11,17", NULL);
+    cmd = virCommandNewArgList("dmidecode", "-q", "-t", "0,1,2,3,4,11,17", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
         return NULL;
