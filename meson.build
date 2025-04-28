@@ -2028,14 +2028,10 @@ if not get_option('nss').disabled()
   endif
 endif
 
-if not get_option('numad').disabled() and numactl_dep.found()
-  numad_prog = find_program('numad', required: get_option('numad'), dirs: libvirt_sbin_path)
-  if numad_prog.found()
-    conf.set('WITH_NUMAD', 1)
-    conf.set_quoted('NUMAD', numad_prog.full_path())
-  endif
+if not get_option('numad').disabled() and numactl_dep.found() and host_machine.system() == 'linux'
+  conf.set('WITH_NUMAD', 1)
 elif get_option('numad').enabled()
-  error('You must have numactl enabled for numad support.')
+  error('You must have a Linux host with numactl enabled for numad support.')
 endif
 
 # nwfilter should only be compiled for linux, and only if the

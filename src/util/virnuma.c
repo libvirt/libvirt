@@ -61,7 +61,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
     g_autoptr(virCommand) cmd = NULL;
     char *output = NULL;
 
-    cmd = virCommandNewArgList(NUMAD, "-w", NULL);
+    cmd = virCommandNewArgList("numad", "-w", NULL);
     virCommandAddArgFormat(cmd, "%d:%llu", vcpus,
                            VIR_DIV_UP(balloon, 1024));
 
