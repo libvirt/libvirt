@@ -390,8 +390,8 @@ virNetDevIPAddrAdd(const char *ifname,
         return -1;
     }
 
-# ifdef IFCONFIG
-    cmd = virCommandNew(IFCONFIG);
+# ifdef __FreeBSD__
+    cmd = virCommandNew("ifconfig");
     virCommandAddArg(cmd, ifname);
     if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))
         virCommandAddArg(cmd, "inet6");
@@ -431,8 +431,8 @@ virNetDevIPAddrDel(const char *ifname,
 
     if (!(addrstr = virSocketAddrFormat(addr)))
         return -1;
-# ifdef IFCONFIG
-    cmd = virCommandNew(IFCONFIG);
+# ifdef __FreeBSD__
+    cmd = virCommandNew("ifconfig");
     virCommandAddArg(cmd, ifname);
     if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))
         virCommandAddArg(cmd, "inet6");

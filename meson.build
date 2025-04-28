@@ -837,10 +837,6 @@ required_programs = [
   'xsltproc',
 ]
 
-if host_machine.system() == 'freebsd'
-  required_programs += 'ifconfig'
-endif
-
 foreach name : required_programs
   prog = find_program(name, dirs: libvirt_sbin_path)
   varname = name.underscorify()
