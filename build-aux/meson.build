@@ -42,6 +42,7 @@ if git and tests_enabled[0]
     'black_path': black_path,
     'runutf8': ' '.join(runutf8),
     'PYTHON3': python3_prog.full_path(),
+    'PERL': perl_prog.full_path(),
     'GREP': grep_prog.full_path(),
     'SED': sed_prog.full_path(),
     'AWK': awk_prog.full_path(),

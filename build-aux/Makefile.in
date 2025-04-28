@@ -6,6 +6,7 @@ FLAKE8 = @flake8_path@
 BLACK = @black_path@
 RUNUTF8 = @runutf8@
 PYTHON = @PYTHON3@
+PERL = @PERL@
 GREP = @GREP@
 SED = @SED@
 AWK = @AWK@
