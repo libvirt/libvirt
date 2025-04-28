@@ -854,7 +854,6 @@ optional_test_programs = [
 ]
 
 optional_programs = [
-  'mm-ctl',
   'modprobe',
   'ovs-vsctl',
   'rmmod',
