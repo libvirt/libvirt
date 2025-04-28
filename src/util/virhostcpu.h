@@ -90,7 +90,7 @@ virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 int virHostCPUGetSignature(char **signature);
 
 int virHostCPUGetPhysAddrSize(const virArch hostArch,
-                              unsigned int *size);
+                              unsigned int *size) G_NO_INLINE;
 
 int virHostCPUGetHaltPollTime(pid_t pid,
                               unsigned long long *haltPollSuccess,
