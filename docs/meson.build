@@ -176,7 +176,6 @@ docs_programs_groups = [
 foreach item : docs_programs_groups
   prog = find_program(item.get('prog'), dirs: libvirt_sbin_path)
   varname = item.get('name').underscorify()
-  conf.set_quoted(varname.to_upper(), prog.full_path())
   set_variable('@0@_prog'.format(varname), prog)
 endforeach
 
