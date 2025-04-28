@@ -845,17 +845,13 @@ endforeach
 
 # optional programs
 
-optional_test_programs = [
+optional_programs = [
   'augparse',
   'black',
   'flake8',
   'pdwtags',
   'pytest',
 ]
-
-optional_programs = [
-  'tc',
-] + optional_test_programs
 
 missing_optional_programs = []
 foreach name : optional_programs
@@ -865,9 +861,7 @@ foreach name : optional_programs
     prog_path = prog.full_path()
   else
     prog_path = name
-    if name in optional_test_programs
-      missing_optional_programs += [ name ]
-    endif
+    missing_optional_programs += [ name ]
   endif
 
   conf.set_quoted(varname.to_upper(), prog_path)

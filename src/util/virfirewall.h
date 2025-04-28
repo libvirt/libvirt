@@ -30,6 +30,7 @@
 #define IPTABLES "iptables"
 #define IP6TABLES "ip6tables"
 #define NFT "nft"
+#define TC "tc"
 
 typedef struct _virFirewall virFirewall;
 
