@@ -23,13 +23,14 @@
 # jianqing yan <yanjianqing@kylinos.cn>, 2024, 2025.
 # zk dc <zkdc2345@qq.com>, 2024.
 # "Daniel P. Berrange" <berrange@redhat.com>, 2025.
+# QiangWei Zhang <zhang.qiangwei@zte.com.cn>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-04-28 08:27+0000\n"
-"PO-Revision-Date: 2025-02-20 14:49+0000\n"
-"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
+"PO-Revision-Date: 2025-04-29 01:33+0000\n"
+"Last-Translator: QiangWei Zhang <zhang.qiangwei@zte.com.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -37,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10\n"
+"X-Generator: Weblate 5.11\n"
 
 msgid ""
 "\n"
@@ -5794,11 +5795,11 @@ msgstr "域 '%1$s' 不能被唤醒"
 
 #, c-format
 msgid "Domain '%1$s' created from %2$s\n"
-msgstr "从 %1$s 创建的域 '%2$s'\n"
+msgstr "从 %2$s 创建的域 '%1$s'\n"
 
 #, c-format
 msgid "Domain '%1$s' defined from %2$s\n"
-msgstr "从 %1$s 定义的域 '%2$s'\n"
+msgstr "从 %2$s 定义的域 '%1$s'\n"
 
 #, c-format
 msgid "Domain '%1$s' destroyed\n"
@@ -8754,7 +8755,7 @@ msgstr "使用路径 '%1$s' 将卷截取到 0 字节失败"
 
 #, c-format
 msgid "Failed to unbind PCI device '%1$s' from %2$s"
-msgstr "从 %1$s 中取消捆绑 PCI 设备 '%2$s' 失败"
+msgstr "从 %2$s 中取消捆绑 PCI 设备 '%1$s' 失败"
 
 #, c-format
 msgid "Failed to undefine bridge interface %1$s"
@@ -9786,7 +9787,7 @@ msgstr "未更改 %1$s XML 配置。\n"
 
 #, c-format
 msgid "Interface %1$s defined from %2$s\n"
-msgstr "使用 %1$s 定义的接口 %2$s\n"
+msgstr "使用 %2$s 定义的接口 %1$s\n"
 
 #, c-format
 msgid "Interface %1$s destroyed\n"
@@ -12228,11 +12229,11 @@ msgstr "未更改网络 %1$s XML 配置\n"
 
 #, c-format
 msgid "Network %1$s created from %2$s\n"
-msgstr "从%1$s创建网络%2$s\n"
+msgstr "从%2$s创建网络%1$s\n"
 
 #, c-format
 msgid "Network %1$s defined from %2$s\n"
-msgstr "从 %1$s定义网络%2$s\n"
+msgstr "从 %2$s定义网络%1$s\n"
 
 #, c-format
 msgid "Network %1$s destroyed\n"
@@ -12313,7 +12314,7 @@ msgstr "未更改为网络过滤器 %1$s XML 配置\n"
 
 #, c-format
 msgid "Network filter %1$s defined from %2$s\n"
-msgstr "使用 %1$s 定义的网络过滤器 %2$s\n"
+msgstr "使用 %2$s 定义的网络过滤器 %1$s\n"
 
 #, c-format
 msgid "Network filter %1$s undefined\n"
@@ -12328,7 +12329,7 @@ msgstr "未找到网络过滤器绑定：%1$s"
 
 #, c-format
 msgid "Network filter binding on %1$s created from %2$s\n"
-msgstr "从%1$s 创建的 %2$s 上的网络过滤器绑定\n"
+msgstr "从%2$s 创建的 %1$s 上的网络过滤器绑定\n"
 
 #, c-format
 msgid "Network filter binding on %1$s deleted\n"
@@ -12364,7 +12365,7 @@ msgstr "未找到网络: %1$s"
 
 #, c-format
 msgid "Network port %1$s created from %2$s\n"
-msgstr "从 %1$s 创建的网络端口 %2$s\n"
+msgstr "从 %2$s 创建的网络端口 %1$s\n"
 
 #, c-format
 msgid "Network port %1$s deleted\n"
@@ -12796,7 +12797,7 @@ msgstr "节点设备事件"
 
 #, c-format
 msgid "Node device %1$s created from %2$s\n"
-msgstr "使用 %1$s 生成的节点设备 %2$s\n"
+msgstr "使用 %2$s 生成的节点设备 %1$s\n"
 
 #, c-format
 msgid "Node device '%1$s' defined from '%2$s'\n"
@@ -13609,7 +13610,7 @@ msgstr "创建池 %1$s\n"
 
 #, c-format
 msgid "Pool %1$s created from %2$s\n"
-msgstr "从 %1$s 中创建池 %2$s\n"
+msgstr "从 %2$s 中创建池 %1$s\n"
 
 #, c-format
 msgid "Pool %1$s defined\n"
@@ -13617,7 +13618,7 @@ msgstr "定义池 %1$s\n"
 
 #, c-format
 msgid "Pool %1$s defined from %2$s\n"
-msgstr "在 %1$s 中定义池 %2$s\n"
+msgstr "在 %2$s 中定义池 %1$s\n"
 
 #, c-format
 msgid "Pool %1$s deleted\n"
@@ -20574,7 +20575,7 @@ msgstr "在这个平台中部支持虚拟端口侧写关联"
 
 #, c-format
 msgid "Vol %1$s cloned from %2$s\n"
-msgstr "从 %1$s 克隆的卷 %2$s\n"
+msgstr "从 %2$s 克隆的卷 %1$s\n"
 
 #, c-format
 msgid "Vol %1$s created\n"
@@ -20582,7 +20583,7 @@ msgstr "卷 %1$s 创建了\n"
 
 #, c-format
 msgid "Vol %1$s created from %2$s\n"
-msgstr "在 %1$s 中创建卷 %2$s\n"
+msgstr "在 %2$s 中创建卷 %1$s\n"
 
 #, c-format
 msgid "Vol %1$s created from input vol %2$s\n"
