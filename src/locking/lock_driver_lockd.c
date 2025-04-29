@@ -433,7 +433,7 @@ static int virLockManagerLockDaemonNew(virLockManager *lock,
 }
 
 
-#ifdef LVS
+#ifdef __linux__
 static int
 virLockManagerGetLVMKey(const char *path,
                         char **key)
@@ -446,7 +446,7 @@ virLockManagerGetLVMKey(const char *path,
     int ret = -1;
     g_autoptr(virCommand) cmd = NULL;
 
-    cmd = virCommandNewArgList(LVS, "--noheadings",
+    cmd = virCommandNewArgList("lvs", "--noheadings",
                                "--unbuffered", "--nosuffix",
                                "--options", "uuid", path,
                                NULL
