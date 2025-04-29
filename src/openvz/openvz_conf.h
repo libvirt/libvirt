@@ -29,9 +29,9 @@
 
 
 /* OpenVZ commands - Replace with wrapper scripts later? */
-#define VZLIST         "/usr/sbin/vzlist"
-#define VZCTL          "/usr/sbin/vzctl"
-#define VZMIGRATE      "/usr/sbin/vzmigrate"
+#define VZLIST         "vzlist"
+#define VZCTL          "vzctl"
+#define VZMIGRATE      "vzmigrate"
 #define VZ_CONF_FILE   "/etc/vz/vz.conf"
 
 #define VZCTL_BRIDGE_MIN_VERSION ((3 * 1000 * 1000) + (0 * 1000) + 22 + 1)
