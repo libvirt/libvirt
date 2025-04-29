@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2015-02-24 05:43+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
@@ -3291,11 +3291,6 @@ msgstr ""
 
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
-msgstr ""
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
 msgstr ""
 
 #, c-format
@@ -7036,10 +7031,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "Kunne ikke definere domenet fra %1$s"
 
 #, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "Kunne ikke definere domenet fra %1$s"
-
-#, fuzzy, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "Kunne ikke definere domenet fra %1$s"
 
@@ -8555,10 +8546,6 @@ msgstr ""
 msgid "Failed to symlink device %1$s to %2$s"
 msgstr "Kunne ikke lagre domenet %1$s til %2$s"
 
-#, fuzzy, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "Kunne ikke starte nettverket %1$s"
-
 #, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr ""
@@ -9291,6 +9278,10 @@ msgid "Human readable output"
 msgstr ""
 
 msgid "Hybrid-Suspend"
+msgstr ""
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
 msgstr ""
 
 #, c-format
@@ -10108,7 +10099,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr ""
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, c-format
@@ -12206,10 +12197,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Network type %1$d is not supported"
-msgstr "Nettverket %s er startet\n"
-
 msgid "New disk media source was not specified"
 msgstr ""
 
@@ -12246,6 +12233,13 @@ msgid "No PCI buses available"
 msgstr ""
 
 msgid "No UNIX caller UID available"
+msgstr ""
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
 msgstr ""
 
 msgid "No URI scheme specified"
@@ -12788,6 +12782,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr ""
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 msgid "Only 1 IDE controller is supported"
@@ -13716,6 +13719,9 @@ msgid "RDP password expiration isn't supported"
 msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
+msgstr ""
+
+msgid "RNG backend is not supported"
 msgstr ""
 
 msgid "RNG device is missing alias"
@@ -16494,7 +16500,7 @@ msgid "The read only disk has no parent"
 msgstr ""
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -27479,6 +27485,12 @@ msgid "file containing secret attributes in XML"
 msgstr ""
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -28636,11 +28648,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr ""
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -36307,12 +36314,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr ""
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr ""
-
-msgid "this domain does not have a device to take snapshots"
-msgstr ""
-
 msgid "this domain exists already"
 msgstr "dette domenet eksisterer allerede"
 
@@ -36782,6 +36783,9 @@ msgstr ""
 
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
+msgstr ""
+
+msgid "transport 'fd' is now allowed"
 msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
@@ -39765,6 +39769,18 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "Kunne ikke definere domenet fra %1$s"
+
+#, fuzzy, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "Kunne ikke starte nettverket %1$s"
+
+#, fuzzy, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "Nettverket %s er startet\n"
 
 #, fuzzy, c-format
 #~ msgid "Failed to allocate slirp for '%1$s'"

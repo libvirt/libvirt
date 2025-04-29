@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -3493,11 +3493,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "চকেট ঠিকনাক স্ট্ৰিংলে পৰিবৰ্তন কৰিব নোৱাৰি: %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7372,10 +7367,6 @@ msgstr "গোপনীয় তথ্য %1$s আঁতৰাবলৈ ব্য�
 msgid "Failed to delete snapshot %1$s"
 msgstr "স্নেপশ্বট %1$s মচি পেলাবলে ব্যৰ্থ"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "স্নেপশ্বট %1$s মচি পেলাবলে ব্যৰ্থ"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "symlink '%1$s' আঁতৰাওঁতে ব্যৰ্থ"
@@ -8838,10 +8829,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "ডিভাইচ %1$s ক %2$s লে symlink কৰিবলে ব্যৰ্থ"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "স্নেপশ্বট লবলে ব্যৰ্থ হল: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "প্ৰক্ৰিয়া %1$lld অন্ত কৰিবলে ব্যৰ্থ SIG%2$s"
 
@@ -9596,6 +9583,10 @@ msgstr "এটা মানুহে পঢ়িব পৰা আউটপুট �
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10438,7 +10429,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "অবৈধ হস্ট কি' সতা সত্য নিৰূপণ প্ৰক্ৰিয়া: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12627,10 +12618,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "%1$d প্ৰকৃতিৰ নে'টৱৰ্ক সমৰ্থিত নহয়"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "অজ্ঞাত ডিস্কৰ নাম '%s' আৰু কোনো ঠিকনা ধাৰ্য্য কৰা হোৱা নাই"
@@ -12673,6 +12660,13 @@ msgstr "কোনো PCI বাচ উপলব্ধ নাই"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "কোনো বিভাগ বিস্তাৰ উপলব্ধ নাই"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13237,6 +13231,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "কেৱল '%1$s' ফাইলচিস্টেম ধৰণ সমৰ্থিত"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14226,6 +14229,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "xml পৰিবৰ্তন অসমৰ্থিত"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17135,7 +17141,7 @@ msgid "The read only disk has no parent"
 msgstr "স্নেপশ্বট '%s' ৰ কোনো উপধায়ক নাই"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28415,6 +28421,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML বিন্যাসে গোপনীয় গুণ সহ এটা ফাইল"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29622,11 +29634,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr "ডিস্ক %1$s ৰ বাবে অভ্যন্তৰীক স্নেপশ্বট সংৰক্ষণ ধৰণ %2$s ৰ বাবে অসমৰ্থিত"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -37572,12 +37579,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "এই ডিস্কে আপডেইট সমৰ্থন নকৰে"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "এই ডমেইনৰ স্নেপশ্বটসমূহ মচি পেলাবলে এটা ডিভাইচ নাই"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "এই ডমেইনৰ ওচৰত স্নেপশ্বট লবলে এটা ডিভাইচ নাই"
-
 msgid "this domain exists already"
 msgstr "এই ডোমেইন ইতিমধ্যে আছে"
 
@@ -38071,6 +38072,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "পৰিবহন '%1$s' এ চকেট বৈশিষ্ট্য সমৰ্থন নকৰে"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "Windows ৰ অধীন unix, ssh আৰু ext সম্প্ৰচাৰ সমৰ্থিত নহয়"
@@ -41112,6 +41116,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "স্নেপশ্বট %1$s মচি পেলাবলে ব্যৰ্থ"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "স্নেপশ্বট লবলে ব্যৰ্থ হল: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "%1$d প্ৰকৃতিৰ নে'টৱৰ্ক সমৰ্থিত নহয়"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "এই ডমেইনৰ স্নেপশ্বটসমূহ মচি পেলাবলে এটা ডিভাইচ নাই"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "এই ডমেইনৰ ওচৰত স্নেপশ্বট লবলে এটা ডিভাইচ নাই"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"

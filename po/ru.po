@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2025-03-16 17:56+0000\n"
 "Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3711,11 +3711,6 @@ msgid "Cannot use direct socket mode for %1$s transport"
 msgstr ""
 "Для способа передачи %1$s нельзя использовать режим непосредственного "
 "использования сокетов"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7557,10 +7552,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "Не удалось удалить снимок %1$s"
 
 #, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "Не удалось удалить снимок: %1$s"
-
-#, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "Не удалось удалить символьную ссылку «%1$s»"
 
@@ -9034,10 +9025,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "Не удалось создать символьную ссылку на устройство %1$s в %2$s"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "Не удалось создать снимок: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "Не удалось прервать выполнение процесса %1$lld с SIG%2$s"
 
@@ -9807,6 +9794,10 @@ msgstr "Вывод данных в удобном для восприятия ф
 
 msgid "Hybrid-Suspend"
 msgstr "Приостановка (гибридный режим)"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10678,7 +10669,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "Недопустимый метод проверки ключа хоста: «%1$s»"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, c-format
@@ -12878,10 +12869,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "Тип сети %1$d не поддерживается"
-
 msgid "New disk media source was not specified"
 msgstr "Не указан новый источник дисковых носителей"
 
@@ -12921,6 +12908,13 @@ msgstr "Нет шин PCI"
 
 msgid "No UNIX caller UID available"
 msgstr "Данные по UID вызова UNIX недоступны"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 msgid "No URI scheme specified"
 msgstr "Не указана схема URI"
@@ -13491,6 +13485,15 @@ msgstr "Поддерживаются только файловые систем�
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Поддерживаются только планировщики «credit» и «credit2»"
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
+msgstr ""
 
 msgid "Only 1 IDE controller is supported"
 msgstr "Поддерживается только 1 контроллер IDE"
@@ -14487,6 +14490,9 @@ msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "Выделение пропускной способности памяти RDT не поддерживается"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 msgid "RNG device is missing alias"
 msgstr "у устройство RNG отсутствует альтернативное название"
@@ -17487,11 +17493,9 @@ msgid "The read only disk has no parent"
 msgstr "Доступный только для чтения диск не имеет родителя"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
-"Число дисков, предназначенных для чтения, не может быть меньше количества "
-"дисков, доступных для чтения и записи"
 
 #, c-format
 msgid ""
@@ -28710,6 +28714,12 @@ msgid "file containing secret attributes in XML"
 msgstr "файл с атрибутами секрета в формате XML"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29973,11 +29983,6 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 "внутренний снимок запущенной виртуальной машины должен включать состояние "
 "памяти"
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
-msgstr ""
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
@@ -37899,12 +37904,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "этот диск не поддерживает обновление"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "у этого домена нет устройств для удаления снимков"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "нет устройств, для которых можно создать снимок"
-
 msgid "this domain exists already"
 msgstr "домен уже существует"
 
@@ -38452,6 +38451,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "%1$s не поддерживает атрибут сокета"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "методы unix, ssh и ext не поддерживаются в Windows"
@@ -41529,6 +41531,31 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "Не удалось удалить снимок: %1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "Не удалось создать снимок: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "Тип сети %1$d не поддерживается"
+
+#~ msgid ""
+#~ "The read only disk number must be greater or equal to the  read write "
+#~ "disk number"
+#~ msgstr ""
+#~ "Число дисков, предназначенных для чтения, не может быть меньше количества "
+#~ "дисков, доступных для чтения и записи"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "у этого домена нет устройств для удаления снимков"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "нет устройств, для которых можно создать снимок"
 
 #, c-format
 #~ msgid "Cannot find CPU model with PVR 0x%1$03llx"

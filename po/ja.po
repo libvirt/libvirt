@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -3676,11 +3676,6 @@ msgstr ""
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "%1$s トランスポートにダイレクトソケットモードは使用できません"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7547,10 +7542,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "スナップショット %1$s の削除に失敗しました"
 
 #, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "スナップショットの削除に失敗しました: %1$s"
-
-#, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "シンボルリンク'%1$s' の削除に失敗しました"
 
@@ -9025,10 +9016,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "デバイス %1$s を %2$s にシンボリックリンクできません"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "スナップショットの取得に失敗しました: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "プロセス %1$lld を SIG%2$s で終了に失敗しました"
 
@@ -9807,6 +9794,10 @@ msgstr "人間が判読できる出力"
 
 msgid "Hybrid-Suspend"
 msgstr "ハイブリッドサスペンド"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10685,7 +10676,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "無効なホスト鍵検証方式: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, c-format
@@ -12865,10 +12856,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "ネットワークタイプ %1$d はサポートされていません"
-
 msgid "New disk media source was not specified"
 msgstr "新しいディスクメディアソースが指定されていませんでした"
 
@@ -12907,6 +12894,13 @@ msgstr "利用可能な PCI バスがありません"
 
 msgid "No UNIX caller UID available"
 msgstr "UNIX の呼び出し元 UID は利用できません"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 msgid "No URI scheme specified"
 msgstr "URI スキームが指定されていません"
@@ -13458,6 +13452,15 @@ msgstr "'%1$s' ファイルシステムタイプのみがサポートされま�
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "'credit' および 'credit2' スケジューラーのみがサポートされます"
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
+msgstr ""
 
 msgid "Only 1 IDE controller is supported"
 msgstr "1 つの IDE コントローラーのみがサポートされます"
@@ -14465,6 +14468,9 @@ msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "RDT メモリー帯域幅の割り当てはサポートされません"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 msgid "RNG device is missing alias"
 msgstr "RNG デバイスにエイリアスがありません"
@@ -17468,11 +17474,9 @@ msgid "The read only disk has no parent"
 msgstr "読み取り専用ディスクには親がありません"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
-"読み取り専用ディスク番号は、読み取り/書き込みディスク番号以上である必要があり"
-"ます"
 
 #, c-format
 msgid ""
@@ -28679,6 +28683,12 @@ msgid "file containing secret attributes in XML"
 msgstr "secret 属性を含む XML ファイル"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr "ファイル記述子グループ '%1$s' はドメインに関連付けられていませんでした"
 
@@ -29901,11 +29911,6 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 "実行中の VM の内部スナップショットには、メモリーの状態が含まれている必要があ"
 "ります"
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
-msgstr ""
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
@@ -37816,12 +37821,6 @@ msgstr "この QEMU バージョンに SGX EPC NUMA 情報はありません"
 msgid "this disk doesn't support update"
 msgstr "このディスクは更新をサポートしません"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "このドメインはスナップショットを削除するデバイスがありません"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "このドメインはスナップショットを取得するデバイスがありません"
-
 msgid "this domain exists already"
 msgstr "このドメインはすでに存在しています"
 
@@ -38360,6 +38359,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "トランスポート '%1$s' はソケット属性をサポートしません"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
@@ -41422,6 +41424,31 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "スナップショットの削除に失敗しました: %1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "スナップショットの取得に失敗しました: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "ネットワークタイプ %1$d はサポートされていません"
+
+#~ msgid ""
+#~ "The read only disk number must be greater or equal to the  read write "
+#~ "disk number"
+#~ msgstr ""
+#~ "読み取り専用ディスク番号は、読み取り/書き込みディスク番号以上である必要が"
+#~ "あります"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "このドメインはスナップショットを削除するデバイスがありません"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "このドメインはスナップショットを取得するデバイスがありません"
 
 #, c-format
 #~ msgid "Cannot find CPU model with PVR 0x%1$03llx"

@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2024-07-15 13:19+0000\n"
 "Last-Translator: Gildasio Junior <gildasiojunior@riseup.net>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
@@ -3563,11 +3563,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "Não foi possível converter endereço de soquete para faixa: %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7503,10 +7498,6 @@ msgstr "Falha ao remover segredo %1$s"
 msgid "Failed to delete snapshot %1$s"
 msgstr "Falha ao remover snapshot: %1$s"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "Falha ao remover snapshot: %1$s"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "Falha ao excluir o link simbólico \"%1$s\""
@@ -8986,10 +8977,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "Falha a realizar o symlink do dispositivo %1$s para %2$s"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "Falha ao obter snapshot: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "Falha ao terminar processo %1$lld com SIG%2$s"
 
@@ -9765,6 +9752,10 @@ msgstr "imprime um resultado mais legível"
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -10620,7 +10611,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "Método de verificação de chave de host inválido: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12845,10 +12836,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "Não há suporte para o tipo %1$d de rede"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "Nome do disco desconhecido '%s' e nenhum endereço especificado"
@@ -12892,6 +12879,13 @@ msgstr "Nenhum barramento de PCI disponível"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "Nenhuma categoria de classe disponível"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13459,6 +13453,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "somente sistema de arquivo '%1$s' é suportado"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14486,6 +14489,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "modificação do xml não suportada"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17474,7 +17480,7 @@ msgid "The read only disk has no parent"
 msgstr "snapshot '%s' não possui pai"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28908,6 +28914,12 @@ msgid "file containing secret attributes in XML"
 msgstr "arquivo contém atributos de segredo no XML"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -30131,11 +30143,6 @@ msgstr ""
 "%2$s"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -38197,12 +38204,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "o disco não suporta atualização"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "este domínio não possui um dispositivo para remover snapshots"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "este domínio não possui um dispositivo para tirar um snapshot"
-
 msgid "this domain exists already"
 msgstr "este domínio já existe"
 
@@ -38701,6 +38702,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "tipo de pool '%1$s' não suporta a descoberta de fonte"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
@@ -41754,6 +41758,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "Falha ao remover snapshot: %1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "Falha ao obter snapshot: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "Não há suporte para o tipo %1$d de rede"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "este domínio não possui um dispositivo para remover snapshots"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "este domínio não possui um dispositivo para tirar um snapshot"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"

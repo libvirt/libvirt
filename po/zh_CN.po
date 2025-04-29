@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2025-02-20 14:49+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -3530,14 +3530,6 @@ msgstr "无法更新设备 '%1$s，uuid 不匹配（当前 uuid '%2$s'）"
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "无法对 %1$s 传输直接使用套接字模式"
-
-#, fuzzy
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
-"如果未设置 URI，则无法使用直接套接字模式。有关详细信息，请参阅 https://"
-"libvirt.org/kbase/failed_connection_after_install.html"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7287,10 +7279,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "删除快照失败：%1$s"
 
 #, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "删除快照失败：%1$s"
-
-#, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "删除符号链接 '%1$s' 失败"
 
@@ -8733,10 +8721,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "为设备 %1$s 符号链接为 %2$s 失败"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "提取快照失败：%1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "进程 %1$lld 无法使用 SIG%2$s 终止"
 
@@ -9483,6 +9467,10 @@ msgstr "人类可读的输出"
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10304,7 +10292,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "无效主机密钥认证方法：'%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, c-format
@@ -12402,10 +12390,6 @@ msgstr "网络标题未更改\n"
 msgid "Network title updated successfully"
 msgstr "网络标题更新成功"
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "不支持网络类型 %1$d"
-
 msgid "New disk media source was not specified"
 msgstr "未指定新的磁盘介质源"
 
@@ -12443,6 +12427,13 @@ msgstr "没有可用 PCI 总线"
 
 msgid "No UNIX caller UID available"
 msgstr "没有可用 UNIX 主叫方 UID"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 msgid "No URI scheme specified"
 msgstr "未指定 URI 模式"
@@ -12982,6 +12973,15 @@ msgstr "只支持文件系统类型 '%1$s'"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "仅支持 'credit' 和 'credit2' 调度程序"
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
+msgstr ""
 
 msgid "Only 1 IDE controller is supported"
 msgstr "仅支持 1 个 IDE 控制器"
@@ -13919,6 +13919,9 @@ msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "不支持 RDT 内存带宽分配"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 msgid "RNG device is missing alias"
 msgstr "RNG 设备缺少别名"
@@ -16734,9 +16737,9 @@ msgid "The read only disk has no parent"
 msgstr "只读磁盘没有父磁盘"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
-msgstr "只读磁盘号必须大于或等于读写磁盘号"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -27584,6 +27587,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML 中包含 secret 属性的文件"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr "文件描述符组 '%1$s' 没有与域关联"
 
@@ -28744,11 +28753,6 @@ msgstr "存储类型 %1$s 不支持磁盘 %2$s 的内部快照"
 
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr "正在运行的虚拟机的内部快照必须包含内存状态"
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
-msgstr ""
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
@@ -36302,12 +36306,6 @@ msgstr "这个 QEMU 版本没有提供 SGX EPC NUMA 信息"
 msgid "this disk doesn't support update"
 msgstr "这个磁盘不支持更新"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "这个域没有要删除快照的设备"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "这个域没有要提取快照的设备"
-
 msgid "this domain exists already"
 msgstr "这个域名已经存在"
 
@@ -36819,6 +36817,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "transport '%1$s' 不支持 socket 属性"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "Windows 中不支持 unix、ssh 以及 ext 传输方法"
@@ -39792,6 +39793,37 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#, fuzzy
+#~ msgid ""
+#~ "Cannot use direct socket mode if no URI is set. For more information see "
+#~ "https://libvirt.org/kbase/failed_connection_after_install.html"
+#~ msgstr ""
+#~ "如果未设置 URI，则无法使用直接套接字模式。有关详细信息，请参阅 https://"
+#~ "libvirt.org/kbase/failed_connection_after_install.html"
+
+#, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "删除快照失败：%1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "提取快照失败：%1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "不支持网络类型 %1$d"
+
+#~ msgid ""
+#~ "The read only disk number must be greater or equal to the  read write "
+#~ "disk number"
+#~ msgstr "只读磁盘号必须大于或等于读写磁盘号"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "这个域没有要删除快照的设备"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "这个域没有要提取快照的设备"
 
 #, c-format
 #~ msgid "Cannot find CPU model with PVR 0x%1$03llx"

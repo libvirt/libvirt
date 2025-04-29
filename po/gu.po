@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2015-02-23 06:16+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Gujarati (http://www.transifex.com/projects/p/libvirt/"
@@ -3484,11 +3484,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "શબ્દમાળામાં સોકેટ સરનામાંને રૂપાંતર કરી શકાતુ નથી: %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7345,10 +7340,6 @@ msgstr "ગુપ્ત %1$s ને કાઢી નાંખવાનું ન
 msgid "Failed to delete snapshot %1$s"
 msgstr "સ્નેપશોટ %1$s ને કાઢતી વખતે નિષ્ફળતા"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "સ્નેપશોટ %1$s ને કાઢતી વખતે નિષ્ફળતા"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "symlink '%1$s' ને કાઢી નાંખવા માટે નિષ્ફળ"
@@ -8810,10 +8801,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "'%1$s' માટે PCI ઉપકરણ '%2$s' ને બાંધવામાં નિષ્ફળતા"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "સ્નેપશોટ લેવવાનું નિષ્ફળ: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "પ્રક્રિયા %1$lld ને SIG%2$s સાથે કાઢી નાંખવામાં નિષ્ફળતા"
 
@@ -9570,6 +9557,10 @@ msgstr "વધારે માણસથી વાંચી શકાય તે�
 
 msgid "Hybrid-Suspend"
 msgstr "હાઇબ્રીડ અટકાવો"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10415,7 +10406,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "અયોગ્ય યજમાન કી ચકાસણી પદ્દતિ: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12599,10 +12590,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "નેટવર્ક પ્રકાર %1$d આધારભૂત નથી"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "અજ્ઞાત ડિસ્ક નામ '%s' અને સરનામું સ્પષ્ટ થયેલ નથી"
@@ -12645,6 +12632,13 @@ msgstr "PCI બસ ઉપલબ્ધ નથી"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "વર્ગ સીમા ઉપલબ્ધ નથી"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13203,6 +13197,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "ફક્ત '%1$s' ફાઇલસિસ્ટમ પ્રકાર આધારભૂત છે"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14192,6 +14195,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "xml બદલાવ બિનઆધારભૂત"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17081,7 +17087,7 @@ msgid "The read only disk has no parent"
 msgstr "સ્નેપશોટ '%s' પાસે મુખ્ય નથી"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28329,6 +28335,12 @@ msgid "file containing secret attributes in XML"
 msgstr "ફાઇલ એ XML માં ગુપ્ત ગુણધર્મોને સમાવી રહ્યુ છે"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29532,11 +29544,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr "ડિસ્ક %1$s માટે આંતરિક સ્નેપશોટ સંગ્રહ પ્રકાર %2$s માટે બિનઆધારભૂત છે"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -37475,12 +37482,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "આ ડિસ્ક સુધારાને આધાર આપતુ નથી"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "આ ડોમેઇન પાસે સ્નેપશોટને કાઢવા માટે ઉપકરણ ન હતુ"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "આ ડોમેઇન પાસે સ્નેપશોટને લેવા માટે ઉપકરણ નથી"
-
 msgid "this domain exists already"
 msgstr "આ ડોમેઈન પહેલાથી જ હાજર છે"
 
@@ -37974,6 +37975,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "પુલ પ્રકાર '%1$s' એ સ્ત્રોત શોધને આધાર આપતુ નથી"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "વિન્ડો નીચે પરિવહન પદ્દતિઓ unix, ssh અને ext આધારભૂત નથી"
@@ -41010,6 +41014,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "સ્નેપશોટ %1$s ને કાઢતી વખતે નિષ્ફળતા"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "સ્નેપશોટ લેવવાનું નિષ્ફળ: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "નેટવર્ક પ્રકાર %1$d આધારભૂત નથી"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "આ ડોમેઇન પાસે સ્નેપશોટને કાઢવા માટે ઉપકરણ ન હતુ"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "આ ડોમેઇન પાસે સ્નેપશોટને લેવા માટે ઉપકરણ નથી"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"

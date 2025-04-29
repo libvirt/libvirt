@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2025-04-14 10:04+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1506,8 +1506,9 @@ msgid "'return' member missing"
 msgstr "'return' 구성이 누락됨"
 
 msgid "'sheepdog' protocol is no longer supported by any hypervisor driver"
-msgstr "'sheepdog' 통신규약은 모든 하이퍼바이저 드라이버에서 더 이상 지원되지 "
-"않습니다"
+msgstr ""
+"'sheepdog' 통신규약은 모든 하이퍼바이저 드라이버에서 더 이상 지원되지 않습니"
+"다"
 
 #, c-format
 msgid ""
@@ -3652,14 +3653,6 @@ msgstr ""
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "%1$s 전송을 위한 다이렉트 소켓 모드를 사용 할 수 없습니다"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
-"만약 URI가 아닌 설정이면 직접 소켓 방식을 사용 할 수 없습니다. 더 많은 정보"
-"를 위해 https://libvirt.org/kbase/failed_connection_after_install.html를 참고"
-"하세요"
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7462,10 +7455,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "순간찍기 %1$s 삭제에 실패함"
 
 #, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "순간찍기 삭제에 실패함: %1$s"
-
-#, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "심볼릭 링크 '%1$s' 삭제 실패"
 
@@ -8920,10 +8909,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "%1$s에 장치 %2$s를 심볼릭 링크하는데 실패"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "순간찍기를 가져오는데 실패함: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "프로세서 %1$lld(SIG%2$s와 함께)를 종료하는데 실패함"
 
@@ -9683,6 +9668,10 @@ msgid "Hybrid-Suspend"
 msgstr "하이브리드-일시 중단"
 
 #, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
+
+#, c-format
 msgid ""
 "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr "HyperV spinlock 재시도 횟수가 다릅니다: 원천: '%1$u', 대상: '%2$u'"
@@ -9721,8 +9710,9 @@ msgstr "I/O 오류"
 msgid ""
 "I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
 "message='%5$s'"
-msgstr "I/O 오류: 디스크='%1$s', 색인='%2$d', 경로='%3$s', 시간표기='%4$s', "
-"통보='%5$s'"
+msgstr ""
+"I/O 오류: 디스크='%1$s', 색인='%2$d', 경로='%3$s', 시간표기='%4$s', 통보"
+"='%5$s'"
 
 msgid "I/O size in bytes"
 msgstr "I/O 크기(바이트)"
@@ -9826,7 +9816,8 @@ msgstr ""
 msgid ""
 "IOThread mapping for virtio-scsi controllers is not available with this QEMU "
 "binary"
-msgstr "virtio-scsi 제어기를 위한 IOThread 대응은 이 QEMU 바이너리와 함께 사용 할 수 "
+msgstr ""
+"virtio-scsi 제어기를 위한 IOThread 대응은 이 QEMU 바이너리와 함께 사용 할 수 "
 "없습니다"
 
 msgid "IOThread to be used by supported device"
@@ -10246,8 +10237,9 @@ msgstr ""
 msgid ""
 "Invalid attempt to set network interface guest-side IP address info, not "
 "supported by QEMU"
-msgstr "QEMU에 의해 지원되지 않는 네트워크 연결장치 게스트-측면 IP 주소 정보를 "
-"설정하려는 데 유효하지 않은 시도"
+msgstr ""
+"QEMU에 의해 지원되지 않는 네트워크 연결장치 게스트-측면 IP 주소 정보를 설정하"
+"려는 데 유효하지 않은 시도"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
@@ -10538,8 +10530,8 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "잘못된 호스트 키 확인 방법: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
-msgstr "유효하지 않는 호스트_자료가 제공되었습니다. '%1$ld' 바이트가 예상됨"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
+msgstr ""
 
 #, c-format
 msgid "Invalid hostdev protocol '%1$s'"
@@ -11075,8 +11067,9 @@ msgid "Kernel image path in this domain is not defined"
 msgstr "이 도메인의 커널 이미지 경로가 정의되지 않았습니다"
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
-msgstr "커널 이미지 경로가 정의되지 않았습니다. sev_snp=on과 함께 igvm 경로를 "
-"전달합니다"
+msgstr ""
+"커널 이미지 경로가 정의되지 않았습니다. sev_snp=on과 함께 igvm 경로를 전달합"
+"니다"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "개인 키 인증을 위해 키 파일 경로를 제공해야 합니다"
@@ -11892,7 +11885,8 @@ msgstr "JSON 문서에서 클라이언트 자료가 누락되어 있습니다"
 
 #, c-format
 msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
-msgstr "'%2$s' 를 위한 구성원에서 참조 '%1$s' 와 함께 ccw_device 에서 누락된 자료"
+msgstr ""
+"'%2$s' 를 위한 구성원에서 참조 '%1$s' 와 함께 ccw_device 에서 누락된 자료"
 
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON 파일에서 defaultLockspace 자료가 누락"
@@ -12675,10 +12669,6 @@ msgstr "네트워크 이름이 변경되지 않았습니다\n"
 msgid "Network title updated successfully"
 msgstr "네트워크 이름이 성공적으로 최신화 되었습니다"
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "네트워크 유형 %1$d를 지원하지 않습니다"
-
 msgid "New disk media source was not specified"
 msgstr "새 디스크 미디어 소스가 지정되지 않았습니다"
 
@@ -12716,6 +12706,13 @@ msgstr "사용 가능한 PCI 버스 없음"
 
 msgid "No UNIX caller UID available"
 msgstr "사용 가능한 UNIX 호출자 UID가 없습니다"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 msgid "No URI scheme specified"
 msgstr "URI 체계가 지정되지 않았습니다"
@@ -13261,6 +13258,15 @@ msgstr "오직 '%1$s' 파일 시스템만 지원됨"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "'credit' 및 'credit2' 스케줄러만 지원됩니다"
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
+msgstr ""
 
 msgid "Only 1 IDE controller is supported"
 msgstr "1개의 IDE 컨트롤러만 지원됩니다"
@@ -14237,6 +14243,9 @@ msgstr "RDP 비밀번호 만료는 지원하지 않습니다"
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "RDT 메모리 대역폭 할당이 지원되지 않음"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 msgid "RNG device is missing alias"
 msgstr "RNG 장치에 별칭이 없습니다"
@@ -15786,7 +15795,8 @@ msgstr "저장소 소스가 풀과 충돌합니다: '%1$s'"
 #, c-format
 msgid ""
 "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
-msgstr "저장소 볼륨 '%1$s'(%2$s) 는 libvirt에 의해 관리되지 않습니다. 수동으로 이를 "
+msgstr ""
+"저장소 볼륨 '%1$s'(%2$s) 는 libvirt에 의해 관리되지 않습니다. 수동으로 이를 "
 "제거하세요."
 
 msgid "Storage volume deletion is supported only on stopped domains"
@@ -16846,7 +16856,8 @@ msgstr ""
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
 "type='vhostuser'"
-msgstr "'passt' 백엔드는 연결장치 type='user' 또는 type='vhostuser' 와 함께만 사용 "
+msgstr ""
+"'passt' 백엔드는 연결장치 type='user' 또는 type='vhostuser' 와 함께만 사용 "
 "될 수 있습니다"
 
 msgid ""
@@ -16868,8 +16879,8 @@ msgid ""
 "The <portForward> element can only be used with the 'passt' backend of "
 "interface type='user' or type='vhostuser'"
 msgstr ""
-"<portForward> 요소는 연결장치 type='user' 또는 type='vhostuser' 의 'passt' "
-"백엔드와 함께만 사용 될 수 있습니다"
+"<portForward> 요소는 연결장치 type='user' 또는 type='vhostuser' 의 'passt' 백"
+"엔드와 함께만 사용 될 수 있습니다"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
@@ -17159,9 +17170,9 @@ msgid "The read only disk has no parent"
 msgstr "읽기 전용 디스크에는 상위 항목이 없습니다"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
-msgstr "읽기 전용 디스크 번호는 다음보다 크거나 같아야 합니다"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -22035,13 +22046,15 @@ msgstr "블록"
 #, c-format
 msgid ""
 "block 'iotune' can't be used together with 'throttlefilters' for disk '%1$s'"
-msgstr "블록 'iotune'는 디스크 '%1$s' 용 'throttlefilters' 와 함께 사용 될 수 "
-"없습니다"
+msgstr ""
+"블록 'iotune'는 디스크 '%1$s' 용 'throttlefilters' 와 함께 사용 될 수 없습니"
+"다"
 
 #, c-format
 msgid ""
 "block 'throttlefilters' can't be used together with 'iotune' for disk '%1$s'"
-msgstr "블록 'throttlefilters' 는 디스크 '%1$s' 를 위한 'iotune' 과 함께 사용 될 수 "
+msgstr ""
+"블록 'throttlefilters' 는 디스크 '%1$s' 를 위한 'iotune' 과 함께 사용 될 수 "
 "없습니다"
 
 #, c-format
@@ -24307,8 +24320,8 @@ msgid ""
 "completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
 "completer is used"
 msgstr ""
-"명령 '%2$s' 의 인수 '%1$s' completer_flags 는 만약 completer 아닌 것이 "
-"사용된다면 0이어야 합니다"
+"명령 '%2$s' 의 인수 '%1$s' completer_flags 는 만약 completer 아닌 것이 사용된"
+"다면 0이어야 합니다"
 
 msgid "compress level for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 수준"
@@ -24420,7 +24433,8 @@ msgstr "제어기 %1$s:%2$d를 찾을 수 없음"
 msgid ""
 "controller driver 'iothread' attribute can't be used together with "
 "'iothreads' subelement"
-msgstr "제어기 드라이버 'iothread' 속성은 'iothreads' 하위요소와 공동으로 사용 될 수 "
+msgstr ""
+"제어기 드라이버 'iothread' 속성은 'iothreads' 하위요소와 공동으로 사용 될 수 "
 "없습니다"
 
 #, c-format
@@ -25563,14 +25577,16 @@ msgstr "도메인에서 디스크 '%1$s'을(를) 찾을 수 없습니다"
 msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
 "the deleted snapshot"
-msgstr "순간찍기 '%2$s' 에 의해 참조된 디스크 '%1$s' 는 삭제된 순간찍기의 VM "
-"정의에서 찾을 수 없습니다"
+msgstr ""
+"순간찍기 '%2$s' 에 의해 참조된 디스크 '%1$s' 는 삭제된 순간찍기의 VM 정의에"
+"서 찾을 수 없습니다"
 
 #, c-format
 msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
-msgstr "순간찍기 '%2$s' 에 의해 참조된 디스크 '%1$s' 는 현재 정의에서 찾을 수 "
-"없습니다"
+msgstr ""
+"순간찍기 '%2$s' 에 의해 참조된 디스크 '%1$s' 는 현재 정의에서 찾을 수 없습니"
+"다"
 
 #, c-format
 msgid "disk '%1$s' specified twice"
@@ -28238,6 +28254,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML의 비밀 특성을 포함하는 파일"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr "파일 설명자 그룹 '%1$s'는 도메인과 연관되지 않았습니다"
 
@@ -29445,12 +29467,6 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr "실행 중인 VM의 내부 순간찍기는 메모리 상태가 포함되어야 합니다"
 
 msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
-msgstr ""
-"pflash 기반의 펌웨어의 내부 순간찍기는 이와 같은 qemu에서 지원되지 않습니다"
-
-msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
 "format"
 msgstr ""
@@ -29882,7 +29898,8 @@ msgstr "잘못된 모드"
 
 #, c-format
 msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
-msgstr "연결장치 유형을 위한 잘못된 모델 '%1$s': '%2$s' - 'virtio' 이어야 합니다"
+msgstr ""
+"연결장치 유형을 위한 잘못된 모델 '%1$s': '%2$s' - 'virtio' 이어야 합니다"
 
 #, c-format
 msgid "invalid model for video type '%1$s'"
@@ -32647,7 +32664,8 @@ msgstr ""
 msgid ""
 "multiple optional positional arguments (%1$s, %2$s) of command '%3$s' are "
 "not allowed"
-msgstr "명령 '%3$s' 의 다중 선택적인 위치 인수 (%1$s, %2$s) 는 허용하지 않습니다"
+msgstr ""
+"명령 '%3$s' 의 다중 선택적인 위치 인수 (%1$s, %2$s) 는 허용하지 않습니다"
 
 msgid "multiple stream callbacks not supported"
 msgstr "다중 스트림 콜백이 지원되지 않음"
@@ -33896,8 +33914,9 @@ msgstr "'raw' 이미지만이 <dataStore> 로 지원됩니다"
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
 "is supported"
-msgstr "개별 유형(sdl, vnc, spice, headless, dbus, rdp)의 단일 그래픽 장치만 "
-"지원됩니다"
+msgstr ""
+"개별 유형(sdl, vnc, spice, headless, dbus, rdp)의 단일 그래픽 장치만 지원됩니"
+"다"
 
 msgid "only JSON objects can be top level"
 msgstr "JSON 객체만 최상위 레벨이 될 수 있습니다"
@@ -34292,7 +34311,8 @@ msgstr "명령 '%1$s'의 매개변수 '%2$s'에 잘못된 별칭 옵션이 있�
 
 #, c-format
 msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
-msgstr "명령 '%2$s' 의 매개변수 '%1$s' 는 'required' 플래그가 잘못 사용 되었습니다"
+msgstr ""
+"명령 '%2$s' 의 매개변수 '%1$s' 는 'required' 플래그가 잘못 사용 되었습니다"
 
 #, c-format
 msgid ""
@@ -35584,7 +35604,8 @@ msgstr "원자적 연산이 필요합니다"
 msgid ""
 "required positional argument '%1$s' declared after an optional positional "
 "argument '%2$s' of command '%3$s'"
-msgstr "명령 '%3$s' 의 선택적 위치 인수 '%2$s' 후에 선언된 필수 위치 인수 '%1$s'"
+msgstr ""
+"명령 '%3$s' 의 선택적 위치 인수 '%2$s' 후에 선언된 필수 위치 인수 '%1$s'"
 
 msgid "resctrl locking is not supported on this platform"
 msgstr "이 기술환경에서는 resctrl 잠금이 지원되지 않습니다"
@@ -36399,8 +36420,9 @@ msgstr "저장소에 대한 원천 장치"
 msgid ""
 "source disk for '%1$s' is not a regular file, reverting to snapshot is not "
 "supported"
-msgstr "'%1$s' 용 원천 디스크는 정규 파일이 아니며, 순간찍기로 되돌리기는 지원되지 "
-"않습니다"
+msgstr ""
+"'%1$s' 용 원천 디스크는 정규 파일이 아니며, 순간찍기로 되돌리기는 지원되지 않"
+"습니다"
 
 #, c-format
 msgid ""
@@ -36754,7 +36776,8 @@ msgstr "도메인 디스크 정의에 <cipher>를 제공할 필요가 없습니�
 msgid ""
 "support for offline external snapshots while checkpoint exists was not yet "
 "implemented"
-msgstr "확인점이 존재 할 때에 오프라인 외부 순간찍기 지원은 아직 구현되지 않았습니다"
+msgstr ""
+"확인점이 존재 할 때에 오프라인 외부 순간찍기 지원은 아직 구현되지 않았습니다"
 
 msgid "suspend a domain"
 msgstr "도메인을 중지함"
@@ -37152,12 +37175,6 @@ msgstr "QEMU 버전은 SGX EPC NUMA 정보를 제공하지 않습니다"
 
 msgid "this disk doesn't support update"
 msgstr "이 디스크는 최신화를 지원하지 않습니다"
-
-msgid "this domain does not have a device to delete snapshots"
-msgstr "이 도메인에는 순간찍기를 삭제 할 수 있는 장치를 가지고 있지 않습니다"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "이 도메인은 순간찍기를 실행 할 수 있는 장치를 가지고 있지 않습니다"
 
 msgid "this domain exists already"
 msgstr "이미 도메인이 존재함"
@@ -37691,6 +37708,9 @@ msgstr "임시 노드 장치는 영구적인 구성을 갖고 있지 않습니�
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "전송 '%1$s'는 소켓 특성을 지원하지 않습니다"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "전송 방식 unix, ssh, ext는 Windows하에서 지원하지 않습니다"
@@ -40713,6 +40733,49 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#~ msgid ""
+#~ "Cannot use direct socket mode if no URI is set. For more information see "
+#~ "https://libvirt.org/kbase/failed_connection_after_install.html"
+#~ msgstr ""
+#~ "만약 URI가 아닌 설정이면 직접 소켓 방식을 사용 할 수 없습니다. 더 많은 정"
+#~ "보를 위해 https://libvirt.org/kbase/failed_connection_after_install.html"
+#~ "를 참고하세요"
+
+#, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "순간찍기 삭제에 실패함: %1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "순간찍기를 가져오는데 실패함: %1$s"
+
+#, c-format
+#~ msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+#~ msgstr "유효하지 않는 호스트_자료가 제공되었습니다. '%1$ld' 바이트가 예상됨"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "네트워크 유형 %1$d를 지원하지 않습니다"
+
+#~ msgid ""
+#~ "The read only disk number must be greater or equal to the  read write "
+#~ "disk number"
+#~ msgstr "읽기 전용 디스크 번호는 다음보다 크거나 같아야 합니다"
+
+#~ msgid ""
+#~ "internal snapshots of a VM with pflash based firmware are not supported "
+#~ "with this qemu"
+#~ msgstr ""
+#~ "pflash 기반의 펌웨어의 내부 순간찍기는 이와 같은 qemu에서 지원되지 않습니"
+#~ "다"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr ""
+#~ "이 도메인에는 순간찍기를 삭제 할 수 있는 장치를 가지고 있지 않습니다"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "이 도메인은 순간찍기를 실행 할 수 있는 장치를 가지고 있지 않습니다"
 
 #, c-format
 #~ msgid "Cannot find CPU model with PVR 0x%1$03llx"

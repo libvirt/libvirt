@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3814,11 +3814,6 @@ msgstr ""
 #, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "Impossible d'utiliser le mode socket direct pour le transport %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7785,10 +7780,6 @@ msgid "Failed to delete snapshot %1$s"
 msgstr "Échec de la suppression d'un instantané %1$s"
 
 #, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "Échec de la suppression d'un instantané : %1$s"
-
-#, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "Échec de la suppression du lien symbolique '%1$s'"
 
@@ -9291,10 +9282,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "Echec de la liaison symbolique du périphérique %1$s vers %2$s"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "Impossible de prendre un instantané : %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "Échec de la terminaison du processus %1$lld avec SIG%2$s"
 
@@ -10096,6 +10083,10 @@ msgstr "Sortie lisible par l'homme"
 
 msgid "Hybrid-Suspend"
 msgstr "Hybride-Suspension"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10989,7 +10980,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "Méthode de vérification de la clé de l'hôte non valide : '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, c-format
@@ -13254,10 +13245,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "Le type de réseau %1$d n'est pas pris en charge"
-
 msgid "New disk media source was not specified"
 msgstr "La source du nouveau support de disque n'a pas été spécifiée"
 
@@ -13299,6 +13286,13 @@ msgstr "Aucun bus PCI disponible"
 
 msgid "No UNIX caller UID available"
 msgstr "Aucun ID d’appelant UNIX n’est disponible"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 msgid "No URI scheme specified"
 msgstr "Aucun schéma URI spécifié"
@@ -13875,6 +13869,15 @@ msgstr "Seul le type de système de fichiers '%1$s' est pris en charge"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Seuls les programmateurs \"credit\" et \"credit2\" sont pris en charge"
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
+msgstr ""
 
 msgid "Only 1 IDE controller is supported"
 msgstr "Un seul contrôleur IDE est pris en charge"
@@ -14920,6 +14923,9 @@ msgstr ""
 
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "Allocation de la bande passante de la mémoire RDT non prise en charge"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 msgid "RNG device is missing alias"
 msgstr "Le périphérique RNG n'a pas d'alias"
@@ -18106,11 +18112,9 @@ msgid "The read only disk has no parent"
 msgstr "Le disque en lecture seule n'a pas de parent"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
-"Le numéro du disque en lecture seule doit être supérieur ou égal au numéro "
-"du disque en lecture-écriture"
 
 #, c-format
 msgid ""
@@ -29696,6 +29700,12 @@ msgid "file containing secret attributes in XML"
 msgstr "fichier contenant des attributs secrets en XML"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 "le groupe de descripteurs de fichiers '%1$s' n'était pas associé au domaine"
@@ -30957,11 +30967,6 @@ msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 "L'instantané interne d'une VM en fonctionnement doit inclure l'état de la "
 "mémoire"
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
-msgstr ""
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
@@ -39168,14 +39173,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "ce disque ne prend pas en charge la mise à jour"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr ""
-"ce domaine ne dispose pas d'un périphérique permettant de supprimer les "
-"instantanés"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "ce domaine n'a pas de périphérique pour prendre des instantanés"
-
 msgid "this domain exists already"
 msgstr "ce domaine existe déjà"
 
@@ -39745,6 +39742,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "le transport '%1$s' ne prend pas en charge l'attribut socket"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
@@ -42864,6 +42864,33 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "Échec de la suppression d'un instantané : %1$s"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "Impossible de prendre un instantané : %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "Le type de réseau %1$d n'est pas pris en charge"
+
+#~ msgid ""
+#~ "The read only disk number must be greater or equal to the  read write "
+#~ "disk number"
+#~ msgstr ""
+#~ "Le numéro du disque en lecture seule doit être supérieur ou égal au "
+#~ "numéro du disque en lecture-écriture"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr ""
+#~ "ce domaine ne dispose pas d'un périphérique permettant de supprimer les "
+#~ "instantanés"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "ce domaine n'a pas de périphérique pour prendre des instantanés"
 
 #, c-format
 #~ msgid "Cannot find CPU model with PVR 0x%1$03llx"

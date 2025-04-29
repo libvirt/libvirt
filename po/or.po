@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3529,11 +3529,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "unix ପରିବହନ ପାଇଁ ସକେଟ ଅନୁପସ୍ଥିତ"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7365,10 +7360,6 @@ msgstr "ଗୁପ୍ତ %1$s କୁ ଅପସାରଣ କରିବାରେ ବ
 msgid "Failed to delete snapshot %1$s"
 msgstr "ଆଶୁଚିତ୍ର %1$s କୁ ଅପସାରଣ କରିବାରେ ବିଫଳ"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "ଆଶୁଚିତ୍ର %1$s କୁ ଅପସାରଣ କରିବାରେ ବିଫଳ"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "symlink '%1$s' କୁ ଅପସାରଣ କରିପାରିବେ ନାହିଁ"
@@ -8841,10 +8832,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "ଉପକରଣ '%1$s' କୁ %2$s ରେ symlink  କରିବାରେ ବିଫଳ"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "ଆଶୁଚିତ୍ର ନେବାରେ ବିଫଳ: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "%1$lld କାର୍ଯ୍ୟକୁ SIG%2$s ସହିତ ବନ୍ଦ କରିବାରେ ବିଫଳ"
 
@@ -9602,6 +9589,10 @@ msgstr "ଅଧିକ ମନୁଷ୍ୟ ପଠନଯୋଗ୍ୟ ଫଳାଫଳ
 
 msgid "Hybrid-Suspend"
 msgstr "Hybrid-Suspend"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -10441,7 +10432,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "ଅବୈଧ ବୈଧିକରଣ ପଦ୍ଧତି: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12624,10 +12615,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "ନେଟୱାର୍କ ପ୍ରକାର %1$d ସମର୍ଥିତ ନୁହଁ"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "ଅଜଣା ଡିସ୍କ ନାମ '%s' ଏବଂ କୌଣସି ଠିକଣା ଉଲ୍ଲେଖ ହୋଇନାହିଁ"
@@ -12670,6 +12657,13 @@ msgstr "କୌଣସି PCI ପରିପଥ ଉପଲବ୍ଧ ନାହିଁ"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "କୌଣସି ବିଭାଗ ସୀମା ଉପଲବ୍ଧ ନାହିଁ"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13230,6 +13224,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "କେବଳ '%1$s' ଫାଇଲ ତନ୍ତ୍ର ପ୍ରକାର ସହାୟତା ପ୍ରାପ୍ତ"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14206,6 +14209,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "xml ପରିବର୍ତ୍ତନ ଅସମର୍ଥିତ"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17073,7 +17079,7 @@ msgid "The read only disk has no parent"
 msgstr "କେବଳ ପଠନୀୟ ଡିସ୍କର କୌଣସି ମୂଖ୍ୟ ସ୍ତର ନଥାଏ"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28300,6 +28306,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML ରେ ଗୁପ୍ତ ଗୁଣ ଧାରଣ କରିଥିବା ଫାଇଲ"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29501,11 +29513,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr "ଡିସ୍କ %1$s ପାଇଁ ଆଭ୍ୟନ୍ତରୀଣ ଆଶୁଚିତ୍ର ସଂରକ୍ଷଣ ପ୍ରକାର %2$s ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -37406,12 +37413,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "ଏହି ଡିସ୍କ ଅଦ୍ୟତନକୁ ସମର୍ଥନ କରେନାହିଁ"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "ଏହି ଡମେନରେ ଆଶୁଚିତ୍ର ଅପସାରଣ କରିବା ପାଇଁ କୌଣସି ଉପକରଣ ନାହିଁ"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "ଏହି ଡମେନରେ ଆଶୁଚିତ୍ର ନେବା ପାଇଁ କୌଣସି ଉପକରଣ ନାହିଁ"
-
 msgid "this domain exists already"
 msgstr "ଏହି ପରିସରଟି ପୂର୍ବରୁ ରହିଛି"
 
@@ -37904,6 +37905,9 @@ msgstr ""
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "ପରିବହନ '%1$s' ସକେଟ ଗୁଣଧର୍ମକୁ ସହାୟତା କରିନଥାଏ"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "ପରିବହନ ପ୍ରଣାଳୀ unix, ssh ଏବଂ ext ଗୁଡ଼ିକ Windowsରେ ସମର୍ଥିତ ନୁହଁ"
@@ -40937,6 +40941,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "ଆଶୁଚିତ୍ର %1$s କୁ ଅପସାରଣ କରିବାରେ ବିଫଳ"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "ଆଶୁଚିତ୍ର ନେବାରେ ବିଫଳ: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "ନେଟୱାର୍କ ପ୍ରକାର %1$d ସମର୍ଥିତ ନୁହଁ"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "ଏହି ଡମେନରେ ଆଶୁଚିତ୍ର ଅପସାରଣ କରିବା ପାଇଁ କୌଣସି ଉପକରଣ ନାହିଁ"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "ଏହି ଡମେନରେ ଆଶୁଚିତ୍ର ନେବା ପାଇଁ କୌଣସି ଉପକରଣ ନାହିଁ"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"

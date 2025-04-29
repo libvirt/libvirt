@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -3500,11 +3500,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "സോക്കറ്റ് വിലാസം വാചകമായി മാറ്റാന്‍ സാധ്യമല്ല: %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7379,10 +7374,6 @@ msgstr "രഹസ്യം %1$s വെട്ടി നീക്കുന്ന�
 msgid "Failed to delete snapshot %1$s"
 msgstr "സ്നാപ്പ്ഷോട്ട് %1$s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "സ്നാപ്പ്ഷോട്ട് %1$s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "'%1$s' സിംലിങ്ക് വെട്ടി നീക്കുന്നതില്‍ പരാജയം"
@@ -8860,10 +8851,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "ഡിവൈസ് %1$s-നെ %2$s-ലേക്കു് സിംലിങ്ക് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "സ്നാപ്പ്ഷോട്ട് എടുക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "%1$lld പ്രക്രിയ, SIG%2$s-നൊപ്പം ഇല്ലാതാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
@@ -9623,6 +9610,10 @@ msgstr "കൂടുതല്‍ വ്യക്തതയുള്ള ഔട്�
 
 msgid "Hybrid-Suspend"
 msgstr "ഇടയില്‍ മയങ്ങുക"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -10469,7 +10460,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "തെറ്റായ ഹോസ്റ്റ് കീ ഉറപ്പാക്കല്‍ സംവിധാനം: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12670,10 +12661,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "നെറ്റ്‌വര്‍ക്ക് തരം %1$d-യ്ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "അപരിചിതമായ ഡിസ്ക് നാമം '%s', വിലാസം നല്‍കിയിട്ടില്ല"
@@ -12716,6 +12703,13 @@ msgstr "പിസിഐ ബസുകള്‍ ലഭ്യമല്ല"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "വിഭാഗത്തിനുള്ള ഒരു പരിധിയും ലഭ്യമല്ല"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13276,6 +13270,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "'%1$s' ഫയല്‍സിസ്റ്റം തരം മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14286,6 +14289,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "xml മാറ്റം വരുത്തല്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17214,7 +17220,7 @@ msgid "The read only disk has no parent"
 msgstr "സ്നാപ്പ്ഷോട്ട് '%s' ന് പേരന്‍റ് ഇല്ല"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28516,6 +28522,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML-ല്‍ രഹസ്യ വിശേഷതകളുള്ള ഫയല്‍"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29730,11 +29742,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr "%1$s ഡിസ്കിനു് അകമേയുള്ള സ്നാപ്പ്ഷോട്ടിനു് %2$s സംഭരണ ശൈലിയില്‍ പിന്തുണ ലഭ്യമല്ല"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -37697,12 +37704,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "ഈ ഡിസ്ക് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ വെട്ടി നീക്കുവാനുള്ളൊരു ഡിവൈസ് ഈ ഡൊമെയിനു് ലഭ്യമല്ല"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ എടുക്കുവാനുള്ളൊരു ഡിവൈസ് ഈ ഡൊമെയിനു് ലഭ്യമല്ല"
-
 msgid "this domain exists already"
 msgstr "ഈ ഡൊമെയിന്‍ നിലവിലുണ്ട്"
 
@@ -38196,6 +38197,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "'%1$s' പൂള്‍ തരം സോഴ്സ് പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "unix, ssh, ext എന്നീ ട്രാന്‍സ്പോര്‍ട്ട് രീതികള്‍ക്കുള്ള പിന്തുണ വിന്‍ഡോസ് നല്‍കുന്നില്ല"
@@ -41233,6 +41237,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "സ്നാപ്പ്ഷോട്ട് %1$s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "സ്നാപ്പ്ഷോട്ട് എടുക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "നെറ്റ്‌വര്‍ക്ക് തരം %1$d-യ്ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ വെട്ടി നീക്കുവാനുള്ളൊരു ഡിവൈസ് ഈ ഡൊമെയിനു് ലഭ്യമല്ല"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ എടുക്കുവാനുള്ളൊരു ഡിവൈസ് ഈ ഡൊമെയിനു് ലഭ്യമല്ല"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"

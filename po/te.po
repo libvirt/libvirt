@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-03-25 10:52+0000\n"
+"POT-Creation-Date: 2025-04-28 08:27+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Telugu <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3475,11 +3475,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Cannot use direct socket mode for %1$s transport"
 msgstr "సాకెట్ చిరునామాను స్ట్రింగ్‌కు మార్చలేదు: %1$s"
-
-msgid ""
-"Cannot use direct socket mode if no URI is set. For more information see "
-"https://libvirt.org/kbase/failed_connection_after_install.html"
-msgstr ""
 
 #, c-format
 msgid "Cannot use host name '%1$s' in network '%2$s'"
@@ -7313,10 +7308,6 @@ msgstr "రహస్యము %1$s తొలగించుటకు విఫ�
 msgid "Failed to delete snapshot %1$s"
 msgstr "స్నాప్‌షాట్ %1$s తొలగించుటకు విఫలమైంది"
 
-#, fuzzy, c-format
-msgid "Failed to delete snapshot: %1$s"
-msgstr "స్నాప్‌షాట్ %1$s తొలగించుటకు విఫలమైంది"
-
 #, c-format
 msgid "Failed to delete symlink '%1$s'"
 msgstr "సిమ్‌లింకు '%1$s' తొలగించుటలో విఫలమైంది"
@@ -8782,10 +8773,6 @@ msgid "Failed to symlink device %1$s to %2$s"
 msgstr "పరికరం %1$s ను %2$s కు సిమ్‌లింక్ చేయుటకు విఫలమైంది"
 
 #, c-format
-msgid "Failed to take snapshot: %1$s"
-msgstr "స్నాప్‌షాట్ తీసుకొనుటకు విఫలమైంది: %1$s"
-
-#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
 msgstr "ప్రోసెస్ %1$lld ను SIG%2$s తో అంతంచేయుటకు విఫలమైంది"
 
@@ -9534,6 +9521,10 @@ msgstr "మనిషి చదువగల అవుట్పుట్ ముద
 
 msgid "Hybrid-Suspend"
 msgstr "హైబ్రిడ్-సస్పెండ్"
+
+#, c-format
+msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
+msgstr ""
 
 #, fuzzy, c-format
 msgid ""
@@ -10372,7 +10363,7 @@ msgid "Invalid host key verification method: '%1$s'"
 msgstr "చెల్లని అతిధేయ కీ నిర్ధారణ పద్దతి: '%1$s'"
 
 #, c-format
-msgid "Invalid host_data provided. Expected '%1$ld' bytes"
+msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12562,10 +12553,6 @@ msgstr ""
 msgid "Network title updated successfully"
 msgstr ""
 
-#, c-format
-msgid "Network type %1$d is not supported"
-msgstr "నెట్వర్కు రకము %1$d మద్దతీయుటలేదు"
-
 #, fuzzy
 msgid "New disk media source was not specified"
 msgstr "తెలియని డిస్కు పేరు '%s' ఏ చిరునామా తెలుపలేదు"
@@ -12608,6 +12595,13 @@ msgstr "ఏ PCI బస్‌లు అందుబాటులో లేవు"
 #, fuzzy
 msgid "No UNIX caller UID available"
 msgstr "ఏ వర్గపు విస్తృతి అందుబాటులోలేదు"
+
+msgid ""
+"No URI is provided and cannot identify any listening daemon socket path to "
+"attempt to connect to. Please ensure the expected daemon sockets are active "
+"and/or provide an explicit URI. For more information see https://libvirt.org/"
+"kbase/failed_connection_after_install.html"
+msgstr ""
 
 #, fuzzy
 msgid "No URI scheme specified"
@@ -13167,6 +13161,15 @@ msgid "Only '%1$s' filesystem type is supported"
 msgstr "'%1$s' ఫైల్‌సిస్టమ్ మాత్రమే తోడ్పాటునిచ్చును"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
+msgstr ""
+
+msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'virio' RNG device model is supported"
+msgstr ""
+
+msgid "Only /dev/random source is supported"
 msgstr ""
 
 #, fuzzy
@@ -14157,6 +14160,9 @@ msgstr ""
 #, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "xml సవరణ తోడ్పాటులేదు"
+
+msgid "RNG backend is not supported"
+msgstr ""
 
 #, fuzzy
 msgid "RNG device is missing alias"
@@ -17032,7 +17038,7 @@ msgid "The read only disk has no parent"
 msgstr "స్నాప్‌షాట్ '%s' పేరెంట్ కలిగిలేదు"
 
 msgid ""
-"The read only disk number must be greater or equal to the  read write disk "
+"The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
 
@@ -28274,6 +28280,12 @@ msgid "file containing secret attributes in XML"
 msgstr "XML నందు రక్షణ యాట్రిబ్యూట్లను కలిగివుండు దస్త్రము"
 
 #, c-format
+msgid ""
+"file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
+"server"
+msgstr ""
+
+#, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
 
@@ -29478,11 +29490,6 @@ msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr "డిస్కు %1$s కొరకు అంతర్గత స్నాప్‌షాట్ అనునది నిల్వ రకం %2$s కొరకు తోడ్పాటునీయదు"
 
 msgid "internal snapshot of a running VM must include the memory state"
-msgstr ""
-
-msgid ""
-"internal snapshots of a VM with pflash based firmware are not supported with "
-"this qemu"
 msgstr ""
 
 msgid ""
@@ -37443,12 +37450,6 @@ msgstr ""
 msgid "this disk doesn't support update"
 msgstr "ఈ డిస్కు నవీకరణకు తోడ్పాటునీయదు"
 
-msgid "this domain does not have a device to delete snapshots"
-msgstr "ఈ పరికరం స్నాప్‌షాట్లను తొలగించుటకు వొక పరికరం కలిగిలేదు"
-
-msgid "this domain does not have a device to take snapshots"
-msgstr "ఈ పరికరం స్నాప్‌షాట్లను తీసుకొనుటకు వొక పరికరం కలిగిలేదు"
-
 msgid "this domain exists already"
 msgstr "ఈ క్షేత్రం ఇప్పటికే ఉంది"
 
@@ -37941,6 +37942,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "transport '%1$s' does not support socket attribute"
 msgstr "పూల్ టైప్ '%1$s' మూలము ఆవిష్కారమును మద్దతించదు"
+
+msgid "transport 'fd' is now allowed"
+msgstr ""
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "విండోస్ నందు బదిలీకరణ పద్దతులు unix, ssh మరియు ext మద్దతీయబడవు"
@@ -40976,6 +40980,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Failed to delete snapshot: %1$s"
+#~ msgstr "స్నాప్‌షాట్ %1$s తొలగించుటకు విఫలమైంది"
+
+#, c-format
+#~ msgid "Failed to take snapshot: %1$s"
+#~ msgstr "స్నాప్‌షాట్ తీసుకొనుటకు విఫలమైంది: %1$s"
+
+#, c-format
+#~ msgid "Network type %1$d is not supported"
+#~ msgstr "నెట్వర్కు రకము %1$d మద్దతీయుటలేదు"
+
+#~ msgid "this domain does not have a device to delete snapshots"
+#~ msgstr "ఈ పరికరం స్నాప్‌షాట్లను తొలగించుటకు వొక పరికరం కలిగిలేదు"
+
+#~ msgid "this domain does not have a device to take snapshots"
+#~ msgstr "ఈ పరికరం స్నాప్‌షాట్లను తీసుకొనుటకు వొక పరికరం కలిగిలేదు"
 
 #, fuzzy, c-format
 #~ msgid "Failed to add %1$s controller type definition"
