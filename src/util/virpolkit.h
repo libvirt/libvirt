@@ -24,8 +24,6 @@
 #include "internal.h"
 #include "vircommand.h"
 
-#define PKTTYAGENT "/usr/bin/pkttyagent"
-
 int virPolkitCheckAuth(const char *actionid,
                        pid_t pid,
                        unsigned long long startTime,

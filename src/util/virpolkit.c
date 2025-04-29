@@ -189,7 +189,7 @@ virPolkitAgentCreate(void)
 
     agent = g_new0(virPolkitAgent, 1);
 
-    agent->cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
+    agent->cmd = virCommandNewArgList("pkttyagent", "--process", NULL);
 
     virCommandAddArgFormat(agent->cmd, "%lld", (long long int) getpid());
     virCommandAddArg(agent->cmd, "--notify-fd");
@@ -234,11 +234,13 @@ virPolkitAgentAvailable(void)
 {
     const char *termid = ctermid(NULL);
     VIR_AUTOCLOSE fd = -1;
-
-    if (!virFileIsExecutable(PKTTYAGENT))
-        return false;
+    g_autofree char *agent = NULL;
 
     if (!termid)
+        return false;
+
+    agent = virFindFileInPath("pkttyagent");
+    if (!agent)
         return false;
 
     /*
