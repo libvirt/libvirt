@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-04-28 08:27+0000\n"
-"PO-Revision-Date: 2025-04-03 11:20+0000\n"
+"PO-Revision-Date: 2025-04-29 06:27+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.11\n"
 
 msgid ""
 "\n"
@@ -10061,6 +10061,8 @@ msgstr "Гібридне присипляння"
 #, c-format
 msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
 msgstr ""
+"Підтримки можливості освітлення Hyper-v «%1$s» для доменів Xen не "
+"передбачено."
 
 #, c-format
 msgid ""
@@ -10958,7 +10960,7 @@ msgstr "Некоректний метод перевірки ключів осн
 
 #, c-format
 msgid "Invalid host_data provided. Expected '%1$zu' bytes"
-msgstr ""
+msgstr "Надано некоректні дані host_data. Мало бути «%1$zu» байтів"
 
 #, c-format
 msgid "Invalid hostdev protocol '%1$s'"
@@ -13259,6 +13261,11 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
+"Не надано адреси і не вдалося виявити якийсь шлях для очікування даних від "
+"фонової служби, за яким можна було б з'єднатися. Будь ласка, переконайтеся, "
+"що сокети фонової служби є активними і надайте адресу явним чином. "
+"Докладніший опис: https://libvirt.org/kbase/"
+"failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
 msgstr "Не вказано схеми адреси"
@@ -13836,13 +13843,15 @@ msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Передбачено підтримку лише планувальників «credit» і «credit2»"
 
 msgid "Only 'random' backend model is supported"
-msgstr ""
+msgstr "Передбачено підтримку лише обробника «random»"
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr ""
+"Передбачено підтримку лише моделі пристрою породжувача випадкових чисел "
+"«virio»"
 
 msgid "Only /dev/random source is supported"
-msgstr ""
+msgstr "Передбачено підтримку лише джерела /dev/random"
 
 msgid "Only 1 IDE controller is supported"
 msgstr "Передбачено підтримку лише одного контролера IDE"
@@ -14882,7 +14891,7 @@ msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "Підтримки розподілу ширини каналу пам'яті RDT не передбачено"
 
 msgid "RNG backend is not supported"
-msgstr ""
+msgstr "Підтримки модуля породжувача випадкових чисел не передбачено"
 
 msgid "RNG device is missing alias"
 msgstr "у пристрою RNG немає псевдоніма"
@@ -18134,6 +18143,8 @@ msgid ""
 "The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
+"Номер придатного лише до читання диска має бути більшим або рівним номеру "
+"диска для читання і запису"
 
 #, c-format
 msgid ""
@@ -29655,6 +29666,8 @@ msgid ""
 "file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
 "server"
 msgstr ""
+"група файлових дескрипторів «%1$s» має містити лише 1 дескриптор файла для "
+"сервера NBD"
 
 #, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
@@ -39745,7 +39758,7 @@ msgid "transport '%1$s' does not support socket attribute"
 msgstr "каналом передавання «%1$s» не підтримується атрибут сокета"
 
 msgid "transport 'fd' is now allowed"
-msgstr ""
+msgstr "не можна використовувати передавання «fd»"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
