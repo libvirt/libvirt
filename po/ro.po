@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-04-28 08:27+0000\n"
-"PO-Revision-Date: 2025-04-29 09:08+0000\n"
+"PO-Revision-Date: 2025-05-01 09:25+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.11\n"
+"X-Generator: Weblate 5.11.1\n"
 
 msgid ""
 "\n"
@@ -10032,6 +10032,8 @@ msgstr "Suspendare-hibridă"
 #, c-format
 msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
 msgstr ""
+"Caracteristica de îmbunătățire Hyper-v „%1$s” nu este acceptată pentru "
+"domeniile Xen."
 
 #, c-format
 msgid ""
@@ -10924,6 +10926,7 @@ msgstr "Metodă nevalidă de verificare a cheii de gazdă: „%1$s"
 #, c-format
 msgid "Invalid host_data provided. Expected '%1$zu' bytes"
 msgstr ""
+"Au fost furnizate date host_data nevalide. Se așteptau „%1$zu” de octeți"
 
 #, c-format
 msgid "Invalid hostdev protocol '%1$s'"
@@ -13202,6 +13205,11 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
+"Nu este furnizată nicio adresă URI și nu poate fi identificată nicio rută a "
+"soclului demonului de ascultare la care să se încerce conectarea. Vă rugăm "
+"să vă asigurați că soclurile așteptate ale demonilor sunt active și/sau să "
+"furnizați o adresă URI explicită. Pentru mai multe informații, consultați "
+"https://libvirt.org/kbase/failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
 msgstr "Nu este specificată nicio schemă URI"
@@ -13783,13 +13791,13 @@ msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Sunt acceptate numai planificatoarele „credit” și „credit2”"
 
 msgid "Only 'random' backend model is supported"
-msgstr ""
+msgstr "Numai modelul de gestionare „random” este acceptat"
 
 msgid "Only 'virio' RNG device model is supported"
-msgstr ""
+msgstr "Numai modelul de dispozitiv RNG „virio” este acceptat"
 
 msgid "Only /dev/random source is supported"
-msgstr ""
+msgstr "Numai sursa „/dev/random” este acceptată"
 
 msgid "Only 1 IDE controller is supported"
 msgstr "Este acceptat doar un controlor IDE"
@@ -14107,142 +14115,174 @@ msgstr ""
 "Afișează atributele unui secret ca o descărcare XML la ieșirea standard."
 
 msgid "Output the IP address and port number for the VNC display."
-msgstr ""
+msgstr "Afișează adresa IP și numărul portului pentru afișajul VNC."
 
 msgid "Output the IP address and port number for the graphical display."
-msgstr ""
+msgstr "Afișează adresa IP și numărul portului pentru afișarea grafică."
 
 msgid "Output the device for the TTY console."
-msgstr ""
+msgstr "Afișează dispozitivul pentru consola TTY."
 
 msgid "Output the domain information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile despre domeniu ca o descărcare XML la ieșirea standard."
 
 msgid "Output the network filter information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile privind filtrul de rețea ca o descărcare XML la "
+"ieșirea standard."
 
 msgid "Output the network information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile privind rețeaua ca o descărcare XML la ieșirea "
+"standard."
 
 msgid "Output the network port information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile privind portul de rețea ca o descărcare XML la ieșirea "
+"standard."
 
 msgid "Output the node device details as an XML dump to stdout."
 msgstr ""
+"Afișează detalii despre dispozitivul nodului ca o descărcare XML la ieșirea "
+"standard."
 
 msgid ""
 "Output the physical host interface information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile privind interfața fizică a gazdei sub forma unei "
+"descărcări XML la ieșirea standard."
 
 msgid "Output the pool information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile despre fond ca o descărcare XML la ieșirea standard."
 
 msgid "Output the vol information as an XML dump to stdout."
 msgstr ""
+"Afișează informațiile despre volum ca o descărcare XML la ieșirea standard."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
+msgstr "Suprapunerea vcpus în resctrls"
 
 msgid "PASS"
-msgstr ""
+msgstr "TRECE CU SUCCES"
 
 #, c-format
 msgid ""
 "PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
 "be larger than bus"
 msgstr ""
+"Controlorul PCI la indicele %1$d (0x%2$02x) are magistrala=„0x%3$02x”, dar "
+"indicele trebuie să fie mai mare decât magistrala"
 
 #, c-format
 msgid "PCI controller busNr '%1$d' out of range - must be 1-254"
 msgstr ""
+"Valoarea busNr „%1$d” al controlorului PCI este în afara intervalului - "
+"trebuie să fie între 1 și 254"
 
 #, c-format
 msgid "PCI controller chassis '%1$d' out of range - must be 0-255"
 msgstr ""
+"Valoarea șasiului controlorului PCI „%1$d” este în afara intervalului - "
+"trebuie să fie între 0 și 255"
 
 #, c-format
 msgid "PCI controller chassisNr '%1$d' out of range - must be 1-255"
 msgstr ""
+"Valoarea chassisNr al controlorului PCI „%1$d” este în afara intervalului - "
+"trebuie să fie între 1 și 255"
 
 #, c-format
 msgid "PCI controller index %1$d too high, maximum is 255"
-msgstr ""
+msgstr "Indicele controlorului PCI %1$d este prea mare, maximul este 255"
 
 msgid "PCI controller model was not set correctly"
-msgstr ""
+msgstr "Modelul controlorului PCI nu a fost definit corect"
 
 #, c-format
 msgid "PCI controller port '%1$d' out of range - must be 0-255"
 msgstr ""
+"Portul controlorului PCI „%1$d” este în afara intervalului - trebuie să fie "
+"între 0 și 255"
 
 #, c-format
 msgid "PCI controller target index '%1$d' out of range - must be 0-30"
 msgstr ""
+"Indicele țintă al controlorului PCI „%1$d” este în afara intervalului - "
+"trebuie să fie între 0 și 30"
 
 #, c-format
 msgid ""
 "PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
 "in use by domain %6$s"
 msgstr ""
+"Dispozitivul PCI %1$04x:%2$02x:%3$02x.%4$x alocat din rețeaua %5$s este deja "
+"utilizat de domeniul %6$s"
 
 #, c-format
 msgid "PCI device %1$s is in use"
-msgstr ""
+msgstr "Dispozitivul PCI %1$s este în uz"
 
 #, c-format
 msgid "PCI device %1$s is in use by driver %2$s, domain %3$s"
-msgstr ""
+msgstr "Dispozitivul PCI %1$s este utilizat de controlorul %2$s, domeniul %3$s"
 
 #, c-format
 msgid "PCI device %1$s is not assignable"
-msgstr ""
+msgstr "Dispozitivul PCI %1$s nu este alocabil"
 
 #, c-format
 msgid ""
 "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
 "%5$s"
 msgstr ""
+"Dispozitivul PCI „%1$04x:%2$02x:%3$02x.%4$x” poate fi listat o singură dată "
+"în rețeaua %5$s"
 
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
 msgstr ""
+"Dispozitivele gazdă PCI trebuie să utilizeze tipul de adresă „pci” sau "
+"„unassigned”"
 
 msgid "PID file (unless overridden by -p):"
-msgstr ""
+msgstr "Fișier PID (cu excepția cazului în care este suprascris prin „-p”):"
 
 msgid "PID namespace support is required"
-msgstr ""
+msgstr "Este necesar suportul pentru spațiul de nume PID"
 
 msgid "PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"
-msgstr ""
+msgstr "Controlorul USB PIIX3 la indicele 0 trebuie să aibă adresa PCI 0:0:1.2"
 
 #, c-format
 msgid "PMSuspend type %1$d not supported by libxenlight driver"
-msgstr ""
+msgstr "Tipul PMSuspend %1$d nu este acceptat de controlorul libxenlight"
 
 msgid "PMSuspended"
-msgstr ""
+msgstr "PMSuspended"
 
 #, c-format
 msgid "PMU is always enabled for architecture '%1$s'"
-msgstr ""
+msgstr "PMU este întotdeauna activat pentru arhitectura „%1$s”"
 
 msgid "POST operation failed"
-msgstr ""
+msgstr "Operația POST a eșuat"
 
 #, c-format
 msgid "POST operation failed: %1$s"
-msgstr ""
+msgstr "Operația POST a eșuat: %1$s"
 
 #, c-format
 msgid ""
 "PTR domain for %1$s network with prefix %2$u cannot be automatically created"
 msgstr ""
+"Domeniul PTR pentru rețeaua %1$s cu prefixul %2$u nu poate fi creat automat"
 
 msgid "PTY device is not yet assigned"
-msgstr ""
+msgstr "Dispozitivul PTY nu este încă atribuit"
 
 msgid "PVH guest os type not supported"
-msgstr ""
+msgstr "Tipul de SO invitat PVH nu este acceptat"
 
 msgid "Page size:"
 msgstr "Dimensiunea paginii:"
@@ -14251,25 +14291,27 @@ msgid "Panicked"
 msgstr "Panicat"
 
 msgid "Parallel devices are not supported by libxl"
-msgstr ""
+msgstr "Dispozitivele paralele nu sunt acceptate de libxl"
 
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
-msgstr ""
+msgstr "Indicele portului paralel %1$d este în afara intervalului [0..2]"
 
 msgid "Parallel save is only supported with the 'sparse' save image format"
 msgstr ""
+"Salvarea paralelă este acceptată numai cu formatul de salvare a imaginii "
+"„sparse”"
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
-msgstr ""
+msgstr "Parametrul „%1$s” nu este un șir de caractere"
 
 #, c-format
 msgid "Parameter '%1$s' is not supported by this kernel"
-msgstr ""
+msgstr "Parametrul „%1$s” nu este acceptat de acest nucleu"
 
 msgid "Parameter 'min_guarantee' not supported by QEMU."
-msgstr ""
+msgstr "Parametrul „min_guarantee” nu este acceptat de QEMU."
 
 msgid "Parent"
 msgstr "Părinte"
@@ -14279,72 +14321,74 @@ msgid ""
 "Parent attribute '%1$s' does not match parent '%2$s' determined for the "
 "'%3$s' wwnn/wwpn lookup."
 msgstr ""
+"Atributul părinte „%1$s” nu corespunde cu părintele „%2$s” determinat pentru "
+"căutarea wwnn/wwpn „%3$s”."
 
 #, c-format
 msgid "Parent device %1$s is not capable of vport operations"
-msgstr ""
+msgstr "Dispozitivul părinte %1$s nu este capabil de operații vport"
 
 msgid "Parent device's JSON object data is not an array"
-msgstr ""
+msgstr "Datele obiectului JSON al dispozitivului părinte nu sunt o matrice"
 
 msgid "Parent:"
 msgstr "Părinte:"
 
 #, c-format
 msgid "Parsed JSON reply '%1$s' isn't an object"
-msgstr ""
+msgstr "Răspunsul JSON analizat „%1$s” nu este un obiect"
 
 #, c-format
 msgid "Partition path '%1$s' must start with '/'"
-msgstr ""
+msgstr "Ruta partiției „%1$s” trebuie să înceapă cu „/”"
 
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr ""
+msgstr "Pasarea valorii secrete ca argument al liniei de comandă este nesigură!"
 
 #, c-format
 msgid "Passphrase for key '%1$s'"
-msgstr ""
+msgstr "Fraza de acces pentru cheia „%1$s”"
 
 msgid "Password may not contain ',' character"
-msgstr ""
+msgstr "Parola nu poate conține caracterul „,”"
 
 #, c-format
 msgid "Password set successfully for %1$s in %2$s"
-msgstr ""
+msgstr "Parolă definită cu succes pentru %1$s în %2$s"
 
 msgid "Path"
-msgstr ""
+msgstr "Ruta"
 
 #, c-format
 msgid "Path %1$s too long for unix socket"
-msgstr ""
+msgstr "Ruta %1$s este prea lungă pentru soclul unix"
 
 #, c-format
 msgid "Path '%1$s' does not specify a compute resource"
-msgstr ""
+msgstr "Ruta „%1$s” nu specifică o resursă de calcul"
 
 #, c-format
 msgid "Path '%1$s' does not specify a datacenter"
-msgstr ""
+msgstr "Ruta „%1$s” nu specifică un centru de date"
 
 #, c-format
 msgid "Path '%1$s' does not specify a host system"
-msgstr ""
+msgstr "Ruta „%1$s” nu specifică un sistem gazdă"
 
 #, c-format
 msgid "Path '%1$s' ends with an excess item"
-msgstr ""
+msgstr "Ruta „%1$s” se termină cu un element excedentar"
 
 #, c-format
 msgid "Path '%1$s' is not accessible"
-msgstr ""
+msgstr "Ruta „%1$s” nu este accesibilă"
 
 #, c-format
 msgid "Path '%1$s' must be a block device"
-msgstr ""
+msgstr "Ruta „%1$s” trebuie să fie un dispozitiv de blocuri"
 
 msgid "Path has to specify the datacenter and compute resource"
-msgstr ""
+msgstr "Ruta trebuie să specifice centrul de date și resursa de calcul"
 
 msgid "Paused"
 msgstr "În pauză"
@@ -14354,213 +14398,232 @@ msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', no "
 "possible answers"
 msgstr ""
+"Întrebarea în așteptare blochează executarea mașinii virtuale, întrebarea "
+"este „%1$s”, fără răspunsuri posibile"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s"
 msgstr ""
+"Întrebarea în așteptare blochează executarea mașinii virtuale, întrebarea "
+"este „%1$s”, răspunsurile posibile sunt %2$s"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
+"Întrebarea în așteptare blochează executarea mașinii virtuale, întrebarea "
+"este „%1$s”, răspunsurile posibile sunt %2$s, dar nu este specificat niciun "
+"răspuns implicit"
 
 msgid "Per-node binding is not compatible with automatic NUMA placement."
-msgstr ""
+msgstr "Legarea pe nod nu este compatibilă cu plasarea automată NUMA."
 
 msgid "Perf not supported on this platform"
-msgstr ""
+msgstr "Perf nu este acceptat pe această platformă"
 
 msgid "Persistent"
-msgstr ""
+msgstr "Persistentă"
 
 msgid "Persistent:"
-msgstr ""
+msgstr "Persistentă:"
 
 msgid "Physical"
-msgstr ""
+msgstr "Fizic"
 
 msgid "Physical:"
-msgstr ""
+msgstr "Fizic:"
 
 msgid "Pin domain IOThreads to host physical CPUs."
-msgstr ""
+msgstr "Asociază IOThreads ale domeniului la CPU-urile fizice ale gazdei."
 
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr ""
+"Asociază CPU-urile virtuale (VCPU) ale domeniului la CPU-urile fizice ale "
+"gazdei."
 
 msgid "Pin domain emulator threads to host physical CPUs."
-msgstr ""
+msgstr "Asociază firele emulatorului de domeniu la CPU-urile fizice ale gazdei."
 
 #, c-format
 msgid "Plugin %1$s not accessible"
-msgstr ""
+msgstr "Modulul %1$s nu este accesibil"
 
 #, c-format
 msgid "Policy kit denied action %1$s from <anonymous>"
-msgstr ""
+msgstr "Policy kit a refuzat acțiunea %1$s de la <anonim>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
 msgstr ""
+"S-a încercat autentificarea cu polkit, chiar dacă polkit nu este disponibil"
 
 #, c-format
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "Interogarea pe soclul %1$d a eșuat"
 
 #, c-format
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "Interogarea pe soclul %1$d a depășit timpul de așteptare"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
-msgstr ""
+msgstr "Configurația XML a fondului %1$s a fost editată.\n"
 
 #, c-format
 msgid "Pool %1$s XML configuration not changed.\n"
-msgstr ""
+msgstr "Configurația XML a fondului %1$s nu a fost modificată.\n"
 
 #, c-format
 msgid "Pool %1$s built\n"
-msgstr ""
+msgstr "Fondul %1$s a fost construit\n"
 
 #, c-format
 msgid "Pool %1$s created\n"
-msgstr ""
+msgstr "Fondul %1$s a fost creat\n"
 
 #, c-format
 msgid "Pool %1$s created from %2$s\n"
-msgstr ""
+msgstr "Fondul %1$s a fost creat din %2$s\n"
 
 #, c-format
 msgid "Pool %1$s defined\n"
-msgstr ""
+msgstr "Fondul %1$s a fost definit\n"
 
 #, c-format
 msgid "Pool %1$s defined from %2$s\n"
-msgstr ""
+msgstr "Fondul %1$s a fost definit din %2$s\n"
 
 #, c-format
 msgid "Pool %1$s deleted\n"
-msgstr ""
+msgstr "Fondul %1$s a fost șters\n"
 
 #, c-format
 msgid "Pool %1$s destroyed\n"
-msgstr ""
+msgstr "Fondul %1$s a fost distrus\n"
 
 #, c-format
 msgid "Pool %1$s has been undefined\n"
-msgstr ""
+msgstr "Fondul %1$s a fost făcut ca nedefinit\n"
 
 #, c-format
 msgid "Pool %1$s marked as autostarted\n"
-msgstr ""
+msgstr "Fondul %1$s a fost marcat ca pornit automat\n"
 
 #, c-format
 msgid "Pool %1$s refreshed\n"
-msgstr ""
+msgstr "Fondul %1$s a fost actualizat\n"
 
 #, c-format
 msgid "Pool %1$s started\n"
-msgstr ""
+msgstr "Fondul %1$s a fost inițiat\n"
 
 #, c-format
 msgid "Pool %1$s unmarked as autostarted\n"
-msgstr ""
+msgstr "Fondul %1$s a fost demarcat ca pornit automat\n"
 
 msgid "Populate a disk from its backing image."
-msgstr ""
+msgstr "Popularea unui disc din imaginea sa de copie de rezervă."
 
 msgid "Port Dev"
-msgstr ""
+msgstr "Portul dispozitivului"
 
 #, c-format
 msgid "Port profile Associate failed for %1$s"
-msgstr ""
+msgstr "Asocierea profilului portului a eșuat pentru %1$s"
 
 msgid "Port reclaim not requested but plug type is not none"
 msgstr ""
+"Recuperarea portului nu este solicitată, dar tipul de conector este "
+"specificat"
 
 msgid "Port reclaim requested but plug type is none"
 msgstr ""
+"Se solicită recuperarea portului, dar tipul de conector nu este specificat"
 
 msgid "Post-copy"
-msgstr ""
+msgstr "Post-copiere"
 
 msgid "Post-copy Error"
-msgstr ""
+msgstr "Eroare post-copiere"
 
 msgid "Postcopy requests:"
-msgstr ""
+msgstr "Cereri de post-copiere:"
 
 msgid "PowerPC pseries machines do not support floppy device"
-msgstr ""
+msgstr "Mașinile PowerPC pseries nu acceptă dispozitive de dischetă"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
-msgstr ""
+msgstr "PrepareTunnel a fost apelat, dar nu a fost activat fanionul TUNNELLED"
 
 msgid "Primary IDE controller must have PCI address 0:0:1.1"
-msgstr ""
+msgstr "Controlorul IDE primar trebuie să aibă adresa PCI 0:0:1.1"
 
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
-msgstr ""
+msgstr "Controlorul SATA primar trebuie să aibă adresa PCI 0:0:1f.2"
 
 msgid "Print lease info for a given network"
-msgstr ""
+msgstr "Afișează informațiile de închiriere pentru o anumită rețea"
 
 msgid "Print the current directory."
-msgstr ""
+msgstr "Afișează directorul curent."
 
 msgid "Prints cpu stats of the node."
-msgstr ""
+msgstr "Afișează statisticile cpu ale nodului."
 
 msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
+"Afișează ajutorul global, ajutorul specific comenzii sau\n"
+"    ajutorul pentru un grup de comenzi conexe"
 
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
 "commands"
 msgstr ""
+"Afișează ajutorul global, ajutorul specific comenzii sau ajutorul pentru un "
+"grup de comenzi conexe"
 
 msgid "Prints memory stats of the node."
-msgstr ""
+msgstr "Afișează statisticile de memorie ale nodului."
 
 #, c-format
 msgid "Priority '%1$d' is outside valid range of [%2$d,%3$d]"
-msgstr ""
+msgstr "Prioritatea „%1$d” este în afara intervalului valid [%2$d,%3$d]"
 
 msgid "Probing TSC is not supported on this platform"
-msgstr ""
+msgstr "Testarea TSC nu este acceptată pe această platformă"
 
 msgid "Process CPU affinity is not supported on this platform"
-msgstr ""
+msgstr "Procesul de afinitate a CPU nu este acceptat pe această platformă"
 
 msgid "Process CPU scheduling is not supported on this platform"
-msgstr ""
+msgstr "Procesul de planificare a CPU nu este acceptat pe această platformă"
 
 msgid "Process exited prior to exec"
-msgstr ""
+msgstr "Procesul a ieșit înainte de execuție"
 
 msgid "Process spawning is not supported on this platform"
-msgstr ""
+msgstr "Crearea de procese nu este acceptată pe această platformă"
 
 #, c-format
 msgid "Processes %1$d refused to die"
-msgstr ""
+msgstr "Procesele %1$d au refuzat să moară"
 
 #, c-format
 msgid "Processor mask of target NUMA node %1$zu doesn't match source"
-msgstr ""
+msgstr "Masca de procesor a nodului NUMA țintă %1$zu nu corespunde sursei"
 
 msgid "Profile of 0 size detected, will attempt to remove it"
-msgstr ""
+msgstr "Profil de dimensiune 0 detectat, se va încerca eliminarea acestuia"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
 msgstr ""
+"Proprietatea „guest-stats-polling-interval” nu a fost găsită în controlorul "
+"balonului de memorie."
 
 msgid "Protocol"
 msgstr "Protocol"
@@ -14568,391 +14631,423 @@ msgstr "Protocol"
 #, c-format
 msgid "Protocol '%1$s' is not supported for tcp character device."
 msgstr ""
+"Protocolul „%1$s” nu este acceptat pentru dispozitivul de caractere tcp."
 
 msgid "Pull aborted"
-msgstr ""
+msgstr "Extragere anulată"
 
 msgid "Pull complete"
-msgstr ""
+msgstr "Extragere finalizată"
 
 msgid "Pull failed"
-msgstr ""
+msgstr "Extragere eșuată"
 
 #, c-format
 msgid "QEMU '%1$s' does not support any CPU models for virttype '%2$s'"
-msgstr ""
+msgstr "QEMU „%1$s” nu acceptă niciun model de CPU pentru virttype „%2$s”"
 
 #, c-format
 msgid "QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"
-msgstr ""
+msgstr "QEMU „%1$s” nu acceptă raportarea modelului CPU pentru virttype „%2$s”"
 
 msgid "QEMU Attach"
-msgstr ""
+msgstr "Atașare QEMU"
 
 msgid "QEMU Guest Agent Command"
-msgstr ""
+msgstr "Comanda agentului de invitat QEMU"
 
 msgid "QEMU Monitor Command"
-msgstr ""
+msgstr "Comanda monitor QEMU"
 
 msgid "QEMU Monitor Events"
-msgstr ""
+msgstr "Evenimente de monitorizare QEMU"
 
 msgid "QEMU NBD server does not support TLS transport"
-msgstr ""
+msgstr "Serverul QEMU NBD nu acceptă transportul TLS"
 
 #, c-format
 msgid "QEMU agent command '%1$s' returned neither error nor success"
-msgstr ""
+msgstr "Comanda agentului QEMU „%1$s” nu a returnat nici eroare, nici succes"
 
 #, c-format
 msgid "QEMU binary %1$s is not executable"
-msgstr ""
+msgstr "Binarul QEMU %1$s nu este executabil"
 
 msgid "QEMU does not support SEV guest"
-msgstr ""
+msgstr "QEMU nu acceptă invitați SEV"
 
 msgid "QEMU does not support calculating dirty page rate"
-msgstr ""
+msgstr "QEMU nu oferă suport pentru calcularea ratei paginilor murdare"
 
 #, c-format
 msgid "QEMU does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "QEMU nu acceptă modul de atribuire a dispozitivelor „%1$s”"
 
 msgid "QEMU does not support dirty page rate calculation mode."
-msgstr ""
+msgstr "QEMU nu oferă suport pentru modul de calcul al ratei paginilor murdare."
 
 msgid "QEMU does not support multiple listens for one graphics device."
-msgstr ""
+msgstr "QEMU nu acceptă ascultări multiple pentru un dispozitiv grafic."
 
 msgid "QEMU does not support setting a launch secret"
-msgstr ""
+msgstr "QEMU nu acceptă definirea unui secret de lansare"
 
 msgid "QEMU guest agent is not available due to an error"
-msgstr ""
+msgstr "Agentul invitat QEMU nu este disponibil din cauza unei erori"
 
 msgid "QEMU guest agent is not configured"
-msgstr ""
+msgstr "Agentul de invitați QEMU nu este configurat"
 
 msgid "QEMU guest agent is not connected"
-msgstr ""
+msgstr "Agentul de invitați QEMU nu este conectat"
 
 #, c-format
 msgid "QEMU monitor reply exceeds buffer size (%1$d bytes)"
 msgstr ""
+"Răspunsul monitorului QEMU depășește dimensiunea tamponului (%1$d octeți)"
 
 msgid "QEMU monitor was closed"
-msgstr ""
+msgstr "Monitorul QEMU a fost închis"
 
 msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
+"QEMU raportează un model de CPU implicit nevalid „host” pentru un tip de "
+"virtualizare a domeniului non-kvm"
 
 msgid "QEMU reports migration is still running"
-msgstr ""
+msgstr "QEMU raportează că migrarea este încă în desfășurare"
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
-msgstr ""
+msgstr "QEMU a închis în mod neașteptat monitorul (vm='%1$s')"
 
 #, c-format
 msgid "QEMU version >= %1$d.%2$d.%3$d is required, but %4$d.%5$d.%6$d found"
 msgstr ""
+"Este necesară versiunea QEMU >= %1$d.%2$d.%3$d, dar s-a găsit %4$d.%5$d.%6$d"
 
 msgid "QEMU/KVM virtual machines are running"
-msgstr ""
+msgstr "Mașinile virtuale QEMU/KVM rulează"
 
 #, c-format
 msgid "QOM Object '%1$s' has no property 'ram_size'"
-msgstr ""
+msgstr "Obiectul QOM „%1$s” nu are proprietatea „ram_size”"
 
 #, c-format
 msgid "QOM Object '%1$s' has no property 'vgamem_mb'"
-msgstr ""
+msgstr "Obiectul QOM „%1$s” nu are proprietatea „vgamem_mb”"
 
 #, c-format
 msgid "QOM Object '%1$s' has no property 'vram64_size_mb'"
-msgstr ""
+msgstr "Obiectul QOM „%1$s” nu are proprietatea „vram64_size_mbe”"
 
 #, c-format
 msgid "QOM Object '%1$s' has no property 'vram_size'"
-msgstr ""
+msgstr "Obiectul QOM „%1$s” nu are proprietatea „vram_size”"
 
 #, c-format
 msgid ""
 "Query parameter 'auto_answer' has unexpected value '%1$s' (should be 0 or 1)"
 msgstr ""
+"Parametrul de interogare „auto_answer” are valoarea neașteptată „%1$s” (ar "
+"trebui să fie 0 sau 1)"
 
 #, c-format
 msgid ""
 "Query parameter 'no_verify' has unexpected value '%1$s' (should be 0 or 1)"
 msgstr ""
+"Parametrul de interogare „no_verify” are valoarea neașteptată „%1$s” (ar "
+"trebui să fie 0 sau 1)"
 
 #, c-format
 msgid ""
 "Query parameter 'proxy' contains unexpected type '%1$s' (should be (http|"
 "socks(|4|4a|5))"
 msgstr ""
+"Parametrul de interogare „proxy” conține tipul neașteptat „%1$s” (ar trebui "
+"să fie (http|socks(|4|4a|5))"
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
-msgstr ""
+msgstr "Parametrul de interogare „proxy” nu conține un nume de gazdă"
 
 #, c-format
 msgid ""
 "Query parameter 'proxy' has unexpected port value '%1$s' (should be "
 "[1..65535])"
 msgstr ""
+"Parametrul de interogare „proxy” are valoarea neașteptată a portului „%1$s” ("
+"trebuie să fie [1..65535])"
 
 #, c-format
 msgid ""
 "Query parameter 'transport' has unexpected value '%1$s' (should be http|"
 "https)"
 msgstr ""
+"Parametrul de interogare „transport” are valoarea neașteptată „%1$s” ("
+"trebuie să fie http|https)"
 
 msgid "Query, adjust speed, or cancel active block operations."
 msgstr ""
+"Interoghează, ajustează viteza sau anulează operațiile de blocare active."
 
 #, c-format
 msgid "QueryPerf returned object with unexpected type '%1$s'"
-msgstr ""
+msgstr "QueryPerf a returnat un obiect cu tipul neașteptat „%1$s”"
 
 msgid ""
 "QueryVirtualDiskUuid not available, cannot lookup storage volume by UUID"
 msgstr ""
+"QueryVirtualDiskUuid nu este disponibil, nu se poate căuta volumul de "
+"stocare după UUID"
 
 msgid "Querying migration downtime is not supported by QEMU binary"
 msgstr ""
+"Interogarea timpului de întrerupere a migrării nu este acceptată de binarul "
+"QEMU"
 
 #, c-format
 msgid ""
 "RBD image %1$s is old format. Does not support extended features and striping"
 msgstr ""
+"Imaginea RBD %1$s este un format vechi. Acest format nu oferă caracteristici "
+"avansate și crearea de piste."
 
 msgid "RDP doesn't support 'multiUser'"
-msgstr ""
+msgstr "RDP nu acceptă „multiUser”"
 
 msgid "RDP doesn't support 'replaceUser'"
-msgstr ""
+msgstr "RDP nu acceptă „replaceUser”"
 
 msgid "RDP password expiration isn't supported"
-msgstr ""
+msgstr "Expirarea parolei RDP nu este acceptată"
 
 msgid "RDT Memory Bandwidth allocation unsupported"
-msgstr ""
+msgstr "Alocare de lățime de bandă de memorie RDT neacceptată"
 
 msgid "RNG backend is not supported"
-msgstr ""
+msgstr "Dispozitivul RNG nu este acceptat"
 
 msgid "RNG device is missing alias"
-msgstr ""
+msgstr "Dispozitivul RNG nu are alias"
 
 msgid "ROM tuning is not supported when ROM is disabled"
-msgstr ""
+msgstr "Ajustarea ROM nu este acceptată atunci când ROM este dezactivată"
 
 msgid "ROM tuning is only supported for PCI devices"
-msgstr ""
+msgstr "Ajustarea ROM este acceptată numai pentru dispozitivele PCI"
 
 msgid "RPC error"
-msgstr ""
+msgstr "Eroare RPC"
 
 msgid "Range exceeds available cells"
-msgstr ""
+msgstr "Intervalul depășește celulele disponibile"
 
 #, c-format
 msgid "Rate string '%1$s' has too many fields"
-msgstr ""
+msgstr "Șirul ratei/vitezii „%1$s” are prea multe câmpuri"
 
 msgid "Raw I/O is not supported on this platform"
-msgstr ""
+msgstr "Datele de In/Ieș brute nu este acceptată pe această platformă"
 
 msgid "Read domain"
-msgstr ""
+msgstr "Citirea domeniului"
 
 msgid "Read domain block"
-msgstr ""
+msgstr "Citește blocul domeniului"
 
 msgid "Read domain memory"
-msgstr ""
+msgstr "Citește memoria domeniului"
 
 msgid "Read host"
-msgstr ""
+msgstr "Citește gazda"
 
 msgid "Read interface"
-msgstr ""
+msgstr "Citește interfața"
 
 msgid "Read network"
-msgstr ""
+msgstr "Citește rețeaua"
 
 msgid "Read network filter"
-msgstr ""
+msgstr "Citește filtrul de rețea"
 
 msgid "Read network filter binding"
-msgstr ""
+msgstr "Citește legătura filtrului de rețea"
 
 msgid "Read network port"
-msgstr ""
+msgstr "Citește portul de rețea"
 
 msgid "Read node device"
-msgstr ""
+msgstr "Citește dispozitivul nodului"
 
 msgid "Read secret"
-msgstr ""
+msgstr "Citește secretul"
 
 msgid "Read secure domain"
-msgstr ""
+msgstr "Citește domeniul securizat"
 
 msgid "Read secure secret"
-msgstr ""
+msgstr "Citește secretul securizat"
 
 msgid "Read storage pool"
-msgstr ""
+msgstr "Citește fondul de stocare"
 
 msgid "Read storage volume"
-msgstr ""
+msgstr "Citește volumul de stocare"
 
 msgid "Read storage volume data"
-msgstr ""
+msgstr "Citește datele volumului de stocare"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
+"Citire/scriere, acces exclusiv, discurile erau prezente, dar nu era "
+"specificată nicio locație"
 
 msgid "Reading CPUID is not supported on this platform"
-msgstr ""
+msgstr "Citirea CPUID nu este acceptată pe această platformă"
 
 msgid "Reading MSRs is not supported on this platform"
-msgstr ""
+msgstr "Citirea MSR-urilor nu este acceptată pe această platformă"
 
 msgid "Reading domain block devices requires authorization"
-msgstr ""
+msgstr "Citirea dispozitivelor de blocuri ale domeniului necesită autorizare"
 
 msgid "Reading domain configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației domeniului necesită autorizare"
 
 msgid "Reading domain memory requires authorization"
-msgstr ""
+msgstr "Citirea memoriei domeniului necesită autorizare"
 
 msgid "Reading interface configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației interfeței necesită autorizare"
 
 msgid "Reading network configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației rețelei necesită autorizare"
 
 msgid "Reading network filter configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației filtrului de rețea necesită autorizare"
 
 msgid "Reading network port configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației porturilor de rețea necesită autorizare"
 
 msgid "Reading node device configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației dispozitivului nodului necesită autorizare"
 
 msgid "Reading secret configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației secretului necesită autorizare"
 
 msgid "Reading secure domain configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației domeniului securizat necesită autorizare"
 
 msgid "Reading secure secret configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației secretului securizat necesită autorizare"
 
 msgid "Reading storage pool configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației fondului de stocare necesită autorizare"
 
 msgid "Reading storage volume configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației volumului de stocare necesită autorizare"
 
 msgid "Reading storage volume data requires authorization"
-msgstr ""
+msgstr "Citirea datelor volumului de stocare necesită autorizare"
 
 msgid "Reading the host configuration requires authorization"
-msgstr ""
+msgstr "Citirea configurației gazdei necesită autorizare"
 
 msgid "Reattach node device to its device driver once released by the domain."
 msgstr ""
+"Reatașează dispozitivul nodului la controlorul său de dispozitiv odată ce a "
+"fost eliberat de domeniu."
 
 #, c-format
 msgid "Received too many FDs %1$d, expected %2$d maximum"
 msgstr ""
+"S-au primit prea muți descriptori de fișiee, r%1$d, se așteptau %2$d maxim"
 
 msgid "Receiving file descriptors is not supported on this socket"
-msgstr ""
+msgstr "Primirea descriptorilor de fișier nu este acceptată pe acest soclu"
 
 msgid "Reconnected to the admin server"
-msgstr ""
+msgstr "Reconectat la serverul de administrare"
 
 msgid "Reconnected to the hypervisor"
-msgstr ""
+msgstr "Reconectat la hipervizor"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
-msgstr ""
+msgstr "Magistrala de redirecționare %1$s nu este acceptată de QEMU"
 
 msgid "Refresh a given pool."
-msgstr ""
+msgstr "Actualizează fondul specificat."
 
 msgid "Refresh storage pool"
-msgstr ""
+msgstr "Actualizează fondul de stocare"
 
 msgid "Refreshing storage pool volumes requires authorization"
-msgstr ""
+msgstr "Actualizarea volumelor fondului de stocare necesită autorizare"
 
 #, c-format
 msgid "Refusing to undefine while %1$d snapshots exist"
-msgstr ""
+msgstr "Se refuză anularea definiției atunci când există %1$d instantanee"
 
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
+"Se refuză anularea definiției atunci când există o imagine de salvare "
+"gestionată de domeniu"
 
 msgid "Refusing to undefine while snapshots exist"
-msgstr ""
+msgstr "Se refuză anularea definiției atunci când există instantanee"
 
 #, c-format
 msgid "Regular expression '%1$s' must have exactly 1 match group, not %2$d"
 msgstr ""
+"Expresia regulată „%1$s” trebuie să aibă exact 1 grup de potrivire, nu %2$d"
 
 msgid "Relative backing during copy not supported yet"
-msgstr ""
+msgstr "Copierea de rezervă relativă în timpul copierii nu este încă acceptată"
 
 msgid "Reload domain's graphics display certificates"
-msgstr ""
+msgstr "Reîncarcă certificatele de afișare grafică ale domeniului"
 
 #, c-format
 msgid "Remote command terminated with non-zero code: %1$d"
-msgstr ""
+msgstr "Comanda de la distanță încheiată cu un cod diferit de zero: %1$d"
 
 #, c-format
 msgid "Remote program terminated with non-zero code: %1$d"
-msgstr ""
+msgstr "Programul de la distanță s-a încheiat cu un cod diferit de zero: %1$d"
 
 #, c-format
 msgid "Removable media not supported for %1$s device"
-msgstr ""
+msgstr "Suporturile media amovibile nu sunt acceptate pentru dispozitivul %1$s"
 
 msgid "Remove an existing managed save state file from a domain"
 msgstr ""
+"Elimină un fișier de stare de salvare gestionată existent dintr-un domeniu"
 
 msgid "Remove managed save of a domain"
-msgstr ""
+msgstr "Elimină salvarea gestionată a unui domeniu"
 
 msgid "Removed"
-msgstr ""
+msgstr "Eliminat"
 
 #, c-format
 msgid "Removed managedsave image for domain '%1$s'"
-msgstr ""
+msgstr "Imaginea gestionată de salvare pentru domeniul „%1$s” a fost eliminată"
 
 msgid "Renamed"
-msgstr ""
+msgstr "Redenumit"
 
 msgid "Renaming domains on migration not supported"
-msgstr ""
+msgstr "Redenumirea domeniilor la migrare nu este acceptată"
 
 msgid "Replace the domain XML associated with a managed save state file"
 msgstr ""
+"Înlocuiește domeniul XML asociat cu un fișier de stare de salvare gestionat"
 
 msgid "Replace the domain XML associated with a saved state file"
-msgstr ""
+msgstr "Înlocuiește domeniul XML asociat cu un fișier de stare salvat"
 
 #, c-format
 msgid ""
@@ -14960,10 +15055,13 @@ msgid ""
 "%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
 "by the host CPU"
 msgstr ""
+"Frecvența TSC solicitată %1$llu Hz este în afara intervalului de toleranță ("
+"[%2$llu, %3$llu] Hz) în jurul frecvenței gazdei %4$llu Hz și scalarea TSC nu "
+"este acceptată de CPU-ul gazdă"
 
 #, c-format
 msgid "Requested data len %1$llu is larger than maximum %2$d"
-msgstr ""
+msgstr "Lungimea datelor solicitate %1$llu este mai mare decât maximul de %2$d"
 
 #, c-format
 msgid ""
