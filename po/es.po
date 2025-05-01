@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-04-28 08:27+0000\n"
-"PO-Revision-Date: 2025-04-07 03:11+0000\n"
+"PO-Revision-Date: 2025-04-30 19:09+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.11.1\n"
 
 msgid ""
 "\n"
@@ -44,7 +44,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (especifique help <orden> para obtener detalles de la orden)\n"
+"  (especifique help <comando> para obtener detalles del comando)\n"
 "\n"
 
 msgid ""
@@ -662,13 +662,13 @@ msgstr "%1$s tiene un '*' inesperado antes de última línea"
 msgid "%1$s in %2$s must be NULL"
 msgstr "%1$s en %2$s debe ser NULL"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be greater than zero"
-msgstr "%1$s en %2$s debe ser cero o mayor"
+msgstr "%1$s en %2$s debería ser mayor que cero"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s in %2$s must be zero"
-msgstr "%1$s en %2$s no debe ser cero"
+msgstr "%1$s en %2$s debería ser cero"
 
 #, c-format
 msgid "%1$s in %2$s must be zero or greater"
@@ -686,9 +686,9 @@ msgstr "%1$s en %2$s no debe ser cero"
 msgid "%1$s is missing 'type' property"
 msgstr "%1$s no posee la propiedad 'type'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s is not an executable"
-msgstr "Binario QEMU %1$s no es ejecutable"
+msgstr "%1$s no es un ejecutable"
 
 #, c-format
 msgid "%1$s is not supported by this QEMU binary"
@@ -918,9 +918,10 @@ msgstr ""
 "%1$s: prefijo %2$u no válido especificado en la definición de la ruta "
 "(route), debería ser 0 - 128"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Missing required address attribute in route definition"
-msgstr "Falta el atributo de dirección requerida en red '%1$s'"
+msgstr ""
+"%1$s: Falta el atributo de dirección requerido en la definición de la ruta"
 
 #, c-format
 msgid "%1$s: Missing required gateway attribute in route definition"
@@ -942,11 +943,11 @@ msgstr ""
 "%1$s: No se ha especificado una familia para la puerta de enlace no-IPv4 "
 "'%2$s' en la definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Route definition cannot have both a prefix and a netmask"
 msgstr ""
-"La dirección IP de red '%1$s' no puede tener prefijo y máscara de red a la "
-"vez"
+"%1$s: La definición de ruta no puede tener un prefijo y una máscara de red "
+"al mismo tiempo"
 
 #, c-format
 msgid ""
@@ -963,9 +964,9 @@ msgstr ""
 "%1$s: Iniciando dispositivo externo: %2$s\n"
 "%3$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: Unrecognized family '%2$s' in route definition"
-msgstr "Familia '%1$s' desconocida en red '%2$s'"
+msgstr "%1$s: Familia '%2$s' no reconocida en la definición de la ruta"
 
 #, c-format
 msgid "%1$s: cannot connect to '%2$s': %3$s\n"
@@ -1089,11 +1090,12 @@ msgstr ""
 "%1$s: Se especificó una familia IPv6 para la dirección no-IPv6 '%2$s' en la "
 "definición de la ruta"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s: ipv6 specified for non-IPv6 gateway address '%2$s' in route definition"
 msgstr ""
-"Familia 'ipv6' especificada para dirección non-IPv6 '%1$s' en red '%2$s'"
+"%1$s: ipv6 fue especificado para la dirección de puerta de enlace no ipv6 "
+"'%2$s' en la definición de la ruta"
 
 #, c-format
 msgid "%1$s: malformed fd %2$s"
@@ -1114,7 +1116,7 @@ msgstr "%1$s: migration_port_min: el puerto debe ser mayor que 0"
 msgid "%1$s: must be run as root\n"
 msgstr "%1$s: debe ser ejecutado como root\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: must not be run setuid root\n"
 msgstr "%1$s: no debe ser ejecutado setuid root\n"
 
@@ -1304,17 +1306,17 @@ msgstr "'%1$s' no es un ayudante de puente adecuado"
 msgid "'%1$s' is not a suitable dbus-daemon"
 msgstr "'%1$s' no es un dbus-daemon adecuado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not a suitable pr helper"
-msgstr "Ruta '%1$s' no es accesible"
+msgstr "'%1$s' no es un ayudante adecuado de pr"
 
 #, c-format
 msgid "'%1$s' is not a suitable qemu-rdp helper name"
 msgstr "'%1$s' no es un nombre de ayudante de QEMU-RDP adecuado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
-msgstr "%1$s no tiene soporte en este binario de QEMU"
+msgstr "'%1$s' no es admitido por este binario de QEMU"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
@@ -1360,10 +1362,9 @@ msgstr ""
 "'--migrate-disks-detect-zeroes' requiere una de las siguientes opciones '--"
 "copy-storage-all' o '--copy-storage-inc'"
 
-#, fuzzy
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
-msgstr "Ambos se especifican --storage y --remove-all-storage"
+msgstr "'--wipe-storage' requiere '--storage<string>' o '--remove-all-storage'"
 
 #, c-format
 msgid "':' not allowed in RBD source volume name '%1$s'"
@@ -1404,13 +1405,11 @@ msgstr "el dispositivo de respaldo nvram '%1$s' del tipo 'block' no existe"
 msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' hace referencia a una caché de nodo NUMA inexistente"
 
-#, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr "El controlador virtio-scsi solo admite 'queues'"
+msgstr "'cmd_per_lun' solo es compatible con el controlador virtio-scsi"
 
-#, fuzzy
 msgid "'cow' storage format is not supported"
-msgstr "Formato fs %s no tiene soporte"
+msgstr "no se admite el formato de almacenamiento 'cow'"
 
 msgid ""
 "'directory' storage format is not directly supported by QEMU, use 'dir' disk "
@@ -1438,9 +1437,8 @@ msgstr "'extended_l2' no es compatible con compat level %1$s"
 msgid "'gluster' command line tool not found"
 msgstr "No se encontró la herramienta de línea de órdenes «gluster»"
 
-#, fuzzy
 msgid "'host-name' missing in guest-get-host-name reply"
-msgstr "'online' falta en respuesta de guest-get-vcpus"
+msgstr "falta 'host-name' en la respuesta de guest-get-host-name"
 
 #, c-format
 msgid ""
@@ -1453,17 +1451,14 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' hace referencia a un nodo NUMA inexistente"
 
-#, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "El controlador virtio-scsi solo admite 'queues'"
+msgstr "'ioeventfd' solo es compatible con el controlador virtio-scsi"
 
-#, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
-msgstr "El controlador virtio-scsi solo admite 'queues'"
+msgstr "el atributo 'iothread' solo es compatible con controladores virtio scsi"
 
-#, fuzzy
 msgid "'iothread' is only supported for virtio-scsi controller"
-msgstr "El controlador virtio-scsi solo admite 'queues'"
+msgstr "'iothread' solo es compatible con el controlador virtio-scsi"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -1473,9 +1468,8 @@ msgstr ""
 msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
 
-#, fuzzy
 msgid "'login-time' missing in reply of guest-get-users"
-msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
+msgstr "falta 'login-time' en la respuesta de guest-get-users"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "el modo de instantánea de memoria 'manual' no es compatible"
@@ -1484,9 +1478,8 @@ msgid "'manual' snapshot mode is not supported by the test driver"
 msgstr ""
 "el modo de instantánea 'manual' no es compatible con el controlador de prueba"
 
-#, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
-msgstr "El controlador virtio-scsi solo admite 'queues'"
+msgstr "'max_sectors' solo es compatible con el controlador virtio-scsi"
 
 msgid "'max_workers' must be greater than 0"
 msgstr "«max_workers» debe ser mayor que 0"
@@ -1503,16 +1496,14 @@ msgstr ""
 msgid "'model' attribute in <hostdev> is only supported when type='%1$s'"
 msgstr "el atributo 'model' en <hostdev> solo se admite cuando type= '%1$s'"
 
-#, fuzzy
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
-msgstr "'online' falta en respuesta de guest-get-vcpus"
+msgstr "falta 'mountpoint' en la respuesta de guest-get-fsinfo"
 
 msgid "'name' missing in reply of guest-get-disks"
 msgstr "falta 'name' en la respuesta de guest-get-disks"
 
-#, fuzzy
 msgid "'name' missing in reply of guest-get-fsinfo"
-msgstr "'online' falta en respuesta de guest-get-vcpus"
+msgstr "falta 'name' en la respuesta de guest-get-fsinfo"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr ""
@@ -1531,9 +1522,8 @@ msgstr "el host 'nfs' debe usar el protocolo TCP"
 msgid "'nfs' protocol requires the usage of exactly one host"
 msgstr "el protocolo 'nfs' requiere el uso de un único host"
 
-#, fuzzy
 msgid "'offset' missing in reply of guest-get-timezone"
-msgstr "'can-offline' falta en respuesta de guest-get-vcpus"
+msgstr "falta 'offset' en la respuesta de guest-get-timezone"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' falta en respuesta de guest-get-vcpus"
@@ -1633,9 +1623,9 @@ msgid "'value %1$d' is invalid for 'sibling id %2$d' under NUMA 'cell id %3$d'"
 msgstr ""
 "'value %1$d' no es válido para 'sibling id %2$d' bajo 'cell id %3$d' de NUMA"
 
-#, fuzzy
 msgid "'vhostuser' driver is only supported with 'virtio' device"
-msgstr "vhost-net solamente tiene soporte para interfaces de red virtio"
+msgstr ""
+"el controlador 'vhostuser' solo es compatible con el dispositivo 'virtio'"
 
 msgid "'virtio-s390' addresses are no longer supported"
 msgstr "las direcciones 'virtio-s390' ya no son compatibles"
@@ -1650,9 +1640,8 @@ msgstr "(<null>)"
 msgid "(CPU_definition)"
 msgstr "(CPU_definition)"
 
-#, fuzzy
 msgid "(_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(_migration_cookie)"
 
 msgid "(bridge interface definition)"
 msgstr "(Definición de interfaz de puente)"
@@ -1666,21 +1655,17 @@ msgstr "(definición_ de_ secreto)"
 msgid "(device_definition)"
 msgstr "(device_definition)"
 
-#, fuzzy
 msgid "(disk_definition)"
-msgstr "(device_definition)"
+msgstr "(disk_definition)"
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "(capacidades)"
+msgstr "(domainCapabilities)"
 
-#, fuzzy
 msgid "(domain_backup)"
-msgstr "(domain_snapshot)"
+msgstr "(domain_backup)"
 
-#, fuzzy
 msgid "(domain_checkpoint)"
-msgstr "(domain_definition)"
+msgstr "(domain_checkpoint)"
 
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
@@ -1700,9 +1685,8 @@ msgstr "(definición de interfaz)"
 msgid "(interface_definition)"
 msgstr "(interface_definition)"
 
-#, fuzzy
 msgid "(libxl_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(libxl_migration_cookie)"
 
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
@@ -1710,9 +1694,8 @@ msgstr "(metadata_xml)"
 msgid "(network_definition)"
 msgstr "(network_definition)"
 
-#, fuzzy
 msgid "(networkport_definition)"
-msgstr "(network_definition)"
+msgstr "(networkport_definition)"
 
 msgid "(node_device_definition)"
 msgstr "(node_device_definition)"
@@ -1720,9 +1703,8 @@ msgstr "(node_device_definition)"
 msgid "(nwfilter_definition)"
 msgstr "(nwfilter_definition)"
 
-#, fuzzy
 msgid "(nwfilterbinding_definition)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilterbinding_definition)"
 
 #, fuzzy
 msgid "(nwfilterbinding_status)"
