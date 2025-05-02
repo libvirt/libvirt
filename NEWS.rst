@@ -8,10 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v11.3.0 (unreleased)
+v11.3.0 (2025-05-02)
 ====================
-
-* **Security**
 
 * **Removed features**
 
@@ -37,8 +35,6 @@ v11.3.0 (unreleased)
 
     At the moment it doesn't provide any new features compared to
     ``<interface type='bridge'>``, but allows a more flexible configuration.
-
-* **Improvements**
 
 * **Bug fixes**
 
