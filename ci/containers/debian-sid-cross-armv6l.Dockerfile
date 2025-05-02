@@ -88,7 +88,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libparted-dev:armel \
                       libpcap0.8-dev:armel \
                       libpciaccess-dev:armel \
-                      librbd-dev:armel \
                       libreadline-dev:armel \
                       libsanlock-dev:armel \
                       libsasl2-dev:armel \

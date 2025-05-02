@@ -88,7 +88,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libparted-dev:i386 \
                       libpcap0.8-dev:i386 \
                       libpciaccess-dev:i386 \
-                      librbd-dev:i386 \
                       libreadline-dev:i386 \
                       libsanlock-dev:i386 \
                       libsasl2-dev:i386 \

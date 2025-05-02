@@ -88,7 +88,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libparted-dev:armhf \
                       libpcap0.8-dev:armhf \
                       libpciaccess-dev:armhf \
-                      librbd-dev:armhf \
                       libreadline-dev:armhf \
                       libsanlock-dev:armhf \
                       libsasl2-dev:armhf \
