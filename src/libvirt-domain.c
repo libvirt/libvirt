@@ -7322,9 +7322,8 @@ virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
  * @domain: a domain object
  * @autostart: the value returned
  *
- * Provides a boolean value indicating whether the domain
- * configured to be automatically started when the host
- * machine boots.
+ * Provides a boolean value indicating whether the domain is configured to be
+ * automatically started each time when the host machine boots.
  *
  * Returns -1 in case of error, 0 in case of success
  *
@@ -7366,8 +7365,8 @@ virDomainGetAutostart(virDomainPtr domain,
  * @domain: a domain object
  * @autostart: whether the domain should be automatically started 0 or 1
  *
- * Configure the domain to be automatically started
- * when the host machine boots.
+ * Configure the domain to be automatically started each time when the host
+ * machine boots.
  *
  * Returns -1 in case of error, 0 in case of success
  *
@@ -7409,9 +7408,12 @@ virDomainSetAutostart(virDomainPtr domain,
  * @domain: a domain object
  * @autostart: the value returned
  *
- * Provides a boolean value indicating whether the domain
- * is configured to be automatically started the next time
- * the host machine boots only.
+ * Provides a boolean value indicating whether the domain is configured to be
+ * automatically started next time when the host machine boots.
+ *
+ * Note that autostart configured via the virDomain[Set|Get]AutostartOnce APIs
+ * is independent from the autostart configured via virDomain[Set|Get]Autostart.
+ * Enabling either of them will cause the VM to be started on the next boot.
  *
  * Returns -1 in case of error, 0 in case of success
  *
@@ -7453,8 +7455,12 @@ virDomainGetAutostartOnce(virDomainPtr domain,
  * @domain: a domain object
  * @autostart: whether the domain should be automatically started 0 or 1
  *
- * Configure the domain to be automatically started
- * the next time the host machine boots only.
+ * Configure the domain to be automatically started the next when the host
+ * machine boots.
+ *
+ * Note that autostart configured via the virDomain[Set|Get]AutostartOnce APIs
+ * is independent from the autostart configured via virDomain[Set|Get]Autostart.
+ * Enabling either of them will cause the VM to be started on the next boot.
  *
  * Returns -1 in case of error, 0 in case of success
  *
