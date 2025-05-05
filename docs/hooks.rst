@@ -211,7 +211,10 @@ operation. There is no specific operation to indicate a "restart" is occurring.
       /etc/libvirt/hooks/qemu guest_name stopped end -
 
    Then, after libvirt has released all resources, the hook is called again,
-   :since:`since 0.9.0`, to allow any additional resource cleanup:
+   :since:`since 0.9.0`, to allow any additional resource cleanup.
+   The ``shutoff-reason`` argument (:since:`since 10.5.0`; before that
+   '-' was passed instead) provides the reason for the shutdown of
+   the domain.
 
    ::
 
@@ -331,7 +334,10 @@ operation. There is no specific operation to indicate a "restart" is occurring.
       /etc/libvirt/hooks/lxc guest_name stopped end -
 
    Then, after libvirt has released all resources, the hook is called again,
-   :since:`since 0.9.0`, to allow any additional resource cleanup:
+   :since:`since 0.9.0`, to allow any additional resource cleanup.
+   The ``shutoff-reason`` argument (:since:`since 10.5.0`; before that
+   '-' was passed instead) provides the reason for the shutdown of
+   the domain.
 
    ::
 
