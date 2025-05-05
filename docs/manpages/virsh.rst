@@ -1088,12 +1088,17 @@ autostart
 
 ::
 
-   autostart [--disable] domain
+   autostart [--disable] [--once] domain
 
 
-Configure a domain to be automatically started at boot.
+Configure a domain to be automatically started at each boot of the host. The
+*--once* option configures the domain to be started on the next boot of the host.
 
-The option *--disable* disables autostarting.
+The option *--disable* disables the corresponding autostarting.
+
+Note that autostart configured via the *--once* option is independent from the
+autostart configured without it. Enabling either of them will cause the VM to
+be started on the next boot of the host.
 
 
 blkdeviotune
