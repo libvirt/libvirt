@@ -533,9 +533,19 @@ bhyveDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
     struct _bhyveConn *privconn = domain->conn->privateData;
     virObjectEvent *event = NULL;
     virDomainObj *vm;
+    g_autofree char *nvram_path = NULL;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_UNDEFINE_NVRAM |
+                  VIR_DOMAIN_UNDEFINE_KEEP_NVRAM, -1);
+
+    if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM) &&
+        (flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot both keep and delete nvram"));
+        return -1;
+    }
+
     if (!(vm = bhyveDomObjFromDomain(domain)))
         goto cleanup;
 
@@ -546,6 +556,26 @@ bhyveDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Cannot undefine transient domain"));
         goto cleanup;
+    }
+
+    if (vm->def->os.loader && vm->def->os.loader->nvram &&
+        virStorageSourceIsLocalStorage(vm->def->os.loader->nvram)) {
+        nvram_path = g_strdup(vm->def->os.loader->nvram->path);
+    }
+
+    if (nvram_path && virFileExists(nvram_path)) {
+        if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
+            if (unlink(nvram_path) < 0) {
+                virReportSystemError(errno,
+                                     _("failed to remove nvram: %1$s"),
+                                     nvram_path);
+                goto cleanup;
+            }
+        } else if (!(flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("cannot undefine domain with nvram"));
+            goto cleanup;
+        }
     }
 
     if (virDomainDeleteConfig(BHYVE_CONFIG_DIR,
