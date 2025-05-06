@@ -541,6 +541,9 @@ virNetDevTapReattachBridge(const char *tapname,
     /* IFLA_MASTER for a tap on an OVS switch is always "ovs-system" */
     if (STREQ_NULLABLE(master, "ovs-system")) {
         useOVS = true;
+
+        /* master needs to be released here because it will be reassigned */
+        g_clear_pointer(&master, g_free);
         if (virNetDevOpenvswitchInterfaceGetMaster(tapname, &master) < 0)
             return -1;
     }
