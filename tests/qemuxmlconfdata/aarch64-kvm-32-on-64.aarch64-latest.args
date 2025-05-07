@@ -32,9 +32,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
 -device '{"driver":"pcie-root-port","port":10,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x2"}' \
--blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.2","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
+-blockdev '{"driver":"file","filename":"/arm.raw","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.2","addr":"0x0","drive":"libvirt-1-storage","id":"virtio-disk0","bootindex":1}' \
 -netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.1","addr":"0x0"}' \
 -chardev pty,id=charserial0 \

@@ -12,7 +12,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes"}' \
 -machine vexpress-a9,usb=off,dump-guest-core=off,memory-backend=vexpress.highmem \
 -accel tcg \
--cpu cortex-a9 \
 -m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"vexpress.highmem","size":1073741824}' \
 -overcommit mem-lock=off \
