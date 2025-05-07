@@ -29795,9 +29795,163 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "virtio-iommu-pci"
+    "typename": "virtio-mem-ccw"
   },
   "id": "libvirt-30"
+}
+
+{
+  "return": [
+    {
+      "name": "dev_id",
+      "description": "Read-only identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "name": "devno",
+      "description": "Identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "name": "subch_id",
+      "description": "Read-only identifier of an I/O device in the channel subsystem, example: fe.1.23ab",
+      "type": "str"
+    },
+    {
+      "default-value": 2,
+      "name": "max_revision",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "memaddr",
+      "type": "uint64"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "memdev",
+      "type": "link<memory-backend>"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-early-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "node",
+      "type": "uint32"
+    },
+    {
+      "name": "requested-size",
+      "type": "size"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "queue_reset",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "block-size",
+      "type": "size"
+    },
+    {
+      "default-value": false,
+      "name": "prealloc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "in_order",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "size",
+      "type": "size"
+    },
+    {
+      "default-value": true,
+      "name": "use-disabled-flag",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "dynamic-memslots",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-mem>"
+    }
+  ],
+  "id": "libvirt-30"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-iommu-pci"
+  },
+  "id": "libvirt-31"
 }
 
 {
@@ -30075,7 +30229,7 @@
       "type": "child<virtio-iommu-device>"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
@@ -30083,7 +30237,7 @@
   "arguments": {
     "typename": "virtio-blk-ccw"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -30373,7 +30527,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -30381,7 +30535,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -30471,7 +30625,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -30479,7 +30633,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -30558,12 +30712,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -30838,7 +30992,7 @@
       "default-ram-id": "s390.ram"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -30846,7 +31000,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -30965,12 +31119,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -31680,32 +31834,32 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -32983,12 +33137,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -33082,7 +33236,7 @@
       "capability": "mapped-ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -33093,7 +33247,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -33165,7 +33319,7 @@
       }
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -33176,7 +33330,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -33332,7 +33486,7 @@
       }
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {

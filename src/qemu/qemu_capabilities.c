@@ -1551,6 +1551,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVhostUserFS[] = 
     { "bootindex", QEMU_CAPS_VHOST_USER_FS_BOOTINDEX, NULL },
 };
 
+/* This is used also for QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW */
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioMemPCI[] = {
     { "prealloc", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC, NULL },
     { "dynamic-memslots", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_DYNAMIC_MEMSLOTS, NULL },
@@ -1716,6 +1717,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-mem-pci", virQEMUCapsDevicePropsVirtioMemPCI,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioMemPCI),
       QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
+    { "virtio-mem-ccw", virQEMUCapsDevicePropsVirtioMemPCI,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioMemPCI),
+      QEMU_CAPS_DEVICE_VIRTIO_MEM_CCW },
     { "virtio-iommu-pci", virQEMUCapsDevicePropsVirtioIOMMU,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioIOMMU),
       QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
