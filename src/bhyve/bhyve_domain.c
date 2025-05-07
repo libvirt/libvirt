@@ -267,11 +267,54 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     return 0;
 }
 
+
+static int
+bhyveDomainDefValidate(const virDomainDef *def,
+                       void *opaque G_GNUC_UNUSED,
+                       void *parseOpaque G_GNUC_UNUSED)
+{
+    virStorageSource *src = NULL;
+
+    if (!def->os.loader)
+        return 0;
+
+    if (!(src = def->os.loader->nvram))
+        return 0;
+
+    if (src->type != VIR_STORAGE_TYPE_FILE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s",
+                       _("only 'file' type is supported with NVRAM"));
+        return -1;
+    }
+
+    if (src->sliceStorage) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("slices are not supported with NVRAM"));
+        return -1;
+    }
+
+    if (src->pr) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("persistent reservations are not supported with NVRAM"));
+        return -1;
+    }
+
+    if (src->backingStore) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("backingStore is not supported with NVRAM"));
+        return -1;
+    }
+
+    return 0;
+}
+
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
     .devicesPostParseCallback = bhyveDomainDeviceDefPostParse,
     .domainPostParseCallback = bhyveDomainDefPostParse,
     .assignAddressesCallback = bhyveDomainDefAssignAddresses,
     .deviceValidateCallback = bhyveDomainDeviceDefValidate,
+    .domainValidateCallback = bhyveDomainDefValidate,
 
     .features = VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT,
 };
