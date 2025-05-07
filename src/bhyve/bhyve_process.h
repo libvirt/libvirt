@@ -24,9 +24,17 @@
 #include "bhyve_utils.h"
 
 int
+bhyvePrepareNVRAM(bhyveConn *driver,
+                  virDomainDef *def);
+
+int
 bhyveProcessPrepareDomain(bhyveConn *driver,
                           virDomainObj *vm,
                           unsigned int flags);
+int
+bhyveProcessPrepareHost(bhyveConn *driver,
+                        virDomainDef *def,
+                        unsigned int flags);
 
 int virBhyveProcessStart(bhyveConn *driver,
                          virConnectPtr conn,

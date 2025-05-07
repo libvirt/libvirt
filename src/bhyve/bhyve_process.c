@@ -1,6 +1,7 @@
 /*
  * bhyve_process.c: bhyve process management
  *
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2025 The FreeBSD Foundation
  *
@@ -275,6 +276,134 @@ bhyveProcessPrepareDomain(bhyveConn *driver,
     return 0;
 }
 
+
+struct bhyvePrepareNVRAMHelperData {
+    int srcFD;
+    const char *srcPath;
+};
+
+
+static int
+bhyvePrepareNVRAMHelper(int dstFD,
+                        const char *dstPath,
+                        const void *opaque)
+{
+    const struct bhyvePrepareNVRAMHelperData *data = opaque;
+    ssize_t r;
+
+    do {
+        char buf[1024];
+
+        if ((r = saferead(data->srcFD, buf, sizeof(buf))) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to read from file '%1$s'"),
+                                 data->srcPath);
+            return -2;
+        }
+
+        if (safewrite(dstFD, buf, r) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to write to file '%1$s'"),
+                                 dstPath);
+            return -1;
+        }
+    } while (r);
+
+    return 0;
+}
+
+
+static int
+bhyvePrepareNVRAMFile(bhyveConn *driver G_GNUC_UNUSED,
+                      virDomainLoaderDef *loader)
+{
+    VIR_AUTOCLOSE srcFD = -1;
+    struct bhyvePrepareNVRAMHelperData data;
+
+    if (virFileExists(loader->nvram->path))
+        return 0;
+
+    if (!loader->nvramTemplate) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("unable to find any master var store for loader: %1$s"),
+                       loader->path);
+        return -1;
+    }
+
+    /* If 'nvramTemplateFormat' is empty it means that it's a user-provided
+     * template which we couldn't verify. Assume the user knows what they're doing */
+    if (loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE &&
+        loader->nvram->format != loader->nvramTemplateFormat) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("conversion of the nvram template to another target format is not supported"));
+        return -1;
+    }
+
+    if ((srcFD = virFileOpenAs(loader->nvramTemplate, O_RDONLY,
+                               0, -1, -1, 0)) < 0) {
+        virReportSystemError(-srcFD,
+                             _("Failed to open file '%1$s'"),
+                             loader->nvramTemplate);
+        return -1;
+    }
+
+    data.srcFD = srcFD;
+    data.srcPath = loader->nvramTemplate;
+
+    if (virFileRewrite(loader->nvram->path,
+                       S_IRUSR | S_IWUSR,
+                       0, 0,
+                       bhyvePrepareNVRAMHelper,
+                       &data) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+bhyvePrepareNVRAM(bhyveConn *driver,
+                  virDomainDef *def)
+{
+    virDomainLoaderDef *loader = def->os.loader;
+
+    if (!loader || !loader->nvram)
+        return 0;
+
+    VIR_DEBUG("nvram='%s'", NULLSTR(loader->nvram->path));
+
+    switch (virStorageSourceGetActualType(loader->nvram)) {
+    case VIR_STORAGE_TYPE_FILE:
+        return bhyvePrepareNVRAMFile(driver, loader);
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
+    case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_VHOST_VDPA:
+    case VIR_STORAGE_TYPE_LAST:
+    case VIR_STORAGE_TYPE_NONE:
+        break;
+    }
+
+    return 0;
+}
+
+int
+bhyveProcessPrepareHost(bhyveConn *driver,
+                        virDomainDef *def,
+                        unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    if (bhyvePrepareNVRAM(driver, def) < 0)
+        return -1;
+
+    return 0;
+}
+
 int
 virBhyveProcessStart(bhyveConn *driver,
                      virConnectPtr conn,
@@ -290,6 +419,9 @@ virBhyveProcessStart(bhyveConn *driver,
         virCloseCallbacksDomainAdd(vm, conn, bhyveProcessAutoDestroy);
 
     if (bhyveProcessPrepareDomain(driver, vm, flags) < 0)
+        return -1;
+
+    if (bhyveProcessPrepareHost(driver, vm->def, flags) < 0)
         return -1;
 
     return virBhyveProcessStartImpl(driver, vm, reason);
