@@ -39,6 +39,8 @@ struct _virBhyveDriverConfig {
     virObject parent;
 
     char *firmwareDir;
+    char *libDir;
+    char *nvramDir;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virBhyveDriverConfig, virObjectUnref);

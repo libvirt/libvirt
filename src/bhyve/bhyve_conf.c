@@ -57,6 +57,8 @@ virBhyveDriverConfigNew(void)
         return NULL;
 
     cfg->firmwareDir = g_strdup(DATADIR "/uefi-firmware");
+    cfg->libDir = g_strdup_printf("%s/lib/libvirt/bhyve", LOCALSTATEDIR);
+    cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
 
     return cfg;
 }
@@ -95,6 +97,8 @@ virBhyveDriverConfigDispose(void *obj)
     struct _virBhyveDriverConfig *cfg = obj;
 
     g_free(cfg->firmwareDir);
+    g_free(cfg->libDir);
+    g_free(cfg->nvramDir);
 }
 
 void

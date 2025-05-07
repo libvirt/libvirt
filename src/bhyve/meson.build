@@ -64,4 +64,9 @@ if conf.has('WITH_BHYVE')
   virt_daemon_confs += {
     'name': 'virtbhyved',
   }
+
+  virt_install_dirs += [
+    localstatedir / 'lib' / 'libvirt' / 'bhyve',
+    localstatedir / 'lib' / 'libvirt' / 'bhyve' / 'nvram',
+  ]
 endif
