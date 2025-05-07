@@ -148,6 +148,7 @@ mymain(void)
 {
     int ret = 0;
     g_autofree char *fakefirmwaredir = g_strdup("fakefirmwaredir");
+    g_autofree char *fakenvramdir = g_strdup("fakenvramdir");
     g_autofree char *fakefirmwareemptydir = g_strdup("fakefirmwareemptydir");
 
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
@@ -163,6 +164,7 @@ mymain(void)
         return EXIT_FAILURE;
 
     driver.config->firmwareDir = fakefirmwaredir;
+    driver.config->nvramDir = fakenvramdir;
 
 # define DO_TEST_FULL(name, flags) \
     do { \
@@ -218,6 +220,9 @@ mymain(void)
     DO_TEST("localtime");
     DO_TEST("net-e1000");
     DO_TEST("uefi");
+    DO_TEST("uefi-nvram");
+    DO_TEST("uefi-nvram-template-set");
+    DO_TEST("uefi-nvram-template-and-source-set");
     DO_TEST("vnc");
     DO_TEST("vnc-vgaconf-on");
     DO_TEST("vnc-vgaconf-off");
