@@ -85,8 +85,8 @@
     %endif
 %endif
 
-# Fedora has zfs-fuse
-%if 0%{?fedora}
+# Fedora had zfs-fuse until F43
+%if 0%{?fedora} && 0%{?fedora} < 43
     %define with_storage_zfs      0%{!?_without_storage_zfs:1}
 %else
     %define with_storage_zfs      0
@@ -700,6 +700,9 @@ Requires: /usr/bin/qemu-img
 Obsoletes: libvirt-daemon-driver-storage-rbd < 5.2.0
     %endif
 Obsoletes: libvirt-daemon-driver-storage-sheepdog < 8.8.0
+    %if !%{with_storage_zfs}
+Obsoletes: libvirt-daemon-driver-storage-zfs < 11.4.0
+    %endif
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
