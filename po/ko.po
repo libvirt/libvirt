@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-04-28 08:27+0000\n"
-"PO-Revision-Date: 2025-04-14 10:04+0000\n"
+"PO-Revision-Date: 2025-05-03 10:46+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.11.3\n"
 
 msgid ""
 "\n"
@@ -9669,7 +9669,7 @@ msgstr "하이브리드-일시 중단"
 
 #, c-format
 msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
-msgstr ""
+msgstr "Hyper-v enlightenment 기능 '%1$s' 는 Xen 도메인에서 지원되지 않습니다."
 
 #, c-format
 msgid ""
@@ -10531,7 +10531,7 @@ msgstr "잘못된 호스트 키 확인 방법: '%1$s'"
 
 #, c-format
 msgid "Invalid host_data provided. Expected '%1$zu' bytes"
-msgstr ""
+msgstr "잘못된 host_data가 제공되었습니다. '%1$zu' 바이트가 예상됩니다"
 
 #, c-format
 msgid "Invalid hostdev protocol '%1$s'"
@@ -12713,6 +12713,10 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
+"제공된 URI가 없고 연결하도록 시도하는 모든 수신 데몬 소켓을 식별 할 수 "
+"없습니다. 예상된 데몬 소켓이 활성화되어 있는지 확인하고/또는 명시적인 URI를 "
+"제공하세요. 더 많은 정보는 https://libvirt.org/kbase/"
+"failed_connection_after_install.html를 참고하세요"
 
 msgid "No URI scheme specified"
 msgstr "URI 체계가 지정되지 않았습니다"
@@ -13260,13 +13264,13 @@ msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "'credit' 및 'credit2' 스케줄러만 지원됩니다"
 
 msgid "Only 'random' backend model is supported"
-msgstr ""
+msgstr "'random' 백엔드 모델만 지원됩니다"
 
 msgid "Only 'virio' RNG device model is supported"
-msgstr ""
+msgstr "'virio' RNG 장치 모델만 지원됩니다"
 
 msgid "Only /dev/random source is supported"
-msgstr ""
+msgstr "/dev/random 원천만 지원됩니다"
 
 msgid "Only 1 IDE controller is supported"
 msgstr "1개의 IDE 컨트롤러만 지원됩니다"
@@ -14245,7 +14249,7 @@ msgid "RDT Memory Bandwidth allocation unsupported"
 msgstr "RDT 메모리 대역폭 할당이 지원되지 않음"
 
 msgid "RNG backend is not supported"
-msgstr ""
+msgstr "RNG 백엔드는 지원되지 않습니다"
 
 msgid "RNG device is missing alias"
 msgstr "RNG 장치에 별칭이 없습니다"
@@ -17172,7 +17176,7 @@ msgstr "읽기 전용 디스크에는 상위 항목이 없습니다"
 msgid ""
 "The read only disk number must be greater or equal to the read write disk "
 "number"
-msgstr ""
+msgstr "읽기 전용 디스크 번호는 읽기/쓰기 디스크 번호와 같거나 커야 합니다"
 
 #, c-format
 msgid ""
@@ -28257,7 +28261,7 @@ msgstr "XML의 비밀 특성을 포함하는 파일"
 msgid ""
 "file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
 "server"
-msgstr ""
+msgstr "파일 설명자 그룹 '%1$s' 는 NBD 서버용 1 파일 설명자만 포함해야 합니다"
 
 #, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
@@ -37710,7 +37714,7 @@ msgid "transport '%1$s' does not support socket attribute"
 msgstr "전송 '%1$s'는 소켓 특성을 지원하지 않습니다"
 
 msgid "transport 'fd' is now allowed"
-msgstr ""
+msgstr "전송 'fd'는 이제 허용됩니다"
 
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr "전송 방식 unix, ssh, ext는 Windows하에서 지원하지 않습니다"
