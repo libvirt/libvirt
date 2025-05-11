@@ -122,6 +122,7 @@ mymain(void)
     DO_TEST_DIFFERENT("nvme");
     DO_TEST_DIFFERENT("2-nvme-2-controllers");
     DO_TEST_DIFFERENT("passthru-multiple-devs");
+    DO_TEST_DIFFERENT("slirp");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

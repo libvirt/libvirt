@@ -270,6 +270,9 @@ mymain(void)
     DO_TEST("sata-rotation-rate");
     DO_TEST_FAILURE("disk-virtio-rotation-rate");
     DO_TEST_FAILURE("disk-virtio-queue-opts");
+    DO_TEST("slirp");
+    DO_TEST("slirp-mac-addr");
+    DO_TEST_FAILURE("slirp-ip");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

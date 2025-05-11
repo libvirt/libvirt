@@ -83,6 +83,8 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     if (virDomainActualNetDefValidate(net) < 0)
         return -1;
 
+    virMacAddrFormat(&net->mac, macaddr);
+
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -93,9 +95,13 @@ bhyveBuildNetArgStr(const virDomainDef *def,
             goto cleanup;
         }
         break;
+    case VIR_DOMAIN_NET_TYPE_USER:
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:0,%s,slirp,mac=%s,open",
+                               net->info.addr.pci.slot, nic_model, macaddr);
+        return 0;
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -144,7 +150,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "%d:0,%s,%s,mac=%s",
                            net->info.addr.pci.slot, nic_model,
-                           realifname, virMacAddrFormat(&net->mac, macaddr));
+                           realifname, macaddr);
 
     ret = 0;
  cleanup:

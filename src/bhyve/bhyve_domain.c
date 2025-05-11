@@ -325,6 +325,17 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
         break;
     }
+    case VIR_DOMAIN_DEVICE_NET: {
+        virDomainNetDef *net = dev->data.net;
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_USER) {
+            if (net->guestIP.nips) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting IP addresses for SLIRP networking is not supported"));
+                return -1;
+            }
+        }
+    }
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_CRYPTO:
     case VIR_DOMAIN_DEVICE_FS:
@@ -337,7 +348,6 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_MEMORY:
-    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_PANIC:
