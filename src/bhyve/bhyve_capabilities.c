@@ -125,6 +125,11 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
     caps->features[VIR_DOMAIN_CAPS_FEATURE_GENID] = VIR_TRISTATE_BOOL_NO;
     caps->gic.supported = VIR_TRISTATE_BOOL_NO;
 
+    caps->console.supported = VIR_TRISTATE_BOOL_YES;
+    caps->console.type.report = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->console.type,
+                             VIR_DOMAIN_CHR_TYPE_NMDM);
+
     return 0;
 }
 

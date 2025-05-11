@@ -36,6 +36,11 @@
     <graphics supported='no'/>
     <video supported='no'/>
     <hostdev supported='no'/>
+    <console supported='yes'>
+      <enum name='type'>
+        <value>nmdm</value>
+      </enum>
+    </console>
   </devices>
   <features>
     <gic supported='no'/>
