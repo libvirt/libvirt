@@ -237,6 +237,9 @@
       <optional>
         <ref name="panic"/>
       </optional>
+      <optional>
+        <ref name="console"/>
+      </optional>
     </element>
   </define>
 
@@ -312,6 +315,13 @@
 
   <define name="panic">
     <element name="panic">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="console">
+    <element name="console">
       <ref name="supported"/>
       <ref name="enum"/>
     </element>

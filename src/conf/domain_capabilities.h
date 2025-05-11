@@ -265,6 +265,13 @@ struct _virDomainCapsDevicePanic {
     virDomainCapsEnum model;   /* virDomainPanicModel */
 };
 
+typedef struct _virDomainCapsDeviceConsole virDomainCapsDeviceConsole;
+struct _virDomainCapsDeviceConsole {
+    virTristateBool supported;
+    virDomainCapsEnum type;   /* virDomainChrType */
+};
+
+
 typedef enum {
     VIR_DOMAIN_CAPS_FEATURE_IOTHREADS = 0,
     VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO,
@@ -304,6 +311,7 @@ struct _virDomainCaps {
     virDomainCapsDeviceCrypto crypto;
     virDomainCapsDeviceNet net;
     virDomainCapsDevicePanic panic;
+    virDomainCapsDeviceConsole console;
     /* add new domain devices here */
 
     virDomainCapsFeatureGIC gic;
