@@ -9920,40 +9920,19 @@ static int
 qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
                             virQEMUCaps *qemuCaps)
 {
-    bool supportsPassthroughVFIO = virHostdevHostSupportsPassthroughVFIO();
     virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.driver.name;
 
     /* assign defaults for hostdev passthrough */
     switch (*driverName) {
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT:
-        if (supportsPassthroughVFIO) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-                *driverName = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("VFIO PCI device assignment is not supported by this version of QEMU"));
-                return -1;
-            }
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("host doesn't support passthrough of host PCI devices"));
-            return -1;
-        }
+        /* Since nowadays only VFIO is supported default to it */
+        *driverName = VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO;
         break;
 
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO:
-        if (!supportsPassthroughVFIO) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("host doesn't support VFIO PCI passthrough"));
-            return -1;
-        }
         break;
 
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("host doesn't support legacy PCI passthrough"));
-        return -1;
-
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("QEMU does not support device assignment mode '%1$s'"),
@@ -9963,6 +9942,18 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
     default:
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
         virReportEnumRangeError(virDeviceHostdevPCIDriverName, *driverName);
+        return -1;
+    }
+
+    if (!virHostdevHostSupportsPassthroughVFIO()) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("VFIO PCI device assignment is not supported by the host"));
+        return -1;
+    }
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("VFIO PCI device assignment is not supported by this QEMU binary"));
         return -1;
     }
 
