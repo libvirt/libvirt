@@ -30,9 +30,7 @@
 #endif
 
 #ifdef __linux__
-# if defined(WITH_LIBNL)
-#  include "virnetlink.h"
-# endif
+# include "virnetlink.h"
 # include <linux/sockios.h>
 # include <linux/param.h>     /* HZ                 */
 # include <linux/in6.h>
