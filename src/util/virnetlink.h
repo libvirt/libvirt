@@ -78,8 +78,11 @@ typedef int (*virNetlinkTalkFallback)(const char *ifname);
 int virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback);
 
 int virNetlinkBridgeVlanFilterSet(const char *ifname,
-                                  int cmd,
                                   const unsigned short flags,
+                                  const short vid,
+                                  int *error);
+
+int virNetlinkBridgeVlanFilterDel(const char *ifname,
                                   const short vid,
                                   int *error);
 

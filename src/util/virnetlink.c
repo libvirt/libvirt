@@ -702,7 +702,7 @@ virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback)
 }
 
 /**
- * virNetlinkBridgeVlanFilterSet:
+ * virNetlinkBridgeVlanFilterHelper:
  *
  * @ifname: name of the link
  * @cmd:    netlink command, either RTM_SETLINK or RTM_DELLINK
@@ -717,12 +717,12 @@ virNetlinkDelLink(const char *ifname, virNetlinkTalkFallback fallback)
  * non-zero, then a netlink failure occurred, but no error message
  * is generated leaving it up to the caller to handle the condition.
  */
-int
-virNetlinkBridgeVlanFilterSet(const char *ifname,
-                              int cmd,
-                              const unsigned short flags,
-                              const short vid,
-                              int *error)
+static int
+virNetlinkBridgeVlanFilterHelper(const char *ifname,
+                                 int cmd,
+                                 const unsigned short flags,
+                                 const short vid,
+                                 int *error)
 {
     struct ifinfomsg ifm = { .ifi_family = PF_BRIDGE };
     struct bridge_vlan_info vinfo = { .flags = flags, .vid = vid };
@@ -766,6 +766,55 @@ virNetlinkBridgeVlanFilterSet(const char *ifname,
 
     return 0;
 }
+
+
+/**
+ * virNetlinkBridgeVlanFilterSet:
+ *
+ * @ifname: name of the link
+ * @flags:  flags to use when adding the vlan filter
+ * @vid:    vlan id to add
+ * @error:  netlink error code
+ *
+ * Add a vlan filter from an interface associated with a bridge.
+ *
+ * Returns 0 on success, -1 on error. Additionally, if the @error is
+ * non-zero, then a netlink failure occurred, but no error message
+ * is generated leaving it up to the caller to handle the condition.
+ */
+int
+virNetlinkBridgeVlanFilterSet(const char *ifname,
+                              const unsigned short flags,
+                              const short vid,
+                              int *error)
+{
+    return virNetlinkBridgeVlanFilterHelper(ifname, RTM_SETLINK,
+                                            flags, vid, error);
+}
+
+
+/**
+ * virNetlinkBridgeVlanFilterDel:
+ *
+ * @ifname: name of the link
+ * @vid:    vlan id to remove
+ * @error:  netlink error code
+ *
+ * Remove a vlan filter from an interface associated with a bridge.
+ *
+ * Returns 0 on success, -1 on error. Additionally, if the @error is
+ * non-zero, then a netlink failure occurred, but no error message
+ * is generated leaving it up to the caller to handle the condition.
+ */
+int
+virNetlinkBridgeVlanFilterDel(const char *ifname,
+                              const short vid,
+                              int *error)
+{
+    return virNetlinkBridgeVlanFilterHelper(ifname,
+                                            RTM_DELLINK, 0, vid, error);
+}
+
 
 /**
  * virNetlinkGetNeighbor:
@@ -1346,12 +1395,20 @@ virNetlinkNewLink(const char *ifname G_GNUC_UNUSED,
 
 int
 virNetlinkBridgeVlanFilterSet(const char *ifname G_GNUC_UNUSED,
-                              int cmd G_GNUC_UNUSED,
                               const unsigned short unusedflags G_GNUC_UNUSED,
                               const short vid G_GNUC_UNUSED,
                               int *error)
 {
     *error = 0;
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
+int
+virNetlinkBridgeVlanFilterDel(const char *ifname G_GNUC_UNUSED,
+                              const short vid G_GNUC_UNUSED,
+                              int *error G_GNUC_UNUSED)
+{
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
 }
