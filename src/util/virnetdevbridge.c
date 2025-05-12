@@ -322,7 +322,7 @@ virNetDevBridgeSetupVlans(const char *ifname, const virNetDevVlan *virtVlan)
     if (!virtVlan || !virtVlan->nTags)
         return 0;
 
-    // The interface will have been automatically added to vlan 1, so remove it
+    /* The interface will have been automatically added to vlan 1, so remove it. */
     if (virNetlinkBridgeVlanFilterSet(ifname, RTM_DELLINK, 0, 1, &error) < 0) {
         if (error != 0) {
             virReportSystemError(-error,
@@ -332,7 +332,7 @@ virNetDevBridgeSetupVlans(const char *ifname, const virNetDevVlan *virtVlan)
         return -1;
     }
 
-    // If trunk mode, add the native VLAN then add the others, if any
+    /* If trunk mode, add the native VLAN then add the others, if any. */
     if (virtVlan->trunk) {
         size_t i;
 
@@ -357,7 +357,7 @@ virNetDevBridgeSetupVlans(const char *ifname, const virNetDevVlan *virtVlan)
                 }
         }
     } else {
-        // In native mode, add the single VLAN as pvid untagged
+        /* In native mode, add the single VLAN as pvid untagged. */
         flags = BRIDGE_VLAN_INFO_PVID | BRIDGE_VLAN_INFO_UNTAGGED;
         if (virNetlinkBridgeVlanFilterSet(ifname, RTM_SETLINK, flags,
                                           virtVlan->tag[0], &error) < 0) {
