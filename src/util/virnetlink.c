@@ -1345,6 +1345,18 @@ virNetlinkNewLink(const char *ifname G_GNUC_UNUSED,
 
 
 int
+virNetlinkBridgeVlanFilterSet(const char *ifname G_GNUC_UNUSED,
+                              int cmd G_GNUC_UNUSED,
+                              const unsigned short unusedflags G_GNUC_UNUSED,
+                              const short vid G_GNUC_UNUSED,
+                              int *error)
+{
+    *error = 0;
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
+int
 virNetlinkGetNeighbor(void **nlData G_GNUC_UNUSED,
                       uint32_t src_pid G_GNUC_UNUSED,
                       uint32_t dst_pid G_GNUC_UNUSED)
