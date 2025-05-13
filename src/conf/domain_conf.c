@@ -20801,6 +20801,17 @@ virDomainNetDefCheckABIStability(virDomainNetDef *src,
         return false;
     }
 
+    /* The number of queues is used to calculate the value for 'vectors'
+     * (see qemuBuildNicDevProps) which is machine ABI thus we need to ensure
+     * that the number of queues is kept in sync */
+    if (virDomainNetIsVirtioModel(src) &&
+        (src->driver.virtio.queues != dst->driver.virtio.queues)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target virtio network queue count '%1$d' does not match source '%2$d'"),
+                       dst->driver.virtio.queues, src->driver.virtio.queues);
+        return false;
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 

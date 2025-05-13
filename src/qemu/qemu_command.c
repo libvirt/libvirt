@@ -3770,6 +3770,8 @@ qemuBuildNicDevProps(virDomainDef *def,
                  * we should add vectors=2*N+2 where N is the vhostfdSize
                  */
                 mq = VIR_TRISTATE_SWITCH_ON;
+                /* As 'vectors' is a guest-OS visible property and thus
+                 * effectively guest ABI this formula *MUST NOT* change */
                 vectors = 2 * net->driver.virtio.queues + 2;
             }
         }
