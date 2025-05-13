@@ -7963,7 +7963,7 @@ qemuProcessLaunch(virConnectPtr conn,
                   virDomainObj *vm,
                   virDomainAsyncJob asyncJob,
                   qemuProcessIncomingDef *incoming,
-                  virDomainMomentObj *snapshot,
+                  virDomainMomentObj *internalSnapshotRevert,
                   virNetDevVPortProfileOp vmop,
                   unsigned int flags)
 {
@@ -7983,12 +7983,13 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s id=%d asyncJob=%d "
               "incoming.uri=%s "
               "incoming.fd=%d incoming.path=%s "
-              "snapshot=%p vmop=%d flags=0x%x",
+              "internalSnapshotRevert='%s' vmop=%d flags=0x%x",
               conn, driver, vm, vm->def->name, vm->def->id, asyncJob,
               NULLSTR(incoming ? incoming->uri : NULL),
               incoming ? incoming->fd : -1,
               NULLSTR(incoming ? incoming->path : NULL),
-              snapshot, vmop, flags);
+              NULLSTR(internalSnapshotRevert ? internalSnapshotRevert->def->name : NULL),
+              vmop, flags);
 
     /* Okay, these are just internal flags,
      * but doesn't hurt to check */
@@ -8252,9 +8253,9 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainVcpuPersistOrder(vm->def);
 
-    if (snapshot) {
+    if (internalSnapshotRevert) {
         VIR_DEBUG("reverting internal snapshot via QMP");
-        if (qemuSnapshotInternalRevert(vm, snapshot, asyncJob) < 0)
+        if (qemuSnapshotInternalRevert(vm, internalSnapshotRevert, asyncJob) < 0)
             goto cleanup;
     }
 
@@ -8306,14 +8307,14 @@ qemuProcessLaunch(virConnectPtr conn,
     /* Since CPUs were not started yet, the balloon could not return the memory
      * to the host and thus cur_balloon needs to be updated so that GetXMLdesc
      * and friends return the correct size in case they can't grab the job */
-    if (!incoming && !snapshot &&
+    if (!incoming && !internalSnapshotRevert &&
         qemuProcessRefreshBalloonState(vm, asyncJob) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY)
         virCloseCallbacksDomainAdd(vm, conn, qemuProcessAutoDestroy);
 
-    if (!incoming && !snapshot) {
+    if (!incoming && !internalSnapshotRevert) {
         VIR_DEBUG("Setting up transient disk");
         if (qemuProcessSetupDisksTransient(vm, asyncJob) < 0)
             goto cleanup;

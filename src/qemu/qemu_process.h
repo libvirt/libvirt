@@ -153,7 +153,7 @@ int qemuProcessLaunch(virConnectPtr conn,
                       virDomainObj *vm,
                       virDomainAsyncJob asyncJob,
                       qemuProcessIncomingDef *incoming,
-                      virDomainMomentObj *snapshot,
+                      virDomainMomentObj *internalSnapshotRevert,
                       virNetDevVPortProfileOp vmop,
                       unsigned int flags);
 
