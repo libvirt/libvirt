@@ -78,6 +78,7 @@ typedef enum {
     QEMU_CPU_DEF_POWER8,
     QEMU_CPU_DEF_POWER9,
     QEMU_CPU_DEF_POWER10,
+    QEMU_CPU_DEF_POWER11,
 } qemuTestCPUDef;
 
 struct testQemuArgs {

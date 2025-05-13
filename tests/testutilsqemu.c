@@ -24,6 +24,7 @@ static virCPUDef *cpuHaswell;
 static virCPUDef *cpuPower8;
 static virCPUDef *cpuPower9;
 static virCPUDef *cpuPower10;
+static virCPUDef *cpuPower11;
 
 char *
 virFindFileInPath(const char *file)
@@ -166,6 +167,7 @@ qemuTestGetCPUDef(qemuTestCPUDef d)
     case QEMU_CPU_DEF_POWER8: return cpuPower8;
     case QEMU_CPU_DEF_POWER9: return cpuPower9;
     case QEMU_CPU_DEF_POWER10: return cpuPower10;
+    case QEMU_CPU_DEF_POWER11: return cpuPower11;
     }
 
     return NULL;
@@ -251,6 +253,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virCPUDefFree(cpuPower8);
     virCPUDefFree(cpuPower9);
     virCPUDefFree(cpuPower10);
+    virCPUDefFree(cpuPower11);
 }
 
 
@@ -303,6 +306,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cpuPower8 = virCPUDefCopy(&cpuPower8Data);
     cpuPower9 = virCPUDefCopy(&cpuPower9Data);
     cpuPower10 = virCPUDefCopy(&cpuPower10Data);
+    cpuPower11 = virCPUDefCopy(&cpuPower11Data);
 
     if (virMutexInit(&driver->lock) < 0)
         return -1;
