@@ -43,7 +43,6 @@ VIR_ENUM_DECL(qemuSoundCodec);
 virCommand *
 qemuBuildCommandLine(virDomainObj *vm,
                      const char *migrateURI,
-                     virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
                      size_t *nnicindexes,
                      int **nicindexes);

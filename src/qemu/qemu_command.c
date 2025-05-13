@@ -10483,7 +10483,6 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
 virCommand *
 qemuBuildCommandLine(virDomainObj *vm,
                      const char *migrateURI,
-                     virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
                      size_t *nnicindexes,
                      int **nicindexes)
@@ -10497,8 +10496,8 @@ qemuBuildCommandLine(virDomainObj *vm,
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    VIR_DEBUG("Building qemu commandline for def=%s(%p) migrateURI=%s snapshot=%p vmop=%d",
-              def->name, def, migrateURI, snapshot, vmop);
+    VIR_DEBUG("Building qemu commandline for def=%s(%p) migrateURI=%s vmop=%d",
+              def->name, def, migrateURI, vmop);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
         return NULL;
