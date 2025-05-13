@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-guest/master-key.aes"}' \
 -machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -accel tcg \
--cpu POWER9 \
+-cpu POWER10 \
 -m size=4194304k \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":4294967296}' \
 -overcommit mem-lock=off \
@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -boot strict=on \
 -device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"spapr-vscsi","id":"scsi0","reg":8192}' \
--netdev user,id=hostnet0 \
+-netdev '{"type":"user","id":"hostnet0"}' \
 -device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"52:54:00:09:a4:37","bus":"pci.0","addr":"0x1"}' \
 -chardev pty,id=charserial0 \
 -device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \

@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -accel tcg \
--cpu POWER9 \
+-cpu POWER10 \
 -m size=524288k \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":536870912}' \
 -overcommit mem-lock=off \
@@ -29,9 +29,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
 -device '{"driver":"spapr-vscsi","id":"scsi0","reg":8192}' \
 -device '{"driver":"spapr-vscsi","id":"scsi1","reg":805306368}' \
--blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"scsi-hd","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi1-0-0-0","drive":"libvirt-1-format","id":"scsi1-0-0-0","bootindex":1}' \
+-blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","read-only":false}' \
+-device '{"driver":"scsi-hd","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi1-0-0-0","drive":"libvirt-1-storage","id":"scsi1-0-0-0","bootindex":1}' \
 -chardev pty,id=charserial0 \
 -device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":536870912}' \
 -chardev pty,id=charserial1 \
