@@ -8580,7 +8580,7 @@ qemuProcessStart(virConnectPtr conn,
  * @vm: domain object
  * @fd: FD pointer of memory state file
  * @path: path to memory state file
- * @snapshot: internal snapshot to load when starting QEMU process or NULL
+ * @internalSnapshotRevert: internal snapshot to load when starting QEMU process or NULL
  * @data: data from memory state file or NULL
  * @migParams: Migration params to use on restore or NULL
  * @asyncJob: type of asynchronous job
@@ -8591,11 +8591,11 @@ qemuProcessStart(virConnectPtr conn,
  * Start VM with existing memory state. Make sure that the stored memory state
  * is correctly decompressed so it can be loaded by QEMU process.
  *
- * When reverting to internal snapshot caller needs to pass @snapshot
+ * When reverting to internal snapshot caller needs to pass @internalSnapshotRevert
  * to correctly start QEMU process, @fd, @path, @data needs to be NULL.
  *
  * When restoring VM from saved image caller needs to pass @fd, @path and
- * @data to correctly start QEMU process, @snapshot needs to be NULL.
+ * @data to correctly start QEMU process, @internalSnapshotRevert needs to be NULL.
  *
  * For audit purposes the expected @reason is one of `restored` or `from-snapshot`.
  *
@@ -8607,7 +8607,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
                                 virDomainObj *vm,
                                 int *fd,
                                 const char *path,
-                                virDomainMomentObj *snapshot,
+                                virDomainMomentObj *internalSnapshotRevert,
                                 virQEMUSaveData *data,
                                 qemuMigrationParams *migParams,
                                 virDomainAsyncJob asyncJob,
@@ -8638,7 +8638,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     /* The fd passed to qemuProcessIncomingDefNew is used to create the migration
      * URI, so it must be called after starting the decompression program.
      */
-    if (!snapshot) {
+    if (!internalSnapshotRevert) {
         /* Internal snapshots are reverted by a QMP command after qemu is started,
          * so we don't actually want to setup incoming migration. */
         if (!(incoming = qemuProcessIncomingDefNew(driver, vm, NULL, "stdio",
@@ -8656,7 +8656,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
         priv->disableSlirp = true;
 
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
-                         asyncJob, incoming, *fd, path, snapshot,
+                         asyncJob, incoming, *fd, path, internalSnapshotRevert,
                          migParams, VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
                          start_flags) == 0)
         *started = true;
