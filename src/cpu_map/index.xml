@@ -181,6 +181,7 @@
       <include filename='ppc64_POWER8.xml'/>
       <include filename='ppc64_POWER9.xml'/>
       <include filename='ppc64_POWER10.xml'/>
+      <include filename='ppc64_POWER11.xml'/>
     </group>
 
     <group name='Freescale-based CPU models'>

@@ -17,6 +17,7 @@ cpumap_data = [
   'arm_vendors.xml',
   'index.xml',
   'ppc64_POWER10.xml',
+  'ppc64_POWER11.xml',
   'ppc64_POWER6.xml',
   'ppc64_POWER7.xml',
   'ppc64_POWER8.xml',

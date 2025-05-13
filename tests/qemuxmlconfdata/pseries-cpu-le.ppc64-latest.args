@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -accel kvm \
--cpu power11 \
+-cpu POWER11 \
 -m size=524288k \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":536870912}' \
 -overcommit mem-lock=off \
