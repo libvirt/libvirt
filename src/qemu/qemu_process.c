@@ -8636,9 +8636,13 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
     /* The fd passed to qemuProcessIncomingDefNew is used to create the migration
      * URI, so it must be called after starting the decompression program.
      */
-    incoming = qemuProcessIncomingDefNew(driver, vm, NULL, "stdio", fd, path, data, migParams);
-    if (!incoming)
-        return -1;
+    if (!snapshot) {
+        /* Internal snapshots are reverted by a QMP command after qemu is started,
+         * so we don't actually want to setup incoming migration. */
+        if (!(incoming = qemuProcessIncomingDefNew(driver, vm, NULL, "stdio",
+                                                   fd, path, data, migParams)))
+            return -1;
+    }
 
     /* No cookie means libvirt which saved the domain was too old to mess up
      * the CPU definitions.
