@@ -8472,7 +8472,7 @@ qemuProcessStart(virConnectPtr conn,
                  qemuProcessIncomingDef *incoming,
                  int migrateFd,
                  const char *migratePath,
-                 virDomainMomentObj *snapshot,
+                 virDomainMomentObj *internalSnapshotRevert,
                  qemuMigrationParams *migParams,
                  virNetDevVPortProfileOp vmop,
                  unsigned int flags)
@@ -8486,11 +8486,12 @@ qemuProcessStart(virConnectPtr conn,
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s id=%d asyncJob=%s "
               "incoming=%p migrateFd=%d migratePath=%s "
-              "snapshot=%p vmop=%d flags=0x%x",
+              "internalSnapshotRevert=%s vmop=%d flags=0x%x",
               conn, driver, vm, vm->def->name, vm->def->id,
               virDomainAsyncJobTypeToString(asyncJob),
               incoming, migrateFd, NULLSTR(migratePath),
-              snapshot, vmop, flags);
+              NULLSTR(internalSnapshotRevert ? internalSnapshotRevert->def->name : NULL),
+              vmop, flags);
 
     virCheckFlagsGoto(VIR_QEMU_PROCESS_START_COLD |
                       VIR_QEMU_PROCESS_START_PAUSED |
@@ -8498,7 +8499,7 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_GEN_VMID |
                       VIR_QEMU_PROCESS_START_RESET_NVRAM, cleanup);
 
-    if (!incoming && !snapshot)
+    if (!incoming && !internalSnapshotRevert)
         flags |= VIR_QEMU_PROCESS_START_NEW;
 
     if (qemuProcessInit(driver, vm, updatedCPU,
@@ -8519,7 +8520,7 @@ qemuProcessStart(virConnectPtr conn,
     }
 
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
-                                snapshot, vmop, flags)) < 0) {
+                                internalSnapshotRevert, vmop, flags)) < 0) {
         if (rv == -2)
             relabel = true;
         goto stop;

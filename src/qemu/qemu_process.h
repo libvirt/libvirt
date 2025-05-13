@@ -91,7 +91,7 @@ int qemuProcessStart(virConnectPtr conn,
                      qemuProcessIncomingDef *incoming,
                      int stdin_fd,
                      const char *stdin_path,
-                     virDomainMomentObj *snapshot,
+                     virDomainMomentObj *internalSnapshotRevert,
                      qemuMigrationParams *migParams,
                      virNetDevVPortProfileOp vmop,
                      unsigned int flags);
