@@ -8,7 +8,8 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='network'/>
   </os>
-  <cpu>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
     <topology sockets="1" cores="4" threads="8"/>
   </cpu>
   <on_poweroff>destroy</on_poweroff>
