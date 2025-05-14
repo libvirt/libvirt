@@ -6405,7 +6405,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDef *def)
 }
 
 
-static int
+static bool
 qemuDomainHasHotpluggableStartupVcpus(virDomainDef *def)
 {
     size_t maxvcpus = virDomainDefGetVcpusMax(def);
