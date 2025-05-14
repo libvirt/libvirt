@@ -322,7 +322,7 @@ static const vshCmdOptDef opts_pool_define_as[] = {
     {.name = NULL}
 };
 
-static int
+static bool
 virshBuildPoolXML(vshControl *ctl,
                   const vshCmd *cmd,
                   const char **retname,
