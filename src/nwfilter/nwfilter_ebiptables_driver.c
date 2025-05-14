@@ -2797,7 +2797,7 @@ ebtablesRenameTmpSubAndRootChainsFW(virFirewall *fw,
  * run ebtablesApplyBasicRules and ebtablesApplyDHCPOnlyRules.
  * In case of this driver we need the ebtables tool available.
  */
-static int
+static bool
 ebiptablesCanApplyBasicRules(void)
 {
     return true;

@@ -51,7 +51,7 @@ typedef int (*virNWFilterRuleTeardownOldRules)(const char *ifname);
 
 typedef int (*virNWFilterRuleAllTeardown)(const char *ifname);
 
-typedef int (*virNWFilterCanApplyBasicRules)(void);
+typedef bool (*virNWFilterCanApplyBasicRules)(void);
 
 typedef int (*virNWFilterApplyBasicRules)(const char *ifname,
                                           const virMacAddr *macaddr);
