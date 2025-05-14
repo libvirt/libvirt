@@ -503,7 +503,7 @@ volStorageBackendRBDGetFlags(rbd_image_t image G_GNUC_UNUSED,
     return 0;
 }
 
-static int
+static bool
 volStorageBackendRBDUseFastDiff(uint64_t features G_GNUC_UNUSED,
                                 uint64_t feature_flags G_GNUC_UNUSED)
 {
