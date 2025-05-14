@@ -41,7 +41,7 @@ struct _virNetDevVlan {
 
 void virNetDevVlanClear(virNetDevVlan *vlan);
 void virNetDevVlanFree(virNetDevVlan *vlan);
-int virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
+bool virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b);
 void virNetDevVlanCopy(virNetDevVlan *dst, const virNetDevVlan *src);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetDevVlan, virNetDevVlanFree);

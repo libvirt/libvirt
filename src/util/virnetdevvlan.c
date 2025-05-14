@@ -41,7 +41,7 @@ virNetDevVlanFree(virNetDevVlan *vlan)
     g_free(vlan);
 }
 
-int
+bool
 virNetDevVlanEqual(const virNetDevVlan *a, const virNetDevVlan *b)
 {
     int ai, bi;
