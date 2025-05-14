@@ -6785,6 +6785,36 @@ virQEMUCapsFillDomainDevicePanicCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceConsoleCaps(virQEMUCaps *qemuCaps,
+                                       virDomainCapsDeviceConsole *console)
+{
+    console->supported = VIR_TRISTATE_BOOL_YES;
+    console->type.report = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(console->type,
+                             VIR_DOMAIN_CHR_TYPE_DBUS,
+                             VIR_DOMAIN_CHR_TYPE_DEV,
+                             VIR_DOMAIN_CHR_TYPE_FILE,
+                             VIR_DOMAIN_CHR_TYPE_NULL,
+                             VIR_DOMAIN_CHR_TYPE_PIPE,
+                             VIR_DOMAIN_CHR_TYPE_PTY,
+                             VIR_DOMAIN_CHR_TYPE_STDIO,
+                             VIR_DOMAIN_CHR_TYPE_TCP,
+                             VIR_DOMAIN_CHR_TYPE_UDP,
+                             VIR_DOMAIN_CHR_TYPE_UNIX,
+                             VIR_DOMAIN_CHR_TYPE_VC);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_QEMU_VDAGENT))
+        VIR_DOMAIN_CAPS_ENUM_SET(console->type,
+                                 VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE))
+        VIR_DOMAIN_CAPS_ENUM_SET(console->type,
+                                 VIR_DOMAIN_CHR_TYPE_SPICEVMC,
+                                 VIR_DOMAIN_CHR_TYPE_SPICEPORT);
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6963,6 +6993,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
     virDomainCapsLaunchSecurity *launchSecurity = &domCaps->launchSecurity;
     virDomainCapsDeviceNet *net = &domCaps->net;
     virDomainCapsDevicePanic *panic = &domCaps->panic;
+    virDomainCapsDeviceConsole *console = &domCaps->console;
     virFirmware **firmwares = cfg->firmwares;
     size_t nfirmwares = cfg->nfirmwares;
 
@@ -7008,6 +7039,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
     virQEMUCapsFillDomainLaunchSecurity(qemuCaps, launchSecurity);
     virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, net);
     virQEMUCapsFillDomainDevicePanicCaps(qemuCaps, domCaps->machine, panic);
+    virQEMUCapsFillDomainDeviceConsoleCaps(qemuCaps, console);
 
     return 0;
 }

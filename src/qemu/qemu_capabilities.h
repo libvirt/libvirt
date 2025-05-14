@@ -916,6 +916,9 @@ void virQEMUCapsFillDomainDevicePanicCaps(virQEMUCaps *qemuCaps,
                                           const char *machine,
                                           virDomainCapsDevicePanic *panic);
 
+void virQEMUCapsFillDomainDeviceConsoleCaps(virQEMUCaps *qemuCaps,
+                                            virDomainCapsDeviceConsole *console);
+
 bool virQEMUCapsGuestIsNative(virArch host,
                               virArch guest);
 

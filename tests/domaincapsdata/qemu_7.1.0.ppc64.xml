@@ -169,6 +169,22 @@
         <value>pvpanic</value>
       </enum>
     </panic>
+    <console supported='yes'>
+      <enum name='type'>
+        <value>null</value>
+        <value>vc</value>
+        <value>pty</value>
+        <value>dev</value>
+        <value>file</value>
+        <value>pipe</value>
+        <value>stdio</value>
+        <value>udp</value>
+        <value>tcp</value>
+        <value>unix</value>
+        <value>qemu-vdagent</value>
+        <value>dbus</value>
+      </enum>
+    </console>
   </devices>
   <features>
     <gic supported='no'/>
