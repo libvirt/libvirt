@@ -397,7 +397,7 @@ virCommandHandshakeChild(virCommand *cmd)
     int rv;
 
     if (!cmd->handshake)
-       return true;
+       return 0;
 
     VIR_DEBUG("Notifying parent for handshake start on %d",
               cmd->handshakeWait[1]);

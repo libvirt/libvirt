@@ -69,20 +69,20 @@ virCHDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev)
         if (!supportsPassthroughVFIO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("host doesn't support VFIO PCI passthrough"));
-            return false;
+            return -1;
         }
         break;
 
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_KVM:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("host doesn't support legacy PCI passthrough"));
-        return false;
+        return -1;
 
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("CH does not support device assignment mode '%1$s'"),
                        virDeviceHostdevPCIDriverNameTypeToString(*driverName));
-        return false;
+        return -1;
 
     default:
     case VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST:
@@ -90,7 +90,7 @@ virCHDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev)
         break;
     }
 
-    return true;
+    return 0;
 }
 
 int
