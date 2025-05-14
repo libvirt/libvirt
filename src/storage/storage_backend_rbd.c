@@ -515,6 +515,7 @@ virStorageBackendRBDSetAllocation(virStorageVolDef *vol G_GNUC_UNUSED,
                                   rbd_image_t *image G_GNUC_UNUSED,
                                   rbd_image_info_t *info G_GNUC_UNUSED)
 {
+    virReportUnsupportedError();
     return false;
 }
 #endif
