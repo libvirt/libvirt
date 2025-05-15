@@ -2773,24 +2773,20 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
     if (virDomainSnapshotIsExternal(snap)) {
         if (!(tmpsnapdef = virDomainSnapshotDefNew()))
-            return -1;
+            goto error;
 
         if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
-                                              NULL, *inactiveConfig, NULL) < 0) {
-            return -1;
-        }
+                                              NULL, *inactiveConfig, NULL) < 0)
+            goto error;
 
         if (qemuSnapshotRevertExternalInactive(tmpsnapdef,
-                                               *inactiveConfig) < 0) {
-            return -1;
-        }
+                                               *inactiveConfig) < 0)
+            goto error;
 
         qemuSnapshotRevertExternalFinish(vm, tmpsnapdef, snap);
     } else {
-        if (qemuSnapshotInternalRevertInactive(vm, snap) < 0) {
-            qemuDomainRemoveInactive(driver, vm, 0, false);
-            return -1;
-        }
+        if (qemuSnapshotInternalRevertInactive(vm, snap) < 0)
+            goto error;
     }
 
     if (*inactiveConfig) {
@@ -2810,10 +2806,9 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
                               NULL, VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                               start_flags);
         virDomainAuditStart(vm, "from-snapshot", rc >= 0);
-        if (rc < 0) {
-            qemuDomainRemoveInactive(driver, vm, 0, false);
-            return -1;
-        }
+        if (rc < 0)
+            goto error;
+
         detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
@@ -2829,6 +2824,12 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
     }
 
     return qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
+
+ error:
+    if (!virDomainObjIsActive(vm))
+        qemuDomainRemoveInactive(driver, vm, 0, false);
+
+    return -1;
 }
 
 
