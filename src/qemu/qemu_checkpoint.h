@@ -33,8 +33,7 @@ qemuCheckpointObjFromName(virDomainObj *vm,
                           const char *name);
 
 int
-qemuCheckpointDiscardAllMetadata(virQEMUDriver *driver,
-                                 virDomainObj *vm);
+qemuCheckpointDiscardAllMetadata(virDomainObj *vm);
 
 virDomainCheckpointPtr
 qemuCheckpointCreateXML(virDomainPtr domain,

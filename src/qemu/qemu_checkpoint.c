@@ -305,11 +305,10 @@ qemuCheckpointDiscard(virQEMUDriver *driver,
 
 
 int
-qemuCheckpointDiscardAllMetadata(virQEMUDriver *driver,
-                                       virDomainObj *vm)
+qemuCheckpointDiscardAllMetadata(virDomainObj *vm)
 {
     virQEMUMomentRemove rem = {
-        .driver = driver,
+        .driver = QEMU_DOMAIN_PRIVATE(vm)->driver,
         .vm = vm,
         .metadata_only = true,
         .momentDiscard = qemuCheckpointDiscard,

@@ -5807,7 +5807,7 @@ qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
             VIR_WARN("unable to remove snapshot directory %s", snapDir);
     }
     /* Remove any checkpoint metadata prior to removing the domain */
-    if (qemuCheckpointDiscardAllMetadata(driver, vm) < 0) {
+    if (qemuCheckpointDiscardAllMetadata(vm) < 0) {
         VIR_WARN("unable to remove all checkpoints for domain %s",
                  vm->def->name);
     } else {
