@@ -691,8 +691,7 @@ int qemuDomainMomentDiscardAll(void *payload,
                                const char *name,
                                void *data);
 
-void qemuDomainRemoveInactive(virQEMUDriver *driver,
-                              virDomainObj *vm,
+void qemuDomainRemoveInactive(virDomainObj *vm,
                               virDomainUndefineFlagsValues flags,
                               bool migration);
 

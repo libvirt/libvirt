@@ -2698,7 +2698,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
  error:
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm, 0, false);
+        qemuDomainRemoveInactive(vm, 0, false);
 
     return -1;
 }
@@ -2823,7 +2823,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
  error:
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm, 0, false);
+        qemuDomainRemoveInactive(vm, 0, false);
 
     return -1;
 }

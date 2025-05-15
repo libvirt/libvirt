@@ -5825,8 +5825,7 @@ qemuDomainRemoveInactiveCommon(virDomainObj *vm,
  * The caller must hold a lock to the vm.
  */
 void
-qemuDomainRemoveInactive(virQEMUDriver *driver,
-                         virDomainObj *vm,
+qemuDomainRemoveInactive(virDomainObj *vm,
                          virDomainUndefineFlagsValues flags,
                          bool migration)
 {
@@ -5837,7 +5836,7 @@ qemuDomainRemoveInactive(virQEMUDriver *driver,
 
     qemuDomainRemoveInactiveCommon(vm, flags, migration);
 
-    virDomainObjListRemove(driver->domains, vm);
+    virDomainObjListRemove(QEMU_DOMAIN_PRIVATE(vm)->driver->domains, vm);
 }
 
 
