@@ -5961,7 +5961,7 @@ qemuProcessInit(virQEMUDriver *driver,
     stopFlags = VIR_QEMU_PROCESS_STOP_NO_RELABEL;
     if (migration)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
     return -1;
 }
 
@@ -8568,7 +8568,7 @@ qemuProcessStart(virConnectPtr conn,
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED, asyncJob, stopFlags);
     goto cleanup;
 }
 
@@ -8917,15 +8917,16 @@ qemuProcessEndStopJob(virDomainObj *vm)
 }
 
 
-void qemuProcessStop(virQEMUDriver *driver,
-                     virDomainObj *vm,
-                     virDomainShutoffReason reason,
-                     virDomainAsyncJob asyncJob,
-                     unsigned int flags)
+void
+qemuProcessStop(virDomainObj *vm,
+                virDomainShutoffReason reason,
+                virDomainAsyncJob asyncJob,
+                unsigned int flags)
 {
     int ret;
     int retries = 0;
     qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     virErrorPtr orig_err;
     virDomainDef *def = vm->def;
     size_t i;
@@ -9264,7 +9265,7 @@ qemuProcessAutoDestroy(virDomainObj *dom,
     if (qemuProcessBeginStopJob(dom, VIR_JOB_DESTROY, true) < 0)
         return;
 
-    qemuProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
+    qemuProcessStop(dom, VIR_DOMAIN_SHUTOFF_DESTROYED,
                     VIR_ASYNC_JOB_NONE, stopFlags);
 
     virDomainAuditStop(dom, "destroyed");
@@ -9828,7 +9829,7 @@ qemuProcessReconnect(void *opaque)
          * thread didn't have a chance to start playing with the domain yet
          * (it's all we can do anyway).
          */
-        qemuProcessStop(driver, obj, state, VIR_ASYNC_JOB_NONE, stopFlags);
+        qemuProcessStop(obj, state, VIR_ASYNC_JOB_NONE, stopFlags);
     }
     goto cleanup;
 }
@@ -9868,7 +9869,7 @@ qemuProcessReconnectHelper(virDomainObj *obj,
          * is no thread that could be doing anything else with the same domain
          * object.
          */
-        qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED,
+        qemuProcessStop(obj, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_ASYNC_JOB_NONE, 0);
         qemuDomainRemoveInactiveLocked(src->driver, obj);
 

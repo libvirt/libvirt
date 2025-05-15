@@ -176,8 +176,7 @@ int qemuProcessBeginStopJob(virDomainObj *vm,
                             virDomainJob job,
                             bool forceKill);
 void qemuProcessEndStopJob(virDomainObj *vm);
-void qemuProcessStop(virQEMUDriver *driver,
-                     virDomainObj *vm,
+void qemuProcessStop(virDomainObj *vm,
                      virDomainShutoffReason reason,
                      virDomainAsyncJob asyncJob,
                      unsigned int flags);

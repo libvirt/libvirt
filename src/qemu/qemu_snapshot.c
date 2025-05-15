@@ -595,7 +595,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
                         VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
@@ -1694,8 +1694,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) {
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        VIR_ASYNC_JOB_SNAPSHOT, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
         thaw = false;
@@ -2615,9 +2614,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
     /* Transitions 2, 3, 5, 6, 8, 9 */
     if (virDomainObjIsActive(vm)) {
         /* Transitions 5, 6, 8, 9 */
-        qemuProcessStop(driver, vm,
-                        VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        VIR_ASYNC_JOB_SNAPSHOT, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -2651,7 +2648,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
                                         start_flags, "from-snapshot",
                                         &started) < 0) {
         if (started) {
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+            qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED,
                             VIR_ASYNC_JOB_SNAPSHOT,
                             VIR_QEMU_PROCESS_STOP_MIGRATED);
         }
@@ -2761,8 +2758,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
     if (virDomainObjIsActive(vm)) {
         /* Transitions 4, 7 */
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        VIR_ASYNC_JOB_SNAPSHOT, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT, VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -4356,8 +4352,6 @@ qemuSnapshotDelete(virDomainObj *vm,
     virDomainMomentObj *snap = NULL;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
     bool stop_qemu = false;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
     g_autoslist(qemuSnapshotDeleteExternalData) externalData = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
@@ -4393,7 +4387,7 @@ qemuSnapshotDelete(virDomainObj *vm,
 
  endjob:
     if (stop_qemu) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN,
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN,
                         VIR_ASYNC_JOB_SNAPSHOT, 0);
     }
 

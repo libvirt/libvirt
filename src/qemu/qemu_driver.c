@@ -2057,8 +2057,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     if (vm->job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
 
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED,
-                    VIR_ASYNC_JOB_NONE, stopFlags);
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_DESTROYED, VIR_ASYNC_JOB_NONE, stopFlags);
 
     if ((flags & VIR_DOMAIN_DESTROY_REMOVE_LOGS) &&
         qemuDomainRemoveLogs(driver, vm->def->name) < 0)
@@ -2681,8 +2680,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
 
     /* Shut it down */
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED,
-                    VIR_ASYNC_JOB_SAVE, 0);
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_SAVED, VIR_ASYNC_JOB_SAVE, 0);
     virDomainAuditStop(vm, "saved");
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_SAVED);
@@ -3212,8 +3210,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
 
  endjob:
     if ((ret == 0) && (flags & VIR_DUMP_CRASH)) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
-                        VIR_ASYNC_JOB_DUMP, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_CRASHED, VIR_ASYNC_JOB_DUMP, 0);
         virDomainAuditStop(vm, "crashed");
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STOPPED,
@@ -3535,8 +3532,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
         G_GNUC_FALLTHROUGH;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
-                        VIR_ASYNC_JOB_DUMP, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_CRASHED, VIR_ASYNC_JOB_DUMP, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_STOPPED,
                                                   VIR_DOMAIN_EVENT_STOPPED_CRASHED);
@@ -3890,7 +3886,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
 
     event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                               eventReason);
-    qemuProcessStop(driver, vm, stopReason, VIR_ASYNC_JOB_NONE, stopFlags);
+    qemuProcessStop(vm, stopReason, VIR_ASYNC_JOB_NONE, stopFlags);
     virDomainAuditStop(vm, auditReason);
     virObjectEventStateQueue(driver->domainEventState, event);
 
@@ -4050,15 +4046,13 @@ processNbdkitExitedEvent(virDomainObj *vm,
 
 
 static void
-processShutdownCompletedEvent(virQEMUDriver *driver,
-                              virDomainObj *vm)
+processShutdownCompletedEvent(virDomainObj *vm)
 {
     if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, true) < 0)
         return;
 
     if (virDomainObjIsActive(vm)) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_UNKNOWN,
-                        VIR_ASYNC_JOB_NONE, 0);
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_UNKNOWN, VIR_ASYNC_JOB_NONE, 0);
     }
 
     qemuProcessEndStopJob(vm);
@@ -4129,7 +4123,7 @@ static void qemuProcessEventHandler(void *data, void *opaque)
         processNbdkitExitedEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_SHUTDOWN_COMPLETED:
-        processShutdownCompletedEvent(driver, vm);
+        processShutdownCompletedEvent(vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;

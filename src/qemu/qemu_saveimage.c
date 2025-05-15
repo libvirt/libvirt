@@ -773,7 +773,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
 
  cleanup:
     if (ret < 0 && started) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         asyncJob, VIR_QEMU_PROCESS_STOP_MIGRATED);
     }
     return ret;

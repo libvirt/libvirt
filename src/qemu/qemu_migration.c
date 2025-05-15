@@ -3438,7 +3438,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         if (!relabel)
             stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
         virDomainAuditStart(vm, "migrated", false);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_ASYNC_JOB_MIGRATION_IN, stopFlags);
         virPortAllocatorRelease(priv->nbdPort);
         priv->nbdPort = 0;
@@ -4082,7 +4082,7 @@ qemuMigrationSrcComplete(virQEMUDriver *driver,
      * up domain shutdown until SPICE server transfers its data */
     qemuMigrationSrcWaitForSpice(vm);
 
-    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED, asyncJob,
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_MIGRATED, asyncJob,
                     VIR_QEMU_PROCESS_STOP_MIGRATED);
     virDomainAuditStop(vm, "migrated");
 
@@ -6301,7 +6301,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
      * confirm step.
      */
     if (!v3proto) {
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
+        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
                         VIR_ASYNC_JOB_MIGRATION_OUT,
                         VIR_QEMU_PROCESS_STOP_MIGRATED);
         virDomainAuditStop(vm, "migrated");
@@ -6954,7 +6954,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
 
     if (qemuDomainObjIsActive(vm)) {
         if (doKill) {
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+            qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_FAILED,
                             VIR_ASYNC_JOB_MIGRATION_IN,
                             VIR_QEMU_PROCESS_STOP_MIGRATED);
             virDomainAuditStop(vm, "failed");
