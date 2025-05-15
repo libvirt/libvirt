@@ -5787,12 +5787,11 @@ int qemuDomainMomentDiscardAll(void *payload,
 
 
 static void
-qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
-                               virDomainObj *vm,
+qemuDomainRemoveInactiveCommon(virDomainObj *vm,
                                virDomainUndefineFlagsValues flags,
                                bool migration)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(QEMU_DOMAIN_PRIVATE(vm)->driver);
     g_autofree char *snapDir = NULL;
     g_autofree char *chkDir = NULL;
 
@@ -5836,7 +5835,7 @@ qemuDomainRemoveInactive(virQEMUDriver *driver,
         return;
     }
 
-    qemuDomainRemoveInactiveCommon(driver, vm, flags, migration);
+    qemuDomainRemoveInactiveCommon(vm, flags, migration);
 
     virDomainObjListRemove(driver->domains, vm);
 }
@@ -5858,7 +5857,7 @@ qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
         return;
     }
 
-    qemuDomainRemoveInactiveCommon(driver, vm, 0, false);
+    qemuDomainRemoveInactiveCommon(vm, 0, false);
 
     virDomainObjListRemoveLocked(driver->domains, vm);
 }
