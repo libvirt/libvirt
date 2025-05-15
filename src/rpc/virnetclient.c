@@ -987,6 +987,7 @@ int virNetClientSetTLSSession(virNetClient *client,
      * etc.  If we make the grade, it will send us a '\1' byte.
      */
 
+ repoll:
     source = virEventGLibAddSocketWatch(virNetSocketGetFD(client->sock),
                                         G_IO_IN,
                                         client->eventCtx,
@@ -1003,7 +1004,14 @@ int virNetClientSetTLSSession(virNetClient *client,
     ignore_value(pthread_sigmask(SIG_SETMASK, &oldmask, NULL));
 #endif /* !WIN32 */
 
+ retry:
     len = virNetTLSSessionRead(client->tls, buf, 1);
+    if (len < 0 && errno == EINTR) {
+        goto retry;
+    }
+    if (len < 0 && errno == EAGAIN) {
+        goto repoll;
+    }
     if (len < 0 && errno != ENOMSG) {
         virReportSystemError(errno, "%s",
                              _("Unable to read TLS confirmation"));
