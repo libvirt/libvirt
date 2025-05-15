@@ -4135,11 +4135,10 @@ qemuSnapshotDiscard(virQEMUDriver *driver G_GNUC_UNUSED,
 
 
 int
-qemuSnapshotDiscardAllMetadata(virQEMUDriver *driver,
-                               virDomainObj *vm)
+qemuSnapshotDiscardAllMetadata(virDomainObj *vm)
 {
     virQEMUMomentRemove rem = {
-        .driver = driver,
+        .driver = QEMU_DOMAIN_PRIVATE(vm)->driver,
         .vm = vm,
         .metadata_only = true,
         .momentDiscard = qemuSnapshotDiscard,

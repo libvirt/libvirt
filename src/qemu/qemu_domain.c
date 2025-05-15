@@ -5797,7 +5797,7 @@ qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
     g_autofree char *chkDir = NULL;
 
     /* Remove any snapshot metadata prior to removing the domain */
-    if (qemuSnapshotDiscardAllMetadata(driver, vm) < 0) {
+    if (qemuSnapshotDiscardAllMetadata(vm) < 0) {
         VIR_WARN("unable to remove all snapshots for domain %s",
                  vm->def->name);
     } else {
