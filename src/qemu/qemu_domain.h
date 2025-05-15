@@ -697,8 +697,7 @@ void qemuDomainRemoveInactive(virQEMUDriver *driver,
                               bool migration);
 
 void
-qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
-                               virDomainObj *vm);
+qemuDomainRemoveInactiveLocked(virDomainObj *vm);
 
 void qemuDomainSetFakeReboot(virDomainObj *vm,
                              bool value);

@@ -9871,7 +9871,7 @@ qemuProcessReconnectHelper(virDomainObj *obj,
          */
         qemuProcessStop(obj, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_ASYNC_JOB_NONE, 0);
-        qemuDomainRemoveInactiveLocked(src->driver, obj);
+        qemuDomainRemoveInactiveLocked(obj);
 
         virDomainObjEndAPI(&obj);
         g_clear_object(&data->identity);

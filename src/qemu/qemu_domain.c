@@ -5849,8 +5849,7 @@ qemuDomainRemoveInactive(virQEMUDriver *driver,
  * from locked list method.
  */
 void
-qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
-                               virDomainObj *vm)
+qemuDomainRemoveInactiveLocked(virDomainObj *vm)
 {
     if (vm->persistent) {
         /* Short-circuit, we don't want to remove a persistent domain */
@@ -5859,7 +5858,7 @@ qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
 
     qemuDomainRemoveInactiveCommon(vm, 0, false);
 
-    virDomainObjListRemoveLocked(driver->domains, vm);
+    virDomainObjListRemoveLocked(QEMU_DOMAIN_PRIVATE(vm)->driver->domains, vm);
 }
 
 void
