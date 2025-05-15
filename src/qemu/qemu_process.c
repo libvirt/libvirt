@@ -9537,16 +9537,16 @@ struct qemuProcessReconnectData {
 static void
 qemuProcessReconnect(void *opaque)
 {
-    struct qemuProcessReconnectData *data = opaque;
-    virQEMUDriver *driver = data->driver;
+    g_autofree struct qemuProcessReconnectData *data = opaque;
     virDomainObj *obj = data->obj;
-    qemuDomainObjPrivate *priv;
+    qemuDomainObjPrivate *priv = obj->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_auto(virDomainJobObj) oldjob = {
       .cb = NULL,
     };
     int state;
     int reason;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     size_t i;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
@@ -9554,10 +9554,6 @@ qemuProcessReconnect(void *opaque)
 
     virIdentitySetCurrent(data->identity);
     g_clear_object(&data->identity);
-    VIR_FREE(data);
-
-    cfg = virQEMUDriverGetConfig(driver);
-    priv = obj->privateData;
 
     virDomainObjPreserveJob(obj->job, &oldjob);
     if (oldjob.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
