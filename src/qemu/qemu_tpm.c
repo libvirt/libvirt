@@ -926,7 +926,7 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
 
 /**
  * qemuTPMEmulatorCleanupHost:
- * @driver: QEMU driver
+ * @cfg: QEMU driver config
  * @tpm: TPM definition
  * @flags: flags indicating whether to keep or remove TPM persistent state
  * @migration: whether cleanup is due to a successful outgoing or failed
@@ -935,13 +935,11 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
  * Clean up persistent storage for the swtpm.
  */
 static void
-qemuTPMEmulatorCleanupHost(virQEMUDriver *driver,
+qemuTPMEmulatorCleanupHost(virQEMUDriverConfig *cfg,
                            virDomainTPMDef *tpm,
                            virDomainUndefineFlagsValues flags,
                            bool migration)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
     /* Never remove the state in case of migration with shared storage. */
     if (migration &&
         virFileIsSharedFS(tpm->data.emulator.source_path, cfg->sharedFilesystems) == 1)
@@ -1275,12 +1273,10 @@ qemuTPMCanMigrateSharedStorage(virDomainDef *def)
 
 
 int
-qemuExtTPMInitPaths(virQEMUDriver *driver,
+qemuExtTPMInitPaths(virQEMUDriverConfig *cfg,
                     virDomainDef *def,
                     virDomainTPMDef *tpm)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
     return qemuTPMEmulatorInitPaths(tpm,
                                     cfg->swtpmStorageDir,
                                     cfg->swtpmLogDir,
@@ -1311,12 +1307,12 @@ qemuExtTPMPrepareHost(virQEMUDriver *driver,
 
 
 void
-qemuExtTPMCleanupHost(virQEMUDriver *driver,
+qemuExtTPMCleanupHost(virQEMUDriverConfig *cfg,
                       virDomainTPMDef *tpm,
                       virDomainUndefineFlagsValues flags,
                       bool migration)
 {
-    qemuTPMEmulatorCleanupHost(driver, tpm, flags, migration);
+    qemuTPMEmulatorCleanupHost(cfg, tpm, flags, migration);
 }
 
 

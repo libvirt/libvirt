@@ -9577,7 +9577,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainMasterKeyReadFile(priv) < 0)
         goto error;
 
-    if (qemuExtDevicesInitPaths(driver, obj->def) < 0)
+    if (qemuExtDevicesInitPaths(cfg, obj->def) < 0)
         goto error;
 
     /* If we are connecting to a guest started by old libvirt there is no

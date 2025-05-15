@@ -58,7 +58,7 @@ qemuExtDeviceLogCommand(virQEMUDriver *driver,
 /*
  * qemuExtDevicesInitPaths:
  *
- * @driver: QEMU driver
+ * @cfg: QEMU driver config
  * @def: domain definition
  *
  * Initialize paths of external devices so that it is known where state is
@@ -66,7 +66,7 @@ qemuExtDeviceLogCommand(virQEMUDriver *driver,
  * changes.
  */
 int
-qemuExtDevicesInitPaths(virQEMUDriver *driver,
+qemuExtDevicesInitPaths(virQEMUDriverConfig *cfg,
                         virDomainDef *def)
 {
     size_t i;
@@ -75,7 +75,7 @@ qemuExtDevicesInitPaths(virQEMUDriver *driver,
         virDomainTPMDef *tpm = def->tpms[i];
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
-            qemuExtTPMInitPaths(driver, def, tpm) < 0)
+            qemuExtTPMInitPaths(cfg, def, tpm) < 0)
             return -1;
     }
 
@@ -95,10 +95,11 @@ int
 qemuExtDevicesPrepareDomain(virQEMUDriver *driver,
                             virDomainObj *vm)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = 0;
     size_t i;
 
-    if (qemuExtDevicesInitPaths(driver, vm->def) < 0)
+    if (qemuExtDevicesInitPaths(cfg, vm->def) < 0)
         return -1;
 
     for (i = 0; i < vm->def->nvideos; i++) {
@@ -151,21 +152,21 @@ qemuExtDevicesPrepareHost(virQEMUDriver *driver,
 
 
 void
-qemuExtDevicesCleanupHost(virQEMUDriver *driver,
+qemuExtDevicesCleanupHost(virQEMUDriverConfig *cfg,
                           virDomainDef *def,
                           virDomainUndefineFlagsValues flags,
                           bool migration)
 {
     size_t i;
 
-    if (qemuExtDevicesInitPaths(driver, def) < 0)
+    if (qemuExtDevicesInitPaths(cfg, def) < 0)
         return;
 
     for (i = 0; i < def->ntpms; i++) {
         virDomainTPMDef *tpm = def->tpms[i];
 
         if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            qemuExtTPMCleanupHost(driver, tpm, flags, migration);
+            qemuExtTPMCleanupHost(cfg, tpm, flags, migration);
     }
 }
 
@@ -282,10 +283,11 @@ qemuExtDevicesStop(virQEMUDriver *driver,
                    virDomainObj *vm,
                    bool migration)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainDef *def = vm->def;
     size_t i;
 
-    if (qemuExtDevicesInitPaths(driver, def) < 0)
+    if (qemuExtDevicesInitPaths(cfg, def) < 0)
         return;
 
     for (i = 0; i < def->nvideos; i++) {

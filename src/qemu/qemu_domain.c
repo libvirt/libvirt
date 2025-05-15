@@ -5816,7 +5816,7 @@ qemuDomainRemoveInactiveCommon(virQEMUDriver *driver,
         if (rmdir(chkDir) < 0 && errno != ENOENT)
             VIR_WARN("unable to remove checkpoint directory %s", chkDir);
     }
-    qemuExtDevicesCleanupHost(driver, vm->def, flags, migration);
+    qemuExtDevicesCleanupHost(cfg, vm->def, flags, migration);
 }
 
 
