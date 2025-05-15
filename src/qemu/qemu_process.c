@@ -9512,7 +9512,6 @@ qemuProcessReloadMachineTypes(virDomainObj *vm)
 
 
 struct qemuProcessReconnectData {
-    virQEMUDriver *driver;
     virDomainObj *obj;
     virIdentity *identity;
 };
@@ -9832,10 +9831,9 @@ qemuProcessReconnect(void *opaque)
 
 static int
 qemuProcessReconnectHelper(virDomainObj *obj,
-                           void *opaque)
+                           void *opaque G_GNUC_UNUSED)
 {
     virThread thread;
-    struct qemuProcessReconnectData *src = opaque;
     struct qemuProcessReconnectData *data;
     g_autofree char *name = NULL;
 
@@ -9845,7 +9843,6 @@ qemuProcessReconnectHelper(virDomainObj *obj,
 
     data = g_new0(struct qemuProcessReconnectData, 1);
 
-    memcpy(data, src, sizeof(*data));
     data->obj = obj;
     data->identity = virIdentityGetCurrent();
 
@@ -9887,9 +9884,8 @@ qemuProcessReconnectHelper(virDomainObj *obj,
 void
 qemuProcessReconnectAll(virQEMUDriver *driver)
 {
-    struct qemuProcessReconnectData data = {.driver = driver};
     virDomainObjListForEach(driver->domains, true,
-                            qemuProcessReconnectHelper, &data);
+                            qemuProcessReconnectHelper, NULL);
 }
 
 
