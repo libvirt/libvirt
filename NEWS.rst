@@ -21,6 +21,14 @@ v11.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix failure when reverting to internal snapshots
+
+    A regression in ``libvirt-11.2`` and ``libvirt-11.3`` prevents reverting to
+    an internal snapshot. Attempts to revert would produce the following error::
+
+      error: operation failed: load of internal snapshot 'foo1' job failed: Device 'libvirt-1-format' is writable but does not support snapshots
+
+    The only workaround is to avoid the broken versions.
 
 v11.3.0 (2025-05-02)
 ====================
