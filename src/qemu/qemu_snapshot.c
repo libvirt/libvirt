@@ -2628,13 +2628,12 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     if (virDomainSnapshotIsExternal(snap)) {
         if (!(tmpsnapdef = virDomainSnapshotDefNew()))
-            return -1;
+            goto error;
 
         if (qemuSnapshotRevertExternalPrepare(vm, tmpsnapdef, snap,
                                               *config, *inactiveConfig,
-                                              &memdata) < 0) {
-            return -1;
-        }
+                                              &memdata) < 0)
+            goto error;
     } else {
         loadSnap = snap;
     }
@@ -2656,7 +2655,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
                             VIR_ASYNC_JOB_SNAPSHOT,
                             VIR_QEMU_PROCESS_STOP_MIGRATED);
         }
-        return -1;
+        goto error;
     }
 
     detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
@@ -2667,7 +2666,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     if (virDomainSnapshotIsExternal(snap)) {
         if (qemuSnapshotRevertExternalActive(vm, tmpsnapdef) < 0)
-            return -1;
+            goto error;
 
         qemuSnapshotRevertExternalFinish(vm, tmpsnapdef, snap);
     }
@@ -2689,16 +2688,22 @@ qemuSnapshotRevertActive(virDomainObj *vm,
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("guest unexpectedly quit"));
-            return -1;
+            goto error;
         }
         rc = qemuProcessStartCPUs(driver, vm,
                                   VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
                                   VIR_ASYNC_JOB_SNAPSHOT);
         if (rc < 0)
-            return -1;
+            goto error;
     }
 
     return qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
+
+ error:
+    if (!virDomainObjIsActive(vm))
+        qemuDomainRemoveInactive(driver, vm, 0, false);
+
+    return -1;
 }
 
 
