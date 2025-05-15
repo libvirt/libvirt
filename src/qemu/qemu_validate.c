@@ -4085,7 +4085,9 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         if (pciopts->pcihole64 || pciopts->pcihole64size != 0) {
-            if (!qemuDomainIsQ35(def)) {
+            if (!qemuDomainIsQ35(def) &&
+                !(qemuDomainIsARMVirt(def) && virQEMUCapsGet(qemuCaps,
+                                                             QEMU_CAPS_MACHINE_VIRT_HIGHMEM_MMIO_SIZE))) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Setting the 64-bit PCI hole size is not supported for machine '%1$s'"),
                                def->os.machine);
