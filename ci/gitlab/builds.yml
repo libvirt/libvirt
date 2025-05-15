@@ -103,21 +103,6 @@ x86_64-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-x86_64-fedora-40:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-fedora-40-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: fedora-40
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:40
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-fedora-41:
   extends: .native_build_job
   needs:
@@ -127,6 +112,21 @@ x86_64-fedora-41:
   variables:
     NAME: fedora-41
     TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
+x86_64-fedora-42:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-fedora-42-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-42
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:42
   artifacts:
     expire_in: 1 day
     paths:
@@ -416,29 +416,29 @@ s390x-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-mingw32-fedora-41:
+mingw32-fedora-42:
   extends: .cross_build_job
   needs:
-    - job: mingw32-fedora-41-container
+    - job: mingw32-fedora-42-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw32
     JOB_OPTIONAL: 1
-    NAME: fedora-41
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
+    NAME: fedora-42
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:42
 
 
-mingw64-fedora-41:
+mingw64-fedora-42:
   extends: .cross_build_job
   needs:
-    - job: mingw64-fedora-41-container
+    - job: mingw64-fedora-42-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw64
-    NAME: fedora-41
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:41
+    NAME: fedora-42
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:42
 
 
 mingw32-fedora-rawhide:
