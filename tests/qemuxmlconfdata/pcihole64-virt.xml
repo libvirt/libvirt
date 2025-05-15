@@ -1,0 +1,17 @@
+<domain type='qemu'>
+  <name>foo</name>
+  <uuid>6ba7b810-9dad-11d1-80b4-00c04fd430c8</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='pci' index='0' model='pcie-root'>
+      <pcihole64 unit='GiB'>512</pcihole64>
+    </controller>
+    <memballoon model='none'/>
+  </devices>
+</domain>

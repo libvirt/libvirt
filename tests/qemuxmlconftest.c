@@ -2587,6 +2587,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("pcihole64");
     DO_TEST_CAPS_LATEST("pcihole64-q35");
+    DO_TEST_CAPS_ARCH_LATEST("pcihole64-virt", "aarch64");
 
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-nodevs", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("arm-vexpressa9-basic", "aarch64");
