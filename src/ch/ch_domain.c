@@ -163,6 +163,7 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_RNG:
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -177,7 +178,6 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
@@ -215,6 +215,12 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     if (def->nconsoles > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Only a single console can be configured for this domain"));
+        return -1;
+    }
+
+    if (def->nrngs > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Only a single RNG device can be configured for this domain"));
         return -1;
     }
 

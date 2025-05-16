@@ -302,6 +302,44 @@ virCHMonitorBuildDisksJson(virJSONValue *content, virDomainDef *vmdef)
     return 0;
 }
 
+static int
+virCHMonitorBuildRngJson(virJSONValue *content, virDomainDef *vmdef)
+{
+    g_autoptr(virJSONValue) rng = virJSONValueNewObject();
+
+    if (vmdef->nrngs == 0) {
+        return 0;
+    }
+
+    if (vmdef->rngs[0]->model != VIR_DOMAIN_RNG_MODEL_VIRTIO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only virtio model is supported for RNG devices"));
+        return -1;
+    }
+
+    switch (vmdef->rngs[0]->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        if (virJSONValueObjectAppendString(rng, "src", vmdef->rngs[0]->source.file) < 0)
+            return -1;
+
+        if (virJSONValueObjectAppend(content, "rng", &rng) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+    case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only RANDOM backend is supported for RNG devices"));
+        return -1;
+
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        break;
+    }
+
+    return 0;
+}
+
 /**
  * virCHMonitorBuildNetJson:
  * @net: pointer to a guest network definition
@@ -499,6 +537,9 @@ virCHMonitorBuildVMJson(virCHDriver *driver, virDomainDef *vmdef,
         return -1;
 
     if (virCHMonitorBuildDisksJson(content, vmdef) < 0)
+        return -1;
+
+    if (virCHMonitorBuildRngJson(content, vmdef) < 0)
         return -1;
 
     if (virCHMonitorBuildDevicesJson(content, vmdef) < 0)
