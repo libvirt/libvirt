@@ -438,12 +438,6 @@ cc_flags += [
   '-Wwrite-strings',
 ]
 
-if get_option('optimization') != 'g'
-  # Seemingly insignificant changes in the source program can cause the warnings
-  # produced by -Winline to appear or disappear.
-  cc_flags += [ '-Winline' ]
-endif
-
 if cc.get_id() == 'clang'
     # Stop CLang from doing inter-procedural analysis of calls
     # between functions in the same compilation unit. Such an
