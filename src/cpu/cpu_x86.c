@@ -2564,7 +2564,7 @@ virCPUx86DataCheckFeature(const virCPUData *data,
 
 
 #if defined(__i386__) || defined(__x86_64__)
-static inline void
+static void
 cpuidCall(virCPUx86CPUID *cpuid)
 {
     virHostCPUX86GetCPUID(cpuid->eax_in,
