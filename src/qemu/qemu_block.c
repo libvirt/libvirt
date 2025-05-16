@@ -2767,7 +2767,7 @@ qemuBlockThrottleFilterGetNodename(virDomainThrottleFilterDef *filter)
  *
  * Build "arguments" part of "blockdev-add" QMP cmd.
  */
-static inline virJSONValue *
+static virJSONValue *
 qemuBlockThrottleFilterGetProps(virDomainThrottleFilterDef *filter,
                                 const char *parentNodeName)
 {

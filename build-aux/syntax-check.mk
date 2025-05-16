@@ -1349,6 +1349,13 @@ sc_rst_since:
 	halt='format :since: correctly' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_inline_functions:
+	@prohibit='\binline\b' \
+	in_vc_files='\.c$$' \
+	exclude='exempt from syntax-check' \
+	halt='avoid inline functions in .c files' \
+	  $(_sc_search_regexp)
+
 
 ## ---------- ##
 ## Exceptions ##
@@ -1505,6 +1512,9 @@ exclude_file_name_regexp--sc_black = \
 
 exclude_file_name_regexp--sc_spacing-check = \
   ^scripts/rpcgen/tests/test_demo\.[ch]$$
+
+exclude_file_name_regexp--sc_prohibit_inline_functions = \
+  ^src/storage_file/storage_source.*.c$$
 
 ## -------------- ##
 ## Implementation ##

@@ -1152,7 +1152,7 @@ virXMLParseHelper(int domcode,
     else if (url)
         docname = url;
     else
-        docname = "[inline data]";
+        docname = "[inline data]"; /* exempt from syntax-check */
 
     /* Set up a parser context so we can catch the details of XML errors. */
     pctxt = xmlNewParserCtxt();

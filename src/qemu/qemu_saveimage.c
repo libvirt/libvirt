@@ -48,7 +48,7 @@ VIR_ENUM_IMPL(qemuSaveFormat,
               "sparse",
 );
 
-static inline void
+static void
 qemuSaveImageBswapHeader(virQEMUSaveHeader *hdr)
 {
     hdr->version = GUINT32_SWAP_LE_BE(hdr->version);

@@ -2033,7 +2033,7 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
 }
 
 
-static inline bool
+static bool
 qemuDiskConfigThrottleGroupEnabled(const virDomainThrottleGroupDef *group)
 {
     return !!group->group_name &&

@@ -82,7 +82,7 @@ struct virThreadPoolWorkerData {
 /* Test whether the worker needs to quit if the current number of workers @count
  * is greater than @limit actually allows.
  */
-static inline bool virThreadPoolWorkerQuitHelper(size_t count, size_t limit)
+static bool virThreadPoolWorkerQuitHelper(size_t count, size_t limit)
 {
     return count > limit;
 }

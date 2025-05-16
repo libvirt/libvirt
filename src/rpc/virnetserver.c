@@ -78,8 +78,8 @@ static virClass *virNetServerClass;
 static void virNetServerDispose(void *obj);
 static void virNetServerUpdateServicesLocked(virNetServer *srv,
                                              bool enabled);
-static inline size_t virNetServerTrackPendingAuthLocked(virNetServer *srv);
-static inline size_t virNetServerTrackCompletedAuthLocked(virNetServer *srv);
+static size_t virNetServerTrackPendingAuthLocked(virNetServer *srv);
+static size_t virNetServerTrackCompletedAuthLocked(virNetServer *srv);
 
 static int
 virNetServerOnceInit(void)
@@ -901,14 +901,14 @@ virNetServerShutdownWait(virNetServer *srv)
 }
 
 
-static inline size_t
+static size_t
 virNetServerTrackPendingAuthLocked(virNetServer *srv)
 {
     return ++srv->nclients_unauth;
 }
 
 
-static inline size_t
+static size_t
 virNetServerTrackCompletedAuthLocked(virNetServer *srv)
 {
     return --srv->nclients_unauth;

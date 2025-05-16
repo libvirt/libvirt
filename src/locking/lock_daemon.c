@@ -93,13 +93,13 @@ virLockDaemonFree(virLockDaemon *lockd)
     g_free(lockd);
 }
 
-static inline void
+static void
 virLockDaemonLock(virLockDaemon *lockd)
 {
     g_mutex_lock(&lockd->lock);
 }
 
-static inline void
+static void
 virLockDaemonUnlock(virLockDaemon *lockd)
 {
     g_mutex_unlock(&lockd->lock);

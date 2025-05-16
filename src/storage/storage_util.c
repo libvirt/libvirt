@@ -98,13 +98,13 @@ virStorageBackendNamespaceInit(int poolType,
  * Upon success, return 0.  Otherwise, return -1 and set errno.
  */
 #ifdef __linux__
-static inline int
+static int
 reflinkCloneFile(int dest_fd, int src_fd)
 {
     return ioctl(dest_fd, FICLONE, src_fd);
 }
 #else
-static inline int
+static int
 reflinkCloneFile(int dest_fd G_GNUC_UNUSED,
                  int src_fd G_GNUC_UNUSED)
 {

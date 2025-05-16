@@ -230,7 +230,7 @@ NSS_NAME(gethostbyname2)(const char *name, int af, struct hostent *result,
                                     errnop, herrnop, NULL, NULL);
 }
 
-static inline void *
+static void *
 move_and_align(void *buf, size_t len, size_t *idx)
 {
     char *buffer = buf;

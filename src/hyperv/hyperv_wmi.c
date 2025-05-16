@@ -187,7 +187,7 @@ hypervFreeInvokeParams(hypervInvokeParamsList *params)
 }
 
 
-static inline void
+static void
 hypervCheckParams(hypervInvokeParamsList *params)
 {
     if (params->nbParams + 1 > params->nbAvailParams) {
