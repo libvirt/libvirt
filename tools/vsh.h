@@ -200,6 +200,7 @@ struct _vshControl {
     bool imode;                 /* interactive mode? */
     bool quiet;                 /* quiet mode */
     bool timing;                /* print timing info? */
+    bool no_pkttyagent;         /* suppress registration of pkttyagent? */
     int debug;                  /* print debug messages? */
     char *logfile;              /* log file name */
     int log_fd;                 /* log file descriptor */

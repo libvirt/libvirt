@@ -140,6 +140,14 @@ Output elapsed time information for each command.
 
 
 
+- ``--no-pkttyagent``
+
+Do not register ``pkttyagent`` as authentication agent with the
+polkit system daemon, even if ``virsh`` has been started from a
+terminal.
+
+
+
 - ``-v``, ``--version[=short]``
 
 Ignore all other arguments, and prints the version of the libvirt library

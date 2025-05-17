@@ -117,7 +117,8 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         keepalive_forced = true;
     }
 
-    if (virPolkitAgentAvailable() &&
+    if (!ctl->no_pkttyagent &&
+        virPolkitAgentAvailable() &&
         !(pkagent = virPolkitAgentCreate()))
         virResetLastError();
 
@@ -446,6 +447,7 @@ virshUsage(void)
                       "    -q | --quiet            quiet mode\n"
                       "    -r | --readonly         connect readonly\n"
                       "    -t | --timing           print timing information\n"
+                      "         --no-pkttyagent    suppress registration of pkttyagent\n"
                       "    -v                      short version\n"
                       "    -V                      long version\n"
                       "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
@@ -642,6 +644,7 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         { "quiet", no_argument, NULL, 'q' },
         { "readonly", no_argument, NULL, 'r' },
         { "timing", no_argument, NULL, 't' },
+        { "no-pkttyagent", no_argument, NULL, 0 },
         { "version", optional_argument, NULL, 'v' },
         { NULL, 0, NULL, 0 },
     };
@@ -739,6 +742,14 @@ virshParseArgv(vshControl *ctl, int argc, char **argv)
         case 'V':
             virshShowVersion(ctl);
             exit(EXIT_SUCCESS);
+        case 0:
+            if (STREQ(opt[longindex].name, "no-pkttyagent")) {
+                ctl->no_pkttyagent = true;
+                break;
+            } else {
+                vshError(ctl, "%s", _("unknown option"));
+                exit(EXIT_FAILURE);
+            }
         case ':':
             for (i = 0; opt[i].name != NULL; i++) {
                 if (opt[i].val == optopt)
