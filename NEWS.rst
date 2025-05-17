@@ -19,6 +19,10 @@ v11.4.0 (unreleased)
 
 * **Improvements**
 
+  * virsh: Add option ``--no-pkttyagent``
+
+    That option suppresses registration of pkttyagent with polkitd.
+
 * **Bug fixes**
 
   * qemu: Fix failure when reverting to internal snapshots
