@@ -282,11 +282,10 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
 {
     virSecuritySELinuxContextList *list = opaque;
     virSecurityManagerMetadataLockState *state;
-    const char **paths = NULL;
+    g_autofree const char **paths = NULL;
     size_t npaths = 0;
     size_t i;
     int rv;
-    int ret = -1;
 
     if (list->lock) {
         paths = g_new0(const char *, list->nItems);
@@ -303,7 +302,7 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
                                                      list->sharedFilesystems,
                                                      paths, npaths,
                                                      list->lockMetadataException)))
-            goto cleanup;
+            return -1;
 
         for (i = 0; i < list->nItems; i++) {
             virSecuritySELinuxContextItem *item = list->items[i];
@@ -357,12 +356,9 @@ virSecuritySELinuxTransactionRun(pid_t pid G_GNUC_UNUSED,
         virSecurityManagerMetadataUnlock(list->manager, &state);
 
     if (rv < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(paths);
-    return ret;
+    return 0;
 }
 
 
