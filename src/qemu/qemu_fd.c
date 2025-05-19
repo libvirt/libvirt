@@ -25,6 +25,11 @@
 #include "virfile.h"
 #include "virlog.h"
 
+/* Used strictly for logging selinux context of passed FD */
+#ifdef WITH_SECDRIVER_SELINUX
+# include <selinux/selinux.h>
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 VIR_LOG_INIT("qemu.qemu_fd");
 
@@ -42,6 +47,56 @@ struct _qemuFDPass {
 
     bool passed; /* passed to qemu via monitor */
 };
+
+
+static void
+qemuFDPassLogFDInfo(const char *name,
+                    size_t idx,
+                    int fd)
+{
+    struct stat st;
+    const char *type = "error";
+    g_autofree char *selinux = NULL;
+    g_autofree char *tmp = NULL;
+
+    if (fstat(fd, &st) == 0) {
+        switch (st.st_mode & S_IFMT) {
+           case S_IFBLK:
+               type = "block";
+               break;
+           case S_IFCHR:
+               type = "char";
+               break;
+           case S_IFDIR:
+               type = "directory";
+               break;
+           case S_IFIFO:
+               type = "pipe";
+               break;
+           case S_IFLNK:
+               type = "symlink";
+               break;
+           case S_IFREG:
+               type = "file";
+               break;
+           case S_IFSOCK:
+               type = "socket";
+               break;
+           default:
+               type = tmp = g_strdup_printf("unknown:'0x%x')", st.st_mode & S_IFMT);
+               break;
+        }
+    }
+
+#ifdef WITH_SECDRIVER_SELINUX
+    ignore_value(fgetfilecon_raw(fd, &selinux));
+#else
+    selinux = g_strdup("N/A");
+#endif
+
+    VIR_DEBUG("passing fd:'%i', name:'%s'(%zu) type:'%s' selinux:'%s'",
+              fd, name, idx, type, selinux);
+}
 
 
 void
@@ -234,6 +289,8 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
                                                fdpass->fds[i].fd,
                                                fdpass->fds[i].opaque);
 
+        qemuFDPassLogFDInfo(fdpass->fds[i].opaque, i, fdpass->fds[i].fd);
+
         virCommandPassFD(cmd, fdpass->fds[i].fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         fdpass->fds[i].fd = -1;
         virCommandAddArgList(cmd, "-add-fd", arg, NULL);
@@ -274,6 +331,8 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
     }
 
     for (i = 0; i < fdpass->nfds; i++) {
+        qemuFDPassLogFDInfo(fdpass->fds[i].opaque, i, fdpass->fds[i].fd);
+
         if (qemuMonitorAddFileHandleToSet(mon,
                                           fdpass->fds[i].fd,
                                           fdpass->fdSetID,
@@ -381,6 +440,7 @@ qemuFDPassDirectTransferCommand(qemuFDPassDirect *fdpass,
     if (!fdpass)
         return;
 
+    qemuFDPassLogFDInfo(fdpass->name, 0, fdpass->fd);
     virCommandPassFD(cmd, fdpass->fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     g_free(fdpass->name);
     fdpass->name = g_strdup_printf("%d", fdpass->fd);
@@ -402,6 +462,8 @@ qemuFDPassDirectTransferMonitor(qemuFDPassDirect *fdpass,
 {
     if (!fdpass)
         return 0;
+
+    qemuFDPassLogFDInfo(fdpass->name, 0, fdpass->fd);
 
     if (qemuMonitorSendFileHandle(mon, fdpass->name, fdpass->fd) < 0)
         return -1;
