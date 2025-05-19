@@ -3698,7 +3698,6 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManager *mgr,
 {
     int ret = 0;
     struct dirent *ent;
-    char *filename = NULL;
     g_autoptr(DIR) dir = NULL;
 
     if ((ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true)))
@@ -3711,9 +3710,8 @@ virSecuritySELinuxRestoreFileLabels(virSecurityManager *mgr,
         return -1;
 
     while ((ret = virDirRead(dir, &ent, path)) > 0) {
-        filename = g_strdup_printf("%s/%s", path, ent->d_name);
+        g_autofree char *filename = g_strdup_printf("%s/%s", path, ent->d_name);
         ret = virSecuritySELinuxRestoreFileLabel(mgr, filename, true);
-        VIR_FREE(filename);
         if (ret < 0)
             break;
     }
