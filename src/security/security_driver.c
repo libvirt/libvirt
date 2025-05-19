@@ -45,8 +45,9 @@ static virSecurityDriver *security_drivers[] = {
     &virSecurityDriverNop, /* Must always be last, since it will always probe */
 };
 
-virSecurityDriver *virSecurityDriverLookup(const char *name,
-                                             const char *virtDriver)
+virSecurityDriver *
+virSecurityDriverLookup(const char *name,
+                        const char *virtDriver)
 {
     virSecurityDriver *drv = NULL;
     size_t i;

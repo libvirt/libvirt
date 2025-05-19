@@ -245,5 +245,6 @@ struct _virSecurityDriver {
     virSecurityDomainRestoreNetdevLabel domainRestoreSecurityNetdevLabel;
 };
 
-virSecurityDriver *virSecurityDriverLookup(const char *name,
-                                             const char *virtDriver);
+virSecurityDriver *
+virSecurityDriverLookup(const char *name,
+                        const char *virtDriver);
