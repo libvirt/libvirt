@@ -53,6 +53,10 @@ were supplied). The following child elements and attributes are supported:
 
      import socket
      import libvirt
+     import selinux
+
+     # Optionally setup selinux context for the socket if the distro uses it
+     # selinux.setsockcreatecon_raw("system_u:object_r:svirt_t:s0")
 
      s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
      s.bind("/path/to/socket")
