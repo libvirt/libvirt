@@ -3259,6 +3259,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("seclabel-dynamic-none");
     DO_TEST_CAPS_LATEST("serial-target-port-auto");
     DO_TEST_CAPS_LATEST("vhost-user-fs-sock");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("vhost-user-fs-sock-readonly");
     DO_TEST_CAPS_ARCH_LATEST("video-virtio-gpu-ccw-auto", "s390x");
 
     DO_TEST_CAPS_LATEST("graphics-listen-network");

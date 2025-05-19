@@ -5022,6 +5022,12 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                                _("virtiofs does not support wrpolicy"));
                 return -1;
             }
+        } else {
+            if (fs->readonly) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("readonly mode cannot be set for externally started virtiofsd"));
+                return -1;
+            }
         }
 
         if (fs->model != VIR_DOMAIN_FS_MODEL_DEFAULT) {
