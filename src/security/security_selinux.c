@@ -398,7 +398,6 @@ virSecuritySELinuxMCSFind(virSecurityManager *mgr,
 {
     virSecuritySELinuxData *data = virSecurityManagerGetPrivateData(mgr);
     int catRange;
-    char *mcs = NULL;
 
     /* +1 since virRandomInt range is exclusive of the upper bound */
     catRange = (catMax - catMin) + 1;
@@ -416,6 +415,7 @@ virSecuritySELinuxMCSFind(virSecurityManager *mgr,
     for (;;) {
         int c1 = virRandomInt(catRange);
         int c2 = virRandomInt(catRange);
+        g_autofree char *mcs = NULL;
 
         VIR_DEBUG("Try cat %s:c%d,c%d", sens, c1 + catMin, c2 + catMin);
 
@@ -439,12 +439,10 @@ virSecuritySELinuxMCSFind(virSecurityManager *mgr,
         }
 
         if (virHashLookup(data->mcs, mcs) == NULL)
-            break;
-
-        VIR_FREE(mcs);
+            return g_steal_pointer(&mcs);
     }
 
-    return mcs;
+    return NULL;
 }
 
 
