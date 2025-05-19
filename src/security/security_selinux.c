@@ -1737,7 +1737,7 @@ virSecuritySELinuxSetTPMFileLabel(virSecurityManager *mgr,
 {
     int rc;
     virSecurityLabelDef *seclabel;
-    char *cancel_path;
+    g_autofree char *cancel_path = NULL;
     const char *tpmdev;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -1755,7 +1755,6 @@ virSecuritySELinuxSetTPMFileLabel(virSecurityManager *mgr,
             rc = virSecuritySELinuxSetFilecon(mgr,
                                               cancel_path,
                                               seclabel->imagelabel, false);
-            VIR_FREE(cancel_path);
             if (rc < 0) {
                 virSecuritySELinuxRestoreTPMFileLabelInt(mgr, def, tpm);
                 return -1;
@@ -1786,7 +1785,7 @@ virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManager *mgr,
 {
     int rc = 0;
     virSecurityLabelDef *seclabel;
-    char *cancel_path;
+    g_autofree char *cancel_path = NULL;
     const char *tpmdev;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -1801,7 +1800,6 @@ virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManager *mgr,
         if ((cancel_path = virTPMCreateCancelPath(tpmdev)) != NULL) {
             if (virSecuritySELinuxRestoreFileLabel(mgr, cancel_path, false) < 0)
                 rc = -1;
-            VIR_FREE(cancel_path);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
