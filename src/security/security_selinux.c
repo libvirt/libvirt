@@ -1526,10 +1526,9 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
     struct stat buf;
-    char *fcon = NULL;
-    char *newpath = NULL;
+    g_autofree char *fcon = NULL;
+    g_autofree char *newpath = NULL;
     int rc;
-    int ret = -1;
 
     /* Some paths are auto-generated, so let's be safe here and do
      * nothing if nothing is needed.
@@ -1544,15 +1543,14 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
     if (virFileResolveLink(path, &newpath) < 0) {
         VIR_WARN("cannot resolve symlink %s: %s", path,
                  g_strerror(errno));
-        goto cleanup;
+        return -1;
     }
 
     if ((rc = virSecuritySELinuxTransactionAppend(path, NULL,
                                                   recall, true)) < 0) {
-        goto cleanup;
+        return -1;
     } else if (rc > 0) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (recall) {
@@ -1560,10 +1558,9 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
         if (rc == -2) {
             /* Not supported. Lookup the default label below. */
         } else if (rc < 0) {
-            goto cleanup;
+            return -1;
         } else if (rc > 0) {
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
@@ -1571,7 +1568,7 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
         if (stat(newpath, &buf) != 0) {
             VIR_WARN("cannot stat %s: %s", newpath,
                      g_strerror(errno));
-            goto cleanup;
+            return -1;
         }
 
         if (getContext(mgr, newpath, buf.st_mode, &fcon) < 0) {
@@ -1579,19 +1576,14 @@ virSecuritySELinuxRestoreFileLabel(virSecurityManager *mgr,
              * which makes this an expected non error
              */
             VIR_WARN("cannot lookup default selinux label for %s", newpath);
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
     if (virSecuritySELinuxSetFileconImpl(newpath, fcon, privileged) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    freecon(fcon);
-    VIR_FREE(newpath);
-    return ret;
+    return 0;
 }
 
 
