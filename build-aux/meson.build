@@ -13,23 +13,10 @@ if git and tests_enabled[0]
   if host_machine.system() == 'freebsd' or host_machine.system() == 'darwin'
     make_prog = find_program('gmake')
     sed_prog = find_program('gsed')
+    grep_prog = find_program('ggrep')
   else
     make_prog = find_program('make')
     sed_prog = find_program('sed')
-  endif
-
-  if host_machine.system() == 'freebsd'
-    grep_prog = find_program('grep')
-    grep_cmd = run_command(grep_prog, '--version', check: true)
-    if grep_cmd.stdout().startswith('grep (BSD grep')
-      grep_prog = find_program('/usr/local/bin/grep', required: false)
-      if not grep_prog.found()
-        error('GNU grep not found')
-      endif
-    endif
-  elif host_machine.system() == 'darwin'
-    grep_prog = find_program('ggrep')
-  else
     grep_prog = find_program('grep')
   endif
 
