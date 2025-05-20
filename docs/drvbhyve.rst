@@ -329,6 +329,26 @@ This uses the UEFI firmware provided by the
 `sysutils/bhyve-firmware <https://www.freshports.org/sysutils/bhyve-firmware/>`__
 FreeBSD port.
 
+:since:`Since 11.4.0`, it's possible to configure an NVRAM file:
+
+::
+
+    <os>
+      <type>hvm</type>
+      <loader readonly="yes" type="pflash">/usr/local/share/uefi-firmware/BHYVE_UEFI.fd</loader>
+      <nvram template='/usr/local/share/edk2-bhyve/BHYVE_UEFI_VARS.fd'>/var/lib/libvirt/bhyve/nvram/myvm.fd</nvram>
+    </os>
+
+Alternatively, it's also possible to let the driver automatically configure
+the firmware and NVRAM:
+
+::
+
+    <os firmware='efi'>
+      <type>hvm</type>
+      <nvram/>
+    </os>
+
 VNC and the tablet input device could be configured this way:
 
 ::
