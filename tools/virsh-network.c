@@ -325,6 +325,7 @@ static const vshCmdOptDef opts_network_desc[] = {
     {.name = "new-desc",
      .type = VSH_OT_ARGV,
      .positional = true,
+     .completer = vshCompleteEmpty,
      .help = N_("message")
     },
     {.name = NULL}

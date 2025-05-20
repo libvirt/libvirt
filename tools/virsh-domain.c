@@ -8696,6 +8696,7 @@ static const vshCmdOptDef opts_desc[] = {
     {.name = "new-desc",
      .type = VSH_OT_ARGV,
      .positional = true,
+     .completer = vshCompleteEmpty,
      .help = N_("message")
     },
     {.name = NULL}
@@ -9936,10 +9937,12 @@ static const vshCmdOptDef opts_domsetlaunchsecstate[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "secrethdr",
      .type = VSH_OT_STRING,
+     .completer = vshCompleteEmpty,
      .help = N_("path to file containing the secret header"),
     },
     {.name = "secret",
      .type = VSH_OT_STRING,
+     .completer = vshCompleteEmpty,
      .help = N_("path to file containing the secret"),
     },
     {.name = "set-address",
@@ -10119,6 +10122,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
      .type = VSH_OT_ARGV,
      .positional = true,
      .required = true,
+     .completer = vshCompleteEmpty,
      .help = N_("command")
     },
     {.name = NULL}
@@ -10503,6 +10507,7 @@ static const vshCmdOptDef opts_qemu_agent_command[] = {
      .type = VSH_OT_ARGV,
      .positional = true,
      .required = true,
+     .completer = vshCompleteEmpty,
      .help = N_("command")
     },
     {.name = NULL}
@@ -10590,6 +10595,7 @@ static const vshCmdOptDef opts_lxc_enter_namespace[] = {
      .type = VSH_OT_ARGV,
      .positional = true,
      .required = true,
+     .completer = vshCompleteEmpty,
      .help = N_("command to run")
     },
     {.name = NULL}
