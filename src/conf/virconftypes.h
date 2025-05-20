@@ -276,6 +276,8 @@ typedef struct _virDomainXMLPrivateDataCallbacks virDomainXMLPrivateDataCallback
 
 typedef struct _virDomainXenbusControllerOpts virDomainXenbusControllerOpts;
 
+typedef struct _virDomainNVMeControllerOpts virDomainNVMeControllerOpts;
+
 typedef enum {
     VIR_DOMAIN_DISK_IO_DEFAULT = 0,
     VIR_DOMAIN_DISK_IO_NATIVE,

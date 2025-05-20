@@ -3044,6 +3044,16 @@
               </attribute>
             </optional>
           </group>
+          <group>
+            <attribute name="type">
+              <value>nvme</value>
+            </attribute>
+            <optional>
+              <element name="serial">
+                <ref name="diskSerial"/>
+              </element>
+            </optional>
+          </group>
         </choice>
         <optional>
           <element name="driver">

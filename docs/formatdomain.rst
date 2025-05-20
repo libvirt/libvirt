@@ -4140,6 +4140,10 @@ device hotplug is expected.
        <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
      </controller>
      <controller type='xenbus' maxGrantFrames='64' maxEventChannels='2047'/>
+     <controller type='nvme'>
+       <serial>
+       ...
+       </serial>
      ...
    </devices>
    ...
@@ -4185,6 +4189,12 @@ specific features, such as:
    xenbus controller supports the optional ``maxEventChannels`` attribute, which
    specifies maximum number of event channels (PV interrupts) that can be used
    by the guest.
+
+``nvme``
+   Supported :since:`Since 11.5.0`, the ``nvme`` controller can be used to
+   support NVMe disks.  It has an optional ``serial`` sub-element just like
+   regular disks do.
+
 
 Note: The PowerPC64 "spapr-vio" addresses do not have an associated controller.
 

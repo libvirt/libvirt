@@ -231,6 +231,8 @@ mymain(void)
 
     DO_TEST("fibrechannel-appid");
 
+    DO_TEST("controller-nvme");
+
 #define DO_TEST_BACKUP_FULL(name, intrnl) \
     do { \
         const struct testCompareBackupXMLData data = { .testname = name, \

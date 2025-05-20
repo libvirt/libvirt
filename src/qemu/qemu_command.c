@@ -2851,6 +2851,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
 
         break;
 
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:

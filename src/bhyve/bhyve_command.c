@@ -425,6 +425,7 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

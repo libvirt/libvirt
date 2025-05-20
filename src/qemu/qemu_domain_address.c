@@ -616,6 +616,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             }
             break;
 
+        case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
         case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
         case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
@@ -1919,6 +1920,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDef *def,
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
         case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
         case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+        case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
         case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
             break;
         }

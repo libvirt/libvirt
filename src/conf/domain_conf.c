@@ -420,6 +420,7 @@ VIR_ENUM_IMPL(virDomainController,
               "pci",
               "xenbus",
               "isa",
+              "nvme",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelPCI,
@@ -2563,6 +2564,7 @@ virDomainControllerDefNew(virDomainControllerType type)
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         break;
     }
@@ -2580,6 +2582,9 @@ void virDomainControllerDefFree(virDomainControllerDef *def)
 
     virDomainDeviceInfoClear(&def->info);
     g_free(def->virtio);
+
+    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_NVME)
+        g_free(def->opts.nvmeopts.serial);
 
     g_free(def);
 }
@@ -8784,6 +8789,7 @@ virDomainControllerModelTypeFromString(const virDomainControllerDef *def,
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         return -1;
     }
@@ -8812,6 +8818,7 @@ virDomainControllerModelTypeToString(virDomainControllerDef *def,
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
         return NULL;
     }
@@ -9047,6 +9054,10 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
         break;
     }
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+        def->opts.nvmeopts.serial = virXPathString("string(./serial)", ctxt);
+        break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -24026,6 +24037,11 @@ virDomainControllerDefFormat(virBuffer *buf,
             virBufferAsprintf(&attrBuf, " maxEventChannels='%d'",
                               def->opts.xenbusopts.maxEventChannels);
         }
+        break;
+
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+        virBufferEscapeString(&childBuf, "<serial>%s</serial>\n",
+                              def->opts.nvmeopts.serial);
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:

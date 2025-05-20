@@ -5856,6 +5856,10 @@ qemuDomainDiskControllerIsBusy(virDomainObj *vm,
                 continue;
             break;
 
+        case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+            /* nvme is not supported by the qemu driver */
+            break;
+
         case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
             /* xenbus is not supported by the qemu driver */
             continue;
@@ -5905,6 +5909,7 @@ qemuDomainControllerIsBusy(virDomainObj *vm,
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
         return qemuDomainDiskControllerIsBusy(vm, detach);
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
