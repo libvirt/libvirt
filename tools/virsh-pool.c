@@ -57,7 +57,7 @@
      .type = VSH_OT_STRING, \
      .positional = true, \
      .required = true, \
-     .completer = virshCompleteEmpty, \
+     .completer = vshCompleteEmpty, \
      .help = N_("name of the pool") \
     }, \
     {.name = "type", \
@@ -74,7 +74,7 @@
     {.name = "source-host", \
      .type = VSH_OT_STRING, \
      .unwanted_positional = true, \
-     .completer = virshCompleteEmpty, \
+     .completer = vshCompleteEmpty, \
      .help = N_("source-host for underlying storage") \
     }, \
     {.name = "source-path", \
@@ -110,7 +110,7 @@
     {.name = "auth-username", \
      .type = VSH_OT_STRING, \
      .unwanted_positional = true, \
-     .completer = virshCompleteEmpty, \
+     .completer = vshCompleteEmpty, \
      .help = N_("auth username to be used for underlying storage") \
     }, \
     {.name = "secret-usage", \
@@ -166,7 +166,7 @@
     {.name = "source-initiator", \
      .type = VSH_OT_STRING, \
      .unwanted_positional = true, \
-     .completer = virshCompleteEmpty, \
+     .completer = vshCompleteEmpty, \
      .help = N_("initiator iqn for underlying storage") \
     }
 
@@ -745,7 +745,7 @@ static const vshCmdOptDef opts_pool_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -1375,19 +1375,19 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     {.name = "host",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("optional host to query")
     },
     {.name = "port",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("optional port to query")
     },
     {.name = "initiator",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("optional initiator IQN to use for query")
     },
     {.name = NULL}
@@ -1462,7 +1462,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     {.name = "srcSpec",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("optional file of source xml to query for pools")
     },
     {.name = NULL}

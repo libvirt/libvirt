@@ -25,6 +25,7 @@ libvirt_shell_lib = static_library(
   [
     'vsh.c',
     'vsh-table.c',
+    'vsh-completer.c',
   ],
   dependencies: [
     tools_dep,
@@ -169,7 +170,6 @@ virsh_prog = executable(
     'virsh.c',
     'virsh-backup.c',
     'virsh-checkpoint.c',
-    'virsh-completer.c',
     'virsh-completer-domain.c',
     'virsh-completer-checkpoint.c',
     'virsh-completer-host.c',

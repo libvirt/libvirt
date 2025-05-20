@@ -45,7 +45,7 @@ static const vshCmdInfo info_capabilities = {
 static const vshCmdOptDef opts_capabilities[] = {
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -107,7 +107,7 @@ static const vshCmdOptDef opts_domcapabilities[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -1667,7 +1667,7 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
     {.name = "file",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("file containing XML CPU descriptions"),
     },
     {.name = "virttype",

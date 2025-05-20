@@ -506,7 +506,7 @@ static const vshCmdOptDef opts_network_metadata[] = {
     {.name = "set",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("new metadata to set"),
     },
     {.name = "remove",
@@ -638,7 +638,7 @@ static const vshCmdOptDef opts_network_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -1234,7 +1234,7 @@ static const vshCmdOptDef opts_network_update[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("name of file containing xml (or, if it starts with '<', the complete "
                 "xml element itself) to add/modify, or to be matched for search")
     },
@@ -1871,7 +1871,7 @@ static const vshCmdOptDef opts_network_port_dumpxml[] = {
     VIRSH_COMMON_OPT_NETWORK_PORT(0),
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",

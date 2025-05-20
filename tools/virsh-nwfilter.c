@@ -175,7 +175,7 @@ static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -576,7 +576,7 @@ static const vshCmdOptDef opts_nwfilter_binding_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",

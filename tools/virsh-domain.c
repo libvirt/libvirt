@@ -429,7 +429,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("target of disk device")
     },
     {.name = "targetbus",
@@ -475,17 +475,17 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "serial",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("serial of disk device")
     },
     {.name = "wwn",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("wwn of disk device")
     },
     {.name = "alias",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("custom alias name of disk device")
     },
     {.name = "rawio",
@@ -494,7 +494,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "address",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("address of disk device")
     },
     {.name = "multifunction",
@@ -511,7 +511,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "source-host-name",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("host name for source of disk device")
     },
     {.name = "source-host-transport",
@@ -847,13 +847,13 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {.name = "target",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("target network name")
     },
     {.name = "mac",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("MAC address")
     },
     {.name = "script",
@@ -869,19 +869,19 @@ static const vshCmdOptDef opts_attach_interface[] = {
     {.name = "alias",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("custom alias name of interface device")
     },
     {.name = "inbound",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("control domain's outgoing traffics")
     },
     VIRSH_COMMON_OPT_DOMAIN_PERSISTENT,
@@ -1405,7 +1405,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "group-name",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("group name to share I/O quota between multiple drives")
     },
     VSH_OPTS_IOTUNE,
@@ -1912,31 +1912,31 @@ static const vshCmdOptDef opts_blkiotune[] = {
     {.name = "device-weights",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("per-device IO Weights, in the form of /path/to/device,weight,...")
     },
     {.name = "device-read-iops-sec",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("per-device read I/O limit per second, in the form of /path/to/device,read_iops_sec,...")
     },
     {.name = "device-write-iops-sec",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("per-device write I/O limit per second, in the form of /path/to/device,write_iops_sec,...")
     },
     {.name = "device-read-bytes-sec",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("per-device bytes read per second, in the form of /path/to/device,read_bytes_sec,...")
     },
     {.name = "device-write-bytes-sec",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("per-device bytes wrote per second, in the form of /path/to/device,write_bytes_sec,...")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -2669,7 +2669,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing XML description of the copy destination")
     },
     {.name = "format",
@@ -3617,13 +3617,13 @@ static const vshCmdOptDef opts_domiftune[] = {
     {.name = "inbound",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("control domain's incoming traffics")
     },
     {.name = "outbound",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("control domain's outgoing traffics")
     },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
@@ -4386,7 +4386,7 @@ static const vshCmdOptDef opts_start[] = {
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
     {.name = "reset-nvram",
@@ -4541,7 +4541,7 @@ static const vshCmdOptDef opts_save[] = {
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -4939,7 +4939,7 @@ static const vshCmdOptDef opts_save_image_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -4994,7 +4994,7 @@ static const vshCmdOptDef opts_save_image_define[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -5344,7 +5344,7 @@ static const vshCmdOptDef opts_managed_save_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -5392,7 +5392,7 @@ static const vshCmdOptDef opts_managed_save_define[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -5680,7 +5680,7 @@ static const vshCmdOptDef opts_restore[] = {
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -5949,7 +5949,7 @@ static const vshCmdOptDef opts_screenshot[] = {
     {.name = "file",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("where to store the screenshot")
     },
     {.name = "screen",
@@ -6181,7 +6181,7 @@ static const vshCmdOptDef opts_set_user_password[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("the new password")
     },
     {.name = "encrypted",
@@ -8476,7 +8476,7 @@ static const vshCmdOptDef opts_create[] = {
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
     {.name = "validate",
@@ -8833,7 +8833,7 @@ static const vshCmdOptDef opts_metadata[] = {
     {.name = "set",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("new metadata to set"),
     },
     {.name = "remove",
@@ -9086,7 +9086,7 @@ static const vshCmdOptDef opts_send_process_signal[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("the process ID")
     },
     {.name = "signame",
@@ -10036,14 +10036,14 @@ static const vshCmdOptDef opts_dom_fd_associate[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("name of the FD group")
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("file descriptors N,M,... to associate")
     },
     {.name = "seclabel-writable",
@@ -10112,7 +10112,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... along with the command")
     },
     {.name = "cmd",
@@ -10446,7 +10446,7 @@ static const vshCmdOptDef opts_qemu_attach[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("pid")
     },
     {.name = NULL}
@@ -10705,7 +10705,7 @@ static const vshCmdOptDef opts_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -10768,7 +10768,7 @@ static const vshCmdOptDef opts_domxmlfromnative[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("config data file to import from")
     },
     {.name = NULL}
@@ -10822,7 +10822,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("xml data file to export from")
     },
     {.name = NULL}
@@ -10919,7 +10919,7 @@ static const vshCmdOptDef opts_domrename[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("new domain name")
     },
     {.name = NULL}
@@ -11022,7 +11022,7 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("connection URI of the destination host as seen from the client(normal migration) or source(p2p migration)")
     },
     VIRSH_COMMON_OPT_LIVE(N_("live migration")),
@@ -11117,25 +11117,25 @@ static const vshCmdOptDef opts_migrate[] = {
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("migration URI, usually can be omitted")
     },
     {.name = "graphicsuri",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("graphics URI to be used for seamless graphics migration")
     },
     {.name = "listen-address",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("listen address that destination should bind to for incoming migration")
     },
     {.name = "dname",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("rename to new name during migration (if supported)")
     },
     {.name = "timeout",
@@ -11155,7 +11155,7 @@ static const vshCmdOptDef opts_migrate[] = {
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "migrate-disks",
@@ -11176,7 +11176,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "disks-uri",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("URI to use for disks migration (overrides --disks-port)")
     },
     {.name = "comp-methods",
@@ -11210,7 +11210,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "persistent-xml",
      .type = VSH_OT_STRING,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("filename containing updated persistent XML for the target")
     },
     {.name = "tls",
@@ -11235,7 +11235,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "tls-destination",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("override the destination host name used for TLS verification")
     },
     {.name = "comp-zlib-level",
@@ -13673,7 +13673,7 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
     {.name = "file",
      .type = VSH_OT_STRING,
      .positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("optional file to read keys from"),
     },
     {.name = "reset",

@@ -96,10 +96,10 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
     if (vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str) < 0)
         return NULL;
 
-    tmp = virshEnumComplete(VIR_NODE_DEV_CAP_LAST,
-                            virNodeDevCapTypeToString);
+    tmp = vshEnumComplete(VIR_NODE_DEV_CAP_LAST,
+                          virNodeDevCapTypeToString);
 
-    return virshCommaStringListComplete(cap_str, (const char **)tmp);
+    return vshCommaStringListComplete(cap_str, (const char **)tmp);
 }
 
 
@@ -110,6 +110,6 @@ virshNodeDevicePCIBackendCompleter(vshControl *ctl G_GNUC_UNUSED,
 {
     virCheckFlags(0, NULL);
 
-    return virshEnumComplete(VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST,
-                             virDeviceHostdevPCIDriverNameTypeToString);
+    return vshEnumComplete(VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_LAST,
+                           virDeviceHostdevPCIDriverNameTypeToString);
 }

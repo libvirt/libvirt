@@ -248,7 +248,7 @@ static const vshCmdOptDef opts_connect[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .allowEmpty = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("hypervisor connection URI")
     },
     {.name = "readonly",

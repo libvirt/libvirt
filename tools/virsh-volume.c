@@ -178,20 +178,20 @@ static const vshCmdOptDef opts_vol_create_as[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("name of the volume")
     },
     {.name = "capacity",
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("size of the vol, as scaled integer (default bytes)")
     },
     {.name = "allocation",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("initial allocation size, as scaled integer (default bytes)")
     },
     {.name = "format",
@@ -531,7 +531,7 @@ static const vshCmdOptDef opts_vol_clone[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("clone name")
     },
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
@@ -1041,7 +1041,7 @@ static const vshCmdOptDef opts_vol_resize[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("new capacity for the vol, as scaled integer (default bytes)")
     },
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
@@ -1129,7 +1129,7 @@ static const vshCmdOptDef opts_vol_dumpxml[] = {
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",

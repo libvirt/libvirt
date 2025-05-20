@@ -131,7 +131,7 @@ static const vshCmdOptDef opts_secret_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",
@@ -186,7 +186,7 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     },
     {.name = "file",
      .type = VSH_OT_STRING,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("read secret from file"),
     },
     {.name = "plain",
@@ -200,7 +200,7 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     {.name = "base64",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("base64-encoded secret value")
     },
     {.name = NULL}

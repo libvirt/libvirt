@@ -102,7 +102,7 @@
      .type = VSH_OT_STRING, \
      .required = true, \
      .positional = true, \
-     .completer = virshCompletePathLocalExisting, \
+     .completer = vshCompletePathLocalExisting, \
      .help = _helpstr \
     }
 

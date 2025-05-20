@@ -1,5 +1,5 @@
 /*
- * virsh-completer.c: virsh completer callbacks
+ * vsh-completer.c: virsh completer callbacks
  *
  * Copyright (C) 2017 Red Hat, Inc.
  *
@@ -20,7 +20,7 @@
 
 #include <config.h>
 
-#include "virsh-completer.h"
+#include "vsh-completer.h"
 
 /**
  * A completer callback is a function that accepts three arguments:
@@ -56,7 +56,7 @@
 
 
 /**
- * virshEnumComplete:
+ * vshEnumComplete:
  * @last: The number of element in enum (pass VIR_XXX_LAST)
  * @intToStr: integer to string conversion (pass virXXXTypeToString)
  *
@@ -67,8 +67,8 @@
  * Returns: string list of completions.
  */
 char **
-virshEnumComplete(unsigned int last,
-                  const char *(*intToStr)(int))
+vshEnumComplete(unsigned int last,
+                const char *(*intToStr)(int))
 {
     char **ret = NULL;
     size_t i;
@@ -83,7 +83,7 @@ virshEnumComplete(unsigned int last,
 
 
 /**
- * virshCommaStringListComplete:
+ * vshCommaStringListComplete:
  * @input: user input so far
  * @options: ALL options available for argument
  *
@@ -102,15 +102,15 @@ virshEnumComplete(unsigned int last,
  * This helper function takes care of that. In this specific case
  * it would be called as follows:
  *
- *   virshCommaStringListComplete("str1,str2,str3",
+ *   vshCommaStringListComplete("str1,str2,str3",
  *                                {"strA", "strB", "strC", NULL});
  *
  * Returns: string list of completions on success,
  *          NULL otherwise.
  */
 char **
-virshCommaStringListComplete(const char *input,
-                             const char **options)
+vshCommaStringListComplete(const char *input,
+                           const char **options)
 {
     const size_t optionsLen = g_strv_length((char **) options);
     g_autofree char *inputCopy = NULL;
@@ -156,7 +156,7 @@ virshCommaStringListComplete(const char *input,
 
 
 /**
- * virshCompletePathLocalExisting:
+ * vshCompletePathLocalExisting:
  *
  * Complete a path to a existing file used as input. The file is used as input
  * for virsh so only local files are considered.
@@ -164,16 +164,16 @@ virshCommaStringListComplete(const char *input,
  * Note: For now this is a no-op. Readline does the correct thing.
  */
 char **
-virshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
-                               const vshCmd *cmd G_GNUC_UNUSED,
-                               unsigned int completerflags G_GNUC_UNUSED)
+vshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
+                             const vshCmd *cmd G_GNUC_UNUSED,
+                             unsigned int completerflags G_GNUC_UNUSED)
 {
     return NULL;
 }
 
 
 /**
- * virshCompleteEmpty:
+ * vshCompleteEmpty:
  *
  * Complete nothing. For cases where an user input is required and we can't
  * suggest anything.
@@ -182,9 +182,9 @@ virshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
  * file list.
  */
 char **
-virshCompleteEmpty(vshControl *ctl G_GNUC_UNUSED,
-                   const vshCmd *cmd G_GNUC_UNUSED,
-                   unsigned int completerflags G_GNUC_UNUSED)
+vshCompleteEmpty(vshControl *ctl G_GNUC_UNUSED,
+                 const vshCmd *cmd G_GNUC_UNUSED,
+                 unsigned int completerflags G_GNUC_UNUSED)
 {
     return NULL;
 }

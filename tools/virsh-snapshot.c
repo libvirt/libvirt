@@ -110,7 +110,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
      .positional = true,
-     .completer = virshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("domain snapshot XML")
     },
     {.name = "redefine",
@@ -315,13 +315,13 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     {.name = "name",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("name of snapshot")
     },
     {.name = "description",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("description of snapshot")
     },
     {.name = "print-xml",
@@ -1593,7 +1593,7 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
     },
     {.name = "xpath",
      .type = VSH_OT_STRING,
-     .completer = virshCompleteEmpty,
+     .completer = vshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
     {.name = "wrap",

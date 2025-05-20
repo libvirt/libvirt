@@ -1,5 +1,5 @@
 /*
- * virsh-completer.h: virsh completer callbacks
+ * vsh-completer.h: common virt shell completer callbacks
  *
  * Copyright (C) 2017 Red Hat, Inc.
  *
@@ -20,15 +20,22 @@
 
 #pragma once
 
-#include "vsh-completer.h"
-#include "virsh-completer-checkpoint.h"
-#include "virsh-completer-domain.h"
-#include "virsh-completer-host.h"
-#include "virsh-completer-interface.h"
-#include "virsh-completer-network.h"
-#include "virsh-completer-nodedev.h"
-#include "virsh-completer-nwfilter.h"
-#include "virsh-completer-pool.h"
-#include "virsh-completer-secret.h"
-#include "virsh-completer-snapshot.h"
-#include "virsh-completer-volume.h"
+#include "vsh.h"
+
+char **
+vshEnumComplete(unsigned int last,
+                const char *(*intToStr)(int));
+
+char **
+vshCommaStringListComplete(const char *input,
+                           const char **options);
+
+char **
+vshCompletePathLocalExisting(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int completerflags);
+
+char **
+vshCompleteEmpty(vshControl *ctl,
+                 const vshCmd *cmd,
+                 unsigned int completerflags);

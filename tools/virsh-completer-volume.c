@@ -123,6 +123,6 @@ virshStorageVolWipeAlgorithmCompleter(vshControl *ctl G_GNUC_UNUSED,
 {
     virCheckFlags(0, NULL);
 
-    return virshEnumComplete(VIR_STORAGE_VOL_WIPE_ALG_LAST,
-                             virshStorageVolWipeAlgorithmTypeToString);
+    return vshEnumComplete(VIR_STORAGE_VOL_WIPE_ALG_LAST,
+                           virshStorageVolWipeAlgorithmTypeToString);
 }
