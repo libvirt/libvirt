@@ -423,6 +423,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
      .positional = true,
      .required = true,
      .allowEmpty = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("source of disk device or name of network disk")
     },
     {.name = "target",
@@ -4931,6 +4932,7 @@ static const vshCmdOptDef opts_save_image_dumpxml[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("saved state file to read")
     },
     {.name = "security-info",
@@ -4988,6 +4990,7 @@ static const vshCmdOptDef opts_save_image_define[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("saved state file to modify")
     },
     {.name = "xml",
@@ -5053,6 +5056,7 @@ static const vshCmdOptDef opts_save_image_edit[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("saved state file to edit")
     },
     {.name = "running",
@@ -5667,6 +5671,7 @@ static const vshCmdOptDef opts_restore[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("the state to restore")
     },
     {.name = "bypass-cache",
@@ -13153,6 +13158,7 @@ static const vshCmdOptDef opts_change_media[] = {
     {.name = "source",
      .type = VSH_OT_STRING,
      .positional = true,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("source of the media")
     },
     {.name = "eject",
