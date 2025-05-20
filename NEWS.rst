@@ -23,6 +23,14 @@ v11.4.0 (unreleased)
 
     That option suppresses registration of pkttyagent with polkitd.
 
+  * bhyve: support NVRAM configuration for UEFI firmwares
+
+    The bhyve driver now supports specifying NVRAM store file, such as::
+
+      <os firmware='efi'>
+        <nvram/>
+      </os>
+
 * **Bug fixes**
 
   * qemu: Fix failure when reverting to internal snapshots
