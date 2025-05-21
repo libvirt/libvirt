@@ -29,6 +29,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <stdlib.h>
 
 
 #if 0
@@ -61,6 +62,29 @@ do { \
 #else
 # define NSS_NAME(s) _nss_libvirt_guest_##s##_r
 #endif
+
+#if !defined(g_autofree)
+static inline void
+generic_free(void *p)
+{
+    free(*((void **)p));
+}
+# define g_autofree __attribute__((cleanup(generic_free)))
+#endif
+
+#if !defined(g_steal_pointer)
+static inline void *
+g_steal_pointer(void *p)
+{
+    void **pp = (void **)p;
+    void *ptr = *pp;
+
+    *pp = NULL;
+    return ptr;
+}
+# define g_steal_pointer(x) (__typeof__(*(x))) g_steal_pointer(x)
+#endif
+
 
 enum nss_status
 NSS_NAME(gethostbyname)(const char *name, struct hostent *result,
