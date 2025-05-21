@@ -248,7 +248,6 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
                          char *buffer, size_t buflen, int *errnop,
                          int *herrnop, int32_t *ttlp, char **canonp)
 {
-    enum nss_status ret = NSS_STATUS_UNAVAIL;
     char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
     g_autofree leaseAddress *addr = NULL;
     size_t naddr, i;
@@ -303,8 +302,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
     if (buflen < need) {
         *errnop = ENOMEM;
         *herrnop = TRY_AGAIN;
-        ret = NSS_STATUS_TRYAGAIN;
-        goto cleanup;
+        return NSS_STATUS_TRYAGAIN;
     }
 
     /* First, append name */
@@ -354,9 +352,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
     *herrnop = NETDB_SUCCESS;
     h_errno = 0;
 
-    ret = NSS_STATUS_SUCCESS;
- cleanup:
-    return ret;
+    return NSS_STATUS_SUCCESS;
 }
 
 #ifdef WITH_STRUCT_GAIH_ADDRTUPLE
@@ -365,7 +361,6 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
                          char *buffer, size_t buflen, int *errnop,
                          int *herrnop, int32_t *ttlp)
 {
-    enum nss_status ret = NSS_STATUS_UNAVAIL;
     g_autofree leaseAddress *addr = NULL;
     size_t naddr, i;
     bool found = false;
@@ -408,8 +403,7 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
     if (buflen < need) {
         *errnop = ENOMEM;
         *herrnop = TRY_AGAIN;
-        ret = NSS_STATUS_TRYAGAIN;
-        goto cleanup;
+        return NSS_STATUS_TRYAGAIN;
     }
 
     /* First, append name */
@@ -447,9 +441,7 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
     /* Explicitly reset all error variables */
     *errnop = 0;
     *herrnop = NETDB_SUCCESS;
-    ret = NSS_STATUS_SUCCESS;
- cleanup:
-    return ret;
+    return NSS_STATUS_SUCCESS;
 }
 #endif /* WITH_STRUCT_GAIH_ADDRTUPLE */
 
