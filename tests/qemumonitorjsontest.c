@@ -1149,8 +1149,7 @@ GEN_TEST_FUNC(qemuMonitorJSONSaveVirtualMemory, 0, 1024, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONSavePhysicalMemory, 0, 1024, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONMigrate, 0, "tcp:localhost:12345")
 GEN_TEST_FUNC(qemuMonitorJSONMigrateRecover, "tcp://destination.host:54321");
-GEN_TEST_FUNC(qemuMonitorJSONDump, "dummy_protocol", "elf",
-              true)
+GEN_TEST_FUNC(qemuMonitorJSONDump, "dummy_protocol", "elf")
 GEN_TEST_FUNC(qemuMonitorJSONGraphicsRelocate, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
               "localhost", 12345, 12346, "certsubjectval")
 GEN_TEST_FUNC(qemuMonitorJSONRemoveNetdev, "net0")
