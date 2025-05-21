@@ -3198,7 +3198,6 @@ int qemuMonitorJSONMigrate(qemuMonitor *mon,
 {
     bool resume = !!(flags & QEMU_MONITOR_MIGRATE_RESUME);
     g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("migrate",
-                                                             "b:detach", true,
                                                              "b:resume", resume,
                                                              "s:uri", uri,
                                                              NULL);
