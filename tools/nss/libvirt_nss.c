@@ -464,18 +464,17 @@ aiforaf(const char *name,
     struct hostent resolved;
     int err;
     char **addrList;
+    g_autofree char *buf = NULL;
+    const size_t buf_size = 1024;
+    int herr;
 
-    /* Note: The do-while blocks in this function are used to scope off large
-     * stack allocated buffers, which are not needed at the same time */
-    do {
-        char buf[1024] = { 0 };
-        int herr;
+    if (!(buf = calloc(buf_size, sizeof(*buf))))
+        return;
 
-        if (NSS_NAME(gethostbyname2)(name, af, &resolved,
-                                     buf, sizeof(buf),
-                                     &err, &herr) != NS_SUCCESS)
-            return;
-    } while (false);
+    if (NSS_NAME(gethostbyname2)(name, af, &resolved,
+                                 buf, buf_size,
+                                 &err, &herr) != NS_SUCCESS)
+        return;
 
     addrList = resolved.h_addr_list;
     while (*addrList) {
