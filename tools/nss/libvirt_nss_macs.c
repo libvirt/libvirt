@@ -46,7 +46,7 @@ findMACsFromJSON(json_object *jobj,
                  size_t *nmacs)
 {
     size_t i;
-    int len;
+    size_t len;
 
     if (!json_object_is_type(jobj, json_type_array)) {
         ERROR("parsed JSON does not contain the leases array");
