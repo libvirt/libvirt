@@ -3451,8 +3451,12 @@ paravirtualized driver is specified via the ``disk`` element.
       and sync requests from guest are ignored).
       :since:`Since 0.6.0`
    -  The optional ``error_policy`` attribute controls how the hypervisor will
-      behave on a disk read or write error, possible values are "stop",
-      "report" (:since:`since 0.9.7`), "ignore", and "enospace".
+      behave on a disk read or write error, possible values are ``stop``
+      (suspend/pause the domain on error), ``report`` (report the error to the
+      guest OS; :since:`since 0.9.7`), ``ignore`` (ignore the error and try to
+      continue), and ``enospace`` (suspend/pause the domain only if host storage
+      is full; report the error to the guest OS otherwise).
+
       The default is left to the discretion of the hypervisor.
       :since:`Since 0.8.0`.
    -  The optional ``rerror_policy`` attribute controls behavior for read
