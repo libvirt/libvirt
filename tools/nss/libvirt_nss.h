@@ -35,14 +35,18 @@
 #if 0
 # include <errno.h>
 # include <stdio.h>
+# include <string.h>
 # define NULLSTR(s) ((s) ? (s) : "<null>")
 # define ERROR(...) \
 do { \
-    char ebuf[512]; \
-    const char *errmsg = strerror_r(errno, ebuf, sizeof(ebuf)); \
+    int saved_errno = errno; \
+    const size_t ebuf_size = 512; \
+    g_autofree char *ebuf = calloc(ebuf_size, sizeof(*ebuf)); \
+    if (ebuf) \
+        strerror_r(saved_errno, ebuf, ebuf_size); \
     fprintf(stderr, "ERROR %s:%d : ", __FUNCTION__, __LINE__); \
     fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, " : %s\n", errmsg); \
+    fprintf(stderr, " : %s\n", NULLSTR(ebuf)); \
     fprintf(stderr, "\n"); \
 } while (0)
 
