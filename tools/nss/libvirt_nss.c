@@ -134,7 +134,7 @@ findLease(const char *name,
 
     DEBUG("Dir: %s", leaseDir);
     while ((entry = readdir(dir)) != NULL) {
-        char *path;
+        g_autofree char *path = NULL;
         size_t dlen = strlen(entry->d_name);
 
         if (dlen >= 7 && !strcmp(entry->d_name + dlen - 7, ".status")) {
@@ -148,18 +148,15 @@ findLease(const char *name,
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 
-            leaseFiles[nleaseFiles++] = path;
+            leaseFiles[nleaseFiles++] = g_steal_pointer(&path);
 #if defined(LIBVIRT_NSS_GUEST)
         } else if (dlen >= 5 && !strcmp(entry->d_name + dlen - 5, ".macs")) {
             if (asprintf(&path, "%s/%s", leaseDir, entry->d_name) < 0)
                 goto cleanup;
 
             DEBUG("Processing %s", path);
-            if (findMACs(path, name, &macs, &nmacs) < 0) {
-                free(path);
+            if (findMACs(path, name, &macs, &nmacs) < 0)
                 goto cleanup;
-            }
-            free(path);
 #endif /* LIBVIRT_NSS_GUEST */
         }
 
@@ -253,7 +250,7 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
     char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
-    leaseAddress *addr = NULL;
+    g_autofree leaseAddress *addr = NULL;
     size_t naddr, i;
     bool found = false;
     size_t nameLen, need, idx = 0;
@@ -359,7 +356,6 @@ NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
 
     ret = NSS_STATUS_SUCCESS;
  cleanup:
-    free(addr);
     return ret;
 }
 
@@ -370,7 +366,7 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
                          int *herrnop, int32_t *ttlp)
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
-    leaseAddress *addr = NULL;
+    g_autofree leaseAddress *addr = NULL;
     size_t naddr, i;
     bool found = false;
     int r;
@@ -453,7 +449,6 @@ NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
     *herrnop = NETDB_SUCCESS;
     ret = NSS_STATUS_SUCCESS;
  cleanup:
-    free(addr);
     return ret;
 }
 #endif /* WITH_STRUCT_GAIH_ADDRTUPLE */
