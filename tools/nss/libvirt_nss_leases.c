@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 #include <json.h>
 

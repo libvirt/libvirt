@@ -35,6 +35,8 @@
 #include <errno.h>
 #include <string.h>
 #include <time.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 
 #if defined(WITH_BSD_NSS)
