@@ -314,15 +314,82 @@ virFormatIntPretty(unsigned long long val,
 }
 
 
+static int
+virDiskNameParseNvme(const char *name, int *controller, int *disk, int *partition)
+{
+    int ctrl = 0;
+    int ns = 0;
+    int part = 0;
+    char *end_ptr = NULL;
+    const char *tmp = STRSKIP(name, "nvme");
+
+    if (!controller)
+        return -1;
+
+    if (!tmp)
+        return -1;
+
+    if (virStrToLong_i(tmp, &end_ptr, 10, &ctrl) < 0)
+        return -1;
+
+    if (*end_ptr != 'n')
+        return -1;
+
+    if (ctrl < 0)
+        return -1;
+
+    tmp = end_ptr + 1;
+
+    if (virStrToLong_i(tmp, &end_ptr, 10, &ns) < 0)
+        return -1;
+
+    if (*end_ptr != '\0' && *end_ptr != 'p')
+        return -1;
+
+    /* NSIDs start from 1, but we need to map them to [0..] for the controller
+     * address. */
+    if (ns < 1)
+        return -1;
+    ns--;
+
+    if (partition) {
+        *partition = 0;
+
+        if (*end_ptr != '\0') {
+            tmp = end_ptr + 1;
+
+            if (virStrToLong_i(tmp, NULL, 10, &part) < 0)
+                return -1;
+
+            /* Partitions on NVMe disks also from 1 */
+            if (part < 1)
+                return -1;
+
+            *partition = part - 1;
+        }
+    }
+
+    *controller = ctrl;
+    *disk = ns;
+
+    return 0;
+}
+
+
 /* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
- * into the corresponding index and partition number
- * (e.g. sda0 => (0,0), hdz2 => (25,2), vdaa12 => (26,12))
+ * or nvme[0-9]+n[0-9]+(p[0-9]+) for NVMe devices
+ * into the corresponding nvme controller (see below), index and partition number
+ * (e.g. sda0 => (0,0,0), hdz2 => (0,25,2), vdaa12 => (0,26,12)) as these do not
+ * support namespaces and controller is calculated from the disk index
+ * for nvme disks disks: (nvme1n2p3 => (1, 1, 2) as nvme namespaces and
+ * partitions are numbered from 1 and not 0).
  * @param name The name of the device
+ * @param nvme_ctrl The disk namespace to be returned
  * @param disk The disk index to be returned
  * @param partition The partition index to be returned
  * @return 0 on success, or -1 on failure
  */
-int virDiskNameParse(const char *name, int *disk, int *partition)
+int virDiskNameParse(const char *name, int *nvme_ctrl, int *disk, int *partition)
 {
     const char *ptr = NULL;
     char *rem;
@@ -330,6 +397,12 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
     static char const* const drive_prefix[] = {"fd", "hd", "vd", "sd", "xvd", "ubd"};
     size_t i;
     size_t n_digits;
+
+    if (STRPREFIX(name, "nvme"))
+        return virDiskNameParseNvme(name, nvme_ctrl, disk, partition);
+
+    if (nvme_ctrl)
+        *nvme_ctrl = 0;
 
     for (i = 0; i < G_N_ELEMENTS(drive_prefix); i++) {
         if (STRPREFIX(name, drive_prefix[i])) {
@@ -381,6 +454,8 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
 /* Translates a device name of the form (regex) /^[fhv]d[a-z]+[0-9]*$/
  * into the corresponding index (e.g. sda => 0, hdz => 25, vdaa => 26)
  * Note that any trailing string of digits is simply ignored.
+ * Since NVMe disks require controller devices, this function should not be used
+ * for nvme* names unless the caller does not need to know then controller index
  * @param name The name of the device
  * @return name's index, or -1 on failure
  */
@@ -388,16 +463,23 @@ int virDiskNameToIndex(const char *name)
 {
     int idx;
 
-    if (virDiskNameParse(name, &idx, NULL) < 0)
+    if (virDiskNameParse(name, NULL, &idx, NULL) < 0)
         idx = -1;
 
     return idx;
 }
 
-char *virIndexToDiskName(unsigned int idx, const char *prefix)
+char *virIndexToDiskName(unsigned int nvme_ctrl,
+                         unsigned int idx,
+                         const char *prefix)
 {
-    GString *str = g_string_new(NULL);
+    GString *str = NULL;
     long long ctr;
+
+    if (STREQ_NULLABLE(prefix, "nvme"))
+        return g_strdup_printf("nvme%dn%d", nvme_ctrl, idx + 1);
+
+    str = g_string_new(NULL);
 
     for (ctr = idx; ctr >= 0; ctr = ctr / 26 - 1)
         g_string_prepend_c(str, 'a' + (ctr % 26));

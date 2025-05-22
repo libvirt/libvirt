@@ -2257,7 +2257,7 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
         return -1;
     }
 
-    def->dst = virIndexToDiskName(idx, prefix);
+    def->dst = virIndexToDiskName(0, idx, prefix);
     return 0;
 }
 

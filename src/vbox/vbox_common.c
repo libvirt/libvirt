@@ -447,7 +447,7 @@ vboxGenerateMediumName(PRUint32 storageBus,
         return NULL;
     }
 
-    name = virIndexToDiskName(total, prefix);
+    name = virIndexToDiskName(0, total, prefix);
 
     return name;
 }

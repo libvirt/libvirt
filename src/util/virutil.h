@@ -51,9 +51,12 @@ unsigned long long
 virFormatIntPretty(unsigned long long val,
                    const char **unit);
 
-int virDiskNameParse(const char *name, int *disk, int *partition);
+int virDiskNameParse(const char *name, int *nvme_ctrl,
+                     int *disk, int *partition);
 int virDiskNameToIndex(const char* str);
-char *virIndexToDiskName(unsigned int idx, const char *prefix);
+char *virIndexToDiskName(unsigned int nvme_ctrl,
+                         unsigned int idx,
+                         const char *prefix);
 
 /* No-op workarounds for functionality missing in mingw.  */
 #ifndef WITH_GETUID

@@ -22,19 +22,25 @@ static const char* diskNames[] = {
 struct testDiskName
 {
     const char *name;
+    int ctrl;
     int idx;
     int partition;
 };
 
 static struct testDiskName diskNamesPart[] = {
-    {"sda0",          0,           0},
-    {"sdb10",         1,          10},
-    {"sdc2147483647", 2,  2147483647},
+    {"sda",           0, 0,           0},
+    {"sda0",          0, 0,           0},
+    {"sdb10",         0, 1,          10},
+    {"sdc2147483647", 0, 2,  2147483647},
+    {"nvme0n1",       0, 0,           0},
+    {"nvme0n1p1",     0, 0,           0},
+    {"nvme1n2p3",     1, 1,           2},
 };
 
 static const char* diskNamesInvalid[] = {
     "sda00", "sda01", "sdb-1",
-    "vd2"
+    "vd2",
+    "nvme0n0", "nvme0n1p0",
 };
 
 static int
@@ -45,7 +51,7 @@ testIndexToDiskName(const void *data G_GNUC_UNUSED)
     for (i = 0; i < G_N_ELEMENTS(diskNames); ++i) {
         g_autofree char *diskName = NULL;
 
-        diskName = virIndexToDiskName(i, "sd");
+        diskName = virIndexToDiskName(0, i, "sd");
 
         if (virTestCompareToString(diskNames[i], diskName) < 0) {
             return -1;
@@ -66,7 +72,7 @@ testDiskNameToIndex(const void *data G_GNUC_UNUSED)
     for (i = 0; i < 100000; ++i) {
         g_autofree char *diskName = NULL;
 
-        diskName = virIndexToDiskName(i, "sd");
+        diskName = virIndexToDiskName(0, i, "sd");
         idx = virDiskNameToIndex(diskName);
 
         if (idx < 0 || idx != i) {
@@ -85,30 +91,38 @@ static int
 testDiskNameParse(const void *data G_GNUC_UNUSED)
 {
     size_t i;
+    int nvme_ctrl;
     int idx;
     int partition;
     struct testDiskName *disk = NULL;
 
     for (i = 0; i < G_N_ELEMENTS(diskNamesPart); ++i) {
         disk = &diskNamesPart[i];
-        if (virDiskNameParse(disk->name, &idx, &partition))
+        partition = 0;
+        if (virDiskNameParse(disk->name, &nvme_ctrl, &idx, &partition))
             return -1;
 
+        if (disk->ctrl != nvme_ctrl) {
+            VIR_TEST_DEBUG("\nExpect NVMe controller [%d]", disk->ctrl);
+            VIR_TEST_DEBUG("Actual NVMe controller [%d]", nvme_ctrl);
+            return -1;
+        }
+
         if (disk->idx != idx) {
-            VIR_TEST_DEBUG("\nExpect [%d]", disk->idx);
-            VIR_TEST_DEBUG("Actual [%d]", idx);
+            VIR_TEST_DEBUG("\nExpect index [%d]", disk->idx);
+            VIR_TEST_DEBUG("Actual index [%d]", idx);
             return -1;
         }
 
         if (disk->partition != partition) {
-            VIR_TEST_DEBUG("\nExpect [%d]", disk->partition);
-            VIR_TEST_DEBUG("Actual [%d]", partition);
+            VIR_TEST_DEBUG("\nExpect partition [%d]", disk->partition);
+            VIR_TEST_DEBUG("Actual partition [%d]", partition);
             return -1;
         }
     }
 
     for (i = 0; i < G_N_ELEMENTS(diskNamesInvalid); ++i) {
-        if (!virDiskNameParse(diskNamesInvalid[i], &idx, &partition)) {
+        if (!virDiskNameParse(diskNamesInvalid[i], &nvme_ctrl, &idx, &partition)) {
             VIR_TEST_DEBUG("Should Fail [%s]", diskNamesInvalid[i]);
             return -1;
         }
