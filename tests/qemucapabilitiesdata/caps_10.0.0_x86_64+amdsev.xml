@@ -205,6 +205,7 @@
   <flag name='blockdev-set-active'/>
   <flag name='shim'/>
   <flag name='virtio-scsi.iothread-mapping'/>
+  <flag name='bus-floppy'/>
   <version>10000000</version>
   <microcodeVersion>43100285</microcodeVersion>
   <package>v10.0.0</package>

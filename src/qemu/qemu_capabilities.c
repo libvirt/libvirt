@@ -733,6 +733,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 475 */
               "virtio-scsi.iothread-mapping", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD_MAPPING */
               "machine.virt.highmem-mmio-size", /* QEMU_CAPS_MACHINE_VIRT_HIGHMEM_MMIO_SIZE */
+              "bus-floppy", /* QEMU_CAPS_BUS_FLOPPY */
     );
 
 
@@ -1386,6 +1387,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "pvscsi", QEMU_CAPS_SCSI_PVSCSI },
     { "spapr-tpm-proxy", QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY },
     { "vmport", QEMU_CAPS_MACHINE_VMPORT_OPT },
+    { "isa-fdc", QEMU_CAPS_BUS_FLOPPY },
+    { "sysbus-fdc", QEMU_CAPS_BUS_FLOPPY },
     /*
      * We don't probe 'esp' directly, because it is often reported
      * as present for all QEMU binaries, due to it being enabled
