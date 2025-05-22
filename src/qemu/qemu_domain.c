@@ -11531,6 +11531,9 @@ bool
 qemuDomainMachineSupportsFloppy(const char *machine,
                                 virQEMUCaps *qemuCaps)
 {
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BUS_FLOPPY))
+        return false;
+
     /* PowerPC pseries based VMs do not support floppy device */
     if (qemuDomainMachineIsPSeries(machine, virQEMUCapsGetArch(qemuCaps)))
         return false;
