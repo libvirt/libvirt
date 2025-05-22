@@ -1239,6 +1239,7 @@ vboxAttachDrives(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
         case VIR_DOMAIN_DISK_BUS_USB:
         case VIR_DOMAIN_DISK_BUS_UML:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NVME:
         case VIR_DOMAIN_DISK_BUS_NONE:
         case VIR_DOMAIN_DISK_BUS_LAST:
             vboxReportError(VIR_ERR_CONFIG_UNSUPPORTED,

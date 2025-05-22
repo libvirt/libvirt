@@ -2945,6 +2945,7 @@ qemuValidateDomainDeviceDefDiskIOThreads(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_SATA:
     case VIR_DOMAIN_DISK_BUS_SD:
     case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("IOThreads not available for bus %1$s target %2$s"),
@@ -3086,6 +3087,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         case VIR_DOMAIN_DISK_BUS_UML:
         case VIR_DOMAIN_DISK_BUS_SATA:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NVME:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device='lun' is not supported for bus='%1$s'"),
                            virDomainDiskBusTypeToString(disk->bus));
@@ -3201,6 +3203,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 
         break;
 
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_SD:
     case VIR_DOMAIN_DISK_BUS_NONE:
@@ -3397,6 +3400,7 @@ qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
         case VIR_DOMAIN_DISK_BUS_UML:
         case VIR_DOMAIN_DISK_BUS_SATA:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NVME:
         case VIR_DOMAIN_DISK_BUS_NONE:
         case VIR_DOMAIN_DISK_BUS_LAST:
         default:
@@ -3418,6 +3422,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
 {
     const char *driverName = virDomainDiskGetDriver(disk);
     virStorageSource *n;
+    int nvme_ctrl;
     int idx;
     int partition;
 
@@ -3445,7 +3450,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (virDiskNameParse(disk->dst, NULL, &idx, &partition) < 0) {
+    if (virDiskNameParse(disk->dst, &nvme_ctrl, &idx, &partition) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("invalid disk target '%1$s'"), disk->dst);
         return -1;

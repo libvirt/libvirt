@@ -372,6 +372,7 @@ VIR_ENUM_IMPL(virDomainDiskBus,
               "uml",
               "sata",
               "sd",
+              "nvme",
 );
 
 VIR_ENUM_IMPL(virDomainDiskCache,
@@ -6813,8 +6814,10 @@ virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                               virDomainDiskDef *def,
                               const virDomainDef *vmdef)
 {
-    int idx = virDiskNameToIndex(def->dst);
-    if (idx < 0) {
+    int idx = 0;
+    int nvme_ctrl = 0;
+
+    if (virDiskNameParse(def->dst, &nvme_ctrl, &idx, NULL) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unknown disk name '%1$s' and no address specified"),
                        def->dst);
@@ -6889,6 +6892,13 @@ virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
         def->info.addr.drive.controller = idx / 2;
         def->info.addr.drive.bus = 0;
         def->info.addr.drive.unit = idx % 2;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_NVME:
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+        def->info.addr.drive.controller = nvme_ctrl;
+        def->info.addr.drive.bus = 0;
+        def->info.addr.drive.unit = idx;
         break;
 
     case VIR_DOMAIN_DISK_BUS_NONE:
@@ -15015,6 +15025,10 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
         disk_bus == VIR_DOMAIN_DISK_BUS_SATA)
         return true;
 
+    if (controller_type == VIR_DOMAIN_CONTROLLER_TYPE_NVME &&
+        disk_bus == VIR_DOMAIN_DISK_BUS_NVME)
+        return true;
+
     return false;
 }
 
@@ -22664,6 +22678,36 @@ virDomainDefMaybeAddSmartcardController(virDomainDef *def)
     }
 }
 
+static int
+virDomainDefMaybeAssignNvmeControllerSerials(virDomainDef *def)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        virDomainControllerDef *ctrl = NULL;
+
+        if (!disk->serial ||
+            disk->bus != VIR_DOMAIN_DISK_BUS_NVME ||
+            def->disks[i]->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+            continue;
+
+        ctrl = virDomainDeviceFindNvmeController(def, &disk->info.addr.drive);
+        if (ctrl) {
+            if (!ctrl->opts.nvmeopts.serial) {
+                ctrl->opts.nvmeopts.serial = g_strdup(disk->serial);
+            } else if (STRNEQ_NULLABLE(disk->serial, ctrl->opts.nvmeopts.serial)) {
+                virReportError(VIR_ERR_XML_DETAIL, "%s",
+                               _("Conflicting NVME disk serial number, all disks on a controller must have the same serial number as the controller itself"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Based on the declared <address/> info for any devices,
  * add necessary drive controllers which are not already present
@@ -22681,6 +22725,8 @@ virDomainDefAddImplicitControllers(virDomainDef *def)
                                           VIR_DOMAIN_DISK_BUS_IDE);
     virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
                                           VIR_DOMAIN_DISK_BUS_SATA);
+    virDomainDefAddDiskControllersForType(def, VIR_DOMAIN_CONTROLLER_TYPE_NVME,
+                                          VIR_DOMAIN_DISK_BUS_NVME);
 
     virDomainDefMaybeAddVirtioSerialController(def);
     virDomainDefMaybeAddSmartcardController(def);
@@ -22712,6 +22758,9 @@ virDomainDefAddImplicitDevices(virDomainDef *def, virDomainXMLOption *xmlopt)
             return -1;
     }
     virDomainDefAddImplicitControllers(def);
+
+    if (virDomainDefMaybeAssignNvmeControllerSerials(def) < 0)
+        return -1;
 
     if (virDomainDefAddImplicitVideo(def, xmlopt) < 0)
         return -1;
@@ -29674,8 +29723,10 @@ virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
                             int *busIdx,
                             int *devIdx)
 {
-    int idx = virDiskNameToIndex(disk->dst);
-    if (idx < 0)
+    int idx = -1;
+    int nvme_ctrl = 0;
+
+    if (virDiskNameParse(disk->dst, &nvme_ctrl, &idx, NULL) < 0 || idx < 0)
         return -1;
 
     switch (disk->bus) {
@@ -29686,6 +29737,10 @@ virDiskNameToBusDeviceIndex(virDomainDiskDef *disk,
         case VIR_DOMAIN_DISK_BUS_SCSI:
             *busIdx = idx / 7;
             *devIdx = idx % 7;
+            break;
+        case VIR_DOMAIN_DISK_BUS_NVME:
+            *busIdx = nvme_ctrl;
+            *devIdx = idx;
             break;
         case VIR_DOMAIN_DISK_BUS_FDC:
         case VIR_DOMAIN_DISK_BUS_USB:

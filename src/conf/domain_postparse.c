@@ -523,6 +523,8 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
                 disk->bus = VIR_DOMAIN_DISK_BUS_XEN;
             else if (STRPREFIX(disk->dst, "ubd"))
                 disk->bus = VIR_DOMAIN_DISK_BUS_UML;
+            else if (STRPREFIX(disk->dst, "nvme"))
+                disk->bus = VIR_DOMAIN_DISK_BUS_NVME;
         }
     }
 

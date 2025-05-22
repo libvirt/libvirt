@@ -258,6 +258,7 @@ qemuAssignDeviceDiskAlias(virDomainDef *def,
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_SATA:
         case VIR_DOMAIN_DISK_BUS_SCSI:
+        case VIR_DOMAIN_DISK_BUS_NVME:
             diskPriv->qomName = g_strdup(disk->info.alias);
             break;
 

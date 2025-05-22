@@ -260,6 +260,7 @@ virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
     case VIR_DOMAIN_DISK_BUS_FDC:
     case VIR_DOMAIN_DISK_BUS_SCSI:
     case VIR_DOMAIN_DISK_BUS_SATA:
+    case VIR_DOMAIN_DISK_BUS_NVME:
         return addressType == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_XEN:
@@ -948,7 +949,8 @@ virDomainDiskDefValidate(const virDomainDef *def,
         !STRPREFIX(disk->dst, "sd") &&
         !STRPREFIX(disk->dst, "vd") &&
         !STRPREFIX(disk->dst, "xvd") &&
-        !STRPREFIX(disk->dst, "ubd")) {
+        !STRPREFIX(disk->dst, "ubd") &&
+        !STRPREFIX(disk->dst, "nvme")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid harddisk device name: %1$s"), disk->dst);
         return -1;

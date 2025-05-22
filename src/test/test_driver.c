@@ -10344,6 +10344,7 @@ testDomainAttachDeviceDiskLiveInternal(testDriver *driver G_GNUC_UNUSED,
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SATA:
     case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_NONE:
     case VIR_DOMAIN_DISK_BUS_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -10792,6 +10793,7 @@ testDomainDetachPrepDisk(virDomainObj *vm,
         case VIR_DOMAIN_DISK_BUS_UML:
         case VIR_DOMAIN_DISK_BUS_SATA:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NVME:
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("This type of disk cannot be hot unplugged"));
             return -1;

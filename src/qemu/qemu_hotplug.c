@@ -1058,6 +1058,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         /* Note that SD card hotplug support should be added only once
          * they support '-device' (don't require -drive only).
          * See also: qemuDiskBusIsSD */
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_NONE:
     case VIR_DOMAIN_DISK_BUS_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -5776,6 +5777,7 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
         case VIR_DOMAIN_DISK_BUS_SCSI:
             break;
 
+        case VIR_DOMAIN_DISK_BUS_NVME:
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_FDC:
         case VIR_DOMAIN_DISK_BUS_XEN:

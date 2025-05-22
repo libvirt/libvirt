@@ -2824,7 +2824,7 @@ paravirtualized driver is specified via the ``disk`` element.
      <disk type='file' device='disk'>
        <driver name='qemu' type='qcow2' />
        <source file='/var/lib/libvirt/images/disk.qcow2'/>
-       <target dev='vdh' bus='virtio'/>
+       <target dev='nvme0n1' bus='nvme'/>
        <throttlefilters>
          <throttlefilter group='limit2'/>
          <throttlefilter group='limit012'/>
@@ -3313,7 +3313,8 @@ paravirtualized driver is specified via the ``disk`` element.
    name in the guest OS. Treat it as a device ordering hint. The optional
    ``bus`` attribute specifies the type of disk device to emulate; possible
    values are driver specific, with typical values being "ide", "scsi",
-   "virtio", "xen", "usb", "sata", or "sd" :since:`"sd" since 1.1.2`. If
+   "virtio", "xen", "usb", "sata", "sd", or "nvme"
+   :since:`"sd" since 1.1.2, "nvme" since 11.5.0`. If
    omitted, the bus type is inferred from the style of the device name (e.g. a
    device named 'sda' will typically be exported using a SCSI bus). The optional
    attribute ``tray`` indicates the tray status of the removable disks (i.e.
@@ -3651,7 +3652,9 @@ paravirtualized driver is specified via the ``disk`` element.
    If present, this specify serial number of virtual hard drive. For example, it
    may look like ``<serial>WD-WMAP9A966149</serial>``. Not supported for
    scsi-block devices, that is those using disk ``type`` 'block' using
-   ``device`` 'lun' on ``bus`` 'scsi'. :since:`Since 0.7.1`
+   ``device`` 'lun' on ``bus`` 'scsi'. Also not supported for multiple NVMe
+   devices on the same controller since those have serial number per controller
+   and not per disk. :since:`Since 0.7.1`
 
    Note that depending on hypervisor and device type the serial number may be
    truncated silently. IDE/SATA devices are commonly limited to 20 characters.

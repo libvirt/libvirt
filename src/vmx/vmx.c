@@ -2240,6 +2240,7 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
         prefix = "fd";
         break;
 
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_USB:

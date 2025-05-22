@@ -2517,9 +2517,14 @@
   </define>
 
   <define name="diskTargetDev">
-    <data type="string">
-      <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
-    </data>
+    <choice>
+      <data type="string">
+        <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
+      </data>
+      <data type="string">
+        <param name="pattern">nvme[0-9]+n[0-9]+(p[0-9]+)?</param>
+      </data>
+    </choice>
   </define>
 
   <define name="diskTarget">
@@ -2539,6 +2544,7 @@
             <value>uml</value> <!-- NOT USED ANYMORE -->
             <value>sata</value>
             <value>sd</value>
+            <value>nvme</value>
           </choice>
         </attribute>
       </optional>

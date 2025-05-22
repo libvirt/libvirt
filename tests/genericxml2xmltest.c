@@ -232,6 +232,8 @@ mymain(void)
     DO_TEST("fibrechannel-appid");
 
     DO_TEST("controller-nvme");
+    DO_TEST_DIFFERENT("disk-nvme");
+    DO_TEST_FAIL_INACTIVE("disk-nvme-invalid-serials");
 
 #define DO_TEST_BACKUP_FULL(name, intrnl) \
     do { \
