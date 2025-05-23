@@ -5600,38 +5600,6 @@ qemuProcessStartValidateShmem(virDomainObj *vm)
 }
 
 
-static int
-qemuProcessStartValidateDisks(virDomainObj *vm,
-                              virQEMUCaps *qemuCaps)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDef *disk = vm->def->disks[i];
-        virStorageSource *src = disk->src;
-
-        /* This is a best effort check as we can only check if the command
-         * option exists, but we cannot determine whether the running QEMU
-         * was build with '--enable-vxhs'. */
-        if (src->type == VIR_STORAGE_TYPE_NETWORK &&
-            src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("VxHS protocol is not supported with this QEMU binary"));
-            return -1;
-        }
-
-        if (src->type == VIR_STORAGE_TYPE_NVME &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_NVME)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("NVMe disks are not supported with this QEMU binary"));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 /* 250 parts per million (ppm) is a half of NTP threshold */
 #define TSC_TOLERANCE 250
 
@@ -5767,9 +5735,6 @@ qemuProcessStartValidate(virQEMUDriver *driver,
             }
         }
     }
-
-    if (qemuProcessStartValidateDisks(vm, qemuCaps) < 0)
-        return -1;
 
     if (qemuProcessStartValidateTSC(driver, vm) < 0)
         return -1;

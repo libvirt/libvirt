@@ -4453,6 +4453,13 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         }
     }
 
+    if (actualType == VIR_STORAGE_TYPE_NVME &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_NVME)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("NVMe disks are not supported with this QEMU binary"));
+        return -1;
+    }
+
     if (src->pr &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4528,7 +4535,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
     if (actualType == VIR_STORAGE_TYPE_NETWORK) {
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
         case VIR_STORAGE_NET_PROTOCOL_FTP:
@@ -4564,6 +4570,7 @@ qemuDomainValidateStorageSource(virStorageSource *src,
             break;
 
         /* TFTP protocol is not supported since QEMU 2.8.0 */
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("storage protocol '%1$s' is not supported by this QEMU"),
