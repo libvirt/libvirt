@@ -4525,34 +4525,54 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         return -1;
     }
 
-    /* TFTP protocol is not supported since QEMU 2.8.0 */
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_TFTP) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("'tftp' protocol is not supported with this QEMU binary"));
-        return -1;
-    }
+    if (actualType == VIR_STORAGE_TYPE_NETWORK) {
+        switch ((virStorageNetProtocol) src->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+            break;
 
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_NFS) {
-        /* NFS protocol must have exactly one host */
-        if (src->nhosts != 1) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'nfs' protocol requires the usage of exactly one host"));
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+            /* NFS protocol must have exactly one host */
+            if (src->nhosts != 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'nfs' protocol requires the usage of exactly one host"));
+                return -1;
+            }
+
+            /* NFS can only use a TCP protocol */
+            if (src->hosts[0].transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'nfs' host must use TCP protocol"));
+                return -1;
+            }
+
+            /* NFS host cannot have a port */
+            if (src->hosts[0].port != 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("port cannot be specified in 'nfs' protocol host"));
+                return -1;
+            }
+            break;
+
+        /* TFTP protocol is not supported since QEMU 2.8.0 */
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("storage protocol '%1$s' is not supported by this QEMU"),
+                           virStorageNetProtocolTypeToString(src->protocol));
             return -1;
-        }
 
-        /* NFS can only use a TCP protocol */
-        if (src->hosts[0].transport != VIR_STORAGE_NET_HOST_TRANS_TCP) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'nfs' host must use TCP protocol"));
-            return -1;
-        }
-
-        /* NFS host cannot have a port */
-        if (src->hosts[0].port != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("port cannot be specified in 'nfs' protocol host"));
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            virReportEnumRangeError(virStorageNetProtocol, src->protocol);
             return -1;
         }
     }
