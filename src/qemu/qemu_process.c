@@ -5580,26 +5580,6 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
 }
 
 
-static int
-qemuProcessStartValidateShmem(virDomainObj *vm)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->nshmems; i++) {
-        virDomainShmemDef *shmem = vm->def->shmems[i];
-
-        if (strchr(shmem->name, '/')) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("shmem name '%1$s' must not contain '/'"),
-                           shmem->name);
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 /* 250 parts per million (ppm) is a half of NTP threshold */
 #define TSC_TOLERANCE 250
 
@@ -5705,9 +5685,6 @@ qemuProcessStartValidate(virQEMUDriver *driver,
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
-        return -1;
-
-    if (qemuProcessStartValidateShmem(vm) < 0)
         return -1;
 
     if (vm->def->cpu) {

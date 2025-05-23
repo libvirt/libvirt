@@ -5472,6 +5472,13 @@ static int
 qemuValidateDomainDeviceDefShmem(virDomainShmemDef *shmem,
                                  virQEMUCaps *qemuCaps)
 {
+    if (strchr(shmem->name, '/')) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("shmem name '%1$s' must not contain '/'"),
+                       shmem->name);
+        return -1;
+    }
+
     if (shmem->size > 0) {
         if (shmem->size < 1024 * 1024 ||
             !VIR_IS_POW2(shmem->size)) {
