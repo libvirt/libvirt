@@ -1551,7 +1551,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_CAPS_LATEST("disk-floppy-q35");
-    DO_TEST_CAPS_ARCH_LATEST_FAILURE("disk-floppy-pseries", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("disk-floppy-pseries", "ppc64");
     DO_TEST_CAPS_LATEST("disk-floppy-tray");
     DO_TEST_CAPS_LATEST("disk-virtio");
     DO_TEST_CAPS_ARCH_LATEST("disk-virtio-ccw", "s390x");

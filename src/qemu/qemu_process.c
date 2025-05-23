@@ -5620,13 +5620,6 @@ qemuProcessStartValidateDisks(virDomainObj *vm,
             return -1;
         }
 
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            !qemuDomainMachineSupportsFloppy(vm->def->os.machine, qemuCaps)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this machine type do not support floppy devices"));
-            return -1;
-        }
-
         if (src->type == VIR_STORAGE_TYPE_NVME &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_NVME)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

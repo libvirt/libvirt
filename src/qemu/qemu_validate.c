@@ -3008,6 +3008,13 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         return -1;
     }
 
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        !qemuDomainMachineSupportsFloppy(def->os.machine, qemuCaps)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("this machine type do not support floppy devices"));
+        return -1;
+    }
+
     if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
         if (disk->src->readonly) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
