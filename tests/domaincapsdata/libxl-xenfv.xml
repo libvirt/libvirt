@@ -70,6 +70,19 @@
         <value>xen</value>
       </enum>
     </hostdev>
+    <console supported='yes'>
+      <enum name='type'>
+        <value>vc</value>
+        <value>pty</value>
+        <value>dev</value>
+        <value>file</value>
+        <value>pipe</value>
+        <value>stdio</value>
+        <value>udp</value>
+        <value>tcp</value>
+        <value>unix</value>
+      </enum>
+    </console>
   </devices>
   <features>
     <gic supported='no'/>
