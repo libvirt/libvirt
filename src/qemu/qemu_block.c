@@ -427,41 +427,6 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
 
 
 static virJSONValue *
-qemuBlockStorageSourceGetVxHSProps(virStorageSource *src,
-                                   bool onlytarget)
-{
-    g_autoptr(virJSONValue) server = NULL;
-    const char *tlsAlias = src->tlsAlias;
-    virJSONValue *ret = NULL;
-
-    if (src->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("VxHS protocol accepts only one host"));
-        return NULL;
-    }
-
-    if (!(server = qemuBlockStorageSourceBuildJSONInetSocketAddress(&src->hosts[0])))
-        return NULL;
-
-    if (onlytarget)
-        tlsAlias = NULL;
-
-    /* VxHS disk specification example:
-     * { driver:"vxhs",
-     *   tls-creds:"objvirtio-disk0_tls0",
-     *   vdisk-id:"eb90327c-8302-4725-4e85ed4dc251",
-     *   server:{type:"tcp", host:"1.2.3.4", port:9999}}
-     */
-    ignore_value(virJSONValueObjectAdd(&ret,
-                                       "S:tls-creds", tlsAlias,
-                                       "s:vdisk-id", src->path,
-                                       "a:server", &server, NULL));
-
-    return ret;
-}
-
-
-static virJSONValue *
 qemuBlockStorageSourceGetNFSProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) server = NULL;
@@ -1088,11 +1053,6 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
                 return NULL;
             break;
 
-        case VIR_STORAGE_NET_PROTOCOL_VXHS:
-            driver = "vxhs";
-            if (!(fileprops = qemuBlockStorageSourceGetVxHSProps(src, onlytarget)))
-                return NULL;
-            break;
 
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
@@ -1134,6 +1094,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
                 return NULL;
             break;
 
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unsupported disk protocol"));

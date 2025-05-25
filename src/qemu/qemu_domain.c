@@ -8799,40 +8799,6 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
 
 
 static int
-qemuProcessPrepareStorageSourceTLSVxhs(virStorageSource *src,
-                                       virQEMUDriverConfig *cfg,
-                                       qemuDomainObjPrivate *priv,
-                                       const char *parentAlias)
-{
-    /* VxHS uses only client certificates and thus has no need for
-     * the server-key.pem nor a secret that could be used to decrypt
-     * the it, so no need to add a secinfo for a secret UUID. */
-    if (src->haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
-        if (cfg->vxhsTLS)
-            src->haveTLS = VIR_TRISTATE_BOOL_YES;
-        else
-            src->haveTLS = VIR_TRISTATE_BOOL_NO;
-        src->tlsFromConfig = true;
-    }
-
-    if (src->haveTLS == VIR_TRISTATE_BOOL_YES) {
-        src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias);
-        src->tlsCertdir = g_strdup(cfg->vxhsTLSx509certdir);
-
-        if (cfg->vxhsTLSx509secretUUID) {
-            qemuDomainStorageSourcePrivate *srcpriv = qemuDomainStorageSourcePrivateFetch(src);
-
-            if (!(srcpriv->tlsKeySecret = qemuDomainSecretInfoTLSNew(priv, src->tlsAlias,
-                                                                     cfg->vxhsTLSx509secretUUID)))
-                return -1;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 qemuProcessPrepareStorageSourceTLSNBD(virStorageSource *src,
                                       virQEMUDriverConfig *cfg,
                                       qemuDomainObjPrivate *priv,
@@ -8958,8 +8924,7 @@ qemuDomainPrepareStorageSourceTLS(virStorageSource *src,
 
     switch ((virStorageNetProtocol) src->protocol) {
     case VIR_STORAGE_NET_PROTOCOL_VXHS:
-        if (qemuProcessPrepareStorageSourceTLSVxhs(src, cfg, priv, parentAlias) < 0)
-            return -1;
+        /* vxhs is no longer supported */
         break;
 
     case VIR_STORAGE_NET_PROTOCOL_NBD:
