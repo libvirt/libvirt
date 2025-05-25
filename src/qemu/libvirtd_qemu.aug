@@ -69,6 +69,8 @@ module Libvirtd_qemu =
                  | bool_entry "backup_tls_x509_verify"
                  | str_entry "backup_tls_x509_secret_uuid"
 
+   (* support for vxhs was removed from qemu and the examples were dopped from *)
+   (* qemu.conf but these need to stay *)
    let vxhs_entry = bool_entry "vxhs_tls"
                  | str_entry "vxhs_tls_x509_cert_dir"
                  | str_entry "vxhs_tls_x509_secret_uuid"
