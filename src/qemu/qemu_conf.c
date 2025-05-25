@@ -385,9 +385,6 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->chardevTLSx509certdir);
     g_free(cfg->chardevTLSx509secretUUID);
 
-    g_free(cfg->vxhsTLSx509certdir);
-    g_free(cfg->vxhsTLSx509secretUUID);
-
     g_free(cfg->nbdTLSx509certdir);
     g_free(cfg->nbdTLSx509secretUUID);
 
@@ -553,8 +550,6 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfig *cfg,
 {
     int rv;
 
-    if (virConfGetValueBool(conf, "vxhs_tls", &cfg->vxhsTLS) < 0)
-        return -1;
     if (virConfGetValueBool(conf, "nbd_tls", &cfg->nbdTLS) < 0)
         return -1;
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
@@ -590,8 +585,6 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfig *cfg,
 
     GET_CONFIG_TLS_CERTINFO_COMMON(backup);
     GET_CONFIG_TLS_CERTINFO_SERVER(backup);
-
-    GET_CONFIG_TLS_CERTINFO_COMMON(vxhs);
 
     GET_CONFIG_TLS_CERTINFO_COMMON(nbd);
 
@@ -1416,14 +1409,6 @@ virQEMUDriverConfigValidate(virQEMUDriverConfig *cfg)
         return -1;
     }
 
-    if (cfg->vxhsTLSx509certdir &&
-        !virFileExists(cfg->vxhsTLSx509certdir)) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("vxhs_tls_x509_cert_dir directory '%1$s' does not exist"),
-                       cfg->vxhsTLSx509certdir);
-        return -1;
-    }
-
     if (cfg->nbdTLSx509certdir &&
         !virFileExists(cfg->nbdTLSx509certdir)) {
         virReportError(VIR_ERR_CONF_SYNTAX,
@@ -1452,7 +1437,6 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfig *cfg)
     SET_TLS_SECRET_UUID_DEFAULT(chardev);
     SET_TLS_SECRET_UUID_DEFAULT(migrate);
     SET_TLS_SECRET_UUID_DEFAULT(backup);
-    SET_TLS_SECRET_UUID_DEFAULT(vxhs);
     SET_TLS_SECRET_UUID_DEFAULT(nbd);
 
 #undef SET_TLS_SECRET_UUID_DEFAULT
@@ -1481,7 +1465,6 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfig *cfg)
     SET_TLS_X509_CERT_DEFAULT(chardev);
     SET_TLS_X509_CERT_DEFAULT(migrate);
     SET_TLS_X509_CERT_DEFAULT(backup);
-    SET_TLS_X509_CERT_DEFAULT(vxhs);
     SET_TLS_X509_CERT_DEFAULT(nbd);
 
 #undef SET_TLS_X509_CERT_DEFAULT

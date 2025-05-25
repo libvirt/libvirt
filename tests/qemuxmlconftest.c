@@ -1593,16 +1593,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST_CAPS_LATEST("disk-network-source-curl");
     DO_TEST_CAPS_LATEST("disk-network-nfs");
-    driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
-    driver.config->vxhsTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-tlsx509-nbd-hostname", "6.2.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
     DO_TEST_CAPS_LATEST("disk-network-http");
     VIR_FREE(driver.config->nbdTLSx509secretUUID);
-    VIR_FREE(driver.config->vxhsTLSx509secretUUID);
-    driver.config->vxhsTLS = 0;
     DO_TEST_CAPS_LATEST("disk-network-ssh");
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");

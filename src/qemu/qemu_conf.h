@@ -159,10 +159,6 @@ struct _virQEMUDriverConfig {
     bool backupTLSx509verifyPresent;
     char *backupTLSx509secretUUID;
 
-    bool vxhsTLS;
-    char *vxhsTLSx509certdir;
-    char *vxhsTLSx509secretUUID;
-
     bool nbdTLS;
     char *nbdTLSx509certdir;
     char *nbdTLSx509secretUUID;
