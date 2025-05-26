@@ -5540,16 +5540,6 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-            if (graphics->data.rdp.multiUser) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("qemu-rdp doesn't support the 'multiUser' attribute."));
-                return -1;
-            }
-            if (graphics->data.rdp.replaceUser) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("qemu-rdp doesn't support the 'replaceUser' attribute."));
-                return -1;
-            }
             if (!virDomainDefHasDBus(vm->def, false)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("qemu-rdp support requires a D-Bus bus graphics device."));
