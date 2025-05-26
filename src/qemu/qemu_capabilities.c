@@ -6450,8 +6450,7 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
                              VIR_DOMAIN_DISK_DEVICE_CDROM,
                              VIR_DOMAIN_DISK_DEVICE_LUN);
 
-    /* PowerPC pseries based VMs do not support floppy device */
-    if (!qemuDomainMachineIsPSeries(machine, qemuCaps->arch)) {
+    if (qemuDomainMachineSupportsFloppy(machine, qemuCaps)) {
         VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice, VIR_DOMAIN_DISK_DEVICE_FLOPPY);
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_FDC);
     }

@@ -1167,3 +1167,7 @@ qemuDomainCheckCPU(virArch arch,
                    virCPUDef *cpu,
                    virQEMUCapsHostCPUType compatCPU,
                    bool failIncompatible);
+
+bool
+qemuDomainMachineSupportsFloppy(const char *machine,
+                                virQEMUCaps *qemuCaps);

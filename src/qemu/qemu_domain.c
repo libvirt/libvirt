@@ -11525,3 +11525,15 @@ qemuDomainCheckCPU(virArch arch,
     return virCPUCompareUnusable(arch, hypervisorCPU, cpu,
                                  blockers, failIncompatible);
 }
+
+
+bool
+qemuDomainMachineSupportsFloppy(const char *machine,
+                                virQEMUCaps *qemuCaps)
+{
+    /* PowerPC pseries based VMs do not support floppy device */
+    if (qemuDomainMachineIsPSeries(machine, virQEMUCapsGetArch(qemuCaps)))
+        return false;
+
+    return true;
+}

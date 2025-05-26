@@ -5620,11 +5620,10 @@ qemuProcessStartValidateDisks(virDomainObj *vm,
             return -1;
         }
 
-        /* PowerPC pseries based VMs do not support floppy device */
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            qemuDomainIsPSeries(vm->def)) {
+            !qemuDomainMachineSupportsFloppy(vm->def->os.machine, qemuCaps)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("PowerPC pseries machines do not support floppy device"));
+                           _("this machine type do not support floppy devices"));
             return -1;
         }
 
