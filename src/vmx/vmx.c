@@ -97,6 +97,7 @@ def->os
                                         sata[0..3]:[0..29] -> <controller>:<unit> with 1 bus per controller
                                         ide[0..1]:[0..1]        -> <bus>:<unit> with 1 controller
                                         floppy[0..1]            -> <unit> with 1 controller and 1 bus per controller
+                                        nvme[0..3]:[0..14]     -> <controller>:<namespace> with 1 bus per controller
 
 def->disks[0]...
 
@@ -307,6 +308,19 @@ def->disks[0]...
 ->shared
 ->slotnum
 
+
+## disks: nvme hard drive ######################################################
+
+                                        nvme[0...3].present = "true"                  # defaults to "false"
+                                        nvme[0...3]:[0...14].present = "true"                # defaults to "false"
+# Limits are taken from https://configmax.broadcom.com/guest?vmwareproduct=vSphere&release=vSphere%208.0&categories=1-0
+...
+->type = _DISK_TYPE_FILE
+->device = _DISK_DEVICE_DISK
+->bus = _DISK_BUS_NVME
+->src = <value>.vmdk              <=>   nvme0:0.fileName = "<value>.vmdk"
+->dst = nvme<controller>n<namespace>
+->cachemode                       <=>   nvme0:0.writeThrough = "<value>"        # defaults to false, true -> _DISK_CACHE_WRITETHRU, false _DISK_CACHE_DEFAULT
 
 
 ################################################################################
@@ -573,6 +587,7 @@ static int virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def);
 static int virVMXParseSCSIController(virConf *conf, int controller, bool *present,
                                      int *virtualDev);
 static int virVMXParseSATAController(virConf *conf, int controller, bool *present);
+static int virVMXParseNVMEController(virConf *conf, int controller, bool *present);
 static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt,
                            virConf *conf, int device, int busType,
                            int controllerOrBus, int unit, virDomainDiskDef **def,
@@ -1843,6 +1858,30 @@ virVMXParseConfig(virVMXContext *ctx,
         VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
     }
 
+    /* def:disks (nvme) */
+    for (controller = 0; controller < 4; ++controller) {
+        if (virVMXParseNVMEController(conf, controller, &present) < 0)
+            goto cleanup;
+
+        if (!present)
+            continue;
+
+        for (unit = 0; unit < 15; unit++) {
+            g_autoptr(virDomainDiskDef) disk = NULL;
+
+            if (virVMXParseDisk(ctx, xmlopt, conf, VIR_DOMAIN_DISK_DEVICE_DISK,
+                                VIR_DOMAIN_DISK_BUS_NVME, controller, unit,
+                                &disk, def) < 0) {
+                goto cleanup;
+            }
+
+            if (!disk)
+                continue;
+
+            VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
+        }
+    }
+
     /* def:fss */
     if (virVMXGetConfigBoolean(conf, "isolation.tools.hgfs.disable",
                                &hgfs_disabled, true, true) < 0) {
@@ -2157,6 +2196,27 @@ virVMXParseSATAController(virConf *conf, int controller, bool *present)
 
 
 static int
+virVMXParseNVMEController(virConf *conf, int controller, bool *present)
+{
+    char present_name[32];
+
+    if (controller < 0 || controller > 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("NVMe controller index %1$d out of [0..3] range"),
+                       controller);
+        return -1;
+    }
+
+    g_snprintf(present_name, sizeof(present_name), "nvme%d.present", controller);
+
+    if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 virVMXGenerateDiskTarget(virDomainDiskDef *def,
                          virDomainDef *vmdef,
                          int controllerOrBus,
@@ -2164,6 +2224,7 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
 {
     const char *prefix = NULL;
     unsigned int idx = 0;
+    unsigned int nvme_ctrl = 0;
 
     switch (def->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
@@ -2241,6 +2302,25 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_NVME:
+        if (controllerOrBus < 0 || controllerOrBus > 3) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("NVMe controller index %1$d out of [0..3] range"),
+                           controllerOrBus);
+            return -1;
+        }
+
+        if (unit < 0 || unit > 14) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("NVMe NSID %1$d out of [0..14] range"),
+                           unit);
+            return -1;
+        }
+
+        prefix = "nvme";
+        nvme_ctrl = controllerOrBus;
+        idx = unit;
+        break;
+
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_USB:
@@ -2258,7 +2338,7 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
         return -1;
     }
 
-    def->dst = virIndexToDiskName(0, idx, prefix);
+    def->dst = virIndexToDiskName(nvme_ctrl, idx, prefix);
     return 0;
 }
 
@@ -2339,6 +2419,8 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
             prefix = g_strdup_printf("sata%d:%d", controllerOrBus, unit);
         } else if (busType == VIR_DOMAIN_DISK_BUS_IDE) {
             prefix = g_strdup_printf("ide%d:%d", controllerOrBus, unit);
+        } else if (busType == VIR_DOMAIN_DISK_BUS_NVME) {
+            prefix = g_strdup_printf("nvme%d:%d", controllerOrBus, unit);
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported bus type '%1$s' for device type '%2$s'"),

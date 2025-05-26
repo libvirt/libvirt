@@ -1,0 +1,45 @@
+<domain type='vmware'>
+  <name>dokuwiki</name>
+  <uuid>420338bd-1c9e-ad50-99a2-59e92ddda8b6</uuid>
+  <memory unit='KiB'>2097152</memory>
+  <currentMemory unit='KiB'>2097152</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <cputune>
+    <shares>2000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='block' device='cdrom'>
+      <source dev='/vmfs/devices/cdrom/mpx.vmhba0:C0:T0:L0'/>
+      <target dev='hda' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/dokuwiki.vmdk'/>
+      <target dev='nvme0n1' bus='nvme'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/dokuwiki_1.vmdk'/>
+      <target dev='nvme0n2' bus='nvme'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <controller type='ide' index='0'/>
+    <controller type='nvme' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:83:c9:0c' type='generated'/>
+      <source bridge='inside'/>
+      <model type='vmxnet3'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='16384' primary='yes'/>
+    </video>
+  </devices>
+</domain>
