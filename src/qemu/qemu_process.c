@@ -5509,57 +5509,6 @@ qemuProcessMakeDir(virQEMUDriver *driver,
 }
 
 
-static bool
-virDomainDefHasDBus(const virDomainDef *def, bool p2p)
-{
-    size_t i = 0;
-
-    for (i = 0; i < def->ngraphics; i++) {
-        virDomainGraphicsDef *graphics = def->graphics[i];
-
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_DBUS) {
-            return graphics->data.dbus.p2p == p2p;
-        }
-    }
-
-    return false;
-}
-
-
-static int
-qemuProcessStartValidateGraphics(virDomainObj *vm)
-{
-    size_t i;
-
-    for (i = 0; i < vm->def->ngraphics; i++) {
-        virDomainGraphicsDef *graphics = vm->def->graphics[i];
-
-        switch (graphics->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-            if (!virDomainDefHasDBus(vm->def, false)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("qemu-rdp support requires a D-Bus bus graphics device."));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
-        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
-        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-            break;
-        }
-    }
-
-    return 0;
-}
-
-
 /* 250 parts per million (ppm) is a half of NTP threshold */
 #define TSC_TOLERANCE 250
 
@@ -5662,9 +5611,6 @@ qemuProcessStartValidate(virQEMUDriver *driver,
     }
 
     if (virDomainDefValidate(vm->def, 0, driver->xmlopt, qemuCaps) < 0)
-        return -1;
-
-    if (qemuProcessStartValidateGraphics(vm) < 0)
         return -1;
 
     if (vm->def->cpu) {

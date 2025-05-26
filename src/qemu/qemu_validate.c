@@ -4522,8 +4522,11 @@ qemuValidateDomainDeviceDefDBusGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
-qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics)
+qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics,
+                                       const virDomainDef *def)
 {
+    size_t i;
+
     if (graphics->nListens > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("qemu-rdp does not support multiple listens for one graphics device."));
@@ -4543,6 +4546,19 @@ qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics)
     if (graphics->data.rdp.auth.expires) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("RDP password expiration isn't supported"));
+        return -1;
+    }
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDef *g = def->graphics[i];
+
+        if (g->type == VIR_DOMAIN_GRAPHICS_TYPE_DBUS && g->data.dbus.p2p == false)
+            break;
+    }
+
+    if (i == def->ngraphics) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("qemu-rdp support requires a D-Bus bus graphics device."));
         return -1;
     }
 
@@ -4623,7 +4639,7 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        if (qemuValidateDomainDeviceDefRDPGraphics(graphics) < 0)
+        if (qemuValidateDomainDeviceDefRDPGraphics(graphics, def) < 0)
             return -1;
 
         break;
