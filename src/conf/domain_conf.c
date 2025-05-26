@@ -6791,6 +6791,23 @@ virDomainDeviceFindSCSIController(const virDomainDef *def,
     return NULL;
 }
 
+
+virDomainControllerDef *
+virDomainDeviceFindNvmeController(const virDomainDef *def,
+                                  const virDomainDeviceDriveAddress *addr)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_NVME &&
+            def->controllers[i]->idx == addr->controller)
+            return def->controllers[i];
+    }
+
+    return NULL;
+}
+
+
 int
 virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
                               virDomainDiskDef *def,
