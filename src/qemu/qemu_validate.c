@@ -4425,6 +4425,12 @@ qemuValidateDomainDeviceDefSPICEGraphics(const virDomainGraphicsDef *graphics,
     virDomainGraphicsListenDef *glisten = NULL;
     int tlsPort = graphics->data.spice.tlsPort;
 
+    if (graphics->nListens > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("QEMU does not support multiple listens for one graphics device."));
+        return -1;
+    }
+
     glisten = virDomainGraphicsGetListen((virDomainGraphicsDef *)graphics, 0);
     if (!glisten) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4472,6 +4478,12 @@ static int
 qemuValidateDomainDeviceDefVNCGraphics(const virDomainGraphicsDef *graphics,
                                        virQEMUCaps *qemuCaps)
 {
+    if (graphics->nListens > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("QEMU does not support multiple listens for one graphics device."));
+        return -1;
+    }
+
     if (graphics->data.vnc.powerControl != VIR_TRISTATE_BOOL_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_POWER_CONTROL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4512,6 +4524,12 @@ qemuValidateDomainDeviceDefDBusGraphics(const virDomainGraphicsDef *graphics,
 static int
 qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics)
 {
+    if (graphics->nListens > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("qemu-rdp does not support multiple listens for one graphics device."));
+        return -1;
+    }
+
     if (graphics->data.rdp.replaceUser) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("RDP doesn't support 'replaceUser'"));

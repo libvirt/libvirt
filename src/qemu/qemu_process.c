@@ -5537,19 +5537,9 @@ qemuProcessStartValidateGraphics(virDomainObj *vm)
         switch (graphics->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            if (graphics->nListens > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("QEMU does not support multiple listens for one graphics device."));
-                return -1;
-            }
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-            if (graphics->nListens > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("qemu-rdp does not support multiple listens for one graphics device."));
-                return -1;
-            }
             if (graphics->data.rdp.multiUser) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("qemu-rdp doesn't support the 'multiUser' attribute."));
