@@ -512,7 +512,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
     return 0;
 }
 
-static int
+static void
 libxlMakeDomainOSCaps(const char *machine,
                       virDomainCapsOS *os,
                       virFirmware **firmwares,
@@ -527,7 +527,7 @@ libxlMakeDomainOSCaps(const char *machine,
     capsLoader->readonly.report = true;
 
     if (STREQ(machine, "xenpv") || STREQ(machine, "xenpvh"))
-        return 0;
+        return;
 
     capsLoader->supported = VIR_TRISTATE_BOOL_YES;
     capsLoader->values.values = g_new0(char *, nfirmwares);
@@ -542,11 +542,9 @@ libxlMakeDomainOSCaps(const char *machine,
                              VIR_DOMAIN_LOADER_TYPE_PFLASH);
     VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
                              VIR_TRISTATE_BOOL_YES);
-
-    return 0;
 }
 
-static int
+static void
 libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDisk *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
@@ -562,11 +560,9 @@ libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDisk *dev)
                              VIR_DOMAIN_DISK_BUS_IDE,
                              VIR_DOMAIN_DISK_BUS_SCSI,
                              VIR_DOMAIN_DISK_BUS_XEN);
-
-    return 0;
 }
 
-static int
+static void
 libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphics *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
@@ -576,11 +572,9 @@ libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphics *dev)
                              VIR_DOMAIN_GRAPHICS_TYPE_SDL,
                              VIR_DOMAIN_GRAPHICS_TYPE_VNC,
                              VIR_DOMAIN_GRAPHICS_TYPE_SPICE);
-
-    return 0;
 }
 
-static int
+static void
 libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideo *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
@@ -590,11 +584,9 @@ libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideo *dev)
                              VIR_DOMAIN_VIDEO_TYPE_VGA,
                              VIR_DOMAIN_VIDEO_TYPE_CIRRUS,
                              VIR_DOMAIN_VIDEO_TYPE_XEN);
-
-    return 0;
 }
 
-static int
+static void
 libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdev *dev)
 {
     dev->supported = VIR_TRISTATE_BOOL_YES;
@@ -625,10 +617,9 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdev *dev)
 
     virDomainCapsEnumClear(&dev->pciBackend);
     VIR_DOMAIN_CAPS_ENUM_SET(dev->pciBackend, VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_XEN);
-    return 0;
 }
 
-static int
+static void
 libxlMakeDomainDeviceConsoleCaps(virDomainCapsDeviceConsole *console)
 {
     console->supported = VIR_TRISTATE_BOOL_YES;
@@ -643,8 +634,6 @@ libxlMakeDomainDeviceConsoleCaps(virDomainCapsDeviceConsole *console)
                              VIR_DOMAIN_CHR_TYPE_UDP,
                              VIR_DOMAIN_CHR_TYPE_UNIX,
                              VIR_DOMAIN_CHR_TYPE_VC);
-
-    return 0;
 }
 
 virCaps *
@@ -698,15 +687,15 @@ libxlMakeDomainCapabilities(virDomainCaps *domCaps,
     else
         domCaps->maxvcpus = PV_MAX_VCPUS;
 
-    if (libxlMakeDomainOSCaps(domCaps->machine, os, firmwares, nfirmwares) < 0 ||
-        libxlMakeDomainDeviceDiskCaps(disk) < 0 ||
-        libxlMakeDomainDeviceGraphicsCaps(graphics) < 0 ||
-        libxlMakeDomainDeviceVideoCaps(video) < 0 ||
-        libxlMakeDomainDeviceConsoleCaps(console))
-        return -1;
-    if (STRNEQ(domCaps->machine, "xenpvh") &&
-        libxlMakeDomainDeviceHostdevCaps(hostdev) < 0)
-        return -1;
+    libxlMakeDomainOSCaps(domCaps->machine, os, firmwares, nfirmwares);
+    libxlMakeDomainDeviceDiskCaps(disk);
+    libxlMakeDomainDeviceGraphicsCaps(graphics);
+    libxlMakeDomainDeviceVideoCaps(video);
+    libxlMakeDomainDeviceConsoleCaps(console);
+
+    if (STRNEQ(domCaps->machine, "xenpvh")) {
+        libxlMakeDomainDeviceHostdevCaps(hostdev);
+    }
 
     domCaps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS] = VIR_TRISTATE_BOOL_NO;
     domCaps->features[VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO] = VIR_TRISTATE_BOOL_NO;
