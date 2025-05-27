@@ -192,6 +192,7 @@
         <value>scsi</value>
         <value>virtio</value>
         <value>usb</value>
+        <value>nvme</value>
       </enum>
       <enum name='model'>
         <value>virtio</value>

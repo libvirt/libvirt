@@ -107,6 +107,7 @@
         <value>virtio</value>
         <value>usb</value>
         <value>sata</value>
+        <value>nvme</value>
       </enum>
       <enum name='model'>
         <value>virtio</value>

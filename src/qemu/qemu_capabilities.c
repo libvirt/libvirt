@@ -6479,6 +6479,9 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_AHCI))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_SATA);
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVME_NS))
+        VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_NVME);
+
     /* disk->model values */
     VIR_DOMAIN_CAPS_ENUM_SET(disk->model, VIR_DOMAIN_DISK_MODEL_VIRTIO);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
