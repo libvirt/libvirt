@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-04-29 06:27+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -229,37 +229,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [параметри]... [<рядок команди>]\n"
-"%2$s [параметри]... <команда> [аргументи...]\n"
-"\n"
-"  options:\n"
-"    -c | --connect=АДРЕСА   адреса з'єднання з гіпервізором\n"
-"    -d | --debug=ЧИСЛО      рівень діагностики [0-4]\n"
-"    -e | --escape <символ>  послідовність символів екранування для консолі\n"
-"    -h | --help             це довідкове повідомлення\n"
-"    -k | --keepalive-interval=ЧИСЛО\n"
-"                            інтервал підтримання зв'язку у секундах, 0 — "
-"вимкнути\n"
-"    -K | --keepalive-count=ЧИСЛО\n"
-"                            кількість можливих пропущених повідомлень "
-"підтримання зв'язку\n"
-"    -l | --log=ФАЙЛ         вивести журнал обробки до файла\n"
-"    -q | --quiet            режим без повідомлень\n"
-"    -r | --readonly         з'єднатися лише для читання даних\n"
-"    -t | --timing           вивести дані щодо часових інтервалів\n"
-"    -v                      коротка версія\n"
-"    -V                      розширена версія\n"
-"         --version[=ТИП]    версія, значенням ТИП може бути short (коротко) "
-"або long (типово — short)\n"
-"  команди (неінтерактивний режим):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -616,10 +592,6 @@ msgstr ""
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s слід передавати параметри UID і GID"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr "%1$s, помилка нового режиму для призначення «%2$s» зі станом «%3$d»"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1456,6 +1428,10 @@ msgstr ""
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "підтримку «iothread» передбачено лише для контролерів virtio-scsi"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8942,16 +8918,13 @@ msgstr "Не вдалося скасувати дію зі зміни налаш
 msgid "Failed to run clone container"
 msgstr "Не вдалося виконати клонування контейнера"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
-"Не вдалося виконати команду «%1$s» для створення нового інтерфейсу iSCSI"
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"Не вдалося виконати команду «%1$s» для оновлення інтерфейсу iSCSI з IQN "
-"«%2$s»"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13264,8 +13237,8 @@ msgstr ""
 "Не надано адреси і не вдалося виявити якийсь шлях для очікування даних від "
 "фонової служби, за яким можна було б з'єднатися. Будь ласка, переконайтеся, "
 "що сокети фонової служби є активними і надайте адресу явним чином. "
-"Докладніший опис: https://libvirt.org/kbase/"
-"failed_connection_after_install.html"
+"Докладніший опис: https://libvirt.org/kbase/failed_connection_after_install."
+"html"
 
 msgid "No URI scheme specified"
 msgstr "Не вказано схеми адреси"
@@ -13883,6 +13856,9 @@ msgstr "Підтримуються лише PCI-адреси пристроїв 
 msgid "Only PTY console types are supported"
 msgstr "Передбачено підтримку лише типів PTY консолей"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "Передбачено підтримку лише VNC"
 
@@ -13891,6 +13867,9 @@ msgstr "Передбачено підтримку лише єдиної табл
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Для цього типу архітектури передбачено лише один контролер IDE"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Для цього домену можна налаштувати лише одну консоль"
@@ -14040,6 +14019,9 @@ msgstr "Можна завершувати роботу лише процесу i
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "Для «%1$s» передбачено підтримку лише типів каналу virtio"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Підтримуються лише адреси перенесення типу vpxmigr://"
@@ -14600,11 +14582,6 @@ msgstr "Помилка пост-копіювання"
 
 msgid "Postcopy requests:"
 msgstr "Запити посткопіювання:"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr ""
-"у машинах PowerPC p-серії не передбачено підтримки пристроїв для читання "
-"дискет"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "Викликано PrepareTunnel, але не встановлено прапорця TUNNELLED"
@@ -17751,6 +17728,10 @@ msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr ""
 "Об'ємv ram64 відеокартки призначення, %1$u, не відповідає об'ємові у "
 "джерелі, %2$u"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -22059,6 +22040,12 @@ msgstr "Ця версія QEMU не підтримує призначення AP
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "Ця версія QEMU не підтримує призначення CCW-пристроїв VFIO"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "Ця версія QEMU не підтримує призначення PCI-пристроїв VFIO"
@@ -32633,8 +32620,8 @@ msgid "malformed octal mode"
 msgstr "помилкове форматування вісімкового режиму"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "помилкове форматування %1$s: %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "помилкове форматування елемента власника"
@@ -34208,14 +34195,6 @@ msgstr "поєднання вкладених об'єктів і значень 
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"На цій платформі підтримка mkfs недоступна: не вдалося створити файлову "
-"систему типу «%1$s» на пристрої «%2$s»"
-
 msgid "mode attribute of <source/> element"
 msgstr "атрибут режиму елемента <source/>"
 
@@ -35679,6 +35658,9 @@ msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "для пристрою pc-dimm передбачено підтримку лише адрес «dimm»"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "для пристрою спільної пам'яті передбачено підтримку лише адрес «pci»"
@@ -39220,6 +39202,9 @@ msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 "цей екземпляр libvirtd дозволяє перенесення лише із прапорцем VIR_MIGRATE_TLS"
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "ця мережа вже існує"
 
@@ -42728,6 +42713,10 @@ msgstr "пробудити домен зі стану pmsuspend"
 msgid "warning"
 msgstr "попередження"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "сторожовик"
 
@@ -42892,6 +42881,92 @@ msgstr "нуль-копіюванням можна скористатися ли
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "надійшов запит щодо зони %1$s для мережі %2$s, але firewalld не задіяно"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [параметри]... [<рядок команди>]\n"
+#~ "%2$s [параметри]... <команда> [аргументи...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=АДРЕСА   адреса з'єднання з гіпервізором\n"
+#~ "    -d | --debug=ЧИСЛО      рівень діагностики [0-4]\n"
+#~ "    -e | --escape <символ>  послідовність символів екранування для "
+#~ "консолі\n"
+#~ "    -h | --help             це довідкове повідомлення\n"
+#~ "    -k | --keepalive-interval=ЧИСЛО\n"
+#~ "                            інтервал підтримання зв'язку у секундах, 0 — "
+#~ "вимкнути\n"
+#~ "    -K | --keepalive-count=ЧИСЛО\n"
+#~ "                            кількість можливих пропущених повідомлень "
+#~ "підтримання зв'язку\n"
+#~ "    -l | --log=ФАЙЛ         вивести журнал обробки до файла\n"
+#~ "    -q | --quiet            режим без повідомлень\n"
+#~ "    -r | --readonly         з'єднатися лише для читання даних\n"
+#~ "    -t | --timing           вивести дані щодо часових інтервалів\n"
+#~ "    -v                      коротка версія\n"
+#~ "    -V                      розширена версія\n"
+#~ "         --version[=ТИП]    версія, значенням ТИП може бути short "
+#~ "(коротко) або long (типово — short)\n"
+#~ "  команди (неінтерактивний режим):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr "%1$s, помилка нового режиму для призначення «%2$s» зі станом «%3$d»"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "Не вдалося виконати команду «%1$s» для створення нового інтерфейсу iSCSI"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "Не вдалося виконати команду «%1$s» для оновлення інтерфейсу iSCSI з IQN "
+#~ "«%2$s»"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr ""
+#~ "у машинах PowerPC p-серії не передбачено підтримки пристроїв для читання "
+#~ "дискет"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "помилкове форматування %1$s: %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "На цій платформі підтримка mkfs недоступна: не вдалося створити файлову "
+#~ "систему типу «%1$s» на пристрої «%2$s»"
 
 #~ msgid ""
 #~ "Cannot use direct socket mode if no URI is set. For more information see "

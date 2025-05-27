@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-05-03 10:46+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -229,34 +229,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [options]... [<command_string>]\n"
-"%2$s [options]... <command> [args...]\n"
-"\n"
-" options:\n"
-" -c | --connect=URI hypervisor connection URI\n"
-" -d | --debug=NUM debug level [0-4]\n"
-" -e | --escape <char> set escape sequence for console\n"
-" -h | --help this help\n"
-" -k | --keepalive-interval=NUM\n"
-" keepalive interval in seconds, 0 for disable\n"
-" -K | --keepalive-count=NUM\n"
-" number of possible missed keepalive messages\n"
-" -l | --log=FILE output logging to file\n"
-" -q | --quiet quiet mode\n"
-" -r | --readonly connect readonly\n"
-" -t | --timing print timing information\n"
-" -v short version\n"
-" -V long version\n"
-" --version[=TYPE] version, TYPE is short or long (default short)\n"
-" commands (non interactive mode):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -604,11 +583,6 @@ msgstr "%1$s는 파일 설명자를 통해서 암호문 전달을 지원하지 �
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s는 UID와 GID 매개변수를 예상합니다"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr ""
-"%1$s가 대상 ‘%2$s’를 (상태 '%3$d'와 함께) 위한 새로운 방법에 실패하였습니다"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1396,6 +1370,10 @@ msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "'legacy KVM' 장치 할당은 이 시스템에서 더 이상 지원되지 않습니다"
@@ -8612,16 +8590,13 @@ msgstr "네트워크 구성 변경 연결을 되돌리는데 실패"
 msgid "Failed to run clone container"
 msgstr "복제 컨테이너를 실행하는 데 실패"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
-"새 iscsi 인터페이스를 만들기 위해 명령어 '%1$s'를 실행하는 데 실패했습니다"
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"IQN '%1$s'인 iscsi 인터페이스를 갱신하기 위해 '%2$s' 명령을 실행하는 데 실패"
-"했습니다"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -12713,9 +12688,9 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
-"제공된 URI가 없고 연결하도록 시도하는 모든 수신 데몬 소켓을 식별 할 수 "
-"없습니다. 예상된 데몬 소켓이 활성화되어 있는지 확인하고/또는 명시적인 URI를 "
-"제공하세요. 더 많은 정보는 https://libvirt.org/kbase/"
+"제공된 URI가 없고 연결하도록 시도하는 모든 수신 데몬 소켓을 식별 할 수 없습니"
+"다. 예상된 데몬 소켓이 활성화되어 있는지 확인하고/또는 명시적인 URI를 제공하"
+"세요. 더 많은 정보는 https://libvirt.org/kbase/"
 "failed_connection_after_install.html를 참고하세요"
 
 msgid "No URI scheme specified"
@@ -13302,6 +13277,9 @@ msgstr "function=0인 PCI 장치 주소만 지원됩니다"
 msgid "Only PTY console types are supported"
 msgstr "PTY 콘솔 유형만 지원합니다"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "VNC만 지원"
 
@@ -13310,6 +13288,9 @@ msgstr "단일 ACPI 테이블만 지원됩니다"
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "이 머신 유형에는 단일 IDE 컨트롤러만 지원됩니다"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "단일 콘솔만이 해당 도메인을 위해 구성 될 수 있습니다"
@@ -13447,6 +13428,9 @@ msgstr "오직 init 프로세스만 죽을 수 있음"
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "'%1$s'에는 오직 virtio 버스 유형만 지원됩니다"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "vpxmigr:// 이전 URIs만이 지원됩니다"
@@ -13980,9 +13964,6 @@ msgstr "복사 후 오류"
 
 msgid "Postcopy requests:"
 msgstr "복사 후 요청:"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "PowerPC pseries 장비에는 플로피 장치를 지원하지 않습니다"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel이 호출되었지만 TUNNELLED 플래그가 설정되지 않았습니다"
@@ -16797,6 +16778,10 @@ msgstr "대상 비디오 카드 vram %1$u이 소스 %2$u와 일치하지 않음"
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "대상 비디오 카드 가상 램 64 %1$u가 소스 %2$u와 일치하지 않습니다"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -20982,6 +20967,12 @@ msgstr "VFIOAP 장치 할당은 QEMU의 버전에서 지원하지 않습니다"
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "VFIO CCW 장치의 할당은 이 QEMU의 버전에서 지원하지 않습니다"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "VFIO PCI 장치의 할당은 이 QEMU의 버전에서 지원하지 않습니다"
@@ -31040,8 +31031,8 @@ msgid "malformed octal mode"
 msgstr "잘못된 형식의 8진 모드"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "%1$s의 잘못된 출력: %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "잘못된 형식의 owner 요소"
@@ -32488,14 +32479,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"mkfs는 이 기술환경에서 사용 할 수 없습니다. '%1$s' 장치에서 '%2$s' 유형의 파"
-"일 시스템을 만들지 못했습니다"
-
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 요소의 방법(mode) 속성"
 
@@ -33898,6 +33881,9 @@ msgstr "'connect' 방식만이 외부 TPM을 지원합니다"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm 장치에는 'dimm' 주소만 지원됩니다"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "공유 메모리 장치에는 'pci' 주소만 지원됩니다"
@@ -37192,6 +37178,9 @@ msgstr "이 기능은 연결 드라이버에 의해 지원되지 않음: %1$s"
 
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr "이와 같은 libvirtd 예제는 VIR_MIGRATE_TLS 플래그로만 이전을 허용합니다"
+
+msgid "this machine type do not support floppy devices"
+msgstr ""
 
 msgid "this network exists already"
 msgstr "이미 네트워크가 있음"
@@ -40584,6 +40573,10 @@ msgstr "pmsuspended 상태에서 도메인을 시작합니다"
 msgid "warning"
 msgstr "경고"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "와치독"
 
@@ -40737,6 +40730,88 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ " options:\n"
+#~ " -c | --connect=URI hypervisor connection URI\n"
+#~ " -d | --debug=NUM debug level [0-4]\n"
+#~ " -e | --escape <char> set escape sequence for console\n"
+#~ " -h | --help this help\n"
+#~ " -k | --keepalive-interval=NUM\n"
+#~ " keepalive interval in seconds, 0 for disable\n"
+#~ " -K | --keepalive-count=NUM\n"
+#~ " number of possible missed keepalive messages\n"
+#~ " -l | --log=FILE output logging to file\n"
+#~ " -q | --quiet quiet mode\n"
+#~ " -r | --readonly connect readonly\n"
+#~ " -t | --timing print timing information\n"
+#~ " -v short version\n"
+#~ " -V long version\n"
+#~ " --version[=TYPE] version, TYPE is short or long (default short)\n"
+#~ " commands (non interactive mode):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr ""
+#~ "%1$s가 대상 ‘%2$s’를 (상태 '%3$d'와 함께) 위한 새로운 방법에 실패하였습니"
+#~ "다"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "새 iscsi 인터페이스를 만들기 위해 명령어 '%1$s'를 실행하는 데 실패했습니다"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "IQN '%1$s'인 iscsi 인터페이스를 갱신하기 위해 '%2$s' 명령을 실행하는 데 실"
+#~ "패했습니다"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "PowerPC pseries 장비에는 플로피 장치를 지원하지 않습니다"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "%1$s의 잘못된 출력: %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "mkfs는 이 기술환경에서 사용 할 수 없습니다. '%1$s' 장치에서 '%2$s' 유형의 "
+#~ "파일 시스템을 만들지 못했습니다"
 
 #~ msgid ""
 #~ "Cannot use direct socket mode if no URI is set. For more information see "

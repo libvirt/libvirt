@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-05-08 15:49+0000\n"
 "Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -242,39 +242,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [options]... [<command_string>]\n"
-"%2$s [options]... <command> [args...]\n"
-"\n"
-"options:\n"
-"    -c | --connect=URI      可以连接到管理程序（即虚拟化层）的 URI\n"
-"    -d | --debug=NUM        调试级别 [0-4]\n"
-"    -e | --escape <char>    设置退出console的字符。可以设置为单字符或CTRL+单"
-"字符。默认是CTRL+]\n"
-"    -h | --help             显示帮助信息\n"
-"    -k | --keepalive-interval=NUM\n"
-"                            keepalive消息的发送间隔，以秒为单位。值为0时禁止"
-"发送keepalive消息\n"
-"    -K | --keepalive-count=NUM\n"
-"                            将发送keepalive消息的最大次数设置为NUM，若在NUM次"
-"后仍未收到响应，则断开连接\n"
-"    -l | --log=FILE        将日志输出到指定文件中\n"
-"    -q | --quiet            显示简洁的消息\n"
-"    -r | --readonly         以只读模式连接管理程序（即虚拟化层）。只读模式"
-"下，操作会受限\n"
-"    -t | --timing           额外显示virsh执行子命令所耗费的时间\n"
-"    -v                      显示简略的版本信息\n"
-"    -V                      显示详细的版本信息\n"
-"         --version[=TYPE]   显示版本信息, “TYPE”的值是“short”或“long” (默认"
-"是“short”)\n"
-"  命令列表 (非交互模式):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -615,10 +589,6 @@ msgstr "%1$s 不支持通过文件描述符传入密码"
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s 要求 UID 和 GID 参数"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr "%1$s 目标 '%2$s' 的新模式失败，状态为 '%3$d'"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1287,7 +1257,8 @@ msgstr ""
 
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
-msgstr "'--migrate-disks' 需要 '--copy-storage-all' 或 '--copy-storage-inc' 之一"
+msgstr ""
+"'--migrate-disks' 需要 '--copy-storage-all' 或 '--copy-storage-inc' 之一"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
@@ -1389,6 +1360,10 @@ msgstr "virtio scsi 控制器仅支持'iothread'属性"
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread' 只支持 virtio-scsi 控制器"
 
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
+
 #, fuzzy
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "此系统不再支持'传统 KVM'设备分配"
@@ -1475,7 +1450,8 @@ msgstr "只有 virtio-scsi 支持 'queues'"
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
 "<interface type='vhostuser'>"
-msgstr "'reconnect' 属性在源模式='server' 时不支持 <interface type='vhostuser'>"
+msgstr ""
+"'reconnect' 属性在源模式='server' 时不支持 <interface type='vhostuser'>"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
@@ -3408,7 +3384,8 @@ msgstr "没有控制的 TTY 则不能运行互动控制台"
 msgid ""
 "Cannot set CPU model '%1$s' as canonical name of '%2$s' which is already an "
 "alias of '%3$s'"
-msgstr "无法将 CPU 模型 '%1$s' 设置为 '%2$s' 的规范名称，后者已是 '%3$s' 的别名"
+msgstr ""
+"无法将 CPU 模型 '%1$s' 设置为 '%2$s' 的规范名称，后者已是 '%3$s' 的别名"
 
 msgid "Cannot set a base label with AppArmor"
 msgstr "无法使用 AppArmor 设置基础标签"
@@ -8434,13 +8411,13 @@ msgstr "返回到网络配置更改事务失败"
 msgid "Failed to run clone container"
 msgstr "运行克隆容器失败"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
-msgstr "运行 '%1$s' 命令生成新的 iscsi 接口失败"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
+msgstr ""
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
-msgstr "运行 '%1$s' 命令使用 IQN '%2$s' 更新 iscsi 接口失败"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -9516,7 +9493,8 @@ msgstr "I/O 错误"
 msgid ""
 "I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
 "message='%5$s'"
-msgstr "I/O 错误：磁盘='%1$s', 索引='%2$d', 路径='%3$s', 时间戳='%4$s', 消息='%5$s'"
+msgstr ""
+"I/O 错误：磁盘='%1$s', 索引='%2$d', 路径='%3$s', 时间戳='%4$s', 消息='%5$s'"
 
 msgid "I/O size in bytes"
 msgstr "以字节为单位的 I/O 大小"
@@ -12440,10 +12418,9 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
-"未提供 "
-"URI，无法识别任何监听守护进程套接字路径进行连接。请确保预期的守护进程套接字处"
-"于活动状态和/或提供显式 URI。有关更多信息，请参见 https://libvirt.org/kbase/"
-"failed_connection_after_install.html"
+"未提供 URI，无法识别任何监听守护进程套接字路径进行连接。请确保预期的守护进程"
+"套接字处于活动状态和/或提供显式 URI。有关更多信息，请参见 https://libvirt."
+"org/kbase/failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
 msgstr "未指定 URI 模式"
@@ -13024,6 +13001,9 @@ msgstr "只支持带 function=0 的 PCI 设备地址"
 msgid "Only PTY console types are supported"
 msgstr "只支持 PTY 控制台类型"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "仅支持 VNC"
 
@@ -13032,6 +13012,9 @@ msgstr "仅支持单个 ACPI 表"
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "此机器类型只支持一个 IDE 控制器"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "这个域只能配置一个控制台"
@@ -13164,6 +13147,9 @@ msgstr "只有 init 进程可能会被杀死"
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "仅对 '%1$s' 支持 virtio 总线类型"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "只支持 vpxmigr:// migration URI"
@@ -13681,9 +13667,6 @@ msgstr "post-copy 错误"
 
 msgid "Postcopy requests:"
 msgstr "Postcopy 请求："
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "PowerPC p 系列机器不支持软盘"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "调用 PrepareTunnel 但没有设置 TUNNELLED 标签"
@@ -16410,6 +16393,10 @@ msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "目标视频卡 vram64 %1$u 与源 %2$u 不匹配"
 
 #, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
+
+#, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
 msgstr "目标监控程序型号 %1$s 与源 %2$s 不匹配"
 
@@ -16485,14 +16472,16 @@ msgstr "只有网络 %1$s 中的 <forward> 'mode' 为 'nat' 时方可使用 <nat
 msgid ""
 "The <portForward> element can only be used with the 'passt' backend of "
 "interface type='user' or type='vhostuser'"
-msgstr "<portForward> 元素只能与接口 type='user' 或 type='vhostuser' 的 'passt' "
-"后端一起使用"
+msgstr ""
+"<portForward> 元素只能与接口 type='user' 或 type='vhostuser' 的 'passt' 后端"
+"一起使用"
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
 "<backingStore> element"
-msgstr "<dataStore> 的 <source> 不能包含另一个嵌套的 <dataStore> 或 <backingStore> "
-"元素"
+msgstr ""
+"<dataStore> 的 <source> 不能包含另一个嵌套的 <dataStore> 或 <backingStore> 元"
+"素"
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
@@ -16561,7 +16550,8 @@ msgstr "VF %1$s 的 PF 设备没有网络设备名称，无法获取虚拟功能
 msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
-msgstr "PKI 基础目录 %1$s 不得被其他用户访问。请运行：chown %2$d.%3$d %4$s; chmod "
+msgstr ""
+"PKI 基础目录 %1$s 不得被其他用户访问。请运行：chown %2$d.%3$d %4$s; chmod "
 "0700 %5$s"
 
 #, c-format
@@ -16617,15 +16607,17 @@ msgstr "该证书使用不安全的算法"
 msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
-msgstr "客户端证书 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root %2$s;"
-" chmod 0644 %3$s"
+msgstr ""
+"客户端证书 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root "
+"%2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr "客户端证书 %1$s 必须限制为此用户访问。以该用户身份运行：chown %2$d.%3$d %4$s;"
-" chmod 0600 %5$s"
+msgstr ""
+"客户端证书 %1$s 必须限制为此用户访问。以该用户身份运行：chown %2$d.%3$d "
+"%4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -16639,14 +16631,16 @@ msgstr "客户端证书 %1$s 尚未激活"
 msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown root."
 "root %2$s; chmod 0644 %3$s"
-msgstr "客户端密钥 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root %2$s;"
-" chmod 0644 %3$s"
+msgstr ""
+"客户端密钥 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root "
+"%2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr "客户端密钥 %1$s 不得被其他用户访问。以此用户身份运行：chown %2$d.%3$d %4$s; "
+msgstr ""
+"客户端密钥 %1$s 不得被其他用户访问。以此用户身份运行：chown %2$d.%3$d %4$s; "
 "chmod 0600 %5$s"
 
 #, c-format
@@ -16764,15 +16758,17 @@ msgstr "只读磁盘编号必须大于或等于读写磁盘编号"
 msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
-msgstr "服务器证书 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root %2$s;"
-" chmod 0644 %3$s"
+msgstr ""
+"服务器证书 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root "
+"%2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr "服务器证书 %1$s 必须限制为此用户访问。以此用户身份运行：chown %2$d.%3$d %4$s;"
-" chmod 0600 %5$s"
+msgstr ""
+"服务器证书 %1$s 必须限制为此用户访问。以此用户身份运行：chown %2$d.%3$d "
+"%4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
@@ -16786,15 +16782,17 @@ msgstr "服务器证书 %1$s 尚未激活"
 msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
-msgstr "服务器密钥 %1$s 不得被其他用户访问。以此用户身份运行：chown %2$d.%3$d %4$s; "
+msgstr ""
+"服务器密钥 %1$s 不得被其他用户访问。以此用户身份运行：chown %2$d.%3$d %4$s; "
 "chmod 0600 %5$s"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
-msgstr "服务器密钥 %1$s 不得被非特权用户访问。以 root 身份运行：chown root.root %2$s;"
-" chmod 0600 %3$s"
+msgstr ""
+"服务器密钥 %1$s 不得被非特权用户访问。以 root 身份运行：chown root.root "
+"%2$s; chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
@@ -16813,7 +16811,8 @@ msgstr "系统 CA 目录 %1$s 通常作为基础文件系统或 openssl 软件�
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
-msgstr "系统 CA 目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
+msgstr ""
+"系统 CA 目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
 "chmod 0755 %2$s"
 
 #, c-format
@@ -16826,7 +16825,8 @@ msgstr "系统 PKI 目录 %1$s 通常作为基础文件系统或 openssl 软件�
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
-msgstr "系统 PKI 目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
+msgstr ""
+"系统 PKI 目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
 "chmod 0755 %2$s"
 
 #, c-format
@@ -16838,7 +16838,8 @@ msgstr "系统证书目录 %1$s 通常作为 libvirt 软件包的一部分安装
 msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
-msgstr "系统证书目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
+msgstr ""
+"系统证书目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
 "chmod 0755 %2$s"
 
 #, c-format
@@ -16850,7 +16851,8 @@ msgstr "系统密钥目录 %1$s 通常作为 libvirt 软件包的一部分安装
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
-msgstr "系统密钥目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
+msgstr ""
+"系统密钥目录 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root; "
 "chmod 0755 %2$s"
 
 #, c-format
@@ -17732,8 +17734,9 @@ msgstr "无法生成迁移线程"
 msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
-msgstr "无法为 tap 设备 %1$s 创建多个文件描述符（可能现有设备未使用 multi_queue "
-"标志创建）"
+msgstr ""
+"无法为 tap 设备 %1$s 创建多个文件描述符（可能现有设备未使用 multi_queue 标志"
+"创建）"
 
 msgid "Unable to create pipes"
 msgstr "无法创建管道"
@@ -20511,6 +20514,12 @@ msgstr "此版本的 QEMU 不支持 VFIO AP 设备分配"
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "此版本的 QEMU 不支持 VFIO CCW 设备分配"
 
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
+
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "此版本的 QEMU 不支持 VFIO PCI 设备分配"
 
@@ -21315,7 +21324,8 @@ msgstr "属性 'limit' 仅在 maxphysaddr 模式 'passthrough' 中受支持"
 msgid ""
 "attribute 'register=yes' in <domain> element requires 'localOnly=yes' in "
 "network %1$s"
-msgstr "<domain> 元素中的 'register=yes' 属性需要网络 %1$s 中的 'localOnly=yes'"
+msgstr ""
+"<domain> 元素中的 'register=yes' 属性需要网络 %1$s 中的 'localOnly=yes'"
 
 #, c-format
 msgid "audio ID %1$u is used multiple times"
@@ -21767,8 +21777,9 @@ msgstr "桥接现有网络设备"
 msgid ""
 "bridge delay/stp/zone options only allowed in open, route, nat, and isolated "
 "mode, not in %1$s (network '%2$s')"
-msgstr "桥接延迟/stp/区域选项仅允许在开放、路由、nat 和隔离模式中，不允许在 %1$s（"
-"网络 '%2$s'）中"
+msgstr ""
+"桥接延迟/stp/区域选项仅允许在开放、路由、nat 和隔离模式中，不允许在 %1$s（网"
+"络 '%2$s'）中"
 
 msgid "bridge interface misses the bridge element"
 msgstr "bridge 接口缺少 bridge 元素"
@@ -22585,19 +22596,22 @@ msgstr "无法停止临时域快照"
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
-msgstr "无法热插拔 %1$s 设备，PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d - 找不到控制器"
+msgstr ""
+"无法热插拔 %1$s 设备，PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d - 找不到控制器"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
-msgstr "无法热插拔 %1$s 设备，PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d - 控制器不允许"
+msgstr ""
+"无法热插拔 %1$s 设备，PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d - 控制器不允许"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with multifunction PCI guest address: %2$04x:"
 "%3$02x:%4$02x.%5$d"
-msgstr "无法热插拔 %1$s 设备，具有多功能 PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d"
+msgstr ""
+"无法热插拔 %1$s 设备，具有多功能 PCI 客户地址：%2$04x:%3$02x:%4$02x.%5$d"
 
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
@@ -23775,7 +23789,8 @@ msgstr "已完成"
 msgid ""
 "completer_flags of argument '%1$s' of command '%2$s' must be 0 if no "
 "completer is used"
-msgstr "命令 '%2$s' 的参数 '%1$s' 的 completer_flags 必须为 0（如果未使用 completer）"
+msgstr ""
+"命令 '%2$s' 的参数 '%1$s' 的 completer_flags 必须为 0（如果未使用 completer）"
 
 msgid "compress level for multithread compression"
 msgstr "多线程压缩的压缩级别"
@@ -28639,8 +28654,9 @@ msgstr "不是设置新的池大小，而是向其添加页"
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
-msgstr "在 %1$s 上发生整数溢出。请联系 libvirt "
-"开发团队，邮箱：devel@lists.libvirt.org"
+msgstr ""
+"在 %1$s 上发生整数溢出。请联系 libvirt 开发团队，邮箱：devel@lists.libvirt."
+"org"
 
 #, c-format
 msgid ""
@@ -30348,8 +30364,8 @@ msgid "malformed octal mode"
 msgstr "格式错误的八进制模式"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "格式错误的 %1$s 的输出：%2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "格式错误的 owner 元素"
@@ -31770,13 +31786,6 @@ msgstr "在 JSON deflattening 中禁止混合嵌套对象和值"
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"在此平台上不提供 mkfs：无法在设备 '%1$s' 上创建类型为 '%2$s' 的文件系统"
-
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 元素的 mode 属性"
 
@@ -32132,8 +32141,9 @@ msgid ""
 "network '%1$s' has forward mode '%2$s' but lists a device by PCI address in "
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
-msgstr "网络 '%1$s' 的转发模式为 '%2$s'，但在设备池中按 PCI 地址列出了一个设备。"
-"这仅支持转发模式为 'hostdev' 的网络"
+msgstr ""
+"网络 '%1$s' 的转发模式为 '%2$s'，但在设备池中按 PCI 地址列出了一个设备。这仅"
+"支持转发模式为 'hostdev' 的网络"
 
 #, c-format
 msgid ""
@@ -33144,6 +33154,9 @@ msgstr "对于外部 TPM 设备，只支持 'connect' 模式"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "'dimm' 地址只支持 pc-dimm 设备"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "'pci' 地址只支持共享内存设备"
@@ -36369,6 +36382,9 @@ msgstr "连接驱动器不支持这个功能：%1$s"
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr "此 libvirtd 实例只允许带 VIR_MIGRATE_TLS 标志的迁移"
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "这个网络已存在"
 
@@ -38795,7 +38811,8 @@ msgstr "未终止的字符串"
 msgid ""
 "unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
 "used together with positional"
-msgstr "命令 '%2$s' 的参数 '%1$s' 的 unwanted_positional 标志不得与位置参数一起使用"
+msgstr ""
+"命令 '%2$s' 的参数 '%1$s' 的 unwanted_positional 标志不得与位置参数一起使用"
 
 msgid "update device from an XML file"
 msgstr "从 XML 文件中关系设备"
@@ -39695,6 +39712,10 @@ msgstr "从 pmsuspended 状态唤醒域"
 msgid "warning"
 msgstr "警告"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "watchdog"
 
@@ -39845,6 +39866,87 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "options:\n"
+#~ "    -c | --connect=URI      可以连接到管理程序（即虚拟化层）的 URI\n"
+#~ "    -d | --debug=NUM        调试级别 [0-4]\n"
+#~ "    -e | --escape <char>    设置退出console的字符。可以设置为单字符或"
+#~ "CTRL+单字符。默认是CTRL+]\n"
+#~ "    -h | --help             显示帮助信息\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive消息的发送间隔，以秒为单位。值为0时禁"
+#~ "止发送keepalive消息\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            将发送keepalive消息的最大次数设置为NUM，若在"
+#~ "NUM次后仍未收到响应，则断开连接\n"
+#~ "    -l | --log=FILE        将日志输出到指定文件中\n"
+#~ "    -q | --quiet            显示简洁的消息\n"
+#~ "    -r | --readonly         以只读模式连接管理程序（即虚拟化层）。只读模式"
+#~ "下，操作会受限\n"
+#~ "    -t | --timing           额外显示virsh执行子命令所耗费的时间\n"
+#~ "    -v                      显示简略的版本信息\n"
+#~ "    -V                      显示详细的版本信息\n"
+#~ "         --version[=TYPE]   显示版本信息, “TYPE”的值是“short”或“long” (默"
+#~ "认是“short”)\n"
+#~ "  命令列表 (非交互模式):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr "%1$s 目标 '%2$s' 的新模式失败，状态为 '%3$d'"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr "运行 '%1$s' 命令生成新的 iscsi 接口失败"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr "运行 '%1$s' 命令使用 IQN '%2$s' 更新 iscsi 接口失败"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "PowerPC p 系列机器不支持软盘"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "格式错误的 %1$s 的输出：%2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "在此平台上不提供 mkfs：无法在设备 '%1$s' 上创建类型为 '%2$s' 的文件系统"
 
 #, fuzzy
 #~ msgid ""

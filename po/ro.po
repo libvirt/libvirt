@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-05-01 09:25+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
@@ -225,36 +225,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [opțiuni]... [<șir-comenzi>]\n"
-"%2$s [opțiuni]... <comandă> [args...]\n"
-"\n"
-"  options:\n"
-"    -c | --connect=URI      URI de conectare la hipervizor\n"
-"    -d | --debug=NUMĂR      nivelul de depanare [0-4]\n"
-"    -e | --escape <carac>   stabilește secvența de eludare pentru consolă\n"
-"    -h | --help             acest ajutor\n"
-"    -k | --keepalive-interval=NUMĂR\n"
-"                            intervalul keepalive în secunde, 0 pentru "
-"dezactivare\n"
-"    -K | --keepalive-count=NUMĂR\n"
-"                            numărul de posibile mesaje keepalive ratate\n"
-"    -l | --log=FIȘIER       output logging to file\n"
-"    -q | --quiet            modul silențios\n"
-"    -r | --readonly         conectare numai-citire\n"
-"    -t | --timing           afișează informații privind sincronizarea\n"
-"    -v                      versiunea scurtă\n"
-"    -V                      versiunea lungă\n"
-"         --version[=TIP]    versiune, TIPUL este short sau long (implicit "
-"short)\n"
-"  comenzi (modul neinteractiv):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -608,10 +585,6 @@ msgstr ""
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s așteaptă parametri UID și GID"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr "%1$s noul mod pentru ținta „%2$s” a eșuat cu starea „%3$d”"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1338,8 +1311,8 @@ msgstr ""
 msgid ""
 "'--migrate-disks' requires one of '--copy-storage-all', '--copy-storage-inc'"
 msgstr ""
-"„--migrate-disks” necesită una dintre opțiunile „--copy-storage-all”, "
-"„--copy-storage-inc”"
+"„--migrate-disks” necesită una dintre opțiunile „--copy-storage-all”, „--"
+"copy-storage-inc”"
 
 msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
@@ -1448,6 +1421,10 @@ msgstr ""
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "„iothread” este acceptat numai pentru controlorul virtio-scsi"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8537,8 +8514,8 @@ msgstr "Analizarea grupului „%1$s” a eșuat"
 #, c-format
 msgid "Failed to parse int '%1$s' from udev property '%2$s' on '%3$s'"
 msgstr ""
-"Nu s-a reușit analizarea numărului întreg „%1$s” din proprietatea udev „%2$s”"
-" pe „%3$s”"
+"Nu s-a reușit analizarea numărului întreg „%1$s” din proprietatea udev "
+"„%2$s” pe „%3$s”"
 
 #, c-format
 msgid "Failed to parse interface index from '%1$s'"
@@ -8930,15 +8907,13 @@ msgstr "Restabilirea tranzacției de modificare a configurației rețelei a eșu
 msgid "Failed to run clone container"
 msgstr "Execuția containerului de clonare a eșuat"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
-msgstr "Execuția comenzii „%1$s” pentru a crea o nouă interfață iscsi a eșuat"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
+msgstr ""
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"Execuția comenzii „%1$s” pentru actualizarea interfeței iscsi cu IQN „%2$s” "
-"a eșuat"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -9333,7 +9308,8 @@ msgstr "Demontarea „%1$s” a eșuat și nu s-a putut detașa subarborele „%
 
 #, c-format
 msgid "Failed to unmount '%1$s' and could not unmount old root '%2$s'"
-msgstr "Demontarea „%1$s” a eșuat și nu s-a putut demonta rădăcina veche „%2$s”"
+msgstr ""
+"Demontarea „%1$s” a eșuat și nu s-a putut demonta rădăcina veche „%2$s”"
 
 msgid "Failed to unpause domain"
 msgstr "Anularea pauzei domeniului a eșuat"
@@ -9376,7 +9352,8 @@ msgstr "Ștergerea volumului %1$s a eșuat"
 
 #, c-format
 msgid "Failed to write %1$zu bytes to storage volume with path '%2$s'"
-msgstr "Scrierea a %1$zu de octeți în volumul de stocare cu ruta „%2$s” a eșuat"
+msgstr ""
+"Scrierea a %1$zu de octeți în volumul de stocare cu ruta „%2$s” a eșuat"
 
 #, c-format
 msgid "Failed to write '%1$s'"
@@ -9447,8 +9424,8 @@ msgstr "„appid”-ul canalului de fibră nu este un șir imprimabil"
 #, c-format
 msgid "Fibre Channel 'appid' string length must be between [%1$d, %2$d]"
 msgstr ""
-"Lungimea șirului „appid”-ului canalului de fibră trebuie să fie între "
-"[%1$d, %2$d]"
+"Lungimea șirului „appid”-ului canalului de fibră trebuie să fie între [%1$d, "
+"%2$d]"
 
 #, c-format
 msgid "Field '%1$s' too long for destination"
@@ -9627,7 +9604,8 @@ msgstr ""
 
 #, c-format
 msgid "Format of device '%1$s' does not match the expected format '%2$s'"
-msgstr "Formatul dispozitivului „%1$s” nu corespunde formatului așteptat „%2$s”"
+msgstr ""
+"Formatul dispozitivului „%1$s” nu corespunde formatului așteptat „%2$s”"
 
 #, c-format
 msgid ""
@@ -9739,7 +9717,8 @@ msgid "Get memory statistics for a running domain."
 msgstr "Obtine statisticile de memorie pentru un domeniu care rulează."
 
 msgid "Get network interface stats for a running domain."
-msgstr "Obține statisticile interfeței de rețea pentru un domeniu care rulează."
+msgstr ""
+"Obține statisticile interfeței de rețea pentru un domeniu care rulează."
 
 msgid "Get network interfaces' addresses for a running domain"
 msgstr "Obține adresele interfețelor de rețea pentru un domeniu care rulează"
@@ -9768,7 +9747,8 @@ msgstr ""
 "Obține sau definește parametrii de memorie actuali pentru un domeniu invitat."
 
 msgid "Get or set the current numa parameters for a guest domain."
-msgstr "Obține sau definește parametrii numa actuali pentru un domeniu invitat."
+msgstr ""
+"Obține sau definește parametrii numa actuali pentru un domeniu invitat."
 
 msgid "Get or set the current perf events for a guest domain."
 msgstr ""
@@ -9796,7 +9776,8 @@ msgid "Get the maximum migration bandwidth"
 msgstr "Obține lățimea de bandă maximă de migrare"
 
 msgid "Get the maximum migration bandwidth (in MiB/s) for a domain."
-msgstr "Obține lățimea de bandă maximă de migrare (în Mio/s) pentru un domeniu."
+msgstr ""
+"Obține lățimea de bandă maximă de migrare (în Mio/s) pentru un domeniu."
 
 msgid "Get the name of the parent of a checkpoint"
 msgstr "Obține numele părintelui unui punct de control"
@@ -9897,7 +9878,8 @@ msgstr ""
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'. Fault: %3$s - %4$s"
-msgstr "Codul de răspuns HTTP %1$d pentru apelul la „%2$s”. Eroare: %3$s - %4$s"
+msgstr ""
+"Codul de răspuns HTTP %1$d pentru apelul la „%2$s”. Eroare: %3$s - %4$s"
 
 #, c-format
 msgid "HTTP response code %1$d for download from '%2$s'"
@@ -10039,8 +10021,8 @@ msgstr ""
 msgid ""
 "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr ""
-"Numărul de reîncercări de blocare rotativă (spinlock) a HyperV diferă: sursa:"
-" „%1$u”, destinația: „%2$u”."
+"Numărul de reîncercări de blocare rotativă (spinlock) a HyperV diferă: "
+"sursa: „%1$u”, destinația: „%2$u”."
 
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr ""
@@ -11033,15 +11015,16 @@ msgstr "Dimensiune mtu nevalidă „%1$s” în rețeaua „%2$s”"
 
 #, c-format
 msgid "Invalid multicast bridge mac address '%1$s' in network '%2$s'"
-msgstr "Adresa mac a punții multicast „%1$s” din rețeaua „%2$s” nu este validă."
+msgstr ""
+"Adresa mac a punții multicast „%1$s” din rețeaua „%2$s” nu este validă."
 
 #, c-format
 msgid ""
 "Invalid netmask '%1$s' for address '%2$s' in network '%3$s' (both must be "
 "IPv4)"
 msgstr ""
-"Mască de rețea nevalidă „%1$s” pentru adresa „%2$s” din rețeaua „%3$s” ("
-"ambele trebuie să fie IPv4)"
+"Mască de rețea nevalidă „%1$s” pentru adresa „%2$s” din rețeaua "
+"„%3$s” (ambele trebuie să fie IPv4)"
 
 #, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
@@ -11224,7 +11207,8 @@ msgstr "Țintă nevalidă"
 
 #, c-format
 msgid "Invalid target domain state '%1$s'. Refusing snapshot reversion"
-msgstr "Stare domeniu țintă nevalidă „%1$s”. Se refuză revenirea la instantanee"
+msgstr ""
+"Stare domeniu țintă nevalidă „%1$s”. Se refuză revenirea la instantanee"
 
 msgid "Invalid target model for serial device"
 msgstr "Model țintă nevalid pentru dispozitivul serial"
@@ -11271,8 +11255,8 @@ msgid ""
 "Invalid use of 'floor' on interface with MAC address %1$s - network '%2$s' "
 "has no inbound QoS set"
 msgstr ""
-"Utilizare nevalidă a „floor” pe interfața cu adresa MAC %1$s - rețeaua „%2$s”"
-" nu are niciun set QoS de intrare"
+"Utilizare nevalidă a „floor” pe interfața cu adresa MAC %1$s - rețeaua "
+"„%2$s” nu are niciun set QoS de intrare"
 
 #, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
@@ -11500,8 +11484,8 @@ msgstr "Cheia sesiunii curente diferă de cheia de la ultima autentificare"
 
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
-"Cunoscut, dar format de etichetă diferit prezent, necesită construirea cu "
-"„--overwrite”"
+"Cunoscut, dar format de etichetă diferit prezent, necesită construirea cu „--"
+"overwrite”"
 
 msgid "LXC Guest Enter Namespace"
 msgstr "Intrare în spațiul de nume al invitatului LXC"
@@ -11526,7 +11510,8 @@ msgid "Library '%1$s' doesn't exist"
 msgstr "Biblioteca „%1$s” nu există"
 
 msgid "Library function returned error but did not set virError"
-msgstr "Funcția de bibliotecă a returnat o eroare, dar nu a configurat virError"
+msgstr ""
+"Funcția de bibliotecă a returnat o eroare, dar nu a configurat virError"
 
 msgid "Libvirt LXC"
 msgstr "Libvirt LXC"
@@ -11728,7 +11713,8 @@ msgstr "Adresa MAC"
 
 #, c-format
 msgid "MCS level for existing domain label %1$s already reserved"
-msgstr "Nivelul MCS pentru eticheta domeniului existent %1$s este deja rezervat"
+msgstr ""
+"Nivelul MCS pentru eticheta domeniului existent %1$s este deja rezervat"
 
 #, c-format
 msgid "MD5 hash '%1$s' unexpectedly larger than %2$d characters"
@@ -11918,7 +11904,8 @@ msgstr "Manipulează dimensiunea fondului de pagini"
 
 #, c-format
 msgid "Max backup %1$zu must be less than or equal to %2$d"
-msgstr "Copia de rezervă maximă %1$zu trebuie să fie mai mică sau egală cu %2$d"
+msgstr ""
+"Copia de rezervă maximă %1$zu trebuie să fie mai mică sau egală cu %2$d"
 
 msgid "Max memory plus swap, as scaled integer (default KiB)"
 msgstr "Memoria maximă plus swap, ca număr întreg scalat (implicit Kio)"
@@ -12348,7 +12335,8 @@ msgstr "Lipsesc datele clienților din documentul JSON"
 
 #, c-format
 msgid "Missing data in ccw_device with ref '%1$s' in members for '%2$s'"
-msgstr "Lipsesc date în ccw_device cu referința „%1$s” în membrii pentru „%2$s”"
+msgstr ""
+"Lipsesc date în ccw_device cu referința „%1$s” în membrii pentru „%2$s”"
 
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "Lipsesc datele defaultLockspace din fișierul JSON"
@@ -12520,7 +12508,8 @@ msgstr ""
 "Lipsește „unicast-overflow” sau nu este valid în răspunsul query-rx-filter"
 
 msgid "Missing or invalid 'unicast-table' array in query-rx-filter response"
-msgstr "Lipsește „unicast-table” sau nu este valid în răspunsul query-rx-filter"
+msgstr ""
+"Lipsește „unicast-table” sau nu este valid în răspunsul query-rx-filter"
 
 msgid "Missing or invalid 'vlan' in query-rx-filter response"
 msgstr "Lipsește „'vlan” sau nu este valid în răspunsul query-rx-filter"
@@ -13165,8 +13154,8 @@ msgstr "Noul „id” al resctrl nu poate fi NULL"
 
 msgid "New size of the block device, as scaled integer (default KiB)"
 msgstr ""
-"Noua dimensiune a dispozitivului de blocuri, ca număr întreg scalat ("
-"implicit Kio)"
+"Noua dimensiune a dispozitivului de blocuri, ca număr întreg scalat "
+"(implicit Kio)"
 
 msgid "Nicdev support unavailable"
 msgstr "Suportul pentru Nicdev nu este disponibil"
@@ -13378,8 +13367,8 @@ msgid ""
 "bus %1$d. Must be manually assigned"
 msgstr ""
 "Nu este disponibil niciun număr de magistrală liber mai mic decât cel mai "
-"mic număr de magistrală curent pentru a fi atribuit automat magistralei %1$"
-"d. Trebuie să fie atribuit manual"
+"mic număr de magistrală curent pentru a fi atribuit automat magistralei "
+"%1$d. Trebuie să fie atribuit manual"
 
 msgid "No graphical display found"
 msgstr "Nu s-a găsit niciun afișaj grafic"
@@ -13703,7 +13692,8 @@ msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "Numărul de procesoare din <numa> depășește numărul <vcpu>"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
-msgstr "Numărul de CPU-uri din <numa> depășește numărul maxim de vcpu-uri dorit"
+msgstr ""
+"Numărul de CPU-uri din <numa> depășește numărul maxim de vcpu-uri dorit"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -13771,8 +13761,8 @@ msgstr "Decalajul trebuie să fie zero pentru acest gestionar de blocare"
 
 msgid "One of options --enable or --disable is required by option --cpulist"
 msgstr ""
-"Una dintre opțiunile „--enable” sau „--disable” este cerută de opțiunea "
-"„--cpulist”"
+"Una dintre opțiunile „--enable” sau „--disable” este cerută de opțiunea „--"
+"cpulist”"
 
 msgid "One or more references were leaked after disconnect from the hypervisor"
 msgstr ""
@@ -13829,6 +13819,9 @@ msgstr "Sunt acceptate numai adresele dispozitivelor PCI cu funcția=0"
 msgid "Only PTY console types are supported"
 msgstr "Sunt acceptate numai tipurile de console PTY"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "Doar VNC este acceptat"
 
@@ -13837,6 +13830,9 @@ msgstr "Este acceptat doar un singur tabel ACPI"
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Doar un singur controlor IDE este acceptat pentru acest tip de mașină"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Doar o singură consolă poate fi configurată pentru acest domeniu"
@@ -13985,6 +13981,9 @@ msgstr "Doar procesul «init» poate fi omorât"
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "Numai tipurile de magistrale virtio sunt acceptate pentru „%1$s”"
 
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
+
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Sunt acceptate numai URI-urile de migrare vpxmigr://"
 
@@ -14064,15 +14063,15 @@ msgstr "Opțiunea „--file” este necesară"
 
 msgid "Option --transient is incompatible with --persistent and --inactive"
 msgstr ""
-"Opțiunea „--transient” este incompatibilă cu opțiunile „--persistent” și "
-"„--inactive”"
+"Opțiunea „--transient” este incompatibilă cu opțiunile „--persistent” și „--"
+"inactive”"
 
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
-"Opțiunea „--tree” este incompatibilă cu opțiunile „--cap”, „--inactive”, "
-"„--persistent” și „--transient”"
+"Opțiunea „--tree” este incompatibilă cu opțiunile „--cap”, „--inactive”, „--"
+"persistent” și „--transient”"
 
 msgid "Option argument is empty"
 msgstr "Argumentul opțiunii este gol"
@@ -14343,7 +14342,8 @@ msgid "Partition path '%1$s' must start with '/'"
 msgstr "Ruta partiției „%1$s” trebuie să înceapă cu „/”"
 
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr "Pasarea valorii secrete ca argument al liniei de comandă este nesigură!"
+msgstr ""
+"Pasarea valorii secrete ca argument al liniei de comandă este nesigură!"
 
 #, c-format
 msgid "Passphrase for key '%1$s'"
@@ -14445,7 +14445,8 @@ msgstr ""
 "gazdei."
 
 msgid "Pin domain emulator threads to host physical CPUs."
-msgstr "Asociază firele emulatorului de domeniu la CPU-urile fizice ale gazdei."
+msgstr ""
+"Asociază firele emulatorului de domeniu la CPU-urile fizice ale gazdei."
 
 #, c-format
 msgid "Plugin %1$s not accessible"
@@ -14550,9 +14551,6 @@ msgstr "Eroare post-copiere"
 
 msgid "Postcopy requests:"
 msgstr "Cereri de post-copiere:"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "Mașinile PowerPC pseries nu acceptă dispozitive de dischetă"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel a fost apelat, dar nu a fost activat fanionul TUNNELLED"
@@ -14684,7 +14682,8 @@ msgid "QEMU does not support device assignment mode '%1$s'"
 msgstr "QEMU nu acceptă modul de atribuire a dispozitivelor „%1$s”"
 
 msgid "QEMU does not support dirty page rate calculation mode."
-msgstr "QEMU nu oferă suport pentru modul de calcul al ratei paginilor murdare."
+msgstr ""
+"QEMU nu oferă suport pentru modul de calcul al ratei paginilor murdare."
 
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr "QEMU nu acceptă ascultări multiple pentru un dispozitiv grafic."
@@ -14776,16 +14775,16 @@ msgid ""
 "Query parameter 'proxy' has unexpected port value '%1$s' (should be "
 "[1..65535])"
 msgstr ""
-"Parametrul de interogare „proxy” are valoarea neașteptată a portului „%1$s” ("
-"trebuie să fie [1..65535])"
+"Parametrul de interogare „proxy” are valoarea neașteptată a portului "
+"„%1$s” (trebuie să fie [1..65535])"
 
 #, c-format
 msgid ""
 "Query parameter 'transport' has unexpected value '%1$s' (should be http|"
 "https)"
 msgstr ""
-"Parametrul de interogare „transport” are valoarea neașteptată „%1$s” ("
-"trebuie să fie http|https)"
+"Parametrul de interogare „transport” are valoarea neașteptată "
+"„%1$s” (trebuie să fie http|https)"
 
 msgid "Query, adjust speed, or cancel active block operations."
 msgstr ""
@@ -15055,9 +15054,9 @@ msgid ""
 "%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
 "by the host CPU"
 msgstr ""
-"Frecvența TSC solicitată %1$llu Hz este în afara intervalului de toleranță ("
-"[%2$llu, %3$llu] Hz) în jurul frecvenței gazdei %4$llu Hz și scalarea TSC nu "
-"este acceptată de CPU-ul gazdă"
+"Frecvența TSC solicitată %1$llu Hz este în afara intervalului de toleranță "
+"([%2$llu, %3$llu] Hz) în jurul frecvenței gazdei %4$llu Hz și scalarea TSC "
+"nu este acceptată de CPU-ul gazdă"
 
 #, c-format
 msgid "Requested data len %1$llu is larger than maximum %2$d"
@@ -17275,6 +17274,10 @@ msgstr ""
 
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
+msgstr ""
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
 msgstr ""
 
 #, c-format
@@ -21295,6 +21298,12 @@ msgid "VFIO AP device assignment is not supported by this version of QEMU"
 msgstr ""
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
 msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
@@ -31080,7 +31089,7 @@ msgid "malformed octal mode"
 msgstr ""
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
 msgstr ""
 
 msgid "malformed owner element"
@@ -32501,12 +32510,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr ""
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-
 msgid "mode attribute of <source/> element"
 msgstr ""
 
@@ -33858,6 +33861,9 @@ msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
+msgstr ""
+
+msgid "only 'file' type is supported with NVRAM"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
@@ -37065,6 +37071,9 @@ msgid "this function is not supported by the connection driver: %1$s"
 msgstr ""
 
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
+msgstr ""
+
+msgid "this machine type do not support floppy devices"
 msgstr ""
 
 msgid "this network exists already"
@@ -40331,6 +40340,10 @@ msgstr ""
 msgid "warning"
 msgstr "avertisment"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "watchdog"
 
@@ -40481,6 +40494,77 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [opțiuni]... [<șir-comenzi>]\n"
+#~ "%2$s [opțiuni]... <comandă> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      URI de conectare la hipervizor\n"
+#~ "    -d | --debug=NUMĂR      nivelul de depanare [0-4]\n"
+#~ "    -e | --escape <carac>   stabilește secvența de eludare pentru "
+#~ "consolă\n"
+#~ "    -h | --help             acest ajutor\n"
+#~ "    -k | --keepalive-interval=NUMĂR\n"
+#~ "                            intervalul keepalive în secunde, 0 pentru "
+#~ "dezactivare\n"
+#~ "    -K | --keepalive-count=NUMĂR\n"
+#~ "                            numărul de posibile mesaje keepalive ratate\n"
+#~ "    -l | --log=FIȘIER       output logging to file\n"
+#~ "    -q | --quiet            modul silențios\n"
+#~ "    -r | --readonly         conectare numai-citire\n"
+#~ "    -t | --timing           afișează informații privind sincronizarea\n"
+#~ "    -v                      versiunea scurtă\n"
+#~ "    -V                      versiunea lungă\n"
+#~ "         --version[=TIP]    versiune, TIPUL este short sau long (implicit "
+#~ "short)\n"
+#~ "  comenzi (modul neinteractiv):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr "%1$s noul mod pentru ținta „%2$s” a eșuat cu starea „%3$d”"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "Execuția comenzii „%1$s” pentru a crea o nouă interfață iscsi a eșuat"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "Execuția comenzii „%1$s” pentru actualizarea interfeței iscsi cu IQN "
+#~ "„%2$s” a eșuat"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "Mașinile PowerPC pseries nu acceptă dispozitive de dischetă"
 
 #~ msgid ""
 #~ "Cannot use direct socket mode if no URI is set. For more information see "

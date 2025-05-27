@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -211,6 +211,7 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
@@ -500,10 +501,6 @@ msgstr ""
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
 msgstr ""
 
 #, c-format
@@ -1293,6 +1290,10 @@ msgstr "virtio-scsi கன்ட்ரோலர் மட்டுமே 'queues
 #, fuzzy
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "virtio-scsi கன்ட்ரோலர் மட்டுமே 'queues' ஐ ஆதரிக்கும்"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8637,13 +8638,13 @@ msgstr "பிணைய அமைவாக்க மாற்ற பரிமா
 msgid "Failed to run clone container"
 msgstr "க்ளோன் கொள்கலனை இயக்க முடியவில்லை"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
-msgstr "புதிய iscsi இடைமுகத்தை உருவாக்க கட்டளை '%1$s' ஐ இயக்க முடியவில்லை"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
+msgstr ""
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
-msgstr "iscsi இடைமுகத்தை IQN '%1$s' உடன் புதுப்பிக்க கட்டளை '%2$s'ஐ இயக்க முடியவில்லை"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
+msgstr ""
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13419,6 +13420,9 @@ msgstr "PCI சாதன முகவரிகளுடன் செயல் �
 msgid "Only PTY console types are supported"
 msgstr "PTY கன்சோல் வகைகள் மட்டுமே ஆதரிக்கப்படும்"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 #, fuzzy
 msgid "Only VNC supported"
 msgstr "ஆதரவு இல்லை"
@@ -13429,6 +13433,9 @@ msgstr ""
 #, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "மற்றொரு USB கன்ட்ரோலரைச் சேர்க்க முடியாது: இந்த டொமைனுக்கு USB முடக்கப்பட்டுள்ளது"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr ""
@@ -13582,6 +13589,9 @@ msgstr "Init செயலாக்கத்தை மட்டுமே நி�
 
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
+msgstr ""
+
+msgid "Only virtio model is supported for RNG devices"
 msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
@@ -14122,10 +14132,6 @@ msgstr ""
 
 msgid "Postcopy requests:"
 msgstr ""
-
-#, fuzzy
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "சாதனத்திற்கு இந்த செயலுக்கு ஆதரவில்லை: %s"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "தயாரான Tunnel அழைத்தது ஆனால் TUNNELLED கொடி அமைக்கப்படவில்லை"
@@ -16991,6 +16997,10 @@ msgstr "இலக்கு வீடியோ கார்டு vram %1$u ஆ�
 #, fuzzy, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "இலக்கு வீடியோ கார்டு vram %1$u ஆனது மூலம் %2$u உடன் பொருந்தவில்லை"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -21196,6 +21206,12 @@ msgstr "qemu இன் இந்தப் பதிப்பில் VFIO PCI �
 #, fuzzy
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "qemu இன் இந்தப் பதிப்பில் VFIO PCI சாதன ஒதுக்கீடுக்கு ஆதரவில்லை"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
@@ -31470,9 +31486,9 @@ msgstr "தவறான நெட்லிங்க் பதில் செய
 msgid "malformed octal mode"
 msgstr "தவறான எண்ம முறைமை"
 
-#, fuzzy, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "தவறாக வடிவமைக்கப்பட்ட 'port' பண்புக்கூறு: %s"
+#, c-format
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "தவறான உரிமையாளர் உருப்படி"
@@ -32990,12 +33006,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-
 msgid "mode attribute of <source/> element"
 msgstr ""
 
@@ -34429,6 +34439,9 @@ msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
+msgstr ""
+
+msgid "only 'file' type is supported with NVRAM"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
@@ -37841,6 +37854,9 @@ msgstr "இணைப்பு இயக்கி இந்த செயலம்
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "இந்த பிணையம் ஏற்கனவே உள்ளது"
 
@@ -41221,6 +41237,10 @@ msgstr "ஒரு டொமைனை pmsuspended நிலையிலிரு�
 msgid "warning"
 msgstr "எச்சரிக்கை"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "watchdog"
 
@@ -41376,6 +41396,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr "புதிய iscsi இடைமுகத்தை உருவாக்க கட்டளை '%1$s' ஐ இயக்க முடியவில்லை"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "iscsi இடைமுகத்தை IQN '%1$s' உடன் புதுப்பிக்க கட்டளை '%2$s'ஐ இயக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "சாதனத்திற்கு இந்த செயலுக்கு ஆதரவில்லை: %s"
+
+#, fuzzy, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "தவறாக வடிவமைக்கப்பட்ட 'port' பண்புக்கூறு: %s"
 
 #, fuzzy, c-format
 #~ msgid "Failed to delete snapshot: %1$s"

@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -241,36 +241,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [options]... [<command_string>]\n"
-"%2$s [options]... <command> [args...]\n"
-"\n"
-"  options :\n"
-"    -c | --connect=URI URI de connexion à l'hyperviseur\n"
-"    -d | --debug=NUM niveau de débogage [0-4] -e | --escape\n"
-"    -e | --escape <char> définit la séquence d'échappement pour la console\n"
-"    -h | --help cette aide\n"
-"    -k | --keepalive-interval=NUM\n"
-"                            intervalle keepalive en secondes, 0 pour la "
-"désactivation\n"
-"    -K | --keepalive-count=NUM\n"
-"                            nombre de messages keepalive manqués possibles\n"
-"    -l | --log=FILE enregistrement de la sortie dans un fichier\n"
-"    -q | --quiet mode silencieux\n"
-"    -r | --readonly connexion en lecture seule\n"
-"    -t | --timing imprimer les informations de synchronisation\n"
-"    -v version courte\n"
-"    -V version longue\n"
-"         --version[=TYPE] version, TYPE est court ou long (court par "
-"défaut)\n"
-"  commandes (mode non interactif) :\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -615,10 +592,6 @@ msgstr ""
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s attend les paramètres UID et GID"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr "%1$s échec du nouveau mode pour la cible '%2$s' avec le statut '%3$d'"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1465,6 +1438,10 @@ msgstr ""
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "’iothread' n'est pris en charge que pour le contrôleur virtio-scsi"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8962,17 +8939,13 @@ msgstr ""
 msgid "Failed to run clone container"
 msgstr "Échec de l'exécution du conteneur de clone"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
-"Échec de l'exécution de la commande '%1$s' pour créer une nouvelle interface "
-"iscsi"
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"Échec de l'exécution de la commande '%1$s' pour mettre à jour l'interface "
-"iscsi avec l'IQN '%2$s'"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13912,6 +13885,9 @@ msgstr ""
 msgid "Only PTY console types are supported"
 msgstr "Seuls les types de console PTY sont pris en charge"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "Seulement VNC pris en charge"
 
@@ -13920,6 +13896,9 @@ msgstr ""
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Un seul contrôleur IDE est pris en charge pour ce type de machine"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Une seule console peut être configurée pour ce domaine"
@@ -14069,6 +14048,9 @@ msgstr "Seul le processus init peut être supprimé"
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "Seuls les types de bus virtio sont pris en charge pour '%1$s'"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Seuls les URI de migration vpxmigr:// sont pris en charge"
@@ -14634,11 +14616,6 @@ msgstr "Erreur de post-copie"
 
 msgid "Postcopy requests:"
 msgstr "Demandes de copies postales :"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr ""
-"Les machines PowerPC pseries ne prennent pas en charge le périphérique de "
-"disquette"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel appelé mais pas d’indicateur TUNNELLED activé"
@@ -17752,6 +17729,10 @@ msgstr "La carte vidéo cible vram %1$u ne correspond pas à la source %2$u"
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "La carte vidéo cible vram64 %1$u ne correspond pas à la source %2$u"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -22027,6 +22008,12 @@ msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr ""
 "L'affectation du périphérique VFIO CCW n'est pas prise en charge par cette "
 "version de QEMU"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr ""
@@ -32612,8 +32599,8 @@ msgid "malformed octal mode"
 msgstr "mode octal non conforme"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "sortie malformée de %1$s : %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "propriétaire de l’élément non conforme"
@@ -34172,14 +34159,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"mkfs n'est pas disponible sur cette plateforme : Impossible de créer un "
-"système de fichiers de type '%1$s' sur le périphérique '%2$s'"
-
 msgid "mode attribute of <source/> element"
 msgstr "attribut mode de l'élément <source/>"
 
@@ -35639,6 +35618,9 @@ msgstr ""
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 "seules les adresses 'dimm' sont prise en charge pour le périphérique pc-dimm"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
@@ -39189,6 +39171,9 @@ msgstr ""
 "Cette instance de libvirtd ne permet la migration qu'avec l’indicateur "
 "VIR_MIGRATE_TLS"
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "ce domaine existe déjà"
 
@@ -42697,6 +42682,10 @@ msgstr "réveiller un domaine depuis l'état pmsuspendu"
 msgid "warning"
 msgstr "attention"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "périphérique de surveillance"
 
@@ -42864,6 +42853,94 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options :\n"
+#~ "    -c | --connect=URI URI de connexion à l'hyperviseur\n"
+#~ "    -d | --debug=NUM niveau de débogage [0-4] -e | --escape\n"
+#~ "    -e | --escape <char> définit la séquence d'échappement pour la "
+#~ "console\n"
+#~ "    -h | --help cette aide\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            intervalle keepalive en secondes, 0 pour la "
+#~ "désactivation\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            nombre de messages keepalive manqués "
+#~ "possibles\n"
+#~ "    -l | --log=FILE enregistrement de la sortie dans un fichier\n"
+#~ "    -q | --quiet mode silencieux\n"
+#~ "    -r | --readonly connexion en lecture seule\n"
+#~ "    -t | --timing imprimer les informations de synchronisation\n"
+#~ "    -v version courte\n"
+#~ "    -V version longue\n"
+#~ "         --version[=TYPE] version, TYPE est court ou long (court par "
+#~ "défaut)\n"
+#~ "  commandes (mode non interactif) :\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr ""
+#~ "%1$s échec du nouveau mode pour la cible '%2$s' avec le statut '%3$d'"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "Échec de l'exécution de la commande '%1$s' pour créer une nouvelle "
+#~ "interface iscsi"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "Échec de l'exécution de la commande '%1$s' pour mettre à jour l'interface "
+#~ "iscsi avec l'IQN '%2$s'"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr ""
+#~ "Les machines PowerPC pseries ne prennent pas en charge le périphérique de "
+#~ "disquette"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "sortie malformée de %1$s : %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "mkfs n'est pas disponible sur cette plateforme : Impossible de créer un "
+#~ "système de fichiers de type '%1$s' sur le périphérique '%2$s'"
 
 #, c-format
 #~ msgid "Failed to delete snapshot: %1$s"

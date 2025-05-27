@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -233,36 +233,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [オプション]... [<command_string>]\n"
-"%2$s [オプション]... <command> [引数...]\n"
-"\n"
-"  オプション:\n"
-"    -c | --connect=URI      ハイパーバイザー接続 URI\n"
-"    -d | --debug=NUM        デバッグレベル [0-4]\n"
-"    -e | --escape <char>    コンソール用のエスケープシーケンスを設定します\n"
-"    -h | --help             このヘルプ\n"
-"    -k | --keepalive-interval=NUM\n"
-"                             キープアライブ間隔 (秒)、無効の場合は 0\n"
-"    -K | --keepalive-count=NUM\n"
-"                            見逃した可能性のあるキープアライブメッセージの"
-"数\n"
-"    -l | --log=FILE         ファイルにログを出力します\n"
-"    -q | --quiet            静音モード\n"
-"    -r | --readonly         読み取り専用のみを接続します\n"
-"    -t | --timing           タイミング情報を出力します\n"
-"    -v                      ショートバージョン\n"
-"    -V                      ロングバージョン\n"
-"         --version[=TYPE]   バージョン、TYPE はショートまたはロング (デフォル"
-"トはショート)\n"
-"  コマンド (非対話モード):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -605,11 +582,6 @@ msgstr ""
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s は UID および GID パラメーターを必要とします"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr ""
-"%1$s は、ターゲット '%2$s' (ステータス '%3$d') の新しいモードに失敗しました"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1420,6 +1392,10 @@ msgstr ""
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "'iothread' は virtio-scsi コントローラーに対してのみサポートされます"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8709,17 +8685,13 @@ msgstr "ネットワーク設定変更トランザクションをロールバッ
 msgid "Failed to run clone container"
 msgstr "コンテナーのクローンの実行に失敗しました"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
-"新しい iSCSI インターフェイスを作成するためのコマンド '%1$s' の実行に失敗しま"
-"した"
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"コマンド '%1$s' を IQN '%2$s' を持つ IQN iSCSI インターフェイスを更新するため"
-"に実行できませんでした"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13492,6 +13464,9 @@ msgstr "function=0 を持つ PCI デバイスアドレスのみがサポート�
 msgid "Only PTY console types are supported"
 msgstr "PTY タイプのみがサポートされます"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "VNC のみがサポートされます"
 
@@ -13500,6 +13475,9 @@ msgstr ""
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "このマシンタイプでは、単一の IDE コントローラーのみがサポートされます"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "このドメインに設定できるコンソールは 1 つだけです"
@@ -13646,6 +13624,9 @@ msgstr "init プロセスのみがキルされる可能性があります"
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "'%1$s' では virtio バスタイプのみがサポートされます"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "vpxmigr:// マイグレーション URI のみがサポートされます"
@@ -14190,9 +14171,6 @@ msgstr "Post-copy エラー"
 
 msgid "Postcopy requests:"
 msgstr "Postcopy リクエスト:"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "PowerPC pseries マシンは、フロッピーデバイスをサポートしません"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
@@ -17123,6 +17101,10 @@ msgstr "ターゲットのビデオカード vram %1$u がソース %2$u と一�
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "ターゲットのビデオカード vram64 %1$u がソース %2$u と一致しません"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -21298,6 +21280,12 @@ msgstr ""
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr ""
 "このバージョンの QEMU では、VFIO CCW デバイスの割り当てはサポートされません"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr ""
@@ -31509,8 +31497,8 @@ msgid "malformed octal mode"
 msgstr "不正な形式の 8 進数のモード"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "%1$s の不正な形式の出力: %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "不正な形式の owner 要素"
@@ -33013,14 +33001,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"mkfs はこのプラットフォームでは使用できません: デバイス '%1$s' 上のタイプ "
-"'%2$s' のファイルシステムの作成に失敗しました"
-
 msgid "mode attribute of <source/> element"
 msgstr "<source/> 要素のモード属性"
 
@@ -34443,6 +34423,9 @@ msgstr "外部 TPM デバイスでサポートされるのは 'connect' モー�
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm デバイスでサポートされるのは 'dimm' アドレスのみです"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "共有メモリーデバイスでサポートされるのは 'pci' アドレスのみです"
@@ -37835,6 +37818,9 @@ msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 "この libvirtd インスタンスは、VIR_MIGRATE_TLS フラグを使用した場合にのみマイ"
 "グレーションを許可します"
+
+msgid "this machine type do not support floppy devices"
+msgstr ""
 
 msgid "this network exists already"
 msgstr "このネットワークはすでに存在しています"
@@ -41261,6 +41247,10 @@ msgstr "ドメインのサスペンド状態からの再開"
 msgid "warning"
 msgstr "警告"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "ウォッチドッグ"
 
@@ -41424,6 +41414,92 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [オプション]... [<command_string>]\n"
+#~ "%2$s [オプション]... <command> [引数...]\n"
+#~ "\n"
+#~ "  オプション:\n"
+#~ "    -c | --connect=URI      ハイパーバイザー接続 URI\n"
+#~ "    -d | --debug=NUM        デバッグレベル [0-4]\n"
+#~ "    -e | --escape <char>    コンソール用のエスケープシーケンスを設定しま"
+#~ "す\n"
+#~ "    -h | --help             このヘルプ\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                             キープアライブ間隔 (秒)、無効の場合は 0\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            見逃した可能性のあるキープアライブメッセージの"
+#~ "数\n"
+#~ "    -l | --log=FILE         ファイルにログを出力します\n"
+#~ "    -q | --quiet            静音モード\n"
+#~ "    -r | --readonly         読み取り専用のみを接続します\n"
+#~ "    -t | --timing           タイミング情報を出力します\n"
+#~ "    -v                      ショートバージョン\n"
+#~ "    -V                      ロングバージョン\n"
+#~ "         --version[=TYPE]   バージョン、TYPE はショートまたはロング (デ"
+#~ "フォルトはショート)\n"
+#~ "  コマンド (非対話モード):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr ""
+#~ "%1$s は、ターゲット '%2$s' (ステータス '%3$d') の新しいモードに失敗しまし"
+#~ "た"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "新しい iSCSI インターフェイスを作成するためのコマンド '%1$s' の実行に失敗"
+#~ "しました"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "コマンド '%1$s' を IQN '%2$s' を持つ IQN iSCSI インターフェイスを更新する"
+#~ "ために実行できませんでした"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "PowerPC pseries マシンは、フロッピーデバイスをサポートしません"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "%1$s の不正な形式の出力: %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "mkfs はこのプラットフォームでは使用できません: デバイス '%1$s' 上のタイプ "
+#~ "'%2$s' のファイルシステムの作成に失敗しました"
 
 #, c-format
 #~ msgid "Failed to delete snapshot: %1$s"

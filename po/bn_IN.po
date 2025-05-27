@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -172,6 +172,7 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
@@ -427,10 +428,6 @@ msgstr ""
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
 msgstr ""
 
 #, c-format
@@ -1192,6 +1189,10 @@ msgstr "ram অ্যাট্রিবিউট শুধুমাত্র qxl
 #, fuzzy
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "sgio শুধুমাত্র scsi হোস্ট ডিভাইসের ক্ষেত্রে সমর্থিত"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8516,14 +8517,13 @@ msgstr "%s-র জন্য PCI কনফিগ স্পেস পুনরু�
 msgid "Failed to run clone container"
 msgstr "ধারণকারী ক্লোন করার প্রণালী সঞ্চালন করতে ব্যর্থ"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
-msgstr "নতুন iscsi ইন্টারফেস নির্মাণের জন্য '%1$s' কমান্ড সঞ্চালন করতে ব্যর্থ"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
+msgstr ""
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"'%1$s' কমান্ডের সাহায্যে IQN '%2$s' সহযোগে iscsi ইন্টারফেস আপডেট করতে ব্যর্থ"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13272,6 +13272,9 @@ msgstr "শুধুমাত্র function=0 সহ PCI ডিভাইসগ�
 msgid "Only PTY console types are supported"
 msgstr "শুধুমাত্র একটি ফাইল-সিস্টেম সমর্থিত হবে"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 #, fuzzy
 msgid "Only VNC supported"
 msgstr "সমর্থিত নয়"
@@ -13282,6 +13285,9 @@ msgstr ""
 #, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "অপর একটি USB কন্ট্রোলার যোগ করা যাবে না: এই ডোমেনের জন্য USB নিষ্ক্রিয়"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr ""
@@ -13417,6 +13423,9 @@ msgstr ""
 
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
+msgstr ""
+
+msgid "Only virtio model is supported for RNG devices"
 msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
@@ -13942,10 +13951,6 @@ msgstr ""
 
 msgid "Postcopy requests:"
 msgstr ""
-
-#, fuzzy
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "ps2 bus দ্বারা %s ইনপুট ডিভাইস সমর্থিত হবে না"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel কল করা হয়েছে কিন্তু কোনো TUNNELLED ফ্ল্যাগ নির্ধারণ করা হয়নি"
@@ -16758,6 +16763,10 @@ msgstr "টার্গেট ভিডিও কার্ড vram %1$u সো�
 #, fuzzy, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "টার্গেট ভিডিও কার্ড vram %1$u সোর্স %2$u এর সংগে মিলছে না"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -21030,6 +21039,12 @@ msgid "VFIO AP device assignment is not supported by this version of QEMU"
 msgstr ""
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
 msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
@@ -31375,9 +31390,9 @@ msgstr "netlink প্রত্যুত্তরের ত্রুটিপূ
 msgid "malformed octal mode"
 msgstr "ত্রুটিপূর্ণ অক্টাল মোড"
 
-#, fuzzy, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "ভুল ভাবে গঠিত ipset ফ্ল্যাগ"
+#, c-format
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "owner (মালিকানা) স্বত্ত্বা ত্রুটিপূর্ণ"
@@ -32911,12 +32926,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr ""
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-
 msgid "mode attribute of <source/> element"
 msgstr ""
 
@@ -34354,6 +34363,9 @@ msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
+msgstr ""
+
+msgid "only 'file' type is supported with NVRAM"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
@@ -37753,6 +37765,9 @@ msgstr ""
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "চিহ্নিত নেটওয়ার্ক বর্তমানে উপস্থিত রয়েছে"
 
@@ -41137,6 +41152,10 @@ msgstr "ফাইলের মধ্যে সংরক্ষিত অবস্
 msgid "warning"
 msgstr "সতর্কবার্তা"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr ""
 
@@ -41290,6 +41309,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr "নতুন iscsi ইন্টারফেস নির্মাণের জন্য '%1$s' কমান্ড সঞ্চালন করতে ব্যর্থ"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "'%1$s' কমান্ডের সাহায্যে IQN '%2$s' সহযোগে iscsi ইন্টারফেস আপডেট করতে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "ps2 bus দ্বারা %s ইনপুট ডিভাইস সমর্থিত হবে না"
+
+#, fuzzy, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "ভুল ভাবে গঠিত ipset ফ্ল্যাগ"
 
 #, fuzzy, c-format
 #~ msgid "Failed to delete snapshot: %1$s"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -228,37 +228,13 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
-"\n"
-"%1$s [flaggor]… [<kommandosträng>]\n"
-"%2$s [flaggor]… <kommando> [argument…]\n"
-"\n"
-"  flaggor:\n"
-"    -c | --connect=URI      anslutnings-URI till hypervisor\n"
-"    -d | --debug=TAL        felsökningsnivå [0-4]\n"
-"    -e | --escape <tkn>     sätt kontrollsekvens för konsolen\n"
-"    -h | --help             denna hjälp\n"
-"    -k | --keepalive-interval=TAL\n"
-"                            intervall för att hålla vid liv i sekunder, 0 "
-"för att avaktivera\n"
-"    -K | --keepalive-count=ANTAL\n"
-"                            antal möjliga missade meddelande för "
-"livsuppehållning\n"
-"    -l | --log=FIL          mata ut loggning till fil\n"
-"    -q | --quiet            tyst läge\n"
-"    -r | --readonly         anslut endast för läsning\n"
-"    -t | --timing           skriv ut tidsinformation\n"
-"    -v                      kort version\n"
-"    -V                      lång version\n"
-"         --version[=TYP]    version, TYP är short eller long (standard "
-"short)\n"
-"  kommandon (icke-interaktivt läge):\n"
-"\n"
 
 #, c-format
 msgid ""
@@ -610,11 +586,6 @@ msgstr "%1$s stödjer inte att skicka en lösenfras via en filbeskrivare"
 #, c-format
 msgid "%1$s expects UID and GID parameters"
 msgstr "%1$s förväntar sig UID- och GID-parametrar"
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
-msgstr ""
-"%1$s misslyckades att sätta ett nytt läge för målet ”%2$s” med status ”%3$d”"
 
 #, c-format
 msgid "%1$s family specified for non-IPv4 address '%2$s' in network '%3$s'"
@@ -1415,6 +1386,10 @@ msgstr "attributet ”iothread” stödjs endast för styrenheten virtio scsi"
 
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "attributet ”iothread” stödjs endast för styrenheten virtio-scsi"
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "”Föråldrad KVM”-enhetstilldelning stödjs inte längre på detta system"
@@ -8713,17 +8688,13 @@ msgstr ""
 msgid "Failed to run clone container"
 msgstr "Misslyckades med att köra klonad behållare"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
-"Misslyckades med att köra kommandot ”%1$s” för att skapa ett nytt iscsi-"
-"gränssnitt"
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"Misslyckades att köra kommandot ”%1$s” för att uppdatera iscsi-gränssnittet "
-"med IQN ”%2$s”"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13470,6 +13441,9 @@ msgstr "Endast PCI-enhetsadresser med function=0 stödjs"
 msgid "Only PTY console types are supported"
 msgstr "Endast PTY-konsoltyper stödjs"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 msgid "Only VNC supported"
 msgstr "Endast VNC stödjs"
 
@@ -13478,6 +13452,9 @@ msgstr ""
 
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Endast en enda IDE-styrenhet stödjs för denna maskintyp"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Endast en enda konsol kan konfigureras för denna domän"
@@ -13619,6 +13596,9 @@ msgstr "Endast init-processen kan dödas"
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "Endast virtio-busstyper stödjs för ”%1$s”"
+
+msgid "Only virtio model is supported for RNG devices"
+msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Endast vpxmigr://-migrerings-URI:er stödjs"
@@ -14157,9 +14137,6 @@ msgstr "Efterkopieringsfel"
 
 msgid "Postcopy requests:"
 msgstr "Efterkopieringsbegäran:"
-
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "PowerPC pseries-maskiner stödjer inte en floppyenhet"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel anropad men ingen flagga TUNNELLED satt"
@@ -16999,6 +16976,10 @@ msgstr "Målvideokortets vram %1$u stämmer inte med källan %2$u"
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "Målvideokortets vram64 %1$u stämmer inte med källan %2$u"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -21203,6 +21184,12 @@ msgstr "Tilldelning av VFIO AP-enhet stödjs inte av denna version av QEMU"
 
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "Tilldelning av VFIO CCW-enhet stödjs inte av denna version av QEMU"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "Tilldelning av VFIO PCI-enhet stödjs inte av denna version av QEMU"
@@ -31406,8 +31393,8 @@ msgid "malformed octal mode"
 msgstr "felformaterat oktalt läge"
 
 #, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "felformaterad utdata från %1$s: %2$s"
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "felformaterat ägarelement"
@@ -32892,14 +32879,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr "mkdir(\"%1$s\")"
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-"mkfs är inte tillgängligt på denna plattform: misslyckades att skapa ett "
-"filsystem av typen ”%1$s” på enheten ”%2$s”"
-
 msgid "mode attribute of <source/> element"
 msgstr "attributet mode i elementet <source/>"
 
@@ -34309,6 +34288,9 @@ msgstr "endast läget ”connect” stödjs för en extern TPM-enhet"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "endast ”dimm”-adresser stödjs för enheten pc-dimm"
+
+msgid "only 'file' type is supported with NVRAM"
+msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "endast ”pci”-adresser stödjs för delat minnes-enheten"
@@ -37670,6 +37652,9 @@ msgstr "denna funktion stödjs inte av anslutningsdrivrutinen: %1$s"
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 "denna libvirtd-instans tillåter bara migrering med flaggan VIR_MIGRATE_TLS"
+
+msgid "this machine type do not support floppy devices"
+msgstr ""
 
 msgid "this network exists already"
 msgstr "detta nätverk finns redan"
@@ -41075,6 +41060,10 @@ msgstr "väck upp en domän från tillståndet pmsuspended"
 msgid "warning"
 msgstr "varning"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "vakthund"
 
@@ -41231,6 +41220,92 @@ msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
+
+#, c-format
+#~ msgid ""
+#~ "\n"
+#~ "%1$s [options]... [<command_string>]\n"
+#~ "%2$s [options]... <command> [args...]\n"
+#~ "\n"
+#~ "  options:\n"
+#~ "    -c | --connect=URI      hypervisor connection URI\n"
+#~ "    -d | --debug=NUM        debug level [0-4]\n"
+#~ "    -e | --escape <char>    set escape sequence for console\n"
+#~ "    -h | --help             this help\n"
+#~ "    -k | --keepalive-interval=NUM\n"
+#~ "                            keepalive interval in seconds, 0 for disable\n"
+#~ "    -K | --keepalive-count=NUM\n"
+#~ "                            number of possible missed keepalive messages\n"
+#~ "    -l | --log=FILE         output logging to file\n"
+#~ "    -q | --quiet            quiet mode\n"
+#~ "    -r | --readonly         connect readonly\n"
+#~ "    -t | --timing           print timing information\n"
+#~ "    -v                      short version\n"
+#~ "    -V                      long version\n"
+#~ "         --version[=TYPE]   version, TYPE is short or long (default "
+#~ "short)\n"
+#~ "  commands (non interactive mode):\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%1$s [flaggor]… [<kommandosträng>]\n"
+#~ "%2$s [flaggor]… <kommando> [argument…]\n"
+#~ "\n"
+#~ "  flaggor:\n"
+#~ "    -c | --connect=URI      anslutnings-URI till hypervisor\n"
+#~ "    -d | --debug=TAL        felsökningsnivå [0-4]\n"
+#~ "    -e | --escape <tkn>     sätt kontrollsekvens för konsolen\n"
+#~ "    -h | --help             denna hjälp\n"
+#~ "    -k | --keepalive-interval=TAL\n"
+#~ "                            intervall för att hålla vid liv i sekunder, 0 "
+#~ "för att avaktivera\n"
+#~ "    -K | --keepalive-count=ANTAL\n"
+#~ "                            antal möjliga missade meddelande för "
+#~ "livsuppehållning\n"
+#~ "    -l | --log=FIL          mata ut loggning till fil\n"
+#~ "    -q | --quiet            tyst läge\n"
+#~ "    -r | --readonly         anslut endast för läsning\n"
+#~ "    -t | --timing           skriv ut tidsinformation\n"
+#~ "    -v                      kort version\n"
+#~ "    -V                      lång version\n"
+#~ "         --version[=TYP]    version, TYP är short eller long (standard "
+#~ "short)\n"
+#~ "  kommandon (icke-interaktivt läge):\n"
+#~ "\n"
+
+#, c-format
+#~ msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
+#~ msgstr ""
+#~ "%1$s misslyckades att sätta ett nytt läge för målet ”%2$s” med status "
+#~ "”%3$d”"
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr ""
+#~ "Misslyckades med att köra kommandot ”%1$s” för att skapa ett nytt iscsi-"
+#~ "gränssnitt"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "Misslyckades att köra kommandot ”%1$s” för att uppdatera iscsi-"
+#~ "gränssnittet med IQN ”%2$s”"
+
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "PowerPC pseries-maskiner stödjer inte en floppyenhet"
+
+#, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "felformaterad utdata från %1$s: %2$s"
+
+#, c-format
+#~ msgid ""
+#~ "mkfs is not available on this platform: Failed to make filesystem of type "
+#~ "'%1$s' on device '%2$s'"
+#~ msgstr ""
+#~ "mkfs är inte tillgängligt på denna plattform: misslyckades att skapa ett "
+#~ "filsystem av typen ”%1$s” på enheten ”%2$s”"
 
 #~ msgid ""
 #~ "Cannot use direct socket mode if no URI is set. For more information see "

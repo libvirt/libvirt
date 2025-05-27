@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-04-28 08:27+0000\n"
+"POT-Creation-Date: 2025-05-27 08:29+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hindi <https://translate.fedoraproject.org/projects/libvirt/"
@@ -215,6 +215,7 @@ msgid ""
 "    -q | --quiet            quiet mode\n"
 "    -r | --readonly         connect readonly\n"
 "    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
 "    -v                      short version\n"
 "    -V                      long version\n"
 "         --version[=TYPE]   version, TYPE is short or long (default short)\n"
@@ -470,10 +471,6 @@ msgstr ""
 
 #, c-format
 msgid "%1$s expects UID and GID parameters"
-msgstr ""
-
-#, c-format
-msgid "%1$s failed new mode for target '%2$s' with status '%3$d'"
 msgstr ""
 
 #, c-format
@@ -1232,6 +1229,10 @@ msgstr "रैम qxl के प्रकार के लिए केवल �
 #, fuzzy
 msgid "'iothread' is only supported for virtio-scsi controller"
 msgstr "virtio संजाल अंतराफलक के लिए केवल vhost-net समर्थित है "
+
+#, c-format
+msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
+msgstr ""
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -8525,14 +8526,13 @@ msgstr "ट्रांजेक्शन रोलबैक करने मे
 msgid "Failed to run clone container"
 msgstr "क्लोन कंटेनर चलाने में विफल"
 
-#, c-format
-msgid "Failed to run command '%1$s' to create new iscsi interface"
-msgstr "नया iscsi अंतरफलक बनाने के लिए '%1$s' कमांड को चलाने में विफल"
+msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
+msgstr ""
 
 #, c-format
-msgid "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+msgid ""
+"Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
-"'%1$s' कमांड चलाने में विफल iscsi अंतरफलक को IQN '%2$s' के साथ अद्यतन करने के लिए"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13315,6 +13315,9 @@ msgstr "केवल PCI युक्ति पता को प्रकार�
 msgid "Only PTY console types are supported"
 msgstr "सिर्फ PTY कंसोल प्रकार ही समर्थित"
 
+msgid "Only RANDOM backend is supported for RNG devices"
+msgstr ""
+
 #, fuzzy
 msgid "Only VNC supported"
 msgstr "समर्थित नहीं"
@@ -13325,6 +13328,9 @@ msgstr ""
 #, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "अन्य USB नियंत्रक: USB को इस डोमेन के लिए निष्क्रिय कर दिया गया है"
+
+msgid "Only a single RNG device can be configured for this domain"
+msgstr ""
 
 msgid "Only a single console can be configured for this domain"
 msgstr ""
@@ -13462,6 +13468,9 @@ msgstr "केवल init प्रक्रिया को मार डाल
 
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
+msgstr ""
+
+msgid "Only virtio model is supported for RNG devices"
 msgstr ""
 
 msgid "Only vpxmigr:// migration URIs are supported"
@@ -13994,10 +14003,6 @@ msgstr ""
 
 msgid "Postcopy requests:"
 msgstr ""
-
-#, fuzzy
-msgid "PowerPC pseries machines do not support floppy device"
-msgstr "ऑपरेशन डिवाइस के लिए समर्थित नहीं है: %s"
 
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr "PrepareTunnel बुलाया गया लेनिक कोई TUNNELLED फ्लैग सेट नहीं किया गया"
@@ -16820,6 +16825,10 @@ msgstr "लक्ष्य वीडियो कार्ड vram %1$u का �
 #, fuzzy, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr "लक्ष्य वीडियो कार्ड vram %1$u का मेल स्रोत %2$u से नहीं है"
+
+#, c-format
+msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -21081,6 +21090,12 @@ msgstr "USB पुनर्निर्देशन QEMU के इस संस
 #, fuzzy
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "USB पुनर्निर्देशन QEMU के इस संस्करण द्वारा समर्थित नहीं है"
+
+msgid "VFIO PCI device assignment is not supported by the host"
+msgstr ""
+
+msgid "VFIO PCI device assignment is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
@@ -31403,9 +31418,9 @@ msgstr "विरूपित नेटलिंक अनुक्रिया 
 msgid "malformed octal mode"
 msgstr "विरूपित ओक्टल मोड"
 
-#, fuzzy, c-format
-msgid "malformed output of %1$s: %2$s"
-msgstr "विरूपित ipset फ्लैग"
+#, c-format
+msgid "malformed output of 'iscsiadm': %1$s"
+msgstr ""
 
 msgid "malformed owner element"
 msgstr "विरूपित स्वामी तत्व"
@@ -32935,12 +32950,6 @@ msgstr ""
 msgid "mkdir(\"%1$s\")"
 msgstr ""
 
-#, c-format
-msgid ""
-"mkfs is not available on this platform: Failed to make filesystem of type "
-"'%1$s' on device '%2$s'"
-msgstr ""
-
 msgid "mode attribute of <source/> element"
 msgstr ""
 
@@ -34376,6 +34385,9 @@ msgid "only 'connect' mode is supported for external TPM device"
 msgstr ""
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
+msgstr ""
+
+msgid "only 'file' type is supported with NVRAM"
 msgstr ""
 
 msgid "only 'pci' addresses are supported for the shared memory device"
@@ -37772,6 +37784,9 @@ msgstr "ऑफ़लाइन प्रवास गंतव्य होस्
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr ""
 
+msgid "this machine type do not support floppy devices"
+msgstr ""
+
 msgid "this network exists already"
 msgstr "यह संजाल पहले से मौजूद है"
 
@@ -41165,6 +41180,10 @@ msgstr "एक फाइल में सहेजे स्थिति मे�
 msgid "warning"
 msgstr "चेतावनी"
 
+#, c-format
+msgid "warning: %1$s\n"
+msgstr ""
+
 msgid "watchdog"
 msgstr "प्रहरी"
 
@@ -41318,6 +41337,24 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Failed to run command '%1$s' to create new iscsi interface"
+#~ msgstr "नया iscsi अंतरफलक बनाने के लिए '%1$s' कमांड को चलाने में विफल"
+
+#, c-format
+#~ msgid ""
+#~ "Failed to run command '%1$s' to update iscsi interface with IQN '%2$s'"
+#~ msgstr ""
+#~ "'%1$s' कमांड चलाने में विफल iscsi अंतरफलक को IQN '%2$s' के साथ अद्यतन करने के लिए"
+
+#, fuzzy
+#~ msgid "PowerPC pseries machines do not support floppy device"
+#~ msgstr "ऑपरेशन डिवाइस के लिए समर्थित नहीं है: %s"
+
+#, fuzzy, c-format
+#~ msgid "malformed output of %1$s: %2$s"
+#~ msgstr "विरूपित ipset फ्लैग"
 
 #, fuzzy, c-format
 #~ msgid "Failed to delete snapshot: %1$s"
