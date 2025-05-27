@@ -42,6 +42,13 @@ v11.4.0 (unreleased)
 
     The only workaround is to avoid the broken versions.
 
+  * qemu: Fix virtqemud crash when resuming failed post-copy migration
+
+    A regression introduced in ``libvirt-11.2.0`` caused virtqemud on the
+    destination host to crash when trying to resume failed post-copy
+    migration.
+
+
 v11.3.0 (2025-05-02)
 ====================
 
