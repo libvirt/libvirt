@@ -3459,10 +3459,11 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManager *mgr,
                                 int fd)
 {
     struct stat buf;
-    char *fcon = NULL;
+    g_autofree char *fcon = NULL;
     virSecurityLabelDef *secdef;
-    char *str = NULL, *proc = NULL, *fd_path = NULL;
-    int rc = -1;
+    g_autofree char *str = NULL;
+    g_autofree char *proc = NULL;
+    g_autofree char *fd_path = NULL;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!secdef || !secdef->label)
@@ -3470,13 +3471,13 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManager *mgr,
 
     if (fstat(fd, &buf) < 0) {
         virReportSystemError(errno, _("cannot stat tap fd %1$d"), fd);
-        goto cleanup;
+        return -1;
     }
 
     if ((buf.st_mode & S_IFMT) != S_IFCHR) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("tap fd %1$d is not character device"), fd);
-        goto cleanup;
+        return -1;
     }
 
     /* Label /dev/tap([0-9]+)? devices only. Leave /dev/net/tun alone! */
@@ -3485,34 +3486,28 @@ virSecuritySELinuxSetTapFDLabel(virSecurityManager *mgr,
     if (virFileResolveLink(proc, &fd_path) < 0) {
         virReportSystemError(errno,
                              _("Unable to resolve link: %1$s"), proc);
-        goto cleanup;
+        return -1;
     }
 
     if (!STRPREFIX(fd_path, "/dev/tap")) {
         VIR_DEBUG("fd=%d points to %s not setting SELinux label",
                   fd, fd_path);
-        rc = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (getContext(mgr, fd_path, buf.st_mode, &fcon) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot lookup default selinux label for tap fd %1$d"), fd);
-        goto cleanup;
+        return -1;
     }
 
-    if (!(str = virSecuritySELinuxContextAddRange(secdef->label, fcon))) {
-        goto cleanup;
-    } else {
-        rc = virSecuritySELinuxFSetFilecon(fd, str);
-    }
+    if (!(str = virSecuritySELinuxContextAddRange(secdef->label, fcon)))
+        return -1;
 
- cleanup:
-    freecon(fcon);
-    VIR_FREE(fd_path);
-    VIR_FREE(proc);
-    VIR_FREE(str);
-    return rc;
+    if (virSecuritySELinuxFSetFilecon(fd, str) < 0)
+        return -1;
+
+    return 0;
 }
 
 static char *
