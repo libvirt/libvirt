@@ -2333,7 +2333,6 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManager *mgr,
 {
     int ret = -1;
     virSecurityLabelDef *secdef;
-    char *path;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (secdef == NULL)
@@ -2341,6 +2340,7 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManager *mgr,
 
     switch (dev->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE: {
+        g_autofree char *path = NULL;
         if (vroot) {
             path = g_strdup_printf("%s/%s", vroot,
                                    dev->source.caps.u.storage.block);
@@ -2348,11 +2348,11 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManager *mgr,
             path = g_strdup(dev->source.caps.u.storage.block);
         }
         ret = virSecuritySELinuxSetFilecon(mgr, path, secdef->imagelabel, true);
-        VIR_FREE(path);
         break;
     }
 
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC: {
+        g_autofree char *path = NULL;
         if (vroot) {
             path = g_strdup_printf("%s/%s", vroot,
                                    dev->source.caps.u.misc.chardev);
@@ -2360,7 +2360,6 @@ virSecuritySELinuxSetHostdevCapsLabel(virSecurityManager *mgr,
             path = g_strdup(dev->source.caps.u.misc.chardev);
         }
         ret = virSecuritySELinuxSetFilecon(mgr, path, secdef->imagelabel, true);
-        VIR_FREE(path);
         break;
     }
 
@@ -2562,10 +2561,10 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManager *mgr,
                                           const char *vroot)
 {
     int ret = -1;
-    char *path;
 
     switch (dev->source.caps.type) {
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_STORAGE: {
+        g_autofree char *path = NULL;
         if (vroot) {
             path = g_strdup_printf("%s/%s", vroot,
                                    dev->source.caps.u.storage.block);
@@ -2573,11 +2572,11 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManager *mgr,
             path = g_strdup(dev->source.caps.u.storage.block);
         }
         ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true);
-        VIR_FREE(path);
         break;
     }
 
     case VIR_DOMAIN_HOSTDEV_CAPS_TYPE_MISC: {
+        g_autofree char *path = NULL;
         if (vroot) {
             path = g_strdup_printf("%s/%s", vroot,
                                    dev->source.caps.u.misc.chardev);
@@ -2585,7 +2584,6 @@ virSecuritySELinuxRestoreHostdevCapsLabel(virSecurityManager *mgr,
             path = g_strdup(dev->source.caps.u.misc.chardev);
         }
         ret = virSecuritySELinuxRestoreFileLabel(mgr, path, true);
-        VIR_FREE(path);
         break;
     }
 
