@@ -415,31 +415,21 @@ qcow2GetExtensions(const char *buf,
         extension_start = virReadBufInt32BE(buf + QCOW2v3_HDR_SIZE);
 
     /*
-     * Traditionally QCow2 files had a layout of
-     *
-     * [header]
-     * [backingStoreName]
-     *
-     * Although the backingStoreName typically followed
-     * the header immediately, this was not required by
-     * the format. By specifying a higher byte offset for
-     * the backing file offset in the header, it was
-     * possible to leave space between the header and
-     * start of backingStore.
-     *
-     * This hack is now used to store extensions to the
-     * qcow2 format:
+     * QCow2 header extensions are stored directly after the header before
+     * the (optional) backing store filename:
      *
      * [header]
      * [extensions]
      * [backingStoreName]
      *
-     * Thus the file region to search for extensions is
-     * between the end of the header (QCOW2_HDR_TOTAL_SIZE)
-     * and the start of the backingStoreName (offset)
+     * For qcow2(v2) the [header] portion has a fixed size (QCOW2_HDR_TOTAL_SIZE),
+     * whereas for qcow2v3 the size of the header itself is recorded inside
+     * the header (at offset QCOW2v3_HDR_SIZE).
      *
-     * for qcow2 v3 images, the length of the header
-     * is stored at QCOW2v3_HDR_SIZE
+     * Thus the file region to search for header extensions is
+     * between the end of the header and the start of the backingStoreName
+     * (QCOWX_HDR_BACKING_FILE_OFFSET) if a backing file is present (as
+     * otherwise the value at QCOWX_HDR_BACKING_FILE_OFFSET is 0)
      */
     extension_end = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
 
@@ -449,19 +439,28 @@ qcow2GetExtensions(const char *buf,
     if (extension_end > buf_size)
         return -1;
 
-    /*
-     * The extensions take format of
-     *
-     * int32: magic
-     * int32: length
-     * byte[length]: payload
-     *
-     * Unknown extensions can be ignored by skipping
-     * over "length" bytes in the data stream.
-     */
     offset = extension_start;
     while (offset < (buf_size-8) &&
-           offset < (extension_end-8)) {
+           (extension_end == 0 || offset <= (extension_end - 8))) {
+        /**
+         * Directly after the image header, optional sections called header
+         * extensions can
+         * be stored. Each extension has a structure like the following:
+         *
+         * Byte 0 -  3:   Header extension type:
+         *      0x00000000 - End of the header extension area
+         *      0xe2792aca - Backing file format name string
+         *      0x6803f857 - Feature name table
+         *      0x23852875 - Bitmaps extension
+         *      0x0537be77 - Full disk encryption header pointer
+         *      0x44415441 - External data file name string
+         *      other      - Unknown header extension, can be safely ignored
+         *
+         *      4 -  7:   Length of the header extension data
+         *      8 -  n:   Header extension data
+         *      n -  m:   Padding to round up the header extension size to the
+         *                next multiple of 8.
+         */
         unsigned int magic = virReadBufInt32BE(buf + offset);
         unsigned int len = virReadBufInt32BE(buf + offset + 4);
 
@@ -510,7 +509,8 @@ qcow2GetExtensions(const char *buf,
             return 0;
         }
 
-        offset += len;
+        /* take padding into account; see above */
+        offset += VIR_ROUND_UP(len, 8);
     }
 
     return 0;
