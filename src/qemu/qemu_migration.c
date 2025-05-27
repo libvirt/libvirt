@@ -3642,6 +3642,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
     virDomainJobStatus status;
     virDomainObj *vm;
     int ret = -1;
+    int nofd = -1;
 
     VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
               "listenAddress=%s, flags=0x%x",
@@ -3684,7 +3685,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
     priv->origname = g_strdup(origname);
 
     if (!(incoming = qemuMigrationDstPrepare(driver, vm, false, protocol,
-                                             listenAddress, port, NULL)))
+                                             listenAddress, port, &nofd)))
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0)
