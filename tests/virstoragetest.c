@@ -179,12 +179,14 @@ testStorageChain(const void *args)
     for (elt = meta; virStorageSourceIsBacking(elt); elt = elt->backingStore) {
         g_autofree char *strippedPath = virTestStablePath(elt->path);
         g_autofree char *strippedBackingStoreRaw = virTestStablePath(elt->backingStoreRaw);
+        g_autofree char *strippedDataFileRaw = virTestStablePath(elt->dataFileRaw);
         g_autofree char *strippedRelPath = virTestStablePath(elt->relPath);
 
         virBufferAsprintf(&buf,
                           "path:%s\n"
                           "backingStoreRaw: %s\n"
                           "backingStoreRawFormat: %s(%d)\n"
+                          "dataFileRaw: %s\n"
                           "capacity: %lld\n"
                           "encryption: %d\n"
                           "relPath:%s\n"
@@ -196,6 +198,7 @@ testStorageChain(const void *args)
                           strippedBackingStoreRaw,
                           NULLSTR(virStorageFileFormatTypeToString(elt->backingStoreRawFormat)),
                           elt->backingStoreRawFormat,
+                          strippedDataFileRaw,
                           elt->capacity,
                           !!elt->encryption,
                           strippedRelPath,
@@ -205,18 +208,17 @@ testStorageChain(const void *args)
                           NULLSTR(elt->nhosts ? elt->hosts[0].name : NULL));
 
         if (elt->dataFileStore) {
-            g_autofree char *strippedPathDataFileRaw = virTestStablePath(elt->dataFileRaw);
             g_autofree char *strippedPathDataFile = virTestStablePath(elt->dataFileStore->path);
 
             virBufferAsprintf(&buf,
-                              "dataFileRaw: %s\n\n\n"
-                              "dataFileStoreSource:\n"
-                              "path: %s\n"
-                              "capacity: %lld\n"
-                              "encryption: %d\n"
-                              "type:%s\n"
-                              "format:%s\n",
-                              strippedPathDataFileRaw,
+                              " dataFileStoreSource for '%s':\n"
+                              "  path: %s\n"
+                              "  capacity: %lld\n"
+                              "  encryption: %d\n"
+                              "  type:%s\n"
+                              "  format:%s\n"
+                              "\n\n",
+                              strippedPath,
                               strippedPathDataFile,
                               elt->dataFileStore->capacity,
                               !!elt->dataFileStore->encryption,

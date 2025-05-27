@@ -1,6 +1,7 @@
 path:ABS_SRCDIR/virstoragetestdata/images/
 backingStoreRaw: <null>
 backingStoreRawFormat: none(0)
+dataFileRaw: <null>
 capacity: 0
 encryption: 0
 relPath:<null>
