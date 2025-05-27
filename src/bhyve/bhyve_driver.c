@@ -55,6 +55,7 @@
 #include "conf/domain_capabilities.h"
 #include "virutil.h"
 #include "domain_driver.h"
+#include "virnetdevtap.h"
 
 #include "bhyve_conf.h"
 #include "bhyve_device.h"
@@ -1625,6 +1626,38 @@ bhyveConnectGetDomainCapabilities(virConnectPtr conn,
     return ret;
 }
 
+static int
+bhyveDomainInterfaceStats(virDomainPtr domain,
+                          const char *device,
+                          virDomainInterfaceStatsPtr stats)
+{
+    virDomainObj *vm;
+    int ret = -1;
+    virDomainNetDef *net = NULL;
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainInterfaceStatsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (!(net = virDomainNetFind(vm->def, device)))
+        goto cleanup;
+
+    if (virNetDevTapInterfaceStats(net->ifname, stats,
+                                   !virDomainNetTypeSharesHostView(net)) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -1685,6 +1718,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectIsEncrypted = bhyveConnectIsEncrypted, /* 1.3.5 */
     .connectDomainXMLFromNative = bhyveConnectDomainXMLFromNative, /* 2.1.0 */
     .connectGetDomainCapabilities = bhyveConnectGetDomainCapabilities, /* 2.1.0 */
+    .domainInterfaceStats = bhyveDomainInterfaceStats, /* 11.7.0 */
 };
 
 
