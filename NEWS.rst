@@ -26,6 +26,19 @@ v11.5.0 (unreleased)
 
   * vmx: Add support for reporting NVMe disks in the domain XML
 
+  * qemu: Add support for NVMe disks
+
+    NVMe disks can now be emulated by using an ``nvme`` bus, but require a
+    serial due to the hypervisor::
+
+      <target dev='nvme0n1' bus='nvme'/>
+      <serial>qwertyuiop</serial>
+
+    Multiple disks can be represented as different namespaces on the same
+    controller, but they cannot have a different serial number due to the fact
+    that it is the controller which ultimately has the serial number attached to
+    it, but for ease of use it is automatically copied from the disk serial.
+
 * **Improvements**
 
 * **Bug fixes**
