@@ -3147,9 +3147,8 @@ virSecuritySELinuxSetDaemonSocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
 {
     /* TODO: verify DOI */
     virSecurityLabelDef *secdef;
-    char *scon = NULL;
-    char *str = NULL;
-    int rc = -1;
+    g_autofree char *scon = NULL;
+    g_autofree char *str = NULL;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!secdef || !secdef->label)
@@ -3159,34 +3158,33 @@ virSecuritySELinuxSetDaemonSocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: '%1$s' model configured for domain, but hypervisor driver is '%2$s'."),
                        secdef->model, SECURITY_SELINUX_NAME);
-        goto done;
+        goto error;
     }
 
     if (getcon_raw(&scon) == -1) {
         virReportSystemError(errno,
                              _("unable to get current process context '%1$s'"),
                              secdef->label);
-        goto done;
+        goto error;
     }
 
     if (!(str = virSecuritySELinuxContextAddRange(secdef->label, scon)))
-        goto done;
+        goto error;
 
     VIR_DEBUG("Setting VM %s socket context %s", def->name, str);
     if (setsockcreatecon_raw(str) == -1) {
         virReportSystemError(errno,
                              _("unable to set socket security context '%1$s'"), str);
-        goto done;
+        goto error;
     }
 
-    rc = 0;
- done:
+    return 0;
 
+ error:
     if (security_getenforce() != 1)
-        rc = 0;
-    freecon(scon);
-    VIR_FREE(str);
-    return rc;
+        return 0;
+
+    return -1;
 }
 
 static int
@@ -3194,7 +3192,6 @@ virSecuritySELinuxSetSocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
                                  virDomainDef *vm)
 {
     virSecurityLabelDef *secdef;
-    int rc = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(vm, SECURITY_SELINUX_NAME);
     if (!secdef || !secdef->label)
@@ -3204,7 +3201,7 @@ virSecuritySELinuxSetSocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label driver mismatch: '%1$s' model configured for domain, but hypervisor driver is '%2$s'."),
                        secdef->model, SECURITY_SELINUX_NAME);
-        goto done;
+        goto error;
     }
 
     VIR_DEBUG("Setting VM %s socket context %s",
@@ -3213,16 +3210,16 @@ virSecuritySELinuxSetSocketLabel(virSecurityManager *mgr G_GNUC_UNUSED,
         virReportSystemError(errno,
                              _("unable to set socket security context '%1$s'"),
                              secdef->label);
-        goto done;
+        goto error;
     }
 
-    rc = 0;
+    return 0;
 
- done:
+ error:
     if (security_getenforce() != 1)
-        rc = 0;
+        return 0;
 
-    return rc;
+    return -1;
 }
 
 static int
