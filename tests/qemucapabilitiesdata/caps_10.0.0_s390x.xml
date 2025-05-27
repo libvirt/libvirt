@@ -135,6 +135,8 @@
   <flag name='blockdev-set-active'/>
   <flag name='shim'/>
   <flag name='virtio-scsi.iothread-mapping'/>
+  <flag name='nvme'/>
+  <flag name='nvme-ns'/>
   <version>10000000</version>
   <microcodeVersion>39100285</microcodeVersion>
   <package>v10.0.0</package>

@@ -199,6 +199,8 @@
   <flag name='intel-iommu.dma-translation'/>
   <flag name='machine-i8042-opt'/>
   <flag name='bus-floppy'/>
+  <flag name='nvme'/>
+  <flag name='nvme-ns'/>
   <version>8002000</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v8.2.0</package>

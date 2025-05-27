@@ -204,6 +204,8 @@
   <flag name='netdev-stream-reconnect-miliseconds'/>
   <flag name='migrate-incoming.exit-on-error'/>
   <flag name='bus-floppy'/>
+  <flag name='nvme'/>
+  <flag name='nvme-ns'/>
   <version>9002000</version>
   <microcodeVersion>43100247</microcodeVersion>
   <package>v9.2.0</package>
