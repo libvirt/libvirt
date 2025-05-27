@@ -24,6 +24,8 @@ v11.5.0 (unreleased)
 
 * **New features**
 
+  * vmx: Add support for reporting NVMe disks in the domain XML
+
 * **Improvements**
 
 * **Bug fixes**
