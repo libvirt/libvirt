@@ -2667,8 +2667,6 @@ virSecuritySELinuxSetChardevLabel(virSecurityManager *mgr,
     virSecurityLabelDef *seclabel;
     virSecurityDeviceLabelDef *chr_seclabel = NULL;
     char *imagelabel = NULL;
-    char *in = NULL, *out = NULL;
-    int ret = -1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!seclabel || !seclabel->relabel)
@@ -2693,10 +2691,12 @@ virSecuritySELinuxSetChardevLabel(virSecurityManager *mgr,
     switch (dev_source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        ret = virSecuritySELinuxSetFilecon(mgr,
-                                           dev_source->data.file.path,
-                                           imagelabel,
-                                           true);
+        if (virSecuritySELinuxSetFilecon(mgr,
+                                         dev_source->data.file.path,
+                                         imagelabel,
+                                         true) < 0)
+            return -1;
+
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -2710,37 +2710,35 @@ virSecuritySELinuxSetChardevLabel(virSecurityManager *mgr,
                                              dev_source->data.nix.path,
                                              imagelabel,
                                              true) < 0)
-                goto done;
+                return -1;
         }
-        ret = 0;
+
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-        in = g_strdup_printf("%s.in", dev_source->data.file.path);
-        out = g_strdup_printf("%s.out", dev_source->data.file.path);
+    case VIR_DOMAIN_CHR_TYPE_PIPE: {
+        g_autofree char *in = g_strdup_printf("%s.in", dev_source->data.file.path);
+        g_autofree char *out = g_strdup_printf("%s.out", dev_source->data.file.path);
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecuritySELinuxSetFilecon(mgr, in, imagelabel, true) < 0) ||
-                (virSecuritySELinuxSetFilecon(mgr, out, imagelabel, true) < 0)) {
-                goto done;
-            }
-        } else if (virSecuritySELinuxSetFilecon(mgr,
-                                                dev_source->data.file.path,
-                                                imagelabel,
-                                                true) < 0) {
-            goto done;
-        }
-        ret = 0;
-        break;
+                (virSecuritySELinuxSetFilecon(mgr, out, imagelabel, true) < 0))
+                return -1;
 
-    default:
-        ret = 0;
+        } else {
+            if (virSecuritySELinuxSetFilecon(mgr,
+                                             dev_source->data.file.path,
+                                             imagelabel,
+                                             true) < 0)
+                return -1;
+        }
+
         break;
     }
 
- done:
-    VIR_FREE(in);
-    VIR_FREE(out);
-    return ret;
+    default:
+        break;
+    }
+
+    return 0;
 }
 
 static int
@@ -2752,8 +2750,6 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManager *mgr,
 {
     virSecurityLabelDef *seclabel;
     virSecurityDeviceLabelDef *chr_seclabel = NULL;
-    char *in = NULL, *out = NULL;
-    int ret = -1;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (!seclabel || !seclabel->relabel)
@@ -2775,8 +2771,8 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManager *mgr,
         if (virSecuritySELinuxRestoreFileLabel(mgr,
                                                dev_source->data.file.path,
                                                true) < 0)
-            goto done;
-        ret = 0;
+            return -1;
+
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -2784,36 +2780,33 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManager *mgr,
             if (virSecuritySELinuxRestoreFileLabel(mgr,
                                                    dev_source->data.nix.path,
                                                    true) < 0)
-                goto done;
+                return -1;
         }
-        ret = 0;
+
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-        out = g_strdup_printf("%s.out", dev_source->data.file.path);
-        in = g_strdup_printf("%s.in", dev_source->data.file.path);
+    case VIR_DOMAIN_CHR_TYPE_PIPE: {
+        g_autofree char *out = g_strdup_printf("%s.out", dev_source->data.file.path);
+        g_autofree char *in = g_strdup_printf("%s.in", dev_source->data.file.path);
         if (virFileExists(in) && virFileExists(out)) {
             if ((virSecuritySELinuxRestoreFileLabel(mgr, out, true) < 0) ||
-                (virSecuritySELinuxRestoreFileLabel(mgr, in, true) < 0)) {
-                goto done;
-            }
-        } else if (virSecuritySELinuxRestoreFileLabel(mgr,
-                                                      dev_source->data.file.path,
-                                                      true) < 0) {
-            goto done;
+                (virSecuritySELinuxRestoreFileLabel(mgr, in, true) < 0))
+                return -1;
+
+        } else {
+            if (virSecuritySELinuxRestoreFileLabel(mgr,
+                                                   dev_source->data.file.path,
+                                                   true) < 0)
+                return -1;
         }
-        ret = 0;
+    }
         break;
 
     default:
-        ret = 0;
         break;
     }
 
- done:
-    VIR_FREE(in);
-    VIR_FREE(out);
-    return ret;
+    return 0;
 }
 
 
