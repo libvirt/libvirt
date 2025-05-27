@@ -533,6 +533,7 @@ v10.9.0 (2024-11-01)
     ``<blockers model='...'>`` element is added for that CPU model listing
     features required by the CPU model, but not supported on the host.
 
+
 v10.8.0 (2024-10-01)
 ====================
 
@@ -667,6 +668,7 @@ v10.7.0 (2024-09-02)
   * ch: support basic networking modes
     Cloud-Hypervisor driver now supports Ethernet, Network (NAT) and Bridge
     networking modes.
+
 
 v10.6.0 (2024-08-05)
 ====================
