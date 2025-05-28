@@ -114,9 +114,6 @@ static int
 qcow2GetImageSpecific(virStorageSource *meta,
                       const char *buf,
                       size_t buf_size);
-static unsigned long long
-qcow2GetClusterSize(const char *buf,
-                    size_t buf_size);
 static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
 static int qcow2GetFeatures(virBitmap **features, int format,
                             char *buf, ssize_t len);
@@ -329,7 +326,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_BIG_ENDIAN, 4, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow2EncryptionInfo,
-        qcow2GetClusterSize,
+        NULL,
         NULL,
         qcow2GetDataFile,
         qcow2GetFeatures,
@@ -532,24 +529,6 @@ qcow2GetExtensions(const char *buf,
 }
 
 
-static unsigned long long
-qcow2GetClusterSize(const char *buf,
-                    size_t buf_size)
-{
-    int clusterBits = 0;
-
-    if ((QCOWX_HDR_CLUSTER_BITS_OFFSET + 4) > buf_size)
-        return 0;
-
-    clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
-
-    if (clusterBits > 0)
-        return 1ULL << clusterBits;
-
-    return 0;
-}
-
-
 static int
 qcowXGetBackingStore(virStorageSource *meta,
                      const char *buf,
@@ -600,6 +579,14 @@ qcow2GetImageSpecific(virStorageSource *meta,
                       size_t buf_size)
 {
     int format;
+
+    meta->clusterSize = 0;
+    if (buf_size > (QCOWX_HDR_CLUSTER_BITS_OFFSET + 4)) {
+        int clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
+
+        if (clusterBits > 0)
+            meta->clusterSize = 1ULL << clusterBits;
+    }
 
     if (qcowXGetBackingStore(meta, buf, buf_size) < 0)
         return -1;
