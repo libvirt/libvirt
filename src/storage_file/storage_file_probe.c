@@ -102,8 +102,10 @@ struct FileTypeInfo {
 };
 
 
-static int cowGetBackingStore(char **, int *,
-                              const char *, size_t);
+static int
+cowGetImageSpecific(virStorageSource *meta,
+                    const char *buf,
+                    size_t buf_size);
 static unsigned long long
 qcow2GetClusterSize(const char *buf,
                     size_t buf_size);
@@ -303,7 +305,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_COW] = {
         0, "OOOM",
         LV_BIG_ENDIAN, 4, 4, {2},
-        4+4+1024+4, 8, 1, NULL, NULL, cowGetBackingStore, NULL, NULL, NULL
+        4+4+1024+4, 8, 1, NULL, NULL, NULL, NULL, NULL, cowGetImageSpecific
     },
     [VIR_STORAGE_FILE_QCOW] = {
         0, "QFI",
@@ -375,23 +377,22 @@ G_STATIC_ASSERT(G_N_ELEMENTS(qcow2IncompatibleFeatureArray) == QCOW2_INCOMPATIBL
 
 
 static int
-cowGetBackingStore(char **res,
-                   int *format,
-                   const char *buf,
-                   size_t buf_size)
+cowGetImageSpecific(virStorageSource *meta,
+                    const char *buf,
+                    size_t buf_size)
 {
 #define COW_FILENAME_MAXLEN 1024
-    *res = NULL;
-    *format = VIR_STORAGE_FILE_AUTO;
 
-    if (buf_size < 4+4+ COW_FILENAME_MAXLEN)
+    g_clear_pointer(&meta->backingStoreRaw, g_free);
+
+    if (buf_size < 4 + 4 + COW_FILENAME_MAXLEN)
         return 0;
-    if (buf[4+4] == '\0') { /* cow_header_v2.backing_file[0] */
-        *format = VIR_STORAGE_FILE_NONE;
+    if (buf[4 + 4] == '\0') { /* cow_header_v2.backing_file[0] */
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_NONE;
         return 0;
     }
 
-    *res = g_strndup((const char *)buf + 4 + 4, COW_FILENAME_MAXLEN);
+    meta->backingStoreRaw = g_strndup((const char *)buf + 4 + 4, COW_FILENAME_MAXLEN);
     return 0;
 }
 
