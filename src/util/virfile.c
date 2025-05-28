@@ -3408,7 +3408,8 @@ virFileSanitizePath(const char *path)
 /**
  * virFileCanonicalizePath:
  *
- * Returns the canonical representation of @path.
+ * Returns the canonical representation of @path. This function is only
+ * guaranteed to work when @path exists. It may return NULL otherwise.
  *
  * The returned string must be freed after use.
  */
