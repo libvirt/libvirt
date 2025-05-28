@@ -579,6 +579,7 @@ qcow2GetFeatures(virStorageSource *meta,
     int version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
 
     g_clear_pointer(&meta->features, virBitmapFree);
+    g_clear_pointer(&meta->compat, g_free);
 
     if (version == 2)
         return 0;
@@ -587,6 +588,7 @@ qcow2GetFeatures(virStorageSource *meta,
         return -1;
 
     meta->features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
+    meta->compat = g_strdup("1.1");
 
     qcow2GetFeaturesProcessGroup(virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_COMPATIBLE),
                                  qcow2CompatibleFeatureArray,
@@ -996,10 +998,6 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
         fileTypeInfo[meta->format].getDataFile(&meta->dataFileRaw, meta->features,
                                                buf, len);
     }
-
-    VIR_FREE(meta->compat);
-    if (meta->format == VIR_STORAGE_FILE_QCOW2 && meta->features)
-        meta->compat = g_strdup("1.1");
 
     return 0;
 }
