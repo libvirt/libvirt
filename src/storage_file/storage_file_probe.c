@@ -442,6 +442,10 @@ qcow2GetExtensions(const char *buf,
      * is stored at QCOW2v3_HDR_SIZE
      */
     extension_end = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
+
+    VIR_DEBUG("extension_start:%zu, extension_end:%zu, buf_size:%zu",
+              extension_start, extension_end, buf_size);
+
     if (extension_end > buf_size)
         return -1;
 
@@ -460,6 +464,8 @@ qcow2GetExtensions(const char *buf,
            offset < (extension_end-8)) {
         unsigned int magic = virReadBufInt32BE(buf + offset);
         unsigned int len = virReadBufInt32BE(buf + offset + 4);
+
+        VIR_DEBUG("offset:%zu, len:%u, magic:0x%x", offset, len, magic);
 
         offset += 8;
 
