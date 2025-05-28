@@ -1812,7 +1812,85 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
 
     return 0;
 }
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+int
+virProcessGetStatInfo(unsigned long long *cpuTime,
+                      unsigned long long *userTime,
+                      unsigned long long *sysTime,
+                      int *lastCpu,
+                      unsigned long long *vm_rss,
+                      pid_t pid,
+                      pid_t tid)
+{
+    struct kinfo_proc p;
+    int mib[4];
+    size_t len = 4;
+    unsigned long long utime = 0;
+    unsigned long long stime = 0;
+    unsigned long long rss = 0;
+    int cpu = 0;
+    const long pagesize = virGetSystemPageSizeKB();
 
+    sysctlnametomib("kern.proc.pid", mib, &len);
+
+    len = sizeof(struct kinfo_proc);
+    mib[3] = pid;
+
+    if (sysctl(mib, 4, &p, &len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to query process stats"));
+        return -1;
+    }
+
+    utime = p.ki_rusage.ru_utime.tv_sec;
+    stime = p.ki_rusage.ru_stime.tv_sec;
+    rss = p.ki_rssize * pagesize;
+    cpu = p.ki_lastcpu_old;
+
+    if (cpuTime)
+        *cpuTime = utime + stime;
+    if (userTime)
+        *userTime = utime;
+    if (sysTime)
+        *sysTime = stime;
+    if (lastCpu)
+        *lastCpu = cpu;
+    if (vm_rss)
+        *vm_rss = rss;
+
+    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%lld",
+              (int) pid, tid, utime, stime, cpu, rss);
+
+    return 0;
+}
+#else
+int
+virProcessGetStatInfo(unsigned long long *cpuTime,
+                      unsigned long long *userTime,
+                      unsigned long long *sysTime,
+                      int *lastCpu,
+                      unsigned long long *vm_rss,
+                      pid_t pid G_GNUC_UNUSED,
+                      pid_t tid G_GNUC_UNUSED)
+{
+    /* We don't have a way to collect this information on non-Linux
+     * platforms, so just report neutral values */
+    if (cpuTime)
+        *cpuTime = 0;
+    if (userTime)
+        *userTime = 0;
+    if (sysTime)
+        *sysTime = 0;
+    if (lastCpu)
+        *lastCpu = 0;
+    if (vm_rss)
+        *vm_rss = 0;
+
+    return 0;
+}
+#endif
+
+#ifdef __linux__
 int
 virProcessGetSchedInfo(unsigned long long *cpuWait,
                        pid_t pid,
@@ -1879,33 +1957,7 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
 
     return 0;
 }
-
 #else
-int
-virProcessGetStatInfo(unsigned long long *cpuTime,
-                      unsigned long long *userTime,
-                      unsigned long long *sysTime,
-                      int *lastCpu,
-                      unsigned long long *vm_rss,
-                      pid_t pid G_GNUC_UNUSED,
-                      pid_t tid G_GNUC_UNUSED)
-{
-    /* We don't have a way to collect this information on non-Linux
-     * platforms, so just report neutral values */
-    if (cpuTime)
-        *cpuTime = 0;
-    if (userTime)
-        *userTime = 0;
-    if (sysTime)
-        *sysTime = 0;
-    if (lastCpu)
-        *lastCpu = 0;
-    if (vm_rss)
-        *vm_rss = 0;
-
-    return 0;
-}
-
 int
 virProcessGetSchedInfo(unsigned long long *cpuWait,
                        pid_t pid G_GNUC_UNUSED,
