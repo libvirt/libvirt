@@ -17,6 +17,10 @@ v11.4.0 (unreleased)
 
 * **New features**
 
+  * qemu: ppc64 POWER11 processor support
+
+    Support for the recently released IBM POWER11 processor was added.
+
 * **Improvements**
 
   * virsh: Add option ``--no-pkttyagent``
