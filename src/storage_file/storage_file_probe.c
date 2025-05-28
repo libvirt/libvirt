@@ -114,7 +114,6 @@ static int
 qcow2GetImageSpecific(virStorageSource *meta,
                       const char *buf,
                       size_t buf_size);
-static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
 static int
 vmdk4GetImageSpecific(virStorageSource *meta,
                       const char *buf,
@@ -326,7 +325,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         qcow2EncryptionInfo,
         NULL,
         NULL,
-        qcow2GetDataFile,
+        NULL,
         NULL,
         qcow2GetImageSpecific
     },
@@ -403,21 +402,16 @@ cowGetImageSpecific(virStorageSource *meta,
 
 
 static int
-qcow2GetExtensions(const char *buf,
-                   size_t buf_size,
-                   int *backingFormat,
-                   char **dataFilePath)
+qcow2GetExtensions(virStorageSource *meta,
+                   const char *buf,
+                   size_t buf_size)
 {
     size_t offset;
     size_t extension_start;
     size_t extension_end;
     int version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
 
-    if (version < 2) {
-        /* QCow1 doesn't have the extensions capability
-         * used to store backing format */
-        return 0;
-    }
+    g_clear_pointer(&meta->dataFileRaw, g_free);
 
     if (version == 2)
         extension_start = QCOW2_HDR_TOTAL_SIZE;
@@ -486,13 +480,7 @@ qcow2GetExtensions(const char *buf,
 
         switch (magic) {
         case QCOW2_HDR_EXTENSION_BACKING_FORMAT: {
-            g_autofree char *tmp = NULL;
-            if (!backingFormat)
-                break;
-
-            tmp = g_new0(char, len + 1);
-            memcpy(tmp, buf + offset, len);
-            tmp[len] = '\0';
+            g_autofree char *tmp = g_strndup(buf + offset, len);
 
             /* qemu and qemu-img allow using the protocol driver name inside
              * of the format field in cases when the dummy 'raw' driver should
@@ -500,20 +488,16 @@ qcow2GetExtensions(const char *buf,
              * doesn't look like a format driver name to be a protocol driver
              * directly and thus the image is in fact still considered raw
              */
-            *backingFormat = virStorageFileFormatTypeFromString(tmp);
-            if (*backingFormat <= VIR_STORAGE_FILE_NONE)
-                *backingFormat = VIR_STORAGE_FILE_RAW;
+            meta->backingStoreRawFormat = virStorageFileFormatTypeFromString(tmp);
+            if (meta->backingStoreRawFormat <= VIR_STORAGE_FILE_NONE)
+                meta->backingStoreRawFormat = VIR_STORAGE_FILE_RAW;
             break;
         }
 
-        case QCOW2_HDR_EXTENSION_DATA_FILE_NAME: {
-            if (!dataFilePath)
-                break;
-
-            *dataFilePath = g_new0(char, len + 1);
-            memcpy(*dataFilePath, buf + offset, len);
+        case QCOW2_HDR_EXTENSION_DATA_FILE_NAME:
+            if (virBitmapIsBitSet(meta->features, VIR_STORAGE_FILE_FEATURE_DATA_FILE))
+                meta->dataFileRaw = g_strndup(buf + offset, len);
             break;
-        }
 
         case QCOW2_HDR_EXTENSION_END:
             return 0;
@@ -623,8 +607,6 @@ qcow2GetImageSpecific(virStorageSource *meta,
                       const char *buf,
                       size_t buf_size)
 {
-    int format;
-
     meta->clusterSize = 0;
     if (buf_size > (QCOWX_HDR_CLUSTER_BITS_OFFSET + 4)) {
         int clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
@@ -639,32 +621,8 @@ qcow2GetImageSpecific(virStorageSource *meta,
     if (qcow2GetFeatures(meta, buf, buf_size) < 0)
         return -1;
 
-    format = meta->backingStoreRawFormat;
-
-    if (qcow2GetExtensions(buf, buf_size, &format, NULL) < 0)
+    if (qcow2GetExtensions(meta, buf, buf_size) < 0)
         return 0;
-
-    meta->backingStoreRawFormat = format;
-
-    return 0;
-}
-
-
-static int
-qcow2GetDataFile(char **res,
-                 virBitmap *features,
-                 char *buf,
-                 size_t buf_size)
-{
-    *res = NULL;
-
-    if (buf_size < QCOW2v3_HDR_FEATURES_INCOMPATIBLE + 8)
-        return 0;
-
-    if (features && virBitmapIsBitSet(features, VIR_STORAGE_FILE_FEATURE_DATA_FILE)) {
-        if (qcow2GetExtensions(buf, buf_size, NULL, res) < 0)
-            return -1;
-    }
 
     return 0;
 }
