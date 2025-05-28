@@ -3821,15 +3821,26 @@ virFileIsSharedFSOverride(const char *path,
                           char *const *overrides)
 {
     g_autofree char *dirpath = NULL;
+    g_autofree char *existing = NULL;
     char *p = NULL;
 
     if (!path || path[0] != '/' || !overrides)
         return false;
 
+    /* We only care about the longest existing sub-path. Further components
+     * may will later be created by libvirt will not magically become a shared
+     * filesystem. */
+    if (!(existing = virFileGetExistingParent(path)))
+        return false;
+
     /* Overrides have been canonicalized ahead of time, so we need to
      * do the same for the provided path or we'll never be able to
      * find a match if symlinks are involved */
-    dirpath = virFileCanonicalizePath(path);
+    if (!(dirpath = virFileCanonicalizePath(existing))) {
+        VIR_DEBUG("Cannot canonicalize parent '%s' of path '%s'",
+                  existing, path);
+        return false;
+    }
 
     if (g_strv_contains((const char *const *) overrides, dirpath))
         return true;
