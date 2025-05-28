@@ -114,8 +114,10 @@ static int qcowXGetBackingStore(char **, int *,
 static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
 static int qcow2GetFeatures(virBitmap **features, int format,
                             char *buf, ssize_t len);
-static int vmdk4GetBackingStore(char **, int *,
-                                const char *, size_t);
+static int
+vmdk4GetImageSpecific(virStorageSource *meta,
+                      const char *buf,
+                      size_t buf_size);
 static int
 qedGetImageSpecific(virStorageSource *meta,
                     const char *buf,
@@ -336,7 +338,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_VMDK] = {
         0, "KDMV",
         LV_LITTLE_ENDIAN, 4, 4, {1, 2, 3},
-        4+4+4, 8, 512, NULL, NULL, vmdk4GetBackingStore, NULL, NULL, NULL
+        4+4+4, 8, 512, NULL, NULL, NULL, NULL, NULL, vmdk4GetImageSpecific
     },
 };
 G_STATIC_ASSERT(G_N_ELEMENTS(fileTypeInfo) == VIR_STORAGE_FILE_LAST);
@@ -607,10 +609,9 @@ qcow2GetDataFile(char **res,
 
 
 static int
-vmdk4GetBackingStore(char **res,
-                     int *format,
-                     const char *buf,
-                     size_t buf_size)
+vmdk4GetImageSpecific(virStorageSource *meta,
+                      const char *buf,
+                      size_t buf_size)
 {
     static const char prefix[] = "parentFileNameHint=\"";
     char *start, *end;
@@ -619,7 +620,7 @@ vmdk4GetBackingStore(char **res,
 
     desc = g_new0(char, VIR_STORAGE_MAX_HEADER);
 
-    *res = NULL;
+    g_clear_pointer(&meta->backingStoreRaw, g_free);
     /*
      * Technically this should have been VMDK, since
      * VMDK spec / VMware impl only support VMDK backed
@@ -627,7 +628,7 @@ vmdk4GetBackingStore(char **res,
      * does probing on VMDK backing files, hence we set
      * AUTO
      */
-    *format = VIR_STORAGE_FILE_AUTO;
+    meta->backingStoreRawFormat = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size <= 0x200)
         return 0;
@@ -639,7 +640,7 @@ vmdk4GetBackingStore(char **res,
     desc[len] = '\0';
     start = strstr(desc, prefix);
     if (start == NULL) {
-        *format = VIR_STORAGE_FILE_NONE;
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_NONE;
         return 0;
     }
     start += strlen(prefix);
@@ -648,11 +649,11 @@ vmdk4GetBackingStore(char **res,
         return 0;
 
     if (end == start) {
-        *format = VIR_STORAGE_FILE_NONE;
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_NONE;
         return 0;
     }
     *end = '\0';
-    *res = g_strdup(start);
+    meta->backingStoreRaw = g_strdup(start);
 
     return 0;
 }
