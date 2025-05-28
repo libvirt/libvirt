@@ -3557,6 +3557,34 @@ virFileIsSharedFsFUSE(const char *path,
 }
 
 
+static char *
+virFileGetExistingParent(const char *path)
+{
+    g_autofree char *dirpath = g_strdup(path);
+    struct statfs sb;
+    char *p = NULL;
+
+    /* Try less and less of the path until we get to a directory we can stat.
+     * Even if we don't have 'x' permission on any directory in the path on the
+     * NFS server (assuming it's NFS), we will be able to stat the mount point.
+     */
+    while (statfs(dirpath, &sb) < 0 && p != dirpath) {
+        if (!(p = strrchr(dirpath, '/'))) {
+            virReportSystemError(EINVAL,
+                                 _("Invalid relative path '%1$s'"), path);
+            return NULL;
+        }
+
+        if (p == dirpath)
+            *(p + 1) = '\0';
+        else
+            *p = '\0';
+    }
+
+    return g_steal_pointer(&dirpath);
+}
+
+
 static const struct virFileSharedFsData virFileSharedFs[] = {
     { .fstype = VIR_FILE_SHFS_NFS, .magic = NFS_SUPER_MAGIC },
     { .fstype = VIR_FILE_SHFS_GFS2, .magic = GFS2_MAGIC },
@@ -3576,40 +3604,14 @@ virFileIsSharedFSType(const char *path,
                       unsigned int fstypes)
 {
     g_autofree char *dirpath = NULL;
-    char *p = NULL;
     struct statfs sb;
-    int statfs_ret;
     long long f_type = 0;
     size_t i;
 
-    dirpath = g_strdup(path);
+    if (!(dirpath = virFileGetExistingParent(path)))
+        return -1;
 
-    statfs_ret = statfs(dirpath, &sb);
-
-    while ((statfs_ret < 0) && (p != dirpath)) {
-        /* Try less and less of the path until we get to a
-         * directory we can stat. Even if we don't have 'x'
-         * permission on any directory in the path on the NFS
-         * server (assuming it's NFS), we will be able to stat the
-         * mount point, and that will properly tell us if the
-         * fstype is NFS.
-         */
-
-        if ((p = strrchr(dirpath, '/')) == NULL) {
-            virReportSystemError(EINVAL,
-                                 _("Invalid relative path '%1$s'"), path);
-            return -1;
-        }
-
-        if (p == dirpath)
-            *(p+1) = '\0';
-        else
-            *p = '\0';
-
-        statfs_ret = statfs(dirpath, &sb);
-    }
-
-    if (statfs_ret < 0) {
+    if (statfs(dirpath, &sb) < 0) {
         virReportSystemError(errno,
                              _("cannot determine filesystem for '%1$s'"),
                              path);
