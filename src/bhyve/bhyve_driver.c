@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2014-2015 Red Hat, Inc.
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1658,6 +1659,55 @@ bhyveDomainInterfaceStats(virDomainPtr domain,
     return ret;
 }
 
+#define BHYVE_SET_MEMSTAT(TAG, VAL) \
+        if (i < nr_stats) { \
+            stats[i].tag = TAG; \
+            stats[i].val = VAL; \
+            i++; \
+        }
+
+static int
+bhyveDomainMemoryStats(virDomainPtr domain,
+                       virDomainMemoryStatPtr stats,
+                       unsigned int nr_stats,
+                       unsigned int flags)
+{
+    virDomainObj *vm;
+    unsigned maxmem;
+    unsigned long long rss;
+    size_t i = 0;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (virDomainMemoryStatsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virProcessGetStatInfo(NULL, NULL, NULL, NULL, &rss, vm->pid, 0) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("cannot get RSS for domain"));
+    } else {
+        BHYVE_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_RSS, rss);
+    }
+
+    maxmem = virDomainDefGetMemoryTotal(vm->def);
+    BHYVE_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_AVAILABLE, maxmem);
+
+    ret = i;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+#undef BHYVE_SET_MEMSTAT
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -1719,6 +1769,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectDomainXMLFromNative = bhyveConnectDomainXMLFromNative, /* 2.1.0 */
     .connectGetDomainCapabilities = bhyveConnectGetDomainCapabilities, /* 2.1.0 */
     .domainInterfaceStats = bhyveDomainInterfaceStats, /* 11.7.0 */
+    .domainMemoryStats = bhyveDomainMemoryStats, /* 11.7.0 */
 };
 
 
