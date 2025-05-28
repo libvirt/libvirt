@@ -106,11 +106,17 @@ static int
 cowGetImageSpecific(virStorageSource *meta,
                     const char *buf,
                     size_t buf_size);
+static int
+qcowGetImageSpecific(virStorageSource *meta,
+                     const char *buf,
+                     size_t buf_size);
+static int
+qcow2GetImageSpecific(virStorageSource *meta,
+                      const char *buf,
+                      size_t buf_size);
 static unsigned long long
 qcow2GetClusterSize(const char *buf,
                     size_t buf_size);
-static int qcowXGetBackingStore(char **, int *,
-                                const char *, size_t);
 static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
 static int qcow2GetFeatures(virBitmap **features, int format,
                             char *buf, ssize_t len);
@@ -316,7 +322,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         LV_BIG_ENDIAN, 4, 4, {1},
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow1EncryptionInfo,
-        NULL, qcowXGetBackingStore, NULL, NULL, NULL
+        NULL,  NULL, NULL, NULL, qcowGetImageSpecific
     },
     [VIR_STORAGE_FILE_QCOW2] = {
         0, "QFI",
@@ -324,10 +330,10 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         QCOWX_HDR_IMAGE_SIZE, 8, 1,
         qcow2EncryptionInfo,
         qcow2GetClusterSize,
-        qcowXGetBackingStore,
+        NULL,
         qcow2GetDataFile,
         qcow2GetFeatures,
-        NULL
+        qcow2GetImageSpecific
     },
     [VIR_STORAGE_FILE_QED] = {
         /* https://wiki.qemu.org/Features/QED */
@@ -545,44 +551,65 @@ qcow2GetClusterSize(const char *buf,
 
 
 static int
-qcowXGetBackingStore(char **res,
-                     int *format,
+qcowXGetBackingStore(virStorageSource *meta,
                      const char *buf,
                      size_t buf_size)
 {
     unsigned long long offset;
     unsigned int size;
 
-    *res = NULL;
-    *format = VIR_STORAGE_FILE_AUTO;
+    g_clear_pointer(&meta->backingStoreRaw, g_free);
+    meta->backingStoreRawFormat = VIR_STORAGE_FILE_AUTO;
 
     if (buf_size < QCOWX_HDR_BACKING_FILE_OFFSET+8+4)
         return 0;
 
     offset = virReadBufInt64BE(buf + QCOWX_HDR_BACKING_FILE_OFFSET);
+    size = virReadBufInt32BE(buf + QCOWX_HDR_BACKING_FILE_SIZE);
+
+    if (offset == 0 || size == 0) {
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_NONE;
+        return 0;
+    }
+
     if (offset > buf_size)
         return 0;
-
-    if (offset == 0) {
-        *format = VIR_STORAGE_FILE_NONE;
-        return 0;
-    }
-
-    size = virReadBufInt32BE(buf + QCOWX_HDR_BACKING_FILE_SIZE);
-    if (size == 0) {
-        *format = VIR_STORAGE_FILE_NONE;
-        return 0;
-    }
     if (size > 1023)
         return 0;
     if (offset + size > buf_size || offset + size < offset)
         return 0;
-    *res = g_new0(char, size + 1);
-    memcpy(*res, buf + offset, size);
-    (*res)[size] = '\0';
 
-    if (qcow2GetExtensions(buf, buf_size, format, NULL) < 0)
+    meta->backingStoreRaw = g_strndup(buf + offset, size);
+
+    return 0;
+}
+
+
+static int
+qcowGetImageSpecific(virStorageSource *meta,
+                     const char *buf,
+                     size_t buf_size)
+{
+    return qcowXGetBackingStore(meta, buf, buf_size);
+}
+
+
+static int
+qcow2GetImageSpecific(virStorageSource *meta,
+                      const char *buf,
+                      size_t buf_size)
+{
+    int format;
+
+    if (qcowXGetBackingStore(meta, buf, buf_size) < 0)
+        return -1;
+
+    format = meta->backingStoreRawFormat;
+
+    if (qcow2GetExtensions(buf, buf_size, &format, NULL) < 0)
         return 0;
+
+    meta->backingStoreRawFormat = format;
 
     return 0;
 }
