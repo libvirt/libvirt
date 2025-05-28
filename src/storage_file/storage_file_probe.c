@@ -115,8 +115,6 @@ qcow2GetImageSpecific(virStorageSource *meta,
                       const char *buf,
                       size_t buf_size);
 static int qcow2GetDataFile(char **, virBitmap *, char *, size_t);
-static int qcow2GetFeatures(virBitmap **features, int format,
-                            char *buf, ssize_t len);
 static int
 vmdk4GetImageSpecific(virStorageSource *meta,
                       const char *buf,
@@ -329,7 +327,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         NULL,
         NULL,
         qcow2GetDataFile,
-        qcow2GetFeatures,
+        NULL,
         qcow2GetImageSpecific
     },
     [VIR_STORAGE_FILE_QED] = {
@@ -590,14 +588,13 @@ qcow2GetFeaturesProcessGroup(uint64_t bits,
 
 
 static int
-qcow2GetFeatures(virBitmap **features,
-                 int format,
-                 char *buf,
+qcow2GetFeatures(virStorageSource *meta,
+                 const char *buf,
                  ssize_t len)
 {
-    int version = -1;
+    int version = virReadBufInt32BE(buf + QCOWX_HDR_VERSION);
 
-    version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
+    g_clear_pointer(&meta->features, virBitmapFree);
 
     if (version == 2)
         return 0;
@@ -605,17 +602,17 @@ qcow2GetFeatures(virBitmap **features,
     if (len < QCOW2v3_HDR_SIZE)
         return -1;
 
-    *features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
+    meta->features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
 
     qcow2GetFeaturesProcessGroup(virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_COMPATIBLE),
                                  qcow2CompatibleFeatureArray,
                                  G_N_ELEMENTS(qcow2CompatibleFeatureArray),
-                                 *features);
+                                 meta->features);
 
     qcow2GetFeaturesProcessGroup(virReadBufInt64BE(buf + QCOW2v3_HDR_FEATURES_INCOMPATIBLE),
                                  qcow2IncompatibleFeatureArray,
                                  G_N_ELEMENTS(qcow2IncompatibleFeatureArray),
-                                 *features);
+                                 meta->features);
 
     return 0;
 }
@@ -637,6 +634,9 @@ qcow2GetImageSpecific(virStorageSource *meta,
     }
 
     if (qcowXGetBackingStore(meta, buf, buf_size) < 0)
+        return -1;
+
+    if (qcow2GetFeatures(meta, buf, buf_size) < 0)
         return -1;
 
     format = meta->backingStoreRawFormat;
