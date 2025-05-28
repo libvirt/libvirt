@@ -117,7 +117,9 @@ static int qcow2GetFeatures(virBitmap **features, int format,
 static int vmdk4GetBackingStore(char **, int *,
                                 const char *, size_t);
 static int
-qedGetBackingStore(char **, int *, const char *, size_t);
+qedGetImageSpecific(virStorageSource *meta,
+                    const char *buf,
+                    size_t buf_size);
 
 #define QCOWX_HDR_VERSION (4)
 #define QCOWX_HDR_BACKING_FILE_OFFSET (QCOWX_HDR_VERSION+4)
@@ -329,7 +331,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
         /* https://wiki.qemu.org/Features/QED */
         0, "QED",
         LV_LITTLE_ENDIAN, -2, 0, {0},
-        QED_HDR_IMAGE_SIZE, 8, 1, NULL, NULL, qedGetBackingStore, NULL, NULL, NULL
+        QED_HDR_IMAGE_SIZE, 8, 1, NULL, NULL, NULL, NULL, NULL, qedGetImageSpecific
     },
     [VIR_STORAGE_FILE_VMDK] = {
         0, "KDMV",
@@ -656,21 +658,22 @@ vmdk4GetBackingStore(char **res,
 }
 
 static int
-qedGetBackingStore(char **res,
-                   int *format,
-                   const char *buf,
-                   size_t buf_size)
+qedGetImageSpecific(virStorageSource *meta,
+                    const char *buf,
+                    size_t buf_size)
 {
     unsigned long long flags;
     unsigned long offset, size;
 
-    *res = NULL;
+    g_clear_pointer(&meta->backingStoreRaw, g_free);
+
     /* Check if this image has a backing file */
     if (buf_size < QED_HDR_FEATURES_OFFSET+8)
         return 0;
+
     flags = virReadBufInt64LE(buf + QED_HDR_FEATURES_OFFSET);
     if (!(flags & QED_F_BACKING_FILE)) {
-        *format = VIR_STORAGE_FILE_NONE;
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_NONE;
         return 0;
     }
 
@@ -685,14 +688,13 @@ qedGetBackingStore(char **res,
         return 0;
     if (offset + size > buf_size || offset + size < offset)
         return 0;
-    *res = g_new0(char, size + 1);
-    memcpy(*res, buf + offset, size);
-    (*res)[size] = '\0';
+
+    meta->backingStoreRaw = g_strndup(buf + offset, size);
 
     if (flags & QED_F_BACKING_FORMAT_NO_PROBE)
-        *format = VIR_STORAGE_FILE_RAW;
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_RAW;
     else
-        *format = VIR_STORAGE_FILE_AUTO_SAFE;
+        meta->backingStoreRawFormat = VIR_STORAGE_FILE_AUTO_SAFE;
 
     return 0;
 }
