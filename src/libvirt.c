@@ -158,7 +158,9 @@ virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             if (fflush(stdout) != 0)
                 return -1;
 
-            bufptr = virGetPassword();
+            if (!(bufptr = virGetPassword()))
+                return -1;
+
             if (STREQ(bufptr, ""))
                 VIR_FREE(bufptr);
             break;
