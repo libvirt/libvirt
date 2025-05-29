@@ -21,6 +21,25 @@ v11.4.0 (unreleased)
 
     Support for the recently released IBM POWER11 processor was added.
 
+* **Packaging changes**
+
+  * All helper programs are now detected from ``$PATH`` during runtime
+
+    All of the code was now converted to dynamically look up helper programs
+    in ``$PATH`` rather than doing the lookup at build time and then compiling
+    in the result.
+
+    Programs ``mount``, ``umount``, ``mkfs``, ``modprobe``, ``rmmod``,
+    ``numad``, ``dmidecode``, ``ip``, ``tc``, ``mdevctl``, ``mm-ctl``,
+    ``iscsiadm``, ``ovs-vsctl``, ``pkttyagent``, ``bhyveload``, ``bhyvectl``,
+    ``bhyve``, ``ifconfig``, ``vzlist``, ``vzctl``, ``vzmigrate``, and the
+    tools from the lvm suite (``vgchange``, ``lvcreate``, etc..) are now not
+    needed during build and will still work properly if placed in ``$PATH``.
+
+    This also ensures that libvirt works correctly on distros that are
+    transitioning ``/sbin`` into ``/bin`` and upgraded installations have
+    a different layout from fresh installations.
+
 * **Improvements**
 
   * virsh: Add option ``--no-pkttyagent``
@@ -34,6 +53,11 @@ v11.4.0 (unreleased)
       <os firmware='efi'>
         <nvram/>
       </os>
+
+  * qemu: Improve accuracy of FDC/floppy device support statement in capabilities XML
+
+    The data is now based on the presence of the controller in qemu rather than
+    just a denylist of machine types where floppies not work.
 
 * **Bug fixes**
 
@@ -51,6 +75,13 @@ v11.4.0 (unreleased)
     A regression introduced in ``libvirt-11.2.0`` caused virtqemud on the
     destination host to crash when trying to resume failed post-copy
     migration.
+
+  * qemu: Treat the ``queues`` configuration of ``virtio-net`` as guest ABI
+
+    The queue count itself isn't a device frontend property but libvirt uses
+    it to calculate ``vectors`` option of the device which is a guest OS visible
+    property, thus ``queues`` must not change during migration. The ABI stability
+    check now handles this properly.
 
 
 v11.3.0 (2025-05-02)
