@@ -1077,6 +1077,8 @@ struct _virDomainNetBackend {
     char *vhost;
     /* The following are currently only valid/used when backend type='passt' */
     char *logFile;  /* path to logfile used by passt process */
+    char *hostname; /* hostname of the passt process */
+    char *fqdn; /* fully qualified domain name of the passt process */
 };
 
 struct _virDomainNetPortForwardRange {

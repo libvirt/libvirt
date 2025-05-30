@@ -2919,6 +2919,8 @@ virDomainNetDefFree(virDomainNetDef *def)
     g_free(def->backend.tap);
     g_free(def->backend.vhost);
     g_free(def->backend.logFile);
+    g_free(def->backend.hostname);
+    g_free(def->backend.fqdn);
     virDomainNetTeamingInfoFree(def->teaming);
     g_free(def->virtPortProfile);
     g_free(def->script);
@@ -9804,6 +9806,8 @@ virDomainNetBackendParseXML(xmlNodePtr node,
     }
 
     def->backend.logFile = virXMLPropString(node, "logFile");
+    def->backend.hostname = virXMLPropString(node, "hostname");
+    def->backend.fqdn = virXMLPropString(node, "fqdn");
 
     if (tap)
         def->backend.tap = virFileSanitizePath(tap);
@@ -20880,7 +20884,9 @@ virDomainNetBackendIsEqual(virDomainNetBackend *src,
     if (src->type != dst->type ||
         STRNEQ_NULLABLE(src->tap, dst->tap) ||
         STRNEQ_NULLABLE(src->vhost, dst->vhost) ||
-        STRNEQ_NULLABLE(src->logFile, dst->logFile)) {
+        STRNEQ_NULLABLE(src->logFile, dst->logFile) ||
+        STRNEQ_NULLABLE(src->hostname, dst->hostname) ||
+        STRNEQ_NULLABLE(src->fqdn, dst->fqdn)) {
         return false;
     }
     return true;
@@ -25019,6 +25025,8 @@ virDomainNetBackendFormat(virBuffer *buf,
     virBufferEscapeString(&attrBuf, " tap='%s'", backend->tap);
     virBufferEscapeString(&attrBuf, " vhost='%s'", backend->vhost);
     virBufferEscapeString(&attrBuf, " logFile='%s'", backend->logFile);
+    virBufferEscapeString(&attrBuf, " hostname='%s'", backend->hostname);
+    virBufferEscapeString(&attrBuf, " fqdn='%s'", backend->fqdn);
     virXMLFormatElement(buf, "backend", &attrBuf, NULL);
 }
 

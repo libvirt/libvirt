@@ -2284,10 +2284,22 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         }
     }
 
-    if (net->sourceDev && net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("The 'dev' attribute of the <source> element can only be used with <interface> type='user' or type='vhostuser' if the <backend> type='passt'"));
-        return -1;
+    if (net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+        if (net->sourceDev) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The 'dev' attribute of the <source> element can only be used with <interface> type='user' or type='vhostuser' if the <backend> type='passt'"));
+            return -1;
+        }
+        if (net->backend.fqdn) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The 'fqdn' attribute of the <backend> element can only be used with the <backend> type='passt'"));
+            return -1;
+        }
+        if (net->backend.hostname) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The 'fqdn' attribute of the <backend> element can only be used with the <backend> type='passt'"));
+            return -1;
+        }
     }
 
     if (net->nPortForwards > 0) {

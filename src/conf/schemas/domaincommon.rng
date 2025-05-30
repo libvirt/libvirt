@@ -3978,6 +3978,16 @@
               <ref name="absFilePath"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="hostname">
+              <ref name="dnsName"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="fqdn">
+              <ref name="dnsName"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
       <optional>

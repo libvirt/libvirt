@@ -229,6 +229,12 @@ qemuPasstStart(virDomainObj *vm,
     if (net->backend.logFile)
         virCommandAddArgList(cmd, "--log-file", net->backend.logFile, NULL);
 
+    if (net->backend.hostname)
+        virCommandAddArgList(cmd, "--hostname", net->backend.hostname, NULL);
+
+    if (net->backend.fqdn)
+        virCommandAddArgList(cmd, "--fqdn", net->backend.fqdn, NULL);
+
     /* Add IP address info */
     for (i = 0; i < net->guestIP.nips; i++) {
         const virNetDevIPAddr *ip = net->guestIP.ips[i];

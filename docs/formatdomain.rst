@@ -5468,19 +5468,26 @@ host towards the rest of the network, it will always appear as if it
 came from the host's IP.
 
 There are a few other options that are configurable only for the passt
-backend.  For example, the ``<backend>`` attribute ``logFile`` can be
-used to tell the passt process for this interface where to write its
-message log, and the ``<source>`` attribute ``dev`` can tell it a
-particular host interface to use when deriving the routes given to the
-guest for forwarding traffic upstream.  Due to the design decisions of
-passt, when using SELinux on the host, it is recommended that the log
-file reside in the runtime directory of the user under which the passt
-process will run, most probably ``/run/user/$UID`` (where ``$UID`` is
-the UID of that user), e.g. ``/run/user/1000``. Be aware that libvirt
-does not create this directory if it does not already exist to avoid
-possible, however unlikely, issues with orphaned directories or
-permissions, etc. The logfile attribute is meant mostly for debugging,
-so it shouldn't be set under normal circumstances.
+backend.  For example, the ``<backend>`` subelement's attribute
+``logFile`` can be used to tell the passt process for this interface
+where to write its message log (:since:`since 9.0.0`)[\*], while the
+``hostname`` attribute is used to set the hostname sent to the guest
+in a DHCPv4 response (using option 12) (:since:`since 11.8.0`), and
+``fqdn`` sets the "fully qualified domain name" sent to the guest in
+DHCPv4 response option 81 and DHCPv6 response option 39 (:since:`since
+11.8.0`).  Also, the ``<source>`` subelement attribute ``dev`` can
+tell passt a particular host interface to use when deriving the routes
+given to the guest for forwarding traffic upstream.
+
+[\*] *Due to the design decisions of passt, when using SELinux on the
+host, it is recommended that the log file reside in the runtime
+directory of the user under which the passt process will run, most
+probably ``/run/user/$UID`` (where ``$UID`` is the UID of that user),
+e.g. ``/run/user/1000``. Be aware that libvirt does not create this
+directory if it does not already exist to avoid possible, however
+unlikely, issues with orphaned directories or permissions, etc. The
+logfile attribute is meant mostly for debugging, so it shouldn't be
+set under normal circumstances.*
 
 Additionally, when passt is used, multiple ``<portForward>`` elements
 can be added to forward incoming network traffic for the host to this
@@ -5514,7 +5521,7 @@ ports **with the exception of some subset**.
    <devices>
      ...
      <interface type='user'>
-       <backend type='passt' logFile='/run/user/$UID/passt-domain.log'/>
+       <backend type='passt' hostname='bob' logFile='/run/user/$UID/passt-domain.log'/>
        <mac address="00:11:22:33:44:55"/>
        <source dev='eth0'/>
        <ip family='ipv4' address='172.17.5.4' prefix='24'/>
@@ -6657,7 +6664,7 @@ setting guest-side IP addresses with ``<ip>`` and port forwarding with
    ...
    <devices>
      <interface type='vhostuser'>
-       <backend type='passt'/>
+       <backend type='passt' fqdn='bob.example.com'/>
        <mac address='52:54:00:3b:83:1a'/>
        <source dev='enp1s0'/>
        <ip address='10.30.0.5' prefix='24'/>
