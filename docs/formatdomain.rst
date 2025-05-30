@@ -4600,15 +4600,15 @@ or:
      ...
      <devices>
        <hostdev mode='subsystem' type='mdev' model='vfio-pci'>
-       <source>
-         <address uuid='c2177883-f1bb-47f0-914d-32a22e3a8804'/>
-       </source>
+         <source>
+           <address uuid='c2177883-f1bb-47f0-914d-32a22e3a8804'/>
+         </source>
        </hostdev>
        <hostdev mode='subsystem' type='mdev' model='vfio-ccw'>
          <source>
            <address uuid='9063cba3-ecef-47b6-abcf-3fef4fdcad85'/>
          </source>
-       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
+         <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0001'/>
        </hostdev>
      </devices>
      ...
