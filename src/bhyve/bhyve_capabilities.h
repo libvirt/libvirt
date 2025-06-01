@@ -60,6 +60,7 @@ typedef enum {
     BHYVE_CAP_RCTL = 1 << 14,
     BHYVE_CAP_MONITOR = 1 << 15,
     BHYVE_CAP_GET_VMPID = 1 << 16,
+    BHYVE_CAP_LPC_TPM = 1 << 17,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

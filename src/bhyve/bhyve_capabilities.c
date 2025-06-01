@@ -339,6 +339,17 @@ bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
 }
 
 
+static int
+bhyveProbeCapsLpcTpm(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-l",
+                                      "tpm",
+                                      "bhyve: invalid lpc device configuration 'tpm'",
+                                      BHYVE_CAP_LPC_TPM);
+}
+
+
 static void
 bhyveProbeCapsRctl(unsigned int *caps)
 {
@@ -409,6 +420,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     bhyveProbeCapsRctl(caps);
+
+    if ((ret = bhyveProbeCapsLpcTpm(caps, binary)))
+        goto out;
 
  out:
     VIR_FREE(binary);
