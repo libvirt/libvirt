@@ -318,7 +318,7 @@ bhyveProbeCapsFromSHelp(unsigned int *caps, char *binary)
 }
 
 static int
-bhyveProbeCapsLPC_Bootrom(unsigned int *caps, char *binary)
+bhyveProbeCapsLpcBootrom(unsigned int *caps, char *binary)
 {
     return bhyveProbeCapsDeviceHelper(caps, binary,
                                       "-l",
@@ -399,7 +399,7 @@ virBhyveProbeCaps(unsigned int *caps)
     if ((ret = bhyveProbeCapsFromSHelp(caps, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsLPC_Bootrom(caps, binary)))
+    if ((ret = bhyveProbeCapsLpcBootrom(caps, binary)))
         goto out;
 
     if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
