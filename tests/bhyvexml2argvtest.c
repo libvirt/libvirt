@@ -219,7 +219,8 @@ mymain(void)
                        BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
                        BHYVE_CAP_CPUTOPOLOGY | BHYVE_CAP_SOUND_HDA | \
                        BHYVE_CAP_VNC_PASSWORD | BHYVE_CAP_VIRTIO_9P | \
-                       BHYVE_CAP_NVME | BHYVE_CAP_NUMA;
+                       BHYVE_CAP_NVME | BHYVE_CAP_NUMA | \
+                       BHYVE_CAP_LPC_TPM;
 
     DO_TEST("base");
     DO_TEST_UNPRIVILEGED_FAILURE("base");
@@ -332,6 +333,9 @@ mymain(void)
     DO_TEST_UNPRIVILEGED_FAILURE("memtune");
     DO_TEST_FAILURE("memtune-unsupported-params");
     DO_TEST("sysinfo-smbios");
+    DO_TEST("tpm");
+    driver.bhyvecaps &= ~BHYVE_CAP_LPC_TPM;
+    DO_TEST_FAILURE("tpm");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

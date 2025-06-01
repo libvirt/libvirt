@@ -530,6 +530,9 @@ mymain(void)
 
     bhyve_caps |= BHYVE_CAP_FBUF;
     DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+
+    bhyve_caps |= BHYVE_CAP_LPC_TPM;
+    DO_TEST_BHYVE("tpm", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 #endif /* WITH_BHYVE */
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

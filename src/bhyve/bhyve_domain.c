@@ -115,6 +115,9 @@ bhyveDomainDefNeedsISAController(virDomainDef *def)
     if (def->ngraphics && def->nvideos)
         return true;
 
+    if (def->ntpms)
+        return true;
+
     return false;
 }
 

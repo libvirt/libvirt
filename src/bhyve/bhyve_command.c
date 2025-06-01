@@ -263,7 +263,30 @@ bhyveBuildHostdevArgStr(const virDomainDef *def,
                                subsys->u.pci.addr.slot,
                                subsys->u.pci.addr.function);
     }
+    return 0;
+}
 
+static int
+bhyveBuildTPMArgStr(const virDomainDef *def G_GNUC_UNUSED,
+                    virDomainTPMDef *tpm,
+                    struct _bhyveConn *driver,
+                    virCommand *cmd)
+{
+    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_TPM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Installed bhyve binary does not support TPM devices"));
+        return -1;
+    }
+
+    if (tpm->type != VIR_DOMAIN_TPM_TYPE_EXTERNAL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("TPM backend is not supported"));
+        return -1;
+    }
+
+    virCommandAddArg(cmd, "-l");
+    virCommandAddArgFormat(cmd, "tpm,swtpm,%s",
+                           tpm->data.external.source->data.nix.path);
     return 0;
 }
 
@@ -1318,6 +1341,10 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     for (i = 0; i < def->nrngs; i++)
         if (bhyveBuildRNGArgStr(def, def->rngs[i], cmd) < 0)
+            return NULL;
+
+    for (i = 0; i < def->ntpms; i++)
+        if (bhyveBuildTPMArgStr(def, def->tpms[i], driver, cmd) < 0)
             return NULL;
 
     if (def->namespaceData) {

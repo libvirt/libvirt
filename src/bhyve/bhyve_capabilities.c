@@ -121,6 +121,16 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
         VIR_DOMAIN_CAPS_ENUM_SET(caps->rng.backendModel,
                                  VIR_DOMAIN_RNG_BACKEND_RANDOM);
     }
+    if (bhyvecaps & BHYVE_CAP_LPC_TPM) {
+        caps->tpm.supported = VIR_TRISTATE_BOOL_YES;
+        caps->tpm.model.report = true;
+        caps->tpm.backendModel.report = true;
+
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->tpm.model,
+                                 VIR_DOMAIN_TPM_MODEL_CRB);
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->tpm.backendModel,
+                                 VIR_DOMAIN_TPM_TYPE_EXTERNAL);
+    }
 
     caps->hostdev.supported = VIR_TRISTATE_BOOL_YES;
     caps->features[VIR_DOMAIN_CAPS_FEATURE_IOTHREADS] = VIR_TRISTATE_BOOL_NO;
