@@ -334,6 +334,10 @@ mymain(void)
     DO_TEST_FAILURE("memtune-unsupported-params");
     DO_TEST("sysinfo-smbios");
     DO_TEST("tpm");
+    DO_TEST("tpm-crb");
+    DO_TEST_FAILURE("tpm-comma-path");
+    DO_TEST_FAILURE("tpm-invalid-model");
+    DO_TEST_FAILURE("tpm-multiple-devices");
     driver.bhyvecaps &= ~BHYVE_CAP_LPC_TPM;
     DO_TEST_FAILURE("tpm");
 

@@ -159,6 +159,10 @@ mymain(void)
     DO_TEST_FAILURE("virtio-console-invalid-name");
     DO_TEST_FAILURE("virtio-console-invalid-path");
     DO_TEST_FAILURE("sata-disk-invalid-serial");
+    DO_TEST_DIFFERENT("tpm");
+    DO_TEST_FAILURE("tpm-comma-path");
+    DO_TEST_FAILURE("tpm-invalid-model");
+    DO_TEST_FAILURE("tpm-multiple-devices");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

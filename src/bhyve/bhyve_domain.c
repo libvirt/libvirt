@@ -311,6 +311,11 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         dev->data.video->type = VIR_DOMAIN_VIDEO_TYPE_GOP;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_TPM &&
+        dev->data.tpm->model == VIR_DOMAIN_TPM_MODEL_DEFAULT) {
+        dev->data.tpm->model = VIR_DOMAIN_TPM_MODEL_CRB;
+    }
+
     if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
         dev->data.chr->source->type == VIR_DOMAIN_CHR_TYPE_NMDM) {
         virDomainChrDef *chr = dev->data.chr;
@@ -521,10 +526,32 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_SOUND:
-    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_VSOCK:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
+        break;
+
+    case VIR_DOMAIN_DEVICE_TPM:
+        if (dev->data.tpm->type != VIR_DOMAIN_TPM_TYPE_EXTERNAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 'external' TPM device backend is supported"));
+            return -1;
+        }
+
+        if (dev->data.tpm->model != VIR_DOMAIN_TPM_MODEL_DEFAULT &&
+            dev->data.tpm->model != VIR_DOMAIN_TPM_MODEL_CRB) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("TPM model '%1$s' is not supported by bhyve"),
+                           virDomainTPMModelTypeToString(dev->data.tpm->model));
+            return -1;
+        }
+
+        if (virStringHasChars(dev->data.tpm->data.external.source->data.nix.path,
+                              ",")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Commas (',') are not allowed in UNIX socket paths"));
+            return -1;
+        }
         break;
     }
 
@@ -599,6 +626,12 @@ bhyveDomainDefValidate(const virDomainDef *def,
 
             g_hash_table_add(nvme_controllers, GINT_TO_POINTER(nvme_ctrl));
         }
+    }
+
+    if (def->ntpms > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bhyve only supports a single TPM device"));
+        return -1;
     }
 
     if (def->nhostdevs && !def->mem.locked) {
