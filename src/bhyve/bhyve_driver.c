@@ -24,6 +24,9 @@
 
 #include <fcntl.h>
 #include <sys/utsname.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/user.h>
 
 #include "virerror.h"
 #include "datatypes.h"
@@ -1708,6 +1711,58 @@ bhyveDomainMemoryStats(virDomainPtr domain,
 
 #undef BHYVE_SET_MEMSTAT
 
+static struct kinfo_proc *bhyveDomainProcGetInfo(pid_t pid)
+{
+    int mib[4];
+    size_t len = 4;
+    struct kinfo_proc *p = g_malloc0(sizeof(struct kinfo_proc));
+
+    sysctlnametomib("kern.proc.pid", mib, &len);
+    len = sizeof(struct kinfo_proc);
+    mib[3] = pid;
+
+    if (sysctl(mib, 4, p, &len, NULL, 0) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to query process stats"));
+        return NULL;
+    }
+
+    return p;
+}
+
+static int
+bhyveDomainBlockStats(virDomainPtr domain,
+                      const char *path G_GNUC_UNUSED,
+                      virDomainBlockStatsPtr stats)
+{
+    virDomainObj *vm;
+    int ret = -1;
+    g_autofree struct kinfo_proc *p = NULL;
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    if (virDomainBlockStatsEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if ((p = bhyveDomainProcGetInfo(vm->pid)) == NULL)
+        goto cleanup;
+
+    stats->rd_req = p->ki_rusage.ru_inblock;
+    stats->wr_req = p->ki_rusage.ru_oublock;
+    stats->rd_bytes = -1;
+    stats->wr_bytes = -1;
+    stats->errs = -1;
+
+    ret = 0;
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -1770,6 +1825,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectGetDomainCapabilities = bhyveConnectGetDomainCapabilities, /* 2.1.0 */
     .domainInterfaceStats = bhyveDomainInterfaceStats, /* 11.7.0 */
     .domainMemoryStats = bhyveDomainMemoryStats, /* 11.7.0 */
+    .domainBlockStats = bhyveDomainBlockStats, /* 11.7.0 */
 };
 
 
