@@ -3204,6 +3204,19 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         break;
 
     case VIR_DOMAIN_DISK_BUS_NVME:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVME_NS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("NVMe disks are not supported with this QEMU binary"));
+            return -1;
+        }
+
+        if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("unexpected address type for nvme disk"));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_SD:
     case VIR_DOMAIN_DISK_BUS_NONE:

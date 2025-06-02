@@ -533,6 +533,18 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
         break;
 
     case VIR_DOMAIN_DISK_BUS_NVME:
+        if (!(controllerAlias = virDomainControllerAliasFind(domainDef,
+                                                             VIR_DOMAIN_CONTROLLER_TYPE_NVME,
+                                                             info->addr.drive.controller)))
+            return -1;
+
+        if (virJSONValueObjectAdd(&props,
+                                  "s:bus", controllerAlias,
+                                  "u:nsid", info->addr.drive.unit + 1,
+                                  NULL) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_USB:
     case VIR_DOMAIN_DISK_BUS_XEN:
@@ -1724,6 +1736,9 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_NVME:
+        driver = "nvme-ns";
+        break;
+
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SD:
@@ -1793,7 +1808,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
         biosCHSTrans = virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
 
-    if (disk->serial) {
+    /* NVMe disks have serial numbers attached to controllers, not namespaces */
+    if (disk->serial && disk->bus != VIR_DOMAIN_DISK_BUS_NVME) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
 
         virBufferEscape(&buf, '\\', " ", "%s", disk->serial);

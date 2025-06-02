@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>bar</name>
+  <uuid>00010203-0405-4607-8809-0a0b0c0d0e0f</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='nvme0n1' bus='nvme'/>
+    </disk>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='nvme0n2' bus='nvme'/>
+      <serial>abcdefgh</serial>
+    </disk>
+    <controller type='nvme' index='1'>
+      <serial>ASDF</serial>
+      <driver queues='4' ioeventfd="on"/>
+    </controller>
+  </devices>
+</domain>

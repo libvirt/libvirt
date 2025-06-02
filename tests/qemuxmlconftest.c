@@ -1602,6 +1602,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-ssh");
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
+    DO_TEST_CAPS_LATEST("disk-target-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-vhostvdpa", "x86_64",
