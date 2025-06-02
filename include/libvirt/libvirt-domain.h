@@ -715,9 +715,9 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
  * Since: 0.7.5
  */
 typedef enum {
-    /* The total amount of data read from swap space (in kB). (Since: 0.7.5) */
+    /* The total amount of data read from swap space (in kiB). (Since: 0.7.5) */
     VIR_DOMAIN_MEMORY_STAT_SWAP_IN         = 0,
-    /* The total amount of memory written out to swap space (in kB). (Since: 0.7.5) */
+    /* The total amount of memory written out to swap space (in kiB). (Since: 0.7.5) */
     VIR_DOMAIN_MEMORY_STAT_SWAP_OUT        = 1,
 
     /*
@@ -738,7 +738,7 @@ typedef enum {
     /*
      * The amount of memory left completely unused by the system.  Memory that
      * is available but used for reclaimable caches should NOT be reported as
-     * free.  This value is expressed in kB.
+     * free.  This value is expressed in kiB.
      *
      * Since: 0.7.5
      */
@@ -748,7 +748,7 @@ typedef enum {
      * The total amount of usable memory as seen by the domain.  This value
      * may be less than the amount of memory assigned to the domain if a
      * balloon driver is in use or if the guest OS does not initialize all
-     * assigned pages.  This value is expressed in kB.
+     * assigned pages.  This value is expressed in kiB.
      *
      * Since: 0.7.5
      */
@@ -762,7 +762,7 @@ typedef enum {
     VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON  = 6,
 
     /* Resident Set Size of the process running the domain. This value
-     * is in kB
+     * is in kiB
      *
      * Since: 0.9.10
      */
@@ -785,7 +785,7 @@ typedef enum {
 
     /*
      * The amount of memory, that can be quickly reclaimed without
-     * additional I/O (in kB). Typically these pages are used for caching files
+     * additional I/O (in kiB). Typically these pages are used for caching files
      * from disk.
      *
      * Since: 4.6.0

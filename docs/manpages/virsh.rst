@@ -2274,7 +2274,7 @@ If no *--inbound* or *--outbound* is specified, this command will
 query and show the bandwidth settings. Otherwise, it will set the
 inbound or outbound bandwidth. *average,peak,burst,floor* is the same as
 in command *attach-interface*.  Values for *average*, *peak* and *floor*
-are expressed in kilobytes per second, while *burst* is expressed in kilobytes
+are expressed in kiB per second, while *burst* is expressed in kiB
 in a single burst at *peak* speed as described in the Network XML
 documentation at
 `https://libvirt.org/formatnetwork.html#quality-of-service <https://libvirt.org/formatnetwork.html#quality-of-service>`__.
@@ -5261,8 +5261,8 @@ interface.  At least one from the *average*, *floor* pair must be
 specified.  The other two *peak* and *burst* are optional, so
 "average,peak", "average,,burst", "average,,,floor", "average" and
 ",,,floor" are also legal.  Values for *average*, *floor* and *peak*
-are expressed in kilobytes per second, while *burst* is expressed in
-kilobytes in a single burst at *peak* speed as described in the
+are expressed in kiB per second, while *burst* is expressed in
+kiB in a single burst at *peak* speed as described in the
 Network XML documentation at
 `https://libvirt.org/formatnetwork.html#quality-of-service <https://libvirt.org/formatnetwork.html#quality-of-service>`__.
 

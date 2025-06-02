@@ -6284,27 +6284,27 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
  * Memory Statistics:
  *
  * VIR_DOMAIN_MEMORY_STAT_SWAP_IN:
- *     The total amount of data read from swap space (in kb).
+ *     The total amount of data read from swap space (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_SWAP_OUT:
- *     The total amount of memory written out to swap space (in kb).
+ *     The total amount of memory written out to swap space (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT:
  *     The number of page faults that required disk IO to service.
  * VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT:
  *     The number of page faults serviced without disk IO.
  * VIR_DOMAIN_MEMORY_STAT_UNUSED:
- *     The amount of memory which is not being used for any purpose (in kb).
+ *     The amount of memory which is not being used for any purpose (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_AVAILABLE:
- *     The total amount of memory available to the domain's OS (in kb).
+ *     The total amount of memory available to the domain's OS (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_USABLE:
  *     How much the balloon can be inflated without pushing the guest system
  *     to swap, corresponds to 'Available' in /proc/meminfo
  * VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON:
- *     Current balloon value (in kb).
+ *     Current balloon value (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE
  *     Timestamp of the last statistic
  * VIR_DOMAIN_MEMORY_STAT_DISK_CACHES
  *     Memory that can be reclaimed without additional I/O, typically disk
- *     caches (in kb).
+ *     caches (in kiB).
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC
  *     The number of successful huge page allocations from inside the domain
  * VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL

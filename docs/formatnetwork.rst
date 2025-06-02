@@ -468,10 +468,10 @@ follows, where accepted values for each attribute is an integer number.
 
 ``average``
    Specifies the desired average bit rate for the interface being shaped (in
-   kilobytes/second).
+   kiB/second).
 ``peak``
    Optional attribute which specifies the maximum rate at which the bridge can
-   send data (in kilobytes/second). Note the limitation of implementation: this
+   send data (in kiB/second). Note the limitation of implementation: this
    attribute in the ``outbound`` element is ignored (as Linux ingress filters
    don't know it yet).
 ``burst``

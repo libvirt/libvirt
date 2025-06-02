@@ -1139,7 +1139,7 @@ influence how virtual memory pages are backed by host pages.
    element is introduced. It has one compulsory attribute ``size`` which
    specifies which hugepages should be used (especially useful on systems
    supporting hugepages of different sizes). The default unit for the ``size``
-   attribute is kilobytes (multiplier of 1024). If you want to use different
+   attribute is kiB (multiplier of 1024). If you want to use different
    unit, use optional ``unit`` attribute. For systems with NUMA, the optional
    ``nodeset`` attribute may come handy as it ties given guest's NUMA nodes to
    certain hugepage sizes. From the example snippet, one gigabyte hugepages are
@@ -4298,7 +4298,7 @@ attribute are
 -  ``pcie-to-pci-bridge`` ( :since:`since 4.3.0` )
 
 The root controllers (``pci-root`` and ``pcie-root``) have an optional
-``pcihole64`` element specifying how big (in kilobytes, or in the unit specified
+``pcihole64`` element specifying how big (in kiB, or in the unit specified
 by ``pcihole64``'s ``unit`` attribute) the 64-bit PCI hole should be. Some
 guests (like Windows XP or Windows Server 2003) might crash when QEMU and
 Seabios are recent enough to support 64-bit PCI holes, unless this is disabled
