@@ -33,15 +33,15 @@ x86_64-almalinux-9-clang:
     TARGET_BASE_IMAGE: docker.io/library/almalinux:9
 
 
-x86_64-alpine-321:
+x86_64-alpine-322:
   extends: .native_build_job
   needs:
-    - job: x86_64-alpine-321-container
+    - job: x86_64-alpine-322-container
       optional: true
   allow_failure: false
   variables:
-    NAME: alpine-321
-    TARGET_BASE_IMAGE: docker.io/library/alpine:3.21
+    NAME: alpine-322
+    TARGET_BASE_IMAGE: docker.io/library/alpine:3.22
 
 
 x86_64-alpine-edge:
