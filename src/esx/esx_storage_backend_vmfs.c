@@ -616,6 +616,9 @@ esxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names,
          searchResults = searchResults->_next) {
         g_autofree char *directoryAndFileName = NULL;
 
+        if (!searchResults->folderPath)
+            continue;
+
         if (esxUtil_ParseDatastorePath(searchResults->folderPath, NULL, NULL,
                                        &directoryAndFileName) < 0) {
             goto cleanup;
@@ -758,6 +761,9 @@ esxStorageVolLookupByKey(virConnectPtr conn, const char *key)
         for (searchResults = searchResultsList; searchResults;
              searchResults = searchResults->_next) {
             g_autofree char *directoryAndFileName = NULL;
+
+            if (searchResults->folderPath)
+                continue;
 
             if (esxUtil_ParseDatastorePath(searchResults->folderPath, NULL,
                                            NULL, &directoryAndFileName) < 0) {
