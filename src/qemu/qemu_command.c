@@ -8713,6 +8713,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     bool requireNicdev = false;
     g_autoptr(virJSONValue) hostnetprops = NULL;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+    bool setBackendMTU = true;
     GSList *n;
 
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
@@ -8802,6 +8803,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_NULL:
     case VIR_DOMAIN_NET_TYPE_VDS:
     case VIR_DOMAIN_NET_TYPE_LAST:
+        setBackendMTU = false;
        /* These types don't use a network device on the host, but
         * instead use some other type of connection to the emulated
         * device in the qemu process.
@@ -8842,7 +8844,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         }
     }
 
-    if (net->mtu && net->managed_tap != VIR_TRISTATE_BOOL_NO &&
+    if (net->mtu && setBackendMTU && net->managed_tap != VIR_TRISTATE_BOOL_NO &&
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
