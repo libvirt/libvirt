@@ -2854,6 +2854,17 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+        if (virJSONValueObjectAdd(&props,
+                                  "s:driver", "nvme",
+                                  "s:id", def->info.alias,
+                                  "s:serial", def->opts.nvmeopts.serial,
+                                  "p:num_queues", def->queues,
+                                  "T:ioeventfd", def->ioeventfd,
+                                  NULL) < 0)
+            return -1;
+
+        break;
+
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
@@ -3016,6 +3027,7 @@ qemuBuildControllersCommandLine(virCommand *cmd,
         VIR_DOMAIN_CONTROLLER_TYPE_IDE,
         VIR_DOMAIN_CONTROLLER_TYPE_SATA,
         VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+        VIR_DOMAIN_CONTROLLER_TYPE_NVME,
     };
 
     for (i = 0; i < G_N_ELEMENTS(contOrder); i++) {

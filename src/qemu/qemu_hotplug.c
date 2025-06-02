@@ -5941,7 +5941,8 @@ qemuDomainDetachPrepController(virDomainObj *vm,
     int idx;
     virDomainControllerDef *controller = NULL;
 
-    if (match->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+    if (match->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+        match->type != VIR_DOMAIN_CONTROLLER_TYPE_NVME) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("'%1$s' controller cannot be hot unplugged."),
                        virDomainControllerTypeToString(match->type));

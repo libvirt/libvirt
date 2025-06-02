@@ -3634,6 +3634,26 @@ qemuValidateDomainDeviceDefControllerSATA(const virDomainControllerDef *controll
 
 
 static int
+qemuValidateDomainDeviceDefControllerNVME(const virDomainControllerDef *controller,
+                                          const virDomainDef *def G_GNUC_UNUSED,
+                                          virQEMUCaps *qemuCaps)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVME)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("NVMe controllers are not supported with this QEMU binary"));
+    }
+
+    if (!controller->opts.nvmeopts.serial) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing mandatory serial for NVMe controller"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDeviceDefControllerIDE(const virDomainControllerDef *controller,
                                          const virDomainDef *def)
 {
@@ -3804,10 +3824,17 @@ qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *co
           (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI ||
            controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL ||
            controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL))) {
-        if (controller->queues) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'queues' is only supported by virtio-scsi controller"));
-            return -1;
+        if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_NVME) {
+            if (controller->queues) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'queues' is only supported by virtio-scsi and nvme controllers"));
+                return -1;
+            }
+            if (controller->ioeventfd) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("'ioeventfd' is only supported by virtio-scsi and nvme controllers"));
+                return -1;
+            }
         }
         if (controller->cmd_per_lun) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3817,11 +3844,6 @@ qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *co
         if (controller->max_sectors) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'max_sectors' is only supported by virtio-scsi controller"));
-            return -1;
-        }
-        if (controller->ioeventfd) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'ioeventfd' is only supported by virtio-scsi controller"));
             return -1;
         }
         if (controller->iothread) {
@@ -4408,6 +4430,10 @@ qemuValidateDomainDeviceDefController(const virDomainControllerDef *controller,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+        ret = qemuValidateDomainDeviceDefControllerNVME(controller, def,
+                                                        qemuCaps);
+        break;
+
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
