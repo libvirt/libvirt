@@ -15,6 +15,13 @@ v11.5.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Don't accept VIR_DUMP_LIVE flag in virDomainCoreDumpWithFormat()
+
+    Unfortunately, QEMU always pauses vCPUs when doing a core dump. Therefore,
+    there is no way for Libvirt to honor VIR_DUMP_LIVE flag semantics. Instead
+    of silently pretending the flag works, an appropriate error is now
+    reported.
+
 * **New features**
 
 * **Improvements**
