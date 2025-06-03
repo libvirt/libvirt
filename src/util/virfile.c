@@ -3444,6 +3444,34 @@ virFileRemoveLastComponent(char *path)
         path[0] = '\0';
 }
 
+
+static char *
+virFileGetExistingParent(const char *path)
+{
+    g_autofree char *dirpath = g_strdup(path);
+    char *p = NULL;
+
+    /* Try less and less of the path until we get to a directory we can access.
+     * Even if we don't have 'x' permission on any directory in the path on the
+     * NFS server (assuming it's NFS), we will be able to stat the mount point.
+     */
+    while (!virFileExists(dirpath) && p != dirpath) {
+        if (!(p = strrchr(dirpath, '/'))) {
+            virReportSystemError(EINVAL,
+                                 _("Invalid relative path '%1$s'"), path);
+            return NULL;
+        }
+
+        if (p == dirpath)
+            *(p + 1) = '\0';
+        else
+            *p = '\0';
+    }
+
+    return g_steal_pointer(&dirpath);
+}
+
+
 #ifdef __linux__
 
 # ifndef NFS_SUPER_MAGIC
@@ -3554,33 +3582,6 @@ virFileIsSharedFsFUSE(const char *path,
         return 1;
 
     return 0;
-}
-
-
-static char *
-virFileGetExistingParent(const char *path)
-{
-    g_autofree char *dirpath = g_strdup(path);
-    char *p = NULL;
-
-    /* Try less and less of the path until we get to a directory we can access.
-     * Even if we don't have 'x' permission on any directory in the path on the
-     * NFS server (assuming it's NFS), we will be able to stat the mount point.
-     */
-    while (!virFileExists(dirpath) && p != dirpath) {
-        if (!(p = strrchr(dirpath, '/'))) {
-            virReportSystemError(EINVAL,
-                                 _("Invalid relative path '%1$s'"), path);
-            return NULL;
-        }
-
-        if (p == dirpath)
-            *(p + 1) = '\0';
-        else
-            *p = '\0';
-    }
-
-    return g_steal_pointer(&dirpath);
 }
 
 
