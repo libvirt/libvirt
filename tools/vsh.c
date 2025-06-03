@@ -1341,14 +1341,22 @@ vshBlockJobOptionBandwidth(vshControl *ctl,
 }
 
 
-/*
- * Executes command(s) and returns return code from last command
+/**
+ * vshCommandRun:
+ * @ctl: virt shell data
+ * @cmd: command to execute
+ *
+ * Returns return code from last command. Return values from command handlers
+ * which return boolean are converted as:
+ *   true -> EXIT_SUCCESS
+ *   false -> EXIT_FAILURE
  */
-bool
-vshCommandRun(vshControl *ctl, const vshCmd *cmd)
+int
+vshCommandRun(vshControl *ctl,
+              const vshCmd *cmd)
 {
     const vshClientHooks *hooks = ctl->hooks;
-    bool ret = true;
+    int ret = EXIT_SUCCESS;
 
     while (cmd) {
         gint64 before, after;
@@ -1358,16 +1366,19 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
 
         if ((cmd->def->flags & VSH_CMD_FLAG_NOCONNECT) ||
             (hooks && hooks->connHandler && hooks->connHandler(ctl))) {
-            ret = cmd->def->handler(ctl, cmd);
+            if (cmd->def->handler(ctl, cmd))
+                ret = EXIT_SUCCESS;
+            else
+                ret = EXIT_FAILURE;
         } else {
             /* connection is not usable, return error */
-            ret = false;
+            ret = EXIT_FAILURE;
         }
 
         after = g_get_real_time();
 
         /* try to automatically catch disconnections */
-        if (!ret &&
+        if (ret != EXIT_SUCCESS &&
             ((last_error != NULL) &&
              (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
                (last_error->domain == VIR_FROM_REMOTE)) ||
@@ -1376,7 +1387,7 @@ vshCommandRun(vshControl *ctl, const vshCmd *cmd)
               (last_error->code == VIR_ERR_INVALID_CONN))))
             disconnected++;
 
-        if (!ret)
+        if (ret != EXIT_SUCCESS)
             vshReportError(ctl);
 
         if (STREQ(cmd->def->name, "quit") ||

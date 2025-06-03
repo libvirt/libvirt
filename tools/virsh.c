@@ -836,7 +836,7 @@ main(int argc, char **argv)
     vshControl _ctl = { 0 };
     vshControl *ctl = &_ctl;
     virshControl virshCtl = { 0 };
-    bool ret = true;
+    int ret = EXIT_SUCCESS;
 
     ctl->name = "virsh";        /* hardcoded name of the binary */
     ctl->env_prefix = "VIRSH";
@@ -930,5 +930,5 @@ main(int argc, char **argv)
     }
 
     virshDeinit(ctl);
-    exit(ret ? EXIT_SUCCESS : EXIT_FAILURE);
+    exit(ret);
 }

@@ -1530,7 +1530,7 @@ main(int argc, char **argv)
     vshControl _ctl = { 0 };
     vshControl *ctl = &_ctl;
     vshAdmControl virtAdminCtl = { 0 };
-    bool ret = true;
+    int ret = EXIT_SUCCESS;
 
     ctl->name = "virt-admin";        /* hardcoded name of the binary */
     ctl->env_prefix = "VIRT_ADMIN";
@@ -1612,5 +1612,5 @@ main(int argc, char **argv)
     }
 
     vshAdmDeinit(ctl);
-    exit(ret ? EXIT_SUCCESS : EXIT_FAILURE);
+    exit(ret);
 }
