@@ -3561,14 +3561,13 @@ static char *
 virFileGetExistingParent(const char *path)
 {
     g_autofree char *dirpath = g_strdup(path);
-    struct statfs sb;
     char *p = NULL;
 
-    /* Try less and less of the path until we get to a directory we can stat.
+    /* Try less and less of the path until we get to a directory we can access.
      * Even if we don't have 'x' permission on any directory in the path on the
      * NFS server (assuming it's NFS), we will be able to stat the mount point.
      */
-    while (statfs(dirpath, &sb) < 0 && p != dirpath) {
+    while (!virFileExists(dirpath) && p != dirpath) {
         if (!(p = strrchr(dirpath, '/'))) {
             virReportSystemError(EINVAL,
                                  _("Invalid relative path '%1$s'"), path);

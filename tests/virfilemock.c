@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <mntent.h>
 #include <sys/vfs.h>
+#include <unistd.h>
 #ifdef __linux__
 # include <linux/magic.h>
 #endif
@@ -32,6 +33,7 @@
 static FILE *(*real_setmntent)(const char *filename, const char *type);
 static int (*real_statfs)(const char *path, struct statfs *buf);
 static char *(*real_realpath)(const char *path, char *resolved);
+static int (*real_access)(const char *path, int mode);
 
 
 static void
@@ -43,6 +45,7 @@ init_syms(void)
     VIR_MOCK_REAL_INIT(setmntent);
     VIR_MOCK_REAL_INIT(statfs);
     VIR_MOCK_REAL_INIT(realpath);
+    VIR_MOCK_REAL_INIT(access);
 }
 
 
@@ -199,4 +202,29 @@ realpath(const char *path, char *resolved)
     }
 
     return real_realpath(path, resolved);
+}
+
+
+int
+access(const char *path, int mode)
+{
+    const char *mtab = getenv("LIBVIRT_MTAB");
+
+    init_syms();
+
+    if (mtab && mode == F_OK) {
+        struct statfs buf;
+
+        /* The real statfs works on any existing file on a filesystem, while
+         * our mocked version only works on the mount point. Thus we have to
+         * pretend no files on the filesystem exist to make sure
+         * virFileGetExistingParent returns the mount point which can later be
+         * checked by statfs. Instead of checking we were called for a mount
+         * point by walking through the mtab, we just call our mocked statfs
+         * that does it for us.
+         */
+        return statfs_mock(mtab, path, &buf);
+    }
+
+    return real_access(path, mode);
 }
