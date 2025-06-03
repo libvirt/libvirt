@@ -167,6 +167,7 @@ enum {
 struct _vshCmdDef {
     const char *name;           /* name of command, or NULL for list end */
     bool (*handler) (vshControl *, const vshCmd *);    /* command handler */
+    int (*handler_rv) (vshControl *, const vshCmd *); /* command handler - allows return codes */
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
     unsigned int flags;         /* bitwise OR of VSH_CMD_FLAG */

@@ -293,7 +293,7 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
-        if (cmd->handler) {
+        if (cmd->handler || cmd->handler_rv) {
             vshError(ctl, _("command '%1$s' has handler set"), cmd->name);
             return -1;
         }
@@ -320,6 +320,11 @@ vshCmddefCheckInternals(vshControl *ctl,
     /* Each command has to provide a non-empty help string. */
     if (!cmd->info || !cmd->info->help || !*cmd->info->help) {
         vshError(ctl, _("command '%1$s' lacks help"), cmd->name);
+        return -1;
+    }
+
+    if (!!cmd->handler + !!cmd->handler_rv != 1) {
+        vshError(ctl, _("command '%1$s' must have exactly one of the handler callbacks set"), cmd->name);
         return -1;
     }
 
@@ -1350,6 +1355,9 @@ vshBlockJobOptionBandwidth(vshControl *ctl,
  * which return boolean are converted as:
  *   true -> EXIT_SUCCESS
  *   false -> EXIT_FAILURE
+ * Return values from command handlers returning integers are converted as:
+ *   '< 0' -> EXIT_FAILURE
+ *   others -> use value returned by handler callback.
  */
 int
 vshCommandRun(vshControl *ctl,
@@ -1366,10 +1374,17 @@ vshCommandRun(vshControl *ctl,
 
         if ((cmd->def->flags & VSH_CMD_FLAG_NOCONNECT) ||
             (hooks && hooks->connHandler && hooks->connHandler(ctl))) {
-            if (cmd->def->handler(ctl, cmd))
-                ret = EXIT_SUCCESS;
-            else
-                ret = EXIT_FAILURE;
+            if (cmd->def->handler_rv) {
+                ret = cmd->def->handler_rv(ctl, cmd);
+
+                if (ret < 0)
+                    ret = EXIT_FAILURE;
+            } else {
+                if (cmd->def->handler(ctl, cmd))
+                    ret = EXIT_SUCCESS;
+                else
+                    ret = EXIT_FAILURE;
+            }
         } else {
             /* connection is not usable, return error */
             ret = EXIT_FAILURE;
