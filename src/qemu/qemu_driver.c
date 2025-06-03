@@ -3162,7 +3162,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     int ret = -1;
     virObjectEvent *event = NULL;
 
-    virCheckFlags(VIR_DUMP_LIVE | VIR_DUMP_CRASH |
+    virCheckFlags(VIR_DUMP_CRASH |
                   VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET |
                   VIR_DUMP_MEMORY_ONLY, -1);
 
