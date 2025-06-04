@@ -121,6 +121,7 @@ int virOnce(virOnceControl *once, virOnceFunc init)
 int virMutexInit(virMutex *m) G_GNUC_WARN_UNUSED_RESULT;
 int virMutexInitRecursive(virMutex *m) G_GNUC_WARN_UNUSED_RESULT;
 void virMutexDestroy(virMutex *m);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virMutex, virMutexDestroy);
 
 void virMutexLock(virMutex *m);
 void virMutexUnlock(virMutex *m);
