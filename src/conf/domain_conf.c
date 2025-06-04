@@ -11891,15 +11891,13 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDef *def,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr glNode;
-    virTristateBool fullscreen;
 
     ctxt->node = node;
 
     if (virXMLPropTristateBool(node, "fullscreen", VIR_XML_PROP_NONE,
-                               &fullscreen) < 0)
+                               &def->data.sdl.fullscreen) < 0)
         return -1;
 
-    virTristateBoolToBool(fullscreen, &def->data.sdl.fullscreen);
     def->data.sdl.xauth = virXMLPropString(node, "xauth");
     def->data.sdl.display = virXMLPropString(node, "display");
 
@@ -26956,8 +26954,9 @@ virDomainGraphicsDefFormatSDL(virBuffer *attrBuf,
 
     virBufferEscapeString(attrBuf, " xauth='%s'", def->data.sdl.xauth);
 
-    if (def->data.sdl.fullscreen)
-        virBufferAddLit(attrBuf, " fullscreen='yes'");
+    if (def->data.sdl.fullscreen != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(attrBuf, " fullscreen='%s'",
+                          virTristateBoolTypeToString(def->data.sdl.fullscreen));
 
     virDomainGraphicsDefFormatGL(childBuf, def->data.sdl.gl, NULL);
 }

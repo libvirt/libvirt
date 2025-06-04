@@ -2036,7 +2036,7 @@ struct _virDomainGraphicsDef {
         struct {
             char *display;
             char *xauth;
-            bool fullscreen;
+            virTristateBool fullscreen;
             virTristateBool gl;
         } sdl;
         struct {

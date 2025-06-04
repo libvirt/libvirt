@@ -8108,7 +8108,7 @@ qemuBuildGraphicsSDLCommandLine(virQEMUDriverConfig *cfg G_GNUC_UNUSED,
         virCommandAddEnvPair(cmd, "XAUTHORITY", graphics->data.sdl.xauth);
     if (graphics->data.sdl.display)
         virCommandAddEnvPair(cmd, "DISPLAY", graphics->data.sdl.display);
-    if (graphics->data.sdl.fullscreen)
+    if (graphics->data.sdl.fullscreen == VIR_TRISTATE_BOOL_YES)
         virCommandAddArg(cmd, "-full-screen");
 
     virCommandAddArg(cmd, "-display");
