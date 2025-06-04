@@ -981,7 +981,7 @@ typedef char *
                              int *cookieoutlen,
                              unsigned long flags,
                              const char *dname,
-                             unsigned long resource);
+                             unsigned long bandwidth);
 
 typedef int
 (*virDrvDomainMigratePrepare3)(virConnectPtr dconn,

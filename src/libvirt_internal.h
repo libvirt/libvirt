@@ -190,7 +190,7 @@ char *virDomainMigrateBegin3(virDomainPtr domain,
                              int *cookieoutlen,
                              unsigned long flags,
                              const char *dname,
-                             unsigned long resource);
+                             unsigned long bandwidth);
 
 int virDomainMigratePrepare3(virConnectPtr dconn,
                              const char *cookiein,

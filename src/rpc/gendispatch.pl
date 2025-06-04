@@ -396,7 +396,7 @@ my $long_legacy = {
     DomainGetInfo               => { ret => { maxMem => 1, memory => 1 } },
     DomainMigrate               => { arg => { flags => 1, resource => 1 } },
     DomainMigrate2              => { arg => { flags => 1, resource => 1 } },
-    DomainMigrateBegin3         => { arg => { flags => 1, resource => 1 } },
+    DomainMigrateBegin3         => { arg => { flags => 1, bandwidth => 1 } },
     DomainMigrateConfirm3       => { arg => { flags => 1, resource => 1 } },
     DomainMigrateDirect         => { arg => { flags => 1, resource => 1 } },
     DomainMigrateFinish         => { arg => { flags => 1 } },

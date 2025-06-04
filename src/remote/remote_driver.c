@@ -5648,7 +5648,7 @@ remoteDomainMigrateBegin3(virDomainPtr domain,
                           int *cookieoutlen,
                           unsigned long flags,
                           const char *dname,
-                          unsigned long resource)
+                          unsigned long bandwidth)
 {
     remote_domain_migrate_begin3_args args = {0};
     g_auto(remote_domain_migrate_begin3_ret) ret = {0};
@@ -5659,7 +5659,7 @@ remoteDomainMigrateBegin3(virDomainPtr domain,
     args.xmlin = xmlin == NULL ? NULL : (char **) &xmlin;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
-    args.resource = resource;
+    args.bandwidth = bandwidth;
 
     if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_BEGIN3,
              (xdrproc_t) xdr_remote_domain_migrate_begin3_args, (char *) &args,

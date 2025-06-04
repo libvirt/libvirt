@@ -2262,7 +2262,7 @@ struct remote_domain_migrate_begin3_args {
         remote_string              xmlin;
         uint64_t                   flags;
         remote_string              dname;
-        uint64_t                   resource;
+        uint64_t                   bandwidth;
 };
 struct remote_domain_migrate_begin3_ret {
         struct {

@@ -2947,7 +2947,7 @@ struct remote_domain_migrate_begin3_args {
     remote_string xmlin;
     unsigned hyper flags;
     remote_string dname;
-    unsigned hyper resource;
+    unsigned hyper bandwidth;
 };
 
 struct remote_domain_migrate_begin3_ret {
