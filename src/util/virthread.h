@@ -73,6 +73,11 @@ struct virOnceControl {
         .once = PTHREAD_ONCE_INIT \
     }
 
+#define VIR_COND_INITIALIZER \
+    { \
+        .cond = PTHREAD_COND_INITIALIZER \
+    }
+
 typedef void (*virOnceFunc)(void);
 
 typedef void (*virThreadFunc)(void *opaque);
@@ -142,6 +147,7 @@ void virRWLockUnlock(virRWLock *m);
 
 int virCondInit(virCond *c) G_GNUC_WARN_UNUSED_RESULT;
 int virCondDestroy(virCond *c);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virCond, virCondDestroy);
 
 /* virCondWait, virCondWaitUntil:
  * These functions can return without the associated predicate
