@@ -4533,12 +4533,12 @@ qemuValidateDomainDeviceDefRDPGraphics(const virDomainGraphicsDef *graphics,
         return -1;
     }
 
-    if (graphics->data.rdp.replaceUser) {
+    if (graphics->data.rdp.replaceUser == VIR_TRISTATE_BOOL_YES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("RDP doesn't support 'replaceUser'"));
         return -1;
     }
-    if (graphics->data.rdp.multiUser) {
+    if (graphics->data.rdp.multiUser == VIR_TRISTATE_BOOL_YES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("RDP doesn't support 'multiUser'"));
         return -1;

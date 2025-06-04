@@ -2043,8 +2043,8 @@ struct _virDomainGraphicsDef {
             int port;
             bool portReserved;
             bool autoport;
-            bool replaceUser;
-            bool multiUser;
+            virTristateBool replaceUser;
+            virTristateBool multiUser;
             virDomainGraphicsAuthDef auth;
         } rdp;
         struct {

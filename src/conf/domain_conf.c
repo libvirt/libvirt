@@ -11917,40 +11917,41 @@ virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDef *def,
                                 xmlXPathContextPtr ctxt,
                                 unsigned int flags)
 {
-    g_autofree char *port = virXMLPropString(node, "port");
-    g_autofree char *autoport = virXMLPropString(node, "autoport");
-    g_autofree char *replaceUser = virXMLPropString(node, "replaceUser");
-    g_autofree char *multiUser = virXMLPropString(node, "multiUser");
+    virTristateBool autoport;
 
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         return -1;
 
-    if (port) {
-        if (virStrToLong_i(port, NULL, 10, &def->data.rdp.port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse rdp port %1$s"), port);
-            return -1;
-        }
-        /* Legacy compat syntax, used -1 for auto-port */
-        if (def->data.rdp.port == -1)
-            def->data.rdp.autoport = true;
+    if (virXMLPropInt(node, "port", 10, VIR_XML_PROP_NONE,
+                      &def->data.rdp.port, 0) < 0)
+        return -1;
 
-    } else {
-        def->data.rdp.port = 0;
+    if (def->data.rdp.port == -1) {
+        /* Legacy compat syntax, used -1 for auto-port */
         def->data.rdp.autoport = true;
     }
 
-    if (STREQ_NULLABLE(autoport, "yes"))
+    if (def->data.rdp.port == 0) {
+        /* No port specified */
         def->data.rdp.autoport = true;
+    }
+
+    if (virXMLPropTristateBool(node, "autoport", VIR_XML_PROP_NONE,
+                               &autoport) < 0)
+        return -1;
+
+    virTristateBoolToBool(autoport, &def->data.rdp.autoport);
 
     if (def->data.rdp.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
         def->data.rdp.port = 0;
 
-    if (STREQ_NULLABLE(replaceUser, "yes"))
-        def->data.rdp.replaceUser = true;
+    if (virXMLPropTristateBool(node, "replaceUser", VIR_XML_PROP_NONE,
+                               &def->data.rdp.replaceUser))
+        return -1;
 
-    if (STREQ_NULLABLE(multiUser, "yes"))
-        def->data.rdp.multiUser = true;
+    if (virXMLPropTristateBool(node, "multiUser", VIR_XML_PROP_NONE,
+                               &def->data.rdp.replaceUser))
+        return -1;
 
     if (virDomainGraphicsAuthDefParseXML(node, &def->data.rdp.auth,
                                          def->type) < 0)
@@ -26977,11 +26978,13 @@ virDomainGraphicsDefFormatRDP(virBuffer *attrBuf,
     if (def->data.rdp.autoport)
         virBufferAddLit(attrBuf, " autoport='yes'");
 
-    if (def->data.rdp.replaceUser)
-        virBufferAddLit(attrBuf, " replaceUser='yes'");
+    if (def->data.rdp.replaceUser != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(attrBuf, " replaceUser='%s'",
+                          virTristateBoolTypeToString(def->data.rdp.replaceUser));
 
-    if (def->data.rdp.multiUser)
-        virBufferAddLit(attrBuf, " multiUser='yes'");
+    if (def->data.rdp.multiUser != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(attrBuf, " multiUser='%s'",
+                          virTristateBoolTypeToString(def->data.rdp.multiUser));
 
     virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
 

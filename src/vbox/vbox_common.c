@@ -1703,13 +1703,13 @@ vboxAttachDisplay(virDomainDef *def, struct _vboxDriver *data, IMachine *machine
 
                 gVBoxAPI.UIVRDEServer.SetPorts(data, VRDEServer, def->graphics[i]);
 
-                if (def->graphics[i]->data.rdp.replaceUser) {
+                if (def->graphics[i]->data.rdp.replaceUser == VIR_TRISTATE_BOOL_YES) {
                     gVBoxAPI.UIVRDEServer.SetReuseSingleConnection(VRDEServer,
                                                                    PR_TRUE);
                     VIR_DEBUG("VRDP set to reuse single connection");
                 }
 
-                if (def->graphics[i]->data.rdp.multiUser) {
+                if (def->graphics[i]->data.rdp.multiUser == VIR_TRISTATE_BOOL_YES) {
                     gVBoxAPI.UIVRDEServer.SetAllowMultiConnection(VRDEServer,
                                                                   PR_TRUE);
                     VIR_DEBUG("VRDP set to allow multiple connection");
@@ -3611,11 +3611,11 @@ vboxDumpDisplay(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
 
         gVBoxAPI.UIVRDEServer.GetAllowMultiConnection(VRDEServer, &allowMultiConnection);
         if (allowMultiConnection)
-            graphics->data.rdp.multiUser = true;
+            graphics->data.rdp.multiUser = VIR_TRISTATE_BOOL_YES;
 
         gVBoxAPI.UIVRDEServer.GetReuseSingleConnection(VRDEServer, &reuseSingleConnection);
         if (reuseSingleConnection)
-            graphics->data.rdp.replaceUser = true;
+            graphics->data.rdp.replaceUser = VIR_TRISTATE_BOOL_YES;
 
         VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics);
     }
