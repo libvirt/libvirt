@@ -3087,6 +3087,9 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCaps *qemuCaps,
     if (virQEMUCapsFetchCPUDefinitions(mon, qemuCaps->arch, &accel->cpuModels) < 0)
         return -1;
 
+    if (!accel->cpuModels)
+        return 0;
+
     defs = accel->cpuModels;
     for (i = 0; i < defs->ncpus; i++) {
         if (STREQ_NULLABLE(defs->cpus[i].name, "max")) {
