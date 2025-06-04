@@ -11815,46 +11815,46 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDef *def,
                                 xmlXPathContextPtr ctxt,
                                 unsigned int flags)
 {
-    g_autofree char *port = virXMLPropString(node, "port");
-    g_autofree char *websocketGenerated = virXMLPropString(node, "websocketGenerated");
-    g_autofree char *autoport = virXMLPropString(node, "autoport");
     xmlNodePtr audioNode;
+    virTristateBool autoport;
+    virTristateBool websocketGenerated;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     if (virDomainGraphicsListensParseXML(def, node, ctxt, flags) < 0)
         return -1;
 
-    if (port) {
-        if (virStrToLong_i(port, NULL, 10, &def->data.vnc.port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse vnc port %1$s"), port);
-            return -1;
-        }
+    if (virXMLPropInt(node, "port", 10, VIR_XML_PROP_NONE,
+                      &def->data.vnc.port, 0) < 0)
+        return -1;
+
+    if (def->data.vnc.port == -1) {
         /* Legacy compat syntax, used -1 for auto-port */
-        if (def->data.vnc.port == -1) {
-            if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
-                def->data.vnc.port = 0;
-            def->data.vnc.autoport = true;
-        }
-    } else {
-        def->data.vnc.port = 0;
         def->data.vnc.autoport = true;
     }
 
-    if (autoport) {
-        ignore_value(virStringParseYesNo(autoport, &def->data.vnc.autoport));
-
-        if (def->data.vnc.autoport && flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
-            def->data.vnc.port = 0;
+    if (def->data.vnc.port == 0) {
+        /* No port specified */
+        def->data.vnc.autoport = true;
     }
+
+    if (virXMLPropTristateBool(node, "autoport", VIR_XML_PROP_NONE,
+                               &autoport) < 0)
+        return -1;
+
+    virTristateBoolToBool(autoport, &def->data.vnc.autoport);
+
+    if (def->data.vnc.autoport && (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+        def->data.vnc.port = 0;
 
     if (virXMLPropInt(node, "websocket", 10, VIR_XML_PROP_NONE,
                       &def->data.vnc.websocket, 0) < 0)
         return -1;
 
-    if (websocketGenerated)
-        ignore_value(virStringParseYesNo(websocketGenerated,
-                     &def->data.vnc.websocketGenerated));
+    if (virXMLPropTristateBool(node, "websocketGenerated", VIR_XML_PROP_NONE,
+                               &websocketGenerated) < 0)
+        return -1;
+
+    virTristateBoolToBool(websocketGenerated, &def->data.vnc.websocketGenerated);
 
     if (virXMLPropEnum(node, "sharePolicy",
                        virDomainGraphicsVNCSharePolicyTypeFromString,
