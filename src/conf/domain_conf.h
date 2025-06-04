@@ -2049,7 +2049,6 @@ struct _virDomainGraphicsDef {
         } rdp;
         struct {
             char *display;
-            bool fullscreen;
         } desktop;
         struct {
             int port;

@@ -6697,7 +6697,7 @@ interaction with the admin.
        <listen type='address' address='1.2.3.4'/>
      </graphics>
      <graphics type='rdp' autoport='yes' multiUser='yes'/>
-     <graphics type='desktop' fullscreen='yes'/>
+     <graphics type='desktop'/>
      <graphics type='spice'>
        <listen type='network' network='rednet'/>
      </graphics>
@@ -6878,8 +6878,7 @@ interaction with the admin.
    ``desktop``
       This value is reserved for VirtualBox domains for the moment. It displays
       a window on the host desktop, similarly to "sdl", but using the VirtualBox
-      viewer. Just like "sdl", it accepts the optional attributes ``display``
-      and ``fullscreen``.
+      viewer. Just like "sdl", it accepts the optional attribute ``display``.
 
    ``egl-headless`` :since:`Since 4.6.0`
       This display type provides support for an OpenGL accelerated display

@@ -11961,20 +11961,11 @@ virDomainGraphicsDefParseXMLRDP(virDomainGraphicsDef *def,
 }
 
 
-static int
+static void
 virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDef *def,
                                     xmlNodePtr node)
 {
-    virTristateBool fullscreen;
-
-    if (virXMLPropTristateBool(node, "fullscreen", VIR_XML_PROP_NONE,
-                               &fullscreen) < 0)
-        return -1;
-
-    virTristateBoolToBool(fullscreen, &def->data.desktop.fullscreen);
     def->data.desktop.display = virXMLPropString(node, "display");
-
-    return 0;
 }
 
 
@@ -12260,8 +12251,7 @@ virDomainGraphicsDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        if (virDomainGraphicsDefParseXMLDesktop(def, node) < 0)
-            goto error;
+        virDomainGraphicsDefParseXMLDesktop(def, node);
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         if (virDomainGraphicsDefParseXMLSpice(def, node, ctxt, flags) < 0)
@@ -26998,9 +26988,6 @@ virDomainGraphicsDefFormatDesktop(virBuffer *attrBuf,
                                   virDomainGraphicsDef *def)
 {
     virBufferEscapeString(attrBuf, " display='%s'", def->data.desktop.display);
-
-    if (def->data.desktop.fullscreen)
-        virBufferAddLit(attrBuf, " fullscreen='yes'");
 }
 
 static int

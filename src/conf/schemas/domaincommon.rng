@@ -4573,11 +4573,6 @@
               <text/>
             </attribute>
           </optional>
-          <optional>
-            <attribute name="fullscreen">
-              <ref name="virYesNo"/>
-            </attribute>
-          </optional>
         </group>
         <group>
           <attribute name="type">
