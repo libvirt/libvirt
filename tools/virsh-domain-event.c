@@ -24,6 +24,7 @@
 #include "virenum.h"
 #include "virtime.h"
 #include "virtypedparam.h"
+#include "virxml.h"
 
 /*
  * "event" command
@@ -1109,6 +1110,20 @@ virshDomainEventAwaitCallbackLifecycle(virConnectPtr conn G_GNUC_UNUSED,
 }
 
 
+static void
+virshDomainEventAwaitAgentLifecycle(virConnectPtr conn G_GNUC_UNUSED,
+                                    virDomainPtr dom G_GNUC_UNUSED,
+                                    int state G_GNUC_UNUSED,
+                                    int reason G_GNUC_UNUSED,
+                                    void *opaque G_GNUC_UNUSED)
+{
+    struct virshDomEventAwaitConditionData *data = opaque;
+
+    if (data->cond->handler(data) < 1)
+        vshEventDone(data->ctl);
+}
+
+
 struct virshDomainEventAwaitCallbackTuple {
     int event;
     virConnectDomainEventGenericCallback eventCB;
@@ -1119,6 +1134,9 @@ static const struct virshDomainEventAwaitCallbackTuple callbacks[] =
 {
     { .event = VIR_DOMAIN_EVENT_ID_LIFECYCLE,
       .eventCB = VIR_DOMAIN_EVENT_CALLBACK(virshDomainEventAwaitCallbackLifecycle),
+    },
+    { .event = VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE,
+      .eventCB = VIR_DOMAIN_EVENT_CALLBACK(virshDomainEventAwaitAgentLifecycle),
     },
 };
 
@@ -1152,10 +1170,34 @@ virshDomainEventAwaitConditionDomainInactive(struct virshDomEventAwaitConditionD
 }
 
 
+static int
+virshDomainEventAwaitConditionGuestAgentAvailable(struct virshDomEventAwaitConditionData *data)
+{
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree char *state = NULL;
+
+    if (virshDomainGetXMLFromDom(data->ctl, data->dom, 0, &xml, &ctxt) < 0)
+        return -1;
+
+    if ((state = virXPathString("string(//devices/channel/target[@name = 'org.qemu.guest_agent.0']/@state)",
+                                ctxt))) {
+        if (STREQ(state, "connected"))
+            return 0;
+    }
+
+    return 1;
+}
+
+
 static const struct virshDomainEventAwaitCondition conditions[] = {
     { .name = "domain-inactive",
       .event = VIR_DOMAIN_EVENT_ID_LIFECYCLE,
       .handler = virshDomainEventAwaitConditionDomainInactive,
+    },
+    { .name = "guest-agent-available",
+      .event = VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE,
+      .handler = virshDomainEventAwaitConditionGuestAgentAvailable,
     },
 };
 

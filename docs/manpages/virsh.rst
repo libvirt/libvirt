@@ -3080,6 +3080,11 @@ Supported conditions:
 
     domain is or becomes inactive
 
+ *guest-agent-available*
+
+    the guest agent inside the guest connects and becomes available for commands
+    (usually means that the guest has booted)
+
 If *--timeout* is specified, the command gives up waiting for the condition to
 satisfy after *seconds* have elapsed. If SIGINT is delivered to virsh
 (usually via ``Ctrl-C``) the wait is given up immediately. In non-interactive
