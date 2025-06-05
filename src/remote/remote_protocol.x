@@ -2973,7 +2973,7 @@ struct remote_domain_migrate_prepare_tunnel3_args {
     opaque cookie_in<REMOTE_MIGRATE_COOKIE_MAX>;
     unsigned hyper flags;
     remote_string dname;
-    unsigned hyper resource;
+    unsigned hyper bandwidth;
     remote_nonnull_string dom_xml;
 };
 

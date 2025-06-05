@@ -11192,7 +11192,7 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                 int *cookieoutlen,
                                 unsigned long flags,
                                 const char *dname,
-                                unsigned long resource G_GNUC_UNUSED,
+                                unsigned long bandwidth G_GNUC_UNUSED,
                                 const char *dom_xml)
 {
     virQEMUDriver *driver = dconn->privateData;

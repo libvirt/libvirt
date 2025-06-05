@@ -5744,7 +5744,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                   int *cookieoutlen,
                                   unsigned long flags,
                                   const char *dname,
-                                  unsigned long resource,
+                                  unsigned long bandwidth,
                                   const char *dom_xml)
 {
     struct private_data *priv = dconn->privateData;
@@ -5769,7 +5769,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
     args.cookie_in.cookie_in_len = cookieinlen;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
-    args.resource = resource;
+    args.bandwidth = bandwidth;
     args.dom_xml = (char *) dom_xml;
 
     if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3,

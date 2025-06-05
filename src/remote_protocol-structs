@@ -2296,7 +2296,7 @@ struct remote_domain_migrate_prepare_tunnel3_args {
         } cookie_in;
         uint64_t                   flags;
         remote_string              dname;
-        uint64_t                   resource;
+        uint64_t                   bandwidth;
         remote_nonnull_string      dom_xml;
 };
 struct remote_domain_migrate_prepare_tunnel3_ret {
