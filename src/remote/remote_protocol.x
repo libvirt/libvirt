@@ -2989,7 +2989,7 @@ struct remote_domain_migrate_perform3_args {
     remote_string uri;
     unsigned hyper flags;
     remote_string dname;
-    unsigned hyper resource;
+    unsigned hyper bandwidth;
 };
 
 struct remote_domain_migrate_perform3_ret {

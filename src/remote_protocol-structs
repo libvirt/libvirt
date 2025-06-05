@@ -2316,7 +2316,7 @@ struct remote_domain_migrate_perform3_args {
         remote_string              uri;
         uint64_t                   flags;
         remote_string              dname;
-        uint64_t                   resource;
+        uint64_t                   bandwidth;
 };
 struct remote_domain_migrate_perform3_ret {
         struct {

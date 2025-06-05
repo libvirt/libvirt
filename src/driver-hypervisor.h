@@ -1020,7 +1020,7 @@ typedef int
                                const char *uri,
                                unsigned long flags,
                                const char *dname,
-                               unsigned long resource);
+                               unsigned long bandwidth);
 
 typedef virDomainPtr
 (*virDrvDomainMigrateFinish3)(virConnectPtr dconn,

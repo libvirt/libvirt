@@ -226,7 +226,7 @@ int virDomainMigratePerform3(virDomainPtr dom,
                              const char *uri, /* VM Migration URI */
                              unsigned long flags,
                              const char *dname,
-                             unsigned long resource);
+                             unsigned long bandwidth);
 
 virDomainPtr virDomainMigrateFinish3(virConnectPtr dconn,
                                      const char *dname,

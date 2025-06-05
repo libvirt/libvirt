@@ -5806,7 +5806,7 @@ remoteDomainMigratePerform3(virDomainPtr dom,
                             const char *uri,
                             unsigned long flags,
                             const char *dname,
-                            unsigned long resource)
+                            unsigned long bandwidth)
 {
     remote_domain_migrate_perform3_args args = {0};
     g_auto(remote_domain_migrate_perform3_ret) ret = {0};
@@ -5822,7 +5822,7 @@ remoteDomainMigratePerform3(virDomainPtr dom,
     args.dname = dname == NULL ? NULL : (char **) &dname;
     args.uri = uri == NULL ? NULL : (char **) &uri;
     args.dconnuri = dconnuri == NULL ? NULL : (char **) &dconnuri;
-    args.resource = resource;
+    args.bandwidth = bandwidth;
 
     if (call(dom->conn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PERFORM3,
              (xdrproc_t) xdr_remote_domain_migrate_perform3_args, (char *) &args,

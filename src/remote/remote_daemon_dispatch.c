@@ -4910,7 +4910,7 @@ remoteDispatchDomainMigratePerform3(virNetServer *server G_GNUC_UNUSED,
                                  args->cookie_in.cookie_in_len,
                                  &cookieout, &cookieoutlen,
                                  dconnuri, uri,
-                                 args->flags, dname, args->resource) < 0)
+                                 args->flags, dname, args->bandwidth) < 0)
         goto cleanup;
 
     /* remoteDispatchClientRequest will free cookie
