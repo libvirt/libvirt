@@ -3125,7 +3125,7 @@ remoteDispatchDomainMigratePrepare2(virNetServer *server G_GNUC_UNUSED,
 
     if (virDomainMigratePrepare2(conn, &cookie, &cookielen,
                                  uri_in, uri_out,
-                                 args->flags, dname, args->resource,
+                                 args->flags, dname, args->bandwidth,
                                  args->dom_xml) < 0)
         goto cleanup;
 

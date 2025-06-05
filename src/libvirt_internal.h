@@ -167,7 +167,7 @@ int virDomainMigratePrepare2 (virConnectPtr dconn,
                               char **uri_out,
                               unsigned long flags,
                               const char *dname,
-                              unsigned long resource,
+                              unsigned long bandwidth,
                               const char *dom_xml);
 virDomainPtr virDomainMigrateFinish2 (virConnectPtr dconn,
                                       const char *dname,

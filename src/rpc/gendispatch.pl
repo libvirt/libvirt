@@ -406,7 +406,7 @@ my $long_legacy = {
     DomainMigratePerform        => { arg => { flags => 1, bandwidth => 1 } },
     DomainMigratePerform3       => { arg => { flags => 1, resource => 1 } },
     DomainMigratePrepare        => { arg => { flags => 1, bandwidth => 1 } },
-    DomainMigratePrepare2       => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePrepare2       => { arg => { flags => 1, bandwidth => 1 } },
     DomainMigratePrepare3       => { arg => { flags => 1, resource => 1 } },
     DomainMigratePrepareTunnel  => { arg => { flags => 1, resource => 1 } },
     DomainMigratePrepareTunnel3 => { arg => { flags => 1, resource => 1 } },

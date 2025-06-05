@@ -1087,7 +1087,7 @@ struct remote_domain_migrate_prepare2_args {
     remote_string uri_in;
     unsigned hyper flags;
     remote_string dname;
-    unsigned hyper resource;
+    unsigned hyper bandwidth;
     remote_nonnull_string dom_xml;
 };
 

@@ -2367,7 +2367,7 @@ remoteDomainMigratePrepare2(virConnectPtr dconn,
                             char **cookie, int *cookielen,
                             const char *uri_in, char **uri_out,
                             unsigned long flags, const char *dname,
-                            unsigned long resource,
+                            unsigned long bandwidth,
                             const char *dom_xml)
 {
     remote_domain_migrate_prepare2_args args = {0};
@@ -2378,7 +2378,7 @@ remoteDomainMigratePrepare2(virConnectPtr dconn,
     args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
-    args.resource = resource;
+    args.bandwidth = bandwidth;
     args.dom_xml = (char *) dom_xml;
 
     if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE2,
