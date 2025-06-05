@@ -237,8 +237,21 @@ struct virshDomEventData {
     bool timestamp;
     virshDomainEventCallback *cb;
     int id;
+
+    virMutex *m; /* needed to signal that handler was unregistered for clean shutdown */
+    virCond *c;
 };
 typedef struct virshDomEventData virshDomEventData;
+
+
+static void
+virshDomEventDataUnregistered(virshDomEventData *d)
+{
+    g_auto(virLockGuard) name = virLockGuardLock(d->m);
+    /* signal that the handler was unregistered */
+    d->id = -1;
+    virCondSignal(d->c);
+}
 
 
 static void G_GNUC_PRINTF(2, 3)
@@ -936,6 +949,8 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
     bool timestamp = vshCommandOptBool(cmd, "timestamp");
     int count = 0;
     virshControl *priv = ctl->privData;
+    g_auto(virMutex) m = VIR_MUTEX_INITIALIZER;
+    g_auto(virCond) c = VIR_COND_INITIALIZER;
 
     VSH_EXCLUSIVE_OPTIONS("all", "event");
     VSH_EXCLUSIVE_OPTIONS("list", "all");
@@ -969,6 +984,8 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         data[ndata].count = &count;
         data[ndata].timestamp = timestamp;
         data[ndata].cb = &virshDomainEventCallbacks[i];
+        data[ndata].m = &m;
+        data[ndata].c = &c;
         data[ndata].id = -1;
         ndata++;
     }
@@ -994,7 +1011,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
                                                            data[i].event,
                                                            data[i].cb->cb,
                                                            &data[i],
-                                                           NULL)) < 0) {
+                                                           (virFreeCallback) virshDomEventDataUnregistered)) < 0) {
             /* When registering for all events: if the first
              * registration succeeds, silently ignore failures on all
              * later registrations on the assumption that the server
@@ -1022,14 +1039,27 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         ret = true;
 
  cleanup:
-    vshEventCleanup(ctl);
     if (data) {
         for (i = 0; i < ndata; i++) {
             if (data[i].id >= 0 &&
                 virConnectDomainEventDeregisterAny(priv->conn, data[i].id) < 0)
                 ret = false;
         }
+
+        virMutexLock(&m);
+        while (true) {
+            for (i = 0; i < ndata; i++) {
+                if (data[i].id >= 0)
+                    break;
+            }
+
+            if (i == ndata ||
+                virCondWait(&c, &m) < 0)
+                break;
+        }
+        virMutexUnlock(&m);
     }
+    vshEventCleanup(ctl);
     return ret;
 }
 
