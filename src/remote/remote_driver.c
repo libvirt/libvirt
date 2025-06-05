@@ -2333,7 +2333,7 @@ remoteDomainMigratePrepare(virConnectPtr dconn,
                            char **cookie, int *cookielen,
                            const char *uri_in, char **uri_out,
                            unsigned long flags, const char *dname,
-                           unsigned long resource)
+                           unsigned long bandwidth)
 {
     remote_domain_migrate_prepare_args args = {0};
     g_auto(remote_domain_migrate_prepare_ret) ret = {0};
@@ -2343,7 +2343,7 @@ remoteDomainMigratePrepare(virConnectPtr dconn,
     args.uri_in = uri_in == NULL ? NULL : (char **) &uri_in;
     args.flags = flags;
     args.dname = dname == NULL ? NULL : (char **) &dname;
-    args.resource = resource;
+    args.bandwidth = bandwidth;
 
     if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_args, (char *) &args,

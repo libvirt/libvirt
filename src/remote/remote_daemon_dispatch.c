@@ -3075,7 +3075,7 @@ remoteDispatchDomainMigratePrepare(virNetServer *server G_GNUC_UNUSED,
 
     if (virDomainMigratePrepare(conn, &cookie, &cookielen,
                                 uri_in, uri_out,
-                                args->flags, dname, args->resource) < 0)
+                                args->flags, dname, args->bandwidth) < 0)
         goto cleanup;
 
     /* remoteDispatchClientRequest will free cookie, uri_out and

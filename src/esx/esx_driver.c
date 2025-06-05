@@ -3614,7 +3614,7 @@ esxDomainMigratePrepare(virConnectPtr dconn,
                         char **uri_out,
                         unsigned long flags,
                         const char *dname G_GNUC_UNUSED,
-                        unsigned long resource G_GNUC_UNUSED)
+                        unsigned long bandwidth G_GNUC_UNUSED)
 {
     esxPrivate *priv = dconn->privateData;
 
