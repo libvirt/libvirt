@@ -328,12 +328,6 @@ repositories on GitHub:
 
    git clone https://github.com/libvirt/[module name].git
 
-And there are also read-only mirrors on libvirt.org:
-
-::
-
-   git clone https://libvirt.org/git/[module name].git
-
 Note that for most repositories, development happens via merge requests
 on GitLab. However, for the main `libvirt.git` repository all patch review and
 discussion only occurs on the `devel <contact.html>`__ mailing list.
