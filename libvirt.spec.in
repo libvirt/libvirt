@@ -515,6 +515,8 @@ Requires: libvirt-libs = %{version}-%{release}
 # Recommends here will install libvirt-client by default (if available), but
 # RPM won't complain if the package is unavailable, masked, or removed later.
 Recommends: libvirt-client = %{version}-%{release}
+# For modprobe and rmmod
+Requires: kmod
 # for /sbin/ip
 Requires: iproute
 # for /sbin/tc
@@ -674,7 +676,7 @@ Summary: Storage driver plugin including base backends for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Recommends: nfs-utils
-# For mkfs
+# For mkfs and mount/umount
 Requires: util-linux
 # For storage wiping with different algorithms
 Requires: scrub
