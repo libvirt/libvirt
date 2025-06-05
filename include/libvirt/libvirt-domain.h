@@ -1275,10 +1275,11 @@ typedef enum {
  * VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES:
  *
  * virDomainMigrate* params multiple field: The multiple values that list
- * the block devices for which zero detection (to avoid transferring zero blocks)
- * is to be enabled. This may increase CPU overhead of the migration. At the
- * moment this is only supported by the QEMU driver but not for the tunnelled
- * migration.
+ * the block devices for which zero detection (to avoid transferring zero blocks,
+ * for storage where it can't be probed) is to be enabled. This may increase CPU
+ * overhead of the migration. Destination image will be sparse only when the
+ * disk 'discard' option is set to 'unmap'. At the moment this is only supported
+ * by the QEMU driver but not for the tunnelled migration.
  *
  * Since: 10.9.0
  */

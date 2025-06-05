@@ -3641,8 +3641,9 @@ host. By default only non-shared non-readonly images are transferred. Use
 transfer via the comma separated ``disk-list`` argument.
 The *--migrate-disks-detect-zeroes* option which takes a comma separated list of
 disk target names enables zeroed block detection for the listed migrated disks.
-These blocks are not transferred or allocated on destination, effectively
-sparsifying the disk at the cost of CPU overhead.
+These blocks are not transferred or allocated (requires that 'discard' option
+on given disk is set to 'unmap') on destination, effectively sparsifying the
+disk at the cost of CPU overhead.
 With *--copy-storage-synchronous-writes* flag used the disk data migration will
 synchronously handle guest disk writes to both the original source and the
 destination to ensure that the disk migration converges at the price of possibly
