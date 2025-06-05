@@ -675,7 +675,7 @@ typedef int
                                     virStreamPtr st,
                                     unsigned long flags,
                                     const char *dname,
-                                    unsigned long resource,
+                                    unsigned long bandwidth,
                                     const char *dom_xml);
 
 typedef int
