@@ -2279,7 +2279,7 @@ struct remote_domain_migrate_prepare3_args {
         remote_string              uri_in;
         uint64_t                   flags;
         remote_string              dname;
-        uint64_t                   resource;
+        uint64_t                   bandwidth;
         remote_nonnull_string      dom_xml;
 };
 struct remote_domain_migrate_prepare3_ret {

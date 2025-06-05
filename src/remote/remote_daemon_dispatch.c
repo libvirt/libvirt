@@ -4855,7 +4855,7 @@ remoteDispatchDomainMigratePrepare3(virNetServer *server G_GNUC_UNUSED,
                                  args->cookie_in.cookie_in_len,
                                  &cookieout, &cookieoutlen,
                                  uri_in, uri_out,
-                                 args->flags, dname, args->resource,
+                                 args->flags, dname, args->bandwidth,
                                  args->dom_xml) < 0)
         goto cleanup;
 
