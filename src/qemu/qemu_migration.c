@@ -6447,7 +6447,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                         int *cookieoutlen,
                         unsigned int flags,
                         const char *dname,
-                        unsigned long resource,
+                        unsigned long bandwidth,
                         bool v3proto)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -6457,12 +6457,12 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
               "migrate_disks=%p, nbdPort=%d, "
               "nbdURI=%s, "
               "cookiein=%s, cookieinlen=%d, cookieout=%p, cookieoutlen=%p, "
-              "flags=0x%x, dname=%s, resource=%lu, v3proto=%d",
+              "flags=0x%x, dname=%s, bandwidth=%lu, v3proto=%d",
               driver, conn, vm, NULLSTR(xmlin), NULLSTR(dconnuri),
               NULLSTR(uri), NULLSTR(graphicsuri), NULLSTR(listenAddress),
               migrate_disks, nbdPort, NULLSTR(nbdURI),
               NULLSTR(cookiein), cookieinlen, cookieout, cookieoutlen,
-              flags, NULLSTR(dname), resource, v3proto);
+              flags, NULLSTR(dname), bandwidth, v3proto);
 
     if (cfg->migrateTLSForce &&
         !(flags & VIR_MIGRATE_TUNNELLED) &&
@@ -6485,7 +6485,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                                           nbdURI, migParams,
                                           cookiein, cookieinlen,
                                           cookieout, cookieoutlen,
-                                          flags, dname, resource, v3proto);
+                                          flags, dname, bandwidth, v3proto);
     }
 
     if (dconnuri) {
@@ -6501,7 +6501,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                                             migParams,
                                             cookiein, cookieinlen,
                                             cookieout, cookieoutlen,
-                                            flags, resource, nbdURI);
+                                            flags, bandwidth, nbdURI);
     }
 
     return qemuMigrationSrcPerformJob(driver, conn, vm, xmlin, persist_xml, NULL,
@@ -6510,7 +6510,7 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                                       nbdURI, migParams,
                                       cookiein, cookieinlen,
                                       cookieout, cookieoutlen, flags,
-                                      dname, resource, v3proto);
+                                      dname, bandwidth, v3proto);
 }
 
 static int

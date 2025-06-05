@@ -153,7 +153,7 @@ int virDomainMigratePerform (virDomainPtr domain,
                              const char *uri,
                              unsigned long flags,
                              const char *dname,
-                             unsigned long resource);
+                             unsigned long bandwidth);
 virDomainPtr virDomainMigrateFinish (virConnectPtr dconn,
                                      const char *dname,
                                      const char *cookie,

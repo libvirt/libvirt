@@ -1069,7 +1069,7 @@ struct remote_domain_migrate_perform_args {
     remote_nonnull_string uri;
     unsigned hyper flags;
     remote_string dname;
-    unsigned hyper resource;
+    unsigned hyper bandwidth;
 };
 
 struct remote_domain_migrate_finish_args {

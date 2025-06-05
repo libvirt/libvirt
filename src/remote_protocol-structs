@@ -646,7 +646,7 @@ struct remote_domain_migrate_perform_args {
         remote_nonnull_string      uri;
         uint64_t                   flags;
         remote_string              dname;
-        uint64_t                   resource;
+        uint64_t                   bandwidth;
 };
 struct remote_domain_migrate_finish_args {
         remote_nonnull_string      dname;

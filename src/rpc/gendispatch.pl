@@ -403,7 +403,7 @@ my $long_legacy = {
     DomainMigrateFinish2        => { arg => { flags => 1 } },
     DomainMigrateFinish3        => { arg => { flags => 1 } },
     DomainMigratePeer2Peer      => { arg => { flags => 1, resource => 1 } },
-    DomainMigratePerform        => { arg => { flags => 1, resource => 1 } },
+    DomainMigratePerform        => { arg => { flags => 1, bandwidth => 1 } },
     DomainMigratePerform3       => { arg => { flags => 1, resource => 1 } },
     DomainMigratePrepare        => { arg => { flags => 1, bandwidth => 1 } },
     DomainMigratePrepare2       => { arg => { flags => 1, resource => 1 } },
