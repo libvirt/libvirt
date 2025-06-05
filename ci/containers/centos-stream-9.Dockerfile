@@ -35,12 +35,7 @@ RUN dnf distro-sync -y && \
         glibc-langpack-en \
         gnutls-devel \
         grep \
-        iproute \
-        iproute-tc \
-        iptables \
-        iscsi-initiator-utils \
         json-c-devel \
-        kmod \
         libacl-devel \
         libattr-devel \
         libblkid-devel \
@@ -60,17 +55,13 @@ RUN dnf distro-sync -y && \
         libxml2 \
         libxml2-devel \
         libxslt \
-        lvm2 \
         make \
         meson \
-        nfs-utils \
         ninja-build \
         numactl-devel \
-        numad \
         parted-devel \
         perl-base \
         pkgconfig \
-        polkit \
         python3 \
         python3-docutils \
         python3-flake8 \

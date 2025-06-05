@@ -32,9 +32,6 @@ function install_buildenv() {
            glibc-locale \
            glusterfs-devel \
            grep \
-           iproute2 \
-           iptables \
-           kmod \
            libacl-devel \
            libapparmor-devel \
            libattr-devel \
@@ -59,17 +56,12 @@ function install_buildenv() {
            libxml2 \
            libxml2-devel \
            libxslt \
-           lvm2 \
            make \
            meson \
-           nfs-utils \
            ninja \
-           numad \
-           open-iscsi \
            parted-devel \
            perl-base \
            pkgconfig \
-           polkit \
            python3-base \
            python3-black \
            python3-docutils \

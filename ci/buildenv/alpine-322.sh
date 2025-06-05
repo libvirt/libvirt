@@ -29,10 +29,8 @@ function install_buildenv() {
         glib-dev \
         gnutls-dev \
         grep \
-        iproute2 \
         iptables \
         json-c-dev \
-        kmod \
         libcap-ng-dev \
         libnl3-dev \
         libpcap-dev \
@@ -44,19 +42,15 @@ function install_buildenv() {
         libxml2-dev \
         libxml2-utils \
         libxslt \
-        lvm2 \
         lvm2-dev \
         make \
         meson \
         musl-dev \
         netcf-dev \
-        nfs-utils \
         numactl-dev \
-        open-iscsi \
         parted-dev \
         perl \
         pkgconf \
-        polkit \
         py3-docutils \
         py3-flake8 \
         py3-pytest \

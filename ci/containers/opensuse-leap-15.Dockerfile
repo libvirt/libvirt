@@ -34,9 +34,6 @@ RUN zypper update -y && \
            glibc-locale \
            glusterfs-devel \
            grep \
-           iproute2 \
-           iptables \
-           kmod \
            libacl-devel \
            libapparmor-devel \
            libattr-devel \
@@ -61,17 +58,12 @@ RUN zypper update -y && \
            libxml2 \
            libxml2-devel \
            libxslt \
-           lvm2 \
            make \
            meson \
-           nfs-utils \
            ninja \
-           numad \
-           open-iscsi \
            parted-devel \
            perl-base \
            pkgconfig \
-           polkit \
            python3-base \
            python3-docutils \
            python3-flake8 \

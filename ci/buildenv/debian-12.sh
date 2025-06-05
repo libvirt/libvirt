@@ -26,9 +26,6 @@ function install_buildenv() {
             gettext \
             git \
             grep \
-            iproute2 \
-            iptables \
-            kmod \
             libacl1-dev \
             libapparmor-dev \
             libattr1-dev \
@@ -65,16 +62,11 @@ function install_buildenv() {
             libxml2-dev \
             libxml2-utils \
             locales \
-            lvm2 \
             make \
             meson \
-            nfs-common \
             ninja-build \
-            numad \
-            open-iscsi \
             perl-base \
             pkgconf \
-            polkitd \
             python3 \
             python3-docutils \
             python3-pytest \

@@ -33,9 +33,6 @@ RUN zypper dist-upgrade -y && \
            glibc-locale \
            glusterfs-devel \
            grep \
-           iproute2 \
-           iptables \
-           kmod \
            libacl-devel \
            libapparmor-devel \
            libattr-devel \
@@ -60,17 +57,12 @@ RUN zypper dist-upgrade -y && \
            libxml2 \
            libxml2-devel \
            libxslt \
-           lvm2 \
            make \
            meson \
-           nfs-utils \
            ninja \
-           numad \
-           open-iscsi \
            parted-devel \
            perl-base \
            pkgconfig \
-           polkit \
            python3-base \
            python3-black \
            python3-docutils \

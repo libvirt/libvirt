@@ -34,22 +34,13 @@ exec "$@"\n' > /usr/bin/nosync && \
                git \
                glibc-langpack-en \
                grep \
-               iproute \
-               iproute-tc \
-               iptables \
-               iscsi-initiator-utils \
-               kmod \
                libnbd-devel \
                libxml2 \
                libxslt \
-               lvm2 \
                make \
                meson \
-               nfs-utils \
                ninja-build \
-               numad \
                perl-base \
-               polkit \
                python3 \
                python3-black \
                python3-docutils \
