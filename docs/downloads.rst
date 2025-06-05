@@ -326,7 +326,7 @@ repositories on GitHub:
 
 ::
 
-   https://github.com/libvirt/
+   git clone https://github.com/libvirt/[module name].git
 
 And there are also read-only mirrors on libvirt.org:
 
