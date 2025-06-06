@@ -927,6 +927,7 @@ nodeDeviceGetMdevctlModifySupportCheck(void)
 
 static int
 virMdevctlModify(virNodeDeviceDef *def,
+                 const char *def_name,
                  bool defined,
                  bool live)
 {
@@ -942,8 +943,9 @@ virMdevctlModify(virNodeDeviceDef *def,
 
     if (nodeDeviceGetMdevctlModifySupportCheck() < 0) {
         VIR_WARN("Installed mdevctl version does not support modify with options jsonfile, defined and live");
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("Unable to modify mediated device: modify unsupported"));
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Unable to modify mediated device '%1$s': modify unsupported"),
+                       def_name);
         return -1;
     }
 
@@ -952,8 +954,8 @@ virMdevctlModify(virNodeDeviceDef *def,
 
     if (status != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to modify mediated device: %1$s"),
-                       MDEVCTL_ERROR(errmsg));
+                       _("Unable to modify mediated device '%1$s': %2$s"),
+                       def_name, MDEVCTL_ERROR(errmsg));
         return -1;
     }
 
@@ -1608,8 +1610,10 @@ nodeDeviceDefineXML(virConnect *conn,
          * nodeDeviceDefValidateUpdate() is not required as uuid and
          * parent are matching if def was found and changing the type in
          * the persistent config is allowed. */
-        VIR_DEBUG("Update node device '%s' with mdevctl", def->name);
-        modify_failed = (virMdevctlModify(def, true, false) < 0);
+        virNodeDeviceDef *olddef = virNodeDeviceObjGetDef(persistent_obj);
+
+        VIR_DEBUG("Update node device '%s' with mdevctl", olddef->name);
+        modify_failed = (virMdevctlModify(def, olddef->name, true, false) < 0);
         virNodeDeviceObjEndAPI(&persistent_obj);
         if (modify_failed)
             return NULL;
@@ -2357,6 +2361,7 @@ nodeDeviceUpdate(virNodeDevice *device,
         /* Update now. */
         VIR_DEBUG("Update node device '%s' with mdevctl", def->name);
         if (virMdevctlModify(new_def,
+                             def->name,
                              (flags & VIR_NODE_DEVICE_UPDATE_AFFECT_CONFIG),
                              (flags & VIR_NODE_DEVICE_UPDATE_AFFECT_LIVE)) < 0) {
             goto cleanup;
