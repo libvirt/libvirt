@@ -513,7 +513,17 @@
 
 # Whether libvirt should dynamically change file ownership
 # to match the configured user/group above. Defaults to 1.
-# Set to 0 to disable file ownership changes.
+#
+# Notes:
+#  - Per domain or per disk image user and group can be configured, or
+#    relabelling disabled using the <seclabel model='dac'> elements in XML:
+#
+#      https://www.libvirt.org/formatdomain.html#security-label
+#
+#  - The user/group of read-only images is not restored as with read-write
+#    images as they may be shared among more domains.
+#
+# Set to 0 to disable file ownership changes globally in the qemu driver.
 #dynamic_ownership = 1
 
 # Whether libvirt should remember and restore the original
