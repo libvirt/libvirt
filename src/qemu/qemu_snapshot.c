@@ -1553,6 +1553,83 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
 
 
 static int
+qemuSnapshotCreateActiveExternalDisksManual(virDomainObj *vm,
+                                            virDomainMomentObj *snap,
+                                            virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+    g_autoptr(GPtrArray) nodenames = g_ptr_array_new();
+    int ret = 0;
+    size_t i;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SET_ACTIVE))
+        return 0;
+
+    for (i = 0; i < snapdef->ndisks; i++) {
+        virDomainDiskDef *domdisk = vm->def->disks[i];
+        qemuDomainDiskPrivate *domdiskPriv = QEMU_DOMAIN_DISK_PRIVATE(domdisk);
+        virStorageSource *n;
+
+        if (snapdef->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL)
+            continue;
+
+        if (domdiskPriv->nodeCopyOnRead)
+            g_ptr_array_add(nodenames, domdiskPriv->nodeCopyOnRead);
+
+        if (domdisk->nthrottlefilters > 0) {
+            size_t j;
+
+            for (j = 0; j < domdisk->nthrottlefilters; j++) {
+                g_ptr_array_add(nodenames, (void *) qemuBlockThrottleFilterGetNodename(domdisk->throttlefilters[j]));
+            }
+        }
+
+        for (n = domdisk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+            const char *tmp;
+
+            if ((tmp = qemuBlockStorageSourceGetFormatNodename(n)))
+                g_ptr_array_add(nodenames, (void *) tmp);
+
+            if ((tmp = qemuBlockStorageSourceGetSliceNodename(n)))
+                g_ptr_array_add(nodenames, (void *) tmp);
+
+            g_ptr_array_add(nodenames, (void *) qemuBlockStorageSourceGetStorageNodename(n));
+
+            if (n->dataFileStore) {
+                if ((tmp = qemuBlockStorageSourceGetFormatNodename(n->dataFileStore)))
+                    g_ptr_array_add(nodenames, (void *) tmp);
+
+                if ((tmp = qemuBlockStorageSourceGetSliceNodename(n->dataFileStore)))
+                    g_ptr_array_add(nodenames, (void *) tmp);
+
+                g_ptr_array_add(nodenames, (void *) qemuBlockStorageSourceGetStorageNodename(n->dataFileStore));
+            }
+        }
+    }
+
+    if (nodenames->len == 0)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    for (i = 0; i < nodenames->len; i++) {
+        const char *nodename = g_ptr_array_index(nodenames, i);
+
+        if (qemuMonitorBlockdevSetActive(priv->mon, nodename, false) < 0) {
+            ret = -1;
+            break;
+        }
+    }
+
+    qemuDomainObjExitMonitor(vm);
+
+    return ret;
+}
+
+
+static int
 qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virDomainMomentObj *snap,
@@ -1626,6 +1703,10 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
             }
         }
     }
+
+    if (has_manual &&
+        qemuSnapshotCreateActiveExternalDisksManual(vm, snap, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+        goto cleanup;
 
     /* We need to collect reply from 'query-named-block-nodes' prior to the
      * migration step as qemu deactivates bitmaps after migration so the result
