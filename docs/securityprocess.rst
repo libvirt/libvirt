@@ -27,6 +27,10 @@ and moderated for non-members. As such you will receive an auto-reply indicating
 the report is held for moderation. Postings by non-members will be approved by a
 moderator and the reporter copied on any replies.
 
+Refer to the `bug reporting <bugs.html#use-of-automated-tools-ai-agents>`__
+page for the *expectations around the use of automated tools and AI agents*,
+**prior** to filing any security report.
+
 Security notices
 ----------------
 

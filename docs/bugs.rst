@@ -76,6 +76,20 @@ Linux Distribution specific bug reports
    like to have your procedure for filing bugs mentioned here, please mail the
    libvirt development list.
 
+Use of automated tools / AI agents
+----------------------------------
+
+If any automated tool / AI agent is used to identify a bug / security
+flaw, the following additional expectations apply when filing a report:
+
+- The tool / agent used **MUST** be clearly declared in the description
+- All stated facts **MUST** be validated as correct and free from AI
+  hallucinations prior to filing
+- The problem **MUST** be described against an upstream release that is
+  no more than 3 months old.
+- The problem **SHOULD** be analysed and accompanied with a proposed
+  patch that can be directly applied to current git
+
 How to file high quality bug reports
 ------------------------------------
 
