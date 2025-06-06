@@ -972,14 +972,9 @@ static char *
 virQEMUCapsFindBinary(const char *format,
                       const char *archstr)
 {
-    char *ret = NULL;
-    char *binary = NULL;
+    g_autofree char *binary = g_strdup_printf(format, archstr);
 
-    binary = g_strdup_printf(format, archstr);
-
-    ret = virFindFileInPath(binary);
-    VIR_FREE(binary);
-    return ret;
+    return virFindFileInPath(binary);
 }
 
 char *
