@@ -880,9 +880,9 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
         }
 
         timer = g_timer_new();
-        virSystemdNotifyStatus("Waiting %d secs for VM shutdown completion",
+        virSystemdNotifyStatus("Waiting %u secs for VM shutdown completion",
                                cfg->waitShutdownSecs);
-        VIR_INFO("Waiting %d secs for VM shutdown completion", cfg->waitShutdownSecs);
+        VIR_INFO("Waiting %u secs for VM shutdown completion", cfg->waitShutdownSecs);
         while (1) {
             bool anyRunning = false;
             for (i = 0; i < numDomains; i++) {
