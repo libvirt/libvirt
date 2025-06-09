@@ -39,6 +39,12 @@ v11.5.0 (unreleased)
     that it is the controller which ultimately has the serial number attached to
     it, but for ease of use it is automatically copied from the disk serial.
 
+  * esx: Add support for specifying alternative CA bundle for remote peer verification
+
+    Users can now use ``cacert`` parameter in the URI to specify a file path
+    with CA certificate(s) that will be used for remote peer certificate
+    validation.
+
 * **Improvements**
 
 * **Bug fixes**
