@@ -343,6 +343,9 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
                          parsedUri->proxy_port);
     }
 
+    if (parsedUri->cacert)
+        curl_easy_setopt(curl->handle, CURLOPT_CAINFO, parsedUri->cacert);
+
     if (virMutexInit(&curl->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize CURL mutex"));

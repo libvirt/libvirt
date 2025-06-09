@@ -135,6 +135,9 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
                     goto cleanup;
                 }
             }
+        } else if (STRCASEEQ(queryParam->name, "cacert")) {
+            g_clear_pointer(&(*parsedUri)->cacert, g_free);
+            (*parsedUri)->cacert = g_strdup(queryParam->value);
         } else {
             VIR_WARN("Ignoring unexpected query parameter '%s'",
                      queryParam->name);
@@ -168,6 +171,7 @@ esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
     g_free((*parsedUri)->vCenter);
     g_free((*parsedUri)->proxy_hostname);
     g_free((*parsedUri)->path);
+    g_free((*parsedUri)->cacert);
 
     g_free(*parsedUri);
 }

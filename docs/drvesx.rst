@@ -91,7 +91,7 @@ Multiple parameters are separated by ``&``.
 
 ::
 
-   ?no_verify=1&auto_answer=1&proxy=socks://example-proxy.com:23456
+   ?no_verify=1&auto_answer=1&proxy=socks://example-proxy.com:23456&cacert=certs/ca-bundle.pem
 
 The driver understands the extra parameters shown below.
 
@@ -146,6 +146,16 @@ The driver understands the extra parameters shown below.
 |                 |                             | ``port`` allows to override |
 |                 |                             | the default port 1080.      |
 +-----------------+-----------------------------+-----------------------------+
+| ``cacert``      | Path to a file with one     | The specified file will be  |
+|                 | or more certificates        | used for verifying the      |
+|                 |                             | remote host certificate     |
+|                 |                             | instead of the default      |
+|                 |                             | system one.                 |
+|                 |                             | :since:`Since 11.5.0`.      |
+|                 |                             | Does nothing if             |
+|                 |                             | ``no_verify`` is set        |
+|                 |                             | to ``1``.                   |
++-----------------+-----------------------------+-----------------------------+
 
 Authentication
 ~~~~~~~~~~~~~~
@@ -181,8 +191,10 @@ error like this one:
 
    error: internal error curl_easy_perform() returned an error: Peer certificate cannot be authenticated with known CA certificates (60)
 
-Where are two ways to solve this problem:
+Where are three ways to solve this problem:
 
+-  Use the ``cacert`` `Extra parameters`_ to point to a certificate bundle
+   with the CA that signed the SSL certificate used on the ESX server.
 -  Use the ``no_verify=1`` `Extra parameters`_ to disable server
    certificate verification.
 -  Generate new SSL certificates signed by a CA known to your client computer
