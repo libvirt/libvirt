@@ -296,7 +296,6 @@ Supported extra parameters:
     **Example:** ``no_verify=1``
 
   ``pkipath``
-
     Specifies x509 certificates path for the client. If any of the CA
     certificate, client certificate, or client key is missing, the connection
     will fail with a fatal error.
