@@ -3380,6 +3380,7 @@ static int prlsdkConfigureDisk(struct _vzDriver *driver,
     case VIR_DOMAIN_DISK_BUS_USB:
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4339,6 +4340,7 @@ prlsdkGetBlockStats(PRL_HANDLE sdkstats,
         case VIR_DOMAIN_DISK_BUS_USB:
         case VIR_DOMAIN_DISK_BUS_UML:
         case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NVME:
         case VIR_DOMAIN_DISK_BUS_LAST:
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
