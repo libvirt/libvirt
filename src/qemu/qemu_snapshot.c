@@ -996,7 +996,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
         }
     }
 
-    if (!found_internal && !external &&
+    if (!found_internal && !external && !*has_manual &&
         def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("nothing selected for snapshot"));
@@ -1013,7 +1013,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
     }
 
     /* disk snapshot requires at least one disk */
-    if (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT && !external) {
+    if (def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT && !external && !*has_manual) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("disk-only snapshots require at least one disk to be selected for snapshot"));
         return -1;
