@@ -201,7 +201,7 @@ testme "1" "bad disk2" "-c -u $valid_uuid" "$test_xml"
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</devices>,<devices>,g" "$template_xml" > "$test_xml"
 testme "1" "malformed xml" "-c -u $valid_uuid" "$test_xml"
 
-initrd=`ls -1 /boot/initrd* | head -1`
+initrd=`ls -1 /boot/initrd* 2>/dev/null | head -1`
 if [ -z "$initrd" ]; then
     echo "Skipping /boot/initrd* tests. Could not find /boot/initrd*"
 else
