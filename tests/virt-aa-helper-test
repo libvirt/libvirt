@@ -116,7 +116,7 @@ testme() {
         input="$4"
         if [ ! -e "$input" ]; then
             echo "FAIL: could not find $input" >$output
-            echo "FAIL: could not find $input"
+            echo "FAIL: could not find $input" >&2
             echo " '$extra_args $args': "
             errors=$(($errors + 1))
         fi
@@ -141,6 +141,7 @@ testme() {
     if [ -n "$checkrule" ]; then
         if ! grep "$checkrule" "$tmpout" >/dev/null; then
             echo "FAIL: missing rule '$checkrule'" >"$output"
+            echo "FAIL: missing rule '$checkrule'" >&2
             rule_missing=1
         fi
     fi
