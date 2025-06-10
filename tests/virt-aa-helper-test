@@ -7,15 +7,9 @@
 
 set -e
 
-test_hostdev="no"
-if [ "$1" = "test_hostdev" ]; then
-    test_hostdev="yes"
-    shift
-fi
-
 output="/dev/null"
 use_valgrind=""
-ld_library_path="$abs_top_builddir/src/"
+ld_library_path="$abs_top_builddir/tests/:$abs_top_builddir/src/"
 if [ ! -z "$1" ] && [ "$1" = "-d" ]; then
     output="/dev/stdout"
     shift
@@ -128,11 +122,12 @@ testme() {
         printf %s " < $input" >$output
     fi
     echo "': " >$output
+    ld_preload="libvirusbmock.so:libvirpcimock.so"
     set +e
     if [ -n "$input" ]; then
-        LD_LIBRARY_PATH="$ld_library_path" "${exe}" $extra_args $args < $input >"$tmpout" 2>&1
+        LD_PRELOAD="$ld_preload" LD_LIBRARY_PATH="$ld_library_path" ${exe} $extra_args $args < $input >"$tmpout" 2>&1
     else
-        LD_LIBRARY_PATH="$ld_library_path" "${exe}" $extra_args $args >"$tmpout" 2>&1
+        LD_PRELOAD="$ld_preload" LD_LIBRARY_PATH="$ld_library_path" ${exe} $extra_args $args >"$tmpout" 2>&1
     fi
     rc="$?"
     cat "$tmpout" >"$output"
@@ -262,13 +257,11 @@ testme "0" "create multiple disks" "-c -u $valid_uuid" "$test_xml" "$disk1.*rwk,
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###',${disk1}'/><readonly,g" "$template_xml" > "$test_xml"
 testme "0" "create (readonly)" "-c -u $valid_uuid" "$test_xml" "$disk1.*rk,$"
 
-if [ "$test_hostdev" = "yes" ]; then
-    sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><hostdev mode='subsystem' type='usb'><source><address bus='002' device='004'/></source></hostdev>,g" "$template_xml" > "$test_xml"
-    testme "0" "create hostdev (USB)" "-c -u $valid_uuid" "$test_xml"
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><hostdev mode='subsystem' type='usb'><source><address bus='001' device='024'/></source></hostdev>,g" "$template_xml" > "$test_xml"
+testme "0" "create hostdev (USB)" "-c -u $valid_uuid" "$test_xml" "/dev/bus/usb/001/020"
 
-    sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><hostdev mode='subsystem' type='pci'><source><address bus='0x00' slot='0x19' function='0x0'/></source></hostdev>,g" "$template_xml" > "$test_xml"
-    testme "0" "create hostdev (PCI)" "-c -u $valid_uuid" "$test_xml"
-fi
+sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$disk1,g" -e "s,</disk>,</disk><hostdev mode='subsystem' type='pci'><source><address bus='0x00' slot='0x3' function='0x0'/></source></hostdev>,g" "$template_xml" > "$test_xml"
+testme "0" "create hostdev (PCI)" "-c -u $valid_uuid" "$test_xml" "/sys/devices/pci0000:00/0000:00:03.0/config"
 
 sed -e "s,###UUID###,$uuid,g" -e "s,###DISK###,$nonexistent,g" "$template_xml" > "$test_xml"
 testme "0" "create (non-existent disk)" "-c -u $valid_uuid" "$test_xml" "$nonexistent.*rwk,$"
