@@ -1040,24 +1040,21 @@ get_files(vahControl * ctl)
     for (i = 0; i < ctl->def->nhostdevs; i++)
         if (ctl->def->hostdevs[i]) {
             virDomainHostdevDef *dev = ctl->def->hostdevs[i];
-            virDomainHostdevSubsysUSB *usbsrc = &dev->source.subsys.u.usb;
 
             if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
                 continue;
 
             switch (dev->source.subsys.type) {
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                virUSBDevice *usb =
-                    virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL);
-
-                if (usb == NULL)
-                    continue;
+                g_autoptr(virUSBDevice) usb = NULL;
 
                 if (virHostdevFindUSBDevice(dev, true, &usb) < 0)
                     continue;
 
+                if (dev->missing)
+                    continue;
+
                 rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
-                virUSBDeviceFree(usb);
                 if (rc != 0)
                     goto cleanup;
                 break;
