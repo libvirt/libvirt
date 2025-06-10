@@ -44,6 +44,7 @@ static DIR * (*real_opendir)(const char *name);
 static char *(*real_virFileCanonicalizePath)(const char *path);
 
 static char *fakerootdir;
+static bool fakerootClean;
 
 /* To add a new mocked prefix in virpcimock:
  * - add the prefix here as a define to make it easier to track what we
@@ -976,8 +977,16 @@ init_env(void)
         .vpd_len = G_N_ELEMENTS(fullVPDExampleData),
     };
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
-        ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
+    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+        GError *err = NULL;
+
+        fakerootdir = g_dir_make_tmp(NULL, &err);
+        if (err != NULL) {
+            ABORT("Unable to create a temporary dir: %s\n", err->message);
+        }
+
+        fakerootClean = true;
+    }
 
     tmp = g_strdup_printf("%s%s", fakerootdir, SYSFS_PCI_PREFIX);
 
@@ -1043,6 +1052,18 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:02:00.0", 0x1cc1, 0x8201, 15, .klass = 0x010802);
 
     MAKE_PCI_DEVICE("0000:03:00.0", 0x15b3, 0xa2d6, 16, .vpd = exampleVPD);
+}
+
+
+static void __attribute__((destructor))
+deinit_env(void)
+{
+    if (!fakerootClean)
+        return;
+
+    virFileDeleteTree(fakerootdir);
+    g_clear_pointer(&fakerootdir, g_free);
+    fakerootClean = false;
 }
 
 
