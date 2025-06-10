@@ -904,63 +904,79 @@ get_files(vahControl * ctl)
             goto cleanup;
     }
 
-    for (i = 0; i < ctl->def->nserials; i++)
-        if (ctl->def->serials[i] &&
-            (ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->serials[i]->source->data.file.path &&
-            ctl->def->serials[i]->source->data.file.path[0] != '\0')
-            if (vah_add_file_chardev(&buf,
-                                     ctl->def->serials[i]->source->data.file.path,
-                                     "rw",
-                                     ctl->def->serials[i]->source->type) != 0)
-                goto cleanup;
+    for (i = 0; i < ctl->def->nserials; i++) {
+        virDomainChrDef *chr = ctl->def->serials[i];
 
-    for (i = 0; i < ctl->def->nconsoles; i++)
-        if (ctl->def->consoles[i] &&
-            (ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->consoles[i]->source->data.file.path &&
-            ctl->def->consoles[i]->source->data.file.path[0] != '\0')
+        if ((chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            chr->source->data.file.path &&
+            chr->source->data.file.path[0] != '\0') {
+            if (vah_add_file_chardev(&buf,
+                                     chr->source->data.file.path,
+                                     "rw",
+                                     chr->source->type) != 0) {
+                goto cleanup;
+            }
+        }
+    }
+
+    for (i = 0; i < ctl->def->nconsoles; i++) {
+        virDomainChrDef *chr = ctl->def->consoles[i];
+
+        if ((chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            chr->source->data.file.path &&
+            chr->source->data.file.path[0] != '\0') {
             if (vah_add_file(&buf,
-                             ctl->def->consoles[i]->source->data.file.path, "rw") != 0)
+                             chr->source->data.file.path, "rw") != 0) {
                 goto cleanup;
+            }
+        }
+    }
 
-    for (i = 0; i < ctl->def->nparallels; i++)
-        if (ctl->def->parallels[i] &&
-            (ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->parallels[i]->source->data.file.path &&
-            ctl->def->parallels[i]->source->data.file.path[0] != '\0')
-            if (vah_add_file_chardev(&buf,
-                                     ctl->def->parallels[i]->source->data.file.path,
-                                     "rw",
-                                     ctl->def->parallels[i]->source->type) != 0)
-                goto cleanup;
+    for (i = 0; i < ctl->def->nparallels; i++) {
+        virDomainChrDef *chr = ctl->def->parallels[i];
 
-    for (i = 0; i < ctl->def->nchannels; i++)
-        if (ctl->def->channels[i] &&
-            (ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->channels[i]->source->data.file.path &&
-            ctl->def->channels[i]->source->data.file.path[0] != '\0')
+        if ((chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            chr->source->data.file.path &&
+            chr->source->data.file.path[0] != '\0') {
             if (vah_add_file_chardev(&buf,
-                                     ctl->def->channels[i]->source->data.file.path,
+                                     chr->source->data.file.path,
                                      "rw",
-                                     ctl->def->channels[i]->source->type) != 0)
+                                     chr->source->type) != 0) {
                 goto cleanup;
+            }
+        }
+    }
+
+    for (i = 0; i < ctl->def->nchannels; i++) {
+        virDomainChrDef *chr = ctl->def->channels[i];
+
+        if ((chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             chr->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            chr->source->data.file.path &&
+            chr->source->data.file.path[0] != '\0') {
+            if (vah_add_file_chardev(&buf,
+                                     chr->source->data.file.path,
+                                     "rw",
+                                     chr->source->type) != 0) {
+                goto cleanup;
+            }
+        }
+    }
 
     if (ctl->def->os.kernel)
         if (vah_add_file(&buf, ctl->def->os.kernel, "r") != 0)
@@ -1037,81 +1053,80 @@ get_files(vahControl * ctl)
                          "r") != 0)
             goto cleanup;
 
-    for (i = 0; i < ctl->def->nhostdevs; i++)
-        if (ctl->def->hostdevs[i]) {
-            virDomainHostdevDef *dev = ctl->def->hostdevs[i];
+    for (i = 0; i < ctl->def->nhostdevs; i++) {
+        virDomainHostdevDef *dev = ctl->def->hostdevs[i];
 
-            if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+
+        switch (dev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
+            g_autoptr(virUSBDevice) usb = NULL;
+
+            if (virHostdevFindUSBDevice(dev, true, &usb) < 0)
                 continue;
 
-            switch (dev->source.subsys.type) {
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
-                g_autoptr(virUSBDevice) usb = NULL;
+            if (dev->missing)
+                continue;
 
-                if (virHostdevFindUSBDevice(dev, true, &usb) < 0)
-                    continue;
-
-                if (dev->missing)
-                    continue;
-
-                rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
-                if (rc != 0)
-                    goto cleanup;
-                break;
-            }
-
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
-                virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
-                switch (mdevsrc->model) {
-                    case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
-                    case VIR_MDEV_MODEL_TYPE_VFIO_AP:
-                    case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
-                        needsVfio = true;
-                        break;
-                    case VIR_MDEV_MODEL_TYPE_LAST:
-                    default:
-                        virReportEnumRangeError(virMediatedDeviceModelType,
-                                                mdevsrc->model);
-                        break;
-                }
-                break;
-            }
-
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-                virPCIDevice *pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
-
-                virDeviceHostdevPCIDriverName driverName = dev->source.subsys.u.pci.driver.name;
-
-                if (driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO ||
-                    driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
-                    needsVfio = true;
-                }
-
-                if (pci == NULL)
-                    continue;
-
-                rc = virPCIDeviceFileIterate(pci, file_iterate_pci_cb, &buf);
-                virPCIDeviceFree(pci);
-
-                break;
-            }
-
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-            default:
-                rc = 0;
-                break;
-            } /* switch */
+            rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
+            if (rc != 0)
+                goto cleanup;
+            break;
         }
 
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+            virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
+            switch (mdevsrc->model) {
+            case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
+            case VIR_MDEV_MODEL_TYPE_VFIO_AP:
+            case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
+                needsVfio = true;
+                break;
+            case VIR_MDEV_MODEL_TYPE_LAST:
+            default:
+                virReportEnumRangeError(virMediatedDeviceModelType,
+                                        mdevsrc->model);
+                break;
+            }
+            break;
+        }
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
+            virPCIDevice *pci = virPCIDeviceNew(&dev->source.subsys.u.pci.addr);
+
+            virDeviceHostdevPCIDriverName driverName = dev->source.subsys.u.pci.driver.name;
+
+            if (driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO ||
+                driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) {
+                needsVfio = true;
+            }
+
+            if (pci == NULL)
+                continue;
+
+            rc = virPCIDeviceFileIterate(pci, file_iterate_pci_cb, &buf);
+            virPCIDeviceFree(pci);
+
+            break;
+        }
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+        default:
+            rc = 0;
+            break;
+        } /* switch */
+    }
+
     for (i = 0; i < ctl->def->nfss; i++) {
-        if (ctl->def->fss[i] &&
-                ctl->def->fss[i]->type == VIR_DOMAIN_FS_TYPE_MOUNT &&
-                (ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
-                 ctl->def->fss[i]->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) &&
-                ctl->def->fss[i]->src) {
-            virDomainFSDef *fs = ctl->def->fss[i];
+        virDomainFSDef *fs = ctl->def->fss[i];
+
+        if (fs->type == VIR_DOMAIN_FS_TYPE_MOUNT &&
+            (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_PATH ||
+             fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT) &&
+            fs->src) {
 
             /* We don't need to add deny rw rules for readonly mounts,
              * this can only lead to troubles when mounting / readonly.
@@ -1122,22 +1137,24 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->ninputs; i++) {
-        if (ctl->def->inputs[i] &&
-                (ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH ||
-                 ctl->def->inputs[i]->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)) {
+        virDomainInputDef *input = ctl->def->inputs[i];
+
+        if (input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH ||
+            input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
             if (vah_add_file(&buf, ctl->def->inputs[i]->source.evdev, "rw") != 0)
                 goto cleanup;
         }
     }
 
     for (i = 0; i < ctl->def->nnets; i++) {
-        if (ctl->def->nets[i] &&
-                ctl->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
-                ctl->def->nets[i]->data.vhostuser) {
+        virDomainNetDef *net = ctl->def->nets[i];
+
+        if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+            net->data.vhostuser) {
             virDomainChrSourceDef *vhu = ctl->def->nets[i]->data.vhostuser;
 
             if (vah_add_file_chardev(&buf, vhu->data.nix.path, "rw",
-                       vhu->type) != 0)
+                                     vhu->type) != 0)
                 goto cleanup;
         }
     }
@@ -1170,10 +1187,11 @@ get_files(vahControl * ctl)
     }
 
     for (i = 0; i < ctl->def->nsysinfo; i++) {
+        virSysinfoDef *sysinfo = ctl->def->sysinfo[i];
         size_t j;
 
-        for (j = 0; j < ctl->def->sysinfo[i]->nfw_cfgs; j++) {
-            virSysinfoFWCfgDef *f = &ctl->def->sysinfo[i]->fw_cfgs[j];
+        for (j = 0; j < sysinfo->nfw_cfgs; j++) {
+            virSysinfoFWCfgDef *f = &sysinfo->fw_cfgs[j];
 
             if (f->file &&
                 vah_add_file(&buf, f->file, "r") != 0)
@@ -1216,50 +1234,49 @@ get_files(vahControl * ctl)
     }
 
 
-    if (ctl->def->ntpms > 0) {
+    for (i = 0; i < ctl->def->ntpms; i++) {
+        virDomainTPMDef *tpm = ctl->def->tpms[i];
         char *shortName = NULL;
         const char *tpmpath = NULL;
 
-        for (i = 0; i < ctl->def->ntpms; i++) {
-            if (ctl->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-                continue;
+        if (tpm->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+            continue;
 
-            shortName = virDomainDefGetShortName(ctl->def);
+        shortName = virDomainDefGetShortName(ctl->def);
 
-            switch (ctl->def->tpms[i]->data.emulator.version) {
-            case VIR_DOMAIN_TPM_VERSION_1_2:
-                tpmpath = "tpm1.2";
-                break;
-            case VIR_DOMAIN_TPM_VERSION_2_0:
-                tpmpath = "tpm2";
-                break;
-            case VIR_DOMAIN_TPM_VERSION_DEFAULT:
-            case VIR_DOMAIN_TPM_VERSION_LAST:
-                break;
-            }
-
-            /* Unix socket for QEMU and swtpm to use */
-            virBufferAsprintf(&buf,
-                "  \"%s/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
-                RUNSTATEDIR, shortName);
-            /* Paths for swtpm to use: give it access to its state
-             * directory (state files and fsync on dir), log, and PID files.
-             */
-            virBufferAsprintf(&buf,
-                "  \"%s/lib/libvirt/swtpm/%s/%s/\" r,\n",
-                LOCALSTATEDIR, uuidstr, tpmpath);
-            virBufferAsprintf(&buf,
-                "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rwk,\n",
-                LOCALSTATEDIR, uuidstr, tpmpath);
-            virBufferAsprintf(&buf,
-                "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" w,\n",
-                LOCALSTATEDIR, ctl->def->name);
-            virBufferAsprintf(&buf,
-                "  \"%s/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
-                RUNSTATEDIR, shortName);
-
-            VIR_FREE(shortName);
+        switch (tpm->data.emulator.version) {
+        case VIR_DOMAIN_TPM_VERSION_1_2:
+            tpmpath = "tpm1.2";
+            break;
+        case VIR_DOMAIN_TPM_VERSION_2_0:
+            tpmpath = "tpm2";
+            break;
+        case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+        case VIR_DOMAIN_TPM_VERSION_LAST:
+            break;
         }
+
+        /* Unix socket for QEMU and swtpm to use */
+        virBufferAsprintf(&buf,
+                          "  \"%s/libvirt/qemu/swtpm/%s-swtpm.sock\" rw,\n",
+                          RUNSTATEDIR, shortName);
+        /* Paths for swtpm to use: give it access to its state
+         * directory (state files and fsync on dir), log, and PID files.
+         */
+        virBufferAsprintf(&buf,
+                          "  \"%s/lib/libvirt/swtpm/%s/%s/\" r,\n",
+                          LOCALSTATEDIR, uuidstr, tpmpath);
+        virBufferAsprintf(&buf,
+                          "  \"%s/lib/libvirt/swtpm/%s/%s/**\" rwk,\n",
+                          LOCALSTATEDIR, uuidstr, tpmpath);
+        virBufferAsprintf(&buf,
+                          "  \"%s/log/swtpm/libvirt/qemu/%s-swtpm.log\" w,\n",
+                          LOCALSTATEDIR, ctl->def->name);
+        virBufferAsprintf(&buf,
+                          "  \"%s/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
+                          RUNSTATEDIR, shortName);
+
+        VIR_FREE(shortName);
     }
 
     for (i = 0; i < ctl->def->nsmartcards; i++) {
