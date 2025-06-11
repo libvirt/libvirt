@@ -712,7 +712,7 @@ vah_add_path(virBuffer *buf, const char *path, const char *perms, bool recursive
         tmp = g_strdup(path);
     } else {
         pathtmp = g_strdup(path + strlen(pathdir));
-        if ((pathreal = realpath(pathdir, NULL)) == NULL) {
+        if (!(pathreal = virFileCanonicalizePath(pathdir))) {
             vah_error(NULL, 0, pathdir);
             vah_error(NULL, 0, _("could not find realpath"));
             return rc;
