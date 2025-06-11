@@ -1442,9 +1442,21 @@ virStorageBackendRBDVolWipe(virStoragePoolObj *pool,
 }
 
 
+static int
+virStorageBackendRBDCheckPool(virStoragePoolObj *pool,
+                              bool *active)
+{
+    /* Return previous state remembered by the status XML. If the pool is not
+     * available we will fail to refresh it and end up in the same situation. */
+    *active = virStoragePoolObjIsActive(pool);
+    return 0;
+}
+
+
 virStorageBackend virStorageBackendRBD = {
     .type = VIR_STORAGE_POOL_RBD,
 
+    .checkPool = virStorageBackendRBDCheckPool,
     .refreshPool = virStorageBackendRBDRefreshPool,
     .createVol = virStorageBackendRBDCreateVol,
     .buildVol = virStorageBackendRBDBuildVol,
