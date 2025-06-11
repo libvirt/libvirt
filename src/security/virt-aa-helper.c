@@ -865,7 +865,7 @@ get_files(vahControl * ctl)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int rc = -1;
     size_t i;
-    char *uuid;
+    g_autofree char *uuid = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     bool needsVfio = false, needsvhost = false, needsgl = false;
 
@@ -1026,12 +1026,11 @@ get_files(vahControl * ctl)
             needsgl = true;
         } else {
             if (virDomainGraphicsNeedsAutoRenderNode(graphics)) {
-                char *defaultRenderNode = virHostGetDRMRenderNode();
+                g_autofree char *defaultRenderNode = virHostGetDRMRenderNode();
                 needsgl = true;
 
                 if (defaultRenderNode) {
                     vah_add_file(&buf, defaultRenderNode, "rw");
-                    VIR_FREE(defaultRenderNode);
                 }
             }
         }
@@ -1237,7 +1236,7 @@ get_files(vahControl * ctl)
 
     for (i = 0; i < ctl->def->ntpms; i++) {
         virDomainTPMDef *tpm = ctl->def->tpms[i];
-        char *shortName = NULL;
+        g_autofree char *shortName = NULL;
         const char *tpmpath = NULL;
 
         if (tpm->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
@@ -1276,8 +1275,6 @@ get_files(vahControl * ctl)
         virBufferAsprintf(&buf,
                           "  \"%s/libvirt/qemu/swtpm/%s-swtpm.pid\" rw,\n",
                           RUNSTATEDIR, shortName);
-
-        VIR_FREE(shortName);
     }
 
     for (i = 0; i < ctl->def->nsmartcards; i++) {
@@ -1362,7 +1359,6 @@ get_files(vahControl * ctl)
     ctl->files = virBufferContentAndReset(&buf);
 
  cleanup:
-    VIR_FREE(uuid);
     return rc;
 }
 
@@ -1438,15 +1434,13 @@ vahParseArgv(vahControl * ctl, int argc, char **argv)
     }
 
     if (ctl->cmd == 'c' || ctl->cmd == 'r') {
-        char *xmlStr = NULL;
+        g_autofree char *xmlStr = NULL;
         if (virFileReadLimFD(STDIN_FILENO, MAX_FILE_LEN, &xmlStr) < 0)
             vah_error(ctl, 1, _("could not read xml file"));
 
         if (get_definition(ctl, xmlStr) != 0 || ctl->def == NULL) {
-            VIR_FREE(xmlStr);
             vah_error(ctl, 1, _("could not get VM definition"));
         }
-        VIR_FREE(xmlStr);
 
         if (get_files(ctl) != 0)
             vah_error(ctl, 1, _("invalid VM definition"));
