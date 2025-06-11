@@ -866,7 +866,6 @@ get_files(vahControl * ctl)
     int rc = -1;
     size_t i;
     char *uuid;
-    char *mem_path = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     bool needsVfio = false, needsvhost = false, needsgl = false;
 
@@ -1210,6 +1209,8 @@ get_files(vahControl * ctl)
                         "rw") != 0)
                     goto cleanup;
         } else {
+            g_autofree char *mem_path = NULL;
+
             switch (shmem->model) {
             case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
                 /* until exposed, recreate qemuBuildShmemBackendMemProps */
@@ -1361,7 +1362,6 @@ get_files(vahControl * ctl)
     ctl->files = virBufferContentAndReset(&buf);
 
  cleanup:
-    VIR_FREE(mem_path);
     VIR_FREE(uuid);
     return rc;
 }
