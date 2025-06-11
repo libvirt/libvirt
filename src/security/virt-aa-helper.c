@@ -863,7 +863,7 @@ static int
 get_files(vahControl * ctl)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    int rc = -1;
+    int rc;
     size_t i;
     g_autofree char *uuid = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -875,7 +875,7 @@ get_files(vahControl * ctl)
 
     if (STRNEQ(uuid, ctl->uuid)) {
         vah_error(ctl, 0, _("given uuid does not match XML uuid"));
-        goto cleanup;
+        return -1;
     }
 
     /* load the storage driver so that backing store can be accessed */
@@ -900,7 +900,7 @@ get_files(vahControl * ctl)
          /* XXX should handle open errors more careful than just ignoring them.
          */
         if (storage_source_add_files(disk->src, &buf, 0) < 0)
-            goto cleanup;
+            return -1;
     }
 
     for (i = 0; i < ctl->def->nserials; i++) {
@@ -917,7 +917,7 @@ get_files(vahControl * ctl)
                                      chr->source->data.file.path,
                                      "rw",
                                      chr->source->type) != 0) {
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -934,7 +934,7 @@ get_files(vahControl * ctl)
             chr->source->data.file.path[0] != '\0') {
             if (vah_add_file(&buf,
                              chr->source->data.file.path, "rw") != 0) {
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -953,7 +953,7 @@ get_files(vahControl * ctl)
                                      chr->source->data.file.path,
                                      "rw",
                                      chr->source->type) != 0) {
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -972,48 +972,54 @@ get_files(vahControl * ctl)
                                      chr->source->data.file.path,
                                      "rw",
                                      chr->source->type) != 0) {
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    if (ctl->def->os.kernel)
-        if (vah_add_file(&buf, ctl->def->os.kernel, "r") != 0)
-            goto cleanup;
+    if (ctl->def->os.kernel &&
+        vah_add_file(&buf, ctl->def->os.kernel, "r") != 0) {
+        return -1;
+    }
 
-    if (ctl->def->os.initrd)
-        if (vah_add_file(&buf, ctl->def->os.initrd, "r") != 0)
-            goto cleanup;
+    if (ctl->def->os.initrd &&
+        vah_add_file(&buf, ctl->def->os.initrd, "r") != 0) {
+        return -1;
+    }
 
-    if (ctl->def->os.shim)
-        if (vah_add_file(&buf, ctl->def->os.shim, "r") != 0)
-            goto cleanup;
+    if (ctl->def->os.shim &&
+        vah_add_file(&buf, ctl->def->os.shim, "r") != 0) {
+        return -1;
+    }
 
-    if (ctl->def->os.dtb)
-        if (vah_add_file(&buf, ctl->def->os.dtb, "r") != 0)
-            goto cleanup;
+    if (ctl->def->os.dtb &&
+        vah_add_file(&buf, ctl->def->os.dtb, "r") != 0) {
+        return -1;
+    }
 
     for (i = 0; i < ctl->def->os.nacpiTables; i++) {
         if (vah_add_file(&buf, ctl->def->os.acpiTables[i]->path, "r") != 0)
-            goto cleanup;
+            return -1;
     }
 
-    if (ctl->def->pstore)
-        if (vah_add_file(&buf, ctl->def->pstore->path, "rw") != 0)
-            goto cleanup;
+    if (ctl->def->pstore &&
+        vah_add_file(&buf, ctl->def->pstore->path, "rw") != 0) {
+        return -1;
+    }
 
     if (ctl->def->os.loader && ctl->def->os.loader->path) {
         bool readonly = false;
         virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
         if (vah_add_file(&buf,
                          ctl->def->os.loader->path,
-                         readonly ? "rk" : "rwk") != 0)
-            goto cleanup;
+                         readonly ? "rk" : "rwk") != 0) {
+            return -1;
+        }
     }
 
-    if (ctl->def->os.loader && ctl->def->os.loader->nvram) {
-        if (storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0)
-            goto cleanup;
+    if (ctl->def->os.loader && ctl->def->os.loader->nvram &&
+        storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0) {
+        return -1;
     }
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
@@ -1023,7 +1029,7 @@ get_files(vahControl * ctl)
 
         if (rendernode) {
             if (vah_add_file(&buf, rendernode, "rw") != 0)
-                goto cleanup;
+                return -1;
             needsgl = true;
         } else {
             if (virDomainGraphicsNeedsAutoRenderNode(graphics)) {
@@ -1032,7 +1038,7 @@ get_files(vahControl * ctl)
 
                 if (defaultRenderNode &&
                     vah_add_file(&buf, defaultRenderNode, "rw") != 0) {
-                    goto cleanup;
+                    return -1;
                 }
             }
         }
@@ -1043,15 +1049,15 @@ get_files(vahControl * ctl)
             if (listenObj.type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
                 listenObj.socket &&
                 vah_add_file(&buf, listenObj.socket, "rw"))
-                goto cleanup;
+                return -1;
         }
     }
 
     if (ctl->def->ngraphics == 1 &&
-        ctl->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL)
-        if (vah_add_file(&buf, ctl->def->graphics[0]->data.sdl.xauth,
-                         "r") != 0)
-            goto cleanup;
+        ctl->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL &&
+        vah_add_file(&buf, ctl->def->graphics[0]->data.sdl.xauth, "r") != 0) {
+        return -1;
+    }
 
     for (i = 0; i < ctl->def->nhostdevs; i++) {
         virDomainHostdevDef *dev = ctl->def->hostdevs[i];
@@ -1071,7 +1077,7 @@ get_files(vahControl * ctl)
 
             rc = virUSBDeviceFileIterate(usb, file_iterate_hostdev_cb, &buf);
             if (rc != 0)
-                goto cleanup;
+                return -1;
             break;
         }
 
@@ -1132,7 +1138,7 @@ get_files(vahControl * ctl)
              * this can only lead to troubles when mounting / readonly.
              */
             if (vah_add_path(&buf, fs->src->path, fs->readonly ? "R" : "rwl", true) != 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -1142,7 +1148,7 @@ get_files(vahControl * ctl)
         if (input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH ||
             input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
             if (vah_add_file(&buf, ctl->def->inputs[i]->source.evdev, "rw") != 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -1155,7 +1161,7 @@ get_files(vahControl * ctl)
 
             if (vah_add_file_chardev(&buf, vhu->data.nix.path, "rw",
                                      vhu->type) != 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -1165,16 +1171,16 @@ get_files(vahControl * ctl)
         switch (mem->model) {
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
             if (vah_add_file(&buf, mem->source.nvdimm.path, "rw") != 0)
-                goto cleanup;
+                return -1;
             break;
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
             if (vah_add_file(&buf, mem->source.virtio_pmem.path, "rw") != 0)
-                goto cleanup;
+                return -1;
             break;
         case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
             if (vah_add_file(&buf, DEV_SGX_VEPC, "rw") != 0 ||
                 vah_add_file(&buf, DEV_SGX_PROVISION, "r") != 0) {
-                goto cleanup;
+                return -1;
             }
             break;
 
@@ -1195,7 +1201,7 @@ get_files(vahControl * ctl)
 
             if (f->file &&
                 vah_add_file(&buf, f->file, "r") != 0)
-                goto cleanup;
+                return -1;
         }
     }
 
@@ -1206,9 +1212,9 @@ get_files(vahControl * ctl)
          * model dependent defaults. */
         if (shmem->server.enabled &&
             shmem->server.chr->data.nix.path) {
-                if (vah_add_file(&buf, shmem->server.chr->data.nix.path,
-                        "rw") != 0)
-                    goto cleanup;
+            if (vah_add_file(&buf, shmem->server.chr->data.nix.path,
+                             "rw") != 0)
+                return -1;
         } else {
             g_autofree char *mem_path = NULL;
 
@@ -1219,18 +1225,18 @@ get_files(vahControl * ctl)
                 break;
             case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
             case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
-                 /* until exposed, recreate qemuDomainPrepareShmemChardev */
+                /* until exposed, recreate qemuDomainPrepareShmemChardev */
                 mem_path = g_strdup_printf("/var/lib/libvirt/shmem-%s-sock",
-                               shmem->name);
+                                           shmem->name);
                 break;
             case VIR_DOMAIN_SHMEM_MODEL_LAST:
                 virReportEnumRangeError(virDomainShmemModel,
                                         shmem->model);
                 break;
             }
-            if (mem_path != NULL) {
-                if (vah_add_file(&buf, mem_path, "rw") != 0)
-                    goto cleanup;
+            if (mem_path != NULL &&
+                vah_add_file(&buf, mem_path, "rw") != 0) {
+                return -1;
             }
         }
     }
@@ -1353,15 +1359,13 @@ get_files(vahControl * ctl)
         virBufferAddLit(&buf, "  deny \"/var/lib/libvirt/.cache/\" w,\n");
     }
 
-    if (ctl->newfile)
-        if (vah_add_file(&buf, ctl->newfile, "rwk") != 0)
-            goto cleanup;
+    if (ctl->newfile &&
+        vah_add_file(&buf, ctl->newfile, "rwk") != 0) {
+        return -1;
+    }
 
-    rc = 0;
     ctl->files = virBufferContentAndReset(&buf);
-
- cleanup:
-    return rc;
+    return 0;
 }
 
 static int
