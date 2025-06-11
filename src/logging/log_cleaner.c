@@ -66,7 +66,7 @@ virLogCleanerParseFilename(const char *path,
     g_autofree char *clear_path = NULL;
     char *chain_prefix = NULL;
 
-    clear_path = realpath(path, NULL);
+    clear_path = virFileCanonicalizePath(path);
     if (!clear_path) {
         VIR_WARN("Failed to resolve path %s: %s", path, g_strerror(errno));
         return NULL;
