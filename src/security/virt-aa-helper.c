@@ -1022,15 +1022,17 @@ get_files(vahControl * ctl)
         const char *rendernode = virDomainGraphicsGetRenderNode(graphics);
 
         if (rendernode) {
-            vah_add_file(&buf, rendernode, "rw");
+            if (vah_add_file(&buf, rendernode, "rw") != 0)
+                goto cleanup;
             needsgl = true;
         } else {
             if (virDomainGraphicsNeedsAutoRenderNode(graphics)) {
                 g_autofree char *defaultRenderNode = virHostGetDRMRenderNode();
                 needsgl = true;
 
-                if (defaultRenderNode) {
-                    vah_add_file(&buf, defaultRenderNode, "rw");
+                if (defaultRenderNode &&
+                    vah_add_file(&buf, defaultRenderNode, "rw") != 0) {
+                    goto cleanup;
                 }
             }
         }
