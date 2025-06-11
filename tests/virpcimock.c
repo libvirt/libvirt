@@ -945,7 +945,11 @@ init_syms(void)
         return;
 
     VIR_MOCK_REAL_INIT(access);
+# if defined(__GLIBC__) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
+    VIR_MOCK_REAL_INIT_ALIASED(open, "open64");
+# else
     VIR_MOCK_REAL_INIT(open);
+# endif
 # if WITH___OPEN_2
     VIR_MOCK_REAL_INIT(__open_2);
 # endif /* WITH___OPEN_2 */
