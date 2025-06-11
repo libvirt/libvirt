@@ -1184,13 +1184,23 @@ char *
 virFileCanonicalizePath(const char *path)
 {
     g_autofree char *newpath = NULL;
+    char *ret = NULL;
 
     init_syms();
 
     if (getrealpath(&newpath, path) < 0)
         return NULL;
 
-    return real_virFileCanonicalizePath(newpath);
+    ret = real_virFileCanonicalizePath(newpath);
+
+    if (ret && fakerootdir && STRPREFIX(ret, fakerootdir)) {
+        size_t len = strlen(ret);
+        size_t preflen = strlen(fakerootdir);
+
+        memmove(ret, ret + preflen, len - preflen + 1);
+    }
+
+    return ret;
 }
 
 # include "virmockstathelpers.c"
