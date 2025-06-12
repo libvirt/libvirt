@@ -10,21 +10,42 @@ set -e
 output="/dev/null"
 use_valgrind=""
 ld_library_path="$abs_top_builddir/tests/:$abs_top_builddir/src/"
-if [ ! -z "$1" ] && [ "$1" = "-d" ]; then
-    output="/dev/stdout"
-    shift
-fi
-
 exe="$abs_top_builddir/src/virt-aa-helper"
-if [ ! -z "$1" ]; then
-    if [ "$1" = "-v" ]; then
-        use_valgrind="yes"
-        shift
-    fi
-    if [ -n "$1" ]; then
-        exe="$1"
-        shift
-    fi
+
+usage() {
+    script=`basename $1`
+    echo "$script: [OPTIONS] [EXE]"
+    echo "  OPTIONS:"
+    echo "      -d  print debug onto stdout"
+    echo "      -h  print this help"
+    echo "      -v  to wrap virt-aa-helper invocation into valgrind"
+    echo "     EXE  use specified virt-aa-helper"
+}
+
+while getopts "dhv" opt; do
+    case ${opt} in
+        d)
+            output="/dev/stdout"
+            ;;
+        v)
+            use_valgrind="yes"
+            ;;
+        h)
+            usage $0
+            exit 0
+            ;;
+        ?)
+            usage $0
+            exit 1
+            ;;
+    esac
+done
+
+
+shift $((OPTIND - 1))
+if [ -n "$1" ]; then
+    exe="$1"
+    shift
 fi
 
 if [ ! -x "$exe" ]; then
