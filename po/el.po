@@ -5,21 +5,22 @@
 # Translators:
 # Daniel  <veillard@redhat.com>, 2011
 # Pierros Papadeas <pierros@papadeas.gr>, 2009
+# Jim Spentzos <jimspentzos2000@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-05-27 08:29+0000\n"
-"PO-Revision-Date: 2015-02-27 04:41+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Greek (http://www.transifex.com/projects/p/fedora/language/"
-"el/)\n"
+"PO-Revision-Date: 2025-06-16 17:43+0000\n"
+"Last-Translator: Jim Spentzos <jimspentzos2000@gmail.com>\n"
+"Language-Team: Greek <https://translate.fedoraproject.org/projects/libvirt/"
+"libvirt/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.12.1\n"
 
 msgid ""
 "\n"
@@ -803,9 +804,9 @@ msgstr ""
 msgid "%1$s: initialization failed"
 msgstr "αδύνατη η αρχικοποίηση υπο συνθήκη μεταβλητής (condition variable)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: initialization failed\n"
-msgstr "αδύνατη η αρχικοποίηση υπο συνθήκη μεταβλητής (condition variable)"
+msgstr "%1$s: αποτυχία αρχικοποίησης\n"
 
 #, c-format
 msgid ""
@@ -38485,9 +38486,9 @@ msgstr "μη υποστηριζόμενος τύπος monitor '%1$s'"
 msgid "unsupported connection mode for <reservations/>: %1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported connection type for <reservations/>: %1$s"
-msgstr "μη υποστηριζόμενος τύπος monitor '%1$s'"
+msgstr "μη υποστηριζόμενος τύπος σύνδεσης για <reservations/>: %1$s"
 
 #, fuzzy, c-format
 msgid "unsupported console target type %1$s"
@@ -38996,9 +38997,9 @@ msgstr ""
 msgid "value of '%1$s' is too large"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "value of cookie '%1$s' contains invalid characters"
-msgstr "Το όνομα του μοντέλου περιέχει εσφαλμένους χαρακτήρες"
+msgstr "η τιμή του cookie «%1$s» περιέχει μη έγκυρους χαρακτήρες"
 
 msgid "value of managerid out of range"
 msgstr ""
