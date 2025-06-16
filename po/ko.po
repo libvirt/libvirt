@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-05-27 08:29+0000\n"
-"PO-Revision-Date: 2025-06-01 09:35+0000\n"
+"PO-Revision-Date: 2025-06-06 06:01+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -1396,7 +1396,7 @@ msgstr "'iothread'는 virtio-scsi 제어기에서만 지원됩니다"
 
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
-msgstr ""
+msgstr "'iscsiadm': 상태 '%2$d' 인 대상 '%1$s' 을 위한 신규 방식이 실패함"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "'legacy KVM' 장치 할당은 이 시스템에서 더 이상 지원되지 않습니다"
@@ -8614,12 +8614,13 @@ msgid "Failed to run clone container"
 msgstr "복제 컨테이너를 실행하는 데 실패"
 
 msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
-msgstr ""
+msgstr "새로운 iscsi 연결장치를 생성하도록 명령 'iscsiadm'를 실행하는 데 실패함"
 
 #, c-format
 msgid ""
 "Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
-msgstr ""
+msgstr "IQN '%1$s'을 갖는 iscsi 연결장치를 최신화하도록 명령 'iscsiadm'를 실행하는 "
+"데 실패함"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -13301,7 +13302,7 @@ msgid "Only PTY console types are supported"
 msgstr "PTY 콘솔 유형만 지원합니다"
 
 msgid "Only RANDOM backend is supported for RNG devices"
-msgstr ""
+msgstr "RANDDOM 백엔드만 RNG 장치를 지원합니다"
 
 msgid "Only VNC supported"
 msgstr "VNC만 지원"
@@ -13313,7 +13314,7 @@ msgid "Only a single IDE controller is supported for this machine type"
 msgstr "이 머신 유형에는 단일 IDE 컨트롤러만 지원됩니다"
 
 msgid "Only a single RNG device can be configured for this domain"
-msgstr ""
+msgstr "단일 RNG 장치만 이와 같은 도메인을 위해 구성 될 수 있습니다"
 
 msgid "Only a single console can be configured for this domain"
 msgstr "단일 콘솔만이 해당 도메인을 위해 구성 될 수 있습니다"
@@ -13453,7 +13454,7 @@ msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "'%1$s'에는 오직 virtio 버스 유형만 지원됩니다"
 
 msgid "Only virtio model is supported for RNG devices"
-msgstr ""
+msgstr "virtio 모델만 RNG 장치를 위해 지원됩니다"
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "vpxmigr:// 이전 URIs만이 지원됩니다"
@@ -16804,7 +16805,7 @@ msgstr "대상 비디오 카드 가상 램 64 %1$u가 소스 %2$u와 일치하�
 
 #, c-format
 msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
-msgstr ""
+msgstr "대상 virtio 네트워크 대기열 수 '%1$d'는 원천 '%2$d'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -20992,10 +20993,10 @@ msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "VFIO CCW 장치의 할당은 이 QEMU의 버전에서 지원하지 않습니다"
 
 msgid "VFIO PCI device assignment is not supported by the host"
-msgstr ""
+msgstr "VFIO PCI 장치 할당은 호스트에 의해 지원되지 않습니다"
 
 msgid "VFIO PCI device assignment is not supported by this QEMU binary"
-msgstr ""
+msgstr "VIFO PCI 장치 할당은 이와 같은 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "VFIO PCI 장치의 할당은 이 QEMU의 버전에서 지원하지 않습니다"
@@ -31055,7 +31056,7 @@ msgstr "잘못된 형식의 8진 모드"
 
 #, c-format
 msgid "malformed output of 'iscsiadm': %1$s"
-msgstr ""
+msgstr "'iscsiadm'의 잘못된 출력: %1$s"
 
 msgid "malformed owner element"
 msgstr "잘못된 형식의 owner 요소"
@@ -33906,7 +33907,7 @@ msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pc-dimm 장치에는 'dimm' 주소만 지원됩니다"
 
 msgid "only 'file' type is supported with NVRAM"
-msgstr ""
+msgstr "'file' 유형만 NVRAM과 함께 지원됩니다"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "공유 메모리 장치에는 'pci' 주소만 지원됩니다"
@@ -37203,7 +37204,7 @@ msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr "이와 같은 libvirtd 예제는 VIR_MIGRATE_TLS 플래그로만 이전을 허용합니다"
 
 msgid "this machine type do not support floppy devices"
-msgstr ""
+msgstr "이와 같은 장비 유형은 플로피 장치를 지원하지 않습니다"
 
 msgid "this network exists already"
 msgstr "이미 네트워크가 있음"
@@ -40598,7 +40599,7 @@ msgstr "경고"
 
 #, c-format
 msgid "warning: %1$s\n"
-msgstr ""
+msgstr "경고: %1$s\n"
 
 msgid "watchdog"
 msgstr "와치독"
