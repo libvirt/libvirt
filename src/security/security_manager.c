@@ -669,9 +669,14 @@ virSecurityManagerGenLabel(virSecurityManager *mgr,
                 VIR_APPEND_ELEMENT(vm->seclabels, vm->nseclabels, seclabel);
 
             if (sec_managers[i]->drv->domainGenSecurityLabel(sec_managers[i], vm) < 0) {
+                virSecurityLabelDef *tmp = vm->seclabels[vm->nseclabels - 1];
+
                 if (VIR_DELETE_ELEMENT(vm->seclabels,
-                                       vm->nseclabels -1, vm->nseclabels) < 0)
+                                       vm->nseclabels - 1, vm->nseclabels) < 0) {
                     vm->nseclabels--;
+                }
+
+                virSecurityLabelDefFree(tmp);
                 goto cleanup;
             }
 
