@@ -12,13 +12,14 @@
 # Milo Casagrande <milo@milo.name>, 2020.
 # Nathan <nathan95@live.it>, 2021.
 # Salvatore Cocuzza <info@salvatorecocuzza.it>, 2025.
+# Andrea Morelli <morelliandrea973@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-05-27 08:29+0000\n"
-"PO-Revision-Date: 2025-01-19 21:18+0000\n"
-"Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
+"PO-Revision-Date: 2025-06-02 21:09+0000\n"
+"Last-Translator: Andrea Morelli <morelliandrea973@gmail.com>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
 "Language: it\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.9.2\n"
+"X-Generator: Weblate 5.11.4\n"
 
 msgid ""
 "\n"
@@ -579,12 +580,12 @@ msgstr "Il modello %1$s di watchdog può essere usato solo su s390 e s390x"
 msgid "%1$s model of watchdog is only part of q35 machine"
 msgstr "Il modello di watchdog %1$s è solo una parte della macchina q35"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
-"Il modello di watchdog di %1$ fa parte della macchina e non può avere alcun "
+"%1$sIl modello di watchdog di fa parte della macchina e non può avere alcun "
 "indirizzo impostato."
 
 #, c-format
@@ -841,9 +842,9 @@ msgstr ""
 msgid "%1$s: could not proxy traffic: %2$s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: error: %2$s%3$c"
-msgstr "errore: "
+msgstr "%1$s: errore: %2$s%3$c"
 
 #, c-format
 msgid ""
@@ -931,9 +932,9 @@ msgstr "%1$s: impossibile leggere il file temporaneo: %2$s"
 msgid "%1$s: failed to write log file: %2$s"
 msgstr "%1$s: impossibile scrivere il file di log: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: failure with %2$s: %3$s"
-msgstr "%s: impossibile scrivere il file di log: %s"
+msgstr "%1$s: errore con %2$s: %3$s"
 
 #, c-format
 msgid "%1$s: initialization failed"
@@ -953,9 +954,9 @@ msgid ""
 "%1$s: ipv6 specified for non-IPv6 gateway address '%2$s' in route definition"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: malformed fd %2$s"
-msgstr "Dimensione malformata %s"
+msgstr "%1$s: descrittore di file non valido %2$s"
 
 #, c-format
 msgid ""
@@ -1084,15 +1085,17 @@ msgstr ""
 msgid "%1$s: warning: %2$s%3$c"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s:%2$d: %3$s"
-msgstr "%s: %s"
+msgstr "%1$s:%2$d: %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%1$s:%2$d: %3$s%4$s\n"
 "%5$s"
-msgstr "%s: %s"
+msgstr ""
+"%1$s:%2$d: %3$s%4$s\n"
+"%5$s"
 
 #, c-format
 msgid "%1$s_DEBUG not set with a valid numeric value"
@@ -1978,9 +1981,9 @@ msgstr "Allocazione"
 msgid "Allocation:"
 msgstr "Allocazione:"
 
-#, fuzzy
 msgid "Allows setting or modifying the description or title of a domain."
-msgstr "impossibile modificare la configurazione persistente di un dominio"
+msgstr ""
+"Consente di impostare o modificare la descrizione o il titolo di un dominio."
 
 msgid "Allows setting or modifying the description or title of a network."
 msgstr ""
@@ -2067,9 +2070,9 @@ msgstr "Collegamento di un nuovo dispositivo disco."
 msgid "Attach new network interface."
 msgstr "Collegamento di una nuova interfaccia di rete."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Attached device %1$s has no type"
-msgstr "tipo di dispositivo target"
+msgstr "Il dispositivo collegato %1$s non ha tipo"
 
 #, c-format
 msgid "Attaching devices of type %1$d is not implemented"
@@ -2292,9 +2295,9 @@ msgstr "Il buffer è troppo piccolo per uint32"
 msgid "Buffer too small for uint8 type"
 msgstr "Il buffer è troppo piccolo per uint8"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Buffer too small to print variable '%1$s' into"
-msgstr "Il buffer è troppo piccolo per uint8"
+msgstr "Buffer troppo piccolo per stampare la variabile '%1$s'"
 
 msgid "Build a given pool."
 msgstr "Creare un determinato pool."
@@ -2341,9 +2344,9 @@ msgstr ""
 msgid "CPU Model %1$s too long for destination"
 msgstr "Modello CPU %1$s troppo lungo per la destinazione"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU arch %1$s does not match host arch"
-msgstr "I CPU vendor non corrispondono"
+msgstr "L'architettura CPU %1$s non corrisponde all'architettura dell'host"
 
 msgid "CPU architecture (/domain/os/type/@arch)"
 msgstr "Architettura CPU (/domain/os/type/@arch)"
@@ -2547,9 +2550,9 @@ msgid ""
 "allocation %2$llu"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level %1$d does not support tuning"
-msgstr "l'emulatore '%s' di qemu non supporta xen"
+msgstr "Il livello di cache %1$d non supporta la regolazione"
 
 #, c-format
 msgid "Cache level %1$d does not support tuning for scope type '%2$s'"
@@ -2559,9 +2562,9 @@ msgstr ""
 msgid "Cache level %1$d id %2$u does not support tuning for scope type '%3$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cache level '%1$u' already defined"
-msgstr "Modello CPU '%s' già definito"
+msgstr "Il livello di cache '%1$u' è già definito"
 
 #, c-format
 msgid "Cache with id %1$u does not exists for level %2$d"
@@ -2661,7 +2664,7 @@ msgid "Can't determine page size"
 msgstr ""
 
 msgid "Can't determine pid file path."
-msgstr "Impossibile determinare il percorso del file PID"
+msgstr "Impossibile determinare il percorso del file pid"
 
 msgid "Can't determine restart state file path"
 msgstr ""
@@ -2673,9 +2676,9 @@ msgstr "Impossibile determinare ii percorsi di socket"
 msgid "Can't find boot device of type: %1$d, device index: %2$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find boot device of type: %1$s, index: %2$d"
-msgstr "tipo di dispositivo di avvio %d inaspettato"
+msgstr "Impossibile trovare il dispositivo di avvio di tipo: %1$s, indice: %2$d"
 
 #, c-format
 msgid "Can't find disk '%1$s' in domain definition"
@@ -2706,9 +2709,9 @@ msgstr "Impossibile modificare il tipo di dispositivo '%1$s'"
 msgid "Can't parse barrier from vzlist output '%1$s'"
 msgstr "impossibile analizzare il numero partizione per il target '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse limit from vzlist output '%1$s'"
-msgstr "Impossibile analizzare l'output di vzlist"
+msgstr "Impossibile analizzare il limite dall'output di vzlist '%1$s'"
 
 msgid "Can't parse prlctl output"
 msgstr "Impossibile analizzare l'output di prlctl"
@@ -2762,9 +2765,11 @@ msgstr "Annullato"
 msgid "Cannot access '%1$s'"
 msgstr "Impossibile accedere a '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access backing file '%1$s' of storage file '%2$s'"
-msgstr "volume di backing store %s inaccessibile"
+msgstr ""
+"Impossibile accedere al file di supporto '%1$s' del file di archiviazione "
+"'%2$s'"
 
 #, c-format
 msgid ""
@@ -2982,9 +2987,9 @@ msgstr "impossibile trovare le statistiche per il dispositivo '%1$s'"
 msgid "Cannot find '%1$s' in path"
 msgstr "impossibile aprire '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find 'iothread' : %1$u"
-msgstr "Impossibile trovare un emulatore idoneo per %s"
+msgstr "Impossibile trovare 'iothread': %1$u"
 
 #, c-format
 msgid "Cannot find CPU model with PVR 0x%1$03llx, vendor id 0x%2$02llx"
@@ -3006,9 +3011,11 @@ msgstr ""
 msgid "Cannot find boot device of requested type %1$s"
 msgstr "Impossibile trovare il dispositivi di boot del tipo richiesto %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find byte '%1$s' stats for block device '%2$s'"
-msgstr "impossibile trovare le statistiche per il dispositivo '%s'"
+msgstr ""
+"Impossibile trovare le statistiche del byte '%1$s' per il dispositivo a "
+"blocchi '%2$s'"
 
 #, fuzzy, c-format
 msgid "Cannot find byte stats for block device '%1$s'"
@@ -3059,13 +3066,13 @@ msgstr "Impossibile determinare il contesto di '%1$s'"
 msgid "Cannot get interface MTU on '%1$s'"
 msgstr "Impossibile determinare il contesto di '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot get interface flags on '%1$s'"
-msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+msgstr "Impossibile ottenere le flag dell'interfaccia su '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot get interface name for index '%1$i'"
-msgstr "nessuna interfaccia di rete fornita per '%s'"
+msgstr "Impossibile ottenere il nome dell'interfaccia per l'indice '%1$i'"
 
 msgid "Cannot get max allocation from resctrl memory info"
 msgstr ""
@@ -3185,9 +3192,9 @@ msgstr "nessuna interfaccia di rete fornita per '%s'"
 msgid "Cannot open resctrl"
 msgstr "impossibile aprire resctrl"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse '%1$s' stat '%2$s'"
-msgstr "impossibile analizzare video ram '%s'"
+msgstr "Impossibile analizzare la statistica '%2$s' di '%1$s'"
 
 msgid "Cannot parse 'memory.stat' cgroup file."
 msgstr "Impossibile analizzare il file di cgroup 'memory.stat'."
@@ -3284,9 +3291,9 @@ msgstr ""
 msgid "Cannot parse blkio cgroup ('%1$s') entry '%2$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse byte '%1$s' stat '%2$s'"
-msgstr "impossibile analizzare video ram '%s'"
+msgstr "Impossibile analizzare la statistica del byte '%2$s' di '%1$s'"
 
 #, fuzzy, c-format
 msgid "Cannot parse category in %1$s"
@@ -3307,9 +3314,9 @@ msgstr "Errore nel parsing del controller indice %1$s"
 msgid "Cannot parse socket address '%1$s': %2$s"
 msgstr "Errore nel parsing dell'indirizzo MAC '%1$s' della rete '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot parse socket service '%1$s': %2$s"
-msgstr "impossibile analizzare il dispositivo %s"
+msgstr "Impossibile analizzare il servizio socket '%1$s': %2$s"
 
 #, c-format
 msgid "Cannot parse start time %1$s for pid %2$d"
@@ -3338,9 +3345,9 @@ msgid ""
 "floor=%3$llu would overcommit peak=%4$llu on network '%5$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot print data type %1$x"
-msgstr "tipo di interfaccia sconosciuta %s"
+msgstr "Impossibile stampare il tipo di dato %1$x"
 
 #, c-format
 msgid "Cannot read %1$s '%2$s'"
@@ -3370,9 +3377,9 @@ msgstr "impossibile rimuovere il file di configurazione '%1$s'"
 msgid "Cannot remove uninitialized CURL handle from a multi handle"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot rename checkpoint %1$s to %2$s"
-msgstr "impossibile leggere la lista di mount '%s'"
+msgstr "Impossibile rinominare il checkpoint %1$s in %2$s"
 
 #, c-format
 msgid "Cannot rename interface '%1$s' to '%2$s' on this platform"
@@ -3383,9 +3390,9 @@ msgstr ""
 msgid "Cannot resize the max memory on an active domain"
 msgstr "impossibile collegare le vcpu su di un dominio inattivo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot resolve %1$s address: %2$s"
-msgstr "Impossibile risolvere l'indirizzo ::1: %s"
+msgstr "Impossibile risolvere l'indirizzo %1$s: %2$s"
 
 msgid "Cannot run interactive console without a controlling TTY"
 msgstr ""
@@ -3406,9 +3413,9 @@ msgstr "impossibile impostare la modalità del file '%s'"
 msgid "Cannot set autostart for transient domain"
 msgstr "Impossibile impostare l'avvio automatico per un dominio temporaneo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set close-on-exec %1$d"
-msgstr "impossibile impostare il proprietario del file '%s'"
+msgstr "Impossibile impostare close-on-exec %1$d"
 
 #, fuzzy
 msgid "Cannot set close-on-exec flag for socket"
@@ -3434,9 +3441,9 @@ msgstr "impossibile impostare il proprietario del file '%1$s'"
 msgid "Cannot set interface MAC to %1$s for ifname %2$s vf %3$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set interface MAC to %1$s on '%2$s'"
-msgstr "nessuna interfaccia di rete fornita per '%s'"
+msgstr "Impossibile impostare il MAC dell'interfaccia su %1$s su '%2$s'"
 
 #, fuzzy, c-format
 msgid "Cannot set interface MTU on '%1$s'"
@@ -3453,9 +3460,9 @@ msgstr ""
 msgid "Cannot set memory higher than max memory"
 msgstr "Impossibile impostare la memoria ad un valore maggiore del massimo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot set scheduler parameters for pid %1$lld"
-msgstr "mostrare/impostare i parametri dello scheduler"
+msgstr "Impossibile impostare i parametri dello scheduler per pid %1$lld"
 
 msgid "Cannot setup CPU affinity until process is started"
 msgstr ""
@@ -3481,9 +3488,9 @@ msgstr ""
 msgid "Cannot specify relabel if label is missing. model=%1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot stat %1$s"
-msgstr "impossibile eseguire stat fd %d"
+msgstr "Impossibile ottenere lo stato di %1$s"
 
 #, fuzzy, c-format
 msgid "Cannot stat '%1$s'"
@@ -3642,9 +3649,8 @@ msgstr "Cambia la directory corrente."
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Modifica l'allocazione della memoria attuale nel dominio guest."
 
-#, fuzzy
 msgid "Change the current number of priority workers"
-msgstr "Modifica l'allocazione della memoria attuale nel dominio guest."
+msgstr "Modifica il numero attuale di lavoratori prioritari"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
@@ -3678,9 +3684,10 @@ msgstr ""
 "La modifica della modalità di accesso del filesystem non è supportata dal "
 "driver vz."
 
-#, fuzzy
 msgid "Changing fs write policy is not supported by vz driver."
-msgstr "il meccanismo SASL %s non è supportato dal server"
+msgstr ""
+"La modifica della politica di scrittura del file system non è supportata dal "
+"driver vz."
 
 msgid ""
 "Check /dev/kvm is world writable or you are in a group that is allowed to "
@@ -4091,9 +4098,8 @@ msgstr ""
 msgid "Container ID is not specified"
 msgstr "L'ID del container non è specificato"
 
-#, fuzzy
 msgid "Container does not provide an initctl pipe"
-msgstr "Il container non è definito"
+msgstr "Il container non fornisce una pipe initctl"
 
 msgid "Container is not defined"
 msgstr "Il container non è definito"
@@ -4118,9 +4124,10 @@ msgstr ""
 msgid "Convert native config to domain XML"
 msgstr "converte un nome o un id di dominio in un UUID di dominio"
 
-#, fuzzy
 msgid "Convert native guest configuration format to domain XML format."
-msgstr "Modifica della configurazione XML per un dominio"
+msgstr ""
+"Converte il formato di configurazione nativo del guest nel formato XML del "
+"dominio."
 
 msgid "Copy a disk backing image chain to dest."
 msgstr ""
@@ -4201,13 +4208,13 @@ msgstr "Impossibile modificare i parametri della memoria: %1$s"
 msgid "Could not change scheduler parameters: %1$s"
 msgstr "Impossibile modificare i parametri dello scheduler: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not chown on swtpm logfile %1$s"
-msgstr "errore durante la chiusura del logfile"
+msgstr "Impossibile modificare il proprietario sul file di registro swtpm %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not complete transfer: %1$s (%2$d)"
-msgstr "Impossibile creare lo snapshot: %s"
+msgstr "Impossibile completare il trasferimento: %1$s (%2$d)"
 
 msgid "Could not configure network"
 msgstr "Impossibile configurare la rete"
@@ -4215,9 +4222,9 @@ msgstr "Impossibile configurare la rete"
 msgid "Could not convert domain name to VEID"
 msgstr "Impossibile convertire il nome del dominio in VEID"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not convert from %1$s to UTF-8 encoding"
-msgstr "Impossibile convertire il nome del dominio in VEID"
+msgstr "Impossibile convertire da %1$s alla codifica UTF-8"
 
 msgid "Could not copy an XML node"
 msgstr "Impossibile copiare un nodo XML"
@@ -4245,21 +4252,21 @@ msgstr "Impossibile creare il volume: %s"
 msgid "Could not create XML document"
 msgstr "Impossibile creare il volume: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create base storage, rc=%1$08x"
-msgstr "Impossibile creare lo snapshot: %s"
+msgstr "Impossibile creare l'archiviazione di base, rc=%1$08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create directory %1$s as %2$u:%3$d"
-msgstr "impossibile creare la cartella %s"
+msgstr "Impossibile creare la directory %1$s come %2$u:%3$d"
 
 #, fuzzy
 msgid "Could not create filter"
 msgstr "Impossibile creare il volume: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not create harddisk, rc=%1$08x"
-msgstr "Impossibile creare lo snapshot: %s"
+msgstr "Impossibile creare il disco rigido, rc=%1$08x"
 
 msgid "Could not create log directory"
 msgstr ""
@@ -4310,9 +4317,9 @@ msgstr ""
 msgid "Could not destroy domain: %1$s"
 msgstr "Impossibile distruggere il dominio: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not dlsym %1$s from '%2$s': %3$s"
-msgstr "Impossibile effettuare il lookup di '%s' da '%s'"
+msgstr "Impossibile eseguire dlsym %1$s da '%2$s': %3$s"
 
 msgid "Could not extract VirtualBox version"
 msgstr "Impossibile estrarre la versione di VirtualBox"
@@ -4328,9 +4335,9 @@ msgstr "Impossibile definire il dominio: %1$s"
 msgid "Could not find %1$s controller with index %2$d required for device"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find %1$s with name '%2$s'"
-msgstr "Impossibile trovare uno snapshot con nome '%s'"
+msgstr "Impossibile trovare %1$s con il nome '%2$s'"
 
 msgid "Could not find 'active' element"
 msgstr "Impossibile trovare l'elemento 'active'"
@@ -4396,9 +4403,11 @@ msgstr ""
 msgid "Could not find any vport capable device"
 msgstr "Impossibile trovare il dispositivo corrispondente"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find auto-added %1$s controller with index %2$zu"
-msgstr "Impossibile trovare il datastore con nome '%s'"
+msgstr ""
+"Impossibile trovare il controller %1$s aggiunto automaticamente con indice "
+"%2$zu"
 
 #, fuzzy, c-format
 msgid "Could not find compute resource specified in '%1$s'"
@@ -4440,9 +4449,9 @@ msgstr "Impossibile trovare un dominio con nome '%1$s'"
 msgid "Could not find host system specified in '%1$s'"
 msgstr "Impossibile trovare il datastore con nome '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not find matching device '%1$s'"
-msgstr "Impossibile trovare il dispositivo corrispondente"
+msgstr "Impossibile trovare un dispositivo corrispondente a '%1$s'"
 
 #, c-format
 msgid "Could not find parent device for '%1$s'"
@@ -4521,9 +4530,11 @@ msgstr "Impossibile ripristinare il dominio: %s"
 msgid "Could not generate eth name for container"
 msgstr "Impossibile generare il nome eth per il container"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not generate medium name for the disk at: port:%1$d, slot:%2$d"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr ""
+"Impossibile generare il nome del supporto per il disco a: porta:%1$d, "
+"slot:%2$d"
 
 #, fuzzy
 msgid "Could not generate next class ID"
@@ -4557,9 +4568,9 @@ msgstr "Impossibile impostare l'UUID"
 msgid "Could not get UUID of virtual machine"
 msgstr "Impossibile determinare l'UUID della virtual machine"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get Virtual functions on %1$s"
-msgstr "Impossibile estrarre la versione di VirtualBox"
+msgstr "Impossibile ottenere le funzioni virtuali su %1$s"
 
 #, c-format
 msgid "Could not get access to ACL tech driver '%1$s'"
@@ -4589,9 +4600,9 @@ msgstr ""
 msgid "Could not get free memory for host %1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr "Impossibile ottenere l'ID istanza per l'invocazione di %1$s"
 
 #, c-format
 msgid ""
@@ -4613,13 +4624,15 @@ msgstr "impossibile determinare l'indirizzo MAC per l'interfaccia %s"
 msgid "Could not get interface list for '%1$s'"
 msgstr "nessuna interfaccia di rete fornita per '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get iterator index for (internal) iterator ID %1$u"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr ""
+"Impossibile ottenere l'indice dell'iteratore per l'ID dell'iteratore "
+"(interno) %1$u"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get iterator index for iterator ID %1$u"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr "Impossibile ottenere l'indice per l'ID dell'iteratore %1$u"
 
 msgid "Could not get list of Defined Domains"
 msgstr ""
@@ -4648,9 +4661,9 @@ msgstr "Impossibile ottenere l'accesso al driver ACL tech '%1$s'"
 msgid "Could not get name of virtual machine"
 msgstr "Impossibile determinare il nome della virtual machine"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get nth (%1$u) value of variable '%2$s'"
-msgstr "Impossibile determinare il nome della virtual machine"
+msgstr "Impossibile ottenere il valore n-esimo (%1$u) della variabile '%2$s'"
 
 msgid "Could not get number of Defined Domains"
 msgstr ""
@@ -4683,9 +4696,9 @@ msgstr "Impossibile determinare l'ora corrente"
 msgid "Could not get response items"
 msgstr "Impossibile determinare l'ora corrente"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not get return value for %1$s invocation"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr "Impossibile ottenere il valore di ritorno per l'invocazione di %1$s"
 
 #, fuzzy
 msgid "Could not get root node of XML document"
@@ -4717,9 +4730,8 @@ msgstr ""
 msgid "Could not get syspath for parent of '%1$s'"
 msgstr "Impossibile determinare il dispositivo parent per '%1$s'"
 
-#, fuzzy
 msgid "Could not get temp xml doc root"
-msgstr "Impossibile generare il nome eth per il container"
+msgstr "Impossibile ottenere la root del documento XML temporaneo"
 
 #, c-format
 msgid "Could not get version information for host %1$s"
@@ -4838,9 +4850,9 @@ msgid "Could not migrate domain, validation reported a problem: %1$s"
 msgstr ""
 "Impossibile migrare il dominio, la validazione ha riportato un problema: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open '%1$s' to trigger host scan"
-msgstr "Impossibile effettuare il lookup del datastore host mount"
+msgstr "Impossibile aprire '%1$s' per avviare la scansione dell'host"
 
 msgid "Could not open /proc/net/dev"
 msgstr "Impossibile aprire /proc/net/dev"
@@ -4853,37 +4865,37 @@ msgstr "Impossibile aprire il dispositivo TPM %1$s"
 msgid "Could not open TPM device's cancel path %1$s"
 msgstr "Impossibile determinare il dispositivo parent per '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/arp_interval' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/arp_interval' '%1$s' per '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/arp_validate' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/arp_validate' '%1$s' per '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/downdelay' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/downdelay' '%1$s' per '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/miimon' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/miimon' '%1$s' per '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/mode' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/mode' '%1$s' per '%2$s'"
 
 #, fuzzy, c-format
 msgid "Could not parse 'bonding/updelay' '%1$s' for '%2$s'"
 msgstr "Impossibile effettuare il lookup di '%1$s' da '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bonding/use_carrier' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bonding/use_carrier' '%1$s' per '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse 'bridge/stp_state' '%1$s' for '%2$s'"
-msgstr "Errore nel parsing di un intero positivo da '%s'"
+msgstr "Impossibile analizzare 'bridge/stp_state' '%1$s' per '%2$s'"
 
 #, fuzzy, c-format
 msgid "Could not parse MTU value '%1$s'"
@@ -4905,14 +4917,18 @@ msgstr "Errore nel parsing dell'UUID nella stringa '%1$s'"
 msgid "Could not parse VPS ID %1$s"
 msgstr "Impossibile analizzare l'ID VPS %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Could not parse barrier and limit of '%1$s' from config for container %2$d"
-msgstr "Impossibile leggere 'NETIF' dalla configurazione per il container %d"
+msgstr ""
+"Impossibile analizzare il limite e la barriera di '%1$s' dalla "
+"configurazione per il contenitore %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse barrier of '%1$s' from config for container %2$d"
-msgstr "Impossibile leggere 'NETIF' dalla configurazione per il container %d"
+msgstr ""
+"Impossibile analizzare la barriera di '%1$s' dalla configurazione per il "
+"contenitore %2$d"
 
 #, fuzzy, c-format
 msgid "Could not parse chain priority '%1$s'"
@@ -4982,13 +4998,12 @@ msgstr "Impossibile leggere la configurazione del container"
 msgid "Could not read embedded param hash table"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not read schemata file for group %1$s"
-msgstr "Impossibile leggere la configurazione per il container %d"
+msgstr "Impossibile leggere il file schemata per il gruppo %1$s"
 
-#, fuzzy
 msgid "Could not read schemata file for the default group"
-msgstr "Impossibile leggere la configurazione per il container %d"
+msgstr "Impossibile leggere il file di schemi per il gruppo predefinito"
 
 #, fuzzy
 msgid "Could not read type information"
@@ -5030,13 +5045,13 @@ msgstr "Errore nel parsing di un intero positivo da '%1$s'"
 msgid "Could not retrieve 'bonding/use_carrier' for '%1$s'"
 msgstr "Errore nel parsing di un intero positivo da '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not retrieve 'bridge/forward_delay' for '%1$s'"
-msgstr "Impossibile reperire il resource pool"
+msgstr "Impossibile recuperare 'bridge/forward_delay' per '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not retrieve 'bridge/stp_state' for '%1$s'"
-msgstr "Impossibile reperire il resource pool"
+msgstr "Impossibile recuperare 'bridge/stp_state' per '%1$s'"
 
 msgid "Could not retrieve NIC settings"
 msgstr ""
@@ -5164,9 +5179,9 @@ msgstr "Impossibile avviare il dominio: %1$s"
 msgid "Could not suspend domain: %1$s"
 msgstr "Impossibile sospendere il dominio: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not transfer data: %1$s (%2$d)"
-msgstr "Impossibile avviare il dominio: %s"
+msgstr "Impossibile trasferire i dati: %1$s (%2$d)"
 
 #, fuzzy
 msgid "Could not translate keycode"
@@ -5175,17 +5190,19 @@ msgstr "Impossibile creare il volume: %s"
 msgid "Could not verify disk address"
 msgstr "Impossibile verificare l'indirizzo del disco"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not wait for transfer: %1$s (%2$d)"
-msgstr "Impossibile leggere la configurazione per il container %d"
+msgstr "Impossibile attendere il trasferimento: %1$s (%2$d)"
 
 #, c-format
 msgid "Could not wipe volume: %1$s"
 msgstr "Impossibile azzerare il volume: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create lock file for device '%1$s' in path '%2$s'"
-msgstr "Impossibile leggere il percorso '%s' del volume target"
+msgstr ""
+"Impossibile creare il file di blocco per il dispositivo '%1$s' nel percorso "
+"'%2$s'"
 
 #, c-format
 msgid "Couldn't read volume target path '%1$s'"
@@ -5195,9 +5212,11 @@ msgstr "Impossibile leggere il percorso '%1$s' del volume target"
 msgid "Couldn't set link state on interface: %1$s"
 msgstr "impossibile determinare l'indirizzo MAC per l'interfaccia %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't write to lock file for device '%1$s' in path '%2$s'"
-msgstr "Impossibile leggere il percorso '%s' del volume target"
+msgstr ""
+"Impossibile scrivere nel file di blocco per il dispositivo '%1$s' nel "
+"percorso '%2$s'"
 
 #, c-format
 msgid "Cpu '%1$u' in node '%2$zu' is out of range of the provided bitmap"
@@ -5417,9 +5436,8 @@ msgid ""
 "a domain. The device must be started before it can be assigned to a domain."
 msgstr ""
 
-#, fuzzy
 msgid "Delete a domain checkpoint"
-msgstr "Eliminare un dato pool."
+msgstr "Eliminare un checkpoint del dominio"
 
 msgid "Delete a domain snapshot"
 msgstr "Elimina uno snapshot di dominio"
@@ -5598,9 +5616,9 @@ msgstr ""
 msgid "Device %1$s not found: could not access %2$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %1$s re-attached\n"
-msgstr "non è possibile assegnare il tipo di dispositivo '%1$s'"
+msgstr "Dispositivo %1$s riattaccato\n"
 
 #, fuzzy, c-format
 msgid "Device %1$s reset\n"
@@ -5610,17 +5628,17 @@ msgstr "Dominio %1$s ripristinato\n"
 msgid "Device %1$s started\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device %1$s un-attached from bridge %2$s\n"
-msgstr "Interfacce multiple connesse al bridge"
+msgstr "Dispositivo %1$s scollegato dal bridge %2$s\n"
 
 #, c-format
 msgid "Device %1$s unmarked as autostarted\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Device '%1$s' already formatted using '%2$s'"
-msgstr "le rete risulta già attiva come '%s'"
+msgstr "Dispositivo '%1$s' già formattato utilizzando '%2$s'"
 
 #, c-format
 msgid "Device '%1$s' is not active"
@@ -5742,9 +5760,8 @@ msgstr "Disco collegato correttamente\n"
 msgid "Disk cache mode %1$s is not supported"
 msgstr "La modalità di cache '%1$s' del disco non è supportata"
 
-#, fuzzy
 msgid "Disk copy_on_read is not supported by vz driver."
-msgstr "il meccanismo SASL %s non è supportato dal server"
+msgstr "La copia su lettura del disco non è supportata dal driver vz."
 
 msgid "Disk detached successfully\n"
 msgstr "Disco scollegato correttamente\n"
@@ -5764,13 +5781,15 @@ msgstr ""
 msgid "Disk label already formatted using '%1$s'"
 msgstr "il pool risulta già attivo con nome '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Disk source %1$s must be a block device"
-msgstr "Attributo host sorgente mancante per il dispositivo a caratteri"
+msgstr "La sorgente del disco %1$s deve essere un dispositivo a blocchi"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Disk source %1$s must be a character/block device"
-msgstr "Attributo host sorgente mancante per il dispositivo a caratteri"
+msgstr ""
+"La sorgente del disco %1$s deve essere un dispositivo di tipo carattere/"
+"blocco"
 
 #, c-format
 msgid ""
@@ -5784,9 +5803,8 @@ msgstr ""
 msgid "Display program help"
 msgstr "Mostra l'aiuto del programma"
 
-#, fuzzy
 msgid "Display the system and also the daemon version information."
-msgstr "Mostra le informazioni sulla versione di sistema."
+msgstr "Visualizza le informazioni di sistema e anche la versione del demone."
 
 msgid "Display the system version information."
 msgstr "Mostra le informazioni sulla versione di sistema."
@@ -5815,9 +5833,9 @@ msgstr "Non modificare l'etichetta di sicurezza del processo"
 msgid "Do not include features that block migration"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %1$s didn't show up"
-msgstr "Il dominio %1$s è stato arrestato\n"
+msgstr "Il dominio %1$s non è comparso"
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -5973,13 +5991,13 @@ msgstr "Dominio non trovato: %1$s"
 msgid "Domain checkpoint %1$s children deleted\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint %1$s created"
-msgstr "Dominio %s creato da %s\n"
+msgstr "Checkpoint del dominio %1$s creato"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint %1$s created from '%2$s'"
-msgstr "Dominio %1$s creato da %2$s\n"
+msgstr "Checkpoint del dominio %1\\$s creato da '%2\\$s'"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint %1$s deleted\n"
@@ -6037,9 +6055,8 @@ msgstr "Interfaccia del dominio"
 msgid "Domain is already active"
 msgstr "Il dominio è già attivo"
 
-#, fuzzy
 msgid "Domain is already active or is in state transition"
-msgstr "Il dominio è già attivo"
+msgstr "Il dominio è già attivo o è in fase di transizione di stato"
 
 msgid "Domain is already running"
 msgstr "Il dominio è già in esecuzione"
@@ -6106,7 +6123,7 @@ msgstr "Il dominio dovrebbe avere almeno un disco definito"
 
 #, fuzzy, c-format
 msgid "Domain snapshot %1$s children deleted\n"
-msgstr "Il dominio non è sospeso"
+msgstr "Figli dell’istantanea del dominio %1\\$s eliminati\n"
 
 #, fuzzy, c-format
 msgid "Domain snapshot %1$s created"
@@ -6267,9 +6284,8 @@ msgstr "Modifica la configurazione XML per un filtro di rete."
 msgid "Edit the XML configuration for a network."
 msgstr "Modifica la configurazione XML di una rete."
 
-#, fuzzy
 msgid "Edit the XML configuration for a physical host interface."
-msgstr "Modifica della configurazione XML per un dominio"
+msgstr "Modifica la configurazione XML per un’interfaccia host fisica."
 
 msgid "Edit the XML configuration for a storage pool."
 msgstr "Modifica la configurazione XML di un pool di storage."
@@ -6468,7 +6484,8 @@ msgstr "impossibile trovare il dispositivo a caratteri %1$s"
 
 #, fuzzy, c-format
 msgid "Ethernet controller index %1$d out of [0..%2$d] range"
-msgstr "il valore di typeid è fuori dal range"
+msgstr ""
+"L’indice del controller Ethernet %1\\$d è fuori dall’intervallo \\[0..%2\\$d]"
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6515,9 +6532,8 @@ msgstr "Atteso almeno un descrittore di file"
 msgid "Expected caps for '%1$s' but saw '%2$s'"
 msgstr "Previsto tipo '%1$s', trovato '%2$s'"
 
-#, fuzzy
 msgid "Expected downtime:"
-msgstr "tipo di dominio %d inaspettato"
+msgstr "Tempo di inattività previsto:"
 
 msgid "Expected exactly 1 host for the storage pool"
 msgstr "Atteso esattamente 1 host per il pool di storage"
@@ -6528,7 +6544,9 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Expecting '%1$s' to be a %2$s host but found a %3$s host"
-msgstr "Previsto tipo '%s', trovato '%s'"
+msgstr ""
+"Si prevedeva un host '%1\\$s' di tipo %2\\$s, ma è stato trovato un host di "
+"tipo %3\\$s"
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
@@ -6538,14 +6556,17 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
-msgstr "La tipologia deve iniziare con 'ArrayOf' ma trovato '%s'"
+msgstr ""
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'ata-hardDisk' o 'disk', ma è "
+"stata trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'buslogic' or 'lsilogic' or 'lsisas1068' or "
 "'pvscsi' but found '%2$s'"
 msgstr ""
-"Previsto prodotto 'gsx', 'esx', 'embeddedEsx' o 'vpx' trovato invece '%s'"
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'buslogic', 'lsilogic', "
+"'lsisas1068' o 'pvscsi', ma è stata trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid "Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"
@@ -6554,31 +6575,37 @@ msgstr "Previsto tipo '%1$s', trovato '%2$s'"
 #, fuzzy, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
 msgstr ""
-"Previsto 'HostAgent' o 'VirtualCenter' di tipo VI API trovato invece '%s'"
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'device' o 'file', ma è stata "
+"trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%2$s'"
 msgstr ""
-"Previsto prodotto 'gsx', 'esx', 'embeddedEsx' o 'vpx' trovato invece '%s'"
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'device', 'file', 'pipe' o "
+"'network', ma è stata trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'generated' or 'static' or 'vpx' but found "
 "'%2$s'"
 msgstr ""
-"Previsto prodotto 'gsx', 'esx', 'embeddedEsx' o 'vpx' trovato invece '%s'"
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'generated', 'static' o 'vpx', "
+"ma è stata trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'scsi-hardDisk' or 'disk' but found '%2$s'"
-msgstr "La tipologia deve iniziare con 'ArrayOf' ma trovato '%s'"
+msgstr ""
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'scsi-hardDisk' o 'disk', ma è "
+"stata trovata '%2\\$s'"
 
 #, fuzzy, c-format
 msgid "Expecting VMX entry '%1$s' to be 'server' or 'client' but found '%2$s'"
 msgstr ""
-"Previsto 'HostAgent' o 'VirtualCenter' di tipo VI API trovato invece '%s'"
+"Si prevedeva che la voce VMX '%1\\$s' fosse 'server' o 'client', ma è stata "
+"trovata '%2\\$s'"
 
 #, c-format
 msgid ""
@@ -6592,7 +6619,9 @@ msgstr "Previsto tipo '%1$s', trovato '%2$s'"
 
 #, fuzzy, c-format
 msgid "Expecting VMX entry 'config.version' to be 8 but found %1$lld"
-msgstr "Previsto tipo '%s', trovato '%s'"
+msgstr ""
+"Si prevedeva che la voce VMX 'config.version' fosse 8, ma è stato trovato %"
+"1\\$lld"
 
 #, c-format
 msgid ""
@@ -6631,7 +6660,9 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%1$s'"
-msgstr "Previsto tipo '%s', trovato '%s'"
+msgstr ""
+"Si prevedeva che la modalità CPU nel XML del dominio fosse 'custom', ma è "
+"stata trovata '%1\\$s'"
 
 #, c-format
 msgid "Expecting domain XML CPU sockets per core as %1$d but found %2$d"
@@ -6755,7 +6786,7 @@ msgstr "Impossibile eseguire il parsing della modalità '%1$s'"
 
 #, fuzzy, c-format
 msgid "Failed set TLS x509 credentials: %1$s"
-msgstr "Impossibile creare le credenziali per l'autenticazione"
+msgstr "Impossibile impostare le credenziali TLS x509: %1\\$s"
 
 #, fuzzy, c-format
 msgid "Failed testunitready: %1$s"
@@ -6795,11 +6826,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to add PCI device %1$s to the inactive list"
-msgstr "Impossibile elencare i pool inattivi"
+msgstr "Impossibile aggiungere il dispositivo PCI %1\\$s alla lista inattiva"
 
 #, fuzzy, c-format
 msgid "Failed to add capability %1$s: %2$d"
-msgstr "Impossibile applicare le funzioni: %d"
+msgstr "Impossibile aggiungere la funzionalità %1\\$s: %2\\$d"
 
 #, c-format
 msgid ""
@@ -6810,9 +6841,8 @@ msgstr ""
 msgid "Failed to add netlink event handle watch"
 msgstr "impossibile impostare l'handle del file per lo stdin"
 
-#, fuzzy
 msgid "Failed to add signal handle watch"
-msgstr "Impossibile compilare il percorso pidfile."
+msgstr "Impossibile aggiungere il monitoraggio del gestore del segnale"
 
 #, c-format
 msgid "Failed to add storage controller (name: %1$s, busType: %2$d)"
@@ -6853,11 +6883,11 @@ msgstr "Impossibile collegare il dispositivo da %s"
 
 #, fuzzy, c-format
 msgid "Failed to attach to pid %1$u"
-msgstr "Impossibile collegare il dispositivo da %s"
+msgstr "Impossibile collegarsi al processo con PID %1\\$u"
 
 #, fuzzy, c-format
 msgid "Failed to authenticate as 'none': %1$s"
-msgstr "Errore durante l'autostart della VM '%s': %s"
+msgstr "Autenticazione come 'none' fallita: %1\\$s"
 
 #, c-format
 msgid "Failed to autostart VM '%1$s': %2$s"
@@ -6877,19 +6907,19 @@ msgstr "Impossibile definire la rete da %s"
 
 #, fuzzy, c-format
 msgid "Failed to bind %1$s on to %2$s"
-msgstr "Impossibile creare il pool %s"
+msgstr "Impossibile associare %1\\$s a %2\\$s"
 
 #, fuzzy, c-format
 msgid "Failed to bind %1$s to new root %2$s"
-msgstr "Impossibile trovare la rete: %s"
+msgstr "Impossibile associare %1\\$s alla nuova root %2\\$s"
 
 #, fuzzy, c-format
 msgid "Failed to bind cgroup '%1$s' on '%2$s'"
-msgstr "Impossibile aprire '%s'"
+msgstr "Impossibile associare il cgroup '%1\\$s' su '%2\\$s'"
 
 #, fuzzy, c-format
 msgid "Failed to bind mount directory %1$s to %2$s"
-msgstr "Impossibile montare devpts su %s"
+msgstr "Impossibile eseguire il mount bind della directory %1\\$s su %2\\$s"
 
 #, fuzzy, c-format
 msgid "Failed to bind socket to '%1$s'"
@@ -6898,9 +6928,8 @@ msgstr "Impossibile creare il pool %1$s"
 msgid "Failed to build net json"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to build pidfile path"
-msgstr "Impossibile compilare il percorso pidfile."
+msgstr "Impossibile creare il percorso del file PID"
 
 msgid "Failed to build pidfile path."
 msgstr "Impossibile compilare il percorso pidfile."
@@ -6911,7 +6940,7 @@ msgstr "Impossibile creare il pool %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to change owner of %1$s to %2$u:%3$u"
-msgstr "impossibile impostare il proprietario di '%s' su %d:%d"
+msgstr "Impossibile modificare il proprietario di %1\\$s in %2\\$u:%3\\$u"
 
 #, fuzzy, c-format
 msgid "Failed to change ownership of '%1$s' to %2$d:%3$d"
@@ -6988,7 +7017,7 @@ msgstr "Impossibile aprire la tty %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to compare hypervisor CPU with %1$s"
-msgstr "impossibile ottenere il tipo di hypervisor"
+msgstr "Confronto della CPU dell'hypervisor con %1\\$s fallito"
 
 #, c-format
 msgid "Failed to compile regex %1$s"
@@ -6996,7 +7025,7 @@ msgstr "Compilazione regex %1$s fallita"
 
 #, fuzzy, c-format
 msgid "Failed to complete action %1$s on media"
-msgstr "Impossibile eseguire il core dump del dominio %s su %s"
+msgstr "Impossibile completare l'azione %1\\$s sul supporto"
 
 #, fuzzy
 msgid "Failed to complete tree listing"
@@ -7004,7 +7033,7 @@ msgstr "Compilazione regex %s fallita"
 
 #, fuzzy, c-format
 msgid "Failed to connect socket to '%1$s'"
-msgstr "Impossibile creare il symlink '%s' verso '%s'"
+msgstr "Impossibile connettere il socket a '%1\\$s'"
 
 #, c-format
 msgid "Failed to connect to dbus-daemon: %1$s"
@@ -7039,7 +7068,7 @@ msgstr "Impossibile convertire '%1$s' a int"
 
 #, fuzzy, c-format
 msgid "Failed to convert '%1$s' to unsigned int"
-msgstr "Impossibile convertire '%1$s' a unsigned long long"
+msgstr "Impossibile convertire '%1\\$s' in un intero senza segno"
 
 #, c-format
 msgid "Failed to convert '%1$s' to unsigned long long"
@@ -7047,7 +7076,7 @@ msgstr "Impossibile convertire '%1$s' a unsigned long long"
 
 #, fuzzy, c-format
 msgid "Failed to convert interface index %1$d to a name"
-msgstr "Impossibile ottenere informazioni sull'interfaccia"
+msgstr "Impossibile convertire l'indice dell'interfaccia %1\\$d in un nome"
 
 #, fuzzy, c-format
 msgid "Failed to convert loadparm '%1$s' to upper case"
@@ -7162,9 +7191,9 @@ msgstr "Impossibile creare la rete da %1$s"
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create iscsi context for %1$s"
-msgstr "Impossibile creare il contesto del client SASL: %d (%s)"
+msgstr "Impossibile creare il contesto iSCSI per %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to create lib dir %1$s"
@@ -7217,9 +7246,9 @@ msgstr "Impossibile riavviare il dominio %s"
 msgid "Failed to create save dir %1$s"
 msgstr "Impossibile creare il volume %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create slirp state dir %1$s"
-msgstr "Impossibile creare il symlink '%s' verso '%s'"
+msgstr "Impossibile creare la directory di stato slirp %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to create snapshot dir %1$s"
@@ -7282,9 +7311,8 @@ msgstr "Impossibile creare il volume %1$s"
 msgid "Failed to create v2 cgroup '%1$s'"
 msgstr "Impossibile creare il volume %1$s"
 
-#, fuzzy
 msgid "Failed to create vbox driver object."
-msgstr "Impossibile creare il volume da %s"
+msgstr "Impossibile creare l'oggetto driver vbox."
 
 #, c-format
 msgid "Failed to create vol %1$s"
@@ -7386,9 +7414,9 @@ msgstr "Impossibile eliminare il volume %1$s"
 msgid "Failed to destroy bridge interface %1$s"
 msgstr "Impossibile distruggere il dominio %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy domain '%1$d'"
-msgstr "Impossibile distruggere il dominio %s"
+msgstr "Impossibile distruggere il dominio '%1$d'"
 
 #, c-format
 msgid "Failed to destroy domain '%1$s'"
@@ -7402,9 +7430,9 @@ msgstr "Impossibile distruggere la rete %1$s"
 msgid "Failed to destroy network %1$s"
 msgstr "Impossibile distruggere la rete %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy node device '%1$s'"
-msgstr "Impossibile elencare i dispositivi nodo"
+msgstr "Impossibile distruggere il dispositivo nodo '%1$s'"
 
 #, c-format
 msgid "Failed to destroy pool %1$s"
@@ -7430,9 +7458,9 @@ msgstr "Impossibile staccare il dispositivo da %s"
 msgid "Failed to detach interface"
 msgstr "Impossibile ottenere informazioni sull'interfaccia"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine broadcast address for '%1$s/%2$d'"
-msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+msgstr "Impossibile determinare l'indirizzo di broadcast per '%1$s/%2$d'"
 
 #, c-format
 msgid "Failed to determine if %1$u:%2$u:%3$u:%4$u is a Direct-Access LUN"
@@ -7451,9 +7479,9 @@ msgstr ""
 msgid "Failed to determine state of guest: $guest. Not tracking it anymore."
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect client '%1$llu' from server %2$s"
-msgstr "Impossibile definire il dominio da %s"
+msgstr "Impossibile disconnettere il client '%1$llu' dal server %2$s"
 
 #, fuzzy
 msgid "Failed to disconnect from the admin server"
@@ -7470,9 +7498,10 @@ msgstr "Impossibile creare %1$s"
 msgid "Failed to discover session: %1$s"
 msgstr "Impossibile eseguire il fork come demone: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dump core of domain '%1$d' with libxenlight"
-msgstr "Impossibile eseguire il core dump del dominio %s su %s"
+msgstr ""
+"Impossibile eseguire il dump del core del dominio '%1$d' con libxenlight"
 
 #, fuzzy, c-format
 msgid "Failed to enable controller '%1$s' for '%2$s'"
@@ -7532,9 +7561,9 @@ msgstr "Impossibile trovare sorgenti di pool %1$s"
 msgid "Failed to find fc_host for wwnn='%1$s' and wwpn='%2$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find group record for gid '%1$u'"
-msgstr "Impossibile trovare un nodo driver: %s"
+msgstr "Impossibile trovare il record del gruppo per gid '%1$u'"
 
 #, fuzzy, c-format
 msgid "Failed to find module '%1$s'"
@@ -7548,9 +7577,9 @@ msgstr "Impossibile determinare il dispositivo parent per '%1$s'"
 msgid "Failed to find scsi_host using PCI '%1$s' and unique_id='%2$u'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find symbol '%1$s' in module '%2$s': %3$s"
-msgstr "Impossibile creare il symlink '%s' verso '%s'"
+msgstr "Impossibile trovare il simbolo '%1$s' nel modulo '%2$s': %3$s"
 
 #, fuzzy
 msgid "Failed to find the interface"
@@ -7567,9 +7596,9 @@ msgstr "Impossibile trovare la rete"
 msgid "Failed to find the network: %1$s"
 msgstr "Impossibile trovare la rete: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find user record for uid '%1$u'"
-msgstr "Impossibile trovare un nodo driver: %s"
+msgstr "Impossibile trovare il record dell'utente per uid '%1$u'"
 
 #, c-format
 msgid "Failed to fork as daemon: %1$s"
@@ -7594,9 +7623,9 @@ msgstr "Impossibile generare UUID"
 msgid "Failed to generate genid"
 msgstr "Impossibile generare UUID"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get %1$s minor number"
-msgstr "Impossibile ottenere informazioni sul disco"
+msgstr "Impossibile ottenere il numero minore di %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%1$s'"
@@ -7695,9 +7724,9 @@ msgstr "Impossibile ottenere statistiche sull'interfaccia %1$s %2$s"
 msgid "Failed to get leases info for %1$s"
 msgstr "Impossibile eliminare il pool %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get memory statistics for domain %1$s"
-msgstr "Errore durante l'impostazione della memoria per il dominio"
+msgstr "Impossibile ottenere le statistiche della memoria per il dominio %1$s"
 
 #, fuzzy
 msgid "Failed to get network autostart state"
@@ -8329,9 +8358,9 @@ msgstr "Impossibile riassegnare il dispositivo PCI: %1$s"
 msgid "Failed to re-attach device %1$s"
 msgstr "Impossibile riassegnare il dispositivo PCI: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to re-mount %1$s on %2$s flags=0x%3$x"
-msgstr "Impossibile montare devpts su %s"
+msgstr "Impossibile rimontare %1$s su %2$s con flag=0x%3$x"
 
 #, fuzzy, c-format
 msgid "Failed to read %1$s"
@@ -8352,9 +8381,9 @@ msgstr "impossibile abilitare il filtro mac in '%1$s'"
 msgid "Failed to read PCI config space for %1$s"
 msgstr "Impossibile analizzare l'indirizzo di configurazione PCI '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read RDP port value, rc=%1$08x"
-msgstr "Impossibile creare il volume %s"
+msgstr "Impossibile leggere il valore della porta RDP, rc=%1$08x"
 
 #, fuzzy, c-format
 msgid "Failed to read checkpoint file %1$s"
@@ -8392,21 +8421,20 @@ msgstr "Impossibile eseguire l'istantanea: %1$s"
 msgid "Failed to read system token '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to read the container continue message"
-msgstr "Impossibile leggere il mesaggio di continua container"
+msgstr "Impossibile leggere il messaggio di continuazione del container"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to readdir for %1$s (%2$d)"
-msgstr "Impossibile creare il dominio da %s"
+msgstr "Impossibile leggere la directory per %1$s (%2$d)"
 
 #, fuzzy, c-format
 msgid "Failed to reattach NVMe for disk target: %1$s"
 msgstr "Impossibile riassegnare il dispositivo PCI: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reboot domain '%1$d' with libxenlight"
-msgstr "Impossibile riavviare il dominio %s"
+msgstr "Impossibile riavviare il dominio '%1$d' con libxenlight."
 
 #, c-format
 msgid "Failed to reboot domain '%1$s'"
@@ -8451,9 +8479,9 @@ msgstr "impossibile creare il socket"
 msgid "Failed to release lock: %1$s"
 msgstr "Impossibile creare il volume %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove capability %1$s: %2$d"
-msgstr "Impossibile applicare le funzioni: %d"
+msgstr "Impossibile rimuovere la capacità %1$s: %2$d"
 
 #, fuzzy
 msgid "Failed to remove domain managed save image"
@@ -8471,9 +8499,9 @@ msgstr ""
 msgid "Failed to remove managed save path '%1$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove storage volume '%1$s'(%2$s)"
-msgstr "Impossibile creare il volume %s"
+msgstr "Impossibile rimuovere il volume di storage '%1$s' (%2$s)"
 
 #, c-format
 msgid "Failed to remove the file: %1$s"
@@ -8487,13 +8515,13 @@ msgstr "Impossibile creare il pool %1$s"
 msgid "Failed to request maximum NUMA node id"
 msgstr "Impossibile ripristinare il dominio %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %1$d"
-msgstr "Impossibile aggiornare il pool %s"
+msgstr "Impossibile riservare la porta %1$d."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %1$zu"
-msgstr "Impossibile aggiornare il pool %s"
+msgstr "Impossibile riservare la porta %1$zu."
 
 #, c-format
 msgid "Failed to reset PCI device: %1$s"
@@ -8543,13 +8571,13 @@ msgstr "Impossibile avviare il pool %s"
 msgid "Failed to restrict process: %1$s"
 msgstr "Impossibile avviare il pool %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resume domain '%1$d'"
-msgstr "Impossibile ripristinare il dominio %s"
+msgstr "Impossibile riprendere il dominio '%1$d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resume domain '%1$d' with libxenlight"
-msgstr "Impossibile ripristinare il dominio %s"
+msgstr "Impossibile riprendere il dominio '%1$d' con libxenlight"
 
 #, c-format
 msgid "Failed to resume domain '%1$s'"
@@ -8569,9 +8597,8 @@ msgid ""
 "Destroying VM"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to retrieve current vcpu count"
-msgstr "impossibile eseguire il container clone"
+msgstr "Impossibile recuperare il conteggio attuale dei vcpu"
 
 msgid "Failed to retrieve image data"
 msgstr ""
@@ -8624,9 +8651,9 @@ msgstr ""
 msgid "Failed to save domain"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save domain '%1$d' with libxenlight"
-msgstr "Impossibile salvare il dominio %s su %s"
+msgstr "Impossibile salvare il dominio '%1$d' con libxenlight"
 
 #, c-format
 msgid "Failed to save domain '%1$s' state"
@@ -8644,13 +8671,12 @@ msgstr ""
 msgid "Failed to seek to the start in volume with path '%1$s'"
 msgstr "Impossibile processare il dispositivo SCSI con percorso sysfs '%1$s'"
 
-#, fuzzy
 msgid "Failed to send continue signal to controller"
-msgstr "impossibile eseguire il container clone"
+msgstr "Impossibile inviare il segnale di continuazione al controller"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to send file descriptor %1$d"
-msgstr "Impossibile impostare il flag non-blocking del file descriptor"
+msgstr "Impossibile inviare il descrittore di file %1$d"
 
 #, fuzzy, c-format
 msgid "Failed to send inquiry command: %1$s"
@@ -8673,21 +8699,21 @@ msgstr ""
 msgid "Failed to serialize snapshot"
 msgstr "Impossibile eseguire l'istantanea: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set %1$s for %2$s: value too large"
-msgstr "Impossibile ripristinare il guest %s dopo l'errore"
+msgstr "Impossibile impostare %1$s per %2$s: valore troppo grande"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set TLS session priority to %1$s: %2$s"
-msgstr "Impostazione contesto di sicurezza fallita del monitor per %s"
+msgstr "Impossibile impostare la priorità della sessione TLS su %1$s: %2$s"
 
 #, fuzzy, c-format
 msgid "Failed to set attributes from %1$s"
 msgstr "Impossibile avviare il dominio %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set bridge %1$s %2$s via ioctl"
-msgstr "Impossibile ripristinare il guest %s dopo l'errore"
+msgstr "Impossibile impostare il bridge %1$s %2$s tramite ioctl"
 
 #, c-format
 msgid "Failed to set bridge delay %1$d in xml document"
@@ -8697,28 +8723,30 @@ msgstr ""
 msgid "Failed to set bridge interface type to 'bridge' in xml document"
 msgstr "l'interfaccia bridge non presenta l'elemento bridge"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set close-on-exec flag '%1$s'"
-msgstr "Impossibile impostare il flag close-on-exec del monitor"
+msgstr "Impossibile impostare il flag close-on-exec '%1$s'"
 
 #, c-format
 msgid "Failed to set com port %1$s: does not start with '/dev/nmdm'."
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set credential: %1$s"
-msgstr "Impossibile creare le credenziali per l'autenticazione"
+msgstr "Impossibile impostare le credenziali: %1$s"
 
 msgid "Failed to set hostname"
 msgstr "Impossibile impostare il nome host"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set interface name to '%1$s' in xml document"
-msgstr "Impossibile ottenere informazioni sull'interfaccia"
+msgstr ""
+"Impossibile impostare il nome dell'interfaccia su '%1$s' nel documento XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set interface type to '%1$s' in xml document"
-msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+msgstr ""
+"Impossibile impostare il tipo di interfaccia su '%1$s' nel documento XML."
 
 #, c-format
 msgid "Failed to set logging priority, argument '%1$s' is invalid"
@@ -8732,9 +8760,11 @@ msgstr ""
 msgid "Failed to set master bridge interface name to '%1$s' in xml document"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set maximum memory for domain '%1$d' with libxenlight"
-msgstr "Errore durante l'impostazione della memoria per il dominio"
+msgstr ""
+"Impossibile impostare la memoria massima per il dominio '%1$d' con "
+"libxenlight"
 
 msgid "Failed to set memory for domain"
 msgstr "Errore durante l'impostazione della memoria per il dominio"
@@ -8898,9 +8928,9 @@ msgstr ""
 msgid "Failed to symlink device %1$s to %2$s"
 msgstr "Impossibile creare il dispositivo %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to terminate process %1$lld with SIG%2$s"
-msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+msgstr "Impossibile terminare il processo %1$lld con SIG%2$s."
 
 #, c-format
 msgid "Failed to translate bridge '%1$s' prefix %2$d to netmask"
@@ -8922,17 +8952,17 @@ msgstr "errore nella creazione del file di log %1$s"
 msgid "Failed to truncate pid file '%1$s'"
 msgstr "Impossibile creare il pool %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to truncate volume with path '%1$s' to %2$ju bytes"
-msgstr "Impossibile creare il symlink '%s' verso '%s'"
+msgstr "Impossibile troncare il volume con percorso '%1$s' a %2$ju byte."
 
 #, fuzzy, c-format
 msgid "Failed to truncate volume with path '%1$s' to 0 bytes"
 msgstr "Nessun volume di storage con chiave o percorso '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unbind PCI device '%1$s' from %2$s"
-msgstr "Impossibile staccare il dispositivo da %s"
+msgstr "Impossibile scollegare il dispositivo PCI '%1$s' da %2$s."
 
 #, fuzzy, c-format
 msgid "Failed to undefine bridge interface %1$s"
@@ -9002,13 +9032,13 @@ msgstr "Impossibile sospendere il dominio %s"
 msgid "Failed to update %1$s"
 msgstr "Impossibile creare %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update %1$s XML configuration"
-msgstr "errore nel parsing del file di configurazione"
+msgstr "Impossibile aggiornare la configurazione XML di %1$s."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update '%1$s' of node mode for target '%2$s'"
-msgstr "Impossibile eseguire il parsing della modalità '%s'"
+msgstr "Impossibile aggiornare '%1$s' della modalità nodo per il target '%2$s'."
 
 #, fuzzy, c-format
 msgid "Failed to update device from %1$s"
@@ -9034,35 +9064,36 @@ msgstr "Impossibile inizializzare il certificato"
 msgid "Failed to wipe vol %1$s"
 msgstr "Impossibile creare il volume %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write %1$zu bytes to storage volume with path '%2$s'"
-msgstr "Nessun volume di storage con chiave o percorso '%s'"
+msgstr ""
+"Impossibile scrivere %1$zu byte nel volume di archiviazione con percorso "
+"'%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write '%1$s'"
-msgstr "Impossibile aprire '%1$s'"
+msgstr "Impossibile scrivere '%1$s'"
 
 msgid "Failed to write file header"
-msgstr ""
+msgstr "Impossibile scrivere l'intestazione del file"
 
 msgid "Failed to write pixel data"
-msgstr ""
+msgstr "Impossibile scrivere i dati dei pixel"
 
-#, fuzzy
 msgid "Failed to write save file header"
-msgstr "impossibile leggere l'intestazione qemu"
+msgstr "Impossibile scrivere l'intestazione del file di salvataggio"
 
 #, c-format
 msgid "Failed to write system token '%1$s'"
-msgstr ""
+msgstr "Impossibile scrivere il token di sistema '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write to pid file '%1$s'"
-msgstr "Impossibile scrivere sul file pid '%s/%s.pid'"
+msgstr "Impossibile scrivere nel file pid '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write vmx file '%1$s'"
-msgstr "%s: impossibile scrivere il file di log: %s"
+msgstr "Impossibile scrivere il file vmx '%1$s'."
 
 msgid "Failed to write xml definition"
 msgstr ""
@@ -9385,9 +9416,9 @@ msgstr "Determina statistiche sulla memoria di un dominio in esecuzione."
 msgid "Get network interface stats for a running domain."
 msgstr "Ottieni statistiche interfaccia di rete per un dominio."
 
-#, fuzzy
 msgid "Get network interfaces' addresses for a running domain"
-msgstr "Ottieni statistiche interfaccia di rete per un dominio."
+msgstr ""
+"Ottieni gli indirizzi delle interfacce di rete per un dominio in esecuzione"
 
 #, fuzzy
 msgid "Get or set blkio parameters"
@@ -9456,9 +9487,8 @@ msgstr ""
 msgid "Get the name of the parent of a snapshot"
 msgstr "il dominio non ha alcuna istantanea corrente"
 
-#, fuzzy
 msgid "Get the summary of block devices for a domain."
-msgstr "ottieni statistiche dei blocchi del dispositivo per un dominio"
+msgstr "Ottieni il riepilogo dei dispositivi di blocco per un dominio."
 
 msgid "Get the summary of throttle groups for a domain."
 msgstr ""
@@ -9523,9 +9553,8 @@ msgstr "L'agente del guest non risponde: %1$s"
 msgid "Guest networking is not supported by this version of ch"
 msgstr ""
 
-#, fuzzy
 msgid "HMAT is not supported with this QEMU"
-msgstr "SATA non è supportato con questo binario di QEMU"
+msgstr "HMAT non è supportato con questo QEMU"
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'"
@@ -9758,9 +9787,8 @@ msgstr "Manca IFLA_VF_PORTS"
 msgid "IO Weight"
 msgstr ""
 
-#, fuzzy
 msgid "IO error on stdin"
-msgstr "Nessun errore trovato\n"
+msgstr "Errore di IO su stdin"
 
 msgid "IO error stdout"
 msgstr ""
