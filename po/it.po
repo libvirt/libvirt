@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-05-27 08:29+0000\n"
-"PO-Revision-Date: 2025-06-02 21:09+0000\n"
-"Last-Translator: Andrea Morelli <morelliandrea973@gmail.com>\n"
+"PO-Revision-Date: 2025-06-14 19:41+0000\n"
+"Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/it/>\n"
 "Language: it\n"
@@ -5995,9 +5995,9 @@ msgstr ""
 msgid "Domain checkpoint %1$s created"
 msgstr "Checkpoint del dominio %1$s creato"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain checkpoint %1$s created from '%2$s'"
-msgstr "Checkpoint del dominio %1\\$s creato da '%2\\$s'"
+msgstr "Checkpoint del dominio %1$s creato da '%2$s'"
 
 #, fuzzy, c-format
 msgid "Domain checkpoint %1$s deleted\n"
@@ -6121,9 +6121,9 @@ msgstr "Dominio ripristinato da %1$s\n"
 msgid "Domain should have at least one disk defined"
 msgstr "Il dominio dovrebbe avere almeno un disco definito"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %1$s children deleted\n"
-msgstr "Figli dell’istantanea del dominio %1\\$s eliminati\n"
+msgstr "Figli dell’istantanea del dominio %1$s eliminati\n"
 
 #, fuzzy, c-format
 msgid "Domain snapshot %1$s created"
@@ -6482,10 +6482,10 @@ msgstr ""
 msgid "Escape character is %1$s"
 msgstr "impossibile trovare il dispositivo a caratteri %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Ethernet controller index %1$d out of [0..%2$d] range"
 msgstr ""
-"L’indice del controller Ethernet %1\\$d è fuori dall’intervallo \\[0..%2\\$d]"
+"L’indice del controller Ethernet %1$d è fuori dall’intervallo \\[0..%2$d]"
 
 #, fuzzy
 msgid "Event thread is already running"
@@ -6542,49 +6542,49 @@ msgstr "Atteso esattamente 1 host per il pool di storage"
 msgid "Expecting %1$d FD names but got %2$u"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting '%1$s' to be a %2$s host but found a %3$s host"
 msgstr ""
-"Si prevedeva un host '%1\\$s' di tipo %2\\$s, ma è stato trovato un host di "
-"tipo %3\\$s"
+"Si prevedeva un host '%1$s' di tipo %2$s, ma è stato trovato un host di tipo "
+"%3$s"
 
 #, c-format
 msgid "Expecting VI API type 'HostAgent' or 'VirtualCenter' but found '%1$s'"
 msgstr ""
 "Previsto 'HostAgent' o 'VirtualCenter' di tipo VI API trovato invece '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'ata-hardDisk' or 'disk' but found '%2$s'"
 msgstr ""
-"Si prevedeva che la voce VMX '%1\\$s' fosse 'ata-hardDisk' o 'disk', ma è "
-"stata trovata '%2\\$s'"
+"Si prevedeva che la voce VMX '%1$s' fosse 'ata-hardDisk' o 'disk', ma è "
+"stata trovata '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'buslogic' or 'lsilogic' or 'lsisas1068' or "
 "'pvscsi' but found '%2$s'"
 msgstr ""
-"Si prevedeva che la voce VMX '%1\\$s' fosse 'buslogic', 'lsilogic', "
-"'lsisas1068' o 'pvscsi', ma è stata trovata '%2\\$s'"
+"Si prevedeva che la voce VMX '%1$s' fosse 'buslogic', 'lsilogic', "
+"'lsisas1068' o 'pvscsi', ma è stata trovata '%2$s'"
 
 #, fuzzy, c-format
 msgid "Expecting VMX entry '%1$s' to be 'cdrom-image' but found '%2$s'"
 msgstr "Previsto tipo '%1$s', trovato '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting VMX entry '%1$s' to be 'device' or 'file' but found '%2$s'"
 msgstr ""
-"Si prevedeva che la voce VMX '%1\\$s' fosse 'device' o 'file', ma è stata "
-"trovata '%2\\$s'"
+"Si prevedeva che la voce VMX '%1$s' fosse 'device' o 'file', ma è stata "
+"trovata '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Expecting VMX entry '%1$s' to be 'device', 'file' or 'pipe' or 'network' but "
 "found '%2$s'"
 msgstr ""
-"Si prevedeva che la voce VMX '%1\\$s' fosse 'device', 'file', 'pipe' o "
-"'network', ma è stata trovata '%2\\$s'"
+"Si prevedeva che la voce VMX '%1$s' fosse 'device', 'file', 'pipe' o "
+"'network', ma è stata trovata '%2$s'"
 
 #, fuzzy, c-format
 msgid ""
