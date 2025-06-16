@@ -6182,6 +6182,7 @@ static char
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
+    bool hasJob = false;
     char *ret = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS | VIR_DOMAIN_XML_UPDATE_CPU,
@@ -6193,8 +6194,10 @@ static char
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
-        goto cleanup;
+    if (virDomainNestedJobAllowed(vm->job, VIR_JOB_QUERY) &&
+        virDomainObjBeginJob(vm, VIR_JOB_QUERY) >= 0) {
+        hasJob = true;
+    }
 
     qemuDomainUpdateCurrentMemorySize(vm);
 
@@ -6210,7 +6213,8 @@ static char
 
     ret = qemuDomainFormatXML(driver, vm, flags);
 
-    virDomainObjEndJob(vm);
+    if (hasJob)
+        virDomainObjEndJob(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
