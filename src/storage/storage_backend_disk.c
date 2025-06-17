@@ -805,7 +805,6 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
     virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
     char *src_path = def->source.devices[0].path;
     g_autofree char *srcname = g_path_get_basename(src_path);
-    bool isDevMapperDevice;
     g_autofree char *devpath = NULL;
     g_autoptr(virCommand) cmd = NULL;
 
@@ -822,8 +821,7 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
      *     (parthelper.c) that is used to generate the target.path name
      *     for use by libvirt. Changes to either, need to be reflected
      *     in both places */
-    isDevMapperDevice = virIsDevMapperDevice(vol->target.path);
-    if (isDevMapperDevice) {
+    if (virIsDevMapperDevice(vol->target.path)) {
         dev_name = g_path_get_basename(vol->target.path);
     } else {
         if (virFileResolveLink(vol->target.path, &devpath) < 0) {
@@ -846,9 +844,8 @@ virStorageBackendDiskDeleteVol(virStoragePoolObj *pool,
 
     part_num = dev_name + strlen(srcname);
 
-    /* For device mapper and we have a partition character 'p' as the
-     * current character, let's move beyond that before checking part_num */
-    if (isDevMapperDevice && *part_num == 'p')
+    /* Check if partition character 'p' is present and move beyond it */
+    if (*part_num == 'p' &&  g_ascii_isdigit(*(part_num + 1)))
         part_num++;
 
     if (*part_num == 0) {
