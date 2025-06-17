@@ -2091,10 +2091,13 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
 
 static void
-virshPrintJobProgress(const char *label, unsigned long long remaining,
+virshPrintJobProgress(const char *label,
+                      unsigned long long remaining,
                       unsigned long long total)
 {
     double progress = 100.00;
+    const char *term_start = "\r";
+    const char *term_end = "";
 
     /* if remaining == 0 migration has completed */
     if (remaining != 0) {
@@ -2106,10 +2109,16 @@ virshPrintJobProgress(const char *label, unsigned long long remaining,
         }
     }
 
+    if (!isatty(STDERR_FILENO)) {
+        term_start = "";
+        term_end = "\n";
+    }
+
     /* see comments in vshError about why we must flush */
     fflush(stdout);
     /* avoid auto-round-off of double by keeping only 2 decimals */
-    fprintf(stderr, "\r%s: [%5.2f %%]", label, (int)(progress*100)/100.0);
+    fprintf(stderr, "%s%s: [%5.2f %%]%s",
+            term_start, label, (int)(progress*100)/100.0, term_end);
     fflush(stderr);
 }
 
