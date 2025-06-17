@@ -163,14 +163,31 @@ static int virNetTLSCertCheckKeyUsage(gnutls_x509_crt_t cert,
             }
         }
         if (!(usage & GNUTLS_KEY_KEY_ENCIPHERMENT)) {
-            if (critical) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("Certificate %1$s usage does not permit key encipherment"),
-                               certFile);
-                return -1;
-            } else {
-                VIR_WARN("Certificate %s usage does not permit key encipherment",
-                         certFile);
+            int alg = gnutls_x509_crt_get_pk_algorithm(cert, NULL);
+
+            /* Per RFC8813 [1] which amends RFC5580 [2] ECDSA, ECDH, and ECMQV
+             * algorithms must not have 'keyEncipherment' present.
+             *
+             * [1] https://datatracker.ietf.org/doc/rfc8813/
+             * [2] https://datatracker.ietf.org/doc/rfc5480
+             */
+
+            switch (alg) {
+            case GNUTLS_PK_ECDSA:
+            case GNUTLS_PK_ECDH_X25519:
+            case GNUTLS_PK_ECDH_X448:
+                break;
+
+            default:
+                if (critical) {
+                    virReportError(VIR_ERR_SYSTEM_ERROR,
+                                   _("Certificate %1$s usage does not permit key encipherment"),
+                                   certFile);
+                    return -1;
+                } else {
+                    VIR_WARN("Certificate %s usage does not permit key encipherment",
+                             certFile);
+                }
             }
         }
     }
