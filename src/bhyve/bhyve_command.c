@@ -159,29 +159,41 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 static int
 bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
 {
+    size_t i = 0;
     virDomainChrDef *chr = NULL;
 
     if (!def->nserials)
         return 0;
 
-    chr = def->serials[0];
+    for (i = 0; i < def->nserials; i++) {
+        chr = def->serials[i];
 
-    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only nmdm console types are supported"));
-        return -1;
+        /* bhyve supports only two ports: com1 and com2 */
+        if (chr->target.port > 2) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only two serial ports are supported"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-l");
+
+        switch (chr->source->type) {
+        case VIR_DOMAIN_CHR_TYPE_NMDM:
+            virCommandAddArgFormat(cmd, "com%d,%s",
+                                   chr->target.port + 1, chr->source->data.file.path);
+            break;
+        case VIR_DOMAIN_CHR_TYPE_TCP:
+            virCommandAddArgFormat(cmd, "com%d,tcp=%s:%s",
+                                   chr->target.port + 1,
+                                   chr->source->data.tcp.host,
+                                   chr->source->data.tcp.service);
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only nmdm and tcp console types are supported"));
+            return -1;
+        }
     }
-
-    /* bhyve supports only two ports: com1 and com2 */
-    if (chr->target.port > 2) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("only two serial ports are supported"));
-        return -1;
-    }
-
-    virCommandAddArg(cmd, "-l");
-    virCommandAddArgFormat(cmd, "com%d,%s",
-                           chr->target.port + 1, chr->source->data.file.path);
 
     return 0;
 }

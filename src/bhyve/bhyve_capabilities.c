@@ -128,7 +128,8 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
     caps->console.supported = VIR_TRISTATE_BOOL_YES;
     caps->console.type.report = true;
     VIR_DOMAIN_CAPS_ENUM_SET(caps->console.type,
-                             VIR_DOMAIN_CHR_TYPE_NMDM);
+                             VIR_DOMAIN_CHR_TYPE_NMDM,
+                             VIR_DOMAIN_CHR_TYPE_TCP);
 
     return 0;
 }

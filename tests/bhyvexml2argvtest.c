@@ -254,6 +254,7 @@ mymain(void)
     DO_TEST_FAILURE("virtio-rnd-transitional");
     driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_RND;
     DO_TEST_FAILURE("virtio-rnd");
+    DO_TEST("serial-tcp");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

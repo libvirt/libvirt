@@ -38,6 +38,7 @@
     <hostdev supported='no'/>
     <console supported='yes'>
       <enum name='type'>
+        <value>tcp</value>
         <value>nmdm</value>
       </enum>
     </console>
