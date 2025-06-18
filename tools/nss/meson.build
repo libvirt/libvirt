@@ -13,6 +13,7 @@ endif
 nss_sources = [
   'libvirt_nss.c',
   'libvirt_nss_leases.c',
+  'libvirt_nss_log.c',
 ]
 
 nss_guest_sources = [

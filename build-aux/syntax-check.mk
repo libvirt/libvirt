@@ -1430,7 +1430,7 @@ exclude_file_name_regexp--sc_prohibit_realpath = \
   ^(build-aux/syntax-check\.mk|src/cpu_map/sync_qemu_features_i386\.py|tests/virfilemock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
-  ^(docs/advanced-tests\.rst|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.[ch])$$
+  ^(docs/advanced-tests\.rst|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_log|_macs)?\.[ch])$$
 
 exclude_file_name_regexp--sc_prohibit_readlink = \
   ^src/(util/virutil|lxc/lxc_container)\.c$$
