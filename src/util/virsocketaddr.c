@@ -1144,12 +1144,14 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
     netmask->data.stor.ss_family = AF_UNSPEC; /* assume failure */
 
     if (family == AF_INET) {
-        int ip;
+        unsigned int ip = 0;
 
         if (prefix > 32)
             return -1;
 
-        ip = prefix ? ~((1 << (32 - prefix)) - 1) : 0;
+        if (prefix > 0)
+            ip = ~((1U << (32 - prefix)) - 1);
+
         netmask->data.inet4.sin_addr.s_addr = htonl(ip);
         netmask->data.stor.ss_family = AF_INET;
         netmask->len = sizeof(struct sockaddr_in);
