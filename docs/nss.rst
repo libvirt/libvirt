@@ -111,6 +111,19 @@ their IP addresses in any other way (usermode networking, assigned network
 devices and so on) will not be able to have their hostnames resolved through
 it.
 
+Debugging
+---------
+
+:since:`Since 11.6.0` both NSS modules check for ``LIBVIRT_NSS_DEBUG``
+environment variable¸ which if set to any value turns on printing of debug and
+error messages onto standard error output. This can be useful when debugging
+either of the module.
+
+::
+
+  $ LIBVIRT_NSS_DEBUG=1 getent hosts mydomain
+
+
 Alternatives
 ------------
 

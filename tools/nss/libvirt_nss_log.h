@@ -18,6 +18,8 @@ typedef enum {
 #define ERROR(...) \
     nssLog(NSS_ERROR, __FUNCTION__, __LINE__, __VA_ARGS__)
 
+#define NSS_LOG_ENV_VAR "LIBVIRT_NSS_DEBUG"
+
 void
 nssLog(nssLogPriority prio,
        const char *func,
