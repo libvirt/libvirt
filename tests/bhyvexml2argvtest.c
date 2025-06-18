@@ -255,6 +255,8 @@ mymain(void)
     driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_RND;
     DO_TEST_FAILURE("virtio-rnd");
     DO_TEST("serial-tcp");
+    DO_TEST("4-consoles");
+    DO_TEST_FAILURE("serial-invalid-port");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

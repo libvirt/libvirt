@@ -19,9 +19,17 @@
       <source bridge="virbr0"/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
+    <serial type='nmdm'/>
     <serial type='tcp'>
       <source mode='bind' host='127.0.0.1' service='12345'/>
       <protocol type="raw"/>
+    </serial>
+    <serial type='tcp'>
+      <source mode='bind' host='0.0.0.0' service='54321'/>
+      <protocol type="raw"/>
+    </serial>
+    <serial type='nmdm'>
+      <source master="/dev/nmdm0A" slave="/dev/nmdm0B"/>
     </serial>
   </devices>
 </domain>

@@ -32,14 +32,26 @@
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
+    <serial type='nmdm'>
+      <source master='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcA' slave='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcB'/>
+      <target port='0'/>
+    </serial>
     <serial type='tcp'>
       <source mode='bind' host='127.0.0.1' service='12345'/>
       <protocol type='raw'/>
-      <target port='0'/>
+      <target port='1'/>
     </serial>
-    <console type='tcp'>
-      <source mode='bind' host='127.0.0.1' service='12345'/>
+    <serial type='tcp'>
+      <source mode='bind' host='0.0.0.0' service='54321'/>
       <protocol type='raw'/>
+      <target port='2'/>
+    </serial>
+    <serial type='nmdm'>
+      <source master='/dev/nmdm0A' slave='/dev/nmdm0B'/>
+      <target port='3'/>
+    </serial>
+    <console type='nmdm'>
+      <source master='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcA' slave='/dev/nmdmdf3be7e7-a104-11e3-aeb0-50e5492bd3dcB'/>
       <target type='serial' port='0'/>
     </console>
   </devices>

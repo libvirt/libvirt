@@ -168,8 +168,8 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
     for (i = 0; i < def->nserials; i++) {
         chr = def->serials[i];
 
-        /* bhyve supports only two ports: com1 and com2 */
-        if (chr->target.port > 2) {
+        /* bhyve supports 4 ports: com1, com2, com3, com4 */
+        if (chr->target.port > 3) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only two serial ports are supported"));
             return -1;

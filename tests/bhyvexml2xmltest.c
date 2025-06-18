@@ -116,6 +116,7 @@ mymain(void)
     DO_TEST_DIFFERENT("fs-9p");
     DO_TEST_DIFFERENT("virtio-rnd");
     DO_TEST_DIFFERENT("serial-tcp");
+    DO_TEST_DIFFERENT("4-consoles");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

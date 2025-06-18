@@ -20,8 +20,9 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <serial type='tcp'>
-      <source mode='bind' host='127.0.0.1' service='12345'/>
+      <source mode='connect' host='127.0.0.1' service='12345'/>
       <protocol type="raw"/>
+      <target port="4"/>
     </serial>
   </devices>
 </domain>
