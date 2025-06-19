@@ -729,6 +729,8 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             case VIR_DOMAIN_DISK_MODEL_DEFAULT:
                 return virtioFlags;
             case VIR_DOMAIN_DISK_MODEL_LAST:
+            case VIR_DOMAIN_DISK_MODEL_USB_STORAGE:
+            case VIR_DOMAIN_DISK_MODEL_USB_BOT:
                 break;
             }
             return 0;

@@ -1400,6 +1400,8 @@ VIR_ENUM_IMPL(virDomainDiskModel,
               "virtio",
               "virtio-transitional",
               "virtio-non-transitional",
+              "usb-storage",
+              "usb-bot",
 );
 
 VIR_ENUM_IMPL(virDomainDiskMirrorState,

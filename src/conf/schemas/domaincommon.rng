@@ -1766,6 +1766,8 @@
             <value>virtio</value>
             <value>virtio-transitional</value>
             <value>virtio-non-transitional</value>
+            <value>usb-storage</value>
+            <value>usb-bot</value>
           </choice>
         </attribute>
       </optional>

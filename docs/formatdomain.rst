@@ -2862,10 +2862,25 @@ paravirtualized driver is specified via the ``disk`` element.
 
    ``model``
       Indicates the emulated device model of the disk. Typically this is
-      indicated solely by the ``bus`` property but for ``bus`` "virtio" the
-      model can be specified further with "virtio", "virtio-transitional" or
-      "virtio-non-transitional". See `virtio device models`_
-      for more details. :since:`Since 5.2.0`
+      indicated solely by the ``bus`` property.
+
+      For ``bus`` "virtio" the model can be specified further with "virtio",
+      "virtio-transitional" or "virtio-non-transitional". See `virtio device
+      models`_ for more details. :since:`Since 5.2.0`
+
+      For ``bus`` "usb" the model can be specified further with ``usb-storage``
+      or ``usb-bot``. There is no difference between the two models for
+      ``<disk type='disk'>``. However  with ``usb-bot`` a device configured as
+      ``<disk type='cdrom'>`` is properly exposed as a cdrom device inside the
+      guest OS. Unfortunately this configuration is not ABI compatible with
+      ``usb-storage`` and thus it can't be interchanged during migration.
+
+      The QEMU hypervisor driver will pick ``usb-bot`` for cold starts or
+      hotplug for cdrom devices to properly configure the devices. This is
+      not compatible for migration to older versions of libvirt and explicit
+      configuration needs to be used.
+      :since:`Since 11.5.0`; relevant only for ``QEMU`` hypervisor.
+
    ``rawio``
       Indicates whether the disk needs rawio capability. Valid settings are
       "yes" or "no" (default is "no"). If any one disk in a domain has
