@@ -2086,6 +2086,26 @@ qemuMonitorJSONSetDBusVMStateIdList(qemuMonitor *mon,
 }
 
 
+/**
+ * qemuMonitorJSONSetUSBDiskAttached:
+ * @mon: monitor object
+ * @alias: alias of usb disk to set
+ *
+ * Sets the 'attached' property of @alias to true.
+ */
+int
+qemuMonitorJSONSetUSBDiskAttached(qemuMonitor *mon,
+                                  const char *alias)
+{
+    qemuMonitorJSONObjectProperty prop = {
+        .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN,
+        .val.b = true,
+    };
+
+    return qemuMonitorJSONSetObjectProperty(mon, alias, "attached", &prop);
+}
+
+
 /* qemuMonitorJSONQueryNamedBlockNodes:
  * @mon: Monitor pointer
  *

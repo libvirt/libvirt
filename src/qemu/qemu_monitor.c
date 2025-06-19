@@ -2164,6 +2164,18 @@ qemuMonitorSetDBusVMStateIdList(qemuMonitor *mon,
 }
 
 
+int
+qemuMonitorSetUSBDiskAttached(qemuMonitor *mon,
+                              const char *alias)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    VIR_DEBUG("alias=%s", alias);
+
+    return qemuMonitorJSONSetUSBDiskAttached(mon, alias);
+}
+
+
 /**
  * qemuMonitorGetMigrationParams:
  * @mon: Pointer to the monitor object.

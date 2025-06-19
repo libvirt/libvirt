@@ -768,6 +768,9 @@ int qemuMonitorSavePhysicalMemory(qemuMonitor *mon,
 int qemuMonitorSetDBusVMStateIdList(qemuMonitor *mon,
                                     GSList *list);
 
+int qemuMonitorSetUSBDiskAttached(qemuMonitor *mon,
+                                  const char *alias);
+
 int qemuMonitorGetMigrationParams(qemuMonitor *mon,
                                   virJSONValue **params);
 int qemuMonitorSetMigrationParams(qemuMonitor *mon,
