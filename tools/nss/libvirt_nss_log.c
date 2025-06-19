@@ -35,6 +35,7 @@ nssLogPriorityToString(nssLogPriority prio)
 
 void
 nssLog(nssLogPriority prio,
+       const char *filename,
        const char *func,
        int linenr,
        const char *fmt, ...)
@@ -47,7 +48,11 @@ nssLog(nssLogPriority prio,
     if (!getenv(NSS_LOG_ENV_VAR))
         return;
 
-    fprintf(stderr, "%s %s:%d : ", nssLogPriorityToString(prio), func, linenr);
+    if ((filename = strrchr(filename, '/')))
+        filename++;
+
+    fprintf(stderr, "%s %s:%s():%d : ",
+            nssLogPriorityToString(prio), NULLSTR(filename), func, linenr);
 
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
