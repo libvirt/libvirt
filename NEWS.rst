@@ -47,6 +47,17 @@ v11.5.0 (unreleased)
 
 * **Improvements**
 
+  * Include supported console types in domain capabilities
+
+    Domain capabilities now include information about supported console types, such as::
+
+      <console supported='yes'>
+        <enum name='type'>
+          <value>pty</value>
+          <value>tcp</value>
+        </enum>
+      </console>
+
 * **Bug fixes**
 
 
