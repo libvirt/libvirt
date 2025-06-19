@@ -121,6 +121,12 @@ findLease(const char *name,
     *naddress = 0;
     *found = false;
 
+#if defined(LIBVIRT_NSS_GUEST)
+    DEBUG("NSS module: libvirt_guest");
+#else
+    DEBUG("NSS module: libvirt");
+#endif
+
     if (af != AF_UNSPEC && af != AF_INET && af != AF_INET6) {
         errno = EAFNOSUPPORT;
         goto cleanup;
