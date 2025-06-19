@@ -545,8 +545,21 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
             return -1;
         break;
 
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_USB:
+        /* Device info with type VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE and
+         * VIR_DOMAIN_DISK_BUS_USB diskbus is an internal representation
+         * for the device address for 'usb-bot'. */
+        bus = g_strdup_printf("%s.0", info->alias);
+
+        if (virJSONValueObjectAdd(&props,
+                                  "s:bus", bus,
+                                  "u:scsi-id", info->addr.drive.target,
+                                  "u:lun", info->addr.drive.unit,
+                                  NULL) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
     case VIR_DOMAIN_DISK_BUS_XEN:
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SD:
