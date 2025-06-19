@@ -43,7 +43,7 @@
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk5.img'/>
-      <target dev='sde' bus='scsi'/>
+      <target dev='sde' bus='scsi' removable='on'/>
       <address type='drive' controller='4' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>
