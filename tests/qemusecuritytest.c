@@ -207,7 +207,7 @@ mymain(void)
     DO_TEST_DOMAIN("disk-backing-chains-noindex");
     DO_TEST_DOMAIN("disk-cache");
     DO_TEST_DOMAIN("disk-cdrom");
-    DO_TEST_DOMAIN("disk-cdrom-bus-other");
+    DO_TEST_DOMAIN("disk-usb-device");
     DO_TEST_DOMAIN("disk-cdrom-network");
     DO_TEST_DOMAIN("disk-cdrom-tray");
     DO_TEST_DOMAIN("disk-copy_on_read");
