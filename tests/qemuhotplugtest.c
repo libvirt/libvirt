@@ -152,7 +152,7 @@ testQemuHotplug(const void *data)
     const char *const *tmp;
     bool fail = test->fail;
     bool keep = test->keep;
-    unsigned int device_parse_flags = 0;
+    unsigned int device_parse_flags = VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
     virDomainObj *vm = NULL;
     g_autoptr(virDomainDeviceDef) dev = NULL;
     g_autoptr(qemuMonitorTest) test_mon = NULL;
@@ -191,7 +191,7 @@ testQemuHotplug(const void *data)
     }
 
     if (test->action == ATTACH)
-        device_parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+        device_parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     if (!(dev = virDomainDeviceDefParse(device_xml, vm->def,
                                         driver.xmlopt, NULL,
