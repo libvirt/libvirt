@@ -1300,24 +1300,30 @@ virConnectBaselineCPU(virConnectPtr conn,
  * @ncpus: number of CPUs in xmlCPUs
  * @flags: bitwise-OR of virConnectBaselineCPUFlags
  *
- * Computes the most feature-rich CPU which is compatible with all given CPUs
- * and can be provided by the specified hypervisor. For best results the
- * host-model CPUs as advertised by virConnectGetDomainCapabilities() should be
- * passed in @xmlCPUs. Any of @emulator, @arch, @machine, and @virttype
- * parameters may be NULL; libvirt will choose sensible defaults tailored to
- * the host and its current configuration.
+ * Computes the most feature-rich CPU which is compatible with all given CPUs.
+ * This API must be called on one of the hosts specified in @xmlCPUs. Calling
+ * it on another host results in an undefined behavior as the computed CPU
+ * model is influenced by the hypervisor (the result may use an unexpected CPU
+ * model or some features may disabled even though they are supported on all
+ * input CPUs).
  *
  * This is different from virConnectBaselineCPU() which doesn't consider any
  * hypervisor abilities when computing the best CPU.
+ *
+ * The @xmlCPUs array should contain guest CPU definitions created from the
+ * host CPU model description as advertised by virConnectGetDomainCapabilities()
+ * in <mode name="host-model"> element. Any of @emulator, @arch, @machine, and
+ * @virttype parameters may be NULL; libvirt will choose sensible defaults
+ * tailored to the host and its current configuration.
  *
  * If @ncpus == 1, the result will be the first (and only) CPU in @xmlCPUs
  * tailored to what the hypervisor can support on the current host.
  * Specifically if this single CPU definition contains no feature elements and
  * a CPU model listed as usable='no' in domain capabilities XML, the result
  * will contain a list usability blockers, i.e., a list of features that would
- * need to be disabled to for the model to be usable on this host. This list
- * may contain more features than what the hypervisor reports as blockers in
- * case the CPU model definition in libvirt differs from QEMU definition.
+ * need to be disabled for the model to be usable on this host. This list may
+ * contain more features than what the hypervisor reports as blockers in case
+ * the CPU model definition in libvirt differs from QEMU definition.
  *
  * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
  * will explicitly list all CPU features that are part of the computed CPU,

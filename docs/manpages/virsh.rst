@@ -1015,9 +1015,14 @@ hypervisor-cpu-baseline
       [--features] [--migratable] [model]
 
 Compute a baseline CPU which will be compatible with all CPUs defined in an XML
-*file* and with the CPU the hypervisor is able to provide on the host. (This
-is different from ``cpu-baseline`` which does not consider any hypervisor
-abilities when computing the baseline CPU.)
+*FILE*. This command must be called on one of the hosts described in *FILE*.
+Calling it on another host results in an undefined behavior as the computed CPU
+model is influenced by the hypervisor (the result may use an unexpected CPU
+model or some features may disabled even though they are supported on all input
+CPUs).
+
+This is different from ``cpu-baseline`` which does not consider any hypervisor
+abilities when computing the baseline CPU.
 
 As an alternative for *FILE* in case the XML would only contain a CPU model
 with no additional features the CPU model name itself can be passed as *model*.
