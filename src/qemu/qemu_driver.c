@@ -11964,12 +11964,19 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     size_t i;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE |
+                  VIR_CONNECT_BASELINE_CPU_IGNORE_HOST, NULL);
 
     if (virConnectBaselineHypervisorCPUEnsureACL(conn) < 0)
         goto cleanup;
 
     migratable = !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE);
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_IGNORE_HOST) && ncpus < 2) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("ignoring host is only allowed when computing baseline from multiple CPUs"));
+        goto cleanup;
+    }
 
     if (!(cpus = virCPUDefListParse(xmlCPUs, ncpus, VIR_CPU_TYPE_AUTO)))
         goto cleanup;
@@ -11993,14 +12000,19 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     }
 
     if (ARCH_IS_X86(arch)) {
-        int rc = virQEMUCapsGetCPUFeatures(qemuCaps, virttype,
-                                           migratable, &features);
-        if (rc < 0)
-            goto cleanup;
-        if (features && rc == 0) {
-            /* We got only migratable features from QEMU if we asked for them,
-             * no further filtering in virCPUBaseline is desired. */
-            migratable = false;
+        if (flags & VIR_CONNECT_BASELINE_CPU_IGNORE_HOST) {
+            VIR_DEBUG("Not adding host's features as VIR_CONNECT_BASELINE_CPU_IGNORE_HOST was set");
+            g_clear_pointer(&cpuModels, virObjectUnref);
+        } else {
+            int rc = virQEMUCapsGetCPUFeatures(qemuCaps, virttype,
+                                               migratable, &features);
+            if (rc < 0)
+                goto cleanup;
+            if (features && rc == 0) {
+                /* We got only migratable features from QEMU if we asked for them,
+                 * no further filtering in virCPUBaseline is desired. */
+                migratable = false;
+            }
         }
 
         if (!(cpu = virCPUBaseline(arch, cpus, ncpus, cpuModels,
