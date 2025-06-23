@@ -271,7 +271,7 @@ testQemuDiskXMLToProps(const void *opaque)
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         return -1;
 
-    if (qemuDomainDeviceDiskDefPostParse(disk, 0) < 0)
+    if (qemuDomainDeviceDiskDefPostParse(disk, 0, data->qemuCaps) < 0)
         return -1;
 
     if (!(vmdef = virDomainDefNew(data->driver->xmlopt)))
@@ -464,7 +464,8 @@ static const char *testQemuImageCreatePath = abs_srcdir "/qemublocktestdata/imag
 
 static virStorageSource *
 testQemuImageCreateLoadDiskXML(const char *name,
-                               virDomainXMLOption *xmlopt)
+                               virDomainXMLOption *xmlopt,
+                               virQEMUCaps *qemuCaps)
 
 {
     g_autoptr(virDomainDiskDef) disk = NULL;
@@ -481,7 +482,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         return NULL;
 
-    if (qemuDomainDeviceDiskDefPostParse(disk, 0) < 0)
+    if (qemuDomainDeviceDiskDefPostParse(disk, 0, qemuCaps) < 0)
         return NULL;
 
     return g_steal_pointer(&disk->src);
@@ -502,12 +503,14 @@ testQemuImageCreate(const void *opaque)
     g_autofree char *actual = NULL;
     g_autofree char *jsonpath = NULL;
 
-    if (!(src = testQemuImageCreateLoadDiskXML(data->name, data->driver->xmlopt)))
+    if (!(src = testQemuImageCreateLoadDiskXML(data->name, data->driver->xmlopt,
+                                               data->qemuCaps)))
         return -1;
 
     if (data->backingname &&
         !(src->backingStore = testQemuImageCreateLoadDiskXML(data->backingname,
-                                                             data->driver->xmlopt)))
+                                                             data->driver->xmlopt,
+                                                             data->qemuCaps)))
         return -1;
 
     if (testQemuDiskXMLToJSONFakeSecrets(src) < 0)

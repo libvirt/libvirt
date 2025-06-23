@@ -5342,6 +5342,27 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
             }
         }
 
+        for (i = 0; i < def->ndisks; i++) {
+            virDomainDiskDef *disk = def->disks[i];
+
+            /* The 'model' property for USB disks was introduced long after USB
+             * disks to allow switching between 'usb-storage' and 'usb-bot'
+             * device. Despite sharing identical implementation 'usb-bot' allows
+             * proper configuration of USB cdroms. Unfortunately it is not ABI
+             * compatible.
+             *
+             * To preserve migration to older daemons we can strip the model to
+             * the default if:
+             * - it's a normal disk (not cdrom) as both are identical
+             * - for a usb-cdrom strip the model if it's not 'usb-bot' as that
+             *   was the old configuration
+             */
+            if (disk->bus == VIR_DOMAIN_DISK_BUS_USB &&
+                (disk->model == VIR_DOMAIN_DISK_MODEL_USB_STORAGE ||
+                 disk->device == VIR_DOMAIN_DISK_DEVICE_DISK))
+                disk->model = VIR_DOMAIN_DISK_MODEL_DEFAULT;
+        }
+
         /* Replace the CPU definition updated according to QEMU with the one
          * used for starting the domain. The updated def will be sent
          * separately for backward compatibility.

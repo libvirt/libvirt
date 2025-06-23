@@ -17,51 +17,51 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img1'/>
       <target dev='sda' bus='usb'/>
     </disk>
-    <disk type='file' device='cdrom'>
+    <disk type='file' device='cdrom' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img2'/>
       <target dev='sdb' bus='usb'/>
       <readonly/>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img3'/>
       <target dev='sdc' bus='usb'/>
       <serial>testserial1</serial>
     </disk>
-    <disk type='file' device='cdrom'>
+    <disk type='file' device='cdrom' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img4'/>
       <target dev='sdd' bus='usb'/>
       <readonly/>
       <serial>testserial2</serial>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img5'/>
       <target dev='sde' bus='usb'/>
       <alias name='ua-test1'/>
     </disk>
-    <disk type='file' device='cdrom'>
+    <disk type='file' device='cdrom' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img6'/>
       <target dev='sdf' bus='usb'/>
       <readonly/>
       <alias name='ua-test2'/>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img7'/>
       <target dev='sdg' bus='usb'/>
       <serial>testserial3</serial>
       <alias name='ua-test3'/>
     </disk>
-    <disk type='file' device='cdrom'>
+    <disk type='file' device='cdrom' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img8'/>
       <target dev='sdh' bus='usb'/>
@@ -69,24 +69,24 @@
       <serial>testserial4</serial>
       <alias name='ua-test4'/>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/img9'/>
       <target dev='sdi' bus='usb' removable='on'/>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/imga'/>
       <target dev='sdj' bus='usb' removable='on'/>
       <serial>testserial5</serial>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/imgb'/>
       <target dev='sdk' bus='usb' removable='on'/>
       <alias name='ua-test5'/>
     </disk>
-    <disk type='file' device='disk'>
+    <disk type='file' device='disk' model='usb-storage'>
       <driver name='qemu' type='raw'/>
       <source file='/tmp/imgc'/>
       <target dev='sdl' bus='usb' removable='on'/>

@@ -202,7 +202,8 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
 
 int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
-                                 unsigned int parseFlags)
+                                 unsigned int parseFlags,
+                                 virQEMUCaps *qemuCaps)
 {
     virStorageSource *n;
 
@@ -219,6 +220,50 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
     if (disk->mirror &&
         disk->mirror->format == VIR_STORAGE_FILE_NONE)
         disk->mirror->format = VIR_STORAGE_FILE_RAW;
+
+    /* default USB disk model:
+     *
+     * Historically we didn't use model for USB disks. It became necessary once
+     * it turned out that 'usb-storage' doesn't properly expose CDROM devices
+     * with -blockdev. Additionally 'usb-bot' which does properly handle them,
+     * while having identical implementation in qemu and driver in guest, are
+     * not in fact ABI compatible. Thus the logic is as follows:
+     *
+     * If ABI update is not allowed:
+     *  - use 'usb-storage' for either (unless only 'usb-bot' is supported)
+     *
+     * If ABI update is possible
+     * - for VIR_DOMAIN_DISK_DEVICE_DISK use 'usb-storage' as it doesn't matter
+     *    (it is identical with 'usb-bot' ABI wise)
+     * - for VIR_DOMAIN_DISK_DEVICE_CDROM use 'usb-bot' if available
+     *    (as it properly exposes cdrom)
+     *
+     * When formatting migratable XML the code strips 'usb-storage' to preserve
+     * migration to older daemons. If a new definition with 'usb-bot' cdrom is
+     * created via new start or hotplug it will fail migrating. Users must
+     * explicitly set the broken config in XML or unplug the device.
+     */
+    if (qemuCaps &&
+        disk->bus == VIR_DOMAIN_DISK_BUS_USB &&
+        disk->model == VIR_DOMAIN_DISK_MODEL_DEFAULT) {
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) {
+
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_BOT)) {
+                disk->model = VIR_DOMAIN_DISK_MODEL_USB_BOT;
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
+                disk->model = VIR_DOMAIN_DISK_MODEL_USB_STORAGE;
+            }
+
+        } else {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE)) {
+                disk->model = VIR_DOMAIN_DISK_MODEL_USB_STORAGE;
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_BOT)) {
+                disk->model = VIR_DOMAIN_DISK_MODEL_USB_BOT;
+            }
+        }
+    }
 
     /* default disk encryption engine */
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
@@ -843,7 +888,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, parseFlags);
+        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, parseFlags, qemuCaps);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:

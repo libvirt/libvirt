@@ -22,10 +22,12 @@
 #pragma once
 
 #include "virconftypes.h"
+#include "qemu_capabilities.h"
 
 int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
-                                 unsigned int parseFlags);
+                                 unsigned int parseFlags,
+                                 virQEMUCaps *qemuCaps);
 
 int
 qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
