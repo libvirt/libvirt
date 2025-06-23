@@ -970,8 +970,10 @@ int virConnectGetCPUModelNames(virConnectPtr conn,
  * Since: 1.1.2
  */
 typedef enum {
-    VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features (Since: 1.1.2) */
-    VIR_CONNECT_BASELINE_CPU_MIGRATABLE = (1 << 1),  /* filter out non-migratable features (Since: 1.2.14) */
+    /* show all features (Since: 1.1.2) */
+    VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),
+    /* filter out non-migratable features (Since: 1.2.14) */
+    VIR_CONNECT_BASELINE_CPU_MIGRATABLE = (1 << 1),
 } virConnectBaselineCPUFlags;
 
 char *virConnectBaselineCPU(virConnectPtr conn,
