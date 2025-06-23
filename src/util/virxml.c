@@ -26,6 +26,8 @@
 
 #include <libxml/xmlsave.h>
 #include <libxml/xpathInternals.h>
+#include <libxml/xmlschemastypes.h>
+#include <libxml/catalog.h>
 
 #include "virerror.h"
 #include "virxml.h"
@@ -35,6 +37,7 @@
 #include "virstring.h"
 #include "virutil.h"
 #include "viruuid.h"
+#include "virthread.h"
 #include "configmake.h"
 
 #define VIR_FROM_THIS VIR_FROM_XML
@@ -49,6 +52,28 @@ struct virParserData {
     const char *filename;
 };
 
+
+static int
+virXMLSchemaOnceInit(void)
+{
+#if LIBXML_VERSION >= 21100
+    if (xmlSchemaInitTypes() < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize libxml2 schema types"));
+        return -1;
+    }
+#else
+    xmlSchemaInitTypes();
+#endif
+    if (xmlRelaxNGInitTypes() < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize libxml2 RelaxNG data"));
+        return -1;
+    }
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virXMLSchema);
 
 static xmlXPathContextPtr
 virXMLXPathContextNew(xmlDocPtr xml)
@@ -1602,6 +1627,9 @@ virXMLValidator *
 virXMLValidatorInit(const char *schemafile)
 {
     g_autoptr(virXMLValidator) validator = NULL;
+
+    if (virXMLSchemaInitialize() < 0)
+        return NULL;
 
     validator = g_new0(virXMLValidator, 1);
 
