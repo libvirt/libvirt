@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-05-27 08:29+0000\n"
-"PO-Revision-Date: 2025-04-30 19:09+0000\n"
+"PO-Revision-Date: 2025-06-23 15:48+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -36,7 +36,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11.1\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgid ""
 "\n"
@@ -247,6 +247,32 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s [opciones]... [<cadena_de_comandos>]\n"
+"%2$s [opciones]... <comando> [argumentoss...]\n"
+"\n"
+"  opciones:\n"
+"    -c | --connect=URI      URI de conexión del hipervisor\n"
+"    -d | --debug=NUMERO        nivel de depuración [0-4]\n"
+"    -e | --escape <caracter>    establecer secuencia de escape para la "
+"consola\n"
+"    -h | --help             esta ayuda\n"
+"    -k | --keepalive-interval=NUMERO\n"
+"                            intervalo de keepalive en segundos, 0 para "
+"deshabilitar\n"
+"    -K | --keepalive-count=NUMERO\n"
+"                            número de posibles mensajes keepalive perdidos\n"
+"    -l | --log=ARCHIVO         registro de salida a archivo\n"
+"    -q | --quiet            modo silencioso\n"
+"    -r | --readonly         conectar solo lectura\n"
+"    -t | --timing           visualizar información del timing\n"
+"         --no-pkttyagent    suprimir el registro de pkttyagent\n"
+"    -v                      versión corta\n"
+"    -V                      versión larga\n"
+"         --version[=TIPO]   versión, TIPO es corta o larga (corta por "
+"defecto)\n"
+"  comandos (modo no interactivo):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -1436,6 +1462,7 @@ msgstr "'iothread' solo es compatible con el controlador virtio-scsi"
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
 msgstr ""
+"'iscsiadm': falló el nuevo modo para el objetivo '%1$s' con el estado '%2$d'"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -1683,9 +1710,8 @@ msgstr "(nwfilter_definition)"
 msgid "(nwfilterbinding_definition)"
 msgstr "(nwfilterbinding_definition)"
 
-#, fuzzy
 msgid "(nwfilterbinding_status)"
-msgstr "(nwfilter_definition)"
+msgstr "(nwfilterbinding_status)"
 
 msgid "(qemu_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
@@ -1696,9 +1722,8 @@ msgstr "(re)conectarse con el hipervisor"
 msgid "(save cookie)"
 msgstr "(save cookie)"
 
-#, fuzzy
 msgid "(snapshot_tree)"
-msgstr "nombre de la captura instantánea"
+msgstr "(snapshot_tree)"
 
 msgid "(storage_pool_definition)"
 msgstr "(storage_pool_definition)"
@@ -1761,9 +1786,8 @@ msgstr ""
 "--async requiere al menos uno de los siguientes parámetros: --timeout, --"
 "wait, --pivot o --keep-overlay"
 
-#, fuzzy
 msgid "--descendants requires --from"
-msgstr "--descendants requiere --from o --current"
+msgstr "--descendants requiere --from"
 
 msgid "--descendants requires either --from or --current"
 msgstr "--descendants requiere --from o --current"
@@ -1778,13 +1802,11 @@ msgstr ""
 "el parámetro --listen no se permite con sockets de activación de systemd, "
 "consulte 'man libvirtd' para obtener más orientación"
 
-#, fuzzy
 msgid "--max-unauth-clients must be less than or equal to --max-clients"
-msgstr "cellNum en %s debe ser menor que o igual a %d"
+msgstr "--max-unauth-clients debe ser menor o igual que --max-clients"
 
-#, fuzzy
 msgid "--min-workers must be less than or equal to --max-workers"
-msgstr "cellNum en %s debe ser menor que o igual a %d"
+msgstr "--min-workers debe ser menor o igual que --max-workers"
 
 msgid "--source-protocol option requires --sourcetype network"
 msgstr "la opción --source-protocol requiere una red del tipo --sourcetype"
@@ -1820,11 +1842,13 @@ msgstr ""
 msgid "<active_pcr_banks/> requires TPM version '%1$s'"
 msgstr "<active_pcr_banks/> requiere la versión '%1$s' de TPM"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %1$s are "
 "mutually exclusive"
-msgstr "Se encontró elemento <interface> no válido en <forward> de red %1$s"
+msgstr ""
+"Los elementos <address>, <interface> y <pf> de <forward> en la red %1$s son "
+"mutuamente excluyentes"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "el elemento <config> solo es admitido actualmente con discos 'rbd'"
@@ -1863,13 +1887,13 @@ msgstr "el elemento <snapshot> solo se admite actualmente con discos 'rbd'"
 msgid "<uuid> does not match secret file name '%1$s'"
 msgstr "<uuid> no coincide con el nombre del archivo secreto '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<virtualport type='%1$s'> not supported for network '%2$s' which uses IP "
 "forwarding"
 msgstr ""
-"<virtualport type='%1$s'> no tiene soporte para red '%2$s' que utilice un "
-"dispositivo de puente"
+"<virtualport type='%1$s'> no es compatible con la red '%2$s' que utiliza "
+"redireccionamiento de IP"
 
 #, c-format
 msgid ""
@@ -1923,7 +1947,7 @@ msgstr "Un close callback ya está registrado"
 
 #, fuzzy
 msgid "A different callback was requested"
-msgstr "Un callback diferente fue solicitado"
+msgstr "Fue solicitado un callback diferente"
 
 #, c-format
 msgid ""
@@ -1932,17 +1956,14 @@ msgstr ""
 "una definición de dominio no puede tener más de un nodo de cifrado con el "
 "nombre %1$s"
 
-#, fuzzy
 msgid "A interface driver is already registered"
-msgstr "Un close callback ya está registrado"
+msgstr "Ya existe un controlador de interfaz registrado"
 
-#, fuzzy
 msgid "A network driver is already registered"
-msgstr "El dispositivo de red %s ya existe"
+msgstr "Ya existe un controlador de red registrado"
 
-#, fuzzy
 msgid "A network filter driver is already registered"
-msgstr "Un close callback ya está registrado"
+msgstr "Ya existe un controlador de filtro de red registrado"
 
 #, c-format
 msgid ""
@@ -1952,13 +1973,12 @@ msgstr ""
 "Una red con forward mode ='%1$s' puede especificar un nombre de puente o dev "
 "forward, pero no ambos (red '%2$s')"
 
-#, fuzzy
 msgid "A node device driver is already registered"
-msgstr "Un close callback ya está registrado"
+msgstr "Ya existe un controlador de dispositivo de nodo registrado"
 
 #, fuzzy
 msgid "A secret driver is already registered"
-msgstr "Un close callback ya está registrado"
+msgstr "Ya existe un controlador de secreto registrado"
 
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
@@ -1967,16 +1987,15 @@ msgstr ""
 "solo se espera un único elemento <secret type='passphrase'...> en la "
 "descripción del cifrado"
 
-#, fuzzy
 msgid "A storage driver is already registered"
-msgstr "Un close callback ya está registrado"
+msgstr "Ya existe un controlador de almacenamiento registrado"
 
 msgid "ACPI ERST device must reside on a PCI bus"
 msgstr "el dispositivo ACPI ERST debe residir en un bus PCI"
 
 #, fuzzy
 msgid "ACPI index is not supported with this QEMU"
-msgstr "el índice de ACPI no es compatible con este binario de QEMU"
+msgstr "El índice de ACPI no es compatible con este binario de QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
 msgstr "el índice de ACPI solo es compatible con dispositivos PCI"
@@ -2000,9 +2019,8 @@ msgstr "keylen=%1$zu no válido para cifrado AES256CBC"
 msgid "AES256CBC initialization vector invalid len=%1$zu"
 msgstr "len=%1$zu no válido para vector de inicialización de AES256CBC"
 
-#, fuzzy
 msgid "API error"
-msgstr "Error de E/S"
+msgstr "Error de API"
 
 msgid "Aborts the currently running domain job"
 msgstr "Interrumpe el trabajo actual del dominio en ejecución"
@@ -2097,11 +2115,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Active Block Commit"
-msgstr "Envío de bloque"
+msgstr "Active Block Commit"
 
 #, fuzzy
 msgid "Active Block Commit started"
-msgstr "Inició envío de bloque"
+msgstr "Active Block Commit iniciado"
 
 msgid "Active channel stream exists for this domain"
 msgstr "Flujo de canal activo existe para este dominio"
@@ -2114,7 +2132,7 @@ msgstr "Activar:"
 
 #, fuzzy, c-format
 msgid "Actual interface '%1$s' hostdev was not a PCI device"
-msgstr "el dispositivo %1$s no es un dispositivo PCI"
+msgstr "hostdev de la interfaz '%1$s' no era un dispositivo PCI"
 
 msgid "Add an IOThread to the guest domain."
 msgstr "Inyectar NMI al dominio de huésped."
@@ -2132,9 +2150,8 @@ msgstr "Agregar o actualizar un grupo de limitación."
 msgid "Added"
 msgstr "Añadido"
 
-#, fuzzy
 msgid "Address"
-msgstr "dirección MAC"
+msgstr "Dirección"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -2193,7 +2210,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Another relabel transaction is already started"
-msgstr "No se puede compartir manejador CURL que ya se esté compartiendo"
+msgstr "Ya se ha iniciado otra transacción de reetiquetado"
 
 msgid "AnyType is missing 'type' property"
 msgstr "AnyType no posee la propiedad 'type'"
@@ -2229,9 +2246,8 @@ msgstr ""
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Al menos un nodo NUMA debe tener CPUs"
 
-#, fuzzy
 msgid "At least one PTY console is required"
-msgstr "Por lo menos se requiere un controlador de cgroup"
+msgstr "Se requiere al menos una consola PTY"
 
 msgid "At least one cgroup controller is required"
 msgstr "Por lo menos se requiere un controlador de cgroup"
@@ -2263,9 +2279,8 @@ msgstr ""
 "Al menos una de las opciones --min-workers, --max-workers o --priority-"
 "workers es obligatoria"
 
-#, fuzzy
 msgid "At least one tty is required"
-msgstr "Por lo menos se requiere un controlador de cgroup"
+msgstr "Se requiere al menos una tty"
 
 msgid "Attach device from an XML <file>."
 msgstr "Asocia un dispositivo desde un <file> XML."
@@ -2298,7 +2313,7 @@ msgstr "Intente crear %1$s sin especificar el modo"
 
 #, fuzzy
 msgid "Attempt to migrate guest to the same host"
-msgstr "Intente migrar huésped al mismo host %s"
+msgstr "Intento de migrar el huésped al mismo anfitrión"
 
 #, c-format
 msgid "Attempt to migrate guest to the same host %1$s"
@@ -2331,9 +2346,8 @@ msgstr ""
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "El modo de atributo solo es permitido para la CPU del huésped"
 
-#, fuzzy
 msgid "Audit is not supported by the kernel"
-msgstr "unpriv_sgio no está admitido por este kernel"
+msgstr "El kernel no admite la auditoría"
 
 msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
@@ -2380,7 +2394,7 @@ msgstr "Respaldo"
 
 #, fuzzy
 msgid "Backup Dump XML"
-msgstr "Descargar XML de captura instantánea"
+msgstr "Copia de seguridad de volcado en XML"
 
 msgid "Backup started\n"
 msgstr "Copia de bloque iniciada\n"
@@ -2411,9 +2425,8 @@ msgstr "Mal uso"
 msgid "Bad value for nativeMode"
 msgstr "Valor errado para nativMode"
 
-#, fuzzy
 msgid "Bandwidth rate limiting is not supported"
-msgstr "El formato de disco %s no tiene soporte"
+msgstr "No se admite la limitación de velocidad de ancho de banda"
 
 #, c-format
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
@@ -2421,9 +2434,8 @@ msgstr ""
 "Antes de vaciar el núcleo, no se pudo suspender el dominio '%1$d' con "
 "libxenlight"
 
-#, fuzzy
 msgid "Bhyve version does not support framebuffer"
-msgstr "Kernel no soporta devpts privados"
+msgstr "La versión de Bhyve no admite framebuffer"
 
 #, c-format
 msgid ""
@@ -2448,7 +2460,7 @@ msgstr "Inició copia de bloque"
 
 #, fuzzy
 msgid "Block I/O tuning is not available in session mode"
-msgstr "Bloque de ajuste E/S no está disponible en este host"
+msgstr "El ajuste de E/S de bloque no está disponible en el modo de sesión"
 
 msgid "Block I/O tuning is not available on this host"
 msgstr "Bloque de ajuste E/S no está disponible en este host"
@@ -2483,7 +2495,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Both secret and the secret header are required"
-msgstr "Tanto el secreto como el encabezado secreto son necesarios"
+msgstr "Tanto el secreto como el encabezado del secreto son necesarios"
 
 msgid "Bounded"
 msgstr "Ligado"
@@ -2530,9 +2542,8 @@ msgstr "El búfer es demasiado pequeño para imprimir variable '%1$s'"
 msgid "Build a given pool."
 msgstr "Compila un grupo determinado."
 
-#, fuzzy
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
-msgstr "BUS debe ser 0 para controlador IDE"
+msgstr "El bus 0 debe ser PCI para controladores integrados PIIX3 USB o IDE"
 
 msgid "Busy"
 msgstr "Ocupado"
@@ -2568,9 +2579,8 @@ msgstr "Afinidad de CPU"
 msgid "CPU Affinity:"
 msgstr "Afinidad de la CPU:"
 
-#, fuzzy
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
-msgstr "El número de las CPU en <numa> excede el conteo <vcpu>"
+msgstr "Las IDs de CPU en <numa> excede el conteo de <vcpu>"
 
 #, c-format
 msgid "CPU Model %1$s too long for destination"
@@ -2593,9 +2603,10 @@ msgstr ""
 msgid "CPU cache mode '%1$s' can only be used with level='3'"
 msgstr "El modo de caché de CPU '%1$s' solo se puede usar con level='3'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU cache specification is not supported for '%1$s' architecture"
-msgstr "Operación no tiene soporte para dispositivo: %1$s"
+msgstr ""
+"La especificación de caché de CPU no es compatible con la arquitectura '%1$s'"
 
 msgid "CPU data"
 msgstr "datos de CPU"
@@ -2620,21 +2631,23 @@ msgid ""
 "the host\n"
 msgstr "La CPU descrita en %1$s era incompatible con la CPU del equipo\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU driver '%1$s' does not exist"
-msgstr "no existe '%1$s'"
+msgstr "El controlador de CPU '%1$s' no existe"
 
 #, c-format
 msgid "CPU feature %1$s already defined"
 msgstr "Ya ha sido definida la característica de CPU %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU feature '%1$s' specified more than once"
-msgstr "orden de arranque '%1$s' se utiliza más que una de dispositivo"
+msgstr "La característica de la CPU '%1$s' se especificó más de una vez"
 
-#, fuzzy, c-format
+#, c-format
 msgid "CPU features not supported by hypervisor for %1$s architecture"
-msgstr "Modelo de CPU %1$s no está admitido por el hipervisor"
+msgstr ""
+"Características de la CPU no admitidas por el hipervisor para la "
+"arquitectura %1$s"
 
 #, fuzzy, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %1$s"
@@ -2715,16 +2728,14 @@ msgstr "Tiempo de CPU"
 msgid "CPU time:"
 msgstr "Hora de la CPU:"
 
-#, fuzzy
 msgid "CPU topology doesn't match maximum vcpu count"
-msgstr "No se pudo recuperar la cuenta máxima de vcpu"
+msgstr "La topología de la CPU no coincide con el número máximo de vcpu"
 
 msgid "CPU topology doesn't match the desired vcpu count"
 msgstr "La topología de la CPU no coincide con el número de vCPU deseado"
 
-#, fuzzy
 msgid "CPU tuning is not available in session mode"
-msgstr "Ajuste de CPU no está disponible en este host"
+msgstr "El ajuste de la CPU no está disponible en el modo de sesión"
 
 msgid "CPU tuning is not available on this host"
 msgstr "Ajuste de CPU no está disponible en este host"
@@ -2757,9 +2768,8 @@ msgstr "CPU(s):"
 msgid "CPU:"
 msgstr "CPU:"
 
-#, fuzzy
 msgid "CPUID registers unavailable"
-msgstr "No hay buses PCI disponibles"
+msgstr "Registros CPUID no disponibles"
 
 msgid "CPUs are incompatible"
 msgstr "Las CPU son incompatibles"
@@ -2892,11 +2902,13 @@ msgstr ""
 "host"
 
 msgid "Can't apply empty firewall command"
-msgstr ""
+msgstr "No se puede aplicar un comando de firewall vacío"
 
 #, fuzzy
 msgid "Can't change domain configuration in managed save state"
-msgstr "Marcar dominios inactivos con estado de almacenamiento administrado"
+msgstr ""
+"No se puede cambiar la configuración del dominio en un estado de guardado "
+"administrado"
 
 msgid "Can't change domain state."
 msgstr "No se puede cambiar el estado del dominio."
@@ -2913,7 +2925,7 @@ msgid "Can't create initial configuration"
 msgstr "No se puede crear configuración inicial"
 
 msgid "Can't define NWFilter bindings in session mode"
-msgstr ""
+msgstr "No se pueden definir enlaces de NWFilter en modo de sesión"
 
 msgid "Can't define NWFilters in session mode"
 msgstr ""
