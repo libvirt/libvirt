@@ -974,6 +974,9 @@ typedef enum {
     VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),
     /* filter out non-migratable features (Since: 1.2.14) */
     VIR_CONNECT_BASELINE_CPU_MIGRATABLE = (1 << 1),
+    /* when computing a baseline from several CPUs, do not make the result
+     * dependent on the current host (Since: 11.5.0) */
+    VIR_CONNECT_BASELINE_CPU_IGNORE_HOST = (1 << 2),
 } virConnectBaselineCPUFlags;
 
 char *virConnectBaselineCPU(virConnectPtr conn,

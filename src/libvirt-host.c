@@ -1305,7 +1305,8 @@ virConnectBaselineCPU(virConnectPtr conn,
  * it on another host results in an undefined behavior as the computed CPU
  * model is influenced by the hypervisor (the result may use an unexpected CPU
  * model or some features may disabled even though they are supported on all
- * input CPUs).
+ * input CPUs). The undefined behavior can be avoided using
+ * VIR_CONNECT_BASELINE_CPU_IGNORE_HOST flag (see below).
  *
  * This is different from virConnectBaselineCPU() which doesn't consider any
  * hypervisor abilities when computing the best CPU.
@@ -1332,6 +1333,11 @@ virConnectBaselineCPU(virConnectPtr conn,
  *
  * If @flags includes VIR_CONNECT_BASELINE_CPU_MIGRATABLE, the resulting
  * CPU will not include features that block migration.
+ *
+ * If @flags contains VIR_CONNECT_BASELINE_CPU_IGNORE_HOST and @ncpus > 1, the
+ * API will not consider hypervisor abilities when computing the baseline. With
+ * this flag baseline can be safely computed on any host (even those not
+ * described in @xmlCPUs).
  *
  * Returns XML description of the computed CPU (caller frees) or NULL on error.
  *
