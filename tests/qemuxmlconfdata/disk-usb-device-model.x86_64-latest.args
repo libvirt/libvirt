@@ -1,0 +1,44 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest1,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"usb-hub","id":"hub0","bus":"usb.0","port":"1"}' \
+-blockdev '{"driver":"file","filename":"/tmp/img1","node-name":"libvirt-4-storage","read-only":false}' \
+-device '{"driver":"usb-storage","bus":"usb.0","port":"2","drive":"libvirt-4-storage","id":"usb-disk0","bootindex":1,"removable":false}' \
+-blockdev '{"driver":"file","filename":"/tmp/img2","node-name":"libvirt-3-storage","read-only":true}' \
+-device '{"driver":"usb-storage","bus":"usb.0","port":"1.1","drive":"libvirt-3-storage","id":"usb-disk1","removable":false}' \
+-blockdev '{"driver":"file","filename":"/tmp/img3","node-name":"libvirt-2-storage","read-only":false}' \
+-device '{"driver":"usb-bot","id":"usb-disk2","bus":"usb.0","port":"1.2"}' \
+-device '{"driver":"scsi-hd","bus":"usb-disk2.0","scsi-id":0,"lun":0,"drive":"libvirt-2-storage","id":"usb-disk2-device"}' \
+-blockdev '{"driver":"file","filename":"/tmp/img4","node-name":"libvirt-1-storage","read-only":true}' \
+-device '{"driver":"usb-bot","id":"usb-disk3","bus":"usb.0","port":"1.3"}' \
+-device '{"driver":"scsi-cd","bus":"usb-disk3.0","scsi-id":0,"lun":0,"drive":"libvirt-1-storage","id":"usb-disk3-device"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

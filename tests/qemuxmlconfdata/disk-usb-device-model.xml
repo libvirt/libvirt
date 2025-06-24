@@ -1,0 +1,37 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk' model='usb-storage'>
+      <source file='/tmp/img1'/>
+      <target dev='sda' bus='usb'/>
+    </disk>
+    <disk type='file' device='cdrom' model='usb-storage'>
+      <source file='/tmp/img2'/>
+      <target dev='sdb' bus='usb'/>
+      <readonly/>
+    </disk>
+    <disk type='file' device='disk' model='usb-bot'>
+      <source file='/tmp/img3'/>
+      <target dev='sdc' bus='usb'/>
+    </disk>
+    <disk type='file' device='cdrom' model='usb-bot'>
+      <source file='/tmp/img4'/>
+      <target dev='sdd' bus='usb'/>
+      <readonly/>
+    </disk>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

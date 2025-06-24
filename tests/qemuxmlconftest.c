@@ -1622,6 +1622,7 @@ mymain(void)
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_USB_BOT, QEMU_CAPS_LAST,
                  ARG_END);
+    DO_TEST_CAPS_LATEST("disk-usb-device-model");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-usb-pci");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
