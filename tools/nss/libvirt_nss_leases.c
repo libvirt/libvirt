@@ -265,10 +265,9 @@ findLeases(const char *file,
     json_tokener *tok = NULL;
     enum json_tokener_error jerr = json_tokener_error_parse_eof;
     int jsonflags = JSON_TOKENER_STRICT | JSON_TOKENER_VALIDATE_UTF8;
-    char line[1024];
     size_t nreadTotal = 0;
-    int rv;
 
+    DEBUG("Processing %s", file);
     if ((fd = open(file, O_RDONLY)) < 0) {
         ERROR("Cannot open %s", file);
         goto cleanup;
@@ -282,7 +281,11 @@ findLeases(const char *file,
     json_tokener_set_flags(tok, jsonflags);
 
     do {
-        rv = read(fd, line, sizeof(line));
+        char line[1024] = { 0 };
+        ssize_t rv;
+
+        rv = read(fd, line, sizeof(line) - 1);
+        DEBUG("read: rv=%zd line='%s'", rv, line);
         if (rv < 0)
             goto cleanup;
         if (rv == 0)
@@ -292,6 +295,9 @@ findLeases(const char *file,
         jobj = json_tokener_parse_ex(tok, line, rv);
         jerr = json_tokener_get_error(tok);
     } while (jerr == json_tokener_continue);
+
+    DEBUG("Done reading, nreadTotal=%zu, jerr=%d '%s'",
+          nreadTotal, (int)jerr, json_tokener_error_desc(jerr));
 
     if (nreadTotal == 0) {
         ret = 0;
