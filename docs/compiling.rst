@@ -105,8 +105,8 @@ Notes:
 ~~~~~~
 
 By default when the ``meson`` is run from within a GIT checkout, it will turn
-on -Werror for builds. This can be disabled with --werror=false, but this is
-not recommended.
+on -Werror for builds. This can be disabled with
+``-Dwerror=false -Dgit_werror=disabled``, but this is not recommended.
 
 Please ensure that you have the appropriate minimal ``meson`` version installed
 in your build environment. The minimal version for a specific package can be
