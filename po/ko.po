@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2025-06-06 06:01+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1385,8 +1385,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator'는 존재하지 않는 NUMA 노드를 나타냅니다"
 
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'ioeventfd'는 virtio-scsi 제어기에서만 지원됩니다"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
@@ -1479,8 +1479,8 @@ msgstr "'pool' 유형 소스의 'pool' 및 'volume'을 함께 지정해야 합�
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 상수는 명백한 iothread를 대기열 대응을 위해 구성되어야 합니다"
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1522,9 +1522,6 @@ msgstr "'socket' 요소는 오직 듣기(listen)상태에 있는 소켓에만 �
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "'target'은 존재하지 않는 NUMA 노드를 의미합니다"
-
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "'tftp' 통신규약은 이 QEMU 바이너리에서 지원하지 않습니다"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr "이와 같은 QEMU에 의해 'tlsHostname' 부분은 지원되지 않습니다"
@@ -4176,6 +4173,11 @@ msgstr ""
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "'%1$s' 타이머 구성은 이 QEMU 바이너리에서는 지원되지 않음"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "게스트를 위한 가상 직렬 콘솔 연결"
@@ -8614,12 +8616,14 @@ msgid "Failed to run clone container"
 msgstr "복제 컨테이너를 실행하는 데 실패"
 
 msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
-msgstr "새로운 iscsi 연결장치를 생성하도록 명령 'iscsiadm'를 실행하는 데 실패함"
+msgstr ""
+"새로운 iscsi 연결장치를 생성하도록 명령 'iscsiadm'를 실행하는 데 실패함"
 
 #, c-format
 msgid ""
 "Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
-msgstr "IQN '%1$s'을 갖는 iscsi 연결장치를 최신화하도록 명령 'iscsiadm'를 실행하는 "
+msgstr ""
+"IQN '%1$s'을 갖는 iscsi 연결장치를 최신화하도록 명령 'iscsiadm'를 실행하는 "
 "데 실패함"
 
 #, c-format
@@ -11865,6 +11869,10 @@ msgstr "브릿지 도움말 이름이 없습니다"
 msgid "Missing bridge name"
 msgstr "브리지 이름이 없습니다"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 msgid "Missing capability type"
 msgstr "기능 유형이 누락됨"
 
@@ -11968,6 +11976,9 @@ msgstr "JSON 문서에서 magic 자료가 누락"
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "필수 평균 또는 하한 속성이 누락되었습니다"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "JSON 문서에서 max_clients 자료가 누락되어 있습니다"
@@ -12459,6 +12470,17 @@ msgstr "NUMA 토폴로지는 NUMA 셀 없이 정의되어 있음"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "NUMA 튜닝은 세션 모드에서 사용 할 수 없습니다"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -16805,7 +16827,8 @@ msgstr "대상 비디오 카드 가상 램 64 %1$u가 소스 %2$u와 일치하�
 
 #, c-format
 msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
-msgstr "대상 virtio 네트워크 대기열 수 '%1$d'는 원천 '%2$d'와 일치하지 않습니다"
+msgstr ""
+"대상 virtio 네트워크 대기열 수 '%1$d'는 원천 '%2$d'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -17318,6 +17341,9 @@ msgstr "더 이상 무료 %1$s가 없습니다."
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "이 QEMU 바이너리는 zPCI를 지원하지 않습니다"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "이 QEMU는 '-device usb-storage'를 지원하지 않습니다"
 
@@ -17769,6 +17795,14 @@ msgstr "USB 장치 %1$s가 이미 사용 중입니다"
 #, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "USB 장치 %1$s는 드라이버%2$s, 도메인 %3$s에 의해 사용 중입니다"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB 호스트 장치에 버스/장치 정보가 빠졌습니다"
@@ -18812,6 +18846,12 @@ msgstr "임대 %1$s 초기화 할 수 없음"
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "임대 %1$s: %2$s 초기화 할 수 없습니다"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "잠금공간 %1$s를 초기화 할 수 없습니다"
@@ -18898,11 +18938,12 @@ msgid "Unable to modify live devices"
 msgstr "라이브 장치를 수정 할 수 없습니다"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
-msgstr "중재된 장치를 수정 할 수 없음: %1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
+msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
-msgstr "중재된 장치를 수정 할 수 없음: 미지원 수정"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -20526,6 +20567,10 @@ msgid "Unsupported algorithm '%1$s'"
 msgstr "지원되지 않는 알고리즘 '%1$s'"
 
 #, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "지원되지 않는 부트 장치 유형: '%1$s'"
 
@@ -21150,12 +21195,6 @@ msgstr "볼륨 경로 '%1$s'는 선입선출 (FIFO) 방법을 사용합니다"
 #, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "볼륨 경로 '%1$s'은(는) 소켓입니다"
-
-msgid "VxHS protocol accepts only one host"
-msgstr "VxHS 프로토콜은 하나의 호스트만 허용합니다"
-
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "VxHS 프로토콜은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "WARN"
 msgstr "경고"
@@ -21906,6 +21945,9 @@ msgstr "복원 시 파일 시스템 캐시 방지"
 
 msgid "avoid file system cache when saving"
 msgstr "저장할 때 파일 시스템 캐시 피하기"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "백그라운드 작업"
@@ -23453,10 +23495,6 @@ msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "virtiofs에 대한 대기열 크기 '%1$s'을(를) 구문 분석할 수 없습니다"
 
 #, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "rdp 포트 %1$s를 구문분석 할 수 없습니다"
-
-#, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "lunStr '%1$s'의 대상을 구문 분석할 수 없습니다"
 
@@ -23488,10 +23526,6 @@ msgstr "vcpu 인덱스 '%1$s'을(를) 구문 분석할 수 없습니다"
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "vlan 태그 '%1$s'(파일 '%2$s'에서)를 구문 분석 할 수 없음"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "vnc 포트 %1$s를 구문 분석 할 수 없습니다"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "터널링된 이전을 위해 파이프를 전달 할 수 없습니다"
@@ -24259,6 +24293,10 @@ msgstr "명령 '%1$s'는 선택(옵션) 설정(set)을 가지고 있습니다"
 #, c-format
 msgid "command '%1$s' lacks help"
 msgstr "명령 '%1$s'에 도움이 부족합니다"
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
+msgstr ""
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -28089,6 +28127,9 @@ msgstr "'%1$s'의 용량을 최신화 하는 데 실패함"
 msgid "failed to update device in BPF cgroup map"
 msgstr "BPF cgroup 맵에서 장치를 최신화하지 못했습니다"
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "SSH 호스트 키를 확인하지 못했습니다. %1$s"
@@ -30212,6 +30253,10 @@ msgstr "iommu 모델 '%1$s'은 주소를 가질 수 없습니다"
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
 msgstr "iommu 모델 '%1$s'는 추가 속성을 지원하지 않습니다"
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -35016,12 +35061,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr "qemu-rdp는 단일 그래픽 장치를 위해서 다중 수신을 지원하지 않습니다."
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr "qemu-rdp는 'multiUser' 속성을 지원하지 않습니다."
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr "qemu-rdp는 'replaceUser' 속성을 지원하지 않습니다."
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr "qemu-rdp 지원은 D-Bus 버스 그래픽 장치를 요구합니다."
 
@@ -36704,6 +36743,10 @@ msgstr "저장소 풀 통신규약 버전 '%1$s'가 포함되지 않아야만 �
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr "풀 유형 '%1$s'에 대해 저장소 풀 통신규약 버전이 지원되지 않습니다"
+
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -38451,6 +38494,9 @@ msgstr "fdc 디스크에 대해 예기치 못한 주소 유형"
 
 msgid "unexpected address type for ide disk"
 msgstr "IDE 디스크에 대해 예기치 못한 주소 유형"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr "사타 디스크에 대한 예기치 못한 주소 유형"
@@ -40529,10 +40575,6 @@ msgstr "vram64 속성은 비디오 유형 qxl에 대해서만 지원됨"
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "vsock 장치는 이 QEMU 바이너리에서 지원되지 않음"
 
-#, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "vxhs_tls_x509_cert_dir 디렉토리 '%1$s'가 존재하지 않습니다"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr "vz 드라이버는 VNC 그래픽에 대한 독점 공유 정책을 지원하지 않습니다."
 
@@ -40591,6 +40633,9 @@ msgstr "일이 끝날 때까지 기다리십시오"
 msgid "wait for job to reach mirroring phase"
 msgstr "작업이 미러링 단계에 도달할 때까지 기다리십시오"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "pmsuspended 상태에서 도메인을 시작합니다"
 
@@ -40641,6 +40686,9 @@ msgstr "데이터를 저장할 위치"
 
 msgid "where to store the screenshot"
 msgstr "스크린샷을 저장해야 할 위치"
+
+msgid "which condition to wait until"
+msgstr ""
 
 msgid "which event type to wait for"
 msgstr "어떤 이벤트 유형을 기다릴지"
@@ -40754,6 +40802,46 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "%1$s 영역이 네트워크 %2$s에 대해 요청되었지만 firewalld가 활성 상태가 아닙니"
 "다"
+
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "'ioeventfd'는 virtio-scsi 제어기에서만 지원됩니다"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "'queues'는 virtio-scsi 제어기에서만 지원됩니다"
+
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "'tftp' 통신규약은 이 QEMU 바이너리에서 지원하지 않습니다"
+
+#, c-format
+#~ msgid "Unable to modify mediated device: %1$s"
+#~ msgstr "중재된 장치를 수정 할 수 없음: %1$s"
+
+#~ msgid "Unable to modify mediated device: modify unsupported"
+#~ msgstr "중재된 장치를 수정 할 수 없음: 미지원 수정"
+
+#~ msgid "VxHS protocol accepts only one host"
+#~ msgstr "VxHS 프로토콜은 하나의 호스트만 허용합니다"
+
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "VxHS 프로토콜은 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "rdp 포트 %1$s를 구문분석 할 수 없습니다"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "vnc 포트 %1$s를 구문 분석 할 수 없습니다"
+
+#~ msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+#~ msgstr "qemu-rdp는 'multiUser' 속성을 지원하지 않습니다."
+
+#~ msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+#~ msgstr "qemu-rdp는 'replaceUser' 속성을 지원하지 않습니다."
+
+#, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "vxhs_tls_x509_cert_dir 디렉토리 '%1$s'가 존재하지 않습니다"
 
 #, c-format
 #~ msgid ""

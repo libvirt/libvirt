@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1370,8 +1370,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "„initiator“ odkazuje na neexistující NUMA uzel"
 
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'ioeventfd' je podporováno pouze řadičem virtio-scsi"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "atribut 'iothread' je podporován pouze pro virtio scsi řadiče"
@@ -1469,8 +1469,8 @@ msgstr ""
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "'queues' (fronty) jsou podporované pouze řadičem virtio-scsi"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1508,9 +1508,6 @@ msgstr "atribut 'socket' je platný pouze pro typ očekávání spojení 'socket
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "'target' odkazuje na neexistující NUMA uzel"
-
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "VxHS protokol není touto binárkou QEMU podporován"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr "kolonka 'tlsHostname' není tímto QEMU podporována"
@@ -4217,6 +4214,11 @@ msgstr ""
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "Nastavování časovače „%1$s“ není touto binárkou QEMU podporováno"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Připojit k virtuální sériové konzoli hosta"
@@ -12041,6 +12043,10 @@ msgstr ""
 msgid "Missing bridge name"
 msgstr "Chybí název síťového mostu"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 msgid "Missing capability type"
 msgstr "Chybí typ schopnosti"
 
@@ -12144,6 +12150,9 @@ msgstr "V JSON dokumentu chybí magic data"
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "Chybí povinné atributy average (průměr) nebo floor (dolní hodnota)"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "V JSON dokumentu chybí data max_clients"
@@ -12640,6 +12649,17 @@ msgstr "NUMA topologie definována bez NUMA buněk"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "ladění NUMA není v režimu relace k dispozici"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -17540,6 +17560,9 @@ msgstr "Už zde nejsou žádné volné %1$s."
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "Tato binárka QEMU nepodporuje zPCI"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "Toto QEMU nepodporuje '-device usb-storage'"
 
@@ -17998,6 +18021,14 @@ msgstr "USB zařízení %1$s už je používáno"
 #, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "USB zařízení %1$s je používáno ovladačem %2$s, doménou %3$s"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB zařízení hostitele postrádá údaje o sběrnici/zařízení"
@@ -19053,6 +19084,12 @@ msgstr "Nedaří se inicializovat zápůjčku %1$s"
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "Nedaří se inicializovat zápůjčku %1$s: %2$s"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "Nedaří se inicializovat zámkový prostor %1$s"
@@ -19139,10 +19176,11 @@ msgid "Unable to modify live devices"
 msgstr "Nedaří se změnit živá zařízení"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
 msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
 msgstr ""
 
 #, c-format
@@ -20778,6 +20816,10 @@ msgid "Unsupported algorithm '%1$s'"
 msgstr "Nepodporovaný algoritmus „%1$s“"
 
 #, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "Nepodporovaný typ zařízení pro zavádění systému: „%1$s“"
 
@@ -21402,12 +21444,6 @@ msgstr "Popis umístění svazku „%1$s“ je FIFO"
 #, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "Popis umístění svazku „%1$s“ je soket"
-
-msgid "VxHS protocol accepts only one host"
-msgstr "protokol VxHS přijímá pouze jediného hostitele"
-
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "VxHS protokol není touto binárkou QEMU podporován"
 
 msgid "WARN"
 msgstr "VAROVÁNÍ"
@@ -22192,6 +22228,9 @@ msgstr "vyhnout se při obnovování mezipaměti systému"
 
 msgid "avoid file system cache when saving"
 msgstr "vyhnout se při ukládání mezipaměti systému"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "úloha na pozadí"
@@ -23776,10 +23815,6 @@ msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "nepodařilo se zpracovat délku fronty „%1$s“ pro virtiofs"
 
 #, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "nedaří se zpracovat rdp port %1$s"
-
-#, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "nedaří se zpracovat cíl pro lunStr „%1$s“"
 
@@ -23812,10 +23847,6 @@ msgstr "nedaří se zpracovat pořadové číslo virt. procesoru „%1$s“"
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "nedaří se zpracovat vlan štítek „%1$s“ ze souboru „%2$s“"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "nedaří se zpracovat vnc port %1$s"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "nedaří se předat rouru pro tunelovanou migraci"
@@ -24596,6 +24627,10 @@ msgstr "příkaz '%1$s' má nastaveny volby"
 #, c-format
 msgid "command '%1$s' lacks help"
 msgstr "příkaz „%1$s“ postrádá nápovědu"
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
+msgstr ""
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -28469,6 +28504,9 @@ msgstr ""
 msgid "failed to update device in BPF cgroup map"
 msgstr "Nepodařilo se aktualizovat zařízení v BPF cgroup mapě"
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "nepodařilo se ověřit SSH klíč hostitele: %1$s"
@@ -30643,6 +30681,10 @@ msgstr "iommu model '%1$s' nemůže mít adresu"
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
 msgstr "iommu model '%1$s' nepodporuje další atributy"
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits není tímto sestavením QEMU podporováno"
@@ -35592,12 +35634,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr ""
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr ""
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr ""
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr ""
 
@@ -37346,6 +37382,10 @@ msgstr "protokol fondu úložiště verze '%1$s' nemůže obsahovat ',' (čárku
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr ""
 "pro fond typu „%1$s“ není podporována verze (ver) protokolu fondu úložiště"
+
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -39113,6 +39153,9 @@ msgstr "neočekávaný typ adresy pro fdc disk"
 
 msgid "unexpected address type for ide disk"
 msgstr "neočekávaný typ adresy pro ide disk"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr "neočekávaný typ adresy pro sata disk"
@@ -41209,10 +41252,6 @@ msgstr "vram64 atribut je podporován pouze pro video typu qxl"
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "vsock zařízení není s touto binárkou QEMU podporováno"
 
-#, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "vxhs_tls_x509_cert_dir složka „%1$s“ neexistuje"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr "ovladač vz nepodporuje pravidlo výhradního sdílení pro VNC grafiku."
 
@@ -41272,6 +41311,9 @@ msgstr "čekat na dokončení úlohy"
 msgid "wait for job to reach mirroring phase"
 msgstr "počkat až úloha dosáhne fáze zrcadlení"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "probudit doménu ze stavu pmsuspend"
 
@@ -41321,6 +41363,9 @@ msgstr "kam uložit data"
 
 msgid "where to store the screenshot"
 msgstr "kam uložit snímek obrazovky"
+
+msgid "which condition to wait until"
+msgstr ""
 
 msgid "which event type to wait for"
 msgstr "na jaký typ události čekat"
@@ -41438,6 +41483,33 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "'ioeventfd' je podporováno pouze řadičem virtio-scsi"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "'queues' (fronty) jsou podporované pouze řadičem virtio-scsi"
+
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "VxHS protokol není touto binárkou QEMU podporován"
+
+#~ msgid "VxHS protocol accepts only one host"
+#~ msgstr "protokol VxHS přijímá pouze jediného hostitele"
+
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "VxHS protokol není touto binárkou QEMU podporován"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "nedaří se zpracovat rdp port %1$s"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "nedaří se zpracovat vnc port %1$s"
+
+#, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "vxhs_tls_x509_cert_dir složka „%1$s“ neexistuje"
 
 #, c-format
 #~ msgid ""

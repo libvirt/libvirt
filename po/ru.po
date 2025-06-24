@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2025-03-16 17:56+0000\n"
 "Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1402,8 +1402,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "«initiator» ссылается на несуществующий узел NUMA"
 
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "«ioeventfd» поддерживается только контроллером virtio-scsi"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "атрибут «iothread» поддерживается только для контроллеров scsi virtio"
@@ -1499,8 +1499,8 @@ msgstr "Для источника типа «pool» необходимо опр�
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "«queues» поддерживается только контроллером virtio-scsi"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1535,9 +1535,6 @@ msgstr "атрибут «socket» является корректным толь
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "«target» ссылается на несуществующий узел NUMA"
-
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "этот исполняемый файл QEMU не поддерживает протокол «tftp»"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr "поле «tlsHostname» не поддерживается этим QEMU"
@@ -4225,6 +4222,11 @@ msgstr ""
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "Этот исполняемый файл QEMU не поддерживает настройку таймера «%1$s»"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Подключить последовательную виртуальную консоль для гостевой системы"
@@ -12009,6 +12011,10 @@ msgstr ""
 msgid "Missing bridge name"
 msgstr "Отсутствует имя моста"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 msgid "Missing capability type"
 msgstr "Отсутствует тип возможности"
 
@@ -12113,6 +12119,9 @@ msgstr "Документ JSON не содержит данных magic"
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "Должно быть определено среднее значение или нижний порог"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "Документ JSON не содержит данных max_clients"
@@ -12631,6 +12640,17 @@ msgstr "Топология NUMA определена без ячеек"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "Настройка NUMA недоступна в режиме сеанса"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -17586,6 +17606,9 @@ msgstr "Больше нет свободных %1$s."
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "Этот исполняемый файл QEMU не поддерживает zPCI"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "Этот QEMU не поддерживает «-device usb-storage»"
 
@@ -18056,6 +18079,14 @@ msgstr "USB-устройство %1$s уже используется"
 #, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "USB-устройство %1$s используется драйвером %2$s, домен %3$s"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "Отсутствует информация о шине/устройстве для USB-устройства"
@@ -19110,6 +19141,12 @@ msgstr "Не удалось инициализировать аренду %1$s"
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "Не удалось инициализировать аренду %1$s: %2$s"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "Не удалось инициализировать пространство блокирования %1$s"
@@ -19196,10 +19233,11 @@ msgid "Unable to modify live devices"
 msgstr "Интерактивные устройства не могут быть изменены"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
 msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
 msgstr ""
 
 #, c-format
@@ -20849,6 +20887,10 @@ msgid "Unsupported algorithm '%1$s'"
 msgstr "Алгоритм «%1$s» не поддерживается."
 
 #, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "Неподдерживаемый тип загрузочного устройства: «%1$s»"
 
@@ -21465,12 +21507,6 @@ msgstr "Путь к тому «%1$s» является записью FIFO"
 #, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "Путь к тому «%1$s» является сокетом"
-
-msgid "VxHS protocol accepts only one host"
-msgstr "протокол VxHS принимает только один узел"
-
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "Этот исполняемый файл QEMU не поддерживает протокол VxHS"
 
 msgid "WARN"
 msgstr "ПРЕДУПРЕЖДЕНИЕ"
@@ -22262,6 +22298,9 @@ msgstr "не использовать кэш файловой системы п�
 
 msgid "avoid file system cache when saving"
 msgstr "не использовать кэш файловой системы при сохранении"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "фоновое задание"
@@ -23860,10 +23899,6 @@ msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "не удалось разобрать размер очереди «%1$s» для virtiofs"
 
 #, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "не удалось разобрать rdp-порт %1$s"
-
-#, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "не удалось разобрать назначение для lunStr «%1$s»"
 
@@ -23897,10 +23932,6 @@ msgstr "не удалось разобрать индекс виртуально
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "не удалось обработать тег vlan «%1$s» из файла «%2$s»"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "не удалось разобрать порт VNC %1$s"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "не удалось передать канал для туннельной миграции"
@@ -24690,6 +24721,10 @@ msgstr ""
 #, c-format
 msgid "command '%1$s' lacks help"
 msgstr "отсутствует справка для команды «%1$s»"
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
+msgstr ""
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -28510,6 +28545,9 @@ msgstr ""
 msgid "failed to update device in BPF cgroup map"
 msgstr "не удалось обновить устройство в карте BPF cgroup"
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "не удалось проверить SSH-ключ узла: %1$s"
@@ -30705,6 +30743,10 @@ msgstr ""
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -35653,12 +35695,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr ""
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr ""
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr ""
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr ""
 
@@ -37386,6 +37422,10 @@ msgstr ""
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr "версия протокола пула хранилища не поддерживается для типа пула «%1$s»"
+
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -39164,6 +39204,9 @@ msgstr "непредвиденный тип адреса FDC-диска"
 
 msgid "unexpected address type for ide disk"
 msgstr "непредвиденный тип адреса IDE-диска"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr "непредвиденный тип адреса диска SATA"
@@ -41281,10 +41324,6 @@ msgstr ""
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает устройство vsock"
 
-#, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "каталог vxhs_tls_x509_cert_dir «%1$s» не существует"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr ""
 "драйвер vz не поддерживает политику монопольного совместного доступа для "
@@ -41348,6 +41387,9 @@ msgstr "дождаться завершения задания"
 msgid "wait for job to reach mirroring phase"
 msgstr "ожидать, пока задание не достигнет стадии зеркалирования"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "вывести домен из спящего режима с пониженным энергопотреблением"
 
@@ -41398,6 +41440,9 @@ msgstr "файл, в который будет сохранено состоян
 
 msgid "where to store the screenshot"
 msgstr "файл, в который будет сохранен снимок"
+
+msgid "which condition to wait until"
+msgstr ""
 
 msgid "which event type to wait for"
 msgstr "тип ожидаемых событий"
@@ -41519,6 +41564,33 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "поступил запрос о зоне %1$s для сети %2$s, но firewalld не задействовано"
+
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "«ioeventfd» поддерживается только контроллером virtio-scsi"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "«queues» поддерживается только контроллером virtio-scsi"
+
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "этот исполняемый файл QEMU не поддерживает протокол «tftp»"
+
+#~ msgid "VxHS protocol accepts only one host"
+#~ msgstr "протокол VxHS принимает только один узел"
+
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "Этот исполняемый файл QEMU не поддерживает протокол VxHS"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "не удалось разобрать rdp-порт %1$s"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "не удалось разобрать порт VNC %1$s"
+
+#, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "каталог vxhs_tls_x509_cert_dir «%1$s» не существует"
 
 #, c-format
 #~ msgid ""

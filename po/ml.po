@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1235,9 +1235,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
-#, fuzzy
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 #, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
@@ -1336,8 +1335,8 @@ msgstr "'pool', 'volume' എന്നിവ ഒന്നിച്ചു് 'pool
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1370,10 +1369,6 @@ msgstr ""
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
-
-#, fuzzy
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr ""
@@ -4028,6 +4023,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറിയില്‍ vhost-net പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "ഗസ്റ്റിനുളള വിര്‍ച്ച്വല്‍ സീരിയല്‍ കണ്‍സോള്‍ കണക്ട് ചെയ്യുക"
@@ -11838,6 +11838,10 @@ msgstr ""
 msgid "Missing bridge name"
 msgstr "ടൈമര്‍ നാമം ലഭ്യമല്ല"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 #, fuzzy
 msgid "Missing capability type"
 msgstr "വിശേഷണ തരം ലഭ്യമല്ല"
@@ -11947,6 +11951,9 @@ msgstr "JSON രേഖയില്‍ മാജിക്ക് ഡേറ്റ�
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "നിര്‍ബന്ധമായ ആവറേജ് അല്ലെങ്കില്‍ ഫ്ലോര്‍ വിശേഷത ലഭ്യമല്ല"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "ജെഎസ്ഒഎന്‍ രേഖയില്‍  max_clients ഡേറ്റാ ലഭ്യമല്ല"
@@ -12444,6 +12451,17 @@ msgstr "NUMA ടോപ്പോളജി NUMA അറകള്‍ ഇല്ലാ
 #, fuzzy
 msgid "NUMA tuning is not available in session mode"
 msgstr "ഈ ഹോസ്റ്റില്‍ സിപിയു ട്യൂണിങ് ലഭ്യമല്ല"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -17344,6 +17362,9 @@ msgstr "ഉപയോഗത്തിലില്ലാത്ത സിസിഡ�
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "ക്യൂഇഎംയു ബൈനറി %s പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 #, fuzzy
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "ഈ QEMU virtio scsi കണ്ട്രോളര്‍ പിന്തുണയ്ക്കുന്നില്ല"
@@ -17802,6 +17823,14 @@ msgstr "യുഎസ്ബി ഡിവൈസ് %1$s ഉപയോഗത്ത�
 #, fuzzy, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "യുഎസ്ബി ഡിവൈസ് %s ഉപയോഗത്തിലുണ്ടു്"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "ബസ്/ഡിവൈസ് വിവരം യുഎസ്ബി ഹോസ്റ്റ് ഡിവൈസില്‍ ലഭ്യമല്ല"
@@ -18910,6 +18939,12 @@ msgstr "ലീസ് %1$s ആരംഭിയ്ക്കുവാന്‍ സ�
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "ലീസ് %s ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "സോക്ക്സ്പെയിസ് %1$s ആരംഭിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -19000,10 +19035,11 @@ msgid "Unable to modify live devices"
 msgstr "ലൈവ് ഡിവൈസുകളില്‍ മാറ്റം വരുത്തുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
 msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
 msgstr ""
 
 #, c-format
@@ -20668,6 +20704,10 @@ msgstr "പിന്തുണയ്ക്കാത്ത ക്യാരക്�
 msgid "Unsupported algorithm '%1$s'"
 msgstr "'%1$s' അല്‍ഗോരിതം പിന്തുണയ്ക്കുന്നില്ല"
 
+#, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് തരം '%1$s'"
@@ -21268,13 +21308,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "പാഥ് '%1$s' ആബ്സല്യൂട്ടല്ല"
-
-msgid "VxHS protocol accepts only one host"
-msgstr ""
-
-#, fuzzy
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
 
 msgid "WARN"
 msgstr "WARN"
@@ -22056,6 +22089,9 @@ msgstr "തിരിച്ചെടുക്കുമ്പോള്‍ ഫയ�
 
 msgid "avoid file system cache when saving"
 msgstr "സൂക്ഷിക്കുമ്പോള്‍ ഫയല്‍ സിസ്റ്റം ക്യാഷ് അവഗണിക്കുക"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "പശ്ചാത്തലത്തിലുള്ള ജോലി"
@@ -23608,10 +23644,6 @@ msgstr "vmware ലോഗ് ഫയലിന്റെ pid പാഴ്സ് ച�
 msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "RAM ഫയല്‍സിസ്റ്റത്തില്‍ '%1$s' ഉപയോഗം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "rdp പോര്‍ട്ട് %1$s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "ലക്ഷ്യം '%1$s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -23644,10 +23676,6 @@ msgstr "വീഡിയോ ram '%1$s' പാഴ്സ് ചെയ്യുവ�
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "'%s' എന്ന ഫയലേയ്ക്കു് എഴുതാന്‍ സാധ്യമല്ല"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "vnc പോര്‍ട്ട് %1$s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "ടണല്‍ മൈഗ്രേഷനു് പൈപ്പ് നല്‍കുവാന്‍ സാധ്യമല്ല"
@@ -24444,6 +24472,10 @@ msgstr ""
 
 #, c-format
 msgid "command '%1$s' lacks help"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
 msgstr ""
 
 #, c-format
@@ -28345,6 +28377,9 @@ msgstr ""
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് പുതുക്കുന്നതില്‍ പരാജയം "
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "SSH ഹോസ്റ്റ് കീ ഉറപ്പാക്കുന്നതില്‍ പരാജയം: %1$s"
@@ -30492,6 +30527,10 @@ msgstr ""
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -35475,12 +35514,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr ""
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr ""
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr ""
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr ""
 
@@ -37221,6 +37254,10 @@ msgstr ""
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr "%s ഡിസ്കിനു് അകമേയുള്ള സ്നാപ്പ്ഷോട്ടിനു് %s സംഭരണ ശൈലിയില്‍ പിന്തുണ ലഭ്യമല്ല"
 
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
 msgstr "സ്റ്റോറേജ് പൂള്‍ '%s' നിലിവില്‍ സജീവല്ല"
@@ -38947,6 +38984,9 @@ msgstr "എഫ്ഡിസി ഡിസ്കിനു് അപ്രതീക�
 
 msgid "unexpected address type for ide disk"
 msgstr "ഐഡിഇ ഡിസ്കിനു് അപ്രതീക്ഷിതമായ വിലാസം തരം"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr ""
@@ -41027,10 +41067,6 @@ msgstr ""
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#, fuzzy, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "known hosts ഫയല്‍ '%1$s' നിലവിലില്ല"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr ""
 
@@ -41090,6 +41126,9 @@ msgstr "ജോലി തീരുന്നത് വരെ കാത്തിര
 msgid "wait for job to reach mirroring phase"
 msgstr "ജോലി മിററിങ്ങ് ഘട്ടം എത്തുന്നതിനായി കാത്തിരിക്കുക"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "ഉറങ്ങുന്ന ഡൊമൈനിനെ വിളിച്ചുണര്‍ത്തുക"
 
@@ -41139,6 +41178,9 @@ msgstr "ഡേറ്റാ സൂക്ഷിക്കേണ്ടത് എവ�
 
 msgid "where to store the screenshot"
 msgstr "ചിത്രം എവിടെ സൂക്ഷിക്കണം."
+
+msgid "which condition to wait until"
+msgstr ""
 
 #, fuzzy
 msgid "which event type to wait for"
@@ -41254,6 +41296,33 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
+
+#, fuzzy
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
+
+#, fuzzy
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "rdp പോര്‍ട്ട് %1$s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "vnc പോര്‍ട്ട് %1$s പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "known hosts ഫയല്‍ '%1$s' നിലവിലില്ല"
 
 #, c-format
 #~ msgid "Failed to run command '%1$s' to create new iscsi interface"

@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2025-05-08 15:49+0000\n"
 "Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1351,8 +1351,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' 指的是不存在的 NUMA 节点"
 
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'ioeventfd' 只被 virtio-scsi 控制器支持"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "virtio scsi 控制器仅支持'iothread'属性"
@@ -1444,8 +1444,8 @@ msgstr "必须为 'pool' 类型源同时指定 'pool' 和 'volume'"
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 计数必须为显式 iothread 到队列映射进行配置"
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "只有 virtio-scsi 支持 'queues'"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1482,9 +1482,6 @@ msgstr "'socket' 属性只适用于侦听类型 'socket'"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "'target' 指的是不存在的 NUMA 节点"
-
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持 'tftp' 协议"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr "此 QEMU 不支持 'tlsHostname' 字段"
@@ -4052,6 +4049,11 @@ msgstr "virtType=%1$s arch=%2$s machine=%3$s 客户机不支持配置 '%4$s' 计
 #, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持配置 '%1$s' 计时器"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "连接客户真实串行控制台"
@@ -11585,6 +11587,10 @@ msgstr "缺少网桥帮助程序名称"
 msgid "Missing bridge name"
 msgstr "缺少网桥名称"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 msgid "Missing capability type"
 msgstr "缺少功能类型"
 
@@ -11687,6 +11693,9 @@ msgstr "JSON 文件中缺少 magic 数据"
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "缺少强制 average 或者 floor 属性"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "JSON 文件中缺少 max_clients 数据"
@@ -12161,6 +12170,17 @@ msgstr "未定义 NUMA 单元的 NUMA 拓扑"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "会话模式中 NUMA 调优不可用"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -16881,6 +16901,9 @@ msgstr "没有更多空闲的 %1$s。"
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "这个 QEMU 二进制文件不支持 zPCI"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "此 QEMU 不支持 '-device usb-storage'"
 
@@ -17324,6 +17347,14 @@ msgstr "USB 设备 %1$s 正在使用中"
 #, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "USB 设备 %1$s 在被驱动程序 %2$s ，域 %3$s 使用"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB 主机失败缺少 bus/device 信息"
@@ -18361,6 +18392,12 @@ msgstr "无法初始化租期 %1$s"
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "无法初始化租期 %1$s: %2$s"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "无法初始化锁空间 %1$s"
@@ -18447,11 +18484,12 @@ msgid "Unable to modify live devices"
 msgstr "无法修改实时设备"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
-msgstr "无法修改中介设备：%1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
+msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
-msgstr "无法修改中介设备：修改不支持"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
+msgstr ""
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -20061,6 +20099,10 @@ msgid "Unsupported algorithm '%1$s'"
 msgstr "不支持的算法 '%1$s'"
 
 #, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "不支持的引导设备类型：'%1$s'"
 
@@ -20671,12 +20713,6 @@ msgstr "卷路径 '%1$s' 是一个 FIFO"
 #, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "卷路径 '%1$s' 是一个套接字"
-
-msgid "VxHS protocol accepts only one host"
-msgstr "VxHS 协议只接受一个主机"
-
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持 VxHS 协议"
 
 msgid "WARN"
 msgstr "警告"
@@ -21416,6 +21452,9 @@ msgstr "恢复时避免文件系统缓存"
 
 msgid "avoid file system cache when saving"
 msgstr "保存时避免文件系统缓存"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "背景任务"
@@ -22916,10 +22955,6 @@ msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "无法解析 virtiofs 的队列大小 '%1$s'"
 
 #, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "无法解析 rdp 端口 %1$s"
-
-#, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "无法解析 lunStr '%1$s' 的目标"
 
@@ -22951,10 +22986,6 @@ msgstr "无法解析 vcpu 索引 '%1$s'"
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "无法解析文件 '%1$s' 中的 vlan 标签 '%2$s'"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "无法解析 vnc 端口 %1$s"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "无法为管道迁移传递通道"
@@ -23710,6 +23741,10 @@ msgstr "命令 '%1$s' 有选项集"
 #, c-format
 msgid "command '%1$s' lacks help"
 msgstr "命令 '%1$s' 缺少帮助"
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
+msgstr ""
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -27465,6 +27500,9 @@ msgstr "未能更新 '%1$s' 的容量"
 msgid "failed to update device in BPF cgroup map"
 msgstr "无法在 BPF cgroup 图中更新设备"
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "无法验证 ssh 主机密钥：%1$s"
@@ -29529,6 +29567,10 @@ msgstr "iommu 型号 '%1$s' 不能有地址"
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
 msgstr "iommu 模型 '%1$s' 不支持附加属性"
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
+msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: 此 QEMU 二进制文件不支持 aw_bits"
@@ -34249,12 +34291,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr "qemu-rdp 不支持一个图形设备的多重监听。"
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr "qemu-rdp 不支持 'multiUser' 属性。"
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr "qemu-rdp 不支持 'replaceUser' 属性。"
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr "qemu-rdp 支持需要 D-Bus 总线图形设备。"
 
@@ -35897,6 +35933,10 @@ msgstr "存储池协议 ver '%1$s' 不得包含 ','"
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr "存储池协议 ver 不支持池类型 '%1$s'"
+
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -37602,6 +37642,9 @@ msgstr "fdc 磁盘的意外的地址类型"
 
 msgid "unexpected address type for ide disk"
 msgstr "ide 磁盘的意外的地址类型"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr "sata 磁盘的意外的地址类型"
@@ -39645,10 +39688,6 @@ msgstr "vram64 属性只支持视频类型 qxl"
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 vsock 设备"
 
-#, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "vxhs_tls_x509_cert_dir 目录 '%1$s' 不存在"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr "vz 驱动程序不支持 VNC 图形的独占共享策略。"
 
@@ -39706,6 +39745,9 @@ msgstr "等待任务完成"
 msgid "wait for job to reach mirroring phase"
 msgstr "等待任务达到镜像阶段"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "从 pmsuspended 状态唤醒域"
 
@@ -39755,6 +39797,9 @@ msgstr "要在哪里保存数据"
 
 msgid "where to store the screenshot"
 msgstr "要在哪里保存截屏"
+
+msgid "which condition to wait until"
+msgstr ""
 
 msgid "which event type to wait for"
 msgstr "要等待哪个事件类型"
@@ -39866,6 +39911,46 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "'ioeventfd' 只被 virtio-scsi 控制器支持"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "只有 virtio-scsi 支持 'queues'"
+
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "此 QEMU 二进制文件不支持 'tftp' 协议"
+
+#, c-format
+#~ msgid "Unable to modify mediated device: %1$s"
+#~ msgstr "无法修改中介设备：%1$s"
+
+#~ msgid "Unable to modify mediated device: modify unsupported"
+#~ msgstr "无法修改中介设备：修改不支持"
+
+#~ msgid "VxHS protocol accepts only one host"
+#~ msgstr "VxHS 协议只接受一个主机"
+
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持 VxHS 协议"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "无法解析 rdp 端口 %1$s"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "无法解析 vnc 端口 %1$s"
+
+#~ msgid "qemu-rdp doesn't support the 'multiUser' attribute."
+#~ msgstr "qemu-rdp 不支持 'multiUser' 属性。"
+
+#~ msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
+#~ msgstr "qemu-rdp 不支持 'replaceUser' 属性。"
+
+#, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "vxhs_tls_x509_cert_dir 目录 '%1$s' 不存在"
 
 #, c-format
 #~ msgid ""

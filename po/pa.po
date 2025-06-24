@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-05-27 08:29+0000\n"
+"POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1223,9 +1223,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
-#, fuzzy
-msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'queues' ਸਿਰਫ virtio-scsi ਨਿਯੰਤਰਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਹੈ"
+msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 #, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
@@ -1326,8 +1325,8 @@ msgstr "'ਪੂਲ' ਕਿਸਮ ਸਰੋਤ ਲਈ 'ਪੂਲ' ਅਤੇ 'ਆ�
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
-msgid "'queues' is only supported by virtio-scsi controller"
-msgstr "'queues' ਸਿਰਫ virtio-scsi ਨਿਯੰਤਰਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਹੈ"
+msgid "'queues' is only supported by virtio-scsi and nvme controllers"
+msgstr ""
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1360,10 +1359,6 @@ msgstr ""
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
-
-#, fuzzy
-msgid "'tftp' protocol is not supported with this QEMU binary"
-msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
 msgstr ""
@@ -4009,6 +4004,11 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Configuring the '%1$s' timer is not supported with this QEMU binary"
 msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+
+msgid ""
+"Conflicting NVME disk serial number, all disks on a controller must have the "
+"same serial number as the controller itself"
+msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "ਗੈਸਟ ਲਈ ਵਰਚੁਅਲ ਸੀਰੀਅਲ ਕਨਸੋਲ ਜੁੜੋ"
@@ -11762,6 +11762,10 @@ msgstr ""
 msgid "Missing bridge name"
 msgstr "ਗੈਰ-ਮੌਜੂਦ ਟਾਈਮਰ ਨਾਂ"
 
+#, c-format
+msgid "Missing callback definition for event type '%1$d'"
+msgstr ""
+
 #, fuzzy
 msgid "Missing capability type"
 msgstr "ਸਮਰੱਥਾ ਕਿਸਮ ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
@@ -11871,6 +11875,9 @@ msgstr "JSON ਦਸਤਾਵੇਜ ਵਿੱਚ ਜਾਦੂਈ ਡਾਟਾ ਗ
 
 msgid "Missing mandatory average or floor attributes"
 msgstr "ਲਾਜਮੀ ਔਸਤ ਜਾਂ ਨੀਵਾਂ ਐਟਰੀਬਿਊਟ ਗੁੰਮ"
+
+msgid "Missing mandatory serial for NVMe controller"
+msgstr ""
 
 msgid "Missing max_clients data in JSON document"
 msgstr "JSON ਦਸਤਾਵੇਜ ਵਿੱਚ max_clients ਡਾਟਾ ਗੁੰਮ"
@@ -12360,6 +12367,17 @@ msgstr "NUMA ਟੋਪੋਲੋਜੀ NUMA ਸੈੱਲਾਂ ਤੋਂ ਪਰ�
 #, fuzzy
 msgid "NUMA tuning is not available in session mode"
 msgstr "NUMA ਮੈਮੋਰੀ ਜਾਣਕਾਰੀ ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਉਪਲੱਬਧ ਨਹੀਂ ਹੈ"
+
+#, c-format
+msgid "NVMe NSID %1$d out of [0..14] range"
+msgstr ""
+
+#, c-format
+msgid "NVMe controller index %1$d out of [0..3] range"
+msgstr ""
+
+msgid "NVMe controllers are not supported with this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -17194,6 +17212,9 @@ msgstr "ਹੋਰ ਵੀ ਵਿਹਲੇ CCW devnos ਹਨ।"
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "QEMU ਬਾਇਨਰੀ %s ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ"
 
+msgid "This QEMU doesn't support '-device usb-bot'"
+msgstr ""
+
 #, fuzzy
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "ਇਹ QEMU  virtio scsi ਨਿਯੰਤਰਕ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ"
@@ -17648,6 +17669,14 @@ msgstr "USB ਜੰਤਰ %1$s ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿ�
 #, fuzzy, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
 msgstr "USB ਜੰਤਰ %s ਪਹਿਲਾਂ ਹੀ ਵਰਤੋਂ ਵਿੱਚ ਹੈ"
+
+msgid ""
+"USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
+"'usb-bot'."
+msgstr ""
+
+msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
+msgstr ""
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB ਹੋਸਟ ਜੰਤਰ ਵਿੱਚ ਬੱਸ/ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
@@ -18752,6 +18781,12 @@ msgstr "ਸਾਰਟੀਫਿਕੇਟ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅ�
 msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "ਸਾਰਟੀਫਿਕੇਟ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: %s"
 
+msgid "Unable to initialize libxml2 RelaxNG data"
+msgstr ""
+
+msgid "Unable to initialize libxml2 schema types"
+msgstr ""
+
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
 msgstr "ਸਾਰਟੀਫਿਕੇਟ ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: %1$s"
@@ -18842,10 +18877,11 @@ msgid "Unable to modify live devices"
 msgstr "ਜੀਵੰਤ ਯੰਤਰਾਂ ਵਿੱਚ ਸੁਧਾਰ ਕਰਨ ਤੋਂ ਅਸਮਰੱਥ"
 
 #, c-format
-msgid "Unable to modify mediated device: %1$s"
+msgid "Unable to modify mediated device '%1$s': %2$s"
 msgstr ""
 
-msgid "Unable to modify mediated device: modify unsupported"
+#, c-format
+msgid "Unable to modify mediated device '%1$s': modify unsupported"
 msgstr ""
 
 #, c-format
@@ -20503,6 +20539,10 @@ msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਅੱਖਰ ਜੰਤਰ ਕਿਸਮ '%s'
 msgid "Unsupported algorithm '%1$s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਐਲਗੋਰਿਥਮ '%1$s'"
 
+#, c-format
+msgid "Unsupported await condition name '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unsupported boot device type: '%1$s'"
 msgstr "ਨਾ-ਸਹਿਯੋਗੀ ਜੰਤਰ ਕਿਸਮ '%1$s'"
@@ -21105,13 +21145,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Volume path '%1$s' is a socket"
 msgstr "ਮਾਰਗ '%1$s' ਨੀਯਤ ਹੈ"
-
-msgid "VxHS protocol accepts only one host"
-msgstr ""
-
-#, fuzzy
-msgid "VxHS protocol is not supported with this QEMU binary"
-msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
 msgid "WARN"
 msgstr "ਚੇਤਾਵਨੀ"
@@ -21881,6 +21914,9 @@ msgstr "ਮੁੜ-ਬਹਾਲੀ ਵੇਲੇ ਫ਼ਾਈਲ ਸਿਸਟਮ �
 
 msgid "avoid file system cache when saving"
 msgstr "ਸੰਭਾਲਣ ਵੇਲੇ ਫ਼ਾਈਲ ਸਿਸਟਮ ਕੈਚੇ ਤੋਂ ਗੁਰੇਜ਼ ਕਰੋ"
+
+msgid "await a domain event"
+msgstr ""
 
 msgid "background job"
 msgstr "ਬੈਕਗਰਾਊਂਡ ਜੌਬ"
@@ -23426,10 +23462,6 @@ msgstr "pid ਨੂੰ vmware ਲਾਗ ਫਾਇਲ ਵਿੱਚ ਪਾਰਸ �
 msgid "cannot parse queue size '%1$s' for virtiofs"
 msgstr "RAM ਫਾਇਲਸਿਸਟਮ ਲਈ '%1$s' ਵਰਤੋਂ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
-#, c-format
-msgid "cannot parse rdp port %1$s"
-msgstr "rdp ਪੋਰਟ %1$s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
-
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%1$s'"
 msgstr "'%1$s' ਟਿਕਾਣੇ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -23462,10 +23494,6 @@ msgstr "ਵੀਡੀਓ ਰੈਮ '%1$s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕ
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
 msgstr "ਫਾਇਲ '%s' ਵਿੱਚ ਡਾਟਾ ਨਹੀਂ ਲਿਖ ਸਕਦਾ"
-
-#, c-format
-msgid "cannot parse vnc port %1$s"
-msgstr "vnc ਪੋਰਟ %1$s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
 
 msgid "cannot pass pipe for tunnelled migration"
 msgstr "ਟੰਨਲਡ ਮਾਈਗਰੇਸ਼ਨ ਲਈ ਪਾਈਪ ਪਾਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
@@ -24258,6 +24286,10 @@ msgstr ""
 
 #, c-format
 msgid "command '%1$s' lacks help"
+msgstr ""
+
+#, c-format
+msgid "command '%1$s' must have exactly one of the handler callbacks set"
 msgstr ""
 
 #, c-format
@@ -28147,6 +28179,9 @@ msgstr ""
 msgid "failed to update device in BPF cgroup map"
 msgstr "%s ਤੋਂ ਜੰਤਰ ਅੱਪਡੇਟ ਲਈ ਫੇਲ"
 
+msgid "failed to update domain state"
+msgstr ""
+
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
 msgstr "SSH ਹੋਸਟ ਕੁੰਜੀ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਤੋਂ ਫੇਲ: %1$s"
@@ -30282,6 +30317,10 @@ msgstr ""
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
+msgstr ""
+
+#, c-format
+msgid "iommu model '%1$s' doesn't support some additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
@@ -35274,12 +35313,6 @@ msgstr ""
 msgid "qemu-rdp does not support multiple listens for one graphics device."
 msgstr ""
 
-msgid "qemu-rdp doesn't support the 'multiUser' attribute."
-msgstr ""
-
-msgid "qemu-rdp doesn't support the 'replaceUser' attribute."
-msgstr ""
-
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr ""
 
@@ -37014,6 +37047,10 @@ msgstr ""
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
 msgstr "ਡਿਸਕ %s ਲਈ ਅੰਦਰੂਨੀ ਸਨੈਪਸਾਟ ਸਟੋਰੇਜ਼ ਕਿਸਮ %s ਲਈ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
+#, c-format
+msgid "storage protocol '%1$s' is not supported by this QEMU"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
 msgstr "ਸਟੋਰੇਜ਼ ਪੂਲ '%s' ਸਰਗਰਮ ਨਹੀਂ ਹੈ"
@@ -38743,6 +38780,9 @@ msgstr "fdc ਡਿਸਕ ਲਈ ਅਚਾਨਕ ਐਡਰੈੱਸ ਕਿਸਮ"
 
 msgid "unexpected address type for ide disk"
 msgstr "ide ਡਿਸਕ ਲਈ ਅਚਾਨਕ ਐਡਰੈੱਸ ਕਿਸਮ"
+
+msgid "unexpected address type for nvme disk"
+msgstr ""
 
 msgid "unexpected address type for sata disk"
 msgstr ""
@@ -40821,10 +40861,6 @@ msgstr ""
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "nvram ਯੰਤਰ ਇਸ QEMU ਬਾਇਨਰੀ ਦੁਆਰਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ"
 
-#, fuzzy, c-format
-msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr "ਟੈਂਪਲਿਟ '%1$s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
-
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr ""
 
@@ -40884,6 +40920,9 @@ msgstr "ਜੌਬ ਦੇ ਪੂਰਾ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ"
 msgid "wait for job to reach mirroring phase"
 msgstr "ਜੌਬ ਦੇ ਪ੍ਰਤੀਬਿੰਬ ਅਵਸਥਾ ਵਿੱਚ ਪਹੁੰਚਣ ਦੀ ਉਡੀਕ ਕਰੋ"
 
+msgid "waits for a certain domain event to happen and then terminates"
+msgstr ""
+
 msgid "wakeup a domain from pmsuspended state"
 msgstr "pmsuspended ਹਾਲਾਤ ਵਿੱਚੋਂ ਇੱਕ ਫਾਈਲ ਨੂੰ ਜਗਾਓ"
 
@@ -40933,6 +40972,9 @@ msgstr "ਡਾਟਾ ਕਿੱਥੇ ਸੰਭਾਲਣਾ ਹੈ"
 
 msgid "where to store the screenshot"
 msgstr "ਸਨੈਪਸ਼ਾਟ ਕਿੱਥੇ ਸੰਭਾਲਣਾ ਹੈ"
+
+msgid "which condition to wait until"
+msgstr ""
 
 #, fuzzy
 msgid "which event type to wait for"
@@ -41048,6 +41090,33 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy
+#~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
+#~ msgstr "'queues' ਸਿਰਫ virtio-scsi ਨਿਯੰਤਰਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਹੈ"
+
+#~ msgid "'queues' is only supported by virtio-scsi controller"
+#~ msgstr "'queues' ਸਿਰਫ virtio-scsi ਨਿਯੰਤਰਕ ਦੁਆਰਾ ਸਮਰਥਿਤ ਹੈ"
+
+#, fuzzy
+#~ msgid "'tftp' protocol is not supported with this QEMU binary"
+#~ msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "VxHS protocol is not supported with this QEMU binary"
+#~ msgstr "SATA ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
+
+#, c-format
+#~ msgid "cannot parse rdp port %1$s"
+#~ msgstr "rdp ਪੋਰਟ %1$s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਿਆ"
+
+#, c-format
+#~ msgid "cannot parse vnc port %1$s"
+#~ msgstr "vnc ਪੋਰਟ %1$s ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+#, fuzzy, c-format
+#~ msgid "vxhs_tls_x509_cert_dir directory '%1$s' does not exist"
+#~ msgstr "ਟੈਂਪਲਿਟ '%1$s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
 #, c-format
 #~ msgid "Failed to run command '%1$s' to create new iscsi interface"
