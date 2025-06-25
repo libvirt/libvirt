@@ -1012,14 +1012,15 @@ hypervisor-cpu-baseline
 ::
 
    hypervisor-cpu-baseline [FILE] [virttype] [emulator] [arch] [machine]
-      [--features] [--migratable] [model]
+      [--features] [--migratable] [--ignore-host] [model]
 
 Compute a baseline CPU which will be compatible with all CPUs defined in an XML
 *FILE*. This command must be called on one of the hosts described in *FILE*.
 Calling it on another host results in an undefined behavior as the computed CPU
 model is influenced by the hypervisor (the result may use an unexpected CPU
 model or some features may disabled even though they are supported on all input
-CPUs).
+CPUs). The undefined behavior can be avoided using *--ignore-host* option (see
+below).
 
 This is different from ``cpu-baseline`` which does not consider any hypervisor
 abilities when computing the baseline CPU.
@@ -1059,7 +1060,11 @@ specifies the path to the emulator, *arch* specifies the CPU architecture, and
 resulting XML description will explicitly include all features that make up the
 CPU, without this option features that are part of the CPU model will not be
 listed in the XML description. If *--migratable* is specified, features that
-block migration will not be included in the resulting CPU.
+block migration will not be included in the resulting CPU. If *--ignore-host*
+is specified and *FILE* contains more than one CPU, the command will not
+consider hypervisor abilities when computing the baseline. With this option
+baseline can be safely computed on any host (even those not described in
+*FILE*).
 
 
 hypervisor-cpu-models

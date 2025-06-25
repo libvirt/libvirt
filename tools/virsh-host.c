@@ -1700,6 +1700,12 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
      .type = VSH_OT_BOOL,
      .help = N_("Do not include features that block migration")
     },
+    {.name = "ignore-host",
+     .type = VSH_OT_BOOL,
+     .help = N_("when computing baseline from several CPUs, do not take "
+                "hypervisor capabilities into account and work with input "
+                "data only")
+    },
     {.name = "model",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
@@ -1730,6 +1736,8 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
         flags |= VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES;
     if (vshCommandOptBool(cmd, "migratable"))
         flags |= VIR_CONNECT_BASELINE_CPU_MIGRATABLE;
+    if (vshCommandOptBool(cmd, "ignore-host"))
+        flags |= VIR_CONNECT_BASELINE_CPU_IGNORE_HOST;
 
     if (vshCommandOptString(ctl, cmd, "file", &from) < 0 ||
         vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
