@@ -97,7 +97,7 @@ static int
 virStorageFileBackendGlusterInit(virStorageSource *src)
 {
     virStorageDriverData *drv = src->drv;
-    virStorageFileBackendGlusterPriv *priv = NULL;
+    g_autofree virStorageFileBackendGlusterPriv *priv = NULL;
     size_t i;
 
     if (!src->volume) {
@@ -117,31 +117,27 @@ virStorageFileBackendGlusterInit(virStorageSource *src)
     if (!(priv->vol = glfs_new(src->volume))) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("failed to create glfs object for '%1$s'"), src->volume);
-        goto error;
+        return -1;
     }
 
     for (i = 0; i < src->nhosts; i++) {
-        if (virStorageFileBackendGlusterInitServer(priv, src->hosts + i) < 0)
-            goto error;
+        if (virStorageFileBackendGlusterInitServer(priv, src->hosts + i) < 0) {
+            glfs_fini(priv->vol);
+            return -1;
+        }
     }
 
     if (glfs_init(priv->vol) < 0) {
         virReportSystemError(errno,
                              _("failed to initialize gluster connection (src=%1$p priv=%2$p)"),
                              src, priv);
-        goto error;
+        glfs_fini(priv->vol);
+        return -1;
     }
 
-    drv->priv = priv;
+    drv->priv = g_steal_pointer(&priv);
 
     return 0;
-
- error:
-    if (priv->vol)
-        glfs_fini(priv->vol);
-    VIR_FREE(priv);
-
-    return -1;
 }
 
 
