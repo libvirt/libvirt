@@ -357,6 +357,7 @@ virSystemdGetMachineUnitByPID(pid_t pid)
  * @nnicindexes: number of network interface indexes in list
  * @nicindexes: list of network interface indexes
  * @partition: name of the slice to place the machine in
+ * @maxthreads: maximum number of threads the VM process can use
  *
  * Returns 0 on success, -1 on fatal error, or -2 if systemd-machine is not available
  */
