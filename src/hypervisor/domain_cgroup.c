@@ -342,7 +342,7 @@ virDomainCgroupSetupCpuCgroup(virDomainObj *vm,
 }
 
 
-int
+static int
 virDomainCgroupInitCgroup(const char *prefix,
                           virDomainObj *vm,
                           size_t nnicindexes,

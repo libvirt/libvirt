@@ -1641,7 +1641,6 @@ virSetConnectStorage;
 virDomainCgroupConnectCgroup;
 virDomainCgroupEmulatorAllNodesAllow;
 virDomainCgroupEmulatorAllNodesRestore;
-virDomainCgroupInitCgroup;
 virDomainCgroupRemoveCgroup;
 virDomainCgroupSetMemoryLimitParameters;
 virDomainCgroupSetupBlkio;
