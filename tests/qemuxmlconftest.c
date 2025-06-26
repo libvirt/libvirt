@@ -495,6 +495,23 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         }
     }
 
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+            virDomainHostdevSubsysUSB *usb = &hostdev->source.subsys.u.usb;
+            if (!usb->device && !usb->bus) {
+                if (usb->vendor == 0x1234 && usb->product == 0x4321) {
+                    usb->bus = 42;
+                    usb->device = 0x1234;
+                } else {
+                    g_assert_not_reached();
+                }
+            }
+        }
+    }
+
     if (flags & FLAG_SLIRP_HELPER) {
         for (i = 0; i < vm->def->nnets; i++) {
             virDomainNetDef *net = vm->def->nets[i];
@@ -2271,6 +2288,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hostdev-usb-address-device");
     DO_TEST_CAPS_LATEST("hostdev-usb-address-device-boot");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-usb-duplicate");
+    DO_TEST_CAPS_LATEST("hostdev-usb-vendor-product");
     DO_TEST_CAPS_LATEST("hostdev-pci-address");
     DO_TEST_CAPS_LATEST("hostdev-pci-address-device");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-pci-duplicate");
