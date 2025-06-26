@@ -4252,7 +4252,8 @@ qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
 
     if (qemuDomainIsPSeries(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-    if (ARCH_IS_S390(def->os.arch) || qemuDomainIsLoongArchVirt(def))
+    if (ARCH_IS_S390(def->os.arch) || qemuDomainIsARMVirt(def) ||
+        qemuDomainIsLoongArchVirt(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
