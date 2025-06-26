@@ -40,7 +40,8 @@ int virSystemdCreateMachine(const char *name,
                             size_t nnicindexes,
                             int *nicindexes,
                             const char *partition,
-                            unsigned int maxthreads);
+                            unsigned int maxthreads,
+                            bool daemonDomainShutdown);
 
 int virSystemdTerminateMachine(const char *name);
 

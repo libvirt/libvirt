@@ -170,7 +170,8 @@ static int testCreateContainer(const void *opaque G_GNUC_UNUSED)
                                 123,
                                 true,
                                 0, NULL,
-                                "highpriority.slice", 0) < 0) {
+                                "highpriority.slice", 0,
+                                false) < 0) {
         fprintf(stderr, "%s", "Failed to create LXC machine\n");
         return -1;
     }
@@ -203,7 +204,9 @@ static int testCreateMachine(const void *opaque G_GNUC_UNUSED)
                                 123,
                                 false,
                                 0, NULL,
-                                NULL, 0) < 0) {
+                                NULL,
+                                0,
+                                true) < 0) {
         fprintf(stderr, "%s", "Failed to create KVM machine\n");
         return -1;
     }
@@ -240,7 +243,7 @@ static int testCreateNoSystemd(const void *opaque G_GNUC_UNUSED)
                                       123,
                                       false,
                                       0, NULL,
-                                      NULL, 0)) == 0) {
+                                      NULL, 0, false)) == 0) {
         g_unsetenv("FAIL_NO_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
@@ -274,7 +277,7 @@ static int testCreateSystemdNotRunning(const void *opaque G_GNUC_UNUSED)
                                       123,
                                       false,
                                       0, NULL,
-                                      NULL, 0)) == 0) {
+                                      NULL, 0, false)) == 0) {
         g_unsetenv("FAIL_NOT_REGISTERED");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
@@ -308,7 +311,7 @@ static int testCreateBadSystemd(const void *opaque G_GNUC_UNUSED)
                                       123,
                                       false,
                                       0, NULL,
-                                      NULL, 0)) == 0) {
+                                      NULL, 0, false)) == 0) {
         g_unsetenv("FAIL_BAD_SERVICE");
         fprintf(stderr, "%s", "Unexpected create machine success\n");
         return -1;
@@ -343,7 +346,7 @@ static int testCreateNetwork(const void *opaque G_GNUC_UNUSED)
                                 123,
                                 true,
                                 nnicindexes, nicindexes,
-                                "highpriority.slice", 2) < 0) {
+                                "highpriority.slice", 2, false) < 0) {
         fprintf(stderr, "%s", "Failed to create LXC machine\n");
         return -1;
     }

@@ -358,6 +358,8 @@ virSystemdGetMachineUnitByPID(pid_t pid)
  * @nicindexes: list of network interface indexes
  * @partition: name of the slice to place the machine in
  * @maxthreads: maximum number of threads the VM process can use
+ * @daemonDomainShutdown: shutdown of domains on host shutdown is done by the
+ *                        daemon instead of the libvirt-guests script
  *
  * Returns 0 on success, -1 on fatal error, or -2 if systemd-machine is not available
  */
@@ -370,7 +372,8 @@ int virSystemdCreateMachine(const char *name,
                             size_t nnicindexes,
                             int *nicindexes,
                             const char *partition,
-                            unsigned int maxthreads)
+                            unsigned int maxthreads,
+                            bool daemonDomainShutdown)
 {
     int rc;
     GDBusConnection *conn;
@@ -462,11 +465,23 @@ int virSystemdCreateMachine(const char *name,
                                           uuid, 16, sizeof(unsigned char));
         gnicindexes = g_variant_new_fixed_array(G_VARIANT_TYPE("i"),
                                                 nicindexes, nnicindexes, sizeof(int));
-        gprops = g_variant_new_parsed("[('Slice', <%s>),"
-                                      " ('After', <['libvirtd.service', %s]>),"
-                                      " ('Before', <['virt-guest-shutdown.target']>)]",
-                                      slicename,
-                                      servicename);
+
+        if (daemonDomainShutdown) {
+            /* When domains are shut down by the daemon rather than the
+             * "libvirt-guests" script we need ensure that their unit
+             * is ordered so that it's shutdown after the libvirt daemon itself */
+            gprops = g_variant_new_parsed("[('Slice', <%s>),"
+                                          " ('Before', <['libvirtd.service', %s]>)]",
+                                          slicename,
+                                          servicename);
+        } else {
+            gprops = g_variant_new_parsed("[('Slice', <%s>),"
+                                          " ('After', <['libvirtd.service', %s]>),"
+                                          " ('Before', <['virt-guest-shutdown.target']>)]",
+                                          slicename,
+                                          servicename);
+        }
+
         message = g_variant_new("(s@ayssus@ai@a(sv))",
                                 name,
                                 guuid,

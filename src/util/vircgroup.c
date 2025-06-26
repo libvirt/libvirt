@@ -1293,7 +1293,8 @@ virCgroupNewMachineSystemd(const char *name,
                                       nnicindexes,
                                       nicindexes,
                                       partition,
-                                      maxthreads)) < 0)
+                                      maxthreads,
+                                      false)) < 0)
         return rv;
 
     if (controllers != -1)
