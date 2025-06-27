@@ -919,6 +919,7 @@ qemuSetupCgroup(virDomainObj *vm,
                                    cfg->cgroupControllers,
                                    cfg->maxThreadsPerProc,
                                    priv->driver->privileged,
+                                   false,
                                    priv->machineName) < 0)
 
         return -1;

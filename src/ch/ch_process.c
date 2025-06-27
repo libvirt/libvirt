@@ -973,6 +973,7 @@ virCHProcessStart(virCHDriver *driver,
                                    cfg->cgroupControllers,
                                    0, /*maxThreadsPerProc*/
                                    priv->driver->privileged,
+                                   false,
                                    priv->machineName) < 0)
         goto cleanup;
 
@@ -1147,6 +1148,7 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
                                    cfg->cgroupControllers,
                                    0, /*maxThreadsPerProc*/
                                    priv->driver->privileged,
+                                   false,
                                    priv->machineName) < 0)
         goto cleanup;
 

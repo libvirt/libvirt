@@ -71,6 +71,7 @@ virDomainCgroupSetupCgroup(const char *prefix,
                            int cgroupControllers,
                            unsigned int maxThreadsPerProc,
                            bool privileged,
+                           bool daemonDomainShutdown,
                            char *machineName);
 void
 virDomainCgroupEmulatorAllNodesDataFree(virCgroupEmulatorAllNodesData *data);

@@ -351,6 +351,7 @@ virDomainCgroupInitCgroup(const char *prefix,
                           int cgroupControllers,
                           unsigned int maxThreadsPerProc,
                           bool privileged,
+                          bool daemonDomainShutdown,
                           char *machineName)
 {
     if (!privileged)
@@ -384,6 +385,7 @@ virDomainCgroupInitCgroup(const char *prefix,
                             vm->def->resource->partition,
                             cgroupControllers,
                             maxThreadsPerProc,
+                            daemonDomainShutdown,
                             cgroup) < 0) {
         if (virCgroupNewIgnoreError())
             return 0;
@@ -513,6 +515,7 @@ virDomainCgroupSetupCgroup(const char *prefix,
                            int cgroupControllers,
                            unsigned int maxThreadsPerProc,
                            bool privileged,
+                           bool daemonDomainShutdown,
                            char *machineName)
 {
     if (vm->pid == 0) {
@@ -529,6 +532,7 @@ virDomainCgroupSetupCgroup(const char *prefix,
                                   cgroupControllers,
                                   maxThreadsPerProc,
                                   privileged,
+                                  daemonDomainShutdown,
                                   machineName) < 0)
         return -1;
 

@@ -400,6 +400,7 @@ virCgroup *virLXCCgroupCreate(virDomainDef *def,
                             def->resource->partition,
                             -1,
                             0,
+                            false,
                             &cgroup) < 0)
         return NULL;
 

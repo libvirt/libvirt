@@ -1274,6 +1274,7 @@ virCgroupNewMachineSystemd(const char *name,
                            const char *partition,
                            int controllers,
                            unsigned int maxthreads,
+                           bool daemonDomainShutdown,
                            virCgroup **group)
 {
     int rv;
@@ -1294,7 +1295,7 @@ virCgroupNewMachineSystemd(const char *name,
                                       nicindexes,
                                       partition,
                                       maxthreads,
-                                      false)) < 0)
+                                      daemonDomainShutdown)) < 0)
         return rv;
 
     if (controllers != -1)
@@ -1407,6 +1408,7 @@ virCgroupNewMachine(const char *name,
                     const char *partition,
                     int controllers,
                     unsigned int maxthreads,
+                    bool daemonDomainShutdown,
                     virCgroup **group)
 {
     int rv;
@@ -1424,6 +1426,7 @@ virCgroupNewMachine(const char *name,
                                          partition,
                                          controllers,
                                          maxthreads,
+                                         daemonDomainShutdown,
                                          group)) == 0)
         return 0;
 
@@ -3144,6 +3147,7 @@ virCgroupNewMachine(const char *name G_GNUC_UNUSED,
                     const char *partition G_GNUC_UNUSED,
                     int controllers G_GNUC_UNUSED,
                     unsigned int maxthreads G_GNUC_UNUSED,
+                    bool daemonDomainShutdown G_GNUC_UNUSED,
                     virCgroup **group G_GNUC_UNUSED)
 {
     virReportSystemError(ENXIO, "%s",
