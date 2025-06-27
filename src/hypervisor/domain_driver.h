@@ -116,4 +116,5 @@ typedef struct _virDomainDriverAutoShutdownConfig {
     bool autoRestore;
 } virDomainDriverAutoShutdownConfig;
 
+bool virDomainDriverAutoShutdownActive(virDomainDriverAutoShutdownConfig *cfg);
 void virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg);

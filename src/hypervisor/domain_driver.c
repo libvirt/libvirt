@@ -729,6 +729,15 @@ virDomainDriverAutoStart(virDomainObjList *domains,
 }
 
 
+bool
+virDomainDriverAutoShutdownActive(virDomainDriverAutoShutdownConfig *cfg)
+{
+    return cfg->trySave != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE ||
+        cfg->tryShutdown != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE ||
+        cfg->poweroff != VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+}
+
+
 void
 virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
 {
@@ -773,9 +782,7 @@ virDomainDriverAutoShutdown(virDomainDriverAutoShutdownConfig *cfg)
     }
 
     /* Short-circuit if all actions are disabled */
-    if (cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE &&
-        cfg->tryShutdown == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE &&
-        cfg->poweroff == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE)
+    if (!virDomainDriverAutoShutdownActive(cfg))
         return;
 
     if (!(conn = virConnectOpen(cfg->uri)))
