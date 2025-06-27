@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-06-27 09:23+0000\n"
+"PO-Revision-Date: 2025-06-27 10:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -24299,7 +24299,7 @@ msgstr "명령 '%1$s'에 도움이 부족합니다"
 
 #, c-format
 msgid "command '%1$s' must have exactly one of the handler callbacks set"
-msgstr ""
+msgstr "명령 '%1$s' 는 핸들러 콜백 중의 하나만 설정해야 합니다"
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -28131,7 +28131,7 @@ msgid "failed to update device in BPF cgroup map"
 msgstr "BPF cgroup 맵에서 장치를 최신화하지 못했습니다"
 
 msgid "failed to update domain state"
-msgstr ""
+msgstr "도메인 상태 최신화에 실패함"
 
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
@@ -30259,7 +30259,7 @@ msgstr "iommu 모델 '%1$s'는 추가 속성을 지원하지 않습니다"
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support some additional attributes"
-msgstr ""
+msgstr "iommu 모델 '%1$s' 는 일부 추가 속성을 지원하지 않습니다"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits는 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -36749,7 +36749,7 @@ msgstr "풀 유형 '%1$s'에 대해 저장소 풀 통신규약 버전이 지원�
 
 #, c-format
 msgid "storage protocol '%1$s' is not supported by this QEMU"
-msgstr ""
+msgstr "저장소 통신규약 '%1$s' 는 이와 같은 QEMU에서 지원되지 않습니다"
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -38499,7 +38499,7 @@ msgid "unexpected address type for ide disk"
 msgstr "IDE 디스크에 대해 예기치 못한 주소 유형"
 
 msgid "unexpected address type for nvme disk"
-msgstr ""
+msgstr "nvme 디스크에 예상치 못한 주소 유형"
 
 msgid "unexpected address type for sata disk"
 msgstr "사타 디스크에 대한 예기치 못한 주소 유형"
@@ -40637,7 +40637,7 @@ msgid "wait for job to reach mirroring phase"
 msgstr "작업이 미러링 단계에 도달할 때까지 기다리십시오"
 
 msgid "waits for a certain domain event to happen and then terminates"
-msgstr ""
+msgstr "특정 도메인 사건이 발생 할 때까지 기다린 후에 종료합니다"
 
 msgid "wakeup a domain from pmsuspended state"
 msgstr "pmsuspended 상태에서 도메인을 시작합니다"
@@ -40691,7 +40691,7 @@ msgid "where to store the screenshot"
 msgstr "스크린샷을 저장해야 할 위치"
 
 msgid "which condition to wait until"
-msgstr ""
+msgstr "어떤 조건까지 기다려야 하는지"
 
 msgid "which event type to wait for"
 msgstr "어떤 이벤트 유형을 기다릴지"
