@@ -910,6 +910,12 @@ qemuSetupCgroup(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    /* When users wants to auto-shutdown the VMs via the qemu daemon itself
+     * we need to instruct machined to create dependencies for the units
+     * in such way that the VMs will not be killed before the auto shutdown
+     * code is reached.
+     */
+    bool daemonAutoShutdown = virDomainDriverAutoShutdownActive(&cfg->autoShutdown);
 
     if (virDomainCgroupSetupCgroup("qemu",
                                    vm,
@@ -919,7 +925,7 @@ qemuSetupCgroup(virDomainObj *vm,
                                    cfg->cgroupControllers,
                                    cfg->maxThreadsPerProc,
                                    priv->driver->privileged,
-                                   false,
+                                   daemonAutoShutdown,
                                    priv->machineName) < 0)
 
         return -1;

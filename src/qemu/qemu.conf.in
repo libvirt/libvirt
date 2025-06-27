@@ -663,7 +663,10 @@
 # implemented for transient VMs.
 #
 # If 'libvirt-guests.service' is enabled, then this must be
-# set to 'none' for system daemons to avoid dueling actions
+# set to 'none' for system daemons to avoid dueling actions.
+# Warning: Switching between 'libvirt-guests.service' and this option
+# causes VMs running at that point to misbehave on host shutdown unless
+# they are restarted, or saved and restored.
 #auto_shutdown_try_save = "persistent"
 
 # As above, but with a graceful shutdown action instead of
@@ -675,6 +678,9 @@
 #
 # If 'libvirt-guests.service' is enabled, then this must be
 # set to 'none' for system daemons to avoid dueling actions
+# Warning: Switching between 'libvirt-guests.service' and this option
+# causes VMs running at that point to misbehave on host shutdown unless
+# they are restarted, or saved and restored.
 #auto_shutdown_try_shutdown = "all"
 
 # As above, but with a forced poweroff instead of managed
@@ -687,6 +693,13 @@
 #
 # If 'libvirt-guests.service' is enabled, then this must be
 # set to 'none' for system daemons to avoid dueling actions
+#
+# Warning: Switching between 'libvirt-guests.service' and this option
+# causes VMs running at that point to misbehave on host shutdown unless
+# they are restarted, or saved and restored.
+#
+# When using any 'auto_shutdown_try_save', 'auto_shutdown_try_shutdown' this
+# feature should to be enabled as well to ensure proper cleanup of the VMs.
 #auto_shutdown_poweroff = "all"
 
 # How may seconds to wait for running VMs to gracefully shutdown
