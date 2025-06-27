@@ -27,7 +27,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-06-23 15:48+0000\n"
+"PO-Revision-Date: 2025-06-25 00:25+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -1450,7 +1450,7 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' hace referencia a un nodo NUMA inexistente"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'ioeventfd' solo es compatible con los controladores virtio-scsi y nvme"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr ""
@@ -1557,7 +1557,7 @@ msgstr ""
 "(queue)"
 
 msgid "'queues' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'queues' solo es compatible con los controladores virtio-scsi y nvme"
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -2925,7 +2925,7 @@ msgid "Can't define NWFilter bindings in session mode"
 msgstr "No se pueden definir enlaces de NWFilter en modo de sesión"
 
 msgid "Can't define NWFilters in session mode"
-msgstr ""
+msgstr "No es posible definir NWFilters en modo de sesión"
 
 msgid "Can't determine config path"
 msgstr "No se puede determinar ruta de configuración"
@@ -2945,6 +2945,8 @@ msgstr "No se pueden determinar rutas de sockets"
 #, c-format
 msgid "Can't find boot device of type: %1$d, device index: %2$d"
 msgstr ""
+"No es posible encontrar el dispositivo de arranque del tipo: %1$d, índice "
+"del dispositivo: %2$d"
 
 #, c-format
 msgid "Can't find boot device of type: %1$s, index: %2$d"
@@ -2954,7 +2956,7 @@ msgstr ""
 
 #, c-format
 msgid "Can't find disk '%1$s' in domain definition"
-msgstr ""
+msgstr "No es posible encontrar el disco '%1$s' en la definición del dominio"
 
 #, c-format
 msgid "Can't find network boot device for index: %1$d"
@@ -2966,6 +2968,8 @@ msgstr ""
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
+"No es posible obtener el UUID del archivo a ser conectado como disco duro/"
+"dvd/disquete: %1$s"
 
 msgid "Can't initialize access manager"
 msgstr "No se puede inicializar gestor de acceso"
@@ -2994,21 +2998,23 @@ msgstr ""
 "No se puede realizar autenticación: no se proporciona llamada de "
 "autenticación"
 
+#, fuzzy
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
 msgstr ""
+"No es posible realizar la autenticación interactiva con el teclado: no se ha "
+"proporcionado la devolución de llamada de autenticación"
 
 #, c-format
 msgid "Can't read %1$s"
 msgstr "No se pudo leer %1$s"
 
-#, fuzzy
 msgid "Can't rename domain to itself"
-msgstr "No se pudo retomar el dominio: %s"
+msgstr "No es posible renombrar el dominio a sí mismo"
 
 msgid "Can't set 0 processors for a VM"
-msgstr ""
+msgstr "No es posible establecer 0 procesadores para una MV"
 
 msgid "Can't set soft limit without hard limit"
 msgstr "No se puede establecer límite sin límite duro"
@@ -3019,14 +3025,16 @@ msgstr "No se puede establecer disco para dispositivo non-block"
 msgid "Can't setup disk without media"
 msgstr "No se puede establecer disco sin medio"
 
-#, fuzzy
 msgid "Can't setup host uuid"
-msgstr "no es posible obtener el uuid del equipo"
+msgstr "No es posible configurar el uuid del anfitrión"
 
+#, fuzzy
 msgid ""
 "Can't shrink capacity below current capacity unless shrink flag explicitly "
 "specified"
 msgstr ""
+"No es posible reducir la capacidad por debajo de la actual a menos que "
+"'shrink' se especifique explícitamente"
 
 msgid ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
@@ -3034,9 +3042,8 @@ msgstr ""
 "Tarea cancelable fue bloqueada por una pregunta sin contestar pero la "
 "cancelación falló"
 
-#, fuzzy
 msgid "Cancelled"
-msgstr "Guardado cancelado"
+msgstr "Cancelado"
 
 #, c-format
 msgid "Cannot access '%1$s'"
