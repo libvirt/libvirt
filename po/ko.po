@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-06-06 06:01+0000\n"
+"PO-Revision-Date: 2025-06-27 09:23+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11.4\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgid ""
 "\n"
@@ -1386,7 +1386,7 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator'는 존재하지 않는 NUMA 노드를 나타냅니다"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'ioeventfd'는 virtio-scsi 및 nvme 제어기에서만 지원됩니다"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "virtio scisi 제어기를 위해 'iothread' 속성만 지원함"
@@ -1480,7 +1480,7 @@ msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 상수는 명백한 iothread를 대기열 대응을 위해 구성되어야 합니다"
 
 msgid "'queues' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'queues'는 virtio-scsi 및 nvme 제어기에서만 지원됩니다"
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -4177,7 +4177,8 @@ msgstr "'%1$s' 타이머 구성은 이 QEMU 바이너리에서는 지원되지 �
 msgid ""
 "Conflicting NVME disk serial number, all disks on a controller must have the "
 "same serial number as the controller itself"
-msgstr ""
+msgstr "충돌하는 NVME 디스크 일련 번호, 제어기에서 모든 디스크는 제어기 자체와 같은 "
+"동일한 일련 번호를 가져야 합니다"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "게스트를 위한 가상 직렬 콘솔 연결"
@@ -11871,7 +11872,7 @@ msgstr "브리지 이름이 없습니다"
 
 #, c-format
 msgid "Missing callback definition for event type '%1$d'"
-msgstr ""
+msgstr "사건 유형 '%1$d'를 위한 누락된 콜백(callback) 정의"
 
 msgid "Missing capability type"
 msgstr "기능 유형이 누락됨"
@@ -11978,7 +11979,7 @@ msgid "Missing mandatory average or floor attributes"
 msgstr "필수 평균 또는 하한 속성이 누락되었습니다"
 
 msgid "Missing mandatory serial for NVMe controller"
-msgstr ""
+msgstr "NVME 제어기를 위한 필수 일련번호가 누락됨"
 
 msgid "Missing max_clients data in JSON document"
 msgstr "JSON 문서에서 max_clients 자료가 누락되어 있습니다"
@@ -12473,14 +12474,14 @@ msgstr "NUMA 튜닝은 세션 모드에서 사용 할 수 없습니다"
 
 #, c-format
 msgid "NVMe NSID %1$d out of [0..14] range"
-msgstr ""
+msgstr "NVMe NSID %1$d 가 [0..14] 범위 밖입니다"
 
 #, c-format
 msgid "NVMe controller index %1$d out of [0..3] range"
-msgstr ""
+msgstr "NVMe 제어기 색인 %1$d 가 [0..3] 범위 밖입니다"
 
 msgid "NVMe controllers are not supported with this QEMU binary"
-msgstr ""
+msgstr "NVME 제어기는 이와 같은 QEMU 바이너리와 함께 지원되지 않습니다"
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -17342,7 +17343,7 @@ msgid "This QEMU binary doesn't support zPCI"
 msgstr "이 QEMU 바이너리는 zPCI를 지원하지 않습니다"
 
 msgid "This QEMU doesn't support '-device usb-bot'"
-msgstr ""
+msgstr "이와 같은 QEMU는 '-device usb-bot'를 지원하지 않습니다"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "이 QEMU는 '-device usb-storage'를 지원하지 않습니다"
@@ -17800,9 +17801,11 @@ msgid ""
 "USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
 "'usb-bot'."
 msgstr ""
+"USB 디스크 모델이 선택되지 않았습니다. 이와 같은 QEMU는 'usb-storage' 나 "
+"'usb-bot' 를 지원하지 않습니다."
 
 msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
-msgstr ""
+msgstr "USB 디스크는 다음 모델만 지원합니다: 'usb-storage', 'usb-bot'"
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB 호스트 장치에 버스/장치 정보가 빠졌습니다"
@@ -18847,10 +18850,10 @@ msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "임대 %1$s: %2$s 초기화 할 수 없습니다"
 
 msgid "Unable to initialize libxml2 RelaxNG data"
-msgstr ""
+msgstr "libxml2 RelaxNG 자료를 초기화 할 수 없음"
 
 msgid "Unable to initialize libxml2 schema types"
-msgstr ""
+msgstr "libxml2 스키마 유형을 초기화 할 수 없음"
 
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
@@ -18939,11 +18942,11 @@ msgstr "라이브 장치를 수정 할 수 없습니다"
 
 #, c-format
 msgid "Unable to modify mediated device '%1$s': %2$s"
-msgstr ""
+msgstr "매개 장치를 수정 할 수 없음 '%1$s': %2$s"
 
 #, c-format
 msgid "Unable to modify mediated device '%1$s': modify unsupported"
-msgstr ""
+msgstr "매개 장치 '%1$s' 를 수정 할 수 없음: 지원되지 않는 수정"
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -20568,7 +20571,7 @@ msgstr "지원되지 않는 알고리즘 '%1$s'"
 
 #, c-format
 msgid "Unsupported await condition name '%1$s'"
-msgstr ""
+msgstr "미지원 대기 조건 이름 '%1$s'"
 
 #, c-format
 msgid "Unsupported boot device type: '%1$s'"
@@ -21947,7 +21950,7 @@ msgid "avoid file system cache when saving"
 msgstr "저장할 때 파일 시스템 캐시 피하기"
 
 msgid "await a domain event"
-msgstr ""
+msgstr "도메인 사건 기다리기"
 
 msgid "background job"
 msgstr "백그라운드 작업"
