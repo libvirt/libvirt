@@ -320,15 +320,15 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
          *
          * XXX, or query if libvirt-guests.service is enabled perhaps ?
          */
-        cfg->autoShutdownTrySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
-        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
-        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdown.trySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdown.tryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
+        cfg->autoShutdown.poweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_NONE;
     } else {
-        cfg->autoShutdownTrySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT;
-        cfg->autoShutdownTryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
-        cfg->autoShutdownPoweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
+        cfg->autoShutdown.trySave = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT;
+        cfg->autoShutdown.tryShutdown = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
+        cfg->autoShutdown.poweroff = VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL;
     }
-    cfg->autoShutdownRestore = true;
+    cfg->autoShutdown.autoRestore = true;
 
     return g_steal_pointer(&cfg);
 }
@@ -719,11 +719,11 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
                            autoShutdownTrySave);
             return -1;
         }
-        cfg->autoShutdownTrySave = autoShutdownVal;
+        cfg->autoShutdown.trySave = autoShutdownVal;
     }
 
-    if (cfg->autoShutdownTrySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL ||
-        cfg->autoShutdownTrySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT) {
+    if (cfg->autoShutdown.trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_ALL ||
+        cfg->autoShutdown.trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("managed save cannot be requested for transient domains"));
         return -1;
@@ -740,7 +740,7 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
                            autoShutdownTryShutdown);
             return -1;
         }
-        cfg->autoShutdownTryShutdown = autoShutdownVal;
+        cfg->autoShutdown.tryShutdown = autoShutdownVal;
     }
 
     if (virConfGetValueString(conf, "auto_shutdown_poweroff", &autoShutdownPoweroff) < 0)
@@ -754,16 +754,16 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
                            autoShutdownPoweroff);
             return -1;
         }
-        cfg->autoShutdownPoweroff = autoShutdownVal;
+        cfg->autoShutdown.poweroff = autoShutdownVal;
     }
 
     if (virConfGetValueUInt(conf, "auto_shutdown_wait",
-                            &cfg->autoShutdownWait) < 0)
+                            &cfg->autoShutdown.waitShutdownSecs) < 0)
         return -1;
-    if (virConfGetValueBool(conf, "auto_shutdown_restore", &cfg->autoShutdownRestore) < 0)
+    if (virConfGetValueBool(conf, "auto_shutdown_restore", &cfg->autoShutdown.autoRestore) < 0)
         return -1;
     if (virConfGetValueBool(conf, "auto_save_bypass_cache",
-                            &cfg->autoSaveBypassCache) < 0)
+                            &cfg->autoShutdown.saveBypassCache) < 0)
         return -1;
 
     return 0;

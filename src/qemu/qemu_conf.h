@@ -208,12 +208,7 @@ struct _virQEMUDriverConfig {
     bool autoDumpBypassCache;
     bool autoStartBypassCache;
     unsigned int autoStartDelayMS;
-    virDomainDriverAutoShutdownScope autoShutdownTrySave;
-    virDomainDriverAutoShutdownScope autoShutdownTryShutdown;
-    virDomainDriverAutoShutdownScope autoShutdownPoweroff;
-    unsigned int autoShutdownWait;
-    bool autoShutdownRestore;
-    bool autoSaveBypassCache;
+    virDomainDriverAutoShutdownConfig autoShutdown;
 
     char *lockManagerName;
 

@@ -964,15 +964,9 @@ static int
 qemuStateStop(void)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(qemu_driver);
-    virDomainDriverAutoShutdownConfig ascfg = {
-        .uri = cfg->uri,
-        .trySave = cfg->autoShutdownTrySave,
-        .tryShutdown = cfg->autoShutdownTryShutdown,
-        .poweroff = cfg->autoShutdownPoweroff,
-        .waitShutdownSecs = cfg->autoShutdownWait,
-        .saveBypassCache = cfg->autoSaveBypassCache,
-        .autoRestore = cfg->autoShutdownRestore,
-    };
+    virDomainDriverAutoShutdownConfig ascfg = cfg->autoShutdown;
+
+    ascfg.uri = cfg->uri;
 
     virDomainDriverAutoShutdown(&ascfg);
 
