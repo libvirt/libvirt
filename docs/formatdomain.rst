@@ -1674,6 +1674,14 @@ In case no restrictions need to be put on CPU model and its features, a simpler
       </cpu>
       ...
 
+``deprecated_features``
+   :since:`Since 11.0.0`, S390 guests may utilize the ``deprecated_features``
+   attribute to specify toggling of CPU model features that are flagged as
+   deprecated by the hypervisor. When this attribute is set to ``off``, the
+   active guest XML will reflect the respective features with the disable
+   policy. When this attribute is set to ``on``, the respective features will
+   be enabled.
+
 ``cache``
    :since:`Since 3.3.0` the ``cache`` element describes the virtual CPU cache.
    If the element is missing, the hypervisor will use a sensible default.
