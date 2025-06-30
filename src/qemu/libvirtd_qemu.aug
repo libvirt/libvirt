@@ -166,6 +166,8 @@ module Libvirtd_qemu =
 
    let filesystem_entry = str_array_entry "shared_filesystems"
 
+   let default_cpu_deprecated_features = str_entry "default_cpu_deprecated_features"
+
    (* Entries that used to exist in the config which are now
     * deleted. We keep on parsing them so we don't break
     * ability to parse old configs after upgrade
@@ -198,6 +200,7 @@ module Libvirtd_qemu =
              | capability_filters_entry
              | storage_entry
              | filesystem_entry
+             | default_cpu_deprecated_features
              | obsolete_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]

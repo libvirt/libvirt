@@ -1195,3 +1195,17 @@
 #  "/path/to/nvram",
 #  "/path/to/swtpm"
 #]
+
+# If QEMU provides a list of deprecated CPU features it is possible to use
+# this list for removal of deprecated CPU features during CPU model expansion.
+# The deprecated_features XML attribute on the XML CPU element in the domain
+# XML can be used to turn deprecated CPU features 'off' or 'on'. Using the
+# option default_cpu_deprecated_features allows to define the default behavior
+# when the attribute deprecated_features is not provided in the domain XML.
+#
+# Possible options are:
+# "off"  - (default) deprecated features are removed during CPU model expansion
+# "on"   - deprecated features remain required in the expanded CPU model
+# "none" - no deprecated_features attribute is added to expanded CPU model
+#
+#default_cpu_deprecated_features = "off"

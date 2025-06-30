@@ -142,3 +142,4 @@ module Test_libvirtd_qemu =
     { "2" = "/path/to/nvram" }
     { "3" = "/path/to/swtpm" }
 }
+{ "default_cpu_deprecated_features" = "off" }

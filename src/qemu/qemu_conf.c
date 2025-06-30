@@ -81,6 +81,11 @@ VIR_ENUM_IMPL(virQEMUSchedCore,
               "emulator",
               "full");
 
+VIR_ENUM_IMPL(virQEMUDeprecatedFeatures,
+              QEMU_DEPRECATED_FEATURES_LAST,
+              "off",
+              "on",
+              "none");
 
 static virClass *virQEMUDriverConfigClass;
 static void virQEMUDriverConfigDispose(void *obj);
@@ -1264,6 +1269,31 @@ virQEMUDriverConfigLoadFilesystemEntry(virQEMUDriverConfig *cfg,
 }
 
 
+static int
+virQEMUDriverConfigLoadDeprecatedFeaturesEntry(virQEMUDriverConfig *cfg,
+                                               virConf *conf)
+{
+    g_autofree char *depFeats = NULL;
+
+    if (virConfGetValueString(conf, "default_cpu_deprecated_features", &depFeats) < 0)
+        return -1;
+    if (depFeats) {
+        int val = virQEMUDeprecatedFeaturesTypeFromString(depFeats);
+
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown default_cpu_deprecated_features value %1$s"),
+                           depFeats);
+            return -1;
+        }
+
+        cfg->defaultDeprecatedFeatures = val;
+    }
+
+    return 0;
+}
+
+
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
                                 const char *filename,
                                 bool privileged)
@@ -1342,6 +1372,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfig *cfg,
         return -1;
 
     if (virQEMUDriverConfigLoadFilesystemEntry(cfg, conf) < 0)
+        return -1;
+
+    if (virQEMUDriverConfigLoadDeprecatedFeaturesEntry(cfg, conf) < 0)
         return -1;
 
     return 0;

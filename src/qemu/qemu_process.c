@@ -6450,6 +6450,7 @@ static int
 qemuProcessUpdateGuestCPU(virDomainDef *def,
                           virQEMUCaps *qemuCaps,
                           virArch hostarch,
+                          virQEMUDriverConfig *cfg,
                           unsigned int flags)
 {
     if (!def->cpu)
@@ -6493,6 +6494,29 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
 
         if (host && virCPUCheckForbiddenFeatures(def->cpu, host) < 0)
             return -1;
+    }
+
+    /* s390 CPU models should disable deprecated features for host-models by
+     * default if supported by QEMU. Set the flag now so the appropriate
+     * features are updated later.
+     */
+    if (ARCH_IS_S390(def->os.arch) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_DEPRECATED_PROPS) &&
+        def->cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
+        !def->cpu->deprecated_feats) {
+        switch (cfg->defaultDeprecatedFeatures) {
+        case QEMU_DEPRECATED_FEATURES_OFF:
+            def->cpu->deprecated_feats = VIR_TRISTATE_SWITCH_OFF;
+            break;
+        case QEMU_DEPRECATED_FEATURES_ON:
+            def->cpu->deprecated_feats = VIR_TRISTATE_SWITCH_ON;
+            break;
+        case QEMU_DEPRECATED_FEATURES_NONE:
+            def->cpu->deprecated_feats = VIR_TRISTATE_SWITCH_ABSENT;
+            break;
+        case QEMU_DEPRECATED_FEATURES_LAST:
+            break;
+        }
     }
 
     /* nothing to update for host-passthrough / maximum */
@@ -6949,7 +6973,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     priv->pausedReason = VIR_DOMAIN_PAUSED_UNKNOWN;
 
     VIR_DEBUG("Updating guest CPU definition");
-    if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, driver->hostarch, flags) < 0)
+    if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, driver->hostarch, cfg, flags) < 0)
         return -1;
 
     for (i = 0; i < vm->def->nshmems; i++)

@@ -58,6 +58,16 @@ typedef enum {
 
 VIR_ENUM_DECL(virQEMUSchedCore);
 
+typedef enum {
+    QEMU_DEPRECATED_FEATURES_OFF = 0,
+    QEMU_DEPRECATED_FEATURES_ON,
+    QEMU_DEPRECATED_FEATURES_NONE,
+
+    QEMU_DEPRECATED_FEATURES_LAST
+} virQEMUDeprecatedFeatures;
+
+VIR_ENUM_DECL(virQEMUDeprecatedFeatures);
+
 typedef struct _virQEMUDriver virQEMUDriver;
 
 typedef struct _virQEMUDriverConfig virQEMUDriverConfig;
@@ -251,6 +261,8 @@ struct _virQEMUDriverConfig {
     virQEMUSchedCore schedCore;
 
     char **sharedFilesystems;
+
+    virQEMUDeprecatedFeatures defaultDeprecatedFeatures;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUDriverConfig, virObjectUnref);
