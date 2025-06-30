@@ -2305,6 +2305,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER_FAILURE("cpu-model-deprecated-features-off", "s390x", "8.2.0");
     DO_TEST_CAPS_ARCH_LATEST("cpu-model-deprecated-features-off", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("cpu-model-deprecated-features-on", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("cpu-model-deprecated-features-none", "s390x");
 
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);
     DO_TEST_CAPS_ARCH_LATEST_FULL("cpu-Haswell2", "x86_64", ARG_CAPS_HOST_CPU_MODEL, QEMU_CPU_DEF_HASWELL);

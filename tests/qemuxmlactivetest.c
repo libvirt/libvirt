@@ -232,9 +232,12 @@ mymain(void)
     virSetConnectSecret(conn);
     virSetConnectStorage(conn);
 
+#define DO_TEST_ACTIVE_CAPS_ARCH_LATEST(_name, arch) \
+    testRunActive(_name, "." arch "-latest", &testConf, &ret, \
+                  ARG_CAPS_ARCH, arch, ARG_CAPS_VER, "latest", ARG_END);
+
 #define DO_TEST_ACTIVE_CAPS_LATEST(_name) \
-    testRunActive(_name, ".x86_64-latest", &testConf, &ret, \
-                  ARG_CAPS_ARCH, "x86_64", ARG_CAPS_VER, "latest", ARG_END);
+    DO_TEST_ACTIVE_CAPS_ARCH_LATEST(_name, "x86_64");
 
     DO_TEST_ACTIVE_CAPS_LATEST("channel-unix-source-path");
     DO_TEST_ACTIVE_CAPS_LATEST("channel-virtio-state");
@@ -246,6 +249,9 @@ mymain(void)
     DO_TEST_ACTIVE_CAPS_LATEST("genid-auto");
     DO_TEST_ACTIVE_CAPS_LATEST("graphics-vnc-remove-generated-socket");
     DO_TEST_ACTIVE_CAPS_LATEST("seclabel-static-labelskip");
+
+    DO_TEST_ACTIVE_CAPS_ARCH_LATEST("cpu-model-deprecated-features-on", "s390x");
+    DO_TEST_ACTIVE_CAPS_ARCH_LATEST("cpu-model-deprecated-features-off", "s390x");
 
 #define DO_TEST_STATUS(_name) \
     do { \
