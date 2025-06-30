@@ -60,6 +60,12 @@ v11.5.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Be more forgiving when acquiring QUERY job when formatting domain XML
+
+    Since ``libvirt-11.0.0`` the ``virDomainGetXMLDesc()`` API used to format
+    domain XML acquires QUERY job. But this caused a regression when the API
+    might timeout for incoming migration. This is now fixed.
+
 
 v11.4.0 (2025-06-02)
 ====================
