@@ -58,6 +58,12 @@ v11.5.0 (unreleased)
         </enum>
       </console>
 
+  * virsh: Add waiting for domain state via ``virsh await``
+
+    The new helper command ``virsh await`` simplifies waiting on domain state
+    which is normally announced via events. Currently two waiting conditions are
+    implemented: ``domain-inactive``, and ``guest-agent-available``.
+
 * **Bug fixes**
 
   * qemu: Be more forgiving when acquiring QUERY job when formatting domain XML
@@ -71,6 +77,12 @@ v11.5.0 (unreleased)
     Since ``libvirt-11.1.0`` nonexistent paths within directories marked as
     shared filesystem (via the ``shared_filesystems`` option in ``qemu.conf``
     would not be properly detected as being on a shared filesystem.
+
+  * qemu: Properly emulate USB cdrom device
+
+    CD-ROM devices on USB bus are now properly emulated as such which was not
+    the case since libvirt switched to the modern qemu commandline sytnax for
+    storage backends.
 
 
 v11.4.0 (2025-06-02)
