@@ -16742,7 +16742,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
     if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES) {
         virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, virttype,
-                                               domCaps->cpu.hostModel);
+                                               domCaps->cpu.hostModel,
+                                               VIR_CPU_FEATURE_DISABLE);
     }
 
     return virDomainCapsFormat(domCaps);

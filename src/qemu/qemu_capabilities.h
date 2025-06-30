@@ -788,7 +788,8 @@ int virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
                               char ***features);
 void virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
                                             virDomainVirtType virtType,
-                                            virCPUDef *cpu);
+                                            virCPUDef *cpu,
+                                            virCPUFeaturePolicy policy);
 
 virDomainVirtType virQEMUCapsGetVirtType(virQEMUCaps *qemuCaps);
 

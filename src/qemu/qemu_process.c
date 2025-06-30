@@ -6543,8 +6543,13 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
         return -1;
     }
 
-    if (def->cpu->deprecated_feats == VIR_TRISTATE_SWITCH_OFF) {
-        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, def->virtType, def->cpu);
+    if (def->cpu->deprecated_feats) {
+        virCPUFeaturePolicy policy = VIR_CPU_FEATURE_REQUIRE;
+        if (def->cpu->deprecated_feats == VIR_TRISTATE_SWITCH_OFF)
+            policy = VIR_CPU_FEATURE_DISABLE;
+
+        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, def->virtType,
+                                               def->cpu, policy);
     }
 
     return 0;
