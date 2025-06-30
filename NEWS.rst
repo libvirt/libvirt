@@ -66,6 +66,12 @@ v11.5.0 (unreleased)
     domain XML acquires QUERY job. But this caused a regression when the API
     might timeout for incoming migration. This is now fixed.
 
+  * qemu: Fix shared filesystem detection on nonexistent paths
+
+    Since ``libvirt-11.1.0`` nonexistent paths within directories marked as
+    shared filesystem (via the ``shared_filesystems`` option in ``qemu.conf``
+    would not be properly detected as being on a shared filesystem.
+
 
 v11.4.0 (2025-06-02)
 ====================
