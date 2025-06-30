@@ -45,6 +45,12 @@ v11.5.0 (unreleased)
     with CA certificate(s) that will be used for remote peer certificate
     validation.
 
+  * qemu: add support for AMD IOMMU device
+
+    The ``amd`` model for the ``<iommu>`` device is now supported.
+    New attributes ``passtrhough`` and ``xtsup`` are also supported for this
+    model.
+
 * **Improvements**
 
   * Include supported console types in domain capabilities
