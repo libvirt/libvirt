@@ -156,13 +156,13 @@ mymain(void)
     TLS_CERT_REQ(servercertreq, cacertreq,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     TLS_CERT_REQ(clientcertreq, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, 0);
 
@@ -182,7 +182,7 @@ mymain(void)
     TLS_CERT_REQ(servercert1req, cacert1req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
@@ -196,7 +196,7 @@ mymain(void)
     TLS_CERT_REQ(servercert2req, cacert2req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
@@ -210,7 +210,7 @@ mymain(void)
     TLS_CERT_REQ(servercert3req, cacert3req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
@@ -230,7 +230,7 @@ mymain(void)
     TLS_CERT_REQ(servercert4req, cacert4req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     /* no-basic */
@@ -243,7 +243,7 @@ mymain(void)
     TLS_CERT_REQ(servercert5req, cacert5req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     /* Key usage:dig-sig:critical */
@@ -256,7 +256,7 @@ mymain(void)
     TLS_CERT_REQ(servercert6req, cacert6req,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
 
@@ -284,7 +284,7 @@ mymain(void)
     TLS_CERT_REQ(servercert8req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT | GNUTLS_KEY_KEY_CERT_SIGN,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_CERT_SIGN,
                  false, false, NULL, NULL,
                  0, 0);
     /* usage:cert-sign:not-critical */
@@ -372,7 +372,7 @@ mymain(void)
     TLS_CERT_REQ(clientcert2req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT | GNUTLS_KEY_KEY_CERT_SIGN,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_CERT_SIGN,
                  false, false, NULL, NULL,
                  0, 0);
     /* usage:cert-sign:not-critical */
@@ -459,19 +459,19 @@ mymain(void)
     TLS_CERT_REQ(servercertexpreq, cacertexpreq,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     TLS_CERT_REQ(servercertexp1req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, -1);
     TLS_CERT_REQ(clientcertexp1req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, -1);
 
@@ -491,19 +491,19 @@ mymain(void)
     TLS_CERT_REQ(servercertnewreq, cacertnewreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     TLS_CERT_REQ(servercertnew1req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  1, 2);
     TLS_CERT_REQ(clientcertnew1req, cacertreq,
                  "UK", "libvirt", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  1, 2);
 
@@ -538,13 +538,13 @@ mymain(void)
     TLS_CERT_REQ(servercertlevel3areq, cacertlevel2areq,
                  "UK", "libvirt.org", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_SERVER, NULL,
                  0, 0);
     TLS_CERT_REQ(clientcertlevel2breq, cacertlevel1breq,
                  "UK", "libvirt client level 2b", NULL, NULL, NULL, NULL,
                  true, true, false,
-                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE | GNUTLS_KEY_KEY_ENCIPHERMENT,
+                 true, true, GNUTLS_KEY_DIGITAL_SIGNATURE,
                  true, true, GNUTLS_KP_TLS_WWW_CLIENT, NULL,
                  0, 0);
 
