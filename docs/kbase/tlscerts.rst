@@ -204,7 +204,6 @@ define the server as follows:
    ip_address = 2001:cafe::74
    ip_address = fe20::24
    tls_www_server
-   encryption_key
    signing_key
 
 The 'cn' field should refer to the fully qualified public hostname of the
@@ -298,7 +297,6 @@ briefly cover the steps.
       organization = Libvirt Project
       cn = client1
       tls_www_client
-      encryption_key
       signing_key
 
    and sign by doing:
