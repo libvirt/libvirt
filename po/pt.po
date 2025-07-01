@@ -5,20 +5,22 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # pmdaniel <danielthpro@gmail.com>, 2013
+# Américo Monteiro <a_monteiro@gmx.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2015-02-24 02:16+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Portuguese <trans-pt@lists.fedoraproject.org>\n"
+"PO-Revision-Date: 2025-07-01 05:48+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
+"libvirt/libvirt/pt/>\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgid ""
 "\n"
@@ -26,17 +28,15 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (indique help <comando> para saber mais detalhes do comando)\n"
+"  (especifique help <comando> para saber mais detalhes do comando)\n"
 "\n"
 
-#, fuzzy
 msgid ""
 "\n"
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (indique help <comando> para saber mais detalhes do comando)\n"
-"\n"
+"  (especifique help <grupo> para detalhes sobre os comandos do grupo)\n"
 
 msgid ""
 "\n"
@@ -317,23 +317,23 @@ msgstr ""
 
 #, c-format
 msgid " --%1$s <string>..."
-msgstr ""
+msgstr " --%1$s <string>..."
 
 msgid " Hypervisors:"
-msgstr ""
+msgstr " Hipervisores:"
 
 msgid " Miscellaneous:"
-msgstr ""
+msgstr " Diversos:"
 
 msgid " Networking:"
-msgstr ""
+msgstr " Rede:"
 
 msgid " Storage:"
-msgstr ""
+msgstr " Armazenamento:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " [--%1$s <string>]..."
 
 #, c-format
 msgid ""
@@ -360,16 +360,17 @@ msgstr ""
 
 #, c-format
 msgid "%1$s %2$s"
-msgstr ""
+msgstr "%1$s %2$s"
 
 #, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
-msgstr ""
+msgstr "%1$s %2$s '%3$s' tem um tipo não suportado '%4$s'"
 
 #, c-format
 msgid ""
 "%1$s %2$s '%3$s' has unsupported type '%4$s', expecting '%5$s' or '%6$s'"
 msgstr ""
+"%1$s %2$s '%3$s' tem um tipo não suportado '%4$s', esperado '%5$s' ou '%6$s'"
 
 #, c-format
 msgid ""
@@ -379,31 +380,31 @@ msgstr ""
 
 #, c-format
 msgid "%1$s (out of %2$d)"
-msgstr ""
+msgstr "%1$s (fora de %2$d)"
 
 #, c-format
 msgid "%1$s can't be empty"
-msgstr ""
+msgstr "%1$s não pode estar vazio"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "%1$s não pode ser maior que %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
-msgstr ""
+msgstr "%1$s incapaz de analisar GID '%2$s'"
 
 #, c-format
 msgid "%1$s cannot parse UID '%2$s'"
-msgstr ""
+msgstr "%1$s incapaz de analisar UID '%2$s'"
 
 #, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "%1$s disco não é suportado com este binário do QEMU"
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s não suporta armazenamento de ficheiros"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -722,9 +723,9 @@ msgstr ""
 msgid "%1$s: could not proxy traffic: %2$s\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: error: %2$s%3$c"
-msgstr "erro: "
+msgstr "%1$s: erro: %2$s%3$c"
 
 #, c-format
 msgid ""
@@ -802,15 +803,15 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
-msgstr "%1$s: não foi possível gravar o ficheiro de registo: %2$s"
+msgstr "%1$s: incapaz de  gravar o ficheiro de registo: %2$s"
 
 #, c-format
 msgid "%1$s: failed to write log file: %2$s"
-msgstr "%1$s: não foi possível gravar o ficheiro de registo: %2$s"
+msgstr "%1$s: incapaz de  gravar o ficheiro de registo: %2$s"
 
 #, fuzzy, c-format
 msgid "%1$s: failure with %2$s: %3$s"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
 
 #, fuzzy, c-format
 msgid "%1$s: initialization failed"
@@ -915,7 +916,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "%1$s: unsupported hypervisor name %2$s\n"
-msgstr "imprimir o nome da máquina supervisora"
+msgstr "imprimir o nome da máquina hipervisora\n"
 
 #, c-format
 msgid "%1$s: value for '%2$s' parameter must be 0 or 1"
@@ -1323,9 +1324,8 @@ msgstr ""
 msgid "(bridge interface definition)"
 msgstr "Não foi possível obter a informação da interface"
 
-#, fuzzy
 msgid "(capabilities)"
-msgstr "capacidades"
+msgstr "(capacidades)"
 
 msgid "(definition_of_secret)"
 msgstr ""
@@ -1394,7 +1394,7 @@ msgid "(qemu_migration_cookie)"
 msgstr ""
 
 msgid "(re)connect to hypervisor"
-msgstr "ligar (de novo) ao supervisor"
+msgstr "(re)ligar ao hipervisor"
 
 msgid "(save cookie)"
 msgstr ""
@@ -1430,7 +1430,7 @@ msgstr "--%1$s <texto>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <string>..."
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -1680,7 +1680,7 @@ msgid "Access connection"
 msgstr ""
 
 msgid "Access denied"
-msgstr ""
+msgstr "Acesso negado"
 
 msgid "Access domain"
 msgstr ""
@@ -1759,9 +1759,8 @@ msgstr ""
 msgid "Active console session exists for this domain"
 msgstr ""
 
-#, fuzzy
 msgid "Active:"
-msgstr "activo"
+msgstr "Ativo:"
 
 #, c-format
 msgid "Actual interface '%1$s' hostdev was not a PCI device"
@@ -1784,7 +1783,7 @@ msgid "Added"
 msgstr ""
 
 msgid "Address"
-msgstr ""
+msgstr "Endereço"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -1811,10 +1810,10 @@ msgid "Allocate or free some pages in the pool for NUMA cell."
 msgstr ""
 
 msgid "Allocation"
-msgstr ""
+msgstr "Alocação"
 
 msgid "Allocation:"
-msgstr ""
+msgstr "Alocação:"
 
 msgid "Allows setting or modifying the description or title of a domain."
 msgstr ""
@@ -1895,13 +1894,13 @@ msgid "At least one tty is required"
 msgstr ""
 
 msgid "Attach device from an XML <file>."
-msgstr "Associa um dispositivo a partir de um <ficheiro> em XML."
+msgstr "Associa um dispositivo a partir de um XML <ficheiro>."
 
 msgid "Attach new disk device."
-msgstr "Anexar um dispositivo em disco novo."
+msgstr "Anexar um novo dispositivo de disco."
 
 msgid "Attach new network interface."
-msgstr "Anexar uma interface de rede nova."
+msgstr "Anexar uma nova interface de rede."
 
 #, fuzzy, c-format
 msgid "Attached device %1$s has no type"
@@ -1973,12 +1972,11 @@ msgstr "Arranque automático"
 msgid "Autostart Once:"
 msgstr ""
 
-#, fuzzy
 msgid "Autostart:"
-msgstr "Arranque automático"
+msgstr "Arranque automático:"
 
 msgid "Available"
-msgstr ""
+msgstr "Disponível"
 
 msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
@@ -1986,7 +1984,7 @@ msgid ""
 msgstr ""
 
 msgid "Available:"
-msgstr ""
+msgstr "Disponível:"
 
 msgid "BIOS serial console only supported on x86 architectures"
 msgstr ""
@@ -2100,7 +2098,7 @@ msgid "Bridge interface %1$s started\n"
 msgstr "A rede %1$s foi iniciada\n"
 
 msgid "Bridge:"
-msgstr ""
+msgstr "Ponte:"
 
 msgid "Buffer to small for ipset name"
 msgstr ""
@@ -2131,7 +2129,7 @@ msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
 
 msgid "Busy"
-msgstr ""
+msgstr "Ocupado"
 
 msgid "CA certificate:"
 msgstr ""
@@ -2156,9 +2154,8 @@ msgstr ""
 msgid "CPU %1$d in cpulist '%2$s' exceed the maxcpu %3$d"
 msgstr ""
 
-#, fuzzy
 msgid "CPU Affinity"
-msgstr "Afinidade do CPU:"
+msgstr "Afinidade do CPU"
 
 msgid "CPU Affinity:"
 msgstr "Afinidade do CPU:"
@@ -2280,9 +2277,8 @@ msgstr ""
 msgid "CPU model:"
 msgstr "Modelo do CPU:"
 
-#, fuzzy
 msgid "CPU models"
-msgstr "Modelo do CPU:"
+msgstr "Modelos do CPU"
 
 msgid "CPU socket topology has changed"
 msgstr ""
@@ -2293,9 +2289,8 @@ msgstr "'Sockets' do CPU:"
 msgid "CPU throttling rate increment for auto-convergence"
 msgstr ""
 
-#, fuzzy
 msgid "CPU time"
-msgstr "Tempo de CPU:"
+msgstr "Tempo de CPU"
 
 msgid "CPU time:"
 msgstr "Tempo de CPU:"
@@ -2515,7 +2510,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Can't load config file: %1$s: %2$s"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 #, c-format
 msgid "Can't modify device type '%1$s'"
@@ -2573,7 +2568,7 @@ msgid ""
 msgstr ""
 
 msgid "Cancelled"
-msgstr ""
+msgstr "Cancelado"
 
 #, c-format
 msgid "Cannot access '%1$s'"
@@ -2783,7 +2778,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot extract running %1$s hypervisor version\n"
-msgstr "Não é possível extrair a versão do supervisor %1$s em execução\n"
+msgstr "Não é possível extrair a versão do hipervisor %1$s em execução\n"
 
 #, c-format
 msgid "Cannot find '%1$s' in node device database"
@@ -3419,14 +3414,14 @@ msgid "Change the current directory."
 msgstr ""
 
 msgid "Change the current memory allocation in the guest domain."
-msgstr "Mudar a reserva de memória actual no domínio convidado."
+msgstr "Mudar a alocação de memória actual no domínio convidado."
 
 #, fuzzy
 msgid "Change the current number of priority workers"
 msgstr "Mudar a reserva de memória actual no domínio convidado."
 
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "Mudar o limite de memória reservada para o domínio convidado."
+msgstr "Mudar o limite máximo de alocação de memória no domínio convidado."
 
 #, fuzzy
 msgid "Change the number of virtual CPUs in the guest domain."
@@ -3832,7 +3827,7 @@ msgid ""
 msgstr ""
 
 msgid "Connect the virtual serial console for the guest"
-msgstr "Ligar à consola série virtual do sistema convidado"
+msgstr "Ligar a consola série virtual para o convidado"
 
 msgid "Connect to a daemon's administrating server."
 msgstr ""
@@ -3840,7 +3835,7 @@ msgstr ""
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Ligar ao supervisor local. Este é um comando incorporado após o arranque da "
+"Ligar ao hipervisor local. Este é um comando incorporado após o arranque na "
 "linha de comandos."
 
 msgid "Connected since"
@@ -3905,7 +3900,7 @@ msgid "Copy failed"
 msgstr "a operação falhou"
 
 msgid "Core dump a domain."
-msgstr "Gerar o 'core' de um domínio."
+msgstr "Despejar o núcleo de um domínio."
 
 msgid "Core(s) per socket:"
 msgstr "Núcleos por 'socket':"
@@ -3971,15 +3966,15 @@ msgstr "mostrar/alterar os parâmetros de escalonamento"
 
 #, fuzzy, c-format
 msgid "Could not chown on swtpm logfile %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 #, fuzzy, c-format
 msgid "Could not complete transfer: %1$s (%2$d)"
-msgstr "não foi possível ligar ao Armazém do Xen %s"
+msgstr "incapaz de  ligar ao Armazém do Xen %s"
 
 #, fuzzy
 msgid "Could not configure network"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 #, fuzzy
 msgid "Could not convert domain name to VEID"
@@ -3991,7 +3986,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not copy an XML node"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "Could not copy default config"
 msgstr ""
@@ -4005,7 +4000,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not create TPM directory %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 msgid "Could not create WQL filter"
 msgstr ""
@@ -4024,7 +4019,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not create filter"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 #, c-format
 msgid "Could not create harddisk, rc=%1$08x"
@@ -4035,7 +4030,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not create monitor"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "Could not create openwsman client"
 msgstr ""
@@ -4055,7 +4050,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not create volume: %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 #, fuzzy, c-format
 msgid "Could not define domain: %1$s"
@@ -4067,7 +4062,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not delete volume: %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 msgid "Could not deserialize pull response item"
 msgstr ""
@@ -4181,7 +4176,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not find directory separator in %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 #, c-format
 msgid "Could not find domain snapshot with internal name '%1$s'"
@@ -4318,7 +4313,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not get checkpoint name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "Could not get count of free %1$uKiB pages, no data returned"
@@ -4326,7 +4321,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not get current time"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "Could not get device port"
 msgstr ""
@@ -4451,7 +4446,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not get snapshot name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 msgid "Could not get storage controller bus"
 msgstr ""
@@ -4461,7 +4456,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not get syspath for parent of '%1$s'"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
 
 msgid "Could not get temp xml doc root"
 msgstr ""
@@ -4652,7 +4647,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not parse chain priority '%1$s'"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "incapaz de  usar o item %1$s do hipervisor do Xen"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -4668,7 +4663,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not parse usb file %1$s"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, c-format
 msgid "Could not parse valid disk index from '%1$s'"
@@ -4707,7 +4702,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not read config for container %1$d"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 msgid "Could not read container config"
 msgstr ""
@@ -4778,7 +4773,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Could not retrieve pool information"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 msgid "Could not retrieve resource pool"
 msgstr ""
@@ -5268,16 +5263,16 @@ msgid "Destroyed node device '%1$s'\n"
 msgstr ""
 
 msgid "Detach device from an XML <file>"
-msgstr "Remove a associação do dispositivo ao <ficheiro> XML"
+msgstr "Desanexa dispositivo de um XML <ficheiro>"
 
 msgid "Detach device identified by the given alias from a domain"
 msgstr ""
 
 msgid "Detach disk device."
-msgstr "Desligar o dispositivo de disco."
+msgstr "Desanexa dispositivo de disco."
 
 msgid "Detach network interface."
-msgstr "Desligar a interface de rede."
+msgstr "Desanexa interface de rede."
 
 msgid "Detach node device"
 msgstr ""
@@ -5511,7 +5506,7 @@ msgid "Display the system and also the daemon version information."
 msgstr "Mostrar a informação da versão do sistema."
 
 msgid "Display the system version information."
-msgstr "Mostrar a informação da versão do sistema."
+msgstr "Mostra a informação da versão do sistema."
 
 #, fuzzy
 msgid "Display version information"
@@ -5822,7 +5817,7 @@ msgstr ""
 
 #, c-format
 msgid "Domain restored from %1$s\n"
-msgstr "O domínio foi reposto a partir do %1$s\n"
+msgstr "O domínio foi restaurado a partir de %1$s\n"
 
 #, fuzzy
 msgid "Domain should have at least one disk defined"
@@ -6490,7 +6485,7 @@ msgstr "Não foi possível iniciar a rede %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to acquire pid file '%1$s'"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, c-format
 msgid "Failed to add IP address %1$s to IP address cache for interface %2$s"
@@ -6506,7 +6501,7 @@ msgstr "Não foi possível listar os domínios inactivos"
 
 #, fuzzy, c-format
 msgid "Failed to add capability %1$s: %2$d"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, c-format
 msgid ""
@@ -6540,7 +6535,7 @@ msgstr "Não foi possível criar o XML"
 
 #, fuzzy, c-format
 msgid "Failed to apply capabilities: %1$d"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, c-format
 msgid "Failed to apply firewall command '%1$s': %2$s"
@@ -6548,7 +6543,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to attach device from %1$s"
-msgstr "Não foi possível associar o dispositivo a partir de %1$s"
+msgstr "Falhou ao anexar dispositivo a partir de %1$s"
 
 #, fuzzy
 msgid "Failed to attach disk"
@@ -6684,7 +6679,7 @@ msgstr "Não foi possível iniciar a rede %1$s"
 
 #, fuzzy
 msgid "Failed to collect auth credentials"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 msgid "Failed to commit network config change transaction"
 msgstr ""
@@ -6695,7 +6690,7 @@ msgstr "Não foi possível gravar o 'core' do domínio %s em %s"
 
 #, fuzzy, c-format
 msgid "Failed to compare hypervisor CPU with %1$s"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "incapaz de  obter o tipo de hipervisor"
 
 #, fuzzy, c-format
 msgid "Failed to compile regex %1$s"
@@ -6711,7 +6706,7 @@ msgstr "Não foi possível obter a informação da interface"
 
 #, fuzzy, c-format
 msgid "Failed to connect socket to '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, c-format
 msgid "Failed to connect to dbus-daemon: %1$s"
@@ -6726,11 +6721,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to connect to ssh agent"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy
 msgid "Failed to connect to the admin server"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, c-format
 msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
@@ -6782,7 +6777,7 @@ msgstr "Não foi possível remover a associação do dispositivo de %s"
 
 #, fuzzy
 msgid "Failed to count secrets"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "Failed to create %1$s"
@@ -6801,7 +6796,7 @@ msgid "Failed to create SAVE dir %1$s"
 msgstr ""
 
 msgid "Failed to create XML"
-msgstr "Não foi possível criar o XML"
+msgstr "Falhou ao criar o XML"
 
 #, fuzzy
 msgid "Failed to create XML config object"
@@ -6845,7 +6840,7 @@ msgstr "Não foi possível criar o domínio do %s"
 
 #, c-format
 msgid "Failed to create domain from %1$s"
-msgstr "Não foi possível criar o domínio do %1$s"
+msgstr "Falhou ao criar o domínio a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to create domain save file '%1$s'"
@@ -6888,7 +6883,7 @@ msgstr "Não foi possível criar a rede a partir do %1$s"
 
 #, c-format
 msgid "Failed to create network from %1$s"
-msgstr "Não foi possível criar a rede a partir do %1$s"
+msgstr "Falhou ao criar rede a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to create node device from %1$s"
@@ -7009,7 +7004,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to define domain from %1$s"
-msgstr "Não foi possível definir o domínio a partir do %1$s"
+msgstr "Falhou ao definir domínio a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to define interface from %1$s"
@@ -7021,7 +7016,7 @@ msgstr "Não foi possível definir a rede a partir do %1$s"
 
 #, c-format
 msgid "Failed to define network from %1$s"
-msgstr "Não foi possível definir a rede a partir do %1$s"
+msgstr "Falhou ao definir rede a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to define new bridge interface %1$s"
@@ -7081,7 +7076,7 @@ msgstr "Não foi possível destruir a rede %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to delete symlink '%1$s'"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "incapaz de  obter o domínio '%1$s'"
 
 #, fuzzy, c-format
 msgid "Failed to delete veth device %1$s"
@@ -7109,7 +7104,7 @@ msgstr "Não foi possível destruir a rede %1$s"
 
 #, c-format
 msgid "Failed to destroy network %1$s"
-msgstr "Não foi possível destruir a rede %1$s"
+msgstr "Falhou ao destruir rede %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to destroy node device '%1$s'"
@@ -7125,7 +7120,7 @@ msgstr "Não foi possível remover a associação do dispositivo de %1$s"
 
 #, c-format
 msgid "Failed to detach device from %1$s"
-msgstr "Não foi possível remover a associação do dispositivo de %1$s"
+msgstr "Falhou ao desanexar dispositivo a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to detach device with alias %1$s"
@@ -7165,11 +7160,11 @@ msgstr "Não foi possível definir o domínio a partir do %s"
 
 #, fuzzy
 msgid "Failed to disconnect from the admin server"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy
 msgid "Failed to disconnect from the hypervisor"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy, c-format
 msgid "Failed to disconnect: %1$s"
@@ -7272,11 +7267,11 @@ msgid "Failed to find the interface: %1$s"
 msgstr "Não foi possível encontrar a rede: %1$s"
 
 msgid "Failed to find the network"
-msgstr "Não foi possível encontrar a rede"
+msgstr "Falhou ao encontrar a rede"
 
 #, c-format
 msgid "Failed to find the network: %1$s"
-msgstr "Não foi possível encontrar a rede: %1$s"
+msgstr "Falhou ao encontrar a rede: %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%1$u'"
@@ -7300,7 +7295,7 @@ msgstr "Não foi possível encontrar a rede: %1$s"
 
 #, fuzzy
 msgid "Failed to generate UUID"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "incapaz de  obter o UUID da rede"
 
 #, fuzzy
 msgid "Failed to generate genid"
@@ -7312,7 +7307,7 @@ msgstr "Não foi possível obter a informação do disco"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, fuzzy
 msgid "Failed to get UUID of created secret"
@@ -7323,7 +7318,7 @@ msgstr ""
 
 #, c-format
 msgid "Failed to get block stats %1$s %2$s"
-msgstr "Não foi possível obter o estado do bloco %1$s %2$s"
+msgstr "Falhou ao obter estatísticas do bloco %1$s %2$s"
 
 #, fuzzy, c-format
 msgid "Failed to get block stats for domain '%1$s' device '%2$s'"
@@ -7331,19 +7326,19 @@ msgstr "Não foi possível obter o estado do bloco %1$s %2$s"
 
 #, fuzzy
 msgid "Failed to get capabilities from libxenlight"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy
 msgid "Failed to get capability names of the device"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy
 msgid "Failed to get capability numbers of the device"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "Failed to get capacity of lun: %1$s"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "Failed to get certificate %1$s distinguished name: %2$s"
@@ -7355,7 +7350,7 @@ msgstr "Não foi possível obter a informação do disco"
 
 #, fuzzy
 msgid "Failed to get client socket PID"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "incapaz de  obter o UUID da rede"
 
 #, fuzzy
 msgid "Failed to get client socket identity"
@@ -7366,7 +7361,7 @@ msgid "Failed to get current process capabilities: %1$d"
 msgstr ""
 
 msgid "Failed to get disk information"
-msgstr "Não foi possível obter a informação do disco"
+msgstr "Falhou ao obter a informação do disco"
 
 #, c-format
 msgid "Failed to get distinguished name: %1$s\n"
@@ -7386,22 +7381,22 @@ msgstr "Não foi possível obter a informação da interface"
 
 #, fuzzy
 msgid "Failed to get domain state"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy
 msgid "Failed to get domain's UUID"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "incapaz de  obter o UUID do domínio"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%1$s'"
 msgstr ""
 
 msgid "Failed to get interface information"
-msgstr "Não foi possível obter a informação da interface"
+msgstr "Falhou ao obter a informação da interface"
 
 #, c-format
 msgid "Failed to get interface stats %1$s %2$s"
-msgstr "Não foi possível obter o estado da interface %1$s %2$s"
+msgstr "Falhou ao obter estatísticas da interface %1$s %2$s"
 
 #, fuzzy, c-format
 msgid "Failed to get leases info for %1$s"
@@ -7413,26 +7408,26 @@ msgstr "Não foi possível iniciar o domínio %1$s"
 
 #, fuzzy
 msgid "Failed to get network autostart state"
-msgstr "não foi possível marcar a rede %s como iniciada automaticamente"
+msgstr "incapaz de  marcar a rede %s como iniciada automaticamente"
 
 msgid "Failed to get network description xml"
 msgstr ""
 
 #, fuzzy
 msgid "Failed to get network persistence info"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 #, fuzzy
 msgid "Failed to get network's UUID"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "incapaz de  obter o UUID da rede"
 
 #, fuzzy
 msgid "Failed to get node physical info from libxenlight"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, fuzzy, c-format
 msgid "Failed to get option '%1$s': %2$s"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy
 msgid "Failed to get pool autostart state"
@@ -7499,7 +7494,7 @@ msgstr "Não foi possível encontrar a rede: %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to initialize TLS session: %1$s"
-msgstr "não foi possível serializar a Expr-S: %1$s"
+msgstr "incapaz de  serializar a Expr-S: %1$s"
 
 msgid "Failed to initialize cgroup backend."
 msgstr ""
@@ -7512,7 +7507,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to initialize libssh session"
-msgstr "não foi possível obter a versão da biblioteca"
+msgstr "incapaz de  obter a versão da biblioteca"
 
 msgid "Failed to initialize libssh2 agent handle"
 msgstr ""
@@ -7522,11 +7517,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to initialize libssh2 session"
-msgstr "não foi possível obter a versão da biblioteca"
+msgstr "incapaz de  obter a versão da biblioteca"
 
 #, fuzzy
 msgid "Failed to initialize libvirt"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "incapaz de  serializar a Expr-S"
 
 #, c-format
 msgid "Failed to initialize libvirt error handling"
@@ -7534,7 +7529,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to initialize mutex"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "incapaz de  serializar a Expr-S"
 
 #, fuzzy
 msgid "Failed to initialize security drivers"
@@ -7557,14 +7552,14 @@ msgid "Failed to kill process %1$lld"
 msgstr ""
 
 msgid "Failed to list active domains"
-msgstr "Não foi possível listar os domínios activos"
+msgstr "Falhou ao listar os domínios activos"
 
 #, fuzzy
 msgid "Failed to list active interfaces"
 msgstr "Não foi possível listar as redes activas"
 
 msgid "Failed to list active networks"
-msgstr "Não foi possível listar as redes activas"
+msgstr "Falhou ao listar as redes activas"
 
 #, fuzzy
 msgid "Failed to list active pools"
@@ -7575,14 +7570,14 @@ msgid "Failed to list domains"
 msgstr "Não foi possível listar os domínios activos"
 
 msgid "Failed to list inactive domains"
-msgstr "Não foi possível listar os domínios inactivos"
+msgstr "Falhou ao listar os domínios inactivos"
 
 #, fuzzy
 msgid "Failed to list inactive interfaces"
 msgstr "Não foi possível listar as redes inactivas"
 
 msgid "Failed to list inactive networks"
-msgstr "Não foi possível listar as redes inactivas"
+msgstr "Falhou ao listar as redes inactivas"
 
 #, fuzzy
 msgid "Failed to list inactive pools"
@@ -7654,11 +7649,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to load config for binding '%1$s'"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to load config for domain '%1$s'"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "incapaz de  obter o domínio '%1$s'"
 
 #, fuzzy, c-format
 msgid "Failed to load module '%1$s': %2$s"
@@ -7666,7 +7661,7 @@ msgstr "Não foi possível gravar o domínio %1$s em %2$s"
 
 #, fuzzy
 msgid "Failed to load nbd module"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 msgid "Failed to load nbd module: administratively prohibited"
 msgstr ""
@@ -7693,7 +7688,7 @@ msgstr "Não foi possível reiniciar o domínio %1$s"
 
 #, fuzzy
 msgid "Failed to make auth credentials"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "Failed to make device %1$s"
@@ -7701,7 +7696,7 @@ msgstr "Não foi possível associar o dispositivo a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to make directory %1$s readonly"
-msgstr "não foi possível marcar a rede %1$s como iniciada automaticamente"
+msgstr "incapaz de  marcar a rede %1$s como iniciada automaticamente"
 
 #, c-format
 msgid "Failed to make dnsmasq (PID: %1$d) reload config files."
@@ -7729,7 +7724,7 @@ msgstr "Não foi possível prosseguir com o domínio %1$s"
 
 #, fuzzy
 msgid "Failed to make root private"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "Failed to mark domain '%1$s' as autostarted"
@@ -7797,22 +7792,22 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to open %1$s"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "Failed to open '%1$s'"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 msgid "Failed to open a UNIX socket"
 msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to open config space file '%1$s'"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to open cpuinfo file '%1$s'"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "Failed to open domain image file '%1$s'"
@@ -7824,7 +7819,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to open file '%1$s'"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, c-format
 msgid "Failed to open file '%1$s': couldn't determine fs type"
@@ -7832,7 +7827,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to open pid file '%1$s'"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 msgid "Failed to open socket to sanlock daemon"
 msgstr ""
@@ -7870,7 +7865,7 @@ msgstr "Não foi possível repor o domínio a partir de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to parse PCI config address '%1$s'"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 msgid "Failed to parse arguments for bhyve command"
 msgstr ""
@@ -7888,7 +7883,7 @@ msgstr "Não foi possível obter o estado do bloco %s %s"
 
 #, fuzzy, c-format
 msgid "Failed to parse configuration of %1$s"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to parse dir name '%1$s'"
@@ -7900,7 +7895,7 @@ msgstr "Não foi possível gravar o domínio %s em %s"
 
 #, fuzzy, c-format
 msgid "Failed to parse firewalld version '%1$s'"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to parse group '%1$s'"
@@ -7945,7 +7940,7 @@ msgstr "Não foi possível prosseguir com o domínio %s"
 
 #, fuzzy
 msgid "Failed to parse port number"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "Failed to parse positive integer from '%1$s'"
@@ -7961,7 +7956,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse snapshot XML from file '%1$s'"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to parse target '%1$s'"
@@ -7977,7 +7972,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to parse user '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, fuzzy, c-format
 msgid "Failed to parse users from '%1$s'"
@@ -8008,7 +8003,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to pivot root"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "Failed to pre-allocate space for file '%1$s'"
@@ -8016,7 +8011,7 @@ msgstr "Não foi possível criar a rede a partir do %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to probe capabilities for %1$s: %2$s"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "Failed to probe for format type '%1$s'"
@@ -8051,7 +8046,7 @@ msgstr "Não foi possível criar o XML"
 
 #, fuzzy, c-format
 msgid "Failed to read '%1$s'"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "incapaz de  obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "Failed to read /proc/mounts"
@@ -8059,11 +8054,11 @@ msgstr "Não foi possível criar o domínio do %s"
 
 #, fuzzy, c-format
 msgid "Failed to read AppArmor profiles list '%1$s'"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to read PCI config space for %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, c-format
 msgid "Failed to read RDP port value, rc=%1$08x"
@@ -8071,11 +8066,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to read checkpoint file %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to read file '%1$s'"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy
 msgid "Failed to read from signal pipe"
@@ -8083,11 +8078,11 @@ msgstr "Não foi possível criar o domínio do %s"
 
 #, fuzzy, c-format
 msgid "Failed to read pid file %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to read pidfile %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to read product/vendor ID for %1$s"
@@ -8099,7 +8094,7 @@ msgstr "Não foi possível criar o XML"
 
 #, fuzzy, c-format
 msgid "Failed to read snapshot file %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "incapaz de  ler o ficheiro de configuração %1$s"
 
 #, c-format
 msgid "Failed to read system token '%1$s'"
@@ -8127,11 +8122,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to reconnect to the admin server"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy
 msgid "Failed to reconnect to the hypervisor"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy
 msgid "Failed to recv file descriptor"
@@ -8143,11 +8138,11 @@ msgstr "Não foi possível prosseguir com o domínio %1$s"
 
 #, fuzzy
 msgid "Failed to register lock failure action"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "Failed to register lock failure action: %1$s"
-msgstr "não foi possível gravar o ficheiro de configuração: %1$s"
+msgstr "incapaz de  gravar o ficheiro de configuração: %1$s"
 
 #, fuzzy
 msgid "Failed to register shutdown timeout"
@@ -8167,7 +8162,7 @@ msgstr "Não foi possível prosseguir com o domínio %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to remove capability %1$s: %2$d"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy
 msgid "Failed to remove domain managed save image"
@@ -8247,7 +8242,7 @@ msgstr "Não foi possível repor o domínio a partir de %1$s"
 
 #, c-format
 msgid "Failed to restore domain from %1$s"
-msgstr "Não foi possível repor o domínio a partir de %1$s"
+msgstr "Falhou ao restaurar domínio a partir de %1$s"
 
 #, fuzzy
 msgid "Failed to restrict process"
@@ -8383,7 +8378,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to serialize snapshot"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "incapaz de  serializar a Expr-S"
 
 #, fuzzy, c-format
 msgid "Failed to set %1$s for %2$s: value too large"
@@ -8422,7 +8417,7 @@ msgstr "Não foi possível iniciar o domínio %1$s"
 
 #, fuzzy
 msgid "Failed to set hostname"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "Failed to set interface name to '%1$s' in xml document"
@@ -8491,7 +8486,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to set secret value"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "Failed to set security context for agent for %1$s"
@@ -8503,7 +8498,7 @@ msgstr "Não foi possível criar a rede a partir do %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to set session type: %1$s"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "incapaz de  obter o tipo de hipervisor"
 
 #, c-format
 msgid "Failed to set slave for %1$s: last letter not 'A' or 'B'"
@@ -8565,7 +8560,7 @@ msgstr "Não foi possível iniciar a rede %1$s"
 
 #, c-format
 msgid "Failed to start network %1$s"
-msgstr "Não foi possível iniciar a rede %1$s"
+msgstr "Falhou ao iniciar a rede %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to start pool %1$s"
@@ -8661,7 +8656,7 @@ msgstr "Não foi possível remover a definição da rede %1$s"
 
 #, c-format
 msgid "Failed to undefine network %1$s"
-msgstr "Não foi possível remover a definição da rede %1$s"
+msgstr "Falhou ao remover a definição da rede %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to undefine network filter %1$s"
@@ -8717,7 +8712,7 @@ msgstr "Não foi possível suspender o domínio %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to update %1$s XML configuration"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, c-format
 msgid "Failed to update '%1$s' of node mode for target '%2$s'"
@@ -8762,7 +8757,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Failed to write save file header"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, c-format
 msgid "Failed to write system token '%1$s'"
@@ -8770,18 +8765,18 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to write to pid file '%1$s'"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
 
 #, fuzzy, c-format
 msgid "Failed to write vmx file '%1$s'"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
 
 msgid "Failed to write xml definition"
 msgstr ""
 
 #, fuzzy
 msgid "Failed to write xml description"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 msgid "Failed while adding guest interfaces"
 msgstr ""
@@ -9079,7 +9074,8 @@ msgid "Get memory statistics for a running domain."
 msgstr "Obter o estado de uma interface de rede para um domínio em execução."
 
 msgid "Get network interface stats for a running domain."
-msgstr "Obter o estado de uma interface de rede para um domínio em execução."
+msgstr ""
+"Obter a estatística de uma interface de rede para um domínio em execução."
 
 #, fuzzy
 msgid "Get network interfaces' addresses for a running domain"
@@ -9578,7 +9574,7 @@ msgstr "migração em tempo-real"
 
 #, fuzzy, c-format
 msgid "Incomplete vnuma configuration for vnode %1$zu"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 #, c-format
 msgid ""
@@ -9668,7 +9664,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Interface %1$s XML configuration edited.\n"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração\n"
 
 #, c-format
 msgid "Interface %1$s XML configuration not changed.\n"
@@ -10287,7 +10283,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid mtu size '%1$s' in network '%2$s'"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 #, c-format
 msgid "Invalid multicast bridge mac address '%1$s' in network '%2$s'"
@@ -10301,7 +10297,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid netmask '%1$s' in network '%2$s'"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 #, fuzzy
 msgid "Invalid network filter"
@@ -10642,7 +10638,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 #, fuzzy, c-format
 msgid "Invalid volume name %1$s"
@@ -11120,7 +11116,7 @@ msgid "Max memory, as scaled integer (default KiB)"
 msgstr ""
 
 msgid "Max memory:"
-msgstr "Memória máx:"
+msgstr "Memória máximo:"
 
 #, c-format
 msgid "Maximum CPUs greater than specified machine type limit %1$u"
@@ -11233,7 +11229,7 @@ msgstr ""
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
-"Migrar o domínio para outra máquina. Adicione --live para uma migração em "
+"Migrar o domínio para outra máquina.   Adicione --live para uma migração em "
 "tempo-real."
 
 msgid "Migrated"
@@ -12152,7 +12148,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Network %1$s XML configuration edited.\n"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração\n"
 
 #, c-format
 msgid "Network %1$s XML configuration not changed.\n"
@@ -12160,11 +12156,11 @@ msgstr ""
 
 #, c-format
 msgid "Network %1$s created from %2$s\n"
-msgstr "A rede %1$s foi criada a partir do %2$s\n"
+msgstr "A rede %1$s foi criada a partir de %2$s\n"
 
 #, c-format
 msgid "Network %1$s defined from %2$s\n"
-msgstr "Rede %1$s definida a partir do %2$s\n"
+msgstr "Rede %1$s definida a partir de %2$s\n"
 
 #, c-format
 msgid "Network %1$s destroyed\n"
@@ -12237,7 +12233,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Network filter %1$s XML configuration edited.\n"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração\n"
 
 #, c-format
 msgid "Network filter %1$s XML configuration not changed.\n"
@@ -12508,7 +12504,7 @@ msgid "No error message from child failure"
 msgstr "Não foi indicada nenhuma mensagem de erro"
 
 msgid "No error message provided"
-msgstr "Não foi indicada nenhuma mensagem de erro"
+msgstr "Não foi fornecida nenhuma mensagem de erro"
 
 #, fuzzy
 msgid "No errors found\n"
@@ -13222,24 +13218,24 @@ msgid "Output attributes of a secret as an XML dump to stdout."
 msgstr "Envia a informação do domínio em XML para o 'stdout'."
 
 msgid "Output the IP address and port number for the VNC display."
-msgstr "Devolve o endereço IP e o número de porto da consola de VNC."
+msgstr "Escreve o endereço IP e número de porto para o visor do VNC."
 
 #, fuzzy
 msgid "Output the IP address and port number for the graphical display."
 msgstr "Devolve o endereço IP e o número de porto da consola de VNC."
 
 msgid "Output the device for the TTY console."
-msgstr "Mostra o dispositivo para a consola TTY."
+msgstr "Escreve o dispositivo para a consola TTY."
 
 msgid "Output the domain information as an XML dump to stdout."
-msgstr "Envia a informação do domínio em XML para o 'stdout'."
+msgstr "Escreve a informação do domínio como um despejo XML para o stdout."
 
 #, fuzzy
 msgid "Output the network filter information as an XML dump to stdout."
 msgstr "Envia a informação da rede em XML para o 'stdout'."
 
 msgid "Output the network information as an XML dump to stdout."
-msgstr "Envia a informação da rede em XML para o 'stdout'."
+msgstr "Escreve a informação da rede como um despejo XML para o stdout."
 
 #, fuzzy
 msgid "Output the network port information as an XML dump to stdout."
@@ -14007,7 +14003,7 @@ msgstr "ligar à consola-convidada"
 
 #, fuzzy
 msgid "Reconnected to the hypervisor"
-msgstr "ligar (de novo) ao supervisor"
+msgstr "ligar (de novo) ao hipervisor"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -14194,7 +14190,7 @@ msgid "Restore"
 msgstr ""
 
 msgid "Restore a domain."
-msgstr "Repor um domínio."
+msgstr "Restaurar um domínio."
 
 #, fuzzy
 msgid "Restored"
@@ -14285,14 +14281,14 @@ msgstr "Devolve informações básicas acerca do nó."
 
 #, fuzzy
 msgid "Returns capabilities of emulator with respect to host and libvirt."
-msgstr "Devolve as capacidades do supervisor/controlador."
+msgstr "Devolve as capacidades do hipervisor/controlador."
 
 msgid "Returns capabilities of hypervisor/driver."
-msgstr "Devolve as capacidades do supervisor/controlador."
+msgstr "Devolve as capacidades do hipervisor/controlador."
 
 #, fuzzy
 msgid "Returns capabilities of storage pool support."
-msgstr "Devolve as capacidades do supervisor/controlador."
+msgstr "Devolve as capacidades do hipervisor/controlador."
 
 msgid "Returns cpu stats of the node, in nanoseconds."
 msgstr ""
@@ -14359,7 +14355,7 @@ msgid "Route address '%1$s' conflicts with IP address for '%2$s'"
 msgstr ""
 
 msgid "Run a reboot command in the target domain."
-msgstr "Executar um comando de reinício no domínio-alvo."
+msgstr "Executa um comando de reiniciar no domínio-alvo."
 
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
 msgstr ""
@@ -14371,11 +14367,11 @@ msgid "Run as a daemon & write PID file"
 msgstr ""
 
 msgid "Run shutdown in the target domain."
-msgstr "Executar o encerramento no domínio-alvo."
+msgstr "Executa o encerramento no domínio-alvo."
 
 #, fuzzy, c-format
 msgid "Running against daemon: %1$d.%2$d.%3$d\n"
-msgstr "A executar o supervisor: %s %d.%d.%d\n"
+msgstr "A executar o hipervisor: %s %d.%d.%d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
@@ -14383,7 +14379,7 @@ msgstr ""
 
 #, c-format
 msgid "Running hypervisor: %1$s %2$d.%3$d.%4$d\n"
-msgstr "A executar o supervisor: %1$s %2$d.%3$d.%4$d\n"
+msgstr "A executar o hipervisor: %1$s %2$d.%3$d.%4$d\n"
 
 msgid "S3 state is disabled for this domain"
 msgstr ""
@@ -14619,7 +14615,7 @@ msgid ""
 msgstr ""
 
 msgid "Scheduler"
-msgstr "Escalonamento"
+msgstr "Agendamento"
 
 #, c-format
 msgid "Scheduler '%1$s' is not supported on this platform"
@@ -14978,7 +14974,7 @@ msgid "Show total statistics only"
 msgstr ""
 
 msgid "Show/Set scheduler parameters."
-msgstr "Mostra/altera os parâmetros de escalonamento."
+msgstr "Mostra/Define parâmetros de agendamento."
 
 msgid "Shows or modifies the XML metadata of a domain."
 msgstr ""
@@ -17286,7 +17282,7 @@ msgstr "UUID:"
 
 #, fuzzy
 msgid "Unable to accept client"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, c-format
 msgid "Unable to access %1$s"
@@ -17298,7 +17294,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to access config file %1$s"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "incapaz de  processar o ficheiro de configuração %1$s"
 
 #, c-format
 msgid "Unable to access file descriptor %1$d"
@@ -17441,8 +17437,9 @@ msgstr "Não foi possível encontrar a rede"
 msgid "Unable to bind to port %1$d"
 msgstr "Não foi possível encontrar a rede: %s"
 
+#, fuzzy
 msgid "Unable to change MaxMemorySize"
-msgstr "Não é possível alterar o Tamanho Máximo de Memória"
+msgstr "Incapaz de alterar o Tamanho Máximo de Memória"
 
 #, fuzzy
 msgid "Unable to change balloon collection period."
@@ -17661,7 +17658,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to create migration thread"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, c-format
 msgid ""
@@ -17698,7 +17695,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to create tunnel migration thread"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, c-format
 msgid ""
@@ -17741,7 +17738,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to delete file %1$s"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
 
 #, fuzzy, c-format
 msgid "Unable to delete lockspace resource %1$s"
@@ -17774,7 +17771,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to determine current file inode: %1$s"
-msgstr "não foi possível gravar o ficheiro de configuração: %1$s"
+msgstr "incapaz de  gravar o ficheiro de configuração: %1$s"
 
 #, c-format
 msgid "Unable to determine current file offset: %1$s"
@@ -17825,7 +17822,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to enter mount namespace"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "Unable to exec shell %1$s"
@@ -17957,11 +17954,11 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get ACLs on %1$s"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "incapaz de  obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "Unable to get Capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "Unable to get Console object for domain %1$s"
@@ -17980,7 +17977,7 @@ msgstr "Não foi possível reiniciar o domínio %1$s"
 
 #, fuzzy, c-format
 msgid "Unable to get LVM key for %1$s"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
@@ -17988,7 +17985,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get SCSI key for %1$s"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, fuzzy, c-format
 msgid "Unable to get SELinux label from %1$s"
@@ -18014,7 +18011,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to get XATTR %1$s on %2$s"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 msgid "Unable to get XML Desc of snapshot"
 msgstr ""
@@ -18027,7 +18024,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to get blkio parameters"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 msgid "Unable to get block I/O throttle parameters"
 msgstr ""
@@ -18111,11 +18108,11 @@ msgstr "Não foi possível obter a informação do disco"
 
 #, fuzzy
 msgid "Unable to get domain status"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy, c-format
 msgid "Unable to get driver name for '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 #, fuzzy
 msgid "Unable to get filesystem information"
@@ -18137,7 +18134,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to get host boot time"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "Unable to get index for interface %1$s"
@@ -18161,14 +18158,14 @@ msgstr "Não foi possível obter a informação da interface"
 
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %1$s"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 msgid "Unable to get launch security parameters"
 msgstr ""
 
 #, fuzzy
 msgid "Unable to get local socket name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "Unable to get loop status on %1$s"
@@ -18195,7 +18192,7 @@ msgstr "Não foi possível obter o estado do bloco %s %s"
 
 #, fuzzy
 msgid "Unable to get numa parameters"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 msgid "Unable to get number of blkio parameters"
 msgstr ""
@@ -18223,7 +18220,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to get peer socket name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 msgid "Unable to get perf events"
 msgstr ""
@@ -18236,7 +18233,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to get remote socket name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 msgid "Unable to get server workerpool parameters"
 msgstr ""
@@ -18247,7 +18244,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to get snapshot content"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 msgid "Unable to get sysfs info on this platform"
 msgstr ""
@@ -18262,7 +18259,7 @@ msgstr "Não foi possível obter a informação da interface"
 
 #, fuzzy
 msgid "Unable to get the parent disk"
-msgstr "não foi possível obter a versão da biblioteca"
+msgstr "incapaz de  obter a versão da biblioteca"
 
 #, fuzzy
 msgid "Unable to get the read write medium format"
@@ -18319,7 +18316,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to initialize condition variable"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 #, c-format
 msgid "Unable to initialize lease %1$s"
@@ -18351,7 +18348,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to initialize thread local variable"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 msgid "Unable to invoke fstrim"
 msgstr ""
@@ -18396,7 +18393,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to lock '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 msgid "Unable to lookup SELinux process context"
 msgstr ""
@@ -18448,7 +18445,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to obtain host UUID"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "incapaz de  obter o UUID do domínio"
 
 msgid "Unable to obtain hostInternetScsiHba"
 msgstr ""
@@ -18462,7 +18459,7 @@ msgstr "Devolve informações básicas acerca do nó."
 
 #, fuzzy, c-format
 msgid "Unable to open %1$s"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, c-format
 msgid "Unable to open %1$s (%2$d)"
@@ -18474,7 +18471,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to open '%1$s'"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "incapaz de  obter o domínio '%1$s'"
 
 #, c-format
 msgid "Unable to open '%1$s' for vdpa device"
@@ -18504,15 +18501,15 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to open file: %1$s"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "Unable to open filesystem %1$s"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "Unable to open log file %1$s"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, c-format
 msgid "Unable to open resource %1$s"
@@ -18546,7 +18543,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to parse FD number '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "incapaz de  obter a rede '%1$s'"
 
 msgid "Unable to parse HPT maxpagesize setting"
 msgstr ""
@@ -18561,7 +18558,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to parse URI %1$s"
-msgstr "não foi possível obter o URI"
+msgstr "incapaz de  obter o URI"
 
 #, c-format
 msgid "Unable to parse UUID '%1$s'"
@@ -18726,11 +18723,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to read TLS confirmation"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, fuzzy
 msgid "Unable to read container pty"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 #, fuzzy, c-format
 msgid "Unable to read directory '%1$s'"
@@ -18758,11 +18755,11 @@ msgstr "não foi possível ler o ficheiro de configuração %1$s"
 
 #, fuzzy
 msgid "Unable to read from log file"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy
 msgid "Unable to read from log pipe"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 msgid "Unable to read from monitor"
 msgstr ""
@@ -19174,7 +19171,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unable to set thread local variable"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 msgid "Unable to set throttle group"
 msgstr ""
@@ -19330,15 +19327,15 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "Unable to write to agent"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy
 msgid "Unable to write to container pty"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 #, fuzzy
 msgid "Unable to write to domain logfile"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "Unable to write to file %1$s"
@@ -19350,7 +19347,7 @@ msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
 
 #, fuzzy
 msgid "Unable to write to monitor"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "Unable to write to: %1$s"
@@ -20072,7 +20069,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unsupported boot order configuration"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, c-format
 msgid "Unsupported bus type '%1$s'"
@@ -20111,7 +20108,7 @@ msgstr ""
 
 #, fuzzy
 msgid "Unsupported configuration"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, c-format
 msgid "Unsupported controller model: %1$s"
@@ -21041,7 +21038,7 @@ msgstr ""
 
 #, fuzzy
 msgid "affect next network startup"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 msgid "affect next node device startup"
 msgstr ""
@@ -21117,7 +21114,7 @@ msgstr ""
 
 #, fuzzy
 msgid "alter live configuration of running domain"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 msgid "alter persistent configuration, effect observed on next boot"
 msgstr ""
@@ -21247,10 +21244,10 @@ msgid "ats driver option is only supported for virtio devices"
 msgstr ""
 
 msgid "attach device from an XML file"
-msgstr "associar um dispositivo a partir de um ficheiro XML"
+msgstr "anexar um dispositivo a partir de um ficheiro XML"
 
 msgid "attach disk device"
-msgstr "anexar um dispositivo em disco"
+msgstr "anexar um dispositivo de disco"
 
 msgid "attach network interface"
 msgstr "anexar a interface de rede"
@@ -21598,7 +21595,7 @@ msgid "block copy still active: %1$s"
 msgstr ""
 
 msgid "block device"
-msgstr "dispositivo em bloco"
+msgstr "dispositivo de bloco"
 
 #, c-format
 msgid "block device backed disk must be resized to its actual size '%1$llu'"
@@ -21880,7 +21877,7 @@ msgstr ""
 
 #, fuzzy
 msgid "can't connect to virtlogd"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 #, c-format
 msgid "can't convert relative size: '%1$s'"
@@ -22537,7 +22534,7 @@ msgstr ""
 
 #, fuzzy
 msgid "cannot get host CPU capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 msgid "cannot get interface flags on macvtap tap"
 msgstr ""
@@ -23396,6 +23393,7 @@ msgstr ""
 msgid "cannot write to stream"
 msgstr ""
 
+#, fuzzy
 msgid "cap for XEN_CREDIT"
 msgstr "valor do XEN_CREDIT"
 
@@ -23470,7 +23468,7 @@ msgid "change maximum memory limit"
 msgstr "mudar o limite máximo de memória"
 
 msgid "change memory allocation"
-msgstr "mudar a reserva de memória"
+msgstr "mudar a alocação de memória"
 
 msgid "change number of virtual CPUs"
 msgstr "mudar o número de CPUs virtuais"
@@ -23867,7 +23865,7 @@ msgid "connect to daemon's admin server"
 msgstr ""
 
 msgid "connect to the guest console"
-msgstr "ligar à consola-convidada"
+msgstr "ligar à consola convidada"
 
 msgid "connected"
 msgstr ""
@@ -23940,19 +23938,19 @@ msgid ""
 msgstr ""
 
 msgid "convert a domain id or UUID to domain name"
-msgstr "converter um ID ou UUID do domínio para um nome"
+msgstr "converter um ID ou UUID do domínio num nome"
 
 msgid "convert a domain name or UUID to domain id"
-msgstr "converter um nome ou UUID de um domínio para um ID"
+msgstr "converter um nome ou UUID de um domínio num id de domínio"
 
 msgid "convert a domain name or id to domain UUID"
-msgstr "converter um nome ou ID de um domínio para um UUID"
+msgstr "converter um nome ou ID de um domínio num UUID"
 
 msgid "convert a network UUID to network name"
 msgstr "converter um UUID de rede para um nome de rede"
 
 msgid "convert a network name to network UUID"
-msgstr "converter um nome ou ID de uma rede para um UUID"
+msgstr "converter um nome de rede para um UUID de rede"
 
 #, fuzzy
 msgid "convert a pool UUID to pool name"
@@ -24037,18 +24035,18 @@ msgstr ""
 
 #, fuzzy
 msgid "could not close logfile"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "could not connect to Xen Store"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de ligar ao Armazém do Xen"
 
 #, c-format
 msgid "could not connect to Xen Store %1$s"
-msgstr "não foi possível ligar ao Armazém do Xen %1$s"
+msgstr "incapaz de ligar ao Armazém do Xen %1$s"
 
 #, fuzzy
 msgid "could not create profile"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "could not define a domain"
 msgstr ""
@@ -24111,7 +24109,7 @@ msgstr ""
 
 #, fuzzy
 msgid "could not get VM definition"
-msgstr "não foi possível ligar ao Armazém do Xen"
+msgstr "incapaz de  ligar ao Armazém do Xen"
 
 msgid "could not get children snapshots"
 msgstr ""
@@ -24136,11 +24134,11 @@ msgstr ""
 
 #, fuzzy
 msgid "could not get domain UUID"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "incapaz de  obter o UUID do domínio"
 
 #, fuzzy
 msgid "could not get domain state"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 msgid "could not get information about NUMA topology"
 msgstr ""
@@ -24181,7 +24179,7 @@ msgstr ""
 
 #, fuzzy
 msgid "could not get snapshot UUID"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "incapaz de  obter o UUID da rede"
 
 msgid "could not get snapshot children"
 msgstr ""
@@ -24195,7 +24193,7 @@ msgstr ""
 
 #, fuzzy
 msgid "could not get snapshot name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "could not get the volume list in the pool: %1$s, rc=%2$08x"
@@ -24220,23 +24218,23 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "could not parse read bytes sec %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "não foi possível usar o item %1$s do hipervisor do Xen"
 
 #, fuzzy, c-format
 msgid "could not parse read iops sec %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "não foi possível usar o item %1$s do hipervisor do Xen"
 
 #, fuzzy, c-format
 msgid "could not parse weight %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "não foi possível usar o item %1$s do hipervisor do Xen"
 
 #, fuzzy, c-format
 msgid "could not parse write bytes sec %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "não foi possível usar o item %1$s do hipervisor do Xen"
 
 #, fuzzy, c-format
 msgid "could not parse write iops sec %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "não foi possível usar o item %1$s do hipervisor do Xen"
 
 msgid "could not read xml file"
 msgstr ""
@@ -24287,11 +24285,11 @@ msgid "could not take snapshot of domain %1$s"
 msgstr "Não foi possível destruir o domínio %1$s"
 
 msgid "could not use Xen hypervisor entry"
-msgstr "não foi possível usar o item do supervisor do Xen"
+msgstr "incapaz de usar a entrada de hipervisor do Xen"
 
 #, c-format
 msgid "could not use Xen hypervisor entry %1$s"
-msgstr "não foi possível usar o item %1$s do supervisor do Xen"
+msgstr "incapaz de usar a entrada do hipervisor do Xen %1$s"
 
 msgid "couldn't fetch array of leases"
 msgstr ""
@@ -24579,7 +24577,7 @@ msgstr ""
 
 #, fuzzy
 msgid "daemon's admin server connection URI"
-msgstr "URI de ligação ao supervisor"
+msgstr "URI de ligação ao hipervisor"
 
 #, c-format
 msgid "daemonized command cannot set working directory %1$s"
@@ -24773,17 +24771,17 @@ msgid "destroyed"
 msgstr "O domínio %s foi destruído\n"
 
 msgid "detach device from an XML file"
-msgstr "remover a associação do dispositivo ao ficheiro XML"
+msgstr "desanexar dispositivo a partir de ficheiro XML"
 
 #, fuzzy
 msgid "detach device from an alias"
 msgstr "remover a associação do dispositivo ao ficheiro XML"
 
 msgid "detach disk device"
-msgstr "desligar o dispositivo de disco"
+msgstr "desanexar dispositivo de disco"
 
 msgid "detach network interface"
-msgstr "desligar a interface de rede"
+msgstr "desanexar interface de rede"
 
 #, fuzzy
 msgid "detach node device from its device driver"
@@ -24880,7 +24878,7 @@ msgstr "O domínio não foi encontrado: %1$s"
 
 #, fuzzy
 msgid "device not present in domain configuration"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, c-format
 msgid "device of type '%1$s' has no device info"
@@ -25239,7 +25237,7 @@ msgid "display all block devices info"
 msgstr ""
 
 msgid "display available free memory for the NUMA cell."
-msgstr "mostrar a memória livre para a célula NUMA."
+msgstr "mostrar a memória livre disponível para a célula NUMA."
 
 #, fuzzy
 msgid "display available free pages for the NUMA cell."
@@ -25521,7 +25519,7 @@ msgid "domain name or uuid"
 msgstr "nome ou UUID do domínio"
 
 msgid "domain name, id or uuid"
-msgstr "nome, 'id' ou 'uuid' do domínio"
+msgstr "nome, id ou uuid do domínio"
 
 msgid "domain save"
 msgstr ""
@@ -25633,7 +25631,7 @@ msgid "dump query failed, status=%1$d"
 msgstr ""
 
 msgid "dump the core of a domain to a file for analysis"
-msgstr "colocar o núcleo de um domínio num ficheiro para análise"
+msgstr "despejar o núcleo de um domínio num ficheiro para análise"
 
 #, c-format
 msgid "dumpformat '%1$d' is not supported"
@@ -25732,7 +25730,7 @@ msgstr ""
 
 #, fuzzy
 msgid "edit XML configuration for a domain"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, fuzzy
 msgid "edit XML configuration for a network"
@@ -25740,7 +25738,7 @@ msgstr "erro de sintaxe no ficheiro de configuração"
 
 #, fuzzy
 msgid "edit XML configuration for a network filter"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 msgid "edit XML configuration for a physical host interface"
 msgstr ""
@@ -26425,7 +26423,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed probing capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "failed reading from file '%1$s'"
@@ -26445,7 +26443,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to acquire guest cid"
-msgstr "não foi possível obter o URI"
+msgstr "incapaz de  obter o URI"
 
 #, fuzzy, c-format
 msgid "failed to add chardev '%1$s' info"
@@ -26506,7 +26504,7 @@ msgstr "não foi possível obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to chown secret file"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to clone RBD volume %1$s to %2$s"
@@ -26518,18 +26516,18 @@ msgstr "não foi possível aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to close file"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to close or write to profile"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 msgid "failed to close screenshot file"
 msgstr ""
 
 #, fuzzy
 msgid "failed to collect snapshot list"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "failed to commit transaction: %1$s%2$s%3$s"
@@ -26541,22 +26539,22 @@ msgstr "não foi possível obter o domínio '%s'"
 
 #, fuzzy, c-format
 msgid "failed to connect to %1$s"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "não foi possível ligar ao hipervisor"
 
 #, fuzzy
 msgid "failed to connect to agent socket"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy
 msgid "failed to connect to monitor socket"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "incapaz de  ligar ao hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to connect to the RADOS monitor on: %1$s"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "não foi possível ligar ao hipervisor"
 
 msgid "failed to connect to the hypervisor"
-msgstr "não foi possível ligar ao supervisor"
+msgstr "falhou ao ligar ao hipervisor"
 
 #, c-format
 msgid "failed to construct broadcast or network address for network %1$s/%2$d"
@@ -26568,7 +26566,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to convert the XML node tree"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy
 msgid "failed to copy all device rules"
@@ -26576,7 +26574,7 @@ msgstr "Não foi possível associar o dispositivo a partir de %s"
 
 #, fuzzy
 msgid "failed to count cgroup BPF map items"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "failed to create %1$s"
@@ -26609,7 +26607,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to create copy target"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "failed to create directory '%1$s'"
@@ -26632,7 +26630,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to create include file"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy
 msgid "failed to create json"
@@ -26656,7 +26654,7 @@ msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
 
 #, fuzzy
 msgid "failed to create profile"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, c-format
 msgid "failed to create save dir '%1$s'"
@@ -26680,7 +26678,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to create the RADOS cluster"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
@@ -26688,7 +26686,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to create udev context"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy
 msgid "failed to create udev handler thread"
@@ -26727,7 +26725,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to enable IP forwarding"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, fuzzy, c-format
 msgid "failed to enable mac filter in '%1$s'"
@@ -26747,7 +26745,7 @@ msgstr "não foi possível obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to extract gluster volume name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
@@ -26811,11 +26809,11 @@ msgstr "Não foi possível obter o estado da interface %s %s"
 
 #, fuzzy
 msgid "failed to generate uuid"
-msgstr "não foi possível obter o URI"
+msgstr "incapaz de  obter o URI"
 
 #, fuzzy
 msgid "failed to get CPU model names"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "failed to get IPv4 address for start or end of range %1$s - %2$s"
@@ -26826,26 +26824,26 @@ msgid "failed to get IPv6 address for start or end of range %1$s - %2$s"
 msgstr ""
 
 msgid "failed to get URI"
-msgstr "não foi possível obter o URI"
+msgstr "falhou ao obter o URI"
 
 msgid "failed to get capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "falhou ao obter as capacidades"
 
 #, fuzzy
 msgid "failed to get cgroup BPF map FD"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "incapaz de  obter o UUID do domínio"
 
 #, fuzzy
 msgid "failed to get cgroup BPF map info"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to get cgroup BPF prog FD"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "incapaz de  obter o UUID da rede"
 
 #, fuzzy
 msgid "failed to get cgroup BPF prog info"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, c-format
 msgid "failed to get cgroup backend for '%1$s' controller '%2$u'"
@@ -26853,26 +26851,26 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to get cmt scaling factor"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, fuzzy
 msgid "failed to get current time"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "failed to get domain '%1$s'"
-msgstr "não foi possível obter o domínio '%1$s'"
+msgstr "falhou ao obter o domínio '%1$s'"
 
 msgid "failed to get domain UUID"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "falhou ao obter o UUID do domínio"
 
 #, fuzzy
 msgid "failed to get domain xml"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to get emulator capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "failed to get features from '%1$s'"
@@ -26883,13 +26881,13 @@ msgid "failed to get free memory for NUMA node number: %1$lu"
 msgstr ""
 
 msgid "failed to get hostname"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "falhou ao obter o nome da máquina"
 
 msgid "failed to get hypervisor CPU model names"
 msgstr ""
 
 msgid "failed to get hypervisor type"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "falhou ao obter o tipo de hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to get interface '%1$s'"
@@ -26897,7 +26895,7 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "failed to get launch security policy"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "incapaz de  obter o tipo de hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to get list of %1$s interfaces on host"
@@ -26905,17 +26903,17 @@ msgstr "Não foi possível obter o estado da interface %s %s"
 
 #, c-format
 msgid "failed to get network '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "falhou ao obter a rede '%1$s'"
 
 msgid "failed to get network UUID"
-msgstr "não foi possível obter o UUID da rede"
+msgstr "falhou ao obter o UUID da rede"
 
 #, fuzzy, c-format
 msgid "failed to get network port '%1$s'"
 msgstr "não foi possível obter a rede '%1$s'"
 
 msgid "failed to get node information"
-msgstr "não foi possível obter a informação do nó"
+msgstr "falhou ao obter a informação do nó"
 
 #, fuzzy, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
@@ -26931,7 +26929,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to get parent pool"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 msgid "failed to get persistent definition object"
 msgstr ""
@@ -26942,11 +26940,11 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to get pool UUID"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "incapaz de  obter o UUID do domínio"
 
 #, fuzzy
 msgid "failed to get rdt event type"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "incapaz de  obter o tipo de hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to get secret '%1$s'"
@@ -26954,7 +26952,7 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "failed to get source from sourceList"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, c-format
 msgid "failed to get stat for '%1$s'"
@@ -26966,7 +26964,7 @@ msgstr "Não foi possível obter o estado da interface %s %s"
 
 #, fuzzy
 msgid "failed to get storage pool capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "failed to get stripe count of RBD image %1$s"
@@ -26974,15 +26972,15 @@ msgstr "não foi possível gravar o ficheiro de configuração: %1$s"
 
 #, fuzzy
 msgid "failed to get sysinfo"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy
 msgid "failed to get the daemon version"
-msgstr "não foi possível obter a versão da biblioteca"
+msgstr "incapaz de  obter a versão da biblioteca"
 
 #, fuzzy, c-format
 msgid "failed to get the features of RBD image %1$s"
-msgstr "não foi possível obter a versão do supervisor"
+msgstr "não foi possível obter a versão do hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to get the flags of RBD image %1$s"
@@ -26993,14 +26991,14 @@ msgid "failed to get the format of RBD image %1$s"
 msgstr "não foi possível obter a informação do nó"
 
 msgid "failed to get the hypervisor version"
-msgstr "não foi possível obter a versão do supervisor"
+msgstr "falhou ao obter a versão do hipervisor"
 
 #, fuzzy
 msgid "failed to get the key of the current session"
-msgstr "não foi possível obter a versão do supervisor"
+msgstr "incapaz de  obter a versão do hipervisor"
 
 msgid "failed to get the library version"
-msgstr "não foi possível obter a versão da biblioteca"
+msgstr "falhou ao obter a versão da biblioteca"
 
 #, c-format
 msgid "failed to get the stripe count of RBD image %1$s"
@@ -27008,7 +27006,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to get the stripe unit of RBD image %1$s"
-msgstr "não foi possível obter a versão do supervisor"
+msgstr "não foi possível obter a versão do hipervisor"
 
 #, fuzzy, c-format
 msgid "failed to get vol '%1$s'"
@@ -27020,7 +27018,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to initialize RADOS"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "incapaz de  serializar a Expr-S"
 
 #, fuzzy, c-format
 msgid "failed to initialize SASL library: %1$d (%2$s)"
@@ -27049,11 +27047,11 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to initialize libssh"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "incapaz de  serializar a Expr-S"
 
 #, fuzzy
 msgid "failed to initialize netcf"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "failed to iterate RBD image '%1$s'"
@@ -27072,7 +27070,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to lookup device in old map"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to lookup interface with MAC address '%1$s'"
@@ -27084,7 +27082,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to mark network %1$s as autostarted"
-msgstr "não foi possível marcar a rede %1$s como iniciada automaticamente"
+msgstr "falhou ao marcar a rede %1$s como iniciada automaticamente"
 
 #, fuzzy, c-format
 msgid "failed to mark pool %1$s as autostarted"
@@ -27116,7 +27114,7 @@ msgstr "não foi possível aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to open configuration file"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "failed to open configuration file %1$s"
@@ -27129,7 +27127,7 @@ msgid "failed to open domain master key file for write"
 msgstr ""
 
 msgid "failed to open file"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "falhou ao abrir o ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to open logfile %1$s"
@@ -27145,7 +27143,7 @@ msgstr "não foi possível aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to open secret file for write"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to open ssh channel: %1$s"
@@ -27161,8 +27159,8 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 msgid "failed to open the log file. check the log file path"
 msgstr ""
-"não é possível aceder ao ficheiro de registo. Verifique a localização do "
-"registo"
+"falhou ao abrir o ficheiro de registo. verifique o caminho para o ficheiro "
+"de registo"
 
 #, fuzzy, c-format
 msgid "failed to parse %1$s"
@@ -27185,7 +27183,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to parse agent timeout"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "failed to parse backing file location '%1$s'"
@@ -27196,11 +27194,11 @@ msgid "failed to parse block device '%1$s'"
 msgstr "não foi possível processar o ficheiro de configuração %1$s"
 
 msgid "failed to parse configuration file"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "falhou ao analisar o ficheiro de configuração"
 
 #, c-format
 msgid "failed to parse configuration file %1$s"
-msgstr "não foi possível processar o ficheiro de configuração %1$s"
+msgstr "falhou ao analisar o ficheiro de configuração %1$s"
 
 #, fuzzy, c-format
 msgid "failed to parse device weight: '%1$s'"
@@ -27216,7 +27214,7 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "failed to parse json"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "failed to parse multicast address from '%1$s'"
@@ -27224,7 +27222,7 @@ msgstr "Não foi possível associar o dispositivo a partir de %1$s"
 
 #, fuzzy
 msgid "failed to parse node name index"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 msgid "failed to parse original memlock size"
 msgstr ""
@@ -27238,7 +27236,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to parse qemu device list"
-msgstr "não foi possível processar o ficheiro de configuração %s"
+msgstr "incapaz de  processar o ficheiro de configuração %s"
 
 #, fuzzy, c-format
 msgid "failed to parse read_bps_device: '%1$s'"
@@ -27250,7 +27248,7 @@ msgstr "não foi possível processar o ficheiro de configuração %1$s"
 
 #, fuzzy
 msgid "failed to parse slirp helper list"
-msgstr "não foi possível processar o ficheiro de configuração %s"
+msgstr "incapaz de  processar o ficheiro de configuração %s"
 
 #, c-format
 msgid "failed to parse the AP Card from sysfs path: '%1$s'"
@@ -27294,7 +27292,7 @@ msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
 
 #, fuzzy
 msgid "failed to populate iothreadids"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to preserve fd %1$d"
@@ -27314,7 +27312,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to re-init netcf"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "failed to read '%1$s'"
@@ -27322,7 +27320,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to read AppArmor template"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "incapaz de  obter o tipo de hipervisor"
 
 msgid "failed to read CHSaveXMLHeader header"
 msgstr ""
@@ -27332,15 +27330,15 @@ msgid "failed to read XML"
 msgstr "Não foi possível criar o XML"
 
 msgid "failed to read configuration file"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "falhou ao ler o ficheiro de configuração"
 
 #, c-format
 msgid "failed to read configuration file %1$s"
-msgstr "não foi possível ler o ficheiro de configuração %1$s"
+msgstr "falhou ao ler o ficheiro de configuração %1$s"
 
 #, fuzzy
 msgid "failed to read cookie"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "failed to read directory '%1$s' in '%2$s'"
@@ -27348,15 +27346,15 @@ msgstr "não foi possível obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to read domain XML"
-msgstr "não foi possível obter o domínio '%s'"
+msgstr "incapaz de  obter o domínio '%s'"
 
 #, fuzzy
 msgid "failed to read from wakeup fd"
-msgstr "não foi possível ler o ficheiro de configuração %s"
+msgstr "incapaz de  ler o ficheiro de configuração %s"
 
 #, fuzzy
 msgid "failed to read libxl header"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "failed to read metadata length in '%1$s'"
@@ -27364,7 +27362,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "failed to read qemu header"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy, c-format
 msgid "failed to read temporary file created with template %1$s"
@@ -27455,7 +27453,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve credentials"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 msgid "failed to retrieve decision to accept host key"
 msgstr ""
@@ -27474,7 +27472,7 @@ msgid "failed to run apparmor_parser"
 msgstr ""
 
 msgid "failed to save content"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "falhou ao gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "failed to seek in log file %1$s"
@@ -27488,11 +27486,11 @@ msgid "failed to seek to end of %1$s"
 msgstr "não foi possível obter o domínio '%1$s'"
 
 msgid "failed to serialize S-Expr"
-msgstr "não foi possível serializar a Expr-S"
+msgstr "falhou ao serializar S-Expr"
 
 #, c-format
 msgid "failed to serialize S-Expr: %1$s"
-msgstr "não foi possível serializar a Expr-S: %1$s"
+msgstr "falhou ao serializar S-Expr: %1$s"
 
 #, fuzzy, c-format
 msgid "failed to set %1$s"
@@ -27523,19 +27521,19 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "failed to set guest cid"
-msgstr "não foi possível obter o URI"
+msgstr "incapaz de  obter o URI"
 
 #, fuzzy
 msgid "failed to setup stderr file handle"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to setup stdin file handle"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, fuzzy
 msgid "failed to setup stdout file handle"
-msgstr "não foi possível processar o ficheiro de configuração %s"
+msgstr "incapaz de  processar o ficheiro de configuração %s"
 
 msgid "failed to shutdown guest VM"
 msgstr ""
@@ -27546,7 +27544,7 @@ msgstr "não foi possível aceder ao ficheiro"
 
 #, fuzzy
 msgid "failed to stat the RADOS cluster"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "failed to stat the RADOS pool '%1$s'"
@@ -27572,7 +27570,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to take screenshot"
-msgstr "não foi possível gravar o conteúdo"
+msgstr "incapaz de  gravar o conteúdo"
 
 #, fuzzy, c-format
 msgid "failed to truncate %1$s"
@@ -27591,7 +27589,7 @@ msgstr ""
 
 #, c-format
 msgid "failed to unmark network %1$s as autostarted"
-msgstr "não foi possível desmarcar a rede %1$s como iniciada automaticamente"
+msgstr "falhou ao desmarcar a rede %1$s como iniciada automaticamente"
 
 #, fuzzy, c-format
 msgid "failed to unmark pool %1$s as autostarted"
@@ -27633,7 +27631,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to wait for domain condition"
-msgstr "não foi possível obter a informação do nó"
+msgstr "incapaz de  obter a informação do nó"
 
 #, fuzzy, c-format
 msgid "failed to wait for file '%1$s' to appear"
@@ -27641,11 +27639,11 @@ msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
 
 #, fuzzy
 msgid "failed to wait on condition"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 #, fuzzy
 msgid "failed to wakeup migration tunnel"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "failed to wipe RBD image %1$s"
@@ -27656,11 +27654,11 @@ msgid "failed to wrap arguments '%1$s' into a QMP command wrapper"
 msgstr ""
 
 msgid "failed to write configuration file"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "falhou ao gravar o ficheiro de configuração"
 
 #, c-format
 msgid "failed to write configuration file: %1$s"
-msgstr "não foi possível gravar o ficheiro de configuração: %1$s"
+msgstr "falhou ao gravar o ficheiro de configuração: %1$s"
 
 #, fuzzy, c-format
 msgid "failed to write cookie to '%1$s'"
@@ -27692,7 +27690,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to write master key file for domain"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "failed to write padding to '%1$s'"
@@ -27703,10 +27701,10 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to write secret file"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 msgid "failed to write the log file"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "falhou ao gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "failed to write to LUN %1$d: %2$s"
@@ -27714,7 +27712,7 @@ msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
 
 #, fuzzy
 msgid "failed to write to profile"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, fuzzy, c-format
 msgid "failed writing to file '%1$s'"
@@ -27782,14 +27780,14 @@ msgid "file containing an XML description of the device"
 msgstr "ficheiro que contém uma descrição em XML do domínio"
 
 msgid "file containing an XML domain description"
-msgstr "ficheiro que contém uma descrição em XML do domínio"
+msgstr "ficheiro que contém uma descrição do domínio em XML"
 
 #, fuzzy
 msgid "file containing an XML interface description"
 msgstr "ficheiro que contém uma descrição em XML da rede"
 
 msgid "file containing an XML network description"
-msgstr "ficheiro que contém uma descrição em XML da rede"
+msgstr "ficheiro que contém uma descrição da rede em XML"
 
 #, fuzzy
 msgid "file containing an XML network filter binding description"
@@ -27892,7 +27890,7 @@ msgstr "nome, 'id' ou 'uuid' do domínio"
 
 #, fuzzy
 msgid "filter by event name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 msgid "filter by external snapshots"
 msgstr ""
@@ -27926,7 +27924,7 @@ msgstr ""
 
 #, fuzzy
 msgid "filter has no name"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 #, c-format
 msgid "filter with same UUID but different name ('%1$s') already exists"
@@ -28127,7 +28125,7 @@ msgid "get arp table not implemented on this platform"
 msgstr ""
 
 msgid "get device block stats for a domain"
-msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
+msgstr "obter as estatísticas do dispositivo de bloco para um domínio"
 
 msgid "get inactive rather than running configuration"
 msgstr ""
@@ -28146,7 +28144,7 @@ msgid "get memory statistics for a domain"
 msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
 
 msgid "get network interface stats for a domain"
-msgstr "obter a interface de rede de um domínio"
+msgstr "obter as estatísticas de interface de rede para um domínio"
 
 msgid "get number of currently active vcpus"
 msgstr ""
@@ -28231,7 +28229,7 @@ msgid ""
 msgstr ""
 
 msgid "gracefully shutdown a domain"
-msgstr "terminar um domínio ordeiramente"
+msgstr "encerrar um domínio graciosamente"
 
 msgid "granularity must be power of 2"
 msgstr ""
@@ -28387,7 +28385,7 @@ msgstr ""
 
 #, fuzzy
 msgid "handler failed to wait on condition"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "incapaz de  gravar o ficheiro de configuração"
 
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
@@ -28609,11 +28607,11 @@ msgid "hypervisor"
 msgstr ""
 
 msgid "hypervisor connection URI"
-msgstr "URI de ligação ao supervisor"
+msgstr "URI de ligação ao hipervisor"
 
 #, fuzzy
 msgid "hypervisor connection not open"
-msgstr "URI de ligação ao supervisor"
+msgstr "URI de ligação ao hipervisor"
 
 msgid "hypervisor feature autodetection override"
 msgstr ""
@@ -29886,7 +29884,7 @@ msgstr ""
 
 #, fuzzy
 msgid "lease file write failed"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
 
 msgid "leave the guest paused after creation"
 msgstr ""
@@ -30003,7 +30001,7 @@ msgstr "não foi possível obter o domínio '%1$s'"
 
 #, fuzzy
 msgid "libxenlight failed to detach network device"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 #, c-format
 msgid "libxenlight failed to detach pci device %1$04x:%2$02x:%3$02x.%4$d"
@@ -30210,11 +30208,11 @@ msgstr "listar as redes"
 
 #, fuzzy
 msgid "list networks with autostart disabled"
-msgstr "não foi possível marcar a rede %s como iniciada automaticamente"
+msgstr "incapaz de  marcar a rede %s como iniciada automaticamente"
 
 #, fuzzy
 msgid "list networks with autostart enabled"
-msgstr "não foi possível marcar a rede %s como iniciada automaticamente"
+msgstr "incapaz de  marcar a rede %s como iniciada automaticamente"
 
 msgid "list non-ephemeral secrets"
 msgstr ""
@@ -31011,7 +31009,7 @@ msgid "migration URI is not supported by tunnelled migration"
 msgstr ""
 
 msgid "migration URI, usually can be omitted"
-msgstr "O URI da migração, que poderá estar em branco"
+msgstr "O URI da migração, geralmente pode ser omitido"
 
 msgid "migration bandwidth limit in MiB/s"
 msgstr ""
@@ -31151,7 +31149,7 @@ msgid "mismatched header magic"
 msgstr ""
 
 msgid "missing \""
-msgstr "falta o \""
+msgstr "em falta \""
 
 #, c-format
 msgid "missing %1$s in <virtualport type='%2$s'>"
@@ -31460,7 +31458,7 @@ msgstr "falta a informação dos dispositivos"
 
 #, c-format
 msgid "missing devices information for %1$s"
-msgstr "falta a informação dos dispositivos em %1$s"
+msgstr "falta a informação dos dispositivos para %1$s"
 
 #, fuzzy, c-format
 msgid "missing devno value for '%1$s'"
@@ -31621,7 +31619,7 @@ msgid "missing job chain data"
 msgstr ""
 
 msgid "missing kernel information"
-msgstr "falta a informação do 'kernel'"
+msgstr "falta a informação do kernel"
 
 #, fuzzy, c-format
 msgid "missing kernel information: %1$s"
@@ -31703,7 +31701,7 @@ msgstr "falta a informação do sistema operativo"
 
 #, c-format
 msgid "missing operating system information for %1$s"
-msgstr "falta a informação do sistema operativo em %1$s"
+msgstr "falta a informação do sistema operativo para %1$s"
 
 #, c-format
 msgid "missing or broken bitmap '%1$s' for disk '%2$s'"
@@ -31901,11 +31899,11 @@ msgid "missing source host"
 msgstr "falta a informação de origem do dispositivo"
 
 msgid "missing source information for device"
-msgstr "falta a informação de origem do dispositivo"
+msgstr "falta a informação de fonte do dispositivo"
 
 #, c-format
 msgid "missing source information for device %1$s"
-msgstr "falta a informação de origem do dispositivo %1$s"
+msgstr "falta a informação de fonte do dispositivo %1$s"
 
 #, fuzzy
 msgid "missing source path"
@@ -31969,11 +31967,11 @@ msgid ""
 msgstr ""
 
 msgid "missing target information for device"
-msgstr "falta a informação do destino do dispositivo"
+msgstr "falta a informação de alvo para dispositivo"
 
 #, c-format
 msgid "missing target information for device %1$s"
-msgstr "falta a informação do destino do dispositivo %1$s"
+msgstr "falta a informação de alvo para dispositivo %1$s"
 
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
@@ -32112,7 +32110,7 @@ msgstr ""
 
 #, fuzzy
 msgid "modify/get persistent configuration"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 msgid "modify/get running state"
 msgstr ""
@@ -32622,7 +32620,7 @@ msgstr ""
 
 #, fuzzy
 msgid "new xml too large to fit in file"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 msgid "nfsvers value for NFS pool mount option"
 msgstr ""
@@ -33415,7 +33413,7 @@ msgid "occupied"
 msgstr ""
 
 msgid "offline"
-msgstr "inacessível"
+msgstr "offline"
 
 #, fuzzy
 msgid "offline migration"
@@ -33752,7 +33750,7 @@ msgid "out of bounds index - count %1$zu at %2$zu"
 msgstr ""
 
 msgid "out of memory"
-msgstr "sem memória"
+msgstr "memória esgotada"
 
 #, fuzzy, c-format
 msgid "out of memory: %1$s"
@@ -33915,7 +33913,7 @@ msgid "parent '%1$s' specified for vHBA does not exist"
 msgstr ""
 
 msgid "parser error"
-msgstr "erro de processamento"
+msgstr "erro de análise"
 
 msgid "partial string to autocomplete"
 msgstr ""
@@ -34357,7 +34355,7 @@ msgid "print domain's time in human readable form"
 msgstr ""
 
 msgid "print help"
-msgstr "imprimir a ajuda"
+msgstr "escreve a ajuda"
 
 msgid "print lease info for a given network"
 msgstr ""
@@ -34370,24 +34368,24 @@ msgstr ""
 
 #, fuzzy
 msgid "print the admin server URI"
-msgstr "imprimir o URI canónico do supervisor"
+msgstr "imprimir o URI canónico do hipervisor"
 
 msgid "print the current directory"
 msgstr ""
 
 #, fuzzy
 msgid "print the domain's hostname"
-msgstr "imprimir o nome da máquina supervisora"
+msgstr "imprimir o nome da máquina hipervisora"
 
 msgid "print the hypervisor canonical URI"
-msgstr "imprimir o URI canónico do supervisor"
+msgstr "escreve o URI canônico do hipervisor"
 
 msgid "print the hypervisor hostname"
-msgstr "imprimir o nome da máquina supervisora"
+msgstr "escreve o nome de máquina do hipervisor"
 
 #, fuzzy
 msgid "print the hypervisor sysinfo"
-msgstr "imprimir o nome da máquina supervisora"
+msgstr "imprimir o nome da máquina hipervisora"
 
 msgid "print the raw data returned by libvirt"
 msgstr ""
@@ -35069,7 +35067,7 @@ msgstr ""
 
 #, fuzzy
 msgid "report hostname"
-msgstr "não foi possível obter o nome da máquina"
+msgstr "incapaz de  obter o nome da máquina"
 
 msgid "report hypervisor-specific statistics"
 msgstr ""
@@ -35216,7 +35214,7 @@ msgid "resource relabeling is not compatible with 'none' label type"
 msgstr ""
 
 msgid "restore a domain from a saved state in a file"
-msgstr "repor um domínio a partir de um estado gravado em ficheiro"
+msgstr "restaurar um domínio a partir de um estado gravado em ficheiro"
 
 #, fuzzy
 msgid "restore domain into paused state"
@@ -35438,7 +35436,7 @@ msgid "screenshot of a current domain console"
 msgstr ""
 
 msgid "script used to bridge network interface"
-msgstr "programa usado para interligar a interface de rede"
+msgstr "script usado para fazer ponte a interface de rede"
 
 #, fuzzy
 msgid "scripts are not supported on LXC network interfaces"
@@ -35841,10 +35839,10 @@ msgid "show version"
 msgstr "mostrar a versão"
 
 msgid "show/set scheduler parameters"
-msgstr "mostrar/alterar os parâmetros de escalonamento"
+msgstr "mostrar/definir os parâmetros de agendamento"
 
 msgid "shut off"
-msgstr "desligado"
+msgstr "desligar"
 
 #, fuzzy
 msgid "shutdown"
@@ -35995,7 +35993,7 @@ msgid "source of disk device or name of network disk"
 msgstr ""
 
 msgid "source of network interface"
-msgstr "origem da interface de rede"
+msgstr "fonte da interface de rede"
 
 #, fuzzy
 msgid "source of the media"
@@ -36186,7 +36184,7 @@ msgstr ""
 
 #, fuzzy
 msgid "storage pool capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 msgid "storage pool does not support changing of volume capacity"
 msgstr ""
@@ -36436,7 +36434,7 @@ msgid "target dev must be supplied when managed='no'"
 msgstr ""
 
 msgid "target device type"
-msgstr "tipo do dispositivo de destino"
+msgstr "tipo de dispositivo alvo"
 
 msgid "target for underlying storage"
 msgstr ""
@@ -36457,10 +36455,10 @@ msgid "target must be 0 for sata controller"
 msgstr ""
 
 msgid "target network name"
-msgstr "nome da rede de destino"
+msgstr "nome da rede alvo"
 
 msgid "target of disk device"
-msgstr "destino do dispositivo de disco"
+msgstr "alvo do dispositivo de disco"
 
 #, c-format
 msgid "target pci device %1$04x:%2$02x:%3$02x.%4$d already exists"
@@ -36515,7 +36513,7 @@ msgid "test hypervisor does not support device assignment mode '%1$s'"
 msgstr ""
 
 msgid "testOpen: supply a path or use test:///default"
-msgstr "testOpen: Indique uma localização ou use a 'test:///default'"
+msgstr "testOpen: Indique um caminho ou use test:///default"
 
 #, c-format
 msgid "the '%1$s' network backend is not supported with this QEMU binary"
@@ -36622,7 +36620,7 @@ msgid "the signal number or name"
 msgstr ""
 
 msgid "the state to restore"
-msgstr "o estado a repor"
+msgstr "o estado a restaurar"
 
 msgid "the time (in milliseconds) how long the keys will be held"
 msgstr ""
@@ -37341,7 +37339,7 @@ msgstr "não foi possível aceder ao ficheiro"
 
 #, fuzzy
 msgid "unable to close pipe"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 #, fuzzy, c-format
 msgid "unable to connect to server at '%1$s:%2$s'"
@@ -37500,15 +37498,15 @@ msgstr ""
 
 #, fuzzy
 msgid "unable to get monitor count"
-msgstr "não foi possível obter a rede '%s'"
+msgstr "incapaz de  obter a rede '%s'"
 
 #, fuzzy
 msgid "unable to get node capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy
 msgid "unable to get numa affinity"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 msgid "unable to get screen resolution"
 msgstr ""
@@ -37567,7 +37565,7 @@ msgstr ""
 
 #, fuzzy
 msgid "unable to open stream"
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "incapaz de  aceder ao ficheiro"
 
 msgid "unable to open vhost-vsock device"
 msgstr ""
@@ -37619,7 +37617,7 @@ msgstr ""
 
 #, fuzzy
 msgid "unable to parse node capabilities"
-msgstr "não foi possível obter as capacidades"
+msgstr "incapaz de  obter as capacidades"
 
 #, fuzzy, c-format
 msgid "unable to parse numa node id: %1$s"
@@ -37668,7 +37666,7 @@ msgstr "Não foi possível remover a associação do dispositivo de %1$s"
 
 #, fuzzy
 msgid "unable to read vmware log file"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, c-format
 msgid "unable to read: %1$s"
@@ -37686,7 +37684,7 @@ msgstr "Não foi possível prosseguir com o domínio %1$s"
 
 #, fuzzy
 msgid "unable to restore position in file"
-msgstr "não foi possível processar o ficheiro de configuração"
+msgstr "incapaz de  processar o ficheiro de configuração"
 
 #, c-format
 msgid "unable to save metadata for checkpoint %1$s"
@@ -37824,7 +37822,7 @@ msgstr "não foi possível obter a rede '%1$s'"
 
 #, fuzzy
 msgid "unable to write to child input"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "incapaz de  gravar o ficheiro de registo"
 
 #, c-format
 msgid "unable write to %1$s"
@@ -37983,7 +37981,7 @@ msgstr ""
 
 #, c-format
 msgid "unexpected data '%1$s'"
-msgstr "dados '%1$s' inesperados"
+msgstr "dados inesperados '%1$s'"
 
 #, fuzzy, c-format
 msgid "unexpected disk address type %1$s"
@@ -38869,7 +38867,7 @@ msgstr ""
 
 #, fuzzy
 msgid "unsupported configuration"
-msgstr "não foi possível ler o ficheiro de configuração"
+msgstr "incapaz de  ler o ficheiro de configuração"
 
 #, fuzzy, c-format
 msgid "unsupported configuration: %1$s"
@@ -39056,7 +39054,7 @@ msgstr "a opção '-%c' não é suportada. Veja o --help."
 
 #, c-format
 msgid "unsupported option '-%1$c'. See --help."
-msgstr "a opção '-%1$c' não é suportada. Veja o --help."
+msgstr "a opção '-%1$c' não é suportada. Veja --help."
 
 #, c-format
 msgid "unsupported pit tickpolicy '%1$s'"
@@ -40036,7 +40034,7 @@ msgid "wakeup a domain from pmsuspended state"
 msgstr "repor um domínio a partir de um estado gravado em ficheiro"
 
 msgid "warning"
-msgstr "atenção"
+msgstr "aviso"
 
 #, c-format
 msgid "warning: %1$s\n"
@@ -40053,7 +40051,7 @@ msgid "webSocket"
 msgstr ""
 
 msgid "weight for XEN_CREDIT"
-msgstr "peso no XEN_CREDIT"
+msgstr "peso para XEN_CREDIT"
 
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
@@ -40074,7 +40072,7 @@ msgid ""
 msgstr ""
 
 msgid "where to dump the core"
-msgstr "onde gravar o 'core'"
+msgstr "onde despejar o núcleo"
 
 msgid "where to save the data"
 msgstr "onde gravar os dados"
