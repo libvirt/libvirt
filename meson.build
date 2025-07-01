@@ -2035,7 +2035,18 @@ elif get_option('userfaultfd_sysctl').enabled()
   error('userfaultfd_sysctl option requires sysctl_config to be enabled')
 endif
 
-conf.set_quoted('TLS_PRIORITY', get_option('tls_priority'))
+prio = get_option('tls_priority')
+if prio == 'auto'
+    # If local OS has 'crypto-policies' then default to that
+    policy = '/etc/crypto-policies/config'
+    if get_option('system') and \
+       run_command('test', '-f', policy, check: false).returncode() == 0
+        prio = '@LIBVIRT,SYSTEM'
+    else
+        prio = 'NORMAL'
+    endif
+endif
+conf.set_quoted('TLS_PRIORITY', prio)
 
 
 # test options
