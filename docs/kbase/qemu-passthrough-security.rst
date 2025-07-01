@@ -139,7 +139,7 @@ As a last resort it is possible to disable security protection host wide which
 will affect all virtual machines. These settings are all made in
 ``/etc/libvirt/qemu.conf``
 
-* SELinux - set ``security_default_confied = 0`` to make QEMU run unconfined by
+* SELinux - set ``security_default_confined = 0`` to make QEMU run unconfined by
   default, while still allowing explicit opt-in to SELinux for VMs.
 
 * DAC - set ``user = root`` and ``group = root`` to make QEMU run as the root
