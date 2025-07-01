@@ -14552,8 +14552,11 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 }
 
 static int
-qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
-                      unsigned long bandwidth, unsigned int flags)
+qemuDomainBlockRebase(virDomainPtr dom,
+                      const char *path,
+                      const char *base,
+                      unsigned long bandwidth,
+                      unsigned int flags)
 {
     virDomainObj *vm;
     int ret = -1;
@@ -14625,8 +14628,11 @@ qemuDomainBlockRebase(virDomainPtr dom, const char *path, const char *base,
 
 
 static int
-qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
-                    virTypedParameterPtr params, int nparams,
+qemuDomainBlockCopy(virDomainPtr dom,
+                    const char *disk,
+                    const char *destxml,
+                    virTypedParameterPtr params,
+                    int nparams,
                     unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
@@ -14703,7 +14709,9 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
 
 
 static int
-qemuDomainBlockPull(virDomainPtr dom, const char *path, unsigned long bandwidth,
+qemuDomainBlockPull(virDomainPtr dom,
+                    const char *path,
+                    unsigned long bandwidth,
                     unsigned int flags)
 {
     virDomainObj *vm;
