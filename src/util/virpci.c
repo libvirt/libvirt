@@ -2870,6 +2870,9 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
         }
     }
 
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("No virtual function index found for '%1$s'"),
+                   pf_sysfs_device_link);
     return -1;
 }
 
