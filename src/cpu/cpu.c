@@ -581,7 +581,7 @@ virCPUBaseline(virArch arch,
               virArchToString(arch), ncpus, models, features, migratable);
     if (cpus) {
         for (i = 0; i < ncpus; i++)
-            VIR_DEBUG("cpus[%zu]=%p", i, cpus[i]);
+            VIR_DEBUG("cpus[%zu]=%p (%s)", i, cpus[i], NULLSTR(cpus[i]->model));
     }
     if (models) {
         for (i = 0; i < models->nmodels; i++)
