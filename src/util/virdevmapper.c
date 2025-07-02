@@ -164,7 +164,7 @@ virDMOpen(void)
 
 
 static char *
-virDMSanitizepath(const char *path)
+virDMGetDeviceName(const char *path)
 {
     g_autofree char *dmDirPath = NULL;
     struct dirent *ent = NULL;
@@ -205,7 +205,7 @@ virDMSanitizepath(const char *path)
 
         if (stat(tmp, &sb[1]) == 0 &&
             sb[0].st_rdev == sb[1].st_rdev) {
-            return g_steal_pointer(&tmp);
+            return g_strdup(ent->d_name);
         }
     }
 
@@ -219,7 +219,7 @@ virDevMapperGetTargetsImpl(int controlFD,
                            GSList **devPaths,
                            unsigned int ttl)
 {
-    g_autofree char *sanitizedPath = NULL;
+    g_autofree char *deviceName = NULL;
     g_autofree char *buf = NULL;
     struct dm_ioctl dm = { 0 };
     struct dm_target_deps *deps = NULL;
@@ -233,10 +233,10 @@ virDevMapperGetTargetsImpl(int controlFD,
     if (!virIsDevMapperDevice(path))
         return 0;
 
-    if (!(sanitizedPath = virDMSanitizepath(path)))
+    if (!(deviceName = virDMGetDeviceName(path)))
         return 0;
 
-    if (virStrcpy(dm.name, sanitizedPath, DM_NAME_LEN) < 0) {
+    if (virStrcpy(dm.name, deviceName, DM_NAME_LEN) < 0) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("Resolved device mapper name too long"));
         return -1;
