@@ -180,7 +180,7 @@ virQEMUQAPISchemaTraverseObject(virJSONValue *cur,
     } else {
         obj = virQEMUQAPISchemaObjectGet("members", query, "name", cur);
 
-        if (modifier == '*' &&
+        if (modifier == '*' && obj &&
             !virJSONValueObjectHasKey(obj, "default"))
             return 0;
     }
