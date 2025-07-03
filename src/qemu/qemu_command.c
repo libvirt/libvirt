@@ -3079,11 +3079,6 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
             /* skip USB controllers with type none*/
             if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
                 continue;
-
-            /* skip 'default' controllers on s390 for legacy reasons */
-            if (ARCH_IS_S390(def->os.arch) &&
-                cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT)
-                continue;
         }
 
         if (qemuBuildControllerDevProps(def, cont, qemuCaps, &props) < 0)
