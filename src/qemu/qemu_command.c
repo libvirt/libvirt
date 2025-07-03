@@ -3036,6 +3036,11 @@ qemuBuildSkipController(const virDomainControllerDef *controller,
         return true;
     }
 
+    /* skip USB controllers with type none */
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+        return true;
+
     return false;
 }
 
@@ -3073,13 +3078,6 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
 
         if (qemuBuildSkipController(cont, def))
             continue;
-
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
-
-            /* skip USB controllers with type none*/
-            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
-                continue;
-        }
 
         if (qemuBuildControllerDevProps(def, cont, qemuCaps, &props) < 0)
             return -1;
