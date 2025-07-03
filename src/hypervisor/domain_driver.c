@@ -779,6 +779,10 @@ virDomainDriverAutoShutdownDoSave(virDomainPtr *domains,
     }
 
     for (i = 0; i < numDomains; i++) {
+        if ((transient[i] && cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_PERSISTENT) ||
+            (!transient[i] && cfg->trySave == VIR_DOMAIN_DRIVER_AUTO_SHUTDOWN_SCOPE_TRANSIENT))
+            continue;
+
         virSystemdNotifyStatus("Saving '%s' (%zu of %zu)",
                                virDomainGetName(domains[i]), i + 1, numDomains);
         VIR_INFO("Saving '%s'", virDomainGetName(domains[i]));
