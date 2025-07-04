@@ -17,6 +17,13 @@ v11.6.0 (unreleased)
 
 * **New features**
 
+  * Introduce VIR_CONNECT_BASELINE_CPU_IGNORE_HOST flag
+
+    This new flag for virConnectBaselineHypervisorCPU can be used for computing
+    a baseline CPU on any host. Without the VIR_CONNECT_BASELINE_CPU_IGNORE_HOST
+    flag the baseline API would return reasonable output only when run on one of
+    the hosts that the input CPU definitions were collected from.
+
 * **Improvements**
 
   * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
@@ -24,6 +31,12 @@ v11.6.0 (unreleased)
     The previous default of ``lsilogic`` is unsupported by modern operating
     systems. ``virtio-scsi`` is a more suitable default for ARM and RISC-V
     ``virt`` machine types.
+
+  * Clarify documentation of virConnectBaselineHypervisorCPU
+
+    The documentation makes it clear virConnectBaselineHypervisorCPU is
+    supposed to be called on one of the hosts represented in the input CPU
+    definitions. Otherwise the API will give unexpected results.
 
 * **Bug fixes**
 
