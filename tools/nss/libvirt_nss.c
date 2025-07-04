@@ -174,7 +174,7 @@ findLease(const char *name,
 #endif
 
     if ((now = time(NULL)) == (time_t)-1) {
-        DEBUG("Failed to get time");
+        ERROR("Failed to get time");
         goto cleanup;
     }
 
