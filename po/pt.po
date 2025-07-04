@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-03 23:11+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-03 23:12+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -22938,7 +22938,7 @@ msgid "cannot read beginning of file '%1$s'"
 msgstr ""
 
 msgid "cannot read cputime for domain"
-msgstr "Incapaz de ler o cputime para domínio"
+msgstr "incapaz de ler o cputime para domínio"
 
 #, c-format
 msgid "cannot read cputime for domain %1$d"
@@ -25402,7 +25402,7 @@ msgid "domain is not in suspend state"
 msgstr "Domínio %s suspenso\n"
 
 msgid "domain is not running"
-msgstr "Domínio não está em execução"
+msgstr "domínio não está em execução"
 
 msgid "domain is not running on destination host"
 msgstr ""
@@ -35700,10 +35700,10 @@ msgid "shut off"
 msgstr "desligar"
 
 msgid "shutdown"
-msgstr "Encerrar"
+msgstr "encerrar"
 
 msgid "shutdown mode: acpi|agent|initctl|signal|paravirt"
-msgstr ""
+msgstr "modo de encerramento: acpi|agent|initctl|signal|paravirt"
 
 msgid "shutting down"
 msgstr "a encerrar"
