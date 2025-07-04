@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2025-07-03 23:10+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -10767,7 +10767,7 @@ msgid "List network filters"
 msgstr "Lista filtros de rede"
 
 msgid "List network ports"
-msgstr ""
+msgstr "lista portos de rede"
 
 msgid "List networks"
 msgstr "Listar redes"
@@ -22938,7 +22938,7 @@ msgid "cannot read beginning of file '%1$s'"
 msgstr ""
 
 msgid "cannot read cputime for domain"
-msgstr ""
+msgstr "Incapaz de ler o cputime para domínio"
 
 #, c-format
 msgid "cannot read cputime for domain %1$d"
