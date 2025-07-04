@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-01 23:54+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-02 06:46+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -10793,7 +10793,7 @@ msgid "List network ports"
 msgstr ""
 
 msgid "List networks"
-msgstr "listar as redes"
+msgstr "Listar redes"
 
 msgid "List node devices"
 msgstr ""
@@ -10860,7 +10860,7 @@ msgid "Load the 'vhost_net' module to improve performance of virtio networking"
 msgstr ""
 
 msgid "Location:"
-msgstr ""
+msgstr "Localização:"
 
 #, c-format
 msgid "Lockspace for path %1$s already exists"
@@ -10909,10 +10909,10 @@ msgid "MAC"
 msgstr ""
 
 msgid "MAC Address"
-msgstr ""
+msgstr "Endereço MAC"
 
 msgid "MAC address"
-msgstr ""
+msgstr "Endereço MAC"
 
 #, c-format
 msgid "MCS level for existing domain label %1$s already reserved"
@@ -11122,9 +11122,8 @@ msgstr ""
 msgid "Mediated host device assignment requires VFIO support"
 msgstr ""
 
-#, fuzzy
 msgid "Memory"
-msgstr "Memória máx:"
+msgstr "Memória"
 
 #, c-format
 msgid "Memory '%1$llu' must be less than %2$llu"
@@ -11201,7 +11200,7 @@ msgid "Metadata removed"
 msgstr ""
 
 msgid "Metadata:"
-msgstr "metadados"
+msgstr "Metadados:"
 
 msgid "MethodFault is missing 'type' property"
 msgstr ""
@@ -11220,7 +11219,7 @@ msgstr ""
 "tempo-real."
 
 msgid "Migrated"
-msgstr ""
+msgstr "Migrado"
 
 msgid "Migrating domain requires authorization"
 msgstr ""
@@ -11885,7 +11884,7 @@ msgid "Missing vendor string for CPU vendor %1$s"
 msgstr "falta a informação de origem do dispositivo %1$s"
 
 msgid "Model"
-msgstr ""
+msgstr "Modelo"
 
 #, c-format
 msgid "Model %1$s too big for destination"
@@ -11911,7 +11910,7 @@ msgid "Mount namespace support is required"
 msgstr ""
 
 msgid "Mountpoint"
-msgstr ""
+msgstr "Ponto de Montagem"
 
 msgid "Multi-head video devices are unsupported"
 msgstr ""
@@ -11980,7 +11979,7 @@ msgid "Must use --rename or --clone to change %1$s to %2$s"
 msgstr ""
 
 msgid "N/A"
-msgstr ""
+msgstr "N/D"
 
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
@@ -11995,7 +11994,7 @@ msgid "NIC model is not supported"
 msgstr ""
 
 msgid "NOTE"
-msgstr ""
+msgstr "NOTA"
 
 msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
@@ -12226,9 +12225,9 @@ msgstr "incapaz de  gravar o ficheiro de configuração\n"
 msgid "Network filter %1$s XML configuration not changed.\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter %1$s defined from %2$s\n"
-msgstr "Rede %1$s definida a partir do %2$s\n"
+msgstr "Filtro de rede %1$s definido a partir de %2$s\n"
 
 #, fuzzy, c-format
 msgid "Network filter %1$s undefined\n"
@@ -12279,9 +12278,9 @@ msgstr "A rede não foi encontrada"
 msgid "Network not found: %1$s"
 msgstr "A rede não foi encontrada: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network port %1$s created from %2$s\n"
-msgstr "A rede %1$s foi criada a partir do %2$s\n"
+msgstr "Porto de rede %1$s criado a partir de %2$s\n"
 
 #, fuzzy, c-format
 msgid "Network port %1$s deleted\n"
@@ -12745,7 +12744,7 @@ msgid "Non-endpoint PCI devices cannot be assigned to guests"
 msgstr ""
 
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 msgid ""
 "None of the requested authentication methods are supported by the server"
@@ -12799,7 +12798,7 @@ msgid "Not shutting down transient guests on URI: $uri: "
 msgstr ""
 
 msgid "Not supported"
-msgstr ""
+msgstr "Não suportado"
 
 msgid "Not supported on this platform"
 msgstr ""
@@ -13173,7 +13172,7 @@ msgid "Options --%1$s and --%2$s are mutually exclusive"
 msgstr ""
 
 msgid "Options:"
-msgstr ""
+msgstr "Opções:"
 
 msgid "Other tasks are pending for this domain"
 msgstr ""
@@ -13182,9 +13181,8 @@ msgstr ""
 msgid "Our own certificate %1$s failed validation against %2$s: %3$s"
 msgstr ""
 
-#, fuzzy
 msgid "Out of memory"
-msgstr "sem memória"
+msgstr "Memória esgotada"
 
 #, c-format
 msgid "Out of space while reading log output: %1$s"
@@ -13195,21 +13193,20 @@ msgid "Outgoing migration"
 msgstr "migração em tempo-real"
 
 msgid "Output a secret value"
-msgstr ""
+msgstr "Devolve um valor secreto"
 
 msgid "Output a secret value to stdout."
-msgstr ""
+msgstr "Devolve um valor secreto para a saída standard."
 
-#, fuzzy
 msgid "Output attributes of a secret as an XML dump to stdout."
-msgstr "Envia a informação do domínio em XML para o 'stdout'."
+msgstr ""
+"Devolve atributos de um segredo numa descarga XML para a saída standard."
 
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Escreve o endereço IP e número de porto para o visor do VNC."
 
-#, fuzzy
 msgid "Output the IP address and port number for the graphical display."
-msgstr "Devolve o endereço IP e o número de porto da consola de VNC."
+msgstr "Devolve o endereço IP e número de porto para o mostrador gráfico."
 
 msgid "Output the device for the TTY console."
 msgstr "Escreve o dispositivo para a consola TTY."
@@ -13217,33 +13214,33 @@ msgstr "Escreve o dispositivo para a consola TTY."
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Escreve a informação do domínio como um despejo XML para o stdout."
 
-#, fuzzy
 msgid "Output the network filter information as an XML dump to stdout."
-msgstr "Envia a informação da rede em XML para o 'stdout'."
+msgstr ""
+"Devolve informação do filtro de rede numa descarga XML para a saída standard."
 
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Escreve a informação da rede como um despejo XML para o stdout."
 
-#, fuzzy
 msgid "Output the network port information as an XML dump to stdout."
-msgstr "Envia a informação da rede em XML para o 'stdout'."
+msgstr ""
+"Devolve informação do porto de rede numa descarga XML para a saída standard."
 
-#, fuzzy
 msgid "Output the node device details as an XML dump to stdout."
-msgstr "Envia a informação da rede em XML para o 'stdout'."
+msgstr ""
+"Devolve detalhes do dispositivo de nó numa descarga XML para a saída "
+"standard."
 
-#, fuzzy
 msgid ""
 "Output the physical host interface information as an XML dump to stdout."
-msgstr "Envia a informação do domínio em XML para o 'stdout'."
+msgstr ""
+"Devolve informação da interface da máquina física numa descarga XML para a "
+"saída standard."
 
-#, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
-msgstr "Envia a informação do domínio em XML para o 'stdout'."
+msgstr "Devolve informação do pool numa descarga XML para a saída standard."
 
-#, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
-msgstr "Envia a informação do domínio em XML para o 'stdout'."
+msgstr "Devolve informação do volume numa descarga XML para a saída standard."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr ""
@@ -13349,12 +13346,11 @@ msgstr ""
 msgid "PVH guest os type not supported"
 msgstr ""
 
-#, fuzzy
 msgid "Page size:"
-msgstr "Tamanho da memória:"
+msgstr "Tamanho da página:"
 
 msgid "Panicked"
-msgstr ""
+msgstr "Em pânico"
 
 msgid "Parallel devices are not supported by libxl"
 msgstr ""
@@ -13378,7 +13374,7 @@ msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr ""
 
 msgid "Parent"
-msgstr ""
+msgstr "Pai"
 
 #, c-format
 msgid ""
@@ -13394,7 +13390,7 @@ msgid "Parent device's JSON object data is not an array"
 msgstr ""
 
 msgid "Parent:"
-msgstr ""
+msgstr "Pai:"
 
 #, c-format
 msgid "Parsed JSON reply '%1$s' isn't an object"
@@ -13419,7 +13415,7 @@ msgid "Password set successfully for %1$s in %2$s"
 msgstr ""
 
 msgid "Path"
-msgstr ""
+msgstr "Caminho"
 
 #, c-format
 msgid "Path %1$s too long for unix socket"
@@ -13452,9 +13448,8 @@ msgstr ""
 msgid "Path has to specify the datacenter and compute resource"
 msgstr ""
 
-#, fuzzy
 msgid "Paused"
-msgstr "em pausa"
+msgstr "Em pausa"
 
 #, c-format
 msgid ""
@@ -13492,9 +13487,8 @@ msgstr ""
 msgid "Physical:"
 msgstr ""
 
-#, fuzzy
 msgid "Pin domain IOThreads to host physical CPUs."
-msgstr "Fixar os VCPUs do domínio nos CPUs físicos do anfitrião."
+msgstr "Fixar IOThreads do domínio para as CPUs físicas da máquina."
 
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Fixar os VCPUs do domínio nos CPUs físicos do anfitrião."
@@ -13669,7 +13663,7 @@ msgid ""
 msgstr ""
 
 msgid "Protocol"
-msgstr ""
+msgstr "Protocolo"
 
 #, c-format
 msgid "Protocol '%1$s' is not supported for tcp character device."
@@ -14044,7 +14038,7 @@ msgid "Remove managed save of a domain"
 msgstr ""
 
 msgid "Removed"
-msgstr ""
+msgstr "Removido"
 
 #, c-format
 msgid "Removed managedsave image for domain '%1$s'"
@@ -14174,14 +14168,13 @@ msgid "Resource partition '%1$s' must start with '/'"
 msgstr ""
 
 msgid "Restore"
-msgstr ""
+msgstr "Restaurar"
 
 msgid "Restore a domain."
 msgstr "Restaurar um domínio."
 
-#, fuzzy
 msgid "Restored"
-msgstr "Repor um domínio."
+msgstr "Restaurado"
 
 #, c-format
 msgid "Restoring of leases failed on interface '%1$s'"
@@ -14228,19 +14221,17 @@ msgid "Returns a list of secrets"
 msgstr "Devolve a lista de redes."
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Devolve informação SEV básica acerca do nó."
 
-#, fuzzy
 msgid "Returns basic information about a checkpoint."
-msgstr "Devolve a informação básica acerca do domínio."
+msgstr "Devolve informação básica acerca dum ponto de verificação."
 
 #, fuzzy
 msgid "Returns basic information about a snapshot."
 msgstr "Devolve informações básicas acerca do nó."
 
-#, fuzzy
 msgid "Returns basic information about the domain IOThreads."
-msgstr "Devolve a informação básica acerca do domínio."
+msgstr "Devolve informação básica acerca de IOThreads do domínio."
 
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Devolve a informação básica acerca dos CPUs virtuais do domínio."
@@ -14248,12 +14239,11 @@ msgstr "Devolve a informação básica acerca dos CPUs virtuais do domínio."
 msgid "Returns basic information about the domain."
 msgstr "Devolve a informação básica acerca do domínio."
 
-#, fuzzy
 msgid "Returns basic information about the network"
-msgstr "Devolve informações básicas acerca do nó."
+msgstr "Devolve informação básica acerca da rede"
 
 msgid "Returns basic information about the node device"
-msgstr ""
+msgstr "Devolve informação básica acerca do dispositivo de nó"
 
 msgid "Returns basic information about the node."
 msgstr "Devolve informações básicas acerca do nó."
@@ -14262,9 +14252,8 @@ msgstr "Devolve informações básicas acerca do nó."
 msgid "Returns basic information about the storage pool."
 msgstr "Devolve informações básicas acerca do nó."
 
-#, fuzzy
 msgid "Returns basic information about the storage vol."
-msgstr "Devolve informações básicas acerca do nó."
+msgstr "Devolve informação básica acerca do volume de armazenamento."
 
 #, fuzzy
 msgid "Returns capabilities of emulator with respect to host and libvirt."
@@ -14295,9 +14284,8 @@ msgstr "Devolve a lista de redes."
 msgid "Returns list of network filters."
 msgstr "Devolve a lista de redes."
 
-#, fuzzy
 msgid "Returns list of network ports."
-msgstr "Devolve a lista de redes."
+msgstr "Devolve lista de portos de rede."
 
 msgid "Returns list of networks."
 msgstr "Devolve a lista de redes."
@@ -14525,7 +14513,7 @@ msgid "Sanlock plugin is not initialized"
 msgstr ""
 
 msgid "Save"
-msgstr ""
+msgstr "Gravar"
 
 msgid ""
 "Save and destroy a running domain, so it can be restarted from\n"
@@ -14560,7 +14548,7 @@ msgid "Save the RAM state of a running domain."
 msgstr "Obter o estado de uma interface de rede para um domínio em execução."
 
 msgid "Saved"
-msgstr ""
+msgstr "Gravado"
 
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
@@ -14924,9 +14912,8 @@ msgstr ""
 msgid "Setup time:"
 msgstr "Tempo de CPU:"
 
-#, fuzzy
 msgid "Shared memory:\n"
-msgstr "Memória usada:"
+msgstr "Memória partilhada:\n"
 
 #, c-format
 msgid "Shell '%1$s' should have absolute path"
@@ -14969,9 +14956,8 @@ msgstr ""
 msgid "Shows or modifies the XML metadata of a network."
 msgstr ""
 
-#, fuzzy
 msgid "Shutdown"
-msgstr "em encerramento"
+msgstr "Encerrar"
 
 #, sh-format
 msgid "Shutdown of guest $name complete."
@@ -15010,7 +14996,7 @@ msgid "Skipping is not supported with this stream"
 msgstr ""
 
 msgid "Snapshot"
-msgstr ""
+msgstr "Instantâneo"
 
 #, c-format
 msgid "Snapshot %1$s XML configuration not changed.\n"
@@ -15030,7 +15016,7 @@ msgstr ""
 
 #, c-format
 msgid "Snapshot '%1$s' already exists"
-msgstr ""
+msgstr "Instantâneo '%1$s' já existe"
 
 msgid "Snapshot Delete"
 msgstr ""
@@ -15067,9 +15053,8 @@ msgstr ""
 msgid "Socket path %1$s too big for destination"
 msgstr ""
 
-#, fuzzy
 msgid "Sockets:"
-msgstr "'Sockets' do CPU:"
+msgstr "Sockets:"
 
 msgid "Some activation file descriptors are unclaimed"
 msgstr ""
@@ -15094,7 +15079,7 @@ msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
 
 msgid "Source"
-msgstr ""
+msgstr "Fonte"
 
 #, c-format
 msgid "Source device does not exist when formatting pool '%1$s'"
@@ -15135,7 +15120,7 @@ msgid "Spice audio is not supported without spice graphics"
 msgstr ""
 
 msgid "Start"
-msgstr ""
+msgstr "Iniciar"
 
 #, c-format
 msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
@@ -31381,9 +31366,8 @@ msgstr ""
 msgid "missing cellno argument"
 msgstr "falta a informação do 'kernel'"
 
-#, fuzzy
 msgid "missing connection mode for <reservations/>"
-msgstr "falta a informação do sistema operativo"
+msgstr "modo de ligação em falta para <reservations/>"
 
 #, fuzzy
 msgid "missing connection type for <reservations/>"
