@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-03 20:26+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-03 23:04+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -534,9 +534,9 @@ msgstr ""
 msgid "%1$s namespace is not available"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s not found in %2$s"
-msgstr "O domínio não foi encontrado: %s"
+msgstr "%1$s não encontrado em %2$s"
 
 #, c-format
 msgid "%1$s not implemented on Win32"
@@ -598,7 +598,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: %2$s"
-msgstr ""
+msgstr "%1$s: %2$s"
 
 #, c-format
 msgid "%1$s: %2$s: unsupported auth %3$s"
@@ -826,9 +826,9 @@ msgstr "%1$s: falhou ao gravar o ficheiro de registo: %2$s"
 msgid "%1$s: failure with %2$s: %3$s"
 msgstr "%1$s: falha com %2$s: %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: initialization failed"
-msgstr "a autenticação falhou"
+msgstr "%1$s: a inicialização falhou"
 
 #, c-format
 msgid "%1$s: initialization failed\n"
@@ -1333,9 +1333,8 @@ msgstr ""
 msgid "(_migration_cookie)"
 msgstr ""
 
-#, fuzzy
 msgid "(bridge interface definition)"
-msgstr "Não foi possível obter a informação da interface"
+msgstr "(definição de interface de ponte)"
 
 msgid "(capabilities)"
 msgstr "(capacidades)"
@@ -1349,9 +1348,8 @@ msgstr ""
 msgid "(disk_definition)"
 msgstr ""
 
-#, fuzzy
 msgid "(domainCapabilities)"
-msgstr "capacidades"
+msgstr "(CapacidadesDeDomínio)"
 
 msgid "(domain_backup)"
 msgstr ""
@@ -1359,13 +1357,11 @@ msgstr ""
 msgid "(domain_checkpoint)"
 msgstr ""
 
-#, fuzzy
 msgid "(domain_definition)"
-msgstr "informação do domínio"
+msgstr "(definição_domínio)"
 
-#, fuzzy
 msgid "(domain_snapshot)"
-msgstr "estado do domínio"
+msgstr "(instantâneo_do_domínio)"
 
 msgid "(esx execute response)"
 msgstr ""
@@ -1600,9 +1596,8 @@ msgid ""
 "configuration"
 msgstr ""
 
-#, fuzzy
 msgid "? - print this help"
-msgstr "imprimir a ajuda"
+msgstr "? - escreve esta ajuda"
 
 msgid "A close callback is already registered"
 msgstr ""
@@ -1615,17 +1610,14 @@ msgid ""
 "A domain definition can have no more than one cipher node with name %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "A interface driver is already registered"
-msgstr "estão demasiados controladores registados"
+msgstr "Um controlador de interface já está registrado"
 
-#, fuzzy
 msgid "A network driver is already registered"
-msgstr "estão demasiados controladores registados"
+msgstr "Um controlador de rede já está registrado"
 
-#, fuzzy
 msgid "A network filter driver is already registered"
-msgstr "estão demasiados controladores registados"
+msgstr "Um controlador de filtro de rede já está registrado"
 
 #, c-format
 msgid ""
@@ -1633,9 +1625,8 @@ msgid ""
 "dev, but not both (network '%2$s')"
 msgstr ""
 
-#, fuzzy
 msgid "A node device driver is already registered"
-msgstr "estão demasiados controladores registados"
+msgstr "Um controlador de dispositivo de nó já está registrado"
 
 #, fuzzy
 msgid "A secret driver is already registered"
@@ -1915,9 +1906,9 @@ msgstr "Anexar um novo dispositivo de disco."
 msgid "Attach new network interface."
 msgstr "Anexar uma nova interface de rede."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Attached device %1$s has no type"
-msgstr "tipo do dispositivo de destino"
+msgstr "Dispositivo anexado %1$s não tem tipo"
 
 #, c-format
 msgid "Attaching devices of type %1$d is not implemented"
@@ -3170,9 +3161,8 @@ msgstr ""
 msgid "Cannot rename interface '%1$s' to '%2$s' on this platform"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot resize the max memory on an active domain"
-msgstr "Mudar o limite de memória reservada para o domínio convidado."
+msgstr "Não pode redimensionar o máximo de memória num domínio activo"
 
 #, c-format
 msgid "Cannot resolve %1$s address: %2$s"
@@ -3327,9 +3317,8 @@ msgstr ""
 msgid "Cannot use predefined UUID"
 msgstr ""
 
-#, fuzzy
 msgid "Cannot use slcp with devices other than console"
-msgstr "Mostra o dispositivo para a consola TTY."
+msgstr "Não pode usar slcp com dispositivos para além de consola"
 
 msgid "Cannot use virtio serial for parallel/serial devices"
 msgstr ""
@@ -3427,9 +3416,8 @@ msgstr ""
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Mudar a alocação de memória actual no domínio convidado."
 
-#, fuzzy
 msgid "Change the current number of priority workers"
-msgstr "Mudar a reserva de memória actual no domínio convidado."
+msgstr "Muda o número atual de trabalhadores de prioridade"
 
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Mudar o limite máximo de alocação de memória no domínio convidado."
@@ -4988,9 +4976,8 @@ msgstr "criar uma rede a partir de um ficheiro XML"
 msgid "Create a snapshot from a set of args"
 msgstr ""
 
-#, fuzzy
 msgid "Create a vol from an existing volume."
-msgstr "criar um domínio a partir de um ficheiro XML"
+msgstr "Cria um vol a partir dum volume existente."
 
 #, fuzzy
 msgid "Create a vol."
@@ -5135,9 +5122,8 @@ msgstr ""
 msgid "Define or modify a secret."
 msgstr ""
 
-#, fuzzy
 msgid "Defined"
-msgstr "Definir um domínio."
+msgstr "Definido"
 
 msgid ""
 "Defines or modifies a persistent device on the node that can be assigned to "
@@ -5147,9 +5133,8 @@ msgstr ""
 msgid "Delete a domain checkpoint"
 msgstr ""
 
-#, fuzzy
 msgid "Delete a domain snapshot"
-msgstr "Criar um domínio."
+msgstr "Apaga um instantâneo de domínio"
 
 msgid "Delete a given network filter binding."
 msgstr ""
@@ -5456,7 +5441,7 @@ msgid "Disk address %1$d:%2$d:%3$d doesn't match target device '%4$s'"
 msgstr ""
 
 msgid "Disk attached successfully\n"
-msgstr ""
+msgstr "Disco anexado com sucesso\n"
 
 #, c-format
 msgid "Disk cache mode %1$s is not supported"
@@ -5466,7 +5451,7 @@ msgid "Disk copy_on_read is not supported by vz driver."
 msgstr ""
 
 msgid "Disk detached successfully\n"
-msgstr ""
+msgstr "Disco desanexado com sucesso\n"
 
 #, fuzzy, c-format
 msgid "Disk device '%1$s' does not support snapshotting"
@@ -5510,9 +5495,8 @@ msgstr "Mostrar a informação da versão do sistema."
 msgid "Display the system version information."
 msgstr "Mostra a informação da versão do sistema."
 
-#, fuzzy
 msgid "Display version information"
-msgstr "Mostrar a informação da versão do sistema."
+msgstr "Mostra informação da versão"
 
 msgid ""
 "Displays the node's total number of CPUs, the number of online CPUs and the "
@@ -5766,9 +5750,8 @@ msgstr ""
 msgid "Domain is not active or is in state transition"
 msgstr ""
 
-#, fuzzy
 msgid "Domain is not paused"
-msgstr "O domínio não foi encontrado"
+msgstr "Domínio não está em pausa"
 
 #, fuzzy
 msgid "Domain is not powered off"
@@ -5778,19 +5761,17 @@ msgstr "O domínio não foi encontrado"
 msgid "Domain is not powered on"
 msgstr "O domínio não foi encontrado"
 
-#, fuzzy
 msgid "Domain is not running"
-msgstr "O domínio já está em execução"
+msgstr "Domínio não está em execução"
 
 msgid "Domain is not suspended"
 msgstr "Domínio não está suspenso"
 
-#, fuzzy
 msgid "Domain is not suspended or powered off"
-msgstr "Domínio %s suspenso\n"
+msgstr "Domínio não está suspenso nem desligado"
 
 msgid "Domain name contains invalid escape sequence"
-msgstr ""
+msgstr "Nome de domínio contém sequência de escape inválida"
 
 msgid "Domain not found"
 msgstr "O domínio não foi encontrado"
@@ -5818,47 +5799,44 @@ msgstr ""
 msgid "Domain restored from %1$s\n"
 msgstr "O domínio foi restaurado a partir de %1$s\n"
 
-#, fuzzy
 msgid "Domain should have at least one disk defined"
-msgstr "O domínio %s ficou indefinido\n"
+msgstr "Domínio deve ter pelo menos um disco definido"
 
 #, c-format
 msgid "Domain snapshot %1$s children deleted\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %1$s created"
-msgstr "O domínio %s foi criado a partir do %s\n"
+msgstr "Instantâneo de domínio %1$s criado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %1$s created from '%2$s'"
-msgstr "O domínio %1$s foi criado a partir do %2$s\n"
+msgstr "Instantâneo de domínio %1$s criado a partir de '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot %1$s deleted\n"
-msgstr "O domínio %1$s foi destruído\n"
+msgstr "Instantâneo de domínio %1$s apagado\n"
 
 #, c-format
 msgid "Domain snapshot %1$s reverted\n"
-msgstr ""
+msgstr "Instantâneo de domínio %1$s revertido\n"
 
-#, fuzzy
 msgid "Domain snapshot not found"
-msgstr "O domínio não foi encontrado"
+msgstr "Instantâneo de domínio não encontrado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Domain snapshot not found: %1$s"
-msgstr "O domínio não foi encontrado: %1$s"
+msgstr "Instantâneo de domínio não encontrado: %1$s"
 
 msgid "Domain title can't contain newlines"
 msgstr ""
 
-#, fuzzy
 msgid "Domain title not changed\n"
-msgstr "O domínio não foi encontrado"
+msgstr "Título de domínio não alterado\n"
 
 msgid "Domain title updated successfully"
-msgstr ""
+msgstr "Título de domínio atualizado com sucesso"
 
 msgid "Domain-0 cannot be migrated"
 msgstr ""
@@ -12176,9 +12154,9 @@ msgstr ""
 msgid "Network '%1$s' is already running"
 msgstr "O domínio já está em execução"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network '%1$s' is still running"
-msgstr "A rede %1$s ficou indefinida\n"
+msgstr "A rede '%1$s' ainda está a correr"
 
 #, fuzzy
 msgid "Network Events"
@@ -12492,9 +12470,8 @@ msgstr "Não foi indicada nenhuma mensagem de erro"
 msgid "No error message provided"
 msgstr "Não foi fornecida nenhuma mensagem de erro"
 
-#, fuzzy
 msgid "No errors found\n"
-msgstr "A rede não foi encontrada"
+msgstr "Nenhum erro encontrado\n"
 
 #, c-format
 msgid "No event expected with procedure 0x%1$x"
@@ -13239,7 +13216,7 @@ msgid "Output the pool information as an XML dump to stdout."
 msgstr "Devolve informação do pool numa descarga XML para a saída standard."
 
 msgid "Output the vol information as an XML dump to stdout."
-msgstr "Devolve informação do volume numa descarga XML para a saída standard."
+msgstr "Devolve informação do vol numa descarga XML para a saída standard."
 
 msgid "Overlapping vcpus in resctrls"
 msgstr ""
@@ -16908,9 +16885,8 @@ msgstr ""
 msgid "Too many IOThreads in info: %1$d for limit %2$d"
 msgstr ""
 
-#, fuzzy
 msgid "Too many bytes to read from stream"
-msgstr "O domínio foi reposto a partir do %s\n"
+msgstr "Demasiados bytes para ler do fluxo"
 
 msgid "Too many bytes to write to stream"
 msgstr ""
@@ -20270,9 +20246,9 @@ msgstr ""
 msgid "Updated"
 msgstr "Atualizado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Updated network %1$s live state"
-msgstr "A rede %1$s foi iniciada\n"
+msgstr "Estado de vida de rede %1$s atualizado"
 
 #, c-format
 msgid "Updated network %1$s persistent config"
@@ -21488,9 +21464,9 @@ msgstr ""
 msgid "binding '%1$s' already exists"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "binding '%1$s' is already being removed"
-msgstr "O domínio %1$s está a ser reiniciado\n"
+msgstr "vínculo '%1$s' já está a ser removido"
 
 #, c-format
 msgid "bitmap '%1$s' not found in backing chain of '%2$s'"
@@ -24413,7 +24389,7 @@ msgid ""
 msgstr ""
 
 msgid "create a vol from an XML file"
-msgstr "criar um volume a partir de um ficheiro XML"
+msgstr "criar um vol a partir de um ficheiro XML"
 
 msgid "create a vol, using another volume as input"
 msgstr ""
@@ -25229,11 +25205,11 @@ msgstr ""
 
 #, c-format
 msgid "domain %1$s exists already"
-msgstr "o domínio %1$s já existe"
+msgstr "domínio %1$s já existe"
 
 #, c-format
 msgid "domain %1$s has no snapshots with name %2$s"
-msgstr ""
+msgstr "domínio '%1$s' não tem nenhum instantâneo com nome %2$s"
 
 #, c-format
 msgid "domain %1$s is already running"
@@ -25241,85 +25217,85 @@ msgstr "domínio %1$s já está em execução"
 
 #, c-format
 msgid "domain '%1$s' already exists with uuid %2$s"
-msgstr ""
+msgstr "domínio '%1$s' já existe com uuid %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' coredump: failed to open %2$s"
-msgstr "O domínio %1$s foi criado a partir do %2$s\n"
+msgstr "despejo de núcleo do domínio '%1$s': falhou ao abrir %2$s"
 
 #, c-format
 msgid "domain '%1$s' coredump: failed to write header to %2$s"
 msgstr ""
+"despejo de núcleo do domínio '%1$s': falhou ao escrever cabeçalho para %2$s"
 
 #, c-format
 msgid "domain '%1$s' coredump: write failed: %2$s"
-msgstr ""
+msgstr "despejo de núcleo do domínio '%1$s': falhou ao escrever: %2$s"
 
 #, c-format
 msgid "domain '%1$s' has no capabilities recorded"
-msgstr ""
+msgstr "domínio '%1$s' não tem capacidades registadas"
 
 #, c-format
 msgid "domain '%1$s' has no current snapshot"
-msgstr ""
+msgstr "domínio '%1$s' não tem instantâneo atual"
 
 #, c-format
 msgid "domain '%1$s' in %2$s must match connection"
-msgstr ""
+msgstr "domínio '%1$s' em %2$s tem de corresponder a ligação"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already active"
-msgstr "O domínio já está activo"
+msgstr "domínio '%1$s'já está activo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already being removed"
-msgstr "O domínio %1$s está a ser reiniciado\n"
+msgstr "domínio '%1$s'já está a ser removido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is already being started"
-msgstr "O domínio %1$s está a ser reiniciado\n"
+msgstr "domínio '%1$s'já está a ser iniciado"
 
 #, c-format
 msgid "domain '%1$s' is already defined with uuid %2$s"
-msgstr ""
+msgstr "domínio '%1$s'já está definido com uuid %2$s"
 
 #, c-format
 msgid "domain '%1$s' is being migrated out"
-msgstr ""
+msgstr "domínio '%1$s' está a ser migrado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is not being migrated"
-msgstr "O domínio %1$s está a ser reiniciado\n"
+msgstr "domínio '%1$s' não está a ser migrado"
 
 #, c-format
 msgid "domain '%1$s' is not processing incoming migration"
-msgstr ""
+msgstr "domínio '%1$s' não está a processar migração a chegar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is not running"
-msgstr "O domínio já está em execução"
+msgstr "domínio '%1$s' não está a correr"
 
 #, c-format
 msgid "domain '%1$s' must match connection"
-msgstr ""
+msgstr "domínio '%1$s' tem de corresponder a ligação"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' not paused"
-msgstr "o domínio %1$s já existe"
+msgstr "domínio '%1$s' não está em pausa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' not running"
-msgstr "O domínio já está em execução"
+msgstr "domínio '%1$s' não está a correr"
 
 msgid "domain already has VNC graphics"
-msgstr ""
+msgstr "domínio já tem gráficos VNC"
 
-#, fuzzy
 msgid "domain already has a vsock device"
-msgstr "O domínio já está activo"
+msgstr "domínio já tem um dispositivo vsock"
 
 msgid "domain already has an iommu device"
-msgstr ""
+msgstr "domínio já tem um dispositivo iommu"
 
 msgid "domain architecture (/domain/os/type/@arch)"
 msgstr ""
@@ -27719,7 +27695,7 @@ msgid "file containing an XML pool description"
 msgstr "ficheiro que contém uma descrição da pool em XML"
 
 msgid "file containing an XML vol description"
-msgstr "ficheiro que contém uma descrição do volume em XML"
+msgstr "ficheiro que contém uma descrição do vol em XML"
 
 msgid "file containing secret attributes in XML"
 msgstr ""
@@ -35779,7 +35755,7 @@ msgid "slices are not supported with NVRAM"
 msgstr ""
 
 msgid "snapshot"
-msgstr "captura instantânea"
+msgstr "instantâneo"
 
 #, c-format
 msgid "snapshot %1$s disappeared from list"
@@ -35958,7 +35934,7 @@ msgid "ssl verification is supported only with HTTPS/FTPS protocol"
 msgstr ""
 
 msgid "start"
-msgstr ""
+msgstr "iniciar"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "iniciar um domínio inactivo (previamente definido)"
@@ -35966,9 +35942,8 @@ msgstr "iniciar um domínio inactivo (previamente definido)"
 msgid "start a (previously defined) inactive network"
 msgstr "iniciar uma rede inactiva (previamente definida)"
 
-#, fuzzy
 msgid "start a (previously defined) inactive pool"
-msgstr "iniciar um domínio inactivo (previamente definido)"
+msgstr "iniciar um pool inactivo (previamente definido)"
 
 msgid "start a physical host interface (enable it / \"if-up\")"
 msgstr ""
@@ -35988,9 +35963,8 @@ msgstr ""
 msgid "start_cpu %1$d larger than maximum of %2$d"
 msgstr ""
 
-#, fuzzy
 msgid "started"
-msgstr "Arranque automático"
+msgstr "iniciado"
 
 msgid "starting up"
 msgstr ""
@@ -36076,7 +36050,7 @@ msgid "storage pool does not support vol deletion"
 msgstr ""
 
 msgid "storage pool does not support volume creation"
-msgstr ""
+msgstr "pool de armazenamento não suporta criação de volumes"
 
 msgid "storage pool does not support volume creation from an existing volume"
 msgstr ""
@@ -36132,9 +36106,8 @@ msgstr ""
 msgid "storage vol already exists"
 msgstr ""
 
-#, fuzzy
 msgid "storage vol information"
-msgstr "informação do nó"
+msgstr "informação do vol de armazenamento"
 
 #, fuzzy, c-format
 msgid "storage volume %1$s exists already"
@@ -36261,7 +36234,7 @@ msgid "system pages pool can't be modified"
 msgstr ""
 
 msgid "system:"
-msgstr ""
+msgstr "sistema:"
 
 #, c-format
 msgid "tainted: %1$s"
@@ -36303,9 +36276,8 @@ msgstr ""
 msgid "target NUMA node needs to be specified for memory device"
 msgstr ""
 
-#, fuzzy
 msgid "target bus of disk device"
-msgstr "destino do dispositivo de disco"
+msgstr "barramento alvo do dispositivo de disco"
 
 msgid "target config data type format"
 msgstr ""
@@ -36606,9 +36578,8 @@ msgstr ""
 msgid "this network exists already"
 msgstr "esta rede já existe"
 
-#, fuzzy
 msgid "this network port exists already"
-msgstr "esta rede já existe"
+msgstr "este porto de rede já existe"
 
 msgid "this platform is missing dlopen"
 msgstr ""
@@ -37743,7 +37714,7 @@ msgid "undefine an interface."
 msgstr "origem da interface de rede"
 
 msgid "undefined"
-msgstr ""
+msgstr "não definido"
 
 msgid "undefined hardware architecture"
 msgstr ""
@@ -38130,9 +38101,8 @@ msgstr ""
 msgid "unix"
 msgstr ""
 
-#, fuzzy
 msgid "unknown"
-msgstr "Desconhecido"
+msgstr "desconhecido"
 
 #, fuzzy, c-format
 msgid "unknown %1$s action: %2$s"
@@ -38161,9 +38131,9 @@ msgstr "tipo de SO desconhecido"
 msgid "unknown OS type %1$s"
 msgstr "tipo de SO desconhecido %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown OS type '%1$s'"
-msgstr "tipo de SO desconhecido %1$s"
+msgstr "tipo de SO desconhecido '%1$s'"
 
 #, c-format
 msgid "unknown QEMU_AUDIO_DRV setting %1$s"
@@ -38308,9 +38278,8 @@ msgstr "tipo de SO desconhecido %s"
 msgid "unknown dumpformat '%1$d'"
 msgstr "comando desconhecido: '%s'"
 
-#, fuzzy
 msgid "unknown error"
-msgstr "máquina desconhecida"
+msgstr "erro desconhecido"
 
 #, fuzzy, c-format
 msgid "unknown event type %1$s"
@@ -38335,9 +38304,8 @@ msgstr "máquina desconhecida"
 msgid "unknown host %1$s"
 msgstr "máquina desconhecida %1$s"
 
-#, fuzzy
 msgid "unknown host CPU"
-msgstr "máquina desconhecida"
+msgstr "CPU de máquina desconhecida"
 
 #, fuzzy
 msgid "unknown host CPU model"
@@ -38423,9 +38391,8 @@ msgstr "máquina desconhecida %1$s"
 msgid "unknown network device feature '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "unknown option"
-msgstr "máquina desconhecida"
+msgstr "opção desconhecida"
 
 #, fuzzy, c-format
 msgid "unknown panic info type '%1$s'"
@@ -38510,9 +38477,9 @@ msgstr "tipo de SO desconhecido %1$s"
 msgid "unknown storage vol backing store type %1$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol type %1$d"
-msgstr "tipo de SO desconhecido %s"
+msgstr "tipo de vol de armazenamento desconhecido %1$d"
 
 #, fuzzy, c-format
 msgid "unknown suffix '%1$s'"
@@ -38600,9 +38567,8 @@ msgstr ""
 msgid "unmanaged target dev is not supported on interfaces of type '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "unpaused"
-msgstr "em pausa"
+msgstr "resumido"
 
 msgid "unplug of device was rejected by the guest"
 msgstr ""
@@ -38924,17 +38890,16 @@ msgstr ""
 msgid "unsupported nvram disk type '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "unsupported option"
-msgstr "a opção '-%c' não é suportada. Veja o --help."
+msgstr "opção não suportada"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported option '%1$s'. See --help."
-msgstr "a opção '-%c' não é suportada. Veja o --help."
+msgstr "opção não suportada '%1$s'. Veja --help."
 
 #, c-format
 msgid "unsupported option '-%1$c'. See --help."
-msgstr "a opção '-%1$c' não é suportada. Veja --help."
+msgstr "opção não suportada '-%1$c'. Veja --help."
 
 #, c-format
 msgid "unsupported pit tickpolicy '%1$s'"
@@ -39023,9 +38988,8 @@ msgid ""
 "used together with positional"
 msgstr ""
 
-#, fuzzy
 msgid "update device from an XML file"
-msgstr "associar um dispositivo a partir de um ficheiro XML"
+msgstr "atualizar dispositivo a partir de um ficheiro XML"
 
 msgid "update guest CPU according to host CPU"
 msgstr ""
@@ -39051,7 +39015,7 @@ msgid "uptime file has unexpected format '%1$s'"
 msgstr "dados '%1$s' inesperados"
 
 msgid "usage:"
-msgstr ""
+msgstr "utilização:"
 
 #, c-format
 msgid ""
@@ -39085,7 +39049,7 @@ msgid "use backing file of top as base"
 msgstr ""
 
 msgid "use btrfs COW lightweight copy"
-msgstr ""
+msgstr "usar cópia leve btrfs COW"
 
 msgid "use capacity as a delta to current size, rather than the new size"
 msgstr ""
@@ -39125,7 +39089,7 @@ msgid "use zero-copy mechanism for migrating memory pages"
 msgstr ""
 
 msgid "user"
-msgstr ""
+msgstr "utilizador"
 
 msgid "user cancelled authentication process"
 msgstr ""
@@ -39137,7 +39101,7 @@ msgid "user to set authorized keys for"
 msgstr ""
 
 msgid "user:"
-msgstr ""
+msgstr "utilizador:"
 
 #, c-format
 msgid "using '%1$s' pools for backing 'volume' disks isn't yet supported"
@@ -39787,12 +39751,11 @@ msgstr ""
 msgid "vnuma vnode invalid format '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "vol information in XML"
-msgstr "informação do domínio em XML"
+msgstr "informação de vol em XML"
 
 msgid "vol name, key or path"
-msgstr ""
+msgstr "nome de vol, chave ou caminho"
 
 #, c-format
 msgid "volume '%1$s' is still being allocated."
@@ -39921,7 +39884,7 @@ msgid "warning: %1$s\n"
 msgstr ""
 
 msgid "watchdog"
-msgstr ""
+msgstr "watchdog"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
@@ -40063,7 +40026,7 @@ msgid "y - yes, start editor again"
 msgstr ""
 
 msgid "yes"
-msgstr ""
+msgstr "sim"
 
 #, c-format
 msgid "zPCI %1$s %2$o is already reserved"
