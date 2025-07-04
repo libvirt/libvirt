@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-02 06:47+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-02 06:49+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -15289,7 +15289,7 @@ msgid "Stop interface"
 msgstr ""
 
 msgid "Stop network"
-msgstr "Parar Rede"
+msgstr "Parar rede"
 
 msgid "Stop node device"
 msgstr ""
@@ -15298,7 +15298,7 @@ msgid "Stop storage pool"
 msgstr ""
 
 msgid "Stopped"
-msgstr ""
+msgstr "Parado"
 
 msgid "Stopping interface requires authorization"
 msgstr ""
@@ -15457,7 +15457,7 @@ msgid "Suspend-to-RAM"
 msgstr ""
 
 msgid "Suspended"
-msgstr ""
+msgstr "Suspenso"
 
 #, sh-format
 msgid "Suspending $name: "
@@ -15550,7 +15550,7 @@ msgid "Taking domain screenshots requires authorization"
 msgstr ""
 
 msgid "Target"
-msgstr ""
+msgstr "Alvo"
 
 #, c-format
 msgid "Target ACPI index '%1$u' does not match source '%2$u'"
@@ -15700,7 +15700,7 @@ msgid "Target active PCR banks doesn't match source"
 msgstr ""
 
 msgid "Target already exists"
-msgstr ""
+msgstr "Alvo já existe"
 
 #, c-format
 msgid ""
@@ -16873,7 +16873,7 @@ msgid "Timed out while reading log output: %1$s"
 msgstr ""
 
 msgid "Timeout"
-msgstr ""
+msgstr "Tempo limite"
 
 #, sh-format
 msgid "Timeout expired while shutting down domains"
@@ -17034,9 +17034,8 @@ msgstr ""
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
 
-#, fuzzy
 msgid "Total:\n"
-msgstr "Total"
+msgstr "Total:\n"
 
 msgid "Transient disks are not supported by vz driver."
 msgstr ""
