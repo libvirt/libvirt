@@ -247,6 +247,12 @@ sc_prohibit_canonicalize_file_name:
 	halt='use virFileCanonicalizePath() instead of canonicalize_file_name()' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_realpath:
+	@prohibit='\<realpath\(' \
+	exclude='exempt from syntax-check' \
+	halt='use virFileCanonicalizePath() instead of realpath()' \
+	  $(_sc_search_regexp)
+
 # qsort from glibc has unstable sort ordering for "equal" members
 sc_prohibit_qsort:
 	@prohibit='\<(qsort|qsort_r) *\(' \
@@ -1419,6 +1425,9 @@ exclude_file_name_regexp--sc_prohibit_nonreentrant = \
 
 exclude_file_name_regexp--sc_prohibit_canonicalize_file_name = \
   ^(build-aux/syntax-check\.mk|tests/virfilemock\.c)$$
+
+exclude_file_name_regexp--sc_prohibit_realpath = \
+  ^(build-aux/syntax-check\.mk|src/cpu_map/sync_qemu_features_i386\.py|tests/virfilemock\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_raw_allocation = \
   ^(docs/advanced-tests\.rst|src/util/viralloc\.[ch]|examples/.*|tests/(securityselinuxhelper|(vircgroup|nss)mock|commandhelper)\.c|tools/wireshark/src/packet-libvirt\.c|tools/nss/libvirt_nss(_leases|_macs)?\.[ch])$$
