@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-01 05:48+0000\n"
+"PO-Revision-Date: 2025-07-01 23:12+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -2069,7 +2069,7 @@ msgid "Block device '%1$s' is resized"
 msgstr ""
 
 msgid "Booted"
-msgstr ""
+msgstr "Arrancado"
 
 msgid ""
 "Both 'name' and 'parent' cannot be specified for the 'scsi_host' adapter"
@@ -3343,10 +3343,10 @@ msgid "Cannot write pid in tasks file '%1$s'"
 msgstr ""
 
 msgid "Capacity"
-msgstr ""
+msgstr "Capacidade"
 
 msgid "Capacity:"
-msgstr ""
+msgstr "Capacidade:"
 
 msgid ""
 "Cardinality of list items must be the same for processing them in parallel"
@@ -3717,7 +3717,7 @@ msgid "Compiled with support for:\n"
 msgstr ""
 
 msgid "Completed"
-msgstr ""
+msgstr "Completado"
 
 msgid "Completed with no error"
 msgstr ""
@@ -3790,9 +3790,8 @@ msgstr ""
 msgid "Config entry '%1$s' must represent an integer value"
 msgstr ""
 
-#, fuzzy
 msgid "Configuration file"
-msgstr "a operação falhou"
+msgstr "Ficheiro de configuração"
 
 #, fuzzy
 msgid "Configuration file (unless overridden by -f):"
@@ -3806,10 +3805,11 @@ msgstr "Configurar uma rede para se iniciar automaticamente no arranque."
 
 msgid "Configure a node device to be automatically started at boot."
 msgstr ""
+"Configurar um dispositivo de nó para ser iniciado automaticamente no "
+"arranque."
 
-#, fuzzy
 msgid "Configure a pool to be automatically started at boot."
-msgstr "Configurar um domínio para se iniciar automaticamente no arranque."
+msgstr "Configurar um pool para ser iniciado automaticamente no arranque."
 
 #, c-format
 msgid ""
@@ -4922,9 +4922,8 @@ msgstr ""
 msgid "Cpu '%1$u' in node '%2$zu' is out of range of the provided bitmap"
 msgstr ""
 
-#, fuzzy
 msgid "Crashed"
-msgstr "estoirado"
+msgstr "Estoirado"
 
 #, fuzzy
 msgid "Crashloaded"
