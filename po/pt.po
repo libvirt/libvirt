@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-03 23:12+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-04 07:49+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -4638,9 +4638,9 @@ msgstr ""
 msgid "Could not parse barrier of '%1$s' from config for container %2$d"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not parse chain priority '%1$s'"
-msgstr "incapaz de  usar o item %1$s do hipervisor do Xen"
+msgstr "Incapaz de analisar prioridade de cadeia '%1$s'"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6962,9 +6962,8 @@ msgstr "Não foi possível criar a rede a partir do %1$s"
 msgid "Failed to create v2 cgroup '%1$s'"
 msgstr "Não foi possível criar o domínio do %1$s"
 
-#, fuzzy
 msgid "Failed to create vbox driver object."
-msgstr "Não foi possível criar o domínio do %s"
+msgstr "Falhou ao criar objeto controlador vbox."
 
 #, fuzzy, c-format
 msgid "Failed to create vol %1$s"
@@ -7845,21 +7844,20 @@ msgstr ""
 msgid "Failed to parse bitmap '%1$s'"
 msgstr "Não foi possível reiniciar o domínio %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse block name %1$s"
-msgstr "Não foi possível obter o estado do bloco %s %s"
+msgstr "Falhou ao analisar nome de bloco %1$s"
 
 #, c-format
 msgid "Failed to parse configuration of %1$s"
 msgstr "Falhou ao analisar configuração de %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse dir name '%1$s'"
-msgstr "Não foi possível prosseguir com o domínio %1$s"
+msgstr "Falhou ao analisar nome de directório '%1$s'"
 
-#, fuzzy
 msgid "Failed to parse domain description xml"
-msgstr "Não foi possível gravar o domínio %s em %s"
+msgstr "Falhou ao analisar xml de descrição do domínio"
 
 #, fuzzy, c-format
 msgid "Failed to parse firewalld version '%1$s'"
@@ -7906,9 +7904,8 @@ msgstr "Não foi possível criar a rede a partir do %1$s"
 msgid "Failed to parse number of vCPUs"
 msgstr "Não foi possível prosseguir com o domínio %s"
 
-#, fuzzy
 msgid "Failed to parse port number"
-msgstr "incapaz de  processar o ficheiro de configuração"
+msgstr "Falhou ao analisar número de porto"
 
 #, fuzzy, c-format
 msgid "Failed to parse positive integer from '%1$s'"
@@ -7946,9 +7943,9 @@ msgstr "incapaz de  obter a rede '%1$s'"
 msgid "Failed to parse users from '%1$s'"
 msgstr "Não foi possível criar a rede a partir do %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value '%1$s' as number."
-msgstr "Não foi possível marcar o domínio %1$s como de arranque automático"
+msgstr "Falhou ao analisar valor '%1$s' como número."
 
 #, c-format
 msgid "Failed to parse value '%1$s' from cpu.max."
@@ -9011,9 +9008,8 @@ msgstr "erro na chamada do GNUTLS"
 msgid "Get a throttling group."
 msgstr ""
 
-#, fuzzy
 msgid "Get block device size info for a domain."
-msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
+msgstr "Obter informação do tamanho de dispositivo de bloco para um domínio."
 
 msgid ""
 "Get device block stats for a running domain. See man page or use --human for "
@@ -9042,9 +9038,8 @@ msgid "Get network interface stats for a running domain."
 msgstr ""
 "Obter a estatística de uma interface de rede para um domínio em execução."
 
-#, fuzzy
 msgid "Get network interfaces' addresses for a running domain"
-msgstr "Obter o estado de uma interface de rede para um domínio em execução."
+msgstr "Obter endereços de interfaces de rede para um domínio em execução"
 
 #, fuzzy
 msgid "Get or set blkio parameters"
@@ -9110,16 +9105,14 @@ msgstr ""
 msgid "Get the name of the parent of a snapshot"
 msgstr ""
 
-#, fuzzy
 msgid "Get the summary of block devices for a domain."
-msgstr "obter as estatísticas do bloco do dispositivo para um domínio"
+msgstr "Obter o sumário de dispositivos de bloco para um domínio."
 
 msgid "Get the summary of throttle groups for a domain."
 msgstr ""
 
-#, fuzzy
 msgid "Get the summary of virtual interfaces for a domain."
-msgstr "obter a interface de rede de um domínio"
+msgstr "Obter o sumário de interfaces virtuais para um domínio."
 
 msgid "Get/set parameters of a domain's virtual interface."
 msgstr ""
@@ -9518,7 +9511,7 @@ msgid ""
 msgstr ""
 
 msgid "In use"
-msgstr ""
+msgstr "Em utilização"
 
 #, c-format
 msgid "Inappropriate new pci controller index %1$zu exceeds addrs array length"
@@ -9532,9 +9525,8 @@ msgstr ""
 msgid "Incoming cookie data had unexpected name %1$s vs %2$s"
 msgstr ""
 
-#, fuzzy
 msgid "Incoming migration"
-msgstr "migração em tempo-real"
+msgstr "Migração a chegar"
 
 #, fuzzy, c-format
 msgid "Incomplete vnuma configuration for vnode %1$zu"
@@ -9585,9 +9577,8 @@ msgstr ""
 msgid "Inject NMI to the guest"
 msgstr "ligar à consola-convidada"
 
-#, fuzzy
 msgid "Inject NMI to the guest domain."
-msgstr "ligar à consola-convidada"
+msgstr "Injetar NMI no domínio convidado."
 
 msgid "Inject domain NMI"
 msgstr ""
@@ -19174,11 +19165,11 @@ msgstr ""
 
 #, c-format
 msgid "Unable to truncate %1$s"
-msgstr ""
+msgstr "Incapaz de truncar %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to umount %1$s"
-msgstr "Não foi possível prosseguir com o domínio %1$s"
+msgstr "Incapaz de desmontar %1$s"
 
 #, c-format
 msgid "Unable to unbind the virtual port %1$s from Midonet"
@@ -19188,108 +19179,107 @@ msgstr ""
 msgid "Unable to undefine mediated device: %1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink %1$s"
-msgstr "Não foi possível remover a definição da rede %1$s"
+msgstr "Incapaz de remover link %1$s"
 
 #, c-format
 msgid "Unable to unlink path '%1$s'"
-msgstr ""
+msgstr "Incapaz de remover link ao caminho '%1$s'"
 
 msgid "Unable to unregister machine"
-msgstr ""
+msgstr "Incapaz de remover registro da máquina"
 
 msgid "Unable to update server's tls related files."
-msgstr ""
+msgstr "Incapaz de atualizar ficheiros relativos ao tls do servidor."
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to validate doc against %1$s\n"
 "%2$s"
-msgstr "Não foi possível gravar o domínio %1$s em %2$s"
+msgstr ""
+"Incapaz de validar documento contra %1$s\n"
+"%2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to verify TLS peer: %1$s"
-msgstr "não foi possível serializar a Expr-S: %1$s"
+msgstr "Incapaz de verificar peer TLS: %1$s"
 
 #, c-format
 msgid "Unable to verify client certificate %1$s against CA certificate %2$s"
 msgstr ""
+"Incapaz de verificar certificado de cliente %1$s contra certificado CA %2$s"
 
 #, c-format
 msgid "Unable to verify server certificate %1$s against CA certificate %2$s"
 msgstr ""
+"Incapaz de verificar certificado de servidor %1$s contra certificado CA %2$s"
 
 msgid "Unable to wait for child process"
-msgstr ""
+msgstr "Incapaz de esperar por processo filho"
 
 msgid "Unable to wait on agent socket condition"
-msgstr ""
+msgstr "Incapaz de esperar por condição de socket de agente"
 
 msgid "Unable to wait on epoll"
-msgstr ""
+msgstr "Incapaz de esperar pelo epoll"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%1$s')"
-msgstr ""
+msgstr "Incapaz de esperar por condição de monitor (vm='%1$s')"
 
 msgid "Unable to wait on parent process"
-msgstr ""
+msgstr "Incapaz de esperar pelo processo pai"
 
 msgid "Unable to watch epoll FD"
-msgstr ""
+msgstr "Incapaz de observar epoll FD"
 
-#, fuzzy
 msgid "Unable to watch host console PTY"
-msgstr "ligar à consola-convidada"
+msgstr "Incapaz de observar consola PTY da máquina"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write %1$s"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "Incapaz de escrever %1$s"
 
 #, c-format
 msgid "Unable to write '%1$s' to '%2$s'"
-msgstr ""
+msgstr "Incapaz de escrever '%1$s' para '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write pid file '%1$s/%2$s.pid'"
-msgstr "%1$s: não foi possível gravar o ficheiro de registo: %2$s"
+msgstr "Incapaz de escrever ficheiro pid '%1$s/%2$s.pid'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to %1$s"
-msgstr "não foi possível gravar o ficheiro de registo"
+msgstr "Incapaz de escrever para %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to '%1$s'"
-msgstr "não foi possível obter a rede '%1$s'"
+msgstr "Incapaz de escrever para '%1$s'"
 
-#, fuzzy
 msgid "Unable to write to agent"
-msgstr "incapaz de  gravar o ficheiro de registo"
+msgstr "Incapaz de escrever para agente"
 
-#, fuzzy
 msgid "Unable to write to container pty"
-msgstr "incapaz de  gravar o ficheiro de configuração"
+msgstr "Incapaz de escrever para contentor pty"
 
-#, fuzzy
 msgid "Unable to write to domain logfile"
-msgstr "incapaz de  gravar o ficheiro de registo"
+msgstr "Incapaz de escrever no ficheiro log do domínio"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file %1$s"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "Incapaz de escrever no ficheiro %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file '%1$s'"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "Incapaz de escrever no ficheiro '%1$s'"
 
-#, fuzzy
 msgid "Unable to write to monitor"
-msgstr "incapaz de  gravar o ficheiro de registo"
+msgstr "Incapaz de escrever para monitor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to: %1$s"
-msgstr "%s: não foi possível gravar o ficheiro de registo: %s"
+msgstr "Incapaz de escrever para: %1$s"
 
 msgid "Unbounded"
 msgstr ""
@@ -25382,9 +25372,8 @@ msgstr "informação do domínio em XML"
 msgid "domain is already running"
 msgstr "domínio já está em execução"
 
-#, fuzzy
 msgid "domain is marked for auto destroy"
-msgstr "O domínio %s foi marcado como de arranque automático\n"
+msgstr "domínio está marcado para auto destruição"
 
 #, fuzzy
 msgid "domain is no longer running"
@@ -25397,9 +25386,8 @@ msgstr "O domínio já está em execução"
 msgid "domain is not in shutoff state"
 msgstr ""
 
-#, fuzzy
 msgid "domain is not in suspend state"
-msgstr "Domínio %s suspenso\n"
+msgstr "domínio não está em estado do suspensão"
 
 msgid "domain is not running"
 msgstr "domínio não está em execução"
@@ -25411,9 +25399,8 @@ msgstr ""
 msgid "domain is not transient"
 msgstr "informação do domínio"
 
-#, fuzzy
 msgid "domain is pmsuspended"
-msgstr "Domínio %s suspenso\n"
+msgstr "domínio é pmsuspended"
 
 #, fuzzy
 msgid "domain is transient"
@@ -25469,9 +25456,8 @@ msgstr "tempo do domínio"
 msgid "domain type"
 msgstr "estado do domínio"
 
-#, fuzzy
 msgid "domain type is not defined"
-msgstr "O domínio %s ficou indefinido\n"
+msgstr "o tipo de domínio não está definido"
 
 msgid "domain vcpu counts"
 msgstr ""
@@ -32240,9 +32226,9 @@ msgstr "rede"
 msgid "network %1$s exists already"
 msgstr "a rede %1$s já existe"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network %1$s is not active"
-msgstr "A rede %1$s foi iniciada\n"
+msgstr "rede %1$s não está activa"
 
 #, c-format
 msgid "network '%1$s' already exists with uuid %2$s"
@@ -32307,9 +32293,9 @@ msgstr ""
 msgid "network '%1$s' has no associated interface or bridge"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%1$s' has no bridge name defined"
-msgstr "A rede %1$s ficou indefinida\n"
+msgstr "rede '%1$s' não tem nome de ponte definido"
 
 #, c-format
 msgid "network '%1$s' in %2$s must match connection"
@@ -32421,9 +32407,8 @@ msgstr ""
 msgid "network port has no owner UUID"
 msgstr ""
 
-#, fuzzy
 msgid "network port has no owner name"
-msgstr "A rede %s ficou indefinida\n"
+msgstr "porto de rede não tem nome de dono"
 
 #, fuzzy
 msgid "network port has no uuid"
@@ -33990,9 +33975,8 @@ msgstr ""
 msgid "ploop"
 msgstr ""
 
-#, fuzzy
 msgid "pmsuspended"
-msgstr "Domínio %s suspenso\n"
+msgstr "pmsuspended"
 
 msgid "polkit text authentication agent unavailable"
 msgstr ""
@@ -37142,9 +37126,9 @@ msgstr ""
 msgid "unable query filesystem type on '%1$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "unable to access device %1$s\n"
-msgstr "Não foi possível associar o dispositivo a partir de %1$s"
+msgstr "incapaz de aceder a dispositivo %1$s\n"
 
 #, c-format
 msgid "unable to access disk %1$s\n"
