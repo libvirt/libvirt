@@ -6,13 +6,14 @@
 # Daniel <veillard@redhat.com>, 2011
 # pmdaniel <danielthpro@gmail.com>, 2013
 # Américo Monteiro <a_monteiro@gmx.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-01 23:12+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"PO-Revision-Date: 2025-07-01 23:13+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -5004,9 +5005,8 @@ msgstr ""
 msgid "Create the dir %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "Created"
-msgstr "Criar um domínio."
+msgstr "Criado"
 
 #, fuzzy, c-format
 msgid "Created bridge %1$s with attached device %2$s\n"
@@ -5169,7 +5169,7 @@ msgid "Delete interface"
 msgstr ""
 
 msgid "Delete network"
-msgstr ""
+msgstr "Eliminar Rede"
 
 msgid "Delete network filter"
 msgstr ""
@@ -5178,7 +5178,7 @@ msgid "Delete network filter binding"
 msgstr ""
 
 msgid "Delete network port"
-msgstr ""
+msgstr "Apagar um Porto de Rede"
 
 msgid "Delete node device"
 msgstr ""
