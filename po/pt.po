@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-07-01 23:15+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-01 23:52+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -802,17 +802,17 @@ msgstr ""
 msgid "%1$s: failed to generate UNIX socket path"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
-msgstr "%1$s: incapaz de  gravar o ficheiro de registo: %2$s"
+msgstr "%1$s: falhou ao ler ficheiro temporário: %2$s"
 
 #, c-format
 msgid "%1$s: failed to write log file: %2$s"
-msgstr "%1$s: incapaz de  gravar o ficheiro de registo: %2$s"
+msgstr "%1$s: falhou ao gravar o ficheiro de registo: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: failure with %2$s: %3$s"
-msgstr "%s: incapaz de  gravar o ficheiro de registo: %s"
+msgstr "%1$s: falha com %2$s: %3$s"
 
 #, fuzzy, c-format
 msgid "%1$s: initialization failed"
@@ -915,9 +915,9 @@ msgstr ""
 msgid "%1$s: unknown remote mode '%2$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: unsupported hypervisor name %2$s\n"
-msgstr "imprimir o nome da máquina hipervisora\n"
+msgstr "%1$s: nome de hipervisor não supotado %2$s\n"
 
 #, c-format
 msgid "%1$s: value for '%2$s' parameter must be 0 or 1"
@@ -2509,9 +2509,9 @@ msgstr ""
 msgid "Can't initialize access manager"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't load config file: %1$s: %2$s"
-msgstr "incapaz de  ler o ficheiro de configuração %s"
+msgstr "Incapaz de ler ficheiro de configuração: %1$s:%2$s"
 
 #, c-format
 msgid "Can't modify device type '%1$s'"
@@ -3965,9 +3965,9 @@ msgstr ""
 msgid "Could not change scheduler parameters: %1$s"
 msgstr "mostrar/alterar os parâmetros de escalonamento"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not chown on swtpm logfile %1$s"
-msgstr "incapaz de  ligar ao Armazém do Xen %1$s"
+msgstr "Incapaz de usar chown em ficheiro log swtpm %1$s"
 
 #, fuzzy, c-format
 msgid "Could not complete transfer: %1$s (%2$d)"
@@ -5178,7 +5178,7 @@ msgid "Delete network filter binding"
 msgstr ""
 
 msgid "Delete network port"
-msgstr "Apagar um Porto de Rede"
+msgstr "Apagar porto de rede"
 
 msgid "Delete node device"
 msgstr ""
@@ -5196,7 +5196,7 @@ msgid "Delete the specified network port."
 msgstr ""
 
 msgid "Deleted"
-msgstr ""
+msgstr "Apagado"
 
 msgid "Deleting domain configuration requires authorization"
 msgstr ""
@@ -5253,9 +5253,8 @@ msgid ""
 "the physical host"
 msgstr ""
 
-#, fuzzy
 msgid "Destroyed"
-msgstr "O domínio %s foi destruído\n"
+msgstr "Destruído"
 
 #, c-format
 msgid "Destroyed node device '%1$s'\n"
@@ -5289,7 +5288,7 @@ msgid "Detecting storage pools requires authorization"
 msgstr ""
 
 msgid "Device"
-msgstr ""
+msgstr "Dispositivo"
 
 #, c-format
 msgid "Device %1$s already exists"
@@ -5423,7 +5422,7 @@ msgid "Dirty rate:"
 msgstr ""
 
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #, c-format
 msgid "Disallowing client %1$lld with uid %2$lld"
@@ -5446,7 +5445,7 @@ msgid "Disconnected from %1$s due to keepalive timeout"
 msgstr ""
 
 msgid "Disk"
-msgstr ""
+msgstr "Disco"
 
 #, c-format
 msgid "Disk address %1$d:%2$d:%3$d doesn't match target device '%4$s'"
@@ -5868,10 +5867,10 @@ msgid "Domain-0 does not support requested operation"
 msgstr "o comando '%s' não suporta a opção --%s"
 
 msgid "Domain:"
-msgstr ""
+msgstr "Domínio:"
 
 msgid "Done.\n"
-msgstr "Concluído\n"
+msgstr "Concluído.\n"
 
 msgid "Download length is too large"
 msgstr ""
@@ -6046,7 +6045,7 @@ msgid "Emulator '%1$s' does not support virt type '%2$s'"
 msgstr "o comando '%1$s' não suporta a opção --%2$s"
 
 msgid "Enabled"
-msgstr ""
+msgstr "Activo"
 
 msgid "End of file from agent socket"
 msgstr ""
@@ -6187,7 +6186,7 @@ msgid "Event thread is already running"
 msgstr "O domínio já está em execução"
 
 msgid "Event wakeup"
-msgstr ""
+msgstr "Acordar por evento"
 
 msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
@@ -6445,7 +6444,7 @@ msgid "Fail to create socket for incoming migration"
 msgstr "Não foi possível obter a informação do disco"
 
 msgid "Failed"
-msgstr ""
+msgstr "Falhado"
 
 msgid "Failed disable mount propagation out of the root filesystem"
 msgstr ""
@@ -6782,9 +6781,9 @@ msgstr "incapaz de  gravar o conteúdo"
 msgid "Failed to create %1$s"
 msgstr "Não foi possível criar o XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create '%1$s': %2$s"
-msgstr "Não foi possível criar o XML"
+msgstr "Falhou ao criar '%1$s': %2$s"
 
 #, fuzzy, c-format
 msgid "Failed to create SASL client context: %1$d (%2$s)"
@@ -6876,9 +6875,9 @@ msgstr "Não foi possível criar o domínio do %1$s"
 msgid "Failed to create memory backing dir %1$s"
 msgstr "Não foi possível criar o domínio do %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create network filter from %1$s"
-msgstr "Não foi possível criar a rede a partir do %1$s"
+msgstr "Falhou ao criar filtro de rede a partir de %1$s"
 
 #, c-format
 msgid "Failed to create network from %1$s"
@@ -7009,9 +7008,9 @@ msgstr "Falhou ao definir domínio a partir de %1$s"
 msgid "Failed to define interface from %1$s"
 msgstr "Não foi possível definir a rede a partir do %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define network filter from %1$s"
-msgstr "Não foi possível definir a rede a partir do %1$s"
+msgstr "Falhou ao definir filtro de rede a partir de %1$s"
 
 #, c-format
 msgid "Failed to define network from %1$s"
@@ -7113,9 +7112,9 @@ msgstr "Não foi possível destruir o domínio %1$s"
 msgid "Failed to destroy pool %1$s"
 msgstr "Não foi possível destruir o domínio %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device %1$s"
-msgstr "Não foi possível remover a associação do dispositivo de %1$s"
+msgstr "Falhou ao desanexar dispositivo %1$s"
 
 #, c-format
 msgid "Failed to detach device from %1$s"
@@ -7161,9 +7160,8 @@ msgstr "Não foi possível definir o domínio a partir do %s"
 msgid "Failed to disconnect from the admin server"
 msgstr "incapaz de  ligar ao hipervisor"
 
-#, fuzzy
 msgid "Failed to disconnect from the hypervisor"
-msgstr "incapaz de  ligar ao hipervisor"
+msgstr "Falhou ao desligar do hipervisor"
 
 #, fuzzy, c-format
 msgid "Failed to disconnect: %1$s"
@@ -7189,9 +7187,8 @@ msgstr "Não foi possível criar a rede a partir do %s"
 msgid "Failed to execute symbol '%1$s' in module '%2$s'"
 msgstr ""
 
-#, fuzzy
 msgid "Failed to extract interface information"
-msgstr "Não foi possível obter a informação da interface"
+msgstr "Falhou ao extrair a informação da interface"
 
 #, fuzzy
 msgid "Failed to extract interface information or no interfaces found"
@@ -7382,9 +7379,8 @@ msgstr "Não foi possível obter a informação da interface"
 msgid "Failed to get domain state"
 msgstr "incapaz de  obter o domínio '%s'"
 
-#, fuzzy
 msgid "Failed to get domain's UUID"
-msgstr "incapaz de  obter o UUID do domínio"
+msgstr "Falhou ao obter o UUID do domínio"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%1$s'"
@@ -7416,9 +7412,8 @@ msgstr ""
 msgid "Failed to get network persistence info"
 msgstr "incapaz de  obter a rede '%s'"
 
-#, fuzzy
 msgid "Failed to get network's UUID"
-msgstr "incapaz de  obter o UUID da rede"
+msgstr "Falhou ao obter o UUID da rede"
 
 #, fuzzy
 msgid "Failed to get node physical info from libxenlight"
@@ -7455,9 +7450,8 @@ msgstr ""
 msgid "Failed to get the number of active networks"
 msgstr "Não foi possível listar as redes inactivas"
 
-#, fuzzy
 msgid "Failed to get the number of active pools "
-msgstr "Não foi possível obter a informação da interface"
+msgstr "Falhou ao obter número de pools activos "
 
 #, fuzzy
 msgid "Failed to get the number of inactive networks"
@@ -7560,9 +7554,8 @@ msgstr "Não foi possível listar as redes activas"
 msgid "Failed to list active networks"
 msgstr "Falhou ao listar as redes activas"
 
-#, fuzzy
 msgid "Failed to list active pools"
-msgstr "Não foi possível listar os domínios activos"
+msgstr "Falhou ao listar pools ativos"
 
 #, fuzzy
 msgid "Failed to list domains"
@@ -7578,9 +7571,8 @@ msgstr "Não foi possível listar as redes inactivas"
 msgid "Failed to list inactive networks"
 msgstr "Falhou ao listar as redes inactivas"
 
-#, fuzzy
 msgid "Failed to list inactive pools"
-msgstr "Não foi possível listar os domínios inactivos"
+msgstr "Falhou ao listar pools inativos"
 
 #, fuzzy
 msgid "Failed to list interfaces"
@@ -7658,9 +7650,8 @@ msgstr "incapaz de  obter o domínio '%1$s'"
 msgid "Failed to load module '%1$s': %2$s"
 msgstr "Não foi possível gravar o domínio %1$s em %2$s"
 
-#, fuzzy
 msgid "Failed to load nbd module"
-msgstr "incapaz de  aceder ao ficheiro"
+msgstr "Falhou ao carregar o modulo nbd"
 
 msgid "Failed to load nbd module: administratively prohibited"
 msgstr ""
@@ -7880,9 +7871,9 @@ msgstr "Não foi possível reiniciar o domínio %1$s"
 msgid "Failed to parse block name %1$s"
 msgstr "Não foi possível obter o estado do bloco %s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse configuration of %1$s"
-msgstr "incapaz de  processar o ficheiro de configuração %1$s"
+msgstr "Falhou ao analisar configuração de %1$s"
 
 #, fuzzy, c-format
 msgid "Failed to parse dir name '%1$s'"
@@ -8123,9 +8114,8 @@ msgstr ""
 msgid "Failed to reconnect to the admin server"
 msgstr "incapaz de  ligar ao hipervisor"
 
-#, fuzzy
 msgid "Failed to reconnect to the hypervisor"
-msgstr "incapaz de  ligar ao hipervisor"
+msgstr "Falhou ao re-ligar ao hipervisor"
 
 #, fuzzy
 msgid "Failed to recv file descriptor"
@@ -8213,7 +8203,7 @@ msgstr "Não foi possível remover a associação do dispositivo de %1$s"
 
 #, c-format
 msgid "Failed to reset domain '%1$s'"
-msgstr ""
+msgstr "Falhou ao reiniciar domínio '%1$s'"
 
 #, fuzzy, c-format
 msgid "Failed to resize block device '%1$s'"
@@ -8414,9 +8404,8 @@ msgstr ""
 msgid "Failed to set credential: %1$s"
 msgstr "Não foi possível iniciar o domínio %1$s"
 
-#, fuzzy
 msgid "Failed to set hostname"
-msgstr "incapaz de  obter o nome da máquina"
+msgstr "Falhou ao definir nome da máquina"
 
 #, fuzzy, c-format
 msgid "Failed to set interface name to '%1$s' in xml document"
@@ -8657,9 +8646,9 @@ msgstr "Não foi possível remover a definição da rede %1$s"
 msgid "Failed to undefine network %1$s"
 msgstr "Falhou ao remover a definição da rede %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine network filter %1$s"
-msgstr "Não foi possível remover a definição da rede %1$s"
+msgstr "Falhou ao remover definições do filtro de rede %1$s"
 
 #, c-format
 msgid "Failed to undefine node device '%1$s'"
@@ -8784,7 +8773,7 @@ msgid "Failed! Volume not removed."
 msgstr ""
 
 msgid "Failed."
-msgstr ""
+msgstr "Falhou."
 
 #, c-format
 msgid "Failure action %1$s is not supported by sanlock"
@@ -8838,7 +8827,7 @@ msgstr ""
 
 #, c-format
 msgid "File '%1$s' does not exist"
-msgstr ""
+msgstr "O ficheiro '%1$s' não existe"
 
 #, c-format
 msgid "File '%1$s' has unknown type"
@@ -8886,7 +8875,7 @@ msgid "Filesystems in VMs are not supported by vz driver"
 msgstr ""
 
 msgid "Filter"
-msgstr ""
+msgstr "Filtro"
 
 #, c-format
 msgid "Filter '%1$s' is in use."
@@ -8899,7 +8888,7 @@ msgid "Filtering using --type is not supported by this libvirt"
 msgstr ""
 
 msgid "Finished"
-msgstr ""
+msgstr "Concluído"
 
 msgid "Finished after guest request"
 msgstr ""
@@ -9329,7 +9318,7 @@ msgid "Hostdev source %1$s must be a block device"
 msgstr ""
 
 msgid "Hostname"
-msgstr ""
+msgstr "Nome de máquina"
 
 msgid "Hostname is needed for host key verification"
 msgstr ""
@@ -9385,11 +9374,10 @@ msgid "Hypervisor reported CPU models"
 msgstr ""
 
 msgid "I/O Error"
-msgstr ""
+msgstr "Erro de I/O"
 
-#, fuzzy
 msgid "I/O error"
-msgstr "erro"
+msgstr "erro de I/O"
 
 #, c-format
 msgid ""
@@ -9503,7 +9491,7 @@ msgid "IOThreads not available for bus %1$s target %2$s"
 msgstr ""
 
 msgid "IP address"
-msgstr ""
+msgstr "Endereço IP"
 
 #, c-format
 msgid "IP address lookup for host '%1$s' failed: %2$s"
@@ -9659,7 +9647,7 @@ msgid "Integrity error in watchdog models"
 msgstr ""
 
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #, fuzzy, c-format
 msgid "Interface %1$s XML configuration edited.\n"
@@ -9888,7 +9876,7 @@ msgid "Invalid address."
 msgstr ""
 
 msgid "Invalid argument"
-msgstr ""
+msgstr "Argumento inválido"
 
 msgid "Invalid async job start"
 msgstr ""
@@ -20827,9 +20815,9 @@ msgstr ""
 msgid "XML does not contain expected 'cpu' element"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "XML error: %1$s"
-msgstr "erro: "
+msgstr "erro de XML: %1$s"
 
 msgid "XML file"
 msgstr "ficheiro XML"
@@ -25901,9 +25889,8 @@ msgstr ""
 msgid "error copying profile name"
 msgstr ""
 
-#, fuzzy
 msgid "error count:"
-msgstr "erro: "
+msgstr "contagem de erros:"
 
 #, fuzzy, c-format
 msgid "error creating %1$s interface %2$s@%3$s (%4$s)"
@@ -27095,9 +27082,9 @@ msgstr ""
 msgid "failed to monitor qemu in-shutdown process %1$i"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to move file to %1$s "
-msgstr "não foi possível aceder ao ficheiro"
+msgstr "falhou ao mover ficheiro para %1$s "
 
 #, c-format
 msgid "failed to obtain list of available servers from %1$s"
