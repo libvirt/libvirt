@@ -11,4 +11,6 @@
           arpsrcmacaddr='$MAC' arpdstmacaddr='$MAC'
           arpsrcipaddr='0.0.0.0' arpdstipaddr='0.0.0.0'/>
   </rule>
+
+  <filterref filter='no-other-rarp-traffic'/>
 </filter>

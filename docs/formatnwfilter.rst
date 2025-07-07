@@ -438,7 +438,7 @@ several other filters.
      <filterref filter='allow-incoming-ipv4'/>
      <filterref filter='no-arp-spoofing'/>
      <filterref filter='no-other-l2-traffic'/>
-     <filterref filter='qemu-announce-self'/>
+     <filterref filter='qemu-announce-self-rarp'/>
    </filter>
 
 To reference another filter, the XML node ``filterref`` needs to be provided

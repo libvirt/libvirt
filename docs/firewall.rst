@@ -285,7 +285,6 @@ useful rules:
    fb57c546-76dc-a372-513f-e8179011b48a  no-mac-spoofing
    dba10ea7-446d-76de-346f-335bd99c1d05  no-other-l2-traffic
    f5c78134-9da4-0c60-a9f0-fb37bc21ac1f  no-other-rarp-traffic
-   7637e405-4ccf-42ac-5b41-14f8d03d8cf3  qemu-announce-self
    9aed52e7-f0f3-343e-fe5c-7dcb27b594e5  qemu-announce-self-rarp
 
 Most of these are just building blocks. The interesting one here is

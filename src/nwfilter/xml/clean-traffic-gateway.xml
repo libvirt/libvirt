@@ -30,5 +30,5 @@
     <filterref filter='no-other-l2-traffic'/>
 
     <!-- allow qemu to send a self-announce upon migration end -->
-    <filterref filter='qemu-announce-self'/>
+    <filterref filter='qemu-announce-self-rarp'/>
 </filter>
