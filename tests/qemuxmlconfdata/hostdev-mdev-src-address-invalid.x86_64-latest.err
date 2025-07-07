@@ -1,1 +1,1 @@
-unsupported configuration: Missing 'uuid' attribute for element <address>
+XML error: Missing required attribute 'uuid' in element 'address'

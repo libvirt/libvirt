@@ -6348,7 +6348,6 @@ virDomainHostdevSubsysMediatedDevDefParseXML(virDomainHostdevDef *def,
     unsigned char uuid[VIR_UUID_BUFLEN] = {0};
     xmlNodePtr node = NULL;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &def->source.subsys.u.mdev;
-    g_autofree char *uuidxml = NULL;
 
     if (!(node = virXPathNode("./source/address", ctxt))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -6356,18 +6355,8 @@ virDomainHostdevSubsysMediatedDevDefParseXML(virDomainHostdevDef *def,
         return -1;
     }
 
-    if (!(uuidxml = virXMLPropString(node, "uuid"))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Missing 'uuid' attribute for element <address>"));
+    if (virXMLPropUUID(node, "uuid", VIR_XML_PROP_REQUIRED, uuid) < 0)
         return -1;
-    }
-
-    if (virUUIDParse(uuidxml, uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("Cannot parse uuid attribute of element <address>"));
-        return -1;
-    }
 
     virUUIDFormat(uuid, mdevsrc->uuidstr);
     return 0;
