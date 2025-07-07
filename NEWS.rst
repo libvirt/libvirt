@@ -19,6 +19,12 @@ v11.6.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
+
+    The previous default of ``lsilogic`` is unsupported by modern operating
+    systems. ``virtio-scsi`` is a more suitable default for ARM and RISC-V
+    ``virt`` machine types.
+
 * **Bug fixes**
 
 
