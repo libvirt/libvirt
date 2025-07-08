@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='aarch64' machine='realview-pbx-a9'>hvm</type>
+    <type arch='aarch64' machine='realview-eb'>hvm</type>
     <boot dev='hd'/>
   </os>
   <cpu mode='host-passthrough' check='none'/>
