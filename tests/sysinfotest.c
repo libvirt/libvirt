@@ -103,7 +103,7 @@ testSysinfo(const void *data)
 
     sysinfo = g_strdup_printf("%s/sysinfodata/%ssysinfo.data", abs_srcdir, testdata->name);
     cpuinfo = g_strdup_printf("%s/sysinfodata/%scpuinfo.data", abs_srcdir, testdata->name);
-    expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.expect", abs_srcdir, testdata->name);
+    expected = g_strdup_printf("%s/sysinfodata/%ssysinfo.xml", abs_srcdir, testdata->name);
 
     virCommandSetDryRun(dryRunToken, NULL, false, false, testDMIDecodeDryRun, sysinfo);
 
