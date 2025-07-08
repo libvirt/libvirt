@@ -7,6 +7,7 @@
   <include href="cputypes.rng"/>
   <include href="nwfilter_params.rng"/>
   <include href="privatedata.rng"/>
+  <include href="sysinfocommon.rng"/>
 
   <define name="createMode">
     <data type="unsignedInt">
@@ -7125,63 +7126,11 @@
             <value>smbios</value>
           </attribute>
           <interleave>
-            <optional>
-              <element name="bios">
-                <oneOrMore>
-                  <element name="entry">
-                    <attribute name="name">
-                      <ref name="sysinfo-bios-name"/>
-                    </attribute>
-                    <ref name="sysinfo-value"/>
-                  </element>
-                </oneOrMore>
-              </element>
-            </optional>
-            <optional>
-              <element name="system">
-                <oneOrMore>
-                  <element name="entry">
-                    <attribute name="name">
-                      <ref name="sysinfo-system-name"/>
-                    </attribute>
-                    <ref name="sysinfo-value"/>
-                  </element>
-                </oneOrMore>
-              </element>
-            </optional>
-            <zeroOrMore>
-              <element name="baseBoard">
-                <oneOrMore>
-                  <element name="entry">
-                    <attribute name="name">
-                      <ref name="sysinfo-baseBoard-name"/>
-                    </attribute>
-                    <ref name="sysinfo-value"/>
-                  </element>
-                </oneOrMore>
-              </element>
-            </zeroOrMore>
-            <optional>
-              <element name="chassis">
-                <oneOrMore>
-                  <element name="entry">
-                    <attribute name="name">
-                      <ref name="sysinfo-chassis-name"/>
-                    </attribute>
-                    <ref name="sysinfo-value"/>
-                  </element>
-                </oneOrMore>
-              </element>
-            </optional>
-            <optional>
-              <element name="oemStrings">
-                <oneOrMore>
-                  <element name="entry">
-                    <ref name="sysinfo-value"/>
-                  </element>
-                </oneOrMore>
-              </element>
-            </optional>
+            <ref name="sysinfo-smbios-group-bios"/>
+            <ref name="sysinfo-smbios-group-system"/>
+            <ref name="sysinfo-smbios-group-baseboard"/>
+            <ref name="sysinfo-smbios-group-chassis"/>
+            <ref name="sysinfo-smbios-group-oemstrings"/>
           </interleave>
         </group>
         <group>
@@ -7189,72 +7138,11 @@
             <value>fwcfg</value>
           </attribute>
           <zeroOrMore>
-            <element name="entry">
-              <attribute name="name">
-                <data type="string"/>
-              </attribute>
-              <choice>
-                <group>
-                  <attribute name="file">
-                    <data type="string"/>
-                  </attribute>
-                  <empty/>
-                </group>
-                <group>
-                  <ref name="sysinfo-value"/>
-                </group>
-              </choice>
-            </element>
+            <ref name="sysinfo-fwcfg-entry"/>
           </zeroOrMore>
         </group>
       </choice>
     </element>
-  </define>
-
-  <define name="sysinfo-bios-name">
-    <choice>
-      <value>vendor</value>
-      <value>version</value>
-      <value>date</value>
-      <value>release</value>
-    </choice>
-  </define>
-
-  <define name="sysinfo-system-name">
-    <choice>
-      <value>manufacturer</value>
-      <value>product</value>
-      <value>version</value>
-      <value>serial</value>
-      <value>uuid</value>
-      <value>sku</value>
-      <value>family</value>
-    </choice>
-  </define>
-
-  <define name="sysinfo-baseBoard-name">
-    <choice>
-      <value>manufacturer</value>
-      <value>product</value>
-      <value>version</value>
-      <value>serial</value>
-      <value>asset</value>
-      <value>location</value>
-    </choice>
-  </define>
-
-  <define name="sysinfo-chassis-name">
-    <choice>
-      <value>manufacturer</value>
-      <value>version</value>
-      <value>serial</value>
-      <value>asset</value>
-      <value>sku</value>
-    </choice>
-  </define>
-
-  <define name="sysinfo-value">
-    <data type="string"/>
   </define>
 
   <define name="acpiTable">
