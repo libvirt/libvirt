@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <element name="sysinfo">
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>smbios</value>
+          </attribute>
+          <interleave>
+            <ref name="sysinfo-smbios-group-bios"/>
+            <ref name="sysinfo-smbios-group-system"/>
+            <ref name="sysinfo-smbios-group-baseboard"/>
+            <ref name="sysinfo-smbios-group-processor"/>
+            <ref name="sysinfo-smbios-group-memory"/>
+            <ref name="sysinfo-smbios-group-chassis"/>
+            <ref name="sysinfo-smbios-group-oemstrings"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>fwcfg</value>
+          </attribute>
+          <zeroOrMore>
+            <ref name="sysinfo-fwcfg-entry"/>
+          </zeroOrMore>
+        </group>
+      </choice>
+    </element>
+  </start>
+
+  <include href="sysinfocommon.rng"/>
+
+</grammar>

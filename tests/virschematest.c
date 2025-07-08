@@ -369,6 +369,10 @@ static const struct testSchemaEntry testDevice[] = {
     { .dir = "tests/qemublocktestdata/xml2json" },
 };
 
+static const struct testSchemaEntry schemaSysinfo[] = {
+    { .dir = "tests/sysinfodata" },
+};
+
 static int
 mymain(void)
 {
@@ -397,6 +401,7 @@ mymain(void)
     DO_TEST(SCHEMAS_PATH "storagepoolcaps.rng", schemaStoragepoolcaps);
     DO_TEST(SCHEMAS_PATH "storagepool.rng", schemaStoragePool);
     DO_TEST(SCHEMAS_PATH "storagevol.rng", schemaStorageVol);
+    DO_TEST(SCHEMAS_PATH "sysinfo.rng", schemaSysinfo);
 
     DO_TEST(INTERNAL_SCHEMAS_PATH "cpu-baseline.rng", testsCpuBaseline);
     DO_TEST(INTERNAL_SCHEMAS_PATH "device.rng", testDevice);

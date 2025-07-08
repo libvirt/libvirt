@@ -63,6 +63,36 @@
     </optional>
   </define>
 
+  <define name="sysinfo-smbios-group-processor">
+    <zeroOrMore>
+      <element name="processor">
+        <oneOrMore>
+          <element name="entry">
+            <attribute name="name">
+              <ref name="sysinfo-processor-name"/>
+            </attribute>
+            <ref name="sysinfo-value"/>
+          </element>
+        </oneOrMore>
+      </element>
+    </zeroOrMore>
+  </define>
+
+  <define name="sysinfo-smbios-group-memory">
+    <zeroOrMore>
+      <element name="memory_device">
+        <oneOrMore>
+          <element name="entry">
+            <attribute name="name">
+              <ref name="sysinfo-memory-name"/>
+            </attribute>
+            <ref name="sysinfo-value"/>
+          </element>
+        </oneOrMore>
+      </element>
+    </zeroOrMore>
+  </define>
+
   <define name="sysinfo-smbios-group-oemstrings">
     <optional>
       <element name="oemStrings">
@@ -133,6 +163,37 @@
       <value>serial</value>
       <value>asset</value>
       <value>sku</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-processor-name">
+    <choice>
+      <value>socket_destination</value>
+      <value>type</value>
+      <value>family</value>
+      <value>manufacturer</value>
+      <value>signature</value>
+      <value>version</value>
+      <value>external_clock</value>
+      <value>max_speed</value>
+      <value>status</value>
+      <value>serial_number</value>
+      <value>part_number</value>
+    </choice>
+  </define>
+
+  <define name="sysinfo-memory-name">
+    <choice>
+      <value>size</value>
+      <value>form_factor</value>
+      <value>locator</value>
+      <value>bank_locator</value>
+      <value>type</value>
+      <value>type_detail</value>
+      <value>speed</value>
+      <value>manufacturer</value>
+      <value>serial_number</value>
+      <value>part_number</value>
     </choice>
   </define>
 
