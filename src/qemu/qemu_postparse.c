@@ -1291,13 +1291,11 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_ARMV7L:
     case VIR_ARCH_ARMV7B:
     case VIR_ARCH_AARCH64:
-        if (STREQ(def->os.machine, "versatilepb"))
-            addPCIRoot = true;
-
-        /* Add default USB for the two machine types which historically
-         * supported -usb */
+        /* Add default PCI and USB for the two machine types which
+         * historically supported -usb */
         if (STREQ(def->os.machine, "versatilepb") ||
-            STRPREFIX(def->os.machine, "realview")) {
+            STRPREFIX(def->os.machine, "realview-eb")) {
+            addPCIRoot = true;
             addDefaultUSB = true;
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
                 usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;

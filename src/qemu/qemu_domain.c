@@ -7688,7 +7688,8 @@ qemuDomainSupportsPCI(const virDomainDef *def)
      * machine types support PCI */
     if (ARCH_IS_ARM(def->os.arch)) {
         if (qemuDomainIsARMVirt(def) ||
-            STREQ(def->os.machine, "versatilepb")) {
+            STREQ(def->os.machine, "versatilepb") ||
+            STRPREFIX(def->os.machine, "realview-eb")) {
             return true;
         }
         return false;
