@@ -2672,7 +2672,8 @@ static int
 qemuDomainAssignPCIAddresses(virDomainDef *def,
                              virQEMUCaps *qemuCaps,
                              virQEMUDriver *driver,
-                             virDomainObj *obj)
+                             virDomainObj *obj,
+                             bool newDomain)
 {
     int ret = -1;
     virDomainPCIAddressSet *addrs = NULL;
@@ -2840,10 +2841,17 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
         g_clear_pointer(&addrs, virDomainPCIAddressSetFree);
     }
 
-    if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, false)))
-        goto cleanup;
+    /* We're done collecting available information, now we're going
+     * to allocate PCI addresses for real. We normally skip this part
+     * for machine type that don't support PCI, but we run it for new
+     * domains to catch situation in which the user is incorrectly
+     * asking for PCI devices to be used. If that's the case, an
+     * error will naturally be raised when attempting to allocate a
+     * PCI address since no PCI buses exist */
+    if (qemuDomainSupportsPCI(def) || newDomain) {
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, false)))
+            goto cleanup;
 
-    if (qemuDomainSupportsPCI(def)) {
         if (qemuDomainValidateDevicePCISlotsChipsets(def, addrs) < 0)
             goto cleanup;
 
@@ -3287,7 +3295,7 @@ qemuDomainAssignAddresses(virDomainDef *def,
 
     qemuDomainAssignVirtioMMIOAddresses(def, qemuCaps);
 
-    if (qemuDomainAssignPCIAddresses(def, qemuCaps, driver, obj) < 0)
+    if (qemuDomainAssignPCIAddresses(def, qemuCaps, driver, obj, newDomain) < 0)
         return -1;
 
     if (qemuDomainAssignUSBAddresses(def, obj, newDomain) < 0)

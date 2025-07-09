@@ -2229,18 +2229,8 @@ mymain(void)
                  ARG_END);
 
     /* The '-nousb' test case tests machine without a built-in USB controller */
-    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-nousb", "aarch64");
-    DO_TEST_FULL("usb-controller-default-fallback-nousb", ".aarch64-latest",
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
-                 ARG_END);
-    DO_TEST_FULL("usb-controller-default-unavailable-nousb", ".aarch64-latest",
-                 ARG_CAPS_ARCH, "aarch64",
-                 ARG_CAPS_VER, "latest",
-                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
-                 ARG_END);
+    DO_TEST_CAPS_ARCH_LATEST_FAILURE("usb-controller-default-nousb", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR("usb-controller-default-nousb", "aarch64");
 
     DO_TEST_FULL("usb-controller-default-fallback-g3beige", ".ppc64-latest",
                  ARG_CAPS_ARCH, "ppc64",
