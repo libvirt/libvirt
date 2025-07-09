@@ -8,6 +8,5 @@
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-armv7l</emulator>
-    <memballoon model='none'/>
   </devices>
 </domain>

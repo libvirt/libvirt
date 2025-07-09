@@ -10,6 +10,5 @@
   <cpu mode='host-passthrough'/>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
-    <memballoon model='none'/>
   </devices>
 </domain>
