@@ -2,11 +2,9 @@
   <name>QEMUGuest1</name>
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219136</memory>
-  <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
-    <boot dev='hd'/>
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
@@ -26,14 +24,10 @@
       <address type='pci' domain='0' bus='0' slot='4' function='2'/>
     </controller>
     <hub type='usb'/>
-    <input type='mouse' bus='usb'>
-    </input>
-    <hub type='usb'>
-    </hub>
-    <input type='mouse' bus='usb'>
-    </input>
-    <input type='mouse' bus='usb'>
-    </input>
-    <memballoon model='virtio'/>
+    <input type='mouse' bus='usb'/>
+    <hub type='usb'/>
+    <input type='mouse' bus='usb'/>
+    <input type='mouse' bus='usb'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

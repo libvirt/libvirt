@@ -8,18 +8,13 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <features>
-    <acpi/>
-    <apic/>
-    <pae/>
-  </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>POWER10</model>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
     <controller type='usb' index='0' model='qemu-xhci'>
@@ -30,9 +25,7 @@
       <target index='0'/>
     </controller>
     <audio id='1' type='none'/>
-    <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
-    </memballoon>
+    <memballoon model='none'/>
     <panic model='pseries'/>
   </devices>
 </domain>

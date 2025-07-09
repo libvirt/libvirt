@@ -8,7 +8,6 @@
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-armv7l</emulator>
-    <controller type='pci' index='0' model='pci-root'/>
     <controller type='usb' index='0'/>
     <memballoon model='none'/>
   </devices>

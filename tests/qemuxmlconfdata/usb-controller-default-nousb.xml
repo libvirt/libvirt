@@ -10,7 +10,6 @@
   <cpu mode='host-passthrough'/>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
-    <controller type='pci' index='0' model='pci-root'/>
     <controller type='usb' index='0'/>
     <memballoon model='none'/>
   </devices>

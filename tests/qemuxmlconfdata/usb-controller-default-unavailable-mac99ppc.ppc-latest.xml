@@ -8,15 +8,10 @@
     <type arch='ppc' machine='mac99'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <features>
-    <acpi/>
-    <apic/>
-    <pae/>
-  </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc</emulator>
     <controller type='usb' index='0'>
@@ -24,8 +19,6 @@
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
-    <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
-    </memballoon>
+    <memballoon model='none'/>
   </devices>
 </domain>

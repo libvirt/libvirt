@@ -41,8 +41,6 @@
     <audio id='1' type='none'/>
     <hub type='usb'/>
     <hub type='usb'/>
-    <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
-    </memballoon>
+    <memballoon model='none'/>
   </devices>
 </domain>
