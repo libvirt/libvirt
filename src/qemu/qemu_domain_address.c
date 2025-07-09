@@ -499,6 +499,55 @@ qemuDomainDeviceCalculatePCIAddressExtensionFlags(virQEMUCaps *qemuCaps,
 }
 
 
+static bool
+qemuDomainNetIsPCI(const virDomainNetDef *net)
+{
+    switch ((virDomainNetModelType)net->model) {
+    case VIR_DOMAIN_NET_MODEL_USB_NET:
+    case VIR_DOMAIN_NET_MODEL_SPAPR_VLAN:
+    case VIR_DOMAIN_NET_MODEL_LAN9118:
+    case VIR_DOMAIN_NET_MODEL_SMC91C111:
+        /* The models above are not PCI devices */
+        return false;
+
+    case VIR_DOMAIN_NET_MODEL_RTL8139:
+    case VIR_DOMAIN_NET_MODEL_VIRTIO:
+    case VIR_DOMAIN_NET_MODEL_E1000:
+    case VIR_DOMAIN_NET_MODEL_E1000E:
+    case VIR_DOMAIN_NET_MODEL_IGB:
+    case VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL:
+    case VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL:
+    case VIR_DOMAIN_NET_MODEL_VMXNET3:
+        /* The models above are PCI devices */
+        return true;
+
+    case VIR_DOMAIN_NET_MODEL_NETFRONT:
+    case VIR_DOMAIN_NET_MODEL_VMXNET:
+    case VIR_DOMAIN_NET_MODEL_VMXNET2:
+    case VIR_DOMAIN_NET_MODEL_VLANCE:
+    case VIR_DOMAIN_NET_MODEL_AM79C970A:
+    case VIR_DOMAIN_NET_MODEL_AM79C973:
+    case VIR_DOMAIN_NET_MODEL_82540EM:
+    case VIR_DOMAIN_NET_MODEL_82545EM:
+    case VIR_DOMAIN_NET_MODEL_82543GC:
+    case VIR_DOMAIN_NET_MODEL_UNKNOWN:
+        /* The models above are probably not PCI devices, and in fact
+         * some of them are not even relevant to the QEMU driver, but
+         * historically we've defaulted to considering all network
+         * interfaces to be PCI so we preserve that behavior here */
+        return true;
+
+    case VIR_DOMAIN_NET_MODEL_LAST:
+    default:
+        /* Due to historical reasons, model names for network interfaces
+         * are not validated as strictly as other devices. When in doubt,
+         * assume that network interfaces are PCI devices, as that has
+         * the highest chance of working correctly */
+        return true;
+    }
+}
+
+
 /**
  * qemuDomainDeviceCalculatePCIConnectFlags:
  *
@@ -669,10 +718,11 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
          * address is assigned when we're assigning the
          * addresses for other hostdev devices.
          */
-        if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
-            net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
+        if (net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV)
             return 0;
-        }
+
+        if (!qemuDomainNetIsPCI(net))
+            return 0;
 
         if (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO ||
             net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL)
@@ -2110,9 +2160,8 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
 
-        if (net->model == VIR_DOMAIN_NET_MODEL_USB_NET) {
+        if (!qemuDomainNetIsPCI(net))
             continue;
-        }
 
         /* type='hostdev' network devices might be USB, and are also
          * in hostdevs list anyway, so handle them with other hostdevs
