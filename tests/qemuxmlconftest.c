@@ -1423,8 +1423,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
-    DO_TEST_CAPS_LATEST("isapc-pci");
-    DO_TEST_CAPS_LATEST("microvm-pci");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("isapc-pci");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("microvm-pci");
 
     DO_TEST_CAPS_LATEST("genid");
     DO_TEST_CAPS_LATEST("genid-auto");
@@ -2118,8 +2118,8 @@ mymain(void)
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-isapc");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-microvm");
+    DO_TEST_CAPS_LATEST_FAILURE("usb-controller-default-isapc");
+    DO_TEST_CAPS_LATEST_FAILURE("usb-controller-default-microvm");
     DO_TEST_CAPS_LATEST("usb-controller-default-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-pseries", "ppc64");

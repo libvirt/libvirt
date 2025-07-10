@@ -7703,6 +7703,17 @@ qemuDomainSupportsPCI(const virDomainDef *def)
         return false;
     }
 
+    if (ARCH_IS_X86(def->os.arch)) {
+        if (STREQ(def->os.machine, "isapc") ||
+            STREQ(def->os.machine, "microvm")) {
+            return false;
+        }
+        return true;
+    }
+
+    if (def->os.arch == VIR_ARCH_SPARC)
+        return false;
+
     /* On all other architectures, PCI support is assumed to
      * be present */
     return true;
