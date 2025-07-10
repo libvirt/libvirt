@@ -674,6 +674,15 @@
           <data type="string"/>
         </element>
       </optional>
+      <optional>
+        <element name="quoteGenerationService">
+          <optional>
+            <attribute name="path">
+              <ref name="absFilePath"/>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
     </interleave>
   </define>
 
