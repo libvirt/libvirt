@@ -16,6 +16,7 @@
     ],
     "features": [
         "enrolled-keys",
+        "intel-tdx",
         "secure-boot",
         "verbose-dynamic"
     ]

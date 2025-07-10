@@ -149,6 +149,7 @@ typedef enum {
     QEMU_FIRMWARE_FEATURE_AMD_SEV,
     QEMU_FIRMWARE_FEATURE_AMD_SEV_ES,
     QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP,
+    QEMU_FIRMWARE_FEATURE_INTEL_TDX,
     QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS,
     QEMU_FIRMWARE_FEATURE_REQUIRES_SMM,
     QEMU_FIRMWARE_FEATURE_SECURE_BOOT,
@@ -167,6 +168,7 @@ VIR_ENUM_IMPL(qemuFirmwareFeature,
               "amd-sev",
               "amd-sev-es",
               "amd-sev-snp",
+              "intel-tdx",
               "enrolled-keys",
               "requires-smm",
               "secure-boot",
@@ -1158,6 +1160,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     bool supportsSEV = false;
     bool supportsSEVES = false;
     bool supportsSEVSNP = false;
+    bool supportsTDX = false;
     bool supportsSecureBoot = false;
     bool hasEnrolledKeys = false;
     int reqSecureBoot;
@@ -1207,6 +1210,10 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
             supportsSEVSNP = true;
+            break;
+
+        case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
+            supportsTDX = true;
             break;
 
         case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
@@ -1370,9 +1377,18 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                 return false;
             }
             break;
-        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+
         case VIR_DOMAIN_LAUNCH_SECURITY_TDX:
+            if (!supportsTDX) {
+                VIR_DEBUG("Domain requires TDX, firmware '%s' doesn't support it",
+                          path);
+                return false;
+            }
             break;
+
+        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+            break;
+
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
             virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
@@ -1490,6 +1506,7 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
+        case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_NONE:
@@ -1541,6 +1558,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
+        case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_LAST:
@@ -1981,6 +1999,7 @@ qemuFirmwareGetSupported(const char *machine,
             case QEMU_FIRMWARE_FEATURE_AMD_SEV:
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
+            case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
             case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
             case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
