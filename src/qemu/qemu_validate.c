@@ -1425,6 +1425,38 @@ qemuValidateDomainDef(const virDomainDef *def,
                                _("Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch security policy"));
                 return -1;
             }
+            if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_KVM) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Intel TDX launch security needs split kernel irqchip"));
+                return -1;
+            }
+            /* Current KVM doesn't support PMU for TD guest. It returns
+             * error if TD is created with PMU bit being set in attributes.
+             * By default, QEMU disable PMU for TD guest.
+             */
+            if (def->features[VIR_DOMAIN_FEATURE_PMU] == VIR_TRISTATE_SWITCH_ON) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Intel TDX launch security is not supported with PMU enabled"));
+                return -1;
+            }
+            /* TDX doesn't support SMM and VMM cannot emulate SMM for TDX VMs
+             * because VMM cannot manipulate TDX VM's memory.
+             * By default, QEMU disable SMM for TD guest.
+             */
+            if (def->features[VIR_DOMAIN_FEATURE_SMM] == VIR_TRISTATE_SWITCH_ON) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Intel TDX launch security is not supported with SMM enabled"));
+                return -1;
+            }
+            /* TDVF(OVMF) needs to run at private memory for TD guest. TDX cannot
+             * support pflash device since it doesn't support read-only private memory.
+             * Thus load TDVF(OVMF) with -bios option for TDs.
+             */
+            if (def->os.loader && def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Intel TDX launch security is not supported with pflash loader"));
+                return -1;
+            }
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
