@@ -1110,6 +1110,7 @@ endif
 run_pkg_config_files = [
   'libvirt-lxc.pc.in',
   'libvirt-qemu.pc.in',
+  'libvirt-admin.pc.in',
   'libvirt.pc.in',
 ]
 
