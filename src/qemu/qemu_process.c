@@ -816,9 +816,11 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
                 reason = VIR_DOMAIN_RUNNING_POSTCOPY;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_RESUMED,
-                                                  eventDetail);
+
+        if (!priv->pausedShutdown)
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_RESUMED,
+                                                      eventDetail);
         qemuDomainSaveStatus(vm);
     }
 
