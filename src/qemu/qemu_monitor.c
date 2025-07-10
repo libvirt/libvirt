@@ -1073,6 +1073,16 @@ qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest,
      * with it here. */
     if (vm->def->sec &&
         vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_TDX) {
+        qemuDomainObjPrivate *priv = vm->privateData;
+
+        /* For secure guest, FakeReboot kills original QEMU instance and
+         * create new one. During this process, QEMU send SHUTDOWN event
+         * with "host-signal" reason which can trigger another FakeReboot.
+         * Check if a FakeReboot is ongoing and bypass "host-signal"
+         * processing which is originally come from FakeReboot. */
+        if (priv->fakeReboot && STREQ_NULLABLE(reason, "host-signal"))
+            return;
+
         if ((STREQ_NULLABLE(reason, "guest-shutdown") &&
              vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART) ||
             (STREQ_NULLABLE(reason, "guest-reset") &&
