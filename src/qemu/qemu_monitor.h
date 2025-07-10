@@ -38,6 +38,7 @@ typedef enum {
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE = 0,
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV,
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390,
+    QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_TDX,
 
     QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST
 } qemuMonitorEventPanicInfoType;
@@ -61,12 +62,22 @@ struct _qemuMonitorEventPanicInfoS390 {
     char *reason;
 };
 
+typedef struct _qemuMonitorEventPanicInfoTDX qemuMonitorEventPanicInfoTDX;
+struct _qemuMonitorEventPanicInfoTDX {
+    /* TDX specific guest panic information */
+    int error_code;
+    char *message;
+    bool has_gpa;
+    unsigned long long gpa;
+};
+
 typedef struct _qemuMonitorEventPanicInfo qemuMonitorEventPanicInfo;
 struct _qemuMonitorEventPanicInfo {
     qemuMonitorEventPanicInfoType type;
     union {
         qemuMonitorEventPanicInfoHyperv hyperv;
         qemuMonitorEventPanicInfoS390 s390;
+        qemuMonitorEventPanicInfoTDX tdx;
     } data;
 };
 

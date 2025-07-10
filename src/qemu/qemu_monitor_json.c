@@ -622,6 +622,36 @@ qemuMonitorJSONGuestPanicExtractInfoS390(virJSONValue *data)
 }
 
 static qemuMonitorEventPanicInfo *
+qemuMonitorJSONGuestPanicExtractInfoTDX(virJSONValue *data)
+{
+    g_autoptr(qemuMonitorEventPanicInfo) ret = NULL;
+    int error_code;
+    unsigned long long gpa = 0;
+    const char *message = NULL;
+    bool has_gpa;
+
+    ret = g_new0(qemuMonitorEventPanicInfo, 1);
+
+    ret->type = QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_TDX;
+    has_gpa = virJSONValueObjectHasKey(data, "gpa");
+
+    if (virJSONValueObjectGetNumberInt(data, "error-code", &error_code) < 0 ||
+        !(message = virJSONValueObjectGetString(data, "message")) ||
+        (has_gpa && virJSONValueObjectGetNumberUlong(data, "gpa", &gpa) < 0)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed TDX panic data"));
+        return NULL;
+    }
+
+    ret->data.tdx.error_code = error_code;
+    ret->data.tdx.gpa = gpa;
+    ret->data.tdx.has_gpa = has_gpa;
+
+    ret->data.tdx.message = g_strdup(message);
+
+    return g_steal_pointer(&ret);
+}
+
+static qemuMonitorEventPanicInfo *
 qemuMonitorJSONGuestPanicExtractInfo(virJSONValue *data)
 {
     const char *type = virJSONValueObjectGetString(data, "type");
@@ -630,6 +660,8 @@ qemuMonitorJSONGuestPanicExtractInfo(virJSONValue *data)
         return qemuMonitorJSONGuestPanicExtractInfoHyperv(data);
     else if (STREQ_NULLABLE(type, "s390"))
         return qemuMonitorJSONGuestPanicExtractInfoS390(data);
+    else if (STREQ_NULLABLE(type, "tdx"))
+        return qemuMonitorJSONGuestPanicExtractInfoTDX(data);
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("unknown panic info type '%1$s'"), NULLSTR(type));

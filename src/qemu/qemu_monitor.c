@@ -3912,6 +3912,19 @@ qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfo *info)
                               info->data.s390.psw_addr,
                               info->data.s390.reason);
         break;
+    case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_TDX:
+        if (info->data.tdx.has_gpa)
+            ret = g_strdup_printf("tdx: error_code='0x%x' message='%s' "
+                                  "additional error information can be found "
+                                  "at gpa page: '0x%016llx'",
+                                  info->data.tdx.error_code,
+                                  info->data.tdx.message,
+                                  info->data.tdx.gpa);
+        else
+            ret = g_strdup_printf("tdx: error_code='0x%x' message='%s'",
+                                  info->data.tdx.error_code,
+                                  info->data.tdx.message);
+        break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST:
         break;
@@ -3930,6 +3943,9 @@ qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfo *info)
     switch (info->type) {
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390:
         g_free(info->data.s390.reason);
+        break;
+    case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_TDX:
+        g_free(info->data.tdx.message);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV:
