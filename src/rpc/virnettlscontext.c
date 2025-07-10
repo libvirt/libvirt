@@ -308,23 +308,18 @@ static virNetTLSContext *virNetTLSContextNewPath(const char *pkipath,
                                                  bool requireValidCert,
                                                  bool isServer)
 {
-    char *cacert = NULL, *cacrl = NULL, *key = NULL, *cert = NULL;
-    virNetTLSContext *ctxt = NULL;
+    g_autofree char *cacert = NULL;
+    g_autofree char *cacrl = NULL;
+    g_autofree char *key = NULL;
+    g_autofree char *cert = NULL;
 
     if (virNetTLSContextLocateCredentials(pkipath, tryUserPkiPath, isServer,
                                           &cacert, &cacrl, &cert, &key) < 0)
         return NULL;
 
-    ctxt = virNetTLSContextNew(cacert, cacrl, cert, key,
+    return virNetTLSContextNew(cacert, cacrl, cert, key,
                                x509dnACL, priority, sanityCheckCert,
                                requireValidCert, isServer);
-
-    VIR_FREE(cacert);
-    VIR_FREE(cacrl);
-    VIR_FREE(key);
-    VIR_FREE(cert);
-
-    return ctxt;
 }
 
 virNetTLSContext *virNetTLSContextNewServerPath(const char *pkipath,
