@@ -5051,6 +5051,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file (Since: 0.5.0) */
     VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot (Since: 0.8.0) */
     VIR_DOMAIN_EVENT_STARTED_WAKEUP = 4,   /* Started due to wakeup event (Since: 0.9.11) */
+    VIR_DOMAIN_EVENT_STARTED_RECREATION = 5, /* Secure guest recreation (Since: 10.1.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_STARTED_LAST /* (Since: 0.9.10) */
@@ -5115,6 +5116,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file (Since: 0.5.0) */
     VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed (Since: 0.5.0) */
     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_STOPPED_RECREATION = 7,    /* Secure guest recreation (Since: 10.1.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_STOPPED_LAST /* (Since: 0.9.10) */
