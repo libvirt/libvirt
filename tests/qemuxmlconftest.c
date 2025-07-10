@@ -2892,6 +2892,9 @@ mymain(void)
 
     DO_TEST_CAPS_ARCH_LATEST("launch-security-s390-pv", "s390x");
 
+    DO_TEST_CAPS_ARCH_LATEST_FULL("launch-security-tdx", "x86_64",
+                                  ARG_CAPS_VARIANT, "+inteltdx", ARG_END);
+
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-memory");
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-openfiles");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
