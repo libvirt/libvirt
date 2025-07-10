@@ -550,6 +550,9 @@
             <value>s390-pv</value>
           </attribute>
         </group>
+        <group>
+          <ref name="launchSecurityTDX"/>
+        </group>
       </choice>
     </element>
   </define>
@@ -645,6 +648,35 @@
       </optional>
     </interleave>
   </define>
+
+  <define name="launchSecurityTDX">
+    <attribute name="type">
+      <value>tdx</value>
+    </attribute>
+    <interleave>
+      <optional>
+        <element name="policy">
+          <ref name="hexuint"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="mrConfigId">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="mrOwner">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="mrOwnerConfig">
+          <data type="string"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+
   <!--
       Enable or disable perf events for the domain. For each
       of the events the following rules apply:

@@ -863,6 +863,7 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
                 return -1;
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_TDX:
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
