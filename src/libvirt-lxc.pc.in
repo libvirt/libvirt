@@ -11,7 +11,7 @@ datarootdir=@abs_top_builddir@
 
 libvirt_lxc_api=@abs_top_builddir@/docs/libvirt-lxc-api.xml
 
-Name: libvirt
+Name: libvirt-lxc
 Version: @VERSION@
 Description: libvirt LXC library
 Requires:

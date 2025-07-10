@@ -11,7 +11,7 @@ datarootdir=@abs_top_builddir@
 
 libvirt_qemu_api=@abs_top_builddir@/docs/libvirt-qemu-api.xml
 
-Name: libvirt
+Name: libvirt-qemu
 Version: @VERSION@
 Description: libvirt QEMU library
 Requires:
