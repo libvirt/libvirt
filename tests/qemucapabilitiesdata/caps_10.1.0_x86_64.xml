@@ -213,6 +213,7 @@
   <flag name='amd-iommu'/>
   <flag name='amd-iommu.pci-id'/>
   <flag name='usb-bot'/>
+  <flag name='tdx-guest'/>
   <version>10000050</version>
   <microcodeVersion>43100286</microcodeVersion>
   <package>v10.0.0-1874-gc77283dd5d</package>
