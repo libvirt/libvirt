@@ -9959,6 +9959,32 @@ qemuBuildPVCommandLine(virCommand *cmd)
 
 
 static int
+qemuBuildTDXCommandLine(virCommand *cmd, virDomainTDXDef *tdx)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    if (tdx->havePolicy)
+        VIR_DEBUG("policy=0x%llx", tdx->policy);
+
+    if (qemuMonitorCreateObjectProps(&props, "tdx-guest", "lsec0",
+                                     "S:mrconfigid", tdx->mrconfigid,
+                                     "S:mrowner", tdx->mrowner,
+                                     "S:mrownerconfig", tdx->mrownerconfig,
+                                     NULL) < 0)
+        return -1;
+
+    if (tdx->havePolicy &&
+        virJSONValueObjectAdd(&props, "U:attributes", tdx->policy, NULL) < 0)
+        return -1;
+
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
                         virDomainSecDef *sec)
 {
@@ -9976,6 +10002,7 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
         return qemuBuildPVCommandLine(cmd);
 
     case VIR_DOMAIN_LAUNCH_SECURITY_TDX:
+        return qemuBuildTDXCommandLine(cmd, &sec->data.tdx);
     case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
     case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
         virReportEnumRangeError(virDomainLaunchSecurity, sec->sectype);

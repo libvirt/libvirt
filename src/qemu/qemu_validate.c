@@ -1414,6 +1414,18 @@ qemuValidateDomainDef(const virDomainDef *def,
             }
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_TDX:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Intel TDX launch security is not supported with this QEMU binary"));
+                return -1;
+            }
+            if (def->sec->data.tdx.havePolicy &&
+                def->sec->data.tdx.policy & ~VIR_DOMAIN_TDX_POLICY_ALLOWED_MASK) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch security policy"));
+                return -1;
+            }
+            break;
         case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
         case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
             virReportEnumRangeError(virDomainLaunchSecurity, def->sec->sectype);
