@@ -3000,6 +3000,9 @@ struct _virDomainSEVSNPDef {
 };
 
 
+/* Copied from QGS source code */
+#define QGS_UNIX_SOCKET_FILE	"/var/run/tdx-qgs/qgs.socket"
+
 struct _virDomainTDXDef {
     bool havePolicy;
     unsigned long long policy;
