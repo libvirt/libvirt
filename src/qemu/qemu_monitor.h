@@ -460,7 +460,7 @@ int qemuMonitorUpdateVideoVram64Size(qemuMonitor *mon,
 void qemuMonitorEmitEvent(qemuMonitor *mon, const char *event,
                           long long seconds, unsigned int micros,
                           const char *details);
-void qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest);
+void qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest, const char *reason);
 void qemuMonitorEmitReset(qemuMonitor *mon);
 void qemuMonitorEmitStop(qemuMonitor *mon);
 void qemuMonitorEmitResume(qemuMonitor *mon);

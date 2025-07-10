@@ -548,12 +548,16 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
 static void qemuMonitorJSONHandleShutdown(qemuMonitor *mon, virJSONValue *data)
 {
     bool guest = false;
+    const char *reason = NULL;
     virTristateBool guest_initiated = VIR_TRISTATE_BOOL_ABSENT;
 
     if (data && virJSONValueObjectGetBoolean(data, "guest", &guest) == 0)
         guest_initiated = virTristateBoolFromBool(guest);
 
-    qemuMonitorEmitShutdown(mon, guest_initiated);
+    if (data)
+        reason = virJSONValueObjectGetString(data, "reason");
+
+    qemuMonitorEmitShutdown(mon, guest_initiated, reason);
 }
 
 static void qemuMonitorJSONHandleReset(qemuMonitor *mon, virJSONValue *data G_GNUC_UNUSED)
