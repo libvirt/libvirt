@@ -40,3 +40,8 @@ char *virNetTLSCertValidate(gnutls_x509_crt_t cert,
 
 gnutls_x509_crt_t virNetTLSCertLoadFromFile(const char *certFile,
                                             bool isServer);
+
+int virNetTLSCertLoadListFromFile(const char *certFile,
+                                  gnutls_x509_crt_t *certs,
+                                  unsigned int certMax,
+                                  size_t *ncerts);

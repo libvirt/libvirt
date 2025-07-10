@@ -408,10 +408,10 @@ gnutls_x509_crt_t virNetTLSCertLoadFromFile(const char *certFile,
 }
 
 
-static int virNetTLSCertLoadCAListFromFile(const char *certFile,
-                                           gnutls_x509_crt_t *certs,
-                                           unsigned int certMax,
-                                           size_t *ncerts)
+int virNetTLSCertLoadListFromFile(const char *certFile,
+                                  gnutls_x509_crt_t *certs,
+                                  unsigned int certMax,
+                                  size_t *ncerts)
 {
     gnutls_datum_t data;
     g_autofree char *buf = NULL;
@@ -427,7 +427,7 @@ static int virNetTLSCertLoadCAListFromFile(const char *certFile,
 
     if (gnutls_x509_crt_list_import(certs, &certMax, &data, GNUTLS_X509_FMT_PEM, 0) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Unable to import CA certificate list %1$s"),
+                       _("Unable to import certificate list %1$s"),
                        certFile);
         return -1;
     }
@@ -452,8 +452,8 @@ int virNetTLSCertSanityCheck(bool isServer,
         !(cert = virNetTLSCertLoadFromFile(certFile, isServer)))
         goto cleanup;
     if ((access(cacertFile, R_OK) == 0) &&
-        virNetTLSCertLoadCAListFromFile(cacertFile, cacerts,
-                                        MAX_CERTS, &ncacerts) < 0)
+        virNetTLSCertLoadListFromFile(cacertFile, cacerts,
+                                      MAX_CERTS, &ncacerts) < 0)
         goto cleanup;
 
     if (cert &&
