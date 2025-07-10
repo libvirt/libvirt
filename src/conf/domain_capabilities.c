@@ -44,6 +44,7 @@ VIR_ENUM_IMPL(virDomainCapsFeature,
               "async-teardown",
               "s390-pv",
               "ps2",
+              "tdx",
 );
 
 static virClass *virDomainCapsClass;

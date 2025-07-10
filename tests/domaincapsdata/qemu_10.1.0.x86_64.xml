@@ -1695,6 +1695,7 @@
     <backup supported='yes'/>
     <async-teardown supported='yes'/>
     <ps2 supported='yes'/>
+    <tdx supported='yes'/>
     <sev supported='no'/>
     <sgx supported='no'/>
     <hyperv supported='yes'>

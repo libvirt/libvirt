@@ -54,7 +54,8 @@ bool
 virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps)
 {
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST))
+        (virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) ||
+         virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST)))
         return true;
 
     if (!real_virQEMUCapsGetKVMSupportsSecureGuest)

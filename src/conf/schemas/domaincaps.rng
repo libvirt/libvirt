@@ -368,6 +368,9 @@
         <ref name="ps2"/>
       </optional>
       <optional>
+        <ref name="tdx"/>
+      </optional>
+      <optional>
         <ref name="sev"/>
       </optional>
       <optional>
@@ -427,6 +430,12 @@
 
   <define name="ps2">
     <element name="ps2">
+      <ref name="supported"/>
+    </element>
+  </define>
+
+  <define name="tdx">
+    <element name="tdx">
       <ref name="supported"/>
     </element>
   </define>

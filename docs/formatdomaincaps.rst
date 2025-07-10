@@ -720,6 +720,7 @@ capabilities. All features occur as children of the main ``features`` element.
        <backingStoreInput supported='yes'/>
        <backup supported='yes'/>
        <async-teardown supported='yes'/>
+       <tdx supported='yes'/>
        <sev>
          <cbitpos>47</cbitpos>
          <reduced-phys-bits>1</reduced-phys-bits>

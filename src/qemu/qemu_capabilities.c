@@ -7012,6 +7012,18 @@ virQEMUCapsFillDomainFeatureHypervCaps(virQEMUCaps *qemuCaps,
 }
 
 
+static void
+virQEMUCapsFillDomainFeatureTDXCaps(virQEMUCaps *qemuCaps,
+                                    virDomainCaps *domCaps)
+{
+    if (domCaps->arch == VIR_ARCH_X86_64 &&
+        domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST) &&
+        virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps))
+            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_TDX] = VIR_TRISTATE_BOOL_YES;
+}
+
+
 int
 virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
                           virQEMUCaps *qemuCaps,
@@ -7076,6 +7088,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
     virQEMUCapsFillDomainFeaturePS2Caps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSGXCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureHypervCaps(qemuCaps, domCaps);
+    virQEMUCapsFillDomainFeatureTDXCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainDeviceCryptoCaps(qemuCaps, crypto);
     virQEMUCapsFillDomainLaunchSecurity(qemuCaps, launchSecurity);
     virQEMUCapsFillDomainDeviceNetCaps(qemuCaps, net);
