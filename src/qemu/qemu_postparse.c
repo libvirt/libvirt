@@ -1384,6 +1384,29 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         break;
     }
 
+    /* Sanity check. If the machine type does not support PCI, asking
+     * for PCI(e) root to be added is an obvious mistake */
+    if ((addPCIRoot ||
+         addPCIeRoot) &&
+        !qemuDomainSupportsPCI(def)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Machine type '%1$s' wants PCI but PCI is not supported"),
+                       def->os.machine);
+        return -1;
+    }
+
+    /* Sanity check. If the machine type supports PCI, we need to reflect
+     * that fact in the XML or other parts of the machine handling code
+     * might misbehave */
+    if (qemuDomainSupportsPCI(def) &&
+        !addPCIRoot &&
+        !addPCIeRoot) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Machine type '%1$s' supports PCI but no PCI controller added"),
+                       def->os.machine);
+        return -1;
+    }
+
     if (addDefaultUSB && virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_USB, 0) < 0)
         virDomainDefAddUSBController(def, 0, usbModel);
 
@@ -1392,9 +1415,6 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
 
     pciRoot = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
 
-    /* NB: any machine that sets addPCIRoot to true must also return
-     * true from the function qemuDomainSupportsPCI().
-     */
     if (addPCIRoot) {
         if (pciRoot >= 0) {
             if (def->controllers[pciRoot]->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
