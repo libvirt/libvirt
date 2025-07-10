@@ -323,11 +323,11 @@ static int virNetTLSCertCheck(gnutls_x509_crt_t cert,
 
 
 static int virNetTLSCertCheckPair(gnutls_x509_crt_t cert,
-                                         const char *certFile,
-                                         gnutls_x509_crt_t *cacerts,
-                                         size_t ncacerts,
-                                         const char *cacertFile,
-                                         bool isServer)
+                                  const char *certFile,
+                                  gnutls_x509_crt_t *cacerts,
+                                  size_t ncacerts,
+                                  const char *cacertFile,
+                                  bool isServer)
 {
     unsigned int status;
 
