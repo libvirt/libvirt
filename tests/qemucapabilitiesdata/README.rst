@@ -62,6 +62,11 @@ Known test variants
   Variant of the test data captured on hosts supporting AMD SEV and AMD SEV_ES
   security framework.
 
+``+inteltdx``
+
+  Variant of the test data captured on hosts supporting INTEL TDX security
+  framework.
+
 Usage in tests
 ==============
 
