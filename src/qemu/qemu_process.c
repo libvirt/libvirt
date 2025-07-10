@@ -447,6 +447,67 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
 
 
 /*
+ * Secure guest doesn't support fake reboot via machine CPU reset.
+ * We thus fake reboot via QEMU re-creation.
+ */
+static void
+qemuProcessFakeRebootViaRecreate(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    int ret = -1;
+
+    VIR_DEBUG("Handle secure guest reboot: destroy phase");
+
+    virObjectLock(vm);
+    if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, 0) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0) {
+        qemuProcessEndStopJob(vm);
+        goto cleanup;
+    }
+
+    qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_DESTROYED, VIR_ASYNC_JOB_NONE, 0);
+    virDomainAuditStop(vm, "destroyed");
+
+    /* skip remove inactive domain from active list */
+    qemuProcessEndStopJob(vm);
+
+    VIR_DEBUG("Handle secure guest reboot: boot phase");
+
+    if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_START, 0) < 0) {
+        qemuDomainRemoveInactive(vm, 0, false);
+        goto cleanup;
+    }
+
+    if (qemuProcessStart(NULL, driver, vm, NULL, VIR_ASYNC_JOB_START,
+                         NULL, -1, NULL, NULL, NULL,
+                         VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                         0) < 0) {
+        virDomainAuditStart(vm, "booted", false);
+        qemuDomainRemoveInactive(vm, 0, false);
+        goto endjob;
+    }
+
+    virDomainAuditStart(vm, "booted", true);
+
+    qemuDomainSaveStatus(vm);
+    ret = 0;
+
+ endjob:
+    qemuProcessEndJob(vm);
+
+ cleanup:
+    priv->pausedShutdown = false;
+    qemuDomainSetFakeReboot(vm, false);
+    if (ret == -1)
+        ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
+    virDomainObjEndAPI(&vm);
+}
+
+
+/*
  * Since we have the '-no-shutdown' flag set, the
  * QEMU process will currently have guest OS shutdown
  * and the CPUS stopped. To fake the reboot, we thus
@@ -455,15 +516,13 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
  * guest OS booting up again
  */
 static void
-qemuProcessFakeReboot(void *opaque)
+qemuProcessFakeRebootViaReset(virDomainObj *vm)
 {
-    virDomainObj *vm = opaque;
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1, rc;
 
-    VIR_DEBUG("vm=%p", vm);
     virObjectLock(vm);
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
@@ -506,6 +565,21 @@ qemuProcessFakeReboot(void *opaque)
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
+}
+
+
+static void
+qemuProcessFakeReboot(void *opaque)
+{
+    virDomainObj *vm = opaque;
+
+    VIR_DEBUG("vm=%p", vm);
+
+    if (vm->def->sec &&
+        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_TDX)
+        qemuProcessFakeRebootViaRecreate(vm);
+    else
+        qemuProcessFakeRebootViaReset(vm);
 }
 
 
