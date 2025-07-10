@@ -1083,6 +1083,12 @@ qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest,
         if (priv->fakeReboot && STREQ_NULLABLE(reason, "host-signal"))
             return;
 
+        /* Similar as FakeReboot for FakeReset. */
+        if (priv->fakeReset && STREQ_NULLABLE(reason, "host-signal")) {
+            priv->fakeReset = false;
+            return;
+        }
+
         if ((STREQ_NULLABLE(reason, "guest-shutdown") &&
              vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART) ||
             (STREQ_NULLABLE(reason, "guest-reset") &&

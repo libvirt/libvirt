@@ -130,6 +130,7 @@ struct _qemuDomainObjPrivate {
     char *lockState;
 
     bool fakeReboot;
+    bool fakeReset;
     bool pausedShutdown;
     /* allowReboot:
      *

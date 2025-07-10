@@ -1970,13 +1970,21 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     if (virDomainResetEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    priv = vm->privateData;
+
+    if (vm->def->sec &&
+        vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_TDX) {
+        priv->fakeReset = true;
+        ret = qemuProcessFakeRebootViaRecreate(vm, true);
+        goto cleanup;
+    }
+
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    priv = vm->privateData;
     qemuDomainObjEnterMonitor(vm);
     ret = qemuMonitorSystemReset(priv->mon);
     qemuDomainObjExitMonitor(vm);

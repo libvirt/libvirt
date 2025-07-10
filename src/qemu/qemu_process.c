@@ -450,8 +450,8 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
  * Secure guest doesn't support fake reboot via machine CPU reset.
  * We thus fake reboot via QEMU re-creation.
  */
-static void
-qemuProcessFakeRebootViaRecreate(virDomainObj *vm)
+int
+qemuProcessFakeRebootViaRecreate(virDomainObj *vm, bool locked)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -460,7 +460,9 @@ qemuProcessFakeRebootViaRecreate(virDomainObj *vm)
 
     VIR_DEBUG("Handle secure guest reboot: destroy phase");
 
-    virObjectLock(vm);
+    if (!locked)
+        virObjectLock(vm);
+
     if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, 0) < 0)
         goto cleanup;
 
@@ -513,7 +515,9 @@ qemuProcessFakeRebootViaRecreate(virDomainObj *vm)
     qemuDomainSetFakeReboot(vm, false);
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
-    virDomainObjEndAPI(&vm);
+    if (!locked)
+        virDomainObjEndAPI(&vm);
+    return ret;
 }
 
 
@@ -587,7 +591,7 @@ qemuProcessFakeReboot(void *opaque)
 
     if (vm->def->sec &&
         vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_TDX)
-        qemuProcessFakeRebootViaRecreate(vm);
+        ignore_value(qemuProcessFakeRebootViaRecreate(vm, false));
     else
         qemuProcessFakeRebootViaReset(vm);
 }
