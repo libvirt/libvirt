@@ -9534,6 +9534,69 @@ The ``<launchSecurity/>`` element then accepts the following child elements:
    the SNP_LAUNCH_FINISH command in the SEV-SNP firmware ABI.
 
 
+The contents of the ``<launchSecurity type='tdx'>`` element is used to provide
+the guest owners input used for creating an encrypted VM using the Intel TDX
+(Trusted Domain eXtensions). Intel TDX refers to an Intel technology that
+extends Virtual Machine Extensions (VMX) and Multi-Key Total Memory Encryption
+(MKTME) with a new kind of virtual machine guest called a Trust Domain (TD).
+A TD runs in a CPU mode that is designed to protect the confidentiality of its
+memory contents and its CPU state from any other software, including the hosting
+Virtual Machine Monitor (VMM), unless explicitly shared by the TD itself.
+Example configuration:
+
+::
+
+   <domain>
+     ...
+     <launchSecurity type='tdx'>
+       <policy>0x10000001</policy>
+       <mrConfigId>xxx</mrConfigId>
+       <mrOwner>xxx</mrOwner>
+       <mrOwnerConfig>xxx</mrOwnerConfig>
+       <quoteGenerationService path="/var/run/tdx-qgs/qgs.socket"/>
+     </launchSecurity>
+     ...
+   </domain>
+
+``policy``
+   The optional ``policy`` element provides the guest TD attributes which is
+   passed by the host VMM as a guest TD initialization parameter as part of
+   TD_PARAMS, it exactly matches the definition of TD_PARAMS.ATTRIBUTES in
+   (Intel TDX Module Spec Table 22.2: ATTRIBUTES Definition). It is reported
+   to the guest TD by TDG.VP.INFO and as part of TDREPORT_STRUCT returned by
+   TDG.MR.REPORT. The guest policy is 64bit unsigned with the fields shown
+   in Table:
+
+   ====== ====================================================================================
+   Bit(s) Description
+   ====== ====================================================================================
+   0      Guest TD runs in off-TD debug mode when set
+   1:27   reserved
+   28     Disable EPT violation conversion to #VE on guest TD access of PENDING pages when set
+   29:63  reserved
+   ====== ====================================================================================
+
+``mrConfigId``
+   The optional ``mrConfigId`` element provides ID for non-owner-defined
+   configuration of the guest TD, e.g., run-time or OS configuration
+   (base64 encoded SHA384 digest).
+
+``@mrOwner``
+   The optional ``@mrOwner`` element provides ID for the guest TD’s owner
+   (base64 encoded SHA384 digest).
+
+``mrOwnerConfig``
+   The optional ``mrOwnerConfig`` element provides ID for owner-defined
+   configuration of the guest TD, e.g., specific to the workload rather than
+   the run-time or OS (base64 encoded SHA384 digest).
+
+``quoteGenerationService``
+   The optional ``quoteGenerationService`` subelement provides Quote Generation
+   Service(QGS) daemon socket address configuration. It includes an optional
+   ``path`` attribute to determine the UNIX socket address, when omitted,
+   ``/var/run/tdx-qgs/qgs.socket`` is used as default. User in TD guest cannot
+   get TD quoting for attestation if this subelement is not provided.
+
 Example configs
 ===============
 
