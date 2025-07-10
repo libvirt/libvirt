@@ -1822,6 +1822,10 @@
         <value>xmm_input</value>
       </enum>
     </hyperv>
-    <launchSecurity supported='no'/>
+    <launchSecurity supported='yes'>
+      <enum name='sectype'>
+        <value>tdx</value>
+      </enum>
+    </launchSecurity>
   </features>
 </domainCapabilities>

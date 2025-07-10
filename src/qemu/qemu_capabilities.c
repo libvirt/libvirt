@@ -6776,6 +6776,8 @@ virQEMUCapsFillDomainLaunchSecurity(virQEMUCaps *qemuCaps,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT))
         VIR_DOMAIN_CAPS_ENUM_SET(launchSecurity->sectype, VIR_DOMAIN_LAUNCH_SECURITY_PV);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST))
+        VIR_DOMAIN_CAPS_ENUM_SET(launchSecurity->sectype, VIR_DOMAIN_LAUNCH_SECURITY_TDX);
 
     if (launchSecurity->sectype.values == 0) {
         launchSecurity->supported = VIR_TRISTATE_BOOL_NO;
