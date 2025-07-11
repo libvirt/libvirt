@@ -3983,6 +3983,13 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         return -1;
     }
 
+    if (!qemuDomainSupportsPCI(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Machine type '%1$s' does not support PCI"),
+                       def->os.machine);
+        return -1;
+    }
+
     /* modelName */
     switch ((virDomainControllerModelPCI) cont->model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
