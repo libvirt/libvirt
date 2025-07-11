@@ -1423,6 +1423,9 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("no-memory");
 
+    DO_TEST_CAPS_LATEST("isapc-pci");
+    DO_TEST_CAPS_LATEST("microvm-pci");
+
     DO_TEST_CAPS_LATEST("genid");
     DO_TEST_CAPS_LATEST("genid-auto");
 
