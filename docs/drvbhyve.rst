@@ -619,3 +619,22 @@ Example:
        <backend model='random'/>
      </rng>
    ...
+
+TCP console
+~~~~~~~~~~~
+:since:`Since 11.6.0` it's possible to configure TCP console.
+
+Example:
+
+::
+
+   ...
+     <serial type='tcp'>
+       <source mode='bind' host='127.0.0.1' service='12345'/>
+       <target type='serial' port='0'/>
+     </serial>
+   ...
+
+Note: there's no direct way to check if the actual ``bhyve`` binary supports
+the TCP console. Thus, libvirt always assumes it's supported. Please
+refer to the ``bhyve(1)`` manual page to make sure.
