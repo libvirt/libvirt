@@ -6,6 +6,7 @@ Internal drivers
 -  `Storage drivers <storage.html>`__
 -  `Node device driver <drvnodedev.html>`__
 -  `Secret driver <drvsecret.html>`__
+-  `Network driver <drvnetwork.html>`__
 
 The libvirt public API delegates its implementation to one or more internal
 drivers, depending on the `connection URI <uri.html>`__ passed when initializing

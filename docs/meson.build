@@ -49,6 +49,7 @@ docs_rst_files = [
   'drvesx',
   'drvhyperv',
   'drvlxc',
+  'drvnetwork',
   'drvnodedev',
   'drvopenvz',
   'drvqemu',
