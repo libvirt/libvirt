@@ -41,6 +41,9 @@ struct _virBhyveDriverConfig {
     char *firmwareDir;
     char *libDir;
     char *nvramDir;
+
+    int bhyveloadTimeout;
+    int bhyveloadTimeoutKill;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virBhyveDriverConfig, virObjectUnref);

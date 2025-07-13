@@ -23,9 +23,11 @@ module Libvirtd_bhyve =
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
    let log_entry = str_entry "firmware_dir"
+   let bhyveload_timeout = int_entry "bhyveload_timeout"
+   let bhyveload_timeout_kill = int_entry "bhyveload_timeout_kill"
 
    (* Each entry in the config is one of the following three ... *)
-   let entry = log_entry
+   let entry = log_entry | bhyveload_timeout | bhyveload_timeout_kill
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]
 

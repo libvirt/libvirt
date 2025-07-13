@@ -921,11 +921,28 @@ virAppendBootloaderArgs(virCommand *cmd, virDomainDef *def)
 }
 
 static virCommand *
-virBhyveProcessBuildBhyveloadCmd(virDomainDef *def, virDomainDiskDef *disk)
+virBhyveProcessBuildBhyveloadCmd(virDomainDef *def,
+                                 struct _bhyveConn *driver,
+                                 virDomainDiskDef *disk)
 {
     virCommand *cmd;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(driver);
 
-    cmd = virCommandNew("bhyveload");
+    if (cfg->bhyveloadTimeout > 0) {
+        /* TODO: update bhyve_process.c to interpret timeout(1) exit
+         * codes 124-127 to produce more meaningful error messages */
+        cmd = virCommandNew("timeout");
+        virCommandAddArg(cmd, "--foreground");
+        virCommandAddArg(cmd, "--verbose");
+        if (cfg->bhyveloadTimeoutKill > 0) {
+            virCommandAddArg(cmd, "-k");
+            virCommandAddArgFormat(cmd, "%ds", cfg->bhyveloadTimeoutKill);
+        }
+        virCommandAddArgFormat(cmd, "%ds", cfg->bhyveloadTimeout);
+        virCommandAddArg(cmd, "bhyveload");
+    } else {
+        cmd = virCommandNew("bhyveload");
+    }
 
     if (def->os.bootloaderArgs == NULL) {
         VIR_DEBUG("bhyveload with default arguments");
@@ -1212,7 +1229,7 @@ virBhyveProcessBuildLoadCmd(struct _bhyveConn *driver, virDomainDef *def,
         if (disk == NULL)
             return NULL;
 
-        return virBhyveProcessBuildBhyveloadCmd(def, disk);
+        return virBhyveProcessBuildBhyveloadCmd(def, driver, disk);
     } else if (strstr(def->os.bootloader, "grub-bhyve") != NULL) {
         return virBhyveProcessBuildGrubbhyveCmd(def, driver, devmap_file,
                                                 devicesmap_out);

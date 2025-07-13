@@ -2,6 +2,7 @@
  * bhyve_conf.c: bhyve config file
  *
  * Copyright (C) 2017 Roman Bogorodskiy
+ * Copyright (C) 2025 The FreeBSD Foundation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,6 +61,9 @@ virBhyveDriverConfigNew(void)
     cfg->libDir = g_strdup_printf("%s/lib/libvirt/bhyve", LOCALSTATEDIR);
     cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
 
+    cfg->bhyveloadTimeout = 300;
+    cfg->bhyveloadTimeoutKill = 15;
+
     return cfg;
 }
 
@@ -79,6 +83,14 @@ virBhyveLoadDriverConfig(struct _virBhyveDriverConfig *cfg,
 
     if (virConfGetValueString(conf, "firmware_dir",
                               &cfg->firmwareDir) < 0)
+        return -1;
+
+    if (virConfGetValueInt(conf, "bhyveload_timeout",
+                           &cfg->bhyveloadTimeout) < 0)
+        return -1;
+
+    if (virConfGetValueInt(conf, "bhyveload_timeout_kill",
+                           &cfg->bhyveloadTimeoutKill) < 0)
         return -1;
 
     return 0;

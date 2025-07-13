@@ -3,3 +3,5 @@ module Test_libvirtd_bhyve =
 
   test Libvirtd_bhyve.lns get conf =
 { "firmware_dir" = "/usr/local/share/uefi-firmware" }
+{ "bhyveload_timeout" = "300" }
+{ "bhyveload_timeout_kill" = "15" }
