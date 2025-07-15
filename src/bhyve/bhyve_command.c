@@ -171,7 +171,7 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
         /* bhyve supports 4 ports: com1, com2, com3, com4 */
         if (chr->target.port > 3) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only two serial ports are supported"));
+                           _("Only four serial ports are supported"));
             return -1;
         }
 
@@ -190,7 +190,7 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
             break;
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only nmdm and tcp console types are supported"));
+                           _("Only 'nmdm' and 'tcp' console types are supported"));
             return -1;
         }
     }
