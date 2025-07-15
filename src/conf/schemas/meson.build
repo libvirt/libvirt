@@ -25,6 +25,8 @@ schema_files = [
   'storagepoolcaps.rng',
   'storagepool.rng',
   'storagevol.rng',
+  'sysinfo.rng',
+  'sysinfocommon.rng',
 ]
 
 install_data(schema_files, install_dir: pkgdatadir / 'schemas')
