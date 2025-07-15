@@ -263,6 +263,33 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            _("Only 'virio' RNG device model is supported"));
             return -1;
         }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
+               dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
+        virDomainChrDef *chr = dev->data.chr;
+        if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM &&
+            chr->source->type != VIR_DOMAIN_CHR_TYPE_TCP) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only 'nmdm' and 'tcp' console types are supported"));
+            return -1;
+        }
+        if (chr->target.port > 3) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only four serial ports are supported"));
+            return -1;
+        }
+        if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP) {
+            if (chr->source->data.tcp.listen == false) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only listening TCP sockets are supported"));
+                return -1;
+            }
+
+            if (chr->source->data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only 'raw' protocol is supported for TCP sockets"));
+                return -1;
+            }
+        }
     }
 
     return 0;
