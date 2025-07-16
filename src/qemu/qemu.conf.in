@@ -48,7 +48,7 @@
 #
 #default_tls_x509_verify = 1
 
-#
+
 # Libvirt assumes the server-key.pem file is unencrypted by default.
 # To use an encrypted server-key.pem file, the password to decrypt
 # the PEM file is required. This can be provided by creating a secret
@@ -71,6 +71,7 @@
 #
 #vnc_listen = "0.0.0.0"
 
+
 # Enable this option to have VNC served over an automatically created
 # unix socket. This prevents unprivileged access from users on the
 # host machine, though most VNC clients do not support it.
@@ -80,6 +81,7 @@
 # preference over vnc_listen.
 #
 #vnc_auto_unix_socket = 1
+
 
 # Enable use of TLS encryption on the VNC server. This requires
 # a VNC client which supports the VeNCrypt protocol extension.
@@ -222,12 +224,14 @@
 #
 #spice_sasl = 1
 
+
 # The default SASL configuration file is located in /etc/sasl2/
 # When running libvirtd unprivileged, it may be desirable to
 # override the configs in this location. Set this parameter to
 # point to the directory, and create a qemu.conf in that location
 #
 #spice_sasl_dir = "/some/directory/sasl2"
+
 
 # RDP is configured to listen on 127.0.0.1 by default.
 # To make it listen on all public interfaces, uncomment
@@ -242,10 +246,12 @@
 #
 #rdp_tls_x509_cert_dir = "/etc/pki/libvirt-rdp"
 
+
 # The default RDP username. This parameter is only used if the
 # per-domain XML config does not already provide a username.
 #
 #rdp_username = "user"
+
 
 # The default RDP password. This parameter is only used if the
 # per-domain XML config does not already provide a password.
@@ -253,6 +259,7 @@
 # Obviously change this example here before you set this.
 #
 #rdp_password = "RDP12345"
+
 
 # Enable use of TLS encryption on the chardev TCP transports.
 #
@@ -457,12 +464,14 @@
 #remote_display_port_min = 5900
 #remote_display_port_max = 65535
 
+
 # VNC WebSocket port policies, same rules apply as with remote display
 # ports.  VNC WebSockets use similar display <-> port mappings, with
 # the exception being that ports start from 5700 instead of 5900.
 #
 #remote_websocket_port_min = 5700
 #remote_websocket_port_max = 65535
+
 
 # The default security driver is SELinux. If SELinux is disabled
 # on the host, then the security driver will automatically disable
@@ -481,14 +490,17 @@
 #
 #security_driver = "selinux"
 
+
 # If set to non-zero, then the default security labeling
 # will make guests confined. If set to zero, then guests
 # will be unconfined by default. Defaults to 1.
 #security_default_confined = 1
 
+
 # If set to non-zero, then attempts to create unconfined
 # guests will be blocked. Defaults to 0.
 #security_require_confined = 1
+
 
 # The user for QEMU processes run by the system instance. It can be
 # specified as a user name or as a user id. The qemu driver will try to
@@ -507,9 +519,11 @@
 #
 #user = "@QEMU_USER@"
 
+
 # The group for QEMU processes run by the system instance. It can be
 # specified in a similar way to user.
 #group = "@QEMU_GROUP@"
+
 
 # Whether libvirt should dynamically change file ownership
 # to match the configured user/group above. Defaults to 1.
@@ -526,10 +540,12 @@
 # Set to 0 to disable file ownership changes globally in the qemu driver.
 #dynamic_ownership = 1
 
+
 # Whether libvirt should remember and restore the original
 # ownership over files it is relabeling. Defaults to 1, set
 # to 0 to disable the feature.
 #remember_owner = 1
+
 
 # What cgroup controllers to make use of with QEMU guests
 #
@@ -551,6 +567,7 @@
 # where they are located.
 #
 #cgroup_controllers = [ "cpu", "devices", "memory", "blkio", "cpuset", "cpuacct" ]
+
 
 # This is the basic set of devices allowed / required by
 # all virtual machines.
@@ -618,11 +635,13 @@
 #dump_image_format = "raw"
 #snapshot_image_format = "raw"
 
+
 # When a domain is configured to be auto-dumped when libvirtd receives a
 # watchdog event from qemu guest, libvirtd will save dump files in directory
 # specified by auto_dump_path. Default value is /var/lib/libvirt/qemu/dump
 #
 #auto_dump_path = "/var/lib/libvirt/qemu/dump"
+
 
 # When a domain is configured to be auto-dumped, enabling this flag
 # has the same effect as using the VIR_DUMP_BYPASS_CACHE flag with the
@@ -632,6 +651,7 @@
 #
 #auto_dump_bypass_cache = 0
 
+
 # When a domain is configured to be auto-started, enabling this flag
 # has the same effect as using the VIR_DOMAIN_START_BYPASS_CACHE flag
 # with the virDomainCreateWithFlags API.  That is, the system will
@@ -640,10 +660,12 @@
 #
 #auto_start_bypass_cache = 0
 
+
 # Delay in milliseconds between initiating the startup for
 # each VM, during autostart
 #
 #auto_start_delay = 0
+
 
 # The settings for auto shutdown actions accept one of
 # four possible options:
@@ -669,6 +691,7 @@
 # they are restarted, or saved and restored.
 #auto_shutdown_try_save = "persistent"
 
+
 # As above, but with a graceful shutdown action instead of
 # managed save. If managed save is enabled, shutdown will
 # be tried only on failure to perform managed save.
@@ -682,6 +705,7 @@
 # causes VMs running at that point to misbehave on host shutdown unless
 # they are restarted, or saved and restored.
 #auto_shutdown_try_shutdown = "all"
+
 
 # As above, but with a forced poweroff instead of managed
 # save. If managed save or graceful shutdown are enabled,
@@ -702,15 +726,18 @@
 # feature should to be enabled as well to ensure proper cleanup of the VMs.
 #auto_shutdown_poweroff = "all"
 
+
 # How may seconds to wait for running VMs to gracefully shutdown
 # when 'auto_shutdown_try_shutdown' is enabled. If set to 0
 # then an arbitrary built-in default value will be used (which
 # is currently 30 secs)
 #auto_shutdown_wait = 30
 
+
 # Whether VMs that are automatically powered off or saved during
 # host shutdown, should be set to restore on next boot
 #auto_shutdown_restore = 1
+
 
 # When a domain is configured to be auto-saved on shutdown, enabling
 # this flag has the same effect as using the VIR_DOMAIN_SAVE_BYPASS_CACHE
@@ -719,6 +746,7 @@
 # file, but may cause slower operation.
 #
 #auto_save_bypass_cache = 0
+
 
 # If provided by the host and a hugetlbfs mount point is configured,
 # a guest may request huge page backing.  When this mount point is
@@ -768,6 +796,7 @@
 #max_processes = 0
 #max_files = 0
 
+
 # If max_threads_per_process is set to a positive integer, libvirt
 # will use it to set the maximum number of threads that can be
 # created by a qemu process. Some VM configurations can result in
@@ -777,6 +806,7 @@
 # limits in the host OS.
 #
 #max_threads_per_process = 0
+
 
 # If max_core is set to a non-zero integer, then QEMU will be
 # permitted to create core dumps when it crashes, provided its
@@ -804,6 +834,7 @@
 #
 #max_core = "unlimited"
 
+
 # Determine if guest RAM is included in QEMU core dumps. By
 # default guest RAM will be excluded on Linux platforms,
 # and included on all other patforms. Setting this to '1' will
@@ -813,6 +844,7 @@
 # dumpCore attribute on the <memory> element.
 #
 #dump_guest_core = 1
+
 
 # mac_filter enables MAC addressed based filtering on bridge ports.
 # This currently requires ebtables to be installed.
@@ -843,6 +875,7 @@
 #
 #max_queued = 0
 
+
 ###################################################################
 # Keepalive protocol:
 # This allows qemu driver to detect broken connections to remote
@@ -864,7 +897,6 @@
 #
 #keepalive_interval = 5
 #keepalive_count = 5
-
 
 
 # Use seccomp syscall filtering sandbox in QEMU.
@@ -899,7 +931,6 @@
 #
 #migration_port_min = 49152
 #migration_port_max = 49215
-
 
 
 # Timestamp QEMU's log messages (if QEMU supports it)
@@ -941,6 +972,7 @@
 #   "/usr/share/AAVMF/AAVMF32_CODE.fd:/usr/share/AAVMF/AAVMF32_VARS.fd"
 #]
 
+
 # The backend to use for handling stdout/stderr output from
 # QEMU processes.
 #
@@ -955,6 +987,7 @@
 #          rollover when a size limit is hit.
 #
 #stdio_handler = "logd"
+
 
 # QEMU gluster libgfapi log level, debug levels are 0-9, with 9 being the
 # most verbose, and 0 representing no debugging output.
@@ -976,12 +1009,14 @@
 #
 #gluster_debug_level = 9
 
+
 # virtiofsd debug
 #
 # Whether to enable the debugging output of the virtiofsd daemon.
 # Possible values are 0 or 1. Disabled by default.
 #
 #virtiofsd_debug = 1
+
 
 # To enhance security, QEMU driver is capable of creating private namespaces
 # for each domain started. Well, so far only "mount" namespace is supported. If
@@ -991,15 +1026,18 @@
 # by default.
 #namespaces = [ "mount" ]
 
+
 # This directory is used for memoryBacking source if configured as file.
 # NOTE: big files will be stored here
 #memory_backing_dir = "/var/lib/libvirt/qemu/ram"
+
 
 # Path to the SCSI persistent reservations helper. This helper is
 # used whenever <reservations/> are enabled for SCSI LUN devices.
 # If this is not an absolute path, the program will be searched for
 # in $PATH as well as a few additional directories.
 #pr_helper = "qemu-pr-helper"
+
 
 # Path to the SLIRP networking helper.
 #slirp_helper = "/usr/bin/slirp-helper"
@@ -1010,10 +1048,12 @@
 # in $PATH.
 #qemu_rdp = "qemu-rdp"
 
+
 # Path to the dbus-daemon
 # If this is not an absolute path, the program will be searched for
 # in $PATH.
 #dbus_daemon = "dbus-daemon"
+
 
 # User for the swtpm TPM Emulator
 #
@@ -1023,12 +1063,14 @@
 #swtpm_user = "tss"
 #swtpm_group = "tss"
 
+
 # For debugging and testing purposes it's sometimes useful to be able to disable
 # libvirt behaviour based on the capabilities of the qemu process. This option
 # allows to do so. DO _NOT_ use in production and beaware that the behaviour
 # may change across versions.
 #
 #capability_filters = [ "capname" ]
+
 
 # 'deprecation_behavior' setting controls how the qemu process behaves towards
 # deprecated commands and arguments used by libvirt.
@@ -1061,6 +1103,7 @@
 #
 #deprecation_behavior = "none"
 
+
 # If this is set then QEMU and its threads will run in a separate scheduling
 # group meaning no other process will share Hyper Threads of a single core with
 # QEMU. Each QEMU has its own group.
@@ -1077,6 +1120,7 @@
 #              scheduling group
 #sched_core = "none"
 
+
 # Using nbdkit to access remote disk sources
 #
 # If this is set then libvirt will use nbdkit to access remote disk sources
@@ -1087,6 +1131,7 @@
 # note that the default might change in future releases.
 #
 #storage_use_nbdkit = @USE_NBDKIT_DEFAULT@
+
 
 # libvirt will normally prevent migration if the storage backing the VM is not
 # on a shared filesystems. Sometimes, however, the storage *is* shared despite
