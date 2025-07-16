@@ -67,6 +67,14 @@ static const char *commonRules[] = {
     "ebtables \\\n--concurrent \\\n-t nat \\\n-N libvirt-J-vnet0\n"
     "ebtables \\\n--concurrent \\\n-t nat \\\n-N libvirt-P-vnet0\n",
 
+    /* Querying existence of rules */
+    "iptables \\\n-w \\\n-L\n",
+    "ip6tables \\\n-w \\\n-L\n",
+
+    /* Inserting ebtables rules */
+    "ebtables \\\n--concurrent \\\n-t nat \\\n-A PREROUTING \\\n-i vnet0 \\\n-j libvirt-J-vnet0\n"
+    "ebtables \\\n--concurrent \\\n-t nat \\\n-A POSTROUTING \\\n-o vnet0 \\\n-j libvirt-P-vnet0\n",
+
     /* Dropping iptables rules */
     "iptables \\\n-w \\\n-D libvirt-out \\\n-m physdev \\\n--physdev-is-bridged \\\n--physdev-out vnet0 \\\n-g FP-vnet0\n"
     "iptables \\\n-w \\\n-D libvirt-out \\\n-m physdev \\\n--physdev-out vnet0 \\\n-g FP-vnet0\n"
@@ -81,16 +89,16 @@ static const char *commonRules[] = {
 
     /* Creating iptables chains */
     "iptables \\\n-w \\\n-N libvirt-in\n"
-    "iptables \\\n-w \\\n-N libvirt-out\n"
-    "iptables \\\n-w \\\n-N libvirt-in-post\n"
-    "iptables \\\n-w \\\n-N libvirt-host-in\n"
     "iptables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in\n"
-    "iptables \\\n-w \\\n-D FORWARD \\\n-j libvirt-out\n"
-    "iptables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in-post\n"
-    "iptables \\\n-w \\\n-D INPUT \\\n-j libvirt-host-in\n"
     "iptables \\\n-w \\\n-I FORWARD 1 \\\n-j libvirt-in\n"
+    "iptables \\\n-w \\\n-N libvirt-out\n"
+    "iptables \\\n-w \\\n-D FORWARD \\\n-j libvirt-out\n"
     "iptables \\\n-w \\\n-I FORWARD 2 \\\n-j libvirt-out\n"
+    "iptables \\\n-w \\\n-N libvirt-in-post\n"
+    "iptables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in-post\n"
     "iptables \\\n-w \\\n-I FORWARD 3 \\\n-j libvirt-in-post\n"
+    "iptables \\\n-w \\\n-N libvirt-host-in\n"
+    "iptables \\\n-w \\\n-D INPUT \\\n-j libvirt-host-in\n"
     "iptables \\\n-w \\\n-I INPUT 1 \\\n-j libvirt-host-in\n"
     "iptables \\\n-w \\\n-N FP-vnet0\n"
     "iptables \\\n-w \\\n-N FJ-vnet0\n"
@@ -115,16 +123,16 @@ static const char *commonRules[] = {
 
     /* Creating ip6tables chains */
     "ip6tables \\\n-w \\\n-N libvirt-in\n"
-    "ip6tables \\\n-w \\\n-N libvirt-out\n"
-    "ip6tables \\\n-w \\\n-N libvirt-in-post\n"
-    "ip6tables \\\n-w \\\n-N libvirt-host-in\n"
     "ip6tables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in\n"
-    "ip6tables \\\n-w \\\n-D FORWARD \\\n-j libvirt-out\n"
-    "ip6tables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in-post\n"
-    "ip6tables \\\n-w \\\n-D INPUT \\\n-j libvirt-host-in\n"
     "ip6tables \\\n-w \\\n-I FORWARD 1 \\\n-j libvirt-in\n"
+    "ip6tables \\\n-w \\\n-N libvirt-out\n"
+    "ip6tables \\\n-w \\\n-D FORWARD \\\n-j libvirt-out\n"
     "ip6tables \\\n-w \\\n-I FORWARD 2 \\\n-j libvirt-out\n"
+    "ip6tables \\\n-w \\\n-N libvirt-in-post\n"
+    "ip6tables \\\n-w \\\n-D FORWARD \\\n-j libvirt-in-post\n"
     "ip6tables \\\n-w \\\n-I FORWARD 3 \\\n-j libvirt-in-post\n"
+    "ip6tables \\\n-w \\\n-N libvirt-host-in\n"
+    "ip6tables \\\n-w \\\n-D INPUT \\\n-j libvirt-host-in\n"
     "ip6tables \\\n-w \\\n-I INPUT 1 \\\n-j libvirt-host-in\n"
     "ip6tables \\\n-w \\\n-N FP-vnet0\n"
     "ip6tables \\\n-w \\\n-N FJ-vnet0\n"
@@ -134,10 +142,6 @@ static const char *commonRules[] = {
     "ip6tables \\\n-w \\\n-A libvirt-host-in \\\n-m physdev \\\n--physdev-in vnet0 \\\n-g HJ-vnet0\n"
     "ip6tables \\\n-w \\\n-D libvirt-in-post \\\n-m physdev \\\n--physdev-in vnet0 \\\n-j ACCEPT\n"
     "ip6tables \\\n-w \\\n-A libvirt-in-post \\\n-m physdev \\\n--physdev-in vnet0 \\\n-j ACCEPT\n",
-
-    /* Inserting ebtables rules */
-    "ebtables \\\n--concurrent \\\n-t nat \\\n-A PREROUTING \\\n-i vnet0 \\\n-j libvirt-J-vnet0\n"
-    "ebtables \\\n--concurrent \\\n-t nat \\\n-A POSTROUTING \\\n-o vnet0 \\\n-j libvirt-P-vnet0\n",
 };
 
 
@@ -342,6 +346,26 @@ static int testSetDefaultParameters(GHashTable *vars)
     return 0;
 }
 
+static void
+testCommandDryRunCallback(const char *const*args,
+                          const char *const*env G_GNUC_UNUSED,
+                          const char *input G_GNUC_UNUSED,
+                          char **output,
+                          char **error G_GNUC_UNUSED,
+                          int *status,
+                          void *opaque G_GNUC_UNUSED)
+{
+    if (STRNEQ(args[0], "iptables") && STRNEQ(args[0], "ip6tables")) {
+        return;
+    }
+
+    /* simulate an empty existing set rules */
+    if (STREQ(args[1], "-w") && STREQ(args[2], "-L")) {
+        *output = g_strdup("Chain nothing\n");
+        *status = EXIT_SUCCESS;
+    }
+}
+
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
@@ -352,7 +376,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
-    virCommandSetDryRun(dryRunToken, &buf, true, true, NULL, NULL);
+    virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRunCallback, NULL);
 
     if (testSetDefaultParameters(vars) < 0)
         goto cleanup;

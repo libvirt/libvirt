@@ -131,6 +131,25 @@ static char chainprefixes_host_temp[3] = {
     0
 };
 
+typedef struct {
+    const char *chain;
+    const char *position;
+    const char *targetChain;
+} iptablesBaseChainFW;
+
+typedef struct {
+    const char *ifname;
+    int nrules;
+    virNWFilterRuleInst **rules;
+} chainCreateCallbackData;
+
+static iptablesBaseChainFW fw_base_chains[] = {
+    {"FORWARD", "1", VIRT_IN_CHAIN},
+    {"FORWARD", "2", VIRT_OUT_CHAIN},
+    {"FORWARD", "3", VIRT_IN_POST_CHAIN},
+    {"INPUT", "1", HOST_IN_CHAIN},
+};
+
 static int
 printVar(virNWFilterVarCombIter *vars,
          char *buf, int bufsize,
@@ -397,46 +416,6 @@ ebtablesHandleEthHdr(virFirewall *fw,
 
 
 /************************ iptables support ************************/
-
-
-static void
-iptablesCreateBaseChainsFW(virFirewall *fw,
-                           virFirewallLayer layer)
-{
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-N", VIRT_IN_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-N", VIRT_OUT_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-N", VIRT_IN_POST_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-N", HOST_IN_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-D", "FORWARD", "-j", VIRT_IN_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-D", "FORWARD", "-j", VIRT_OUT_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-D", "FORWARD", "-j", VIRT_IN_POST_CHAIN, NULL);
-    virFirewallAddCmdFull(fw, layer,
-                          true, NULL, NULL,
-                          "-D", "INPUT", "-j", HOST_IN_CHAIN, NULL);
-    virFirewallAddCmd(fw, layer,
-                      "-I", "FORWARD", "1", "-j", VIRT_IN_CHAIN, NULL);
-    virFirewallAddCmd(fw, layer,
-                      "-I", "FORWARD", "2", "-j", VIRT_OUT_CHAIN, NULL);
-    virFirewallAddCmd(fw, layer,
-                      "-I", "FORWARD", "3", "-j", VIRT_IN_POST_CHAIN, NULL);
-    virFirewallAddCmd(fw, layer,
-                      "-I", "INPUT", "1", "-j", HOST_IN_CHAIN, NULL);
-}
-
 
 static void
 iptablesCreateTmpRootChainFW(virFirewall *fw,
@@ -3148,6 +3127,7 @@ iptablesCheckBridgeNFCallEnabled(bool isIPv6)
     }
 }
 
+
 /*
  * Given a filtername determine the protocol it is used for evaluating
  * We do prefix-matching to determine the protocol.
@@ -3199,6 +3179,104 @@ iptablesRuleInstCommand(virFirewall *fw,
  cleanup:
     virNWFilterVarCombIterFree(vciter);
     return ret;
+}
+
+
+static int
+iptablesHandleCreateChainAndRules(virFirewall *fw,
+                                  virFirewallLayer layer,
+                                  const char *const *lines,
+                                  void *opaque)
+{
+    size_t i, j;
+    static bool baseChainDefined[G_N_ELEMENTS(fw_base_chains)] = { false };
+    chainCreateCallbackData *cbdata = opaque;
+    bool isIPv6 = layer == VIR_FIREWALL_LAYER_IPV6;
+
+    iptablesUnlinkTmpRootChainsFW(fw, layer, cbdata->ifname);
+    iptablesRemoveTmpRootChainsFW(fw, layer, cbdata->ifname);
+
+    /* parse iptables -L output to see if base chains exist */
+    for (i = 0; lines[i] != NULL; i++) {
+        if (!STRPREFIX(lines[i], "Chain ")) {
+            // line doesn't start with Chain
+            continue;
+        };
+
+        VIR_DEBUG("Considering chain for comparison '%s'", lines[i]);
+
+        for (j = 0; j < G_N_ELEMENTS(fw_base_chains); j++) {
+            /* if chain matches basechain */
+            if (STRPREFIX(lines[i]+6, fw_base_chains[j].targetChain)) {
+                VIR_DEBUG("Found chain '%s'", fw_base_chains[j].targetChain);
+                baseChainDefined[j] = true;
+            }
+        }
+    }
+
+    /* go through parsing results and add basechain commands if necessary */
+    for (i = 0; i < G_N_ELEMENTS(fw_base_chains); i++) {
+        if (!baseChainDefined[i]) {
+            VIR_DEBUG("Defining base chain '%s'", fw_base_chains[i].targetChain);
+
+            virFirewallAddCmdFull(fw, layer,
+                                  true, NULL, NULL,
+                                  "-N", fw_base_chains[i].targetChain, NULL);
+            virFirewallAddCmdFull(fw, layer,
+                                  true, NULL, NULL,
+                                  "-D", fw_base_chains[i].chain, "-j",
+                                  fw_base_chains[i].targetChain, NULL);
+            virFirewallAddCmd(fw, layer,
+                              "-I", fw_base_chains[i].chain, fw_base_chains[i].position,
+                              "-j", fw_base_chains[i].targetChain, NULL);
+        }
+    }
+
+    iptablesCreateTmpRootChainsFW(fw, layer, cbdata->ifname);
+    iptablesLinkTmpRootChainsFW(fw, layer, cbdata->ifname);
+    iptablesSetupVirtInPostFW(fw, layer, cbdata->ifname);
+
+    for (i = 0; i < cbdata->nrules; i++) {
+        if (isIPv6 == false &&
+            virNWFilterRuleIsProtocolIPv4(cbdata->rules[i]->def)) {
+            if (iptablesRuleInstCommand(fw, cbdata->ifname, cbdata->rules[i]) < 0)
+                goto cleanup;
+        } else if (isIPv6 && virNWFilterRuleIsProtocolIPv6(cbdata->rules[i]->def)) {
+            if (iptablesRuleInstCommand(fw, cbdata->ifname, cbdata->rules[i]) < 0)
+                goto cleanup;
+        }
+    }
+
+    iptablesCheckBridgeNFCallEnabled(isIPv6);
+
+ cleanup:
+
+    return 0;
+}
+
+
+/**
+ * iptablesCreateChainsAndRules
+ *
+ * @fw: the firewall ruleset instance
+ * @layer: the firewall layer
+ * @cbdata: callback data struct which holds variables that
+ *          the call back handler needs in order to create
+ *          the base chain jumps and the dependant rules
+ *          the ICMP rule from being created
+ *
+ * Run iptables -L and parse if chains already exist
+ * skips creation of base chain jumps if possible
+ * see handler in iptablesHandleCreateChainAndRules
+ */
+static void iptablesCreateChainsAndRules(virFirewall *fw,
+                                 virFirewallLayer layer,
+                                 chainCreateCallbackData *cbdata)
+{
+    virFirewallAddCmdFull(fw, layer,
+                          false, iptablesHandleCreateChainAndRules,
+                          (void *)cbdata,
+                          "-L", NULL, NULL);
 }
 
 
@@ -3311,6 +3389,7 @@ ebiptablesApplyNewRules(const char *ifname,
     g_autofree ebtablesSubChainInst **subchains = NULL;
     size_t nsubchains = 0;
     int ret = -1;
+    chainCreateCallbackData chainCallbackData = {ifname, nrules, rules};
 
     if (nrules) {
         g_qsort_with_data(rules, nrules, sizeof(rules[0]),
@@ -3429,47 +3508,9 @@ ebiptablesApplyNewRules(const char *ifname,
     }
 
     if (haveIptables) {
-        iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
-        iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
-
-        iptablesCreateBaseChainsFW(fw, VIR_FIREWALL_LAYER_IPV4);
-        iptablesCreateTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
-
-        iptablesLinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
-        iptablesSetupVirtInPostFW(fw, VIR_FIREWALL_LAYER_IPV4, ifname);
-
-        for (i = 0; i < nrules; i++) {
-            if (virNWFilterRuleIsProtocolIPv4(rules[i]->def)) {
-                if (iptablesRuleInstCommand(fw,
-                                            ifname,
-                                            rules[i]) < 0)
-                    goto cleanup;
-            }
-        }
-
-        iptablesCheckBridgeNFCallEnabled(false);
-    }
-
-    if (haveIp6tables) {
-        iptablesUnlinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
-        iptablesRemoveTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
-
-        iptablesCreateBaseChainsFW(fw, VIR_FIREWALL_LAYER_IPV6);
-        iptablesCreateTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
-
-        iptablesLinkTmpRootChainsFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
-        iptablesSetupVirtInPostFW(fw, VIR_FIREWALL_LAYER_IPV6, ifname);
-
-        for (i = 0; i < nrules; i++) {
-            if (virNWFilterRuleIsProtocolIPv6(rules[i]->def)) {
-                if (iptablesRuleInstCommand(fw,
-                                            ifname,
-                                            rules[i]) < 0)
-                    goto cleanup;
-            }
-        }
-
-        iptablesCheckBridgeNFCallEnabled(true);
+        iptablesCreateChainsAndRules(fw, VIR_FIREWALL_LAYER_IPV4, &chainCallbackData);
+    } if (haveIp6tables) {
+        iptablesCreateChainsAndRules(fw, VIR_FIREWALL_LAYER_IPV6, &chainCallbackData);
     }
 
     if (virHashSize(chains_in_set) != 0)
