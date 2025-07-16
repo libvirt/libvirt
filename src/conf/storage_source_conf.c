@@ -832,6 +832,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->compat = g_strdup(src->compat);
     def->tlsAlias = g_strdup(src->tlsAlias);
     def->tlsCertdir = g_strdup(src->tlsCertdir);
+    def->tlsPriority = g_strdup(src->tlsPriority);
     def->tlsHostname = g_strdup(src->tlsHostname);
     def->query = g_strdup(src->query);
     def->vdpadev = g_strdup(src->vdpadev);
@@ -1185,6 +1186,7 @@ virStorageSourceClear(virStorageSource *def)
 
     VIR_FREE(def->tlsAlias);
     VIR_FREE(def->tlsCertdir);
+    VIR_FREE(def->tlsPriority);
     VIR_FREE(def->tlsHostname);
 
     VIR_FREE(def->ssh_user);

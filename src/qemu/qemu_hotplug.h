@@ -41,6 +41,7 @@ qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
                         const char *tlsCertdir,
                         bool tlsListen,
                         bool tlsVerify,
+                        const char *tlsPriority,
                         const char *alias,
                         virJSONValue **tlsProps,
                         virJSONValue **secProps);

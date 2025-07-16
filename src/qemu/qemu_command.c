@@ -1263,6 +1263,7 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
  * @tlspath: path to the TLS credentials
  * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
+ * @priority: GNUTLS priority string override (optional)
  * @alias: alias for the TLS credentials object
  * @secalias: if one exists, the alias of the security object for passwordid
  * @propsret: json properties to return
@@ -1275,6 +1276,7 @@ int
 qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool isListen,
                              bool verifypeer,
+                             const char *priority,
                              const char *alias,
                              const char *secalias,
                              virJSONValue **propsret)
@@ -1283,6 +1285,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
                                      "s:dir", tlspath,
                                      "s:endpoint", (isListen ? "server": "client"),
                                      "b:verify-peer", (isListen ? verifypeer : true),
+                                     "S:priority", priority,
                                      "S:passwordid", secalias,
                                      NULL) < 0)
         return -1;
@@ -1296,6 +1299,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
  * @tlspath: path to the TLS credentials
  * @listen: boolean listen for client or server setting
  * @verifypeer: boolean to enable peer verification (form of authorization)
+ * @priority: GNUTLS priority string override (optional)
  * @certEncSecretAlias: alias of a 'secret' object for decrypting TLS private key
  *                      (optional)
  * @alias: TLS object alias
@@ -1309,13 +1313,14 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
                             const char *tlspath,
                             bool isListen,
                             bool verifypeer,
+                            const char *priority,
                             const char *certEncSecretAlias,
                             const char *alias)
 {
     g_autoptr(virJSONValue) props = NULL;
 
-    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, alias,
-                                     certEncSecretAlias, &props) < 0)
+    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, priority,
+                                     alias, certEncSecretAlias, &props) < 0)
         return -1;
 
     if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
@@ -1357,6 +1362,7 @@ qemuBuildChardevCommand(virCommand *cmd,
             if (qemuBuildTLSx509CommandLine(cmd, chrSourcePriv->tlsCertPath,
                                             dev->data.tcp.listen,
                                             chrSourcePriv->tlsVerify,
+                                            chrSourcePriv->tlsPriority,
                                             tlsCertEncSecAlias,
                                             objalias) < 0) {
                 return -1;
@@ -8353,6 +8359,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                                         cfg->vncTLSx509certdir,
                                         true,
                                         cfg->vncTLSx509verify,
+                                        cfg->vncTLSpriority,
                                         secretAlias,
                                         gfxPriv->tlsAlias) < 0)
             return -1;
@@ -11194,8 +11201,8 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
     }
 
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
-        qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsAlias,
-                                     tlsKeySecretAlias, &data->tlsProps) < 0)
+        qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsPriority,
+                                     src->tlsAlias, tlsKeySecretAlias, &data->tlsProps) < 0)
         return -1;
 
     return 0;

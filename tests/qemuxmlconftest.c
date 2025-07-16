@@ -1596,7 +1596,9 @@ mymain(void)
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-tlsx509-nbd-hostname", "6.2.0");
+    driver.config->nbdTLSpriority = g_strdup("@SYSTEM:-VERS-TLS1.3");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
+    VIR_FREE(driver.config->nbdTLSpriority);
     DO_TEST_CAPS_LATEST("disk-network-http");
     VIR_FREE(driver.config->nbdTLSx509secretUUID);
     DO_TEST_CAPS_LATEST("disk-network-ssh");
@@ -1730,8 +1732,10 @@ mymain(void)
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
     DO_TEST_CAPS_LATEST("graphics-vnc-tls");
+    driver.config->vncTLSpriority = g_strdup("@SYSTEM:-VERS-TLS1.3");
     driver.config->vncTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls-secret");
+    VIR_FREE(driver.config->vncTLSpriority);
     VIR_FREE(driver.config->vncTLSx509secretUUID);
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     DO_TEST_CAPS_LATEST("graphics-vnc-egl-headless");
@@ -1881,7 +1885,9 @@ mymain(void)
     driver.config->chardevTLSx509verify = 0;
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-notls");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
+    driver.config->chardevTLSpriority = g_strdup("@SYSTEM:-VERS-TLS1.3");
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-secret-chardev");
+    VIR_FREE(driver.config->chardevTLSpriority);
     VIR_FREE(driver.config->chardevTLSx509secretUUID);
     driver.config->chardevTLS = 0;
     DO_TEST_CAPS_LATEST("serial-many-chardev");

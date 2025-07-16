@@ -955,6 +955,7 @@ qemuDomainChrSourcePrivateDispose(void *obj)
     qemuDomainChrSourcePrivateClearFDPass(priv);
 
     g_free(priv->tlsCertPath);
+    g_free(priv->tlsPriority);
 
     g_free(priv->tlsCredsAlias);
 
@@ -8793,6 +8794,7 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
 
             if (charsrc->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES) {
                 charpriv->tlsCertPath = g_strdup(data->cfg->chardevTLSx509certdir);
+                charpriv->tlsPriority = g_strdup(data->cfg->chardevTLSpriority);
                 charpriv->tlsVerify = data->cfg->chardevTLSx509verify;
             }
         }
@@ -8858,6 +8860,7 @@ qemuProcessPrepareStorageSourceTLSNBD(virStorageSource *src,
 
         src->tlsAlias = qemuAliasTLSObjFromSrcAlias(parentAlias);
         src->tlsCertdir = g_strdup(cfg->nbdTLSx509certdir);
+        src->tlsPriority = g_strdup(cfg->nbdTLSpriority);
 
         if (cfg->nbdTLSx509secretUUID) {
             qemuDomainStorageSourcePrivate *srcpriv = qemuDomainStorageSourcePrivateFetch(src);

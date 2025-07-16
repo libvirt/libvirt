@@ -624,6 +624,7 @@ qemuBlockJobCleanStorageSourceRuntime(virStorageSource *src)
     VIR_FREE(src->nodenameformat);
     VIR_FREE(src->tlsAlias);
     VIR_FREE(src->tlsCertdir);
+    VIR_FREE(src->tlsPriority);
 }
 
 

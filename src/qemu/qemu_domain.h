@@ -384,6 +384,7 @@ struct _qemuDomainChrSourcePrivate {
 
     char *tlsCertPath; /* path to certificates if TLS is requested */
     bool tlsVerify; /* whether server should verify client certificates */
+    char *tlsPriority; /* optional GNUTLS priority string */
 
     char *tlsCredsAlias; /* alias of the x509 tls credentials object */
 };

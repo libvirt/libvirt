@@ -454,6 +454,9 @@ virQEMUDriverConfigLoadDefaultTLSEntry(virQEMUDriverConfig *cfg,
     if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
                               &cfg->defaultTLSx509secretUUID) < 0)
         return -1;
+    if (virConfGetValueString(conf, "default_tls_priority",
+                              &cfg->defaultTLSpriority) < 0)
+        return -1;
 
     return 0;
 }
@@ -565,6 +568,9 @@ virQEMUDriverConfigLoadSpecificTLSEntry(virQEMUDriverConfig *cfg,
         if (virConfGetValueString(conf, \
                                   #val "_tls_x509_secret_uuid", \
                                   &cfg->val## TLSx509secretUUID) < 0) \
+            return -1; \
+        if ((rv = virConfGetValueString(conf, #val "_tls_priority", \
+                                        &cfg->val## TLSpriority)) < 0) \
             return -1; \
     } while (0)
 
@@ -1440,6 +1446,22 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfig *cfg)
     SET_TLS_SECRET_UUID_DEFAULT(nbd);
 
 #undef SET_TLS_SECRET_UUID_DEFAULT
+
+#define SET_TLS_PRIORITY_DEFAULT(val) \
+    do { \
+        if (!cfg->val## TLSpriority && \
+            cfg->defaultTLSpriority) { \
+            cfg->val## TLSpriority = g_strdup(cfg->defaultTLSpriority); \
+        } \
+    } while (0)
+
+    SET_TLS_PRIORITY_DEFAULT(vnc);
+    SET_TLS_PRIORITY_DEFAULT(chardev);
+    SET_TLS_PRIORITY_DEFAULT(migrate);
+    SET_TLS_PRIORITY_DEFAULT(backup);
+    SET_TLS_PRIORITY_DEFAULT(nbd);
+
+#undef SET_TLS_PRIORITY_DEFAULT
 
     /*
      * If a "SYSCONFDIR" + "pki/libvirt-<val>" exists, then assume someone

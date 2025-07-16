@@ -728,8 +728,9 @@ qemuBackupBeginPrepareTLS(virDomainObj *vm,
     }
 
     if (qemuBuildTLSx509BackendProps(cfg->backupTLSx509certdir, true,
-                                     cfg->backupTLSx509verify, tlsObjAlias,
-                                     tlsKeySecretAlias,
+                                     cfg->backupTLSx509verify,
+                                     cfg->backupTLSpriority,
+                                     tlsObjAlias, tlsKeySecretAlias,
                                      tlsProps) < 0)
         return -1;
 

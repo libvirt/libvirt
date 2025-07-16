@@ -396,6 +396,7 @@ struct _virStorageSource {
      * certificate directory with listen and verify bools. */
     char *tlsAlias;
     char *tlsCertdir;
+    char *tlsPriority;
 
     /* TLS hostname override */
     char *tlsHostname;

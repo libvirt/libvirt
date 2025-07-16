@@ -67,6 +67,7 @@ int
 qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool isListen,
                              bool verifypeer,
+                             const char *priority,
                              const char *alias,
                              const char *secalias,
                              virJSONValue **propsret);

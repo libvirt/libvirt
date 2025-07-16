@@ -117,6 +117,7 @@ struct _virQEMUDriverConfig {
     bool defaultTLSx509verify;
     bool defaultTLSx509verifyPresent;
     char *defaultTLSx509secretUUID;
+    char *defaultTLSpriority;
 
     bool vncAutoUnixSocket;
     bool vncTLS;
@@ -125,6 +126,7 @@ struct _virQEMUDriverConfig {
     bool vncSASL;
     char *vncTLSx509certdir;
     char *vncTLSx509secretUUID;
+    char *vncTLSpriority;
     char *vncListen;
     char *vncPassword;
     char *vncSASLdir;
@@ -147,21 +149,25 @@ struct _virQEMUDriverConfig {
     bool chardevTLSx509verify;
     bool chardevTLSx509verifyPresent;
     char *chardevTLSx509secretUUID;
+    char *chardevTLSpriority;
 
     char *migrateTLSx509certdir;
     bool migrateTLSx509verify;
     bool migrateTLSx509verifyPresent;
     char *migrateTLSx509secretUUID;
+    char *migrateTLSpriority;
     bool migrateTLSForce;
 
     char *backupTLSx509certdir;
     bool backupTLSx509verify;
     bool backupTLSx509verifyPresent;
     char *backupTLSx509secretUUID;
+    char *backupTLSpriority;
 
     bool nbdTLS;
     char *nbdTLSx509certdir;
     char *nbdTLSx509secretUUID;
+    char *nbdTLSpriority;
 
     unsigned int remotePortMin;
     unsigned int remotePortMax;

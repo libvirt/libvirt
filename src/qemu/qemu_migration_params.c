@@ -1208,6 +1208,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
     if (qemuDomainGetTLSObjects(priv->migSecinfo,
                                 cfg->migrateTLSx509certdir, tlsListen,
                                 cfg->migrateTLSx509verify,
+                                cfg->migrateTLSpriority,
                                 *tlsAlias, &tlsProps, &secProps) < 0)
         return -1;
 

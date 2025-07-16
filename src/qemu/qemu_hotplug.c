@@ -1749,6 +1749,7 @@ qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
                         const char *tlsCertdir,
                         bool tlsListen,
                         bool tlsVerify,
+                        const char *tlsPriority,
                         const char *alias,
                         virJSONValue **tlsProps,
                         virJSONValue **secProps)
@@ -1762,7 +1763,7 @@ qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
         secAlias = secinfo->alias;
     }
 
-    if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
+    if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify, tlsPriority,
                                      alias, secAlias, tlsProps) < 0)
         return -1;
 
@@ -1806,6 +1807,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
                                 cfg->chardevTLSx509certdir,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,
+                                cfg->chardevTLSpriority,
                                 *tlsAlias, &tlsProps, &secProps) < 0)
         return -1;
 

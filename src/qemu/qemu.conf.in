@@ -62,6 +62,18 @@
 #default_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
 
 
+# Libvirt allows QEMU to use its built-in TLS priority by default,
+# however, this allows overriding it at runtime. This is especially
+# useful if TLS priority needs to be changed for an operation run
+# against an existing running QEMU.
+#
+# This must be a valid GNUTLS priority string:
+#
+#   https://gnutls.org/manual/html_node/Priority-Strings.html
+#
+#default_tls_priority = "@SYSTEM"
+
+
 # VNC is configured to listen on 127.0.0.1 by default.
 # To make it listen on all public interfaces, uncomment
 # this next option.
@@ -125,6 +137,11 @@
 # UUID provided in the default_tls_x509_secret_uuid parameter.
 #
 #vnc_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
+
+
+# Override QEMU default GNUTLS priority string for VNC
+#
+#vnc_tls_priority = "@SYSTEM"
 
 
 # The default VNC password. Only 8 bytes are significant for
@@ -306,6 +323,11 @@
 #chardev_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
 
 
+# Override QEMU default GNUTLS priority string for character devices
+#
+#chardev_tls_priority = "@SYSTEM"
+
+
 # The support for VxHS network block protocol was removed in qemu-5.2 and
 # thus also dropped from libvirt's qemu driver. The following options which
 # were used to configure the TLS certificates for VxHS are thus ignored.
@@ -358,6 +380,11 @@
 #nbd_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
 
 
+# Override QEMU default GNUTLS priority string for NBD
+#
+#nbd_tls_priority = "@SYSTEM"
+
+
 # In order to override the default TLS certificate location for migration
 # certificates, supply a valid path to the certificate directory. If the
 # provided path does not exist, libvirtd will fail to start. If the path is
@@ -395,6 +422,11 @@
 # command and then uncomment the entry
 #
 #migrate_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
+
+
+# Override QEMU default GNUTLS priority string for live migration
+#
+#migrate_tls_priority = "@SYSTEM"
 
 
 # By default TLS is requested using the VIR_MIGRATE_TLS flag, thus not requested
@@ -440,6 +472,11 @@
 # command and then uncomment the entry
 #
 #backup_tls_x509_secret_uuid = "00000000-0000-0000-0000-000000000000"
+
+
+# Override QEMU default GNUTLS priority string for NBD backups
+#
+#backup_tls_priority = "@SYSTEM"
 
 
 # By default, if no graphical front end is configured, libvirt will disable
