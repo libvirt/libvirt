@@ -7137,8 +7137,8 @@ qemuProcessOpenVhostVsock(virDomainVsockDef *vsock)
     int fd;
 
     if ((fd = open(vsock_path, O_RDWR)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       "%s", _("unable to open vhost-vsock device"));
+        virReportSystemError(errno, "%s",
+                             _("unable to open vhost-vsock device"));
         return -1;
     }
 

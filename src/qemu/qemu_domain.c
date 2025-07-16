@@ -515,8 +515,8 @@ qemuDomainWriteMasterKeyFile(virQEMUDriver *driver,
         return -1;
 
     if ((fd = open(path, O_WRONLY|O_TRUNC|O_CREAT, 0600)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to open domain master key file for write"));
+        virReportSystemError(errno, "%s",
+                             _("failed to open domain master key file for write"));
         return -1;
     }
 
@@ -580,8 +580,8 @@ qemuDomainMasterKeyReadFile(qemuDomainObjPrivate *priv)
     }
 
     if ((fd = open(path, O_RDONLY)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to open domain master key file for read"));
+        virReportSystemError(errno, "%s",
+                             _("failed to open domain master key file for read"));
         goto error;
     }
 
