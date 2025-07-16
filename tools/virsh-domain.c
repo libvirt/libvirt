@@ -12875,6 +12875,10 @@ virshFindDisk(const char *doc,
             STREQ_NULLABLE(sourceDir, path) ||
             STREQ_NULLABLE(sourceName, path)) {
             xmlNodePtr ret = xmlCopyNode(nodes[i], 1);
+            if (!ret) {
+                vshError(NULL, "%s", _("Failed to copy XML node"));
+                return NULL;
+            }
             /* drop backing store since they are not needed here */
             virshDiskDropBackingStore(ret);
             return ret;
