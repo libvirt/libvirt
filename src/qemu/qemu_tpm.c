@@ -1150,7 +1150,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
 
-    if (incomingMigration && qemuTPMHasSharedStorage(driver, vm->def)) {
+    if (incomingMigration && qemuTPMDomainHasSharedStorage(driver, vm->def)) {
         /* If the TPM is being migrated over shared storage, we can't
          * lock all files before labeling them: the source swtpm
          * process is still holding on to the lock file, and it will
@@ -1219,8 +1219,8 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
 
 
 bool
-qemuTPMHasSharedStorage(virQEMUDriver *driver,
-                        virDomainDef *def)
+qemuTPMDomainHasSharedStorage(virQEMUDriver *driver,
+                              virDomainDef *def)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
@@ -1346,7 +1346,7 @@ qemuExtTPMStop(virQEMUDriver *driver,
         return;
 
     qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
-    if (migration && qemuTPMHasSharedStorage(driver, vm->def))
+    if (migration && qemuTPMDomainHasSharedStorage(driver, vm->def))
         restoreTPMStateLabel = false;
 
     if (qemuSecurityRestoreTPMLabels(driver, vm, restoreTPMStateLabel, false) < 0)
