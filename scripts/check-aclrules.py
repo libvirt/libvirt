@@ -88,7 +88,7 @@ def fixup_name(name):
     elif name.endswith("Mac"):
         name = name[:-3] + "MAC"
     elif name.endswith("Cpu"):
-        name = name[:-3] + "MAC"
+        name = name[:-3] + "CPU"
     elif name.endswith("Os"):
         name = name[:-2] + "OS"
     elif name.endswith("Nmi"):
