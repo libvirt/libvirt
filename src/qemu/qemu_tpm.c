@@ -205,6 +205,40 @@ qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
 }
 
 
+static bool
+qemuTPMHasSharedStorage(const virQEMUDriverConfig *cfg,
+                        const virDomainTPMDef *tpm)
+{
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        return virFileIsSharedFS(tpm->data.emulator.source_path,
+                                 cfg->sharedFilesystems) == 1;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return false;
+}
+
+
+bool
+qemuTPMDomainHasSharedStorage(virQEMUDriver *driver,
+                              virDomainDef *def)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        if (qemuTPMHasSharedStorage(cfg, def->tpms[i]))
+            return true;
+    }
+
+    return false;
+}
+
+
 /**
  * qemuTPMEmulatorDeleteStorage:
  * @tpm: TPM definition
@@ -1215,31 +1249,6 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
         unlink(pidfile);
     qemuSecurityRestoreTPMLabels(driver, vm, true, lockMetadataException);
     return -1;
-}
-
-
-bool
-qemuTPMDomainHasSharedStorage(virQEMUDriver *driver,
-                              virDomainDef *def)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    size_t i;
-
-    for (i = 0; i < def->ntpms; i++) {
-        virDomainTPMDef *tpm = def->tpms[i];
-
-        switch (tpm->type) {
-        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-            return virFileIsSharedFS(tpm->data.emulator.source_path,
-                                     cfg->sharedFilesystems) == 1;
-        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        case VIR_DOMAIN_TPM_TYPE_EXTERNAL:
-        case VIR_DOMAIN_TPM_TYPE_LAST:
-            break;
-        }
-    }
-
-    return false;
 }
 
 
