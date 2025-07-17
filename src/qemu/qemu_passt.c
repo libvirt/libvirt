@@ -194,15 +194,15 @@ qemuPasstPrepareVhostUser(virDomainObj *vm,
     net->data.vhostuser->data.nix.reconnect.timeout = QEMU_PASST_RECONNECT_TIMEOUT;
 }
 
-int
-qemuPasstStart(virDomainObj *vm,
-               virDomainNetDef *net)
+virCommand *
+qemuPasstBuildCommand(char **socketName,
+                      char **pidfileRet,
+                      virDomainObj *vm,
+                      virDomainNetDef *net)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
-    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
+    g_autoptr(virCommand) cmd = NULL;
     size_t i;
 
     cmd = virCommandNew(PASST);
@@ -244,7 +244,7 @@ qemuPasstStart(virDomainObj *vm,
          * a single IPv4 and single IPv6 address
          */
         if (!(addr = virSocketAddrFormat(&ip->address)))
-            return -1;
+            return NULL;
 
         virCommandAddArgList(cmd, "--address", addr, NULL);
 
@@ -272,14 +272,14 @@ qemuPasstStart(virDomainObj *vm,
             /* validation guarantees this will never happen */
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid portForward proto value %1$u"), pf->proto);
-            return -1;
+            return NULL;
         }
 
         if (VIR_SOCKET_ADDR_VALID(&pf->address)) {
             g_autofree char *addr = NULL;
 
             if (!(addr = virSocketAddrFormat(&pf->address)))
-                return -1;
+                return NULL;
 
             virBufferAddStr(&buf, addr);
             emitsep = true;
@@ -323,6 +323,26 @@ qemuPasstStart(virDomainObj *vm,
         virCommandAddArg(cmd, virBufferCurrentContent(&buf));
     }
 
+    if (socketName)
+        *socketName = g_steal_pointer(&passtSocketName);
+    if (pidfileRet)
+        *pidfileRet = g_steal_pointer(&pidfile);
+
+    return g_steal_pointer(&cmd);
+}
+
+int
+qemuPasstStart(virDomainObj *vm,
+               virDomainNetDef *net)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autofree char *passtSocketName = NULL;
+    g_autofree char *pidfile = NULL;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virCommand) cmd = NULL;
+
+    if (!(cmd = qemuPasstBuildCommand(&passtSocketName, &pidfile, vm, net)))
+        return -1;
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "passt") < 0)
         return -1;

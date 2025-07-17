@@ -27,6 +27,11 @@ qemuPasstAddNetProps(virDomainObj *vm,
                      virDomainNetDef *net,
                      virJSONValue **netprops);
 
+virCommand *qemuPasstBuildCommand(char **socketName,
+                                  char **pidfileRet,
+                                  virDomainObj *vm,
+                                  virDomainNetDef *net);
+
 int qemuPasstStart(virDomainObj *vm,
                    virDomainNetDef *net);
 
