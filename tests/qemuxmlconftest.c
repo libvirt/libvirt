@@ -1694,6 +1694,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-ide-wwn");
     DO_TEST_CAPS_LATEST("disk-geometry");
     DO_TEST_CAPS_LATEST("disk-blockio");
+    DO_TEST_CAPS_LATEST("disk-blockio-no-discard");
 
     driver.config->storageUseNbdkit = 1;
     DO_TEST_CAPS_LATEST_NBDKIT("disk-cdrom-network-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_CURL);

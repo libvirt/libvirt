@@ -8554,6 +8554,8 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     if ((blockioNode = virXPathNode("./blockio", ctxt))) {
+        int tmp = 0;
+
         if (virXMLPropUInt(blockioNode, "logical_block_size", 10, VIR_XML_PROP_NONE,
                            &def->blockio.logical_block_size) < 0)
             return NULL;
@@ -8562,9 +8564,11 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
                            &def->blockio.physical_block_size) < 0)
             return NULL;
 
-        if (virXMLPropUInt(blockioNode, "discard_granularity", 10, VIR_XML_PROP_NONE,
-                           &def->blockio.discard_granularity) < 0)
+        if ((tmp = virXMLPropUInt(blockioNode, "discard_granularity", 10, VIR_XML_PROP_NONE,
+                                  &def->blockio.discard_granularity)) < 0)
             return NULL;
+        if (tmp > 0)
+            def->blockio.discard_granularity_specified = true;
     }
 
     if ((driverNode = virXPathNode("./driver", ctxt))) {
@@ -23102,7 +23106,7 @@ virDomainDiskBlockIoDefFormat(virBuffer *buf,
 {
     if (def->blockio.logical_block_size > 0 ||
         def->blockio.physical_block_size > 0 ||
-        def->blockio.discard_granularity > 0) {
+        def->blockio.discard_granularity_specified) {
         virBufferAddLit(buf, "<blockio");
         if (def->blockio.logical_block_size > 0) {
             virBufferAsprintf(buf,
@@ -23114,7 +23118,7 @@ virDomainDiskBlockIoDefFormat(virBuffer *buf,
                               " physical_block_size='%u'",
                               def->blockio.physical_block_size);
         }
-        if (def->blockio.discard_granularity > 0) {
+        if (def->blockio.discard_granularity_specified) {
             virBufferAsprintf(buf,
                               " discard_granularity='%u'",
                               def->blockio.discard_granularity);

@@ -1899,7 +1899,6 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:loadparm", bootLoadparm,
                               "p:logical_block_size", logical_block_size,
                               "p:physical_block_size", physical_block_size,
-                              "p:discard_granularity", discard_granularity,
                               "A:wwn", &wwn,
                               "p:rotation_rate", disk->rotation_rate,
                               "S:vendor", disk->vendor,
@@ -1914,6 +1913,12 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:serial", serial,
                               "S:werror", wpolicy,
                               "S:rerror", rpolicy,
+                              NULL) < 0)
+        return NULL;
+
+    if (disk->blockio.discard_granularity_specified &&
+        virJSONValueObjectAdd(&props,
+                              "u:discard_granularity", discard_granularity,
                               NULL) < 0)
         return NULL;
 
