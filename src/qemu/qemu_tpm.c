@@ -660,12 +660,16 @@ qemuTPMVirCommandSwtpmAddEncryption(virCommand *cmd,
 
 static void
 qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
-                                  const virDomainTPMEmulatorDef *emulator)
+                                  const virDomainTPMEmulatorDef *emulator,
+                                  const virDomainTPMDef *tpmDef,
+                                  const virQEMUDriverConfig *cfg)
 {
     const char *lock = ",lock";
 
     if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_LOCK)) {
-        VIR_WARN("This swtpm version doesn't support explicit locking");
+        if (qemuTPMHasSharedStorage(cfg, tpmDef))
+            VIR_WARN("This swtpm version doesn't support explicit locking");
+
         lock = "";
     }
 
@@ -721,7 +725,7 @@ qemuTPMEmulatorUpdateProfileName(virDomainTPMEmulatorDef *emulator,
 
     virCommandAddArgList(cmd, "socket", "--print-info", "0x20", "--tpm2", NULL);
 
-    qemuTPMVirCommandSwtpmAddTPMState(cmd, emulator);
+    qemuTPMVirCommandSwtpmAddTPMState(cmd, emulator, persistentTPMDef, cfg);
 
     if (qemuTPMVirCommandSwtpmAddEncryption(cmd, emulator, swtpm) < 0)
         return -1;
@@ -848,7 +852,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
                            tpm->data.emulator.source->data.nix.path);
 
-    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator);
+    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator, persistentTPMDef, cfg);
 
     virCommandAddArg(cmd, "--log");
     if (tpm->data.emulator.debug != 0)
