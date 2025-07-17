@@ -598,6 +598,15 @@ testInfoCheckDuplicate(testQemuInfo *info)
 }
 
 
+static void
+testQemuConfMarkUsed(testQemuInfo *info,
+                     const char *file)
+{
+    if (file)
+        ignore_value(g_hash_table_remove(info->conf->existingTestCases, file));
+}
+
+
 /**
  * testQemuConfXMLCommon: Prepare common test data (e.g. parse input XML)
  * for a test case.
@@ -630,14 +639,10 @@ testQemuConfXMLCommon(testQemuInfo *info,
     if (info->prepared)
         goto cleanup;
 
-    /* mark test case as used */
-    ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->infile));
-    if (info->outfile)
-        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->outfile));
-    if (info->errfile)
-        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->errfile));
-    if (info->out_xml_inactive)
-        ignore_value(g_hash_table_remove(info->conf->existingTestCases, info->out_xml_inactive));
+    testQemuConfMarkUsed(info, info->infile);
+    testQemuConfMarkUsed(info, info->outfile);
+    testQemuConfMarkUsed(info, info->errfile);
+    testQemuConfMarkUsed(info, info->out_xml_inactive);
 
     if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         goto cleanup;
