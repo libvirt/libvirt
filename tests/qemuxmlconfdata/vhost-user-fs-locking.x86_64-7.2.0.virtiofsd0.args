@@ -1,0 +1,4 @@
+/usr/libexec/virtiofsd \
+--fd=1730 \
+-o source=/path,cache=always,sandbox=namespace,xattr,flock,posix_lock \
+--thread-pool-size=16

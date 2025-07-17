@@ -3077,6 +3077,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-fs-fd-openfiles");
     DO_TEST_CAPS_LATEST("vhost-user-fs-hugepages");
     DO_TEST_CAPS_LATEST("vhost-user-fs-readonly");
+    DO_TEST_CAPS_VER("vhost-user-fs-locking", "7.2.0");
 
     DO_TEST_CAPS_ARCH_LATEST("vhost-user-fs-ccw", "s390x");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("vhost-user-fs-ccw-bootindex", "s390x");
