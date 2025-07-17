@@ -26,6 +26,11 @@ char *
 qemuVirtioFSCreateSocketFilename(virDomainObj *vm,
                                  const char *alias);
 
+virCommand *
+qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
+                             virDomainFSDef *fs,
+                             int *fd);
+
 int
 qemuVirtioFSStart(virQEMUDriver *driver,
                   virDomainObj *vm,

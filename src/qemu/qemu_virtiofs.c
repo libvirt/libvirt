@@ -111,7 +111,7 @@ qemuVirtioFSOpenChardev(virQEMUDriver *driver,
 }
 
 
-static virCommand *
+virCommand *
 qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
                              virDomainFSDef *fs,
                              int *fd)
