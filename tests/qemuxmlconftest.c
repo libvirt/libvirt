@@ -19,6 +19,8 @@
 # include "qemu/qemu_passt.h"
 # include "qemu/qemu_process.h"
 # include "qemu/qemu_slirp.h"
+# include "qemu/qemu_virtiofs.h"
+# include "qemu/qemu_vhost_user.h"
 # include "datatypes.h"
 # include "conf/storage_conf.h"
 # include "virfilewrapper.h"
@@ -456,6 +458,24 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         vsockPriv->vhostfd = 6789;
     }
 
+    for (i = 0; i < vm->def->nfss; i++) {
+        unsigned long long ver = 0;
+        virDomainFSDef *fs = vm->def->fss[i];
+
+        virStringParseVersion(&ver, info->args.capsver, false);
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS && !fs->sock) {
+            /* QEMU 8.0.0 was the first release without virtiofsd included.
+               Assume that from that version, the Rust version of virtiofsd
+               which supports separate options is used. */
+
+            if (ver != 0 && ver < 8 * 1000 * 1000)
+                continue;
+            virBitmapSetBitExpand(fs->caps, QEMU_VHOST_USER_FS_FEATURE_SEPARATE_OPTIONS);
+        }
+    }
+
+
     for (i = 0; i < vm->def->ntpms; i++) {
         if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
@@ -846,8 +866,10 @@ static int
 testExtDevicesArgv(testQemuInfo *info,
                    virDomainObj *vm)
 {
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(QEMU_DOMAIN_PRIVATE(vm)->driver);
     size_t i = 42;
     int ret = 0;
+    int fd;
 
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDef *net = vm->def->nets[i];
@@ -862,6 +884,19 @@ testExtDevicesArgv(testQemuInfo *info,
 
             cmd = qemuPasstBuildCommand(NULL, NULL, vm, net);
             if (testExtDeviceArgv(info, cmd, "passt", i) < 0)
+                ret = -1;
+        }
+    }
+
+    for (i = 0; i < vm->def->nfss; i++) {
+        virDomainFSDef *fs = vm->def->fss[i];
+
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS && !fs->sock) {
+            g_autoptr(virCommand) cmd = NULL;
+            fd = 1730 + i;
+
+            cmd = qemuVirtioFSBuildCommandLine(cfg, fs, &fd);
+            if (testExtDeviceArgv(info, cmd, "virtiofsd", i) < 0)
                 ret = -1;
         }
     }

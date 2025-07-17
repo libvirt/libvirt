@@ -1,0 +1,3 @@
+/usr/libexec/virtiofsd \
+--fd=1730 \
+--shared-dir /path

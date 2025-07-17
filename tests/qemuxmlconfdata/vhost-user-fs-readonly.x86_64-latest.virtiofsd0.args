@@ -1,0 +1,6 @@
+/usr/libexec/virtiofsd \
+--fd=1730 \
+--shared-dir /path \
+--cache always \
+--xattr \
+--readonly

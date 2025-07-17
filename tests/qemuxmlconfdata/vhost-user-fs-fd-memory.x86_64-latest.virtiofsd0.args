@@ -1,0 +1,9 @@
+/usr/libexec/qemu/vhost-user/test-virtiofsd \
+--fd=1730 \
+--shared-dir /path \
+--cache always \
+--sandbox chroot \
+--xattr \
+--thread-pool-size=16 \
+--uid-map=:0:100000:65535: \
+--gid-map=:0:100000:65535:
