@@ -98,6 +98,7 @@ struct testQemuArgs {
 
 struct _testQemuInfo {
     const char *name;
+    const char *suffix;
     char *infile;
     char *outfile;
     char *out_xml_active;

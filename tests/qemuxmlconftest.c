@@ -999,6 +999,7 @@ testRun(const char *name,
     va_list ap;
 
     info->name = name;
+    info->suffix = suffix;
     info->conf = testConf;
 
     va_start(ap, testConf);
