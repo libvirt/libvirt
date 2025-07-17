@@ -1,0 +1,6 @@
+passt \
+--vhost-user \
+--one-off \
+--socket /var/run/libvirt/qemu/passt/-1-QEMUGuest1-net2.socket \
+--pid /var/run/libvirt/qemu/passt/-1-QEMUGuest1-net2-passt.pid \
+--interface eth43

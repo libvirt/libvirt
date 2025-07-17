@@ -1,0 +1,5 @@
+passt \
+--vhost-user \
+--one-off \
+--socket /var/run/libvirt/qemu/passt/-1-QEMUGuest1-net1.socket \
+--pid /var/run/libvirt/qemu/passt/-1-QEMUGuest1-net1-passt.pid

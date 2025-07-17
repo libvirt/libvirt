@@ -16,6 +16,7 @@
 # include "qemu/qemu_capabilities.h"
 # include "qemu/qemu_domain.h"
 # include "qemu/qemu_migration.h"
+# include "qemu/qemu_passt.h"
 # include "qemu/qemu_process.h"
 # include "qemu/qemu_slirp.h"
 # include "datatypes.h"
@@ -804,6 +805,72 @@ testCompareOutXML2XML(const void *data)
 
 
 static int
+testExtDeviceArgv(testQemuInfo *info,
+                  virCommand *cmd,
+                  const char *helper,
+                  size_t idx)
+{
+    g_auto(virBuffer) actualBuf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *actualargv = NULL;
+    g_autofree char *outfile = NULL;
+    virError *err = NULL;
+
+    outfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s%s.%s%zu.args",
+                              abs_srcdir, info->name, info->suffix,
+                              info->args.capsvariant, helper, idx);
+    testQemuConfMarkUsed(info, outfile);
+
+    if (!cmd) {
+        err = virGetLastError();
+        if (!err) {
+            VIR_TEST_DEBUG("no error was reported for expected failure");
+            return -1;
+        }
+        return -1;
+    }
+
+    if (virCommandToStringBuf(cmd, &actualBuf, true, false) < 0)
+        return -1;
+
+    virBufferAddLit(&actualBuf, "\n");
+    actualargv = virBufferContentAndReset(&actualBuf);
+
+    if (virTestCompareToFileFull(actualargv, outfile, false) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testExtDevicesArgv(testQemuInfo *info,
+                   virDomainObj *vm)
+{
+    size_t i = 42;
+    int ret = 0;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        virDomainNetDef *net = vm->def->nets[i];
+
+        if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
+            net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+            continue;
+        }
+
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+            g_autoptr(virCommand) cmd = NULL;
+
+            cmd = qemuPasstBuildCommand(NULL, NULL, vm, net);
+            if (testExtDeviceArgv(info, cmd, "passt", i) < 0)
+                ret = -1;
+        }
+    }
+
+    return ret;
+}
+
+
+static int
 testCompareXMLToArgv(const void *data)
 {
     testQemuInfo *info = (void *) data;
@@ -895,6 +962,9 @@ testCompareXMLToArgv(const void *data)
     actualargv = virBufferContentAndReset(&actualBuf);
 
     if (virTestCompareToFileFull(actualargv, info->outfile, false) < 0)
+        goto cleanup;
+
+    if (testExtDevicesArgv(info, vm) < 0)
         goto cleanup;
 
     ret = 0;

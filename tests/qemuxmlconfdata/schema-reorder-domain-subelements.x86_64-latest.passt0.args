@@ -1,0 +1,7 @@
+passt \
+--vhost-user \
+--one-off \
+--socket /var/run/libvirt/qemu/passt/-1-passtvhostuu-net0.socket \
+--pid /var/run/libvirt/qemu/passt/-1-passtvhostuu-net0-passt.pid \
+--address 10.30.0.5 \
+--netmask 24
