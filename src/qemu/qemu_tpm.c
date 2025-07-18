@@ -852,7 +852,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
                            tpm->data.emulator.source->data.nix.path);
 
-    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator, persistentTPMDef, cfg);
+    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator, tpm, cfg);
 
     virCommandAddArg(cmd, "--log");
     if (tpm->data.emulator.debug != 0)
