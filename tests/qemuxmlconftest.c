@@ -3038,6 +3038,9 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("schema-reorder-domain-subelements");
 
+    DO_TEST_CAPS_LATEST("hwuuid");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("hwuuid-smbios-uuid-match");
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;

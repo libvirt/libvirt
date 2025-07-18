@@ -1,0 +1,36 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>f1449954-3a7e-48f8-aa7f-1f25fd6fa38f</uuid>
+  <hwuuid>af2d912f-5f99-4036-a9a1-8739b1f34518</hwuuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <sysinfo type='smbios'>
+    <system>
+      <entry name='uuid'>22173deb-d53e-4db9-b874-93f5bba6e98b</entry>
+    </system>
+  </sysinfo>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+    <smbios mode='sysinfo'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='ide' index='0'/>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>
