@@ -1025,8 +1025,8 @@ virSecuritySELinuxReserveLabel(virSecurityManager *mgr,
                                virDomainDef *def,
                                pid_t pid)
 {
-    char *pctx;
-    context_t ctx = NULL;
+    g_autofree char *pctx = NULL;
+    g_autoptr(context_s_t) ctx = NULL;
     const char *mcs;
     int rv;
     virSecurityLabelDef *seclabel;
@@ -1045,31 +1045,23 @@ virSecuritySELinuxReserveLabel(virSecurityManager *mgr,
 
     ctx = context_new(pctx);
     if (!ctx)
-        goto error;
+        return -1;
 
     mcs = context_range_get(ctx);
     if (!mcs)
-        goto error;
+        return -1;
 
     if ((rv = virSecuritySELinuxMCSAdd(mgr, mcs)) < 0)
-        goto error;
+        return -1;
 
     if (rv == 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("MCS level for existing domain label %1$s already reserved"),
                        (char*)pctx);
-        goto error;
+        return -1;
     }
 
-    freecon(pctx);
-    context_free(ctx);
-
     return 0;
-
- error:
-    freecon(pctx);
-    context_free(ctx);
-    return -1;
 }
 
 
