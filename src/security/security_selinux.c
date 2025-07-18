@@ -1271,7 +1271,7 @@ virSecuritySELinuxGetProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
                                   pid_t pid,
                                   virSecurityLabelPtr sec)
 {
-    char *ctx;
+    g_autofree char *ctx = NULL;
 
     if (getpidcon_raw(pid, &ctx) == -1) {
         virReportSystemError(errno,
@@ -1284,11 +1284,8 @@ virSecuritySELinuxGetProcessLabel(virSecurityManager *mgr G_GNUC_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security label exceeds maximum length: %1$d"),
                        VIR_SECURITY_LABEL_BUFLEN - 1);
-        freecon(ctx);
         return -1;
     }
-
-    freecon(ctx);
 
     VIR_DEBUG("label=%s", sec->label);
     sec->enforcing = security_getenforce();
