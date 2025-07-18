@@ -572,37 +572,31 @@ virSecuritySELinuxContextAddRange(const char *src,
                                   const char *dst)
 {
     const char *str = NULL;
-    char *ret = NULL;
-    context_t srccon = NULL;
-    context_t dstcon = NULL;
+    g_autoptr(context_s_t) srccon = NULL;
+    g_autoptr(context_s_t) dstcon = NULL;
 
     if (!src || !dst)
-        return ret;
+        return NULL;
 
     if (!(srccon = context_new(src)) || !(dstcon = context_new(dst))) {
         virReportSystemError(errno, "%s",
                              _("unable to allocate security context"));
-        goto cleanup;
+        return NULL;
     }
 
     if (context_range_set(dstcon, context_range_get(srccon)) == -1) {
         virReportSystemError(errno,
                              _("unable to set security context range '%1$s'"), dst);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(str = context_str(dstcon))) {
         virReportSystemError(errno, "%s",
                              _("Unable to format SELinux context"));
-        goto cleanup;
+        return NULL;
     }
 
-    ret = g_strdup(str);
-
- cleanup:
-    if (srccon) context_free(srccon);
-    if (dstcon) context_free(dstcon);
-    return ret;
+    return g_strdup(str);
 }
 
 
