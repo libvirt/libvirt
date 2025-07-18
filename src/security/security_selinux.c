@@ -650,11 +650,10 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
                                 const char *mcs,
                                 bool isObjectContext)
 {
-    context_t context = NULL;
-    char *ret = NULL;
+    g_autoptr(context_s_t) context = NULL;
     const char *str;
-    char *ourSecContext = NULL;
-    context_t ourContext = NULL;
+    g_autofree char *ourSecContext = NULL;
+    g_autoptr(context_s_t) ourContext = NULL;
 
     VIR_DEBUG("basecontext=%s mcs=%s isObjectContext=%d",
               basecontext, mcs, isObjectContext);
@@ -662,13 +661,13 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
     if (getcon_raw(&ourSecContext) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to get current process SELinux context"));
-        goto cleanup;
+        return NULL;
     }
     if (!(ourContext = context_new(ourSecContext))) {
         virReportSystemError(errno,
                              _("Unable to parse current SELinux context '%1$s'"),
                              ourSecContext);
-        goto cleanup;
+        return NULL;
     }
     VIR_DEBUG("process=%s", ourSecContext);
 
@@ -676,7 +675,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
         virReportSystemError(errno,
                              _("Unable to parse base SELinux context '%1$s'"),
                              basecontext);
-        goto cleanup;
+        return NULL;
     }
 
     if (context_user_set(context,
@@ -684,7 +683,7 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
         virReportSystemError(errno,
                              _("Unable to set SELinux context user '%1$s'"),
                              context_user_get(ourContext));
-        goto cleanup;
+        return NULL;
     }
 
     if (!isObjectContext &&
@@ -693,27 +692,23 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
         virReportSystemError(errno,
                              _("Unable to set SELinux context role '%1$s'"),
                              context_role_get(ourContext));
-        goto cleanup;
+        return NULL;
     }
 
     if (context_range_set(context, mcs) != 0) {
         virReportSystemError(errno,
                              _("Unable to set SELinux context MCS '%1$s'"),
                              mcs);
-        goto cleanup;
+        return NULL;
     }
     if (!(str = context_str(context))) {
         virReportSystemError(errno, "%s",
                              _("Unable to format SELinux context"));
-        goto cleanup;
+        return NULL;
     }
-    ret = g_strdup(str);
-    VIR_DEBUG("Generated context '%s'",  ret);
- cleanup:
-    freecon(ourSecContext);
-    context_free(ourContext);
-    context_free(context);
-    return ret;
+
+    VIR_DEBUG("Generated context '%s'",  str);
+    return g_strdup(str);
 }
 
 
