@@ -2075,9 +2075,48 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("chardev-reconnect-generated-path");
 
     DO_TEST_CAPS_LATEST("usb-controller-automatic-isapc");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-automatic-microvm");
     DO_TEST_CAPS_LATEST("usb-controller-automatic-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-automatic-q35");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-pseries", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("usb-controller-automatic-pseries", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-s390x", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-virt-aarch64", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-virt-riscv64", "riscv64");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-virt-loongarch64", "loongarch64");
+
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-versatilepb", "armv7l");
+    DO_TEST_FULL("usb-controller-automatic-unavailable-versatilepb", ".armv7l-latest",
+                 ARG_CAPS_ARCH, "armv7l",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-realview", "aarch64");
+    DO_TEST_FULL("usb-controller-automatic-unavailable-realview", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    DO_TEST_FULL("usb-controller-automatic-unavailable-pseries", ".ppc64-latest",
+                 ARG_CAPS_ARCH, "ppc64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-automatic-unavailable-pseries", ".ppc64-latest.abi-update",
+                 ARG_CAPS_ARCH, "ppc64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-isapc");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-microvm");
     DO_TEST_CAPS_LATEST("usb-controller-default-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-pseries", "ppc64");
@@ -2086,6 +2125,21 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-mac99ppc", "ppc");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-powernv9", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-s390x", "s390x");
+
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-virt-loongarch64", "loongarch64");
+    DO_TEST_FULL("usb-controller-default-fallback-virt-loongarch64", ".loongarch64-latest",
+                 ARG_CAPS_ARCH, "loongarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-virt-loongarch64", ".loongarch64-latest",
+                 ARG_CAPS_ARCH, "loongarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
     /* Until qemu-8.1 (see commit 6fe4464c05f) it was possible to compile
      * out USB support from i440fx; the implicit -usb controller still failed */
     DO_TEST_FULL("usb-controller-default-unavailable-i440fx", ".x86_64-latest",
@@ -2116,6 +2170,32 @@ mymain(void)
                  ARG_CAPS_VER, "latest",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-virt-aarch64", "aarch64");
+    DO_TEST_FULL("usb-controller-default-fallback-virt-aarch64", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-virt-aarch64", ".aarch64-latest",
+                 ARG_CAPS_ARCH, "aarch64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+
+    DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-virt-riscv64", "riscv64");
+    DO_TEST_FULL("usb-controller-default-fallback-virt-riscv64", ".riscv64-latest",
+                 ARG_CAPS_ARCH, "riscv64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("usb-controller-default-unavailable-virt-riscv64", ".riscv64-latest",
+                 ARG_CAPS_ARCH, "riscv64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     /* controller selection tests for various uncommon machine types */
