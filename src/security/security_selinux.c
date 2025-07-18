@@ -48,6 +48,9 @@ VIR_LOG_INIT("security.security_selinux");
 
 #define MAX_CONTEXT 1024
 
+/* selinux headers define 'context_t' as pointer to 'context_s_t' */
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(context_s_t, context_free);
+
 typedef struct _virSecuritySELinuxData virSecuritySELinuxData;
 struct _virSecuritySELinuxData {
     char *domain_context;
