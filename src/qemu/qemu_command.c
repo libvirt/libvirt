@@ -10768,7 +10768,11 @@ qemuBuildCommandLine(virDomainObj *vm,
         qemuBuildNumaCommandLine(cfg, def, cmd, priv) < 0)
         return NULL;
 
-    virUUIDFormat(def->uuid, uuid);
+    if (virUUIDIsValid(def->hw_uuid)) {
+        virUUIDFormat(def->hw_uuid, uuid);
+    } else {
+        virUUIDFormat(def->uuid, uuid);
+    }
     virCommandAddArgList(cmd, "-uuid", uuid, NULL);
 
     if (qemuBuildSmbiosCommandLine(cmd, driver, def) < 0)

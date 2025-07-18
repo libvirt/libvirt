@@ -48,6 +48,11 @@
         </element>
       </optional>
       <optional>
+        <element name="hwuuid">
+          <ref name="UUID"/>
+        </element>
+      </optional>
+      <optional>
         <element name="genid">
           <choice>
             <ref name="UUID"/>

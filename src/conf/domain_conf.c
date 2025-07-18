@@ -13079,6 +13079,7 @@ static int
 virSysinfoSystemParseXML(xmlNodePtr node,
                          xmlXPathContextPtr ctxt,
                          virSysinfoSystemDef **sysdef,
+                         unsigned char *hwUUID,
                          unsigned char *domUUID,
                          bool uuid_generated)
 {
@@ -13103,10 +13104,18 @@ virSysinfoSystemParseXML(xmlNodePtr node,
         }
         if (uuid_generated) {
             memcpy(domUUID, uuidbuf, VIR_UUID_BUFLEN);
-        } else if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
+        } else if (virUUIDIsValid(hwUUID)) {
+            if (memcmp(hwUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+                virReportError(VIR_ERR_XML_DETAIL, "%s",
+                    _("UUID mismatch between <hwuuid> and <sysinfo>"));
+                return -1;
+            }
+        } else {
+            if (memcmp(domUUID, uuidbuf, VIR_UUID_BUFLEN) != 0) {
+                virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("UUID mismatch between <uuid> and <sysinfo>"));
-            return -1;
+                return -1;
+            }
         }
         /* Although we've validated the UUID as good, virUUIDParse() is
          * lax with respect to allowing extraneous "-" and " ", but the
@@ -13244,6 +13253,7 @@ virSysinfoChassisParseXML(xmlNodePtr node,
 static int
 virSysinfoParseSMBIOSDef(virSysinfoDef *def,
                          xmlXPathContextPtr ctxt,
+                         unsigned char *hwUUID,
                          unsigned char *domUUID,
                          bool uuid_generated)
 {
@@ -13257,7 +13267,7 @@ virSysinfoParseSMBIOSDef(virSysinfoDef *def,
 
     /* Extract system related metadata */
     if ((tmpnode = virXPathNode("./system[1]", ctxt)) != NULL) {
-        if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system,
+        if (virSysinfoSystemParseXML(tmpnode, ctxt, &def->system, hwUUID,
                                      domUUID, uuid_generated) < 0)
             return -1;
     }
@@ -13344,6 +13354,7 @@ virSysinfoParseFWCfgDef(virSysinfoDef *def,
 static virSysinfoDef *
 virSysinfoParseXML(xmlNodePtr node,
                    xmlXPathContextPtr ctxt,
+                   unsigned char *hwUUID,
                    unsigned char *domUUID,
                    bool uuid_generated)
 {
@@ -13358,7 +13369,8 @@ virSysinfoParseXML(xmlNodePtr node,
 
     switch (def->type) {
     case VIR_SYSINFO_SMBIOS:
-        if (virSysinfoParseSMBIOSDef(def, ctxt, domUUID, uuid_generated) < 0)
+        if (virSysinfoParseSMBIOSDef(def, ctxt, hwUUID, domUUID,
+                                     uuid_generated) < 0)
             return NULL;
         break;
 
@@ -18702,6 +18714,21 @@ virDomainDefParseIDs(virDomainDef *def,
         VIR_FREE(tmp);
     }
 
+    /* Extract hardware uuid (optional). For some use cases e.g. cloning a
+     * domain from a snapshot, the hardware uuid must remain constant and
+     * separate from the domain uuid. */
+    tmp = virXPathString("string(./hwuuid[1])", ctxt);
+    if (tmp) {
+        if (virUUIDParse(tmp, def->hw_uuid) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("malformed hwuuid element"));
+            return -1;
+        }
+        VIR_FREE(tmp);
+    } else {
+        memset(def->hw_uuid, 0, VIR_UUID_BUFLEN);
+    }
+
     /* Extract domain genid - a genid can either be provided or generated */
     if ((n = virXPathNodeSet("./genid", ctxt, &nodes)) < 0)
         return -1;
@@ -20167,6 +20194,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     for (i = 0; i < n; i++) {
         virSysinfoDef *sysinfo = virSysinfoParseXML(nodes[i], ctxt,
+                                                    def->hw_uuid,
                                                     def->uuid, uuid_generated);
 
         if (!sysinfo)
@@ -28954,6 +28982,11 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+
+    if (virUUIDIsValid(def->hw_uuid)) {
+        virUUIDFormat(def->hw_uuid, uuidstr);
+        virBufferAsprintf(buf, "<hwuuid>%s</hwuuid>\n", uuidstr);
+    }
 
     if (def->genidRequested) {
         char genidstr[VIR_UUID_STRING_BUFLEN];

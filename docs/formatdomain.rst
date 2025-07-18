@@ -54,6 +54,13 @@ General metadata
 
    :since:`Since 0.8.7`, it is also possible to provide the UUID via a
    `SMBIOS System Information`_ specification.
+``hwuuid``
+   The optional ``hwuuid`` element can be used to supply an alternative UUID for
+   identifying the virtual machine from the domain ``uuid`` above. The difference
+   between using the ``hwuuid`` element and simply providing an alternative UUID
+   via a `SMBIOS System Information`_ specification is that the ``hwuuid`` affects
+   all devices that expose the UUID to the guest.
+   :since:`Since 11.6.0 QEMU/KVM only`
 ``genid``
    :since:`Since 4.4.0`, the ``genid`` element can be used to add a Virtual
    Machine Generation ID which exposes a 128-bit, cryptographically random,
