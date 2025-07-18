@@ -1602,7 +1602,6 @@ virSecuritySELinuxRestoreInputLabel(virSecurityManager *mgr,
                                     virDomainDef *def,
                                     virDomainInputDef *input)
 {
-    int rc = 0;
     virSecurityLabelDef *seclabel;
 
     seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
@@ -1612,8 +1611,7 @@ virSecuritySELinuxRestoreInputLabel(virSecurityManager *mgr,
     switch ((virDomainInputType)input->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
-        rc = virSecuritySELinuxRestoreFileLabel(mgr, input->source.evdev, true);
-        break;
+        return virSecuritySELinuxRestoreFileLabel(mgr, input->source.evdev, true);
 
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
@@ -1622,7 +1620,7 @@ virSecuritySELinuxRestoreInputLabel(virSecurityManager *mgr,
         break;
     }
 
-    return rc;
+    return 0;
 }
 
 
