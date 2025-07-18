@@ -1380,7 +1380,7 @@ virSecuritySELinuxSetFilecon(virSecurityManager *mgr,
                              bool remember)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
-    char *econ = NULL;
+    g_autofree char *econ = NULL;
     int refcount;
     int rc;
     bool rollback = false;
@@ -1454,7 +1454,6 @@ virSecuritySELinuxSetFilecon(virSecurityManager *mgr,
         virErrorRestore(&origerr);
 
     }
-    freecon(econ);
     return ret;
 }
 
