@@ -3495,34 +3495,29 @@ virSecuritySELinuxGenImageLabel(virSecurityManager *mgr,
     virSecurityLabelDef *secdef;
     virSecuritySELinuxData *data = virSecurityManagerGetPrivateData(mgr);
     const char *range;
-    context_t ctx = NULL;
-    char *label = NULL;
-    char *mcs = NULL;
+    g_autoptr(context_s_t) ctx = NULL;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
     if (secdef == NULL)
-        goto cleanup;
+        return NULL;
 
     if (secdef->label) {
         ctx = context_new(secdef->label);
         if (!ctx) {
             virReportSystemError(errno, _("unable to create selinux context for: %1$s"),
                                  secdef->label);
-            goto cleanup;
+            return NULL;
         }
         range = context_range_get(ctx);
         if (range) {
-            mcs = g_strdup(range);
-            if (!(label = virSecuritySELinuxGenNewContext(data->file_context,
-                                                          mcs, true)))
-                goto cleanup;
+            g_autofree char *mcs = g_strdup(range);
+
+            return virSecuritySELinuxGenNewContext(data->file_context,
+                                                   mcs, true);
         }
     }
 
- cleanup:
-    context_free(ctx);
-    VIR_FREE(mcs);
-    return label;
+    return NULL;
 }
 
 static char *
