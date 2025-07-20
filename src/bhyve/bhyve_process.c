@@ -427,6 +427,18 @@ virBhyveProcessStart(bhyveConn *driver,
     return virBhyveProcessStartImpl(driver, vm, reason);
 }
 
+static void
+bhyveProcessRemoveDomainStatus(const char *statusDir,
+                               const char *name)
+{
+    g_autofree char *file = virDomainConfigFile(statusDir, name);
+
+    if (unlink(file) < 0 && errno != ENOENT && errno != ENOTDIR) {
+        VIR_WARN("Failed to remove domain XML for %s: %s",
+                 name, g_strerror(errno));
+    }
+}
+
 int
 virBhyveProcessStop(struct _bhyveConn *driver,
                     virDomainObj *vm,
@@ -483,7 +495,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
 
  cleanup:
     virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
-    virDomainDeleteConfig(BHYVE_STATE_DIR, NULL, vm);
+    bhyveProcessRemoveDomainStatus(BHYVE_STATE_DIR, vm->def->name);
 
     return ret;
 }
