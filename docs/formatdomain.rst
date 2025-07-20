@@ -6590,7 +6590,7 @@ setting guest-side IP addresses with ``<ip>`` and port forwarding with
        <backend type='passt'/>
        <mac address='52:54:00:3b:83:1a'/>
        <source dev='enp1s0'/>
-       <ip address='10.30.0.5 prefix='24'/>
+       <ip address='10.30.0.5' prefix='24'/>
      </interface>
    </devices>
    ...
