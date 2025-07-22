@@ -64,34 +64,35 @@ int
 virSecretLookupParseSecret(xmlNodePtr secretnode,
                            virSecretLookupTypeDef *def)
 {
-    g_autofree char *uuid = NULL;
     g_autofree char *usage = NULL;
+    int rc;
 
-    uuid = virXMLPropString(secretnode, "uuid");
     usage = virXMLPropString(secretnode, "usage");
-    if (uuid == NULL && usage == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing secret uuid or usage attribute"));
+
+    if ((rc = virXMLPropUUID(secretnode, "uuid",
+                             VIR_XML_PROP_NONE, def->u.uuid)) < 0) {
         return -1;
     }
 
-    if (uuid && usage) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("either secret uuid or usage expected"));
-        return -1;
-    }
-
-    if (uuid) {
-        if (virUUIDParse(uuid, def->u.uuid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid secret uuid '%1$s'"), uuid);
+    if (rc > 0) {
+        if (usage) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("either secret uuid or usage expected"));
             return -1;
         }
+
         def->type = VIR_SECRET_LOOKUP_TYPE_UUID;
     } else {
+        if (!usage) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing secret uuid or usage attribute"));
+            return -1;
+        }
+
         def->u.usage = g_steal_pointer(&usage);
         def->type = VIR_SECRET_LOOKUP_TYPE_USAGE;
     }
+
     return 0;
 }
 
