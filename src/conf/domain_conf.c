@@ -10473,7 +10473,6 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
     g_autofree char *targetType = virXMLPropString(cur, "type");
     g_autofree char *targetModel = NULL;
     g_autofree char *addrStr = NULL;
-    g_autofree char *portStr = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = cur;
@@ -10544,20 +10543,11 @@ virDomainChrDefParseTargetXML(virDomainChrDef *def,
         break;
 
     default:
-        portStr = virXMLPropString(cur, "port");
-        if (portStr == NULL) {
-            /* Set to negative value to indicate we should set it later */
-            def->target.port = -1;
-            break;
-        }
-
-        if (virStrToLong_ui(portStr, NULL, 10, &port) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid port number: %1$s"),
-                           portStr);
+        /* Set default to negative value to indicate we should set it later */
+        if (virXMLPropInt(cur, "port", 10,
+                          VIR_XML_PROP_NONNEGATIVE, &def->target.port, -1) < 0) {
             return -1;
         }
-        def->target.port = port;
         break;
     }
 
