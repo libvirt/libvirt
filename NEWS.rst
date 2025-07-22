@@ -24,6 +24,14 @@ v11.6.0 (unreleased)
     flag the baseline API would return reasonable output only when run on one of
     the hosts that the input CPU definitions were collected from.
 
+  * Allow control over QEMU TLS priority strings
+
+    The qemu.conf file now has multiple settings allowing control over the
+    QEMU TLS priority strings, for the different subsystems in QEMU that
+    can support TLS. This can be used to workaround a current bug in GNUTLS
+    that is liable to cause crashes of the source QEMU when performing long
+    running live migration operations with TLS enabled.
+
 * **Improvements**
 
   * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
