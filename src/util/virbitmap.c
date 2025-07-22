@@ -948,7 +948,7 @@ virBitmapLastSetBit(virBitmap *bitmap)
  * @pos: the position after which to search for a clear bit
  *
  * Search for the first clear bit after position @pos in bitmap @bitmap.
- * @pos can be -1 to search for the first set bit. Position starts
+ * @pos can be -1 to search for the first clear bit. Position starts
  * at 0.
  *
  * Returns the position of the found bit, or -1 if no bit found.
