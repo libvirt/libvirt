@@ -2812,28 +2812,18 @@ qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
                                  virDomainDef *def)
 {
     virDomainVcpuDef *vcpu;
-    g_autofree char *idstr = NULL;
-    g_autofree char *pidstr = NULL;
     unsigned int tmp;
 
-    idstr = virXMLPropString(node, "id");
-
-    if (idstr &&
-        (virStrToLong_uip(idstr, NULL, 10, &idx) < 0)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse vcpu index '%1$s'"), idstr);
+    if (virXMLPropUInt(node, "id", 10, VIR_XML_PROP_NONE, &idx) < 0)
         return -1;
-    }
+
     if (!(vcpu = virDomainDefGetVcpu(def, idx))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid vcpu index '%1$u'"), idx);
         return -1;
     }
 
-    if (!(pidstr = virXMLPropString(node, "pid")))
-        return -1;
-
-    if (virStrToLong_uip(pidstr, NULL, 10, &tmp) < 0)
+    if (virXMLPropUInt(node, "pid", 10, VIR_XML_PROP_REQUIRED, &tmp) < 0)
         return -1;
 
     QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = tmp;
