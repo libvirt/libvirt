@@ -87,6 +87,15 @@ v11.6.0 (unreleased)
 
   * bhyve: Fix resetting of the autostart flag of the domain on destroy.
 
+  * The nwfilter driver no longer recreates the base iptable/ip6tables chains
+
+    The nwfilter driver had a impl mistake causing it to recreate the
+    base chains for iptables/ip6tables every time a VM was started.
+    This allowed a small window where traffic might not be fully
+    filtered. It now handles iptables/ip6tables the same way as
+    ebtables, creating the base chains only if they did not already
+    exist.
+
 v11.5.0 (2025-07-01)
 ====================
 
