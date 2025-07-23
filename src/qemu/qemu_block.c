@@ -4023,3 +4023,55 @@ qemuBlockFinalize(virDomainObj *vm,
 
     return ret;
 }
+
+
+/**
+ * qemuBlockNodesEnsureActive:
+ * @vm: domain object
+ * @asyncJob: asynchronous job ID
+ *
+ * Checks if any block nodes are inactive and reactivates them. This is necessary
+ * to do before any blockjob as the block nodes could have been deactivated
+ * either by an aborted migration (before the VM switched to running mode) or
+ * after a snapshot with 'manual' disks (which deactivates them).
+ *
+ * Block nodes need to be reactivated prior to fetching the data
+ * via 'qemuBlockGetNamedNodeData' as qemu doesn't guarantee that the data
+ * fetched while nodes are inactive is accurate.
+ */
+int
+qemuBlockNodesEnsureActive(virDomainObj *vm,
+                           virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    GHashTableIter htitr;
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    qemuBlockNamedNodeData *node;
+    bool has_inactive = false;
+    int rc = 0;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SET_ACTIVE))
+        return 0;
+
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, asyncJob)))
+        return -1;
+
+    g_hash_table_iter_init(&htitr, blockNamedNodeData);
+    while (g_hash_table_iter_next(&htitr, NULL, (void *) &node)) {
+        if (node->inactive) {
+            has_inactive = true;
+            break;
+        }
+    }
+
+    if (!has_inactive)
+        return 0;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    rc = qemuMonitorBlockdevSetActive(priv->mon, NULL, true);
+    qemuDomainObjExitMonitor(vm);
+
+    return rc;
+}

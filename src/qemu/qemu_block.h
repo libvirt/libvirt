@@ -376,3 +376,7 @@ int
 qemuBlockFinalize(virDomainObj *vm,
                   qemuBlockJobData *job,
                   virDomainAsyncJob asyncJob);
+
+int
+qemuBlockNodesEnsureActive(virDomainObj *vm,
+                           virDomainAsyncJob asyncJob);
