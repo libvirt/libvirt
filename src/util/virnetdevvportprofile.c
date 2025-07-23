@@ -279,7 +279,7 @@ static int
 virNetDevVPortProfileMerge(virNetDevVPortProfile *orig,
                            const virNetDevVPortProfile *mods)
 {
-    enum virNetDevVPortProfile otype;
+    virNetDevVPortProfileType otype;
 
     if (!orig || !mods)
         return 0;

@@ -169,7 +169,7 @@ void
 virNetDevVPortProfileFormat(const virNetDevVPortProfile *virtPort,
                             virBuffer *buf)
 {
-    enum virNetDevVPortProfile type;
+    virNetDevVPortProfileType type;
     bool noParameters;
 
     if (!virtPort)
