@@ -53,7 +53,7 @@ VIR_ENUM_DECL(virNetDevVPortProfileOp);
 /* profile data for macvtap (VEPA) and openvswitch */
 typedef struct _virNetDevVPortProfile virNetDevVPortProfile;
 struct _virNetDevVPortProfile {
-    int           virtPortType; /* enum virNetDevVPortProfile */
+    virNetDevVPortProfileType virtPortType;
     /* these members are used when virtPortType == 802.1Qbg */
     uint8_t       managerID;
     bool          managerID_specified;

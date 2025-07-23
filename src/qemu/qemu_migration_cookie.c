@@ -283,6 +283,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriver *driver G_GNUC_UNUSED,
             case VIR_NETDEV_VPORT_PROFILE_NONE:
             case VIR_NETDEV_VPORT_PROFILE_8021QBG:
             case VIR_NETDEV_VPORT_PROFILE_8021QBH:
+            case VIR_NETDEV_VPORT_PROFILE_MIDONET:
                break;
             case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
                 if (virNetDevOpenvswitchGetMigrateData(&mig->net[i].portdata,
@@ -293,6 +294,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriver *driver G_GNUC_UNUSED,
                         return NULL;
                 }
                 break;
+            case VIR_NETDEV_VPORT_PROFILE_LAST:
             default:
                 break;
             }

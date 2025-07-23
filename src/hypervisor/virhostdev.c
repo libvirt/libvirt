@@ -370,6 +370,7 @@ virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
     case VIR_NETDEV_VPORT_PROFILE_NONE:
     case VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH:
     case VIR_NETDEV_VPORT_PROFILE_8021QBG:
+    case VIR_NETDEV_VPORT_PROFILE_MIDONET:
     case VIR_NETDEV_VPORT_PROFILE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("virtualport type %1$s is currently not supported on interfaces of type hostdev"),
