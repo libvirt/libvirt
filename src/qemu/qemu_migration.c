@@ -2919,6 +2919,9 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
          vm->newDef && !qemuDomainVcpuHotplugIsInOrder(vm->newDef)))
         cookieFlags |= QEMU_MIGRATION_COOKIE_CPU_HOTPLUG;
 
+    if (qemuBlockNodesEnsureActive(vm, vm->job->asyncJob) < 0)
+        return NULL;
+
     return qemuMigrationSrcBeginXML(vm, xmlin,
                                     cookieout, cookieoutlen, cookieFlags,
                                     migrate_disks, flags);

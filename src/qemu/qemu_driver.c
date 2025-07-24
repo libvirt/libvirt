@@ -13820,6 +13820,9 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
         speed <<= 20;
     }
 
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
+        goto endjob;
+
     if (!(job = qemuBlockJobDiskNewPull(vm, disk, baseSource, flags)))
         goto endjob;
 
@@ -14390,6 +14393,9 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         goto endjob;
     }
 
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
+        goto endjob;
+
     /* pre-create the image file. This is required so that libvirt can properly
      * label the image for access by qemu */
     if (!existing) {
@@ -14794,6 +14800,9 @@ qemuDomainBlockCommit(virDomainPtr dom,
         baseSource = topSource->backingStore;
     else if (!(baseSource = virStorageSourceChainLookup(disk->src, topSource,
                                                         base, disk->dst, NULL)))
+        goto endjob;
+
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
     job = qemuBlockCommit(vm, disk, baseSource, topSource, top_parent,

@@ -823,6 +823,9 @@ qemuBackupBegin(virDomainObj *vm,
     if (qemuBackupBeginPrepareTLS(vm, cfg, def, &tlsProps, &tlsSecretProps) < 0)
         goto endjob;
 
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_BACKUP) < 0)
+        goto endjob;
+
     actions = virJSONValueNewArray();
 
     /* The 'chk' checkpoint must be rolled back if the transaction command

@@ -2066,6 +2066,9 @@ qemuSnapshotCreate(virDomainObj *vm,
 
     /* actually do the snapshot */
     if (virDomainObjIsActive(vm)) {
+        if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+            goto error;
+
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
             virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             /* external full system or disk snapshot */
@@ -4094,6 +4097,9 @@ qemuSnapshotDiscardImpl(virDomainObj *vm,
                     return -1;
             }
         } else {
+            if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+                return -1;
+
             if (virDomainSnapshotIsExternal(snap)) {
                 if (qemuSnapshotDiscardExternal(vm, snap, externalData) < 0)
                     return -1;

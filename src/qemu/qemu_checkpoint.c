@@ -189,6 +189,9 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
 
     actions = virJSONValueNewArray();
 
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
+        return -1;
+
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         return -1;
 
@@ -411,6 +414,9 @@ qemuCheckpointRedefineValidateBitmaps(virDomainObj *vm,
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
+        return -1;
+
     if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         return -1;
 
@@ -514,6 +520,9 @@ qemuCheckpointCreate(virQEMUDriver *driver,
     int rc;
 
     if (qemuCheckpointCreateCommon(driver, vm, def, &actions, &chk) < 0)
+        return NULL;
+
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
         return NULL;
 
     qemuDomainObjEnterMonitor(vm);
@@ -649,6 +658,9 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
         return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (qemuBlockNodesEnsureActive(vm, VIR_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
     if (!(nodedataMerge = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
