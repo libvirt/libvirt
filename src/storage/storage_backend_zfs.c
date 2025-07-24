@@ -439,6 +439,25 @@ virStorageBackendZFSDeletePool(virStoragePoolObj *pool,
     return virCommandRun(cmd, NULL);
 }
 
+static int
+virStorageBackendZFSResizeVol(virStoragePoolObj *pool,
+                              virStorageVolDef *vol,
+                              unsigned long long capacity,
+                              unsigned int flags)
+{
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
+    g_autoptr(virCommand) resize_cmd = NULL;
+
+    virCheckFlags(0, -1);
+
+    resize_cmd = virCommandNewArgList(ZFS, "set", NULL);
+    virCommandAddArgFormat(resize_cmd, "volsize=%llu", capacity);
+    virCommandAddArgFormat(resize_cmd, "%s/%s",
+                           def->source.name, vol->name);
+
+    return virCommandRun(resize_cmd, NULL);
+}
+
 virStorageBackend virStorageBackendZFS = {
     .type = VIR_STORAGE_POOL_ZFS,
 
@@ -450,6 +469,7 @@ virStorageBackend virStorageBackendZFS = {
     .deletePool = virStorageBackendZFSDeletePool,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
+    .resizeVol = virStorageBackendZFSResizeVol,
 };
 
 
