@@ -751,6 +751,10 @@ struct _qemuBlockNamedNodeData {
 
     /* qcow2 data file 'raw' feature is enabled */
     bool qcow2dataFileRaw;
+
+    /* node is deactivated in qemu (reported as 'active' but may be missing,
+     * thus the flag is asserted only when we know it's inactive) */
+    bool inactive;
 };
 
 GHashTable *

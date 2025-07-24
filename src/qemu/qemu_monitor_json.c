@@ -2714,6 +2714,7 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
     virJSONValue *bitmaps;
     virJSONValue *snapshots;
     virJSONValue *format_specific;
+    bool active;
     const char *nodename;
     g_autoptr(qemuBlockNamedNodeData) ent = NULL;
 
@@ -2735,6 +2736,10 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
     if ((bitmaps = virJSONValueObjectGetArray(val, "dirty-bitmaps")))
         qemuMonitorJSONBlockGetNamedNodeDataBitmaps(bitmaps, ent);
+
+    /* stored as negative as the value may be missing from some qemus */
+    if (virJSONValueObjectGetBoolean(val, "active", &active) == 0)
+        ent->inactive = !active;
 
     if ((snapshots = virJSONValueObjectGetArray(img, "snapshots"))) {
         size_t nsnapshots = virJSONValueArraySize(snapshots);
