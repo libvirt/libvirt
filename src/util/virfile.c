@@ -4108,11 +4108,11 @@ virFileComparePaths(const char *p1, const char *p2)
      * 'sysfs', since they're no real paths so fallback to plain string
      * comparison.
      */
-    ignore_value(virFileResolveLink(p1, &res1));
+    ignore_value(virFileResolveAllLinks(p1, &res1));
     if (!res1)
         res1 = g_strdup(p1);
 
-    ignore_value(virFileResolveLink(p2, &res2));
+    ignore_value(virFileResolveAllLinks(p2, &res2));
     if (!res2)
         res2 = g_strdup(p2);
 
