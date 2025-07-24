@@ -32,6 +32,14 @@ v11.6.0 (unreleased)
     that is liable to cause crashes of the source QEMU when performing long
     running live migration operations with TLS enabled.
 
+  * Add support for disabling deprecated CPU model features by default for s390 domains
+
+    Starting an s390 domain with host-model will now default to setting the
+    ``deprecated_features`` attribute to ``off``, ensuring the domain starts
+    with a migration-compatible CPU model to newer systems. This behavior can
+    be modified by setting the ``default_cpu_deprecated_features`` option in
+    the qemu.conf file.
+
 * **Improvements**
 
   * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
