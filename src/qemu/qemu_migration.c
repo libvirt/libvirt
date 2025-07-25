@@ -220,43 +220,6 @@ qemuMigrationSrcStoreDomainState(virDomainObj *vm)
 }
 
 
-/**
- * qemuMigrationBlockNodesReactivate:
- *
- * In case when we're keeping the VM paused qemu will not re-activate the block
- * device backend tree so blockjobs would fail. In case when qemu supports the
- * 'blockdev-set-active' command this function will re-activate the block nodes.
- */
-static void
-qemuMigrationBlockNodesReactivate(virDomainObj *vm,
-                                  virDomainAsyncJob asyncJob)
-{
-    virErrorPtr orig_err;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int rc;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SET_ACTIVE))
-        return;
-
-    VIR_DEBUG("re-activating block nodes");
-
-    virErrorPreserveLast(&orig_err);
-
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-        goto cleanup;
-
-    rc = qemuMonitorBlockdevSetActive(priv->mon, NULL, true);
-
-    qemuDomainObjExitMonitor(vm);
-
-    if (rc < 0)
-        VIR_WARN("failed to re-activate block nodes after migration of VM '%s'", vm->def->name);
-
- cleanup:
-    virErrorRestore(&orig_err);
-}
-
-
 static void
 qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
 {
@@ -279,11 +242,11 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
 
     if (preMigrationState != VIR_DOMAIN_RUNNING ||
         state != VIR_DOMAIN_PAUSED)
-        goto reactivate;
+        return;
 
     if (reason == VIR_DOMAIN_PAUSED_IOERROR) {
         VIR_DEBUG("Domain is paused due to I/O error, skipping resume");
-        goto reactivate;
+        return;
     }
 
     VIR_DEBUG("Restoring pre-migration state due to migration error");
@@ -306,14 +269,7 @@ qemuMigrationSrcRestoreDomainState(virQEMUDriver *driver, virDomainObj *vm)
                                                       VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
             virObjectEventStateQueue(driver->domainEventState, event);
         }
-
-        goto reactivate;
     }
-
-    return;
-
- reactivate:
-    qemuMigrationBlockNodesReactivate(vm, VIR_ASYNC_JOB_MIGRATION_OUT);
 }
 
 
@@ -6891,8 +6847,6 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
 
         if (*inPostCopy)
             *doKill = false;
-    } else {
-        qemuMigrationBlockNodesReactivate(vm, VIR_ASYNC_JOB_MIGRATION_IN);
     }
 
     if (mig->jobData) {
