@@ -40,6 +40,17 @@ v11.6.0 (unreleased)
     be modified by setting the ``default_cpu_deprecated_features`` option in
     the qemu.conf file.
 
+  * bhyve: Add TCP console support
+
+    TCP serial devices can now be configured with ``<serial type='tcp'>``::
+
+      <serial type='tcp'>
+        <source mode='bind' host='127.0.0.1' service='12345'/>
+        <target type='serial' port='0'/>
+      </serial>
+
+    Additionally, number of supported consoles increased to 4.
+
 * **Improvements**
 
   * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
@@ -59,8 +70,16 @@ v11.6.0 (unreleased)
     This can be used to tell some guest operating systems (notably Windows) to
     not trim the disk.
 
+  * bhyve: Add timeout handling for bhyveload
+
+    It is now possible to run ``bhyveload`` with the ``timeout`` tool, which
+    can send ``SIGTERM`` and ``SIGKILL`` signals when timeout is reached.
+    Timeout values are set using the ``bhyveload_timeout`` and
+    ``bhyveload_timeout_kill`` configuration options in ``bhyve.conf``.
+
 * **Bug fixes**
 
+  * bhyve: Fix resetting of the autostart flag of the domain on destroy.
 
 v11.5.0 (2025-07-01)
 ====================
