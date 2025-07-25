@@ -2234,7 +2234,7 @@ mymain(void)
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
-    DO_TEST_CAPS_LATEST("usb-controller-nex-xhci-autoassign");
+    DO_TEST_CAPS_LATEST("usb-controller-nec-xhci-autoassign");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-nec-xhci-limit");
     DO_TEST_CAPS_LATEST("usb-controller-qemu-xhci");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-qemu-xhci-limit");
