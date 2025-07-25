@@ -2174,7 +2174,7 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-fallback-virt-aarch64", ".aarch64-latest",
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_LAST,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_LAST,
                  ARG_END);
     DO_TEST_FULL("usb-controller-default-unavailable-virt-aarch64", ".aarch64-latest",
                  ARG_CAPS_ARCH, "aarch64",
