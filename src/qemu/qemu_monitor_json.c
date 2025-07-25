@@ -8246,32 +8246,6 @@ qemuMonitorJSONBitmapRemove(qemuMonitor *mon,
 
 
 int
-qemuMonitorJSONTransactionBitmapEnable(virJSONValue *actions,
-                                       const char *node,
-                                       const char *name)
-{
-    return qemuMonitorJSONTransactionAdd(actions,
-                                         "block-dirty-bitmap-enable",
-                                         "s:node", node,
-                                         "s:name", name,
-                                         NULL);
-}
-
-
-int
-qemuMonitorJSONTransactionBitmapDisable(virJSONValue *actions,
-                                        const char *node,
-                                        const char *name)
-{
-    return qemuMonitorJSONTransactionAdd(actions,
-                                         "block-dirty-bitmap-disable",
-                                         "s:node", node,
-                                         "s:name", name,
-                                         NULL);
-}
-
-
-int
 qemuMonitorJSONTransactionBitmapMerge(virJSONValue *actions,
                                       const char *node,
                                       const char *target,

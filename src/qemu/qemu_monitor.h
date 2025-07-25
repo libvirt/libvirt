@@ -1464,14 +1464,6 @@ qemuMonitorBitmapRemove(qemuMonitor *mon,
                         const char *node,
                         const char *name);
 int
-qemuMonitorTransactionBitmapEnable(virJSONValue *actions,
-                                   const char *node,
-                                   const char *name);
-int
-qemuMonitorTransactionBitmapDisable(virJSONValue *actions,
-                                    const char *node,
-                                    const char *name);
-int
 qemuMonitorTransactionBitmapMerge(virJSONValue *actions,
                                   const char *node,
                                   const char *target,

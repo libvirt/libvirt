@@ -2654,8 +2654,6 @@ testQemuMonitorJSONTransaction(const void *opaque)
 
     if (qemuMonitorTransactionBitmapAdd(actions, "node1", "bitmap1", true, true, 1234) < 0 ||
         qemuMonitorTransactionBitmapRemove(actions, "node2", "bitmap2") < 0 ||
-        qemuMonitorTransactionBitmapEnable(actions, "node3", "bitmap3") < 0 ||
-        qemuMonitorTransactionBitmapDisable(actions, "node4", "bitmap4") < 0 ||
         qemuMonitorTransactionBitmapMerge(actions, "node5", "bitmap5", &mergebitmaps) < 0 ||
         qemuMonitorTransactionSnapshotBlockdev(actions, "node7", "overlay7") < 0 ||
         qemuMonitorTransactionBackup(actions, "dev8", "job8", "target8", "bitmap8",
