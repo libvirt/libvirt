@@ -18,7 +18,7 @@
 # William  Moreno Reyes <williamjmorenor@gmail.com>, 2016
 # Javier Blanco <javi.deb@gmail.com>, 2018
 # Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
-# Emilio Herrera <ehespinosa57@gmail.com>, 2022.
+# Emilio Herrera <ehespinosa57@gmail.com>, 2022, 2025.
 # Nicolas Gal <nialegal@yandex.com>, 2024, 2025.
 # Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
 # Nicolás Gal <nialegal@yandex.com>, 2025.
@@ -27,8 +27,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-06-25 00:25+0000\n"
-"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
+"PO-Revision-Date: 2025-07-11 14:26+0000\n"
+"Last-Translator: Emilio Herrera <ehespinosa57@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -561,7 +561,7 @@ msgstr "El valor de $%1$s debe estar entre 0 y %2$d"
 msgid "%1$s\n"
 msgstr "%1$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s %2$s"
 msgstr "%1$s %2$s"
 
@@ -1942,9 +1942,8 @@ msgstr "? - imprimir esta ayuda"
 msgid "A close callback is already registered"
 msgstr "Un close callback ya está registrado"
 
-#, fuzzy
 msgid "A different callback was requested"
-msgstr "Fue solicitado un callback diferente"
+msgstr "Se solicitó una llamada de vuelta diferente"
 
 #, c-format
 msgid ""
@@ -1973,9 +1972,8 @@ msgstr ""
 msgid "A node device driver is already registered"
 msgstr "Ya existe un controlador de dispositivo de nodo registrado"
 
-#, fuzzy
 msgid "A secret driver is already registered"
-msgstr "Ya existe un controlador de secreto registrado"
+msgstr "Ya existe un controlador secreto registrado"
 
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
@@ -1990,9 +1988,8 @@ msgstr "Ya existe un controlador de almacenamiento registrado"
 msgid "ACPI ERST device must reside on a PCI bus"
 msgstr "el dispositivo ACPI ERST debe residir en un bus PCI"
 
-#, fuzzy
 msgid "ACPI index is not supported with this QEMU"
-msgstr "El índice de ACPI no es compatible con este binario de QEMU"
+msgstr "El índice de ACPI no está soportado por este QEMU"
 
 msgid "ACPI index is only supported for PCI devices"
 msgstr "el índice de ACPI solo es compatible con dispositivos PCI"
