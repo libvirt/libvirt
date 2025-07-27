@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
-"PO-Revision-Date: 2025-04-15 09:30+0000\n"
+"PO-Revision-Date: 2025-07-21 10:56+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgid ""
 "\n"
@@ -21723,9 +21723,8 @@ msgstr ""
 msgid "can't change numatune mode for running domain"
 msgstr ""
 
-#, fuzzy
 msgid "can't connect to virtlogd"
-msgstr "Xen Storeen yhdistäminen epäonnistui"
+msgstr "ei voi muodostaa yhteyttä virtlogdiin"
 
 #, c-format
 msgid "can't convert relative size: '%1$s'"
