@@ -23,13 +23,14 @@
 # Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
 # Nicolás Gal <nialegal@yandex.com>, 2025.
 # "Fco. Javier F. Serrador" <fserrador@gmail.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-06-24 14:31+0000\n"
 "PO-Revision-Date: 2025-07-21 10:56+0000\n"
-"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -5727,7 +5728,7 @@ msgid "Delete an IOThread from the guest domain."
 msgstr "Borrar un IOThread desde el dominio huésped."
 
 msgid "Delete domain"
-msgstr ""
+msgstr "Borrar dominio"
 
 msgid "Delete interface"
 msgstr "Borrar interfaz"
@@ -5742,7 +5743,7 @@ msgid "Delete network filter binding"
 msgstr "Borrar vínculo de filtro de red"
 
 msgid "Delete network port"
-msgstr ""
+msgstr "Borrar puerto de red"
 
 msgid "Delete node device"
 msgstr "Borrar dispositivo de nodo"
