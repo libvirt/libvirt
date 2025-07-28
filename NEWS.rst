@@ -54,6 +54,11 @@ v11.6.0 (unreleased)
     supposed to be called on one of the hosts represented in the input CPU
     definitions. Otherwise the API will give unexpected results.
 
+  * Allow specifying zero discard granularity for block devices
+
+    This can be used to tell some guest operating systems (notably Windows) to
+    not trim the disk.
+
 * **Bug fixes**
 
 
