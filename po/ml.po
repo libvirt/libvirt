@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -3294,9 +3294,6 @@ msgstr "സിസ്റ്റത്തിന്റെ '%1$s' stat പാഴ്�
 msgid "Cannot parse user stat '%1$s'"
 msgstr "ഉപയോക്താവിന്റെ '%1$s' stat പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3569,10 +3566,6 @@ msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %1$s ഉപയോ
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %1$s ഉപയോഗം ഡിജിറ്റല്‍ സിഗ്നേച്ചര്‍ അനുവദിച്ചില്ല"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %1$s ഉപയോഗം കീ എന്‍സിഫര്‍മെന്റ് അനുവദിച്ചില്ല"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -9930,6 +9923,21 @@ msgstr "'%1$s' എന്ന ഇന്റര്‍ഫേസില്‍ നിയ
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "മുഖരൂപം"
 
@@ -10652,10 +10660,6 @@ msgstr ""
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "തെറ്റായ പൂള്‍ രീിതി '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "തെറ്റായ പോര്‍ട്ട് നംബര്‍: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11702,10 +11706,6 @@ msgstr "'%1$s' നെറ്റ്‌വര്‍ക്കിനുള്ള dhcp
 
 msgid "Missing 'target' element for lease"
 msgstr "ലീസില്‍ 'target' എലമെന്റ് ലഭ്യമല്ല"
-
-#, fuzzy
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -13288,7 +13288,13 @@ msgstr "'%1$s' ഫയല്‍സിസ്റ്റം തരം മാത്ര
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13358,6 +13364,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "ബ്രിഡ്ജ് ചെയ്ത veth ഡിവൈസുകള്‍ മാത്രമേ വേര്‍പെടുത്തുവാന്‍ സാധ്യമുള്ളൂ"
 
@@ -13382,6 +13393,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -13389,6 +13403,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "ഐഡിഇ, സ്കസി ഡിസ്ക് മാത്രം wwn പിന്തുണയ്ക്കുന്നു"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 #, fuzzy
@@ -14461,6 +14478,9 @@ msgstr "ഹൈപ്പര്‍വൈസറിലേക്കു് വീണ�
 
 msgid "Reconnected to the hypervisor"
 msgstr "ഹൈപ്പര്‍വൈസറിലേക്കു് വീണ്ടും കണക്ട് ചെയ്യുന്നു"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18385,6 +18405,10 @@ msgstr "%1$s-നുള്ള ഫയല്‍സിസ്റ്റം കണ്�
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "%s സമ്പര്‍ക്കമുഖത്തിനുള്ള സൂചിക കിട്ടുന്നില്ല"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to determine mount table on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമിലെ %s ല്‍ എസ്‌ടിപി എത്രയെന്നു് കാണാന്‍ സാധിച്ചില്ല"
@@ -18896,8 +18920,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമിലെ വിര്‍ച്ച്വല്‍ ഫങ്ഷനുകള്‍ കാണാന്‍ സാധിച്ചില്ല"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "%1$s സിഎ സര്‍ട്ടിഫിക്കേറ്റ് പട്ടിക ഇംപോര്‍ട്ട് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20368,6 +20392,10 @@ msgstr "അപരിചിതമായ ജോലി ഘട്ടം %s"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "അപരിചിതമായ സോഴ്സ് മോഡ് '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22663,10 +22691,6 @@ msgstr "വീഡിയോ heads '%1$s' പാഴ്സ് ചെയ്യുവ
 msgid "can't shrink capacity below existing allocation"
 msgstr "നിലവിലുള്ളതില്‍ കുറഞ്ഞു് വ്യാപ്തി കുറയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "ക്ഷണിക ഡൊമെയിന്‍ വേണ്ടെന്നു് വയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -23613,12 +23637,6 @@ msgstr "ഡിവൈസിന്റെ അവസാന സ്ഥാനം പാ
 msgid "cannot parse device start location"
 msgstr "ഡിവൈസിന്റെ ആരംഭ സ്ഥാനം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമായില്ല"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "instanceid പരാമീറ്റര്‍ ഒരു uuid ആയി പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "interfaceid പരാമീറ്ററിനെ uuid ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23659,19 +23677,6 @@ msgstr "RAM ഫയല്‍സിസ്റ്റത്തില്‍ '%1$s' ഉ
 #, fuzzy, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "typeid പരാമീറ്ററിന്റെ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "managerid പരാമീറ്ററിന്റെ മൂല്ല്യം പരിധിയ്ക്കു് പുറത്തു്"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "typeid പരാമീറ്ററിന്റെ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "typeidversion പരാമീറ്ററിന്റെ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "വീഡിയോ ram '%1$s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27681,6 +27686,9 @@ msgstr "ഇന്റര്‍ഫെയിസ് '%1$s' ലഭ്യമാകു�
 msgid "failed to get launch security policy"
 msgstr "പേരന്റ് പൂള്‍ ലഭ്യമാക്കുന്നതില്‍േ പരാജയം"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "ഹോസ്റ്റിലുള്ള %1$s ഇന്റര്‍ഫെയിസുകളുടെ പട്ടിക ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -28303,6 +28311,12 @@ msgid "failed to setup stdout file handle"
 msgstr "stdout ഫയല്‍ ഹാന്‍ഡില്‍ സജ്ജമാക്കുന്നതില്‍ പരാജയം"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29455,6 +29469,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "അവഗണിക്കേണ്ടുന്ന ഡീബഗ് തലം %1$d പരിധിക്കു പുറത്താണ് [%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "ഇമേജ് മാജിക് തെറ്റാണു്"
 
@@ -30359,10 +30377,6 @@ msgstr "തെറ്റായ രഹസ്യ തരം %1$s"
 
 #, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "തെറ്റായ രഹസ്യ രീതി '%1$s'"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
 msgstr "തെറ്റായ രഹസ്യ രീതി '%1$s'"
 
 #, fuzzy
@@ -31347,6 +31361,9 @@ msgstr "സിംലിങ്ക് '%1$s' -> '%2$s' ഉണ്ടാക്കു
 #, fuzzy
 msgid "malformed QMP schema"
 msgstr "തെറ്റായ ipset ഫ്ലാഗുകള്‍"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32399,10 +32416,6 @@ msgstr "ഫില്‍റ്റര്‍ പരാമീറ്റര്‍ പ�
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "മൈഗ്രേഷന്‍ വിശേഷത നാമം ലഭ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "ഓഫിനുള്ള ഉപയോക്തൃനാമം ലഭ്യമല്ല"
-
 msgid "missing group name"
 msgstr ""
 
@@ -32909,16 +32922,8 @@ msgstr "vlan റ്റാഗ് ഡേറ്റാ ലഭ്യമല്ല"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing volume name and path for gluster volume"
-msgstr "വോള്യം നെയിം എലമെന്റ് ലഭ്യമല്ല"
-
 msgid "missing volume name element"
 msgstr "വോള്യം നെയിം എലമെന്റ് ലഭ്യമല്ല"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
 
 msgid "missing vporttype attribute in migration data"
 msgstr "മൈഗ്രേഷന്‍ ഡേറ്റയില്‍ vporttype വിശേഷത ലഭ്യമല്ല"
@@ -33840,9 +33845,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "മോണിറ്റര്‍ പാഥ് ലഭ്യമല്ല"
 
@@ -34417,6 +34419,9 @@ msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ
 msgid "only a single IOMMU device is supported"
 msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -34572,10 +34577,6 @@ msgstr "ഒറ്റ nvram ഡിവൈസ് മാത്രമേ പിന്
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-#, fuzzy
-msgid "only two serial ports are supported"
-msgstr "x509 സമ്മതപത്രങ്ങള്‍ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -41152,6 +41153,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT-നുളള വെയിറ്റ്"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -41296,6 +41302,57 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %1$s ഉപയോഗം കീ എന്‍സിഫര്‍മെന്റ് അനുവദിച്ചില്ല"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "തെറ്റായ പോര്‍ട്ട് നംബര്‍: %1$s"
+
+#, fuzzy
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "HyperV എന്‍ലൈറ്റ്മെന്റ് വിശേഷത '%s'-നുള്ള 'അവസ്ഥ' ലഭ്യമല്ല"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "%1$s സിഎ സര്‍ട്ടിഫിക്കേറ്റ് പട്ടിക ഇംപോര്‍ട്ട് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "instanceid പരാമീറ്റര്‍ ഒരു uuid ആയി പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "interfaceid പരാമീറ്ററിനെ uuid ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "managerid പരാമീറ്ററിന്റെ മൂല്ല്യം പരിധിയ്ക്കു് പുറത്തു്"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "typeid പരാമീറ്ററിന്റെ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "typeidversion പരാമീറ്ററിന്റെ മൂല്ല്യം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "വീഡിയോ ram '%1$s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "തെറ്റായ രഹസ്യ രീതി '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "ഓഫിനുള്ള ഉപയോക്തൃനാമം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "വോള്യം നെയിം എലമെന്റ് ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "only two serial ports are supported"
+#~ msgstr "x509 സമ്മതപത്രങ്ങള്‍ മാത്രം പിന്തുണയ്ക്കുന്നു"
 
 #, fuzzy
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -3216,9 +3216,6 @@ msgstr "টার্গেট '%1$s' পার্স করতে ব্যর�
 msgid "Cannot parse user stat '%1$s'"
 msgstr "বাস '%1$s' পার্স করতে ব্যর্থ"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3496,10 +3493,6 @@ msgstr ""
 
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
-msgstr ""
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
 msgstr ""
 
 #, c-format
@@ -9899,6 +9892,21 @@ msgstr "ইন্টারফেস '%1$s' প্রাপ্ত করতে �
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 #, fuzzy
 msgid "Interface"
 msgstr "ইন্টারফেসের mac"
@@ -10625,10 +10633,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "অবৈধ সিক্রেট ধরন '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "অবৈধ পোর্ট সংখ্যা: %1$s"
 
 #, fuzzy, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11654,10 +11658,6 @@ msgstr "'%1$s' নেটওয়ার্কের ক্ষেত্রে dhc
 
 msgid "Missing 'target' element for lease"
 msgstr "লিজের ক্ষেত্রে 'টার্গেট' উপাদান অনুপস্থিত"
-
-#, fuzzy
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "'state' অ্যাট্রিবিউট অনুপস্থিত HyperV Enlightenment বৈশিষ্ট্য '%s' এর ক্ষেত্রে"
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -13244,7 +13244,13 @@ msgstr "শুধুমাত্র একটি ফাইল-সিস্টে
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13315,6 +13321,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr ""
 
@@ -13336,6 +13347,9 @@ msgstr "বাজে ipv4 সমাপ্তি ঠিকানা '%1$s' <nat> 
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -13343,6 +13357,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr ""
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14369,6 +14386,9 @@ msgstr "হাইপার-ভাইসরের সাথে পুনরায়
 
 msgid "Reconnected to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে পুনরায় সংযোগ স্থাপিত হয়েছে"
+
+msgid "Recreation"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18258,6 +18278,10 @@ msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ �
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr ""
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to determine mount table on this platform"
 msgstr "এই প্ল্যাটফর্মের জন্য নোড সংক্রান্ত তথ্য বাস্তবায়িত হয়নি"
@@ -18793,9 +18817,9 @@ msgstr "এই প্ল্যাটফর্মের জন্য নোড �
 msgid "Unable to get virtual functions on this platform"
 msgstr "এই প্ল্যাটফর্মের জন্য নোড সংক্রান্ত তথ্য বাস্তবায়িত হয়নি"
 
-#, fuzzy, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
+#, c-format
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20300,6 +20324,10 @@ msgstr "অজানা রিলিজ: %s"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "অজানা ধরনের সোর্স মোড '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22593,10 +22621,6 @@ msgstr "ভিডিও হেড '%1$s' পার্স করতে ব্য�
 msgid "can't shrink capacity below existing allocation"
 msgstr ""
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "স্বল্পকাল স্থায়ী (ট্রান্সিয়েন্ট) ডোমেইনের ব্যাখ্যা বাতিল করা সম্ভব নয়"
@@ -23552,12 +23576,6 @@ msgstr "ডিভাইস সমাপ্তির স্থান পার্
 msgid "cannot parse device start location"
 msgstr "ডিভাইস প্রারম্ভের স্থান পার্স করা সম্ভব নয়"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23598,19 +23616,6 @@ msgstr "RAM filesystem এর ক্ষেত্রে ব্যবহার '%1
 #, fuzzy, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "typeid প্যারামিটারের মান পার্জ করা যাবে না"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "managerid প্যারামিটারের মান পার্জ করা যাবে না"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "typeid প্যারামিটারের মান পার্জ করা যাবে না"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "typeidversion প্যারামিটারের মান পার্জ করা যাবে না"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "ভিডিও ram '%1$s' পার্স করতে ব্যর্থ"
 
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27651,6 +27656,9 @@ msgstr "ইন্টারফেস '%1$s' প্রাপ্ত করতে �
 msgid "failed to get launch security policy"
 msgstr "ঊর্ধ্বস্থ পুল সনাক্ত করতে ব্যর্থ"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "ইন্টারফেস '%1$s' প্রাপ্ত করতে ব্যর্থ"
@@ -28282,6 +28290,12 @@ msgid "failed to setup stdout file handle"
 msgstr "stdout ফাইল হ্যান্ডেল নির্ধারণ করতে ব্যর্থ"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29436,6 +29450,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "প্রারম্ভিক সেলের মান %d, সীমা বহির্ভুত (0-%d)"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "image magic সঠিক নয়"
 
@@ -30354,10 +30372,6 @@ msgstr "অবৈধ সিক্রেট ধরন %1$s"
 
 #, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "অবৈধ সিক্রেট ধরন '%1$s'"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
 msgstr "অবৈধ সিক্রেট ধরন '%1$s'"
 
 #, fuzzy
@@ -31359,6 +31373,9 @@ msgstr "'%1$s' সিমলিংক '%2$s'-এ নির্মাণ করত�
 #, fuzzy
 msgid "malformed QMP schema"
 msgstr "ভুল ভাবে গঠিত ipset ফ্ল্যাগ"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32416,10 +32433,6 @@ msgstr "ফিল্টার প্যারামিটার সারণী 
 msgid "missing flag name in QEMU capabilities cache"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "প্রমাণীকরণের জন্য ব্যবহারকারী নাম অনুপস্থিত"
-
 msgid "missing group name"
 msgstr ""
 
@@ -32934,16 +32947,8 @@ msgstr "অনুপস্থিত vlan ট্যাগ ডেটা"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing volume name and path for gluster volume"
-msgstr "ভলিউমের নামের স্বত্ত্বা অনুপস্থিত"
-
 msgid "missing volume name element"
 msgstr "ভলিউমের নামের স্বত্ত্বা অনুপস্থিত"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
 
 #, fuzzy
 msgid "missing vporttype attribute in migration data"
@@ -33864,9 +33869,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "মনিটর পাথ অনুপস্থিত"
 
@@ -34450,6 +34452,9 @@ msgstr "শুধুমাত্র একটি TPM ডিভাইস সম�
 msgid "only a single IOMMU device is supported"
 msgstr "শুধুমাত্র একটি TPM ডিভাইস সমর্থিত হবে"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -34607,10 +34612,6 @@ msgstr "শুধুমাত্র একটি nvram ডিভাইস সম
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-#, fuzzy
-msgid "only two serial ports are supported"
-msgstr "শুধুমাত্র একটি ফাইল-সিস্টেম সমর্থিত হবে"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -41207,6 +41208,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT-র ক্ষেত্রে weight"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -41350,6 +41356,54 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "অবৈধ পোর্ট সংখ্যা: %1$s"
+
+#, fuzzy
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr ""
+#~ "'state' অ্যাট্রিবিউট অনুপস্থিত HyperV Enlightenment বৈশিষ্ট্য '%s' এর ক্ষেত্রে"
+
+#, fuzzy, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "%s PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "instanceid প্যারামিটার uuid হিসাবে পার্জ করা যাবে না"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "managerid প্যারামিটারের মান পার্জ করা যাবে না"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "typeid প্যারামিটারের মান পার্জ করা যাবে না"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "typeidversion প্যারামিটারের মান পার্জ করা যাবে না"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "ভিডিও ram '%1$s' পার্স করতে ব্যর্থ"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "অবৈধ সিক্রেট ধরন '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "প্রমাণীকরণের জন্য ব্যবহারকারী নাম অনুপস্থিত"
+
+#, fuzzy
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "ভলিউমের নামের স্বত্ত্বা অনুপস্থিত"
+
+#, fuzzy
+#~ msgid "only two serial ports are supported"
+#~ msgstr "শুধুমাত্র একটি ফাইল-সিস্টেম সমর্থিত হবে"
 
 #, fuzzy
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"

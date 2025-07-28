@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -3442,9 +3442,6 @@ msgstr "sys 統計情報 '%1$s' を解析できません"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "user 統計情報 '%1$s' を解析できません"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "要素 <address> の uuid 属性を解析できません"
-
 #, fuzzy, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3724,10 +3721,6 @@ msgstr "証明書 %1$s の使用法は証明書署名を許可しません"
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "証明書 %1$s の使用法は電子署名を許可しません"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "証明書 %1$s の使用法はキー暗号化を許可しません"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -10093,6 +10086,21 @@ msgstr "ルールのインスタンス化がインターフェイス '%1$s' に�
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "インターフェイス"
 
@@ -10841,10 +10849,6 @@ msgstr "無効な persistent_state 値、'yes' または 'no' のいずれかに
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "無効なプールの種類 '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "無効なポート番号: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11894,9 +11898,6 @@ msgstr "ネットワーク '%1$s' の DHCP 範囲に 'start' 属性がありま�
 
 msgid "Missing 'target' element for lease"
 msgstr "リースの 'target'要素がありません"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "要素 <address> の 'uuid' 属性がありません"
 
 msgid "Missing <address> element"
 msgstr "<address> 要素がありません"
@@ -13445,7 +13446,13 @@ msgstr "'%1$s' ファイルシステムタイプのみがサポートされま�
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "'credit' および 'credit2' スケジューラーのみがサポートされます"
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13508,6 +13515,11 @@ msgstr "このドメインに設定できるコンソールまたはシリアル
 msgid "Only a single serial can be configured for this domain"
 msgstr "このドメインに設定できるシリアルは 1 つだけです"
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "ブリッジされた仮想ネットワークデバイスのみ切断できます"
 
@@ -13534,6 +13546,9 @@ msgstr ""
 "vz ドライバーでは、ファイルベースまたはボリュームベースのファイルシステムのみ"
 "がサポートされます。"
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "vz ドライバーでは、ハードディスクと cdrom のみがサポートされます。"
 
@@ -13541,6 +13556,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "IDE および SCSI ディスクのみが WWN をサポートします"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14612,6 +14630,9 @@ msgstr "管理サーバーに再接続しました"
 
 msgid "Reconnected to the hypervisor"
 msgstr "ハイパーバイザーに再接続しました"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18608,6 +18629,10 @@ msgstr "現在のファイルオフセットを判別できません: %1$s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "SCSI コントローラー idx=%1$d のモデルを決定できません"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "このプラットフォームのマウントテーブルがわかりません"
 
@@ -19080,8 +19105,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "このプラットフォームにおいて仮想ファンクションを取得できません"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "CA 証明書一覧 %1$s をインポートできません"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20502,6 +20527,10 @@ msgstr "不明な暗号ハッシュ %1$d"
 #, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "不明なデータソース '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22859,10 +22888,6 @@ msgstr "空のディスクまたは読み取り専用ディスク '%1$s' のサ�
 msgid "can't shrink capacity below existing allocation"
 msgstr "現在の割り当てを下回る容量に縮小できません"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr "パス '%1$s' をプール名とイメージ名に分割できません"
-
 msgid "can't undefine transient network"
 msgstr "一時ネットワークの定義を解除することはできません"
 
@@ -23792,12 +23817,6 @@ msgstr "デバイス終了の場所を解析できません"
 msgid "cannot parse device start location"
 msgstr "デバイス開始の場所を解析できません"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "UUID として instanceid パラメーターを解析できません"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "interfaceid パラメーターを UUID として解析できません"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23838,19 +23857,6 @@ msgstr "RAM ファイルシステムに対して使用法 '%1$s' を解析でき
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "coalesce パラメーターの値 '%1$s' を解析できません"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "managerid パラメーターの値を解析できません"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "typeid パラメーターの値を解析できません"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "typeidversion パラメーターの値を解析できません"
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "vcpu インデックス '%1$s' を解析できません"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27839,6 +27845,9 @@ msgstr "インターフェイス '%1$s' を取得できませんでした"
 msgid "failed to get launch security policy"
 msgstr "起動セキュリティーポリシーを取得できませんでした"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "ホストにある %1$s インターフェイスの一覧の取得に失敗しました"
@@ -28446,6 +28455,12 @@ msgstr "標準出力のファイルハンドルのセットアップに失敗し
 
 msgid "failed to shutdown guest VM"
 msgstr "ゲスト VM のシャットダウンに失敗しました"
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
+msgstr ""
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -29584,6 +29599,10 @@ msgstr "無視する"
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "デバッグレベル %1$d が範囲外 [%2$d-%3$d] のため無視しています"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "イメージマジックは正しくありません"
 
@@ -30510,10 +30529,6 @@ msgstr "無効なシークレットタイプ %1$s"
 #, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "無効なシークレットタイプ '%1$s'"
-
-#, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "無効なシークレット uuid '%1$s'"
 
 msgid "invalid server address"
 msgstr "無効なサーバーアドレス"
@@ -31472,6 +31487,9 @@ msgstr "'%1$s' の '%2$s' をクエリーする際の QAPI スキーマの不正
 
 msgid "malformed QMP schema"
 msgstr "不正な形式の QMP スキーマ"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32500,10 +32518,6 @@ msgstr "フィルターパラメーター表がありません"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU ケイパビリティーキャッシュにフラグ名がありません"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "パス '%1$s' の gluster ボリューム名がありません"
-
 msgid "missing group name"
 msgstr ""
 
@@ -33011,15 +33025,8 @@ msgstr "VLAN タグデータがありません"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-msgid "missing volume name and path for gluster volume"
-msgstr "gluster ボリュームのボリューム名とパスがありません"
-
 msgid "missing volume name element"
 msgstr "ボリュームの name 要素がありません"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr "gluster ソースパス '%1$s' にボリューム名またはファイル名がありません"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "マイグレーションデータに vporttype 属性がありません"
@@ -33943,9 +33950,6 @@ msgstr "メディア接続なし"
 msgid "no memory device found"
 msgstr "メモリーデバイスが見つかりません"
 
-msgid "no model provided for USB controller"
-msgstr "USB コントローラー用のモデルは提供されていません"
-
 msgid "no monitor path"
 msgstr "モニターパスがありません"
 
@@ -34512,6 +34516,9 @@ msgstr "USB 入力デバイスのみがサポートされます"
 msgid "only a single IOMMU device is supported"
 msgstr "単一の IOMMU デバイスのみがサポートされます"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr "単一の TPM プロキシーデバイスのみがサポートされます"
 
@@ -34659,9 +34666,6 @@ msgstr "タブレット入力デバイスのみがサポートされます"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr "ネットワークディスクで使用できるのは 'qemu' ドライバーのみです"
-
-msgid "only two serial ports are supported"
-msgstr "2 つのシリアルポートのみがサポートされます"
 
 msgid "only two source elements are allowed for character device"
 msgstr "キャラクターデバイスには 2 つのソース要素のみが許可されます"
@@ -41308,6 +41312,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT へのウェイト"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr "親 wwnn='%1$s'を提供する場合、wwpn も提供する必要があります"
@@ -41459,6 +41468,69 @@ msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "ゾーン %1$s がネットワーク %2$s に要求されましたが、firewalld はアクティブで"
 "はありません"
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "要素 <address> の uuid 属性を解析できません"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "証明書 %1$s の使用法はキー暗号化を許可しません"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "無効なポート番号: %1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "要素 <address> の 'uuid' 属性がありません"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "CA 証明書一覧 %1$s をインポートできません"
+
+#, c-format
+#~ msgid "can't split path '%1$s' into pool name and image name"
+#~ msgstr "パス '%1$s' をプール名とイメージ名に分割できません"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "UUID として instanceid パラメーターを解析できません"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "interfaceid パラメーターを UUID として解析できません"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "managerid パラメーターの値を解析できません"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "typeid パラメーターの値を解析できません"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "typeidversion パラメーターの値を解析できません"
+
+#, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "vcpu インデックス '%1$s' を解析できません"
+
+#, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "無効なシークレット uuid '%1$s'"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "パス '%1$s' の gluster ボリューム名がありません"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "gluster ボリュームのボリューム名とパスがありません"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr ""
+#~ "gluster ソースパス '%1$s' にボリューム名またはファイル名がありません"
+
+#~ msgid "no model provided for USB controller"
+#~ msgstr "USB コントローラー用のモデルは提供されていません"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "2 つのシリアルポートのみがサポートされます"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "'ioeventfd' は virtio-scsi コントローラでのみサポートされます"

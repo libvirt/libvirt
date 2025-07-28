@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-07-25 11:29+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -544,7 +544,7 @@ msgstr ""
 " cur=%3$llu\n"
 " end=%4$llu\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
@@ -1452,7 +1452,8 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' hace referencia a un nodo NUMA inexistente"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr "'ioeventfd' solo es compatible con los controladores virtio-scsi y nvme"
+msgstr ""
+"'ioeventfd' solo es compatible con los controladores virtio-scsi y nvme"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr ""
@@ -1463,7 +1464,8 @@ msgstr "'iothread' solo es compatible con el controlador virtio-scsi"
 
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
-msgstr "'iscsiadm': modo nuevo incorrecto para destino '%1$s' con estado '%2$d'"
+msgstr ""
+"'iscsiadm': modo nuevo incorrecto para destino '%1$s' con estado '%2$d'"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -3566,9 +3568,6 @@ msgstr "No se puede interpretar el estado del sistema '%1$s'"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "No se puede interpretar el estatus del usuario '%1$s'"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "No se puede interpretar atributo uuid de elemento <address>"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3769,8 +3768,8 @@ msgid ""
 "Cannot update device '%1$s', parent address mismatch (current parent address "
 "'%2$s')"
 msgstr ""
-"No se puede actualizar dispositivo '%1$s', no coincide dirección parental ("
-"dirección parental actual '%2$s')"
+"No se puede actualizar dispositivo '%1$s', no coincide dirección parental "
+"(dirección parental actual '%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
@@ -3863,10 +3862,6 @@ msgstr "El uso del certificado %1$s no permite firma de certificado"
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "El uso del certificado %1$s no permite firma digital de certificado"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "El uso del certificado %1$s no permite codificación de llave"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -5337,7 +5332,8 @@ msgstr "No se pudo revertir a toma de pantalla '%1$s': %2$s"
 
 #, c-format
 msgid "Could not run '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
-msgstr "No se pudo ejecutar '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
+msgstr ""
+"No se pudo ejecutar '%1$s --print-info'. exitstatus: %2$d; stderr: %3$s"
 
 #, c-format
 msgid ""
@@ -5391,7 +5387,8 @@ msgid "Could not set memory to %1$lu kilobytes: %2$s"
 msgstr "No se pudo definir memoria a %1$lu kilobytes: %2$s"
 
 msgid "Could not set namespace address for xmlNodeParam"
-msgstr "No se pudo definir el directorio de espacio de nombre para xmlNodeParam"
+msgstr ""
+"No se pudo definir el directorio de espacio de nombre para xmlNodeParam"
 
 msgid "Could not set number of vCPUs"
 msgstr "No se pudo establecer el número de vCPU"
@@ -5637,8 +5634,8 @@ msgid ""
 "DNS SRV weight attribute not permitted without target for service '%1$s' in "
 "network '%2$s'"
 msgstr ""
-"Atributo de ponderación DNS SRC no permitido sin destino para servicio '%1$"
-"s' en red '%2$s'"
+"Atributo de ponderación DNS SRC no permitido sin destino para servicio "
+"'%1$s' en red '%2$s'"
 
 msgid "Data processed:"
 msgstr "Datos procesados:"
@@ -5837,7 +5834,8 @@ msgid "Detach device from an XML <file>"
 msgstr "Desmontar un dispositivo de un <file> XML"
 
 msgid "Detach device identified by the given alias from a domain"
-msgstr "Desconectar dispositivo identificado por el alias dado desde un dominio"
+msgstr ""
+"Desconectar dispositivo identificado por el alias dado desde un dominio"
 
 msgid "Detach disk device."
 msgstr "Desconectar dispositivo de disco."
@@ -5854,7 +5852,8 @@ msgstr ""
 "de asignar a un dominio."
 
 msgid "Detaching node device driver requires authorization"
-msgstr "Desconectando controlador del dispositivo de nodo requiere autorización"
+msgstr ""
+"Desconectando controlador del dispositivo de nodo requiere autorización"
 
 msgid "Detect storage pools"
 msgstr "Detectar grupos de almacenamiento"
@@ -6264,7 +6263,8 @@ msgid "Domain already exists, editing existing domains is not supported yet"
 msgstr "El dominio ya existe, editar dominios existentes aún no está admitido"
 
 msgid "Domain autodestroy not supported for embedded drivers yet"
-msgstr "Autodescrucción de dominio no admitido aún para controladores embebidos"
+msgstr ""
+"Autodescrucción de dominio no admitido aún para controladores embebidos"
 
 msgid "Domain autodestroy requires a connection handle"
 msgstr "Autodestrucción de dominio requiere un manipulador de conexión"
@@ -6497,7 +6497,8 @@ msgid "Dump XML for a domain snapshot"
 msgstr "Volcado XML para una instantánea de dominio"
 
 msgid "Dump XML for an ongoing domain block backup job"
-msgstr "Volcado XML para una tarea de respaldo del bloque de dominio en proceso"
+msgstr ""
+"Volcado XML para una tarea de respaldo del bloque de dominio en proceso"
 
 msgid "Dump XML of domain information for a managed save state file to stdout."
 msgstr ""
@@ -7519,7 +7520,8 @@ msgstr ""
 
 #, c-format
 msgid "Failed to create filesystem probe for device %1$s"
-msgstr "Incorrecto al crear sondeo de sistema de archivos para dispositivo %1$s"
+msgstr ""
+"Incorrecto al crear sondeo de sistema de archivos para dispositivo %1$s"
 
 msgid "Failed to create interface node under bridge node in xml document"
 msgstr ""
@@ -7618,7 +7620,8 @@ msgid "Failed to create thread to handle domain shutdown"
 msgstr "Incorrecto al crear hilo para manipular apagado del demonio"
 
 msgid "Failed to create thread to handle firewall reload/restart"
-msgstr "Incorrecto al crear hilo para manipular recarga/reinicio de cortafuegos"
+msgstr ""
+"Incorrecto al crear hilo para manipular recarga/reinicio de cortafuegos"
 
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Incorrecto al crear hilo para manipular refresco de consorcio"
@@ -7960,7 +7963,8 @@ msgid "Failed to get UUID of created secret"
 msgstr "Incorrecto al obtener el UUID del secreto creado"
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
-msgstr "Incorrecto al obtener el puerto VNC. ¿Este dominio está utilizando VNC?"
+msgstr ""
+"Incorrecto al obtener el puerto VNC. ¿Este dominio está utilizando VNC?"
 
 #, c-format
 msgid "Failed to get block stats %1$s %2$s"
@@ -8238,7 +8242,8 @@ msgstr "Incorrecto al listar huéspedes transitorios"
 
 #, c-format
 msgid "Failed to list vcpus for domain '%1$d' with libxenlight"
-msgstr "Incorrecto al enumerar las vcpus para el dominio '%1$d' con libxenlight"
+msgstr ""
+"Incorrecto al enumerar las vcpus para el dominio '%1$d' con libxenlight"
 
 msgid "Failed to list volumes"
 msgstr "Incorrecto al listar volúmenes"
@@ -9132,7 +9137,8 @@ msgstr "No se pudo extraer tras guardar dominio"
 
 #, c-format
 msgid "Failed to soft reset VM '%1$s'. Destroying VM"
-msgstr "No se pudo hacer restablecimiento suave de la MV '%1$s'. Destruyendo MV"
+msgstr ""
+"No se pudo hacer restablecimiento suave de la MV '%1$s'. Destruyendo MV"
 
 #, c-format
 msgid "Failed to start QEMU binary %1$s for probing: %2$s"
@@ -9415,8 +9421,8 @@ msgstr "El Canal de Fibra 'appid' no es una cadena imprimible"
 #, c-format
 msgid "Fibre Channel 'appid' string length must be between [%1$d, %2$d]"
 msgstr ""
-"La longitud de la cadena 'appid' del Canal de Fibra debe estar entre "
-"[%1$d, %2$d]"
+"La longitud de la cadena 'appid' del Canal de Fibra debe estar entre [%1$d, "
+"%2$d]"
 
 #, c-format
 msgid "Field '%1$s' too long for destination"
@@ -9879,7 +9885,8 @@ msgstr ""
 
 #, c-format
 msgid "HTTP response code %1$d for call to '%2$s'. Fault: %3$s - %4$s"
-msgstr "Código de respuesta HTTP %1$d para invocar a '%2$s'. Falla: %3$s - %4$s"
+msgstr ""
+"Código de respuesta HTTP %1$d para invocar a '%2$s'. Falla: %3$s - %4$s"
 
 #, c-format
 msgid "HTTP response code %1$d for download from '%2$s'"
@@ -9901,7 +9908,7 @@ msgstr "Hibernar dominio"
 msgid "Holes are not supported with this stream"
 msgstr "Huecos no están admitidos con este flujo"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Hook for %1$s, failed to find operation #%2$d"
 msgstr "Enganchado por %1$s, ha fallado al encontrar la operación nº %2$d"
 
@@ -9909,7 +9916,7 @@ msgstr "Enganchado por %1$s, ha fallado al encontrar la operación nº %2$d"
 msgid "Hook script execution failed"
 msgstr "Gancho en ejecución del script incorrecto"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Hook script execution failed: %1$s"
 msgstr "Error en la ejecución del script de enganche: %1$s"
 
@@ -9933,14 +9940,14 @@ msgstr "el grupo de almacenamiento no tiene soporte para volúmenes cifrados"
 msgid "Host CPU is a superset of CPU described in %1$s\n"
 msgstr "La CPU del equipo es superior a la CPU descrita en %1$s\n"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
 "Modelo de CPU hospedaje no coincide el proveedor %1$s de CPU requerido o(y) "
 "modelo %2$s"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Host CPU provides forbidden feature '%1$s'"
 msgstr "CPU de host proporciona funcionalidad '%1$s' prohibidas"
 
@@ -9983,7 +9990,7 @@ msgid "Hostdev already exists in the domain configuration"
 msgstr ""
 "Ya existe dispositivo de hospedaje interno a la configuración del dominio"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Hostdev source %1$s must be a block device"
 msgstr "Origen de hostdev %1$s debe ser un dispositivo de bloque"
 
@@ -10014,7 +10021,7 @@ msgstr "Salida más legible por humanos"
 msgid "Hybrid-Suspend"
 msgstr "Suspensión híbrida"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Hyper-v enlightenment feature '%1$s' is not supported for Xen domains."
 msgstr ""
 "Característica de enlightenment Hyper-v '%1$s' no está admitida para "
@@ -10123,15 +10130,15 @@ msgstr ""
 msgid "IOMMU device: '%1$s' is only supported with Q35 and ARM Virt machines"
 msgstr ""
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "IOMMU device: '%1$s' is only supported with Q35 machines"
 msgstr "Dispositivo IOMMU: '%1$s' solo es mantenido con máquinas Q35"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "IOMMU device: '%1$s' needs a PCI address"
 msgstr "Dispositivo IOMMU: '%1$s' necesita una dirección PCI"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "IOMMU device: '%1$s' requires ACPI"
 msgstr "Dispositivo IOMM: '%1$s' requiere ACPI"
 
@@ -10348,6 +10355,21 @@ msgstr "Error en la creación de instancia de reglas en interfaz '%1$s'"
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "Interfaz"
 
@@ -10429,7 +10451,7 @@ msgstr "Atributo 'vcpus' %1$s no admitido con valor '%2$s'"
 msgid "Invalid 'cpu.max' data."
 msgstr "Datos 'cpu.max' no válidos."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Listado --with-loader-nvram no válido: %1$s"
 
@@ -10490,12 +10512,12 @@ msgstr ""
 msgid "Invalid NULL callback provided"
 msgstr "Llamada NULL provista no válida"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid PCI address %1$s. Only PCI buses up to %2$zu are available"
 msgstr ""
 "Dirección PCI inválida %1$s. Solo están disponibles buses PCI hasta %2$zu"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid PCI address %1$s. Only PCI domain 0 is available"
 msgstr "Dirección PCI %1$s inválida. Solo está disponible el dominio PCI 0"
 
@@ -10686,7 +10708,7 @@ msgid "Invalid character in source channel for char device"
 msgstr ""
 "No se encuentra atributo de host de origen para el dispositivo de caracteres"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid check/@partial value '%1$s' in CPU model %2$s"
 msgstr ""
 "Valor '%1$s' de comprobación/@partial no válido en el modelo de CPU %2$s"
@@ -10749,7 +10771,7 @@ msgstr "Tipo de dispositivo no válido mantenido: %1$s"
 msgid "Invalid disk bus in definition"
 msgstr "Bus del disco no válido en definición"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid disk read error policy: '%1$s'"
 msgstr "Normativa de error de lectura del disco inválido: '%1$s'"
 
@@ -10776,7 +10798,7 @@ msgstr "Estado %1$s de dominio no válido"
 msgid "Invalid domain supplied"
 msgstr "Dominio proporcionado no válido"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Invalid drive address of disk %1$s, vz driver does not support non default "
 "name mappings."
@@ -10784,7 +10806,7 @@ msgstr ""
 "Dirección de unidad de disco %1$s no válido, controlador vs no admite "
 "asignación de nombre predeterminado."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Invalid drive address of disk %1$s, vz driver supports only bus 0 for SATA "
 "and SCSI bus."
@@ -10792,20 +10814,20 @@ msgstr ""
 "Unidad de dirección de disco %1$s no válida, admite controlador vz solo con "
 "el bus 0 para bus SATA y SCSI."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Invalid drive address of disk %1$s, vz driver supports only one controller."
 msgstr ""
 "Dirección de disco %1$s de unidad no válida, controlador vz admite solo un "
 "controlador."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid drive address of disk %1$s, vz driver supports only target 0."
 msgstr ""
 "Dirección de unidad de disco %1$s no válida, controlador vz admite solo "
 "destino 0."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Invalid drive address of disk %1$s, vz driver supports only units 0-1 for "
 "IDE bus."
@@ -10817,7 +10839,7 @@ msgstr ""
 msgid "Invalid driver type: %1$d"
 msgstr "Tipo de controlador no válido: %1$d"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid dump_image_format '%1$s'"
 msgstr "Volcado dump_image_format '%1$s' no válido"
 
@@ -11098,10 +11120,6 @@ msgid "Invalid pool type '%1$s'"
 msgstr "Tipo de secreto '%1$s'es nulo"
 
 #, c-format
-msgid "Invalid port number: %1$s"
-msgstr "Número de puerto no válido: '%1$s'"
-
-#, c-format
 msgid "Invalid port range '%1$u-%2$u'."
 msgstr "Rango de puerto no válido '%1$u-%2$u'."
 
@@ -11257,7 +11275,7 @@ msgstr ""
 "Uso no válido de 'floor' en interfaz con dirección MAC %1$s - red '%2$s' no "
 "tiene definido QoS de entrada"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
 msgstr "UUID '%1$s' no válido para dispositivo nuevo mdev"
 
@@ -11265,7 +11283,7 @@ msgstr "UUID '%1$s' no válido para dispositivo nuevo mdev"
 msgid "Invalid value '%1$s' for '%2$s'"
 msgstr "Valor '%1$s' no válido parea '%2$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid value '%1$s' for VMX entry '%2$s'"
 msgstr "Valor '%1$s' no válido para apunte VMX '%2$s'"
 
@@ -11273,11 +11291,11 @@ msgstr "Valor '%1$s' no válido para apunte VMX '%2$s'"
 msgid "Invalid value '%1$s' for element or attribute '%2$s'"
 msgstr "Valor '%1$s' no válido para elemento o atributo '%2$s'"
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr "Valor de atributo '%1$s' no válido dentro de elemento '%2$s': '%3$s'."
 
-#, c-format, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
@@ -12159,9 +12177,6 @@ msgstr "Falta el atributo 'start' en rango dhcp para red '%1$s'"
 
 msgid "Missing 'target' element for lease"
 msgstr "No se encuentra el elemento 'target' para arrendamiento"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "Falta el atributo 'uuid' para el elemento <address>"
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -13774,7 +13789,13 @@ msgstr "Solamente tipo de sistema de archivo '%1$s' tiene soporte"
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13845,6 +13866,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "Solamente dispositivos veth en puente pueden ser retirados"
 
@@ -13873,6 +13899,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -13880,6 +13909,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "Solamente ide y disco scsi soportan wwn"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 #, fuzzy
@@ -14962,6 +14994,9 @@ msgstr "Reconectado con el hipervisor"
 
 msgid "Reconnected to the hypervisor"
 msgstr "Reconectado con el hipervisor"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -19021,6 +19056,10 @@ msgstr "No es capaz de determinar desplazamiento de archivo actual: %1$s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "No es capaz de determinar el modelo para controlador SCSI idx=%1$d"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "No es capaz de determinar la tabla de montaje en esta plataforma"
 
@@ -19088,7 +19127,8 @@ msgid "Unable to find 'cpuacct' cgroups controller mount"
 msgstr "No es capaz de encontrar montaje de controlador de cgroups 'cpuacct'"
 
 msgid "Unable to find 'devices' cgroups controller mount"
-msgstr "No es capaz de encontrar el montaje de controlador de cgroups 'devices'"
+msgstr ""
+"No es capaz de encontrar el montaje de controlador de cgroups 'devices'"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
 msgstr "No es capaz de encontrar binario 'dnsmasq' en $PATH"
@@ -19139,8 +19179,8 @@ msgstr "No es capaz de encontrar dirección para dispositivo antecesor '%1$s'"
 #, c-format
 msgid "Unable to find an unused port in range '%1$s' (%2$d-%3$d)"
 msgstr ""
-"No es capaz de encontrar un puerto no utilizado dentro de intervalo '%1$s' "
-"(%2$d-%3$d)"
+"No es capaz de encontrar un puerto no utilizado dentro de intervalo "
+"'%1$s' (%2$d-%3$d)"
 
 msgid "Unable to find any /dev mount"
 msgstr "No es capaz de encontrar cualquier /dev montado"
@@ -19148,8 +19188,8 @@ msgstr "No es capaz de encontrar cualquier /dev montado"
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
 msgstr ""
-"No es capaz de encontrar cualqueir montaje enormetlbfs utilizable para %1$"
-"llu KiB"
+"No es capaz de encontrar cualqueir montaje enormetlbfs utilizable para "
+"%1$llu KiB"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/arp_validate' for '%1$s'"
@@ -19508,8 +19548,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "No es capaz de obtener funciones virtuales en esta plataforma"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "No es capaz de importar listado de certificado AC %1$s"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20973,6 +21013,10 @@ msgstr "Hash criptográfico %1$d desconocido"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "Modo de fuente '%1$s' desconocido"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -23296,10 +23340,6 @@ msgstr "No es posible analizar cabezales de vídeo '%1$s'"
 msgid "can't shrink capacity below existing allocation"
 msgstr "No se puede achicar la capacidad por debajo de la asignación existente"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 msgid "can't undefine transient network"
 msgstr "no se pudo anular la definición de la red transitoria"
 
@@ -24295,12 +24335,6 @@ msgstr "no es posible analizar ubicación final del dispositivo"
 msgid "cannot parse device start location"
 msgstr "no es posible analizar ubicación de inicio del dispositivo"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "No es posible analizar el parámetro instanceid como si fuera un UUID"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "No se puede leer parámetro interfaceid como un UUID"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -24342,19 +24376,6 @@ msgstr "No se puede leer uso '%1$s' para sistema de archivos RAM"
 #, fuzzy, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "no se pudo procesar el valor '%1$s' para el parámetro coalesce"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "No es posible analizar el valor del parámetro managerid"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "No es posible analizar el valor del parámetro typeid"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "No es posible analizar el valor del parámetro typeidversion"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "No es posible analizar ram de vídeo '%1$s'"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -28422,6 +28443,9 @@ msgstr "Error al obtener interfaz '%1$s'"
 msgid "failed to get launch security policy"
 msgstr "Error al obtener el grupo principal"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "Fallo al obtener la lista de interfaces %1$s en el host"
@@ -29046,6 +29070,12 @@ msgid "failed to setup stdout file handle"
 msgstr "Error al definir manipulador de archivo stdout"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -30215,6 +30245,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "ignorando nivel de depuración %1$d fuera de rango [%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "la imagen mágica no es correcta"
 
@@ -31140,10 +31174,6 @@ msgstr "Tipo de secreto no válido %1$s"
 
 #, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "Tipo de secreto '%1$s'es nulo"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
 msgstr "Tipo de secreto '%1$s'es nulo"
 
 #, fuzzy
@@ -32138,6 +32168,9 @@ msgstr "Error al crear enlace simbólico '%1$s' en '%2$s'"
 
 msgid "malformed QMP schema"
 msgstr "esquema QMP malformado"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -33209,10 +33242,6 @@ msgstr "Falta tabla de parámetro de filtro"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "Falta nombre de capacidad de migración"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "falta el nombre del volumen gluster para la ruta '%1$s'"
-
 msgid "missing group name"
 msgstr ""
 
@@ -33726,15 +33755,8 @@ msgstr "Faltan datos de etiqueta VLAN"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-msgid "missing volume name and path for gluster volume"
-msgstr "faltan el nombre y la ruta del volumen gluster"
-
 msgid "missing volume name element"
 msgstr "no se encuentra un elemento de nombre de volumen"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
 
 msgid "missing vporttype attribute in migration data"
 msgstr "Falta atributo vporttype en datos de migración"
@@ -34672,9 +34694,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "No existe una ruta hacia el monitor"
 
@@ -35277,6 +35296,9 @@ msgstr "solo se admiten dispositivos de entrada USB"
 msgid "only a single IOMMU device is supported"
 msgstr "solo se admite un único dispositivo IOMMU"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -35429,9 +35451,6 @@ msgstr "solo se admite un dispositivo nvram individual"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-msgid "only two serial ports are supported"
-msgstr "solo por puertos seriales están admitidos"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -42132,6 +42151,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr "peso para XEN_CREDIT"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -42277,6 +42301,58 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "No se puede interpretar atributo uuid de elemento <address>"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "El uso del certificado %1$s no permite codificación de llave"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "Número de puerto no válido: '%1$s'"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "Falta el atributo 'uuid' para el elemento <address>"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "No es capaz de importar listado de certificado AC %1$s"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr ""
+#~ "No es posible analizar el parámetro instanceid como si fuera un UUID"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "No se puede leer parámetro interfaceid como un UUID"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "No es posible analizar el valor del parámetro managerid"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "No es posible analizar el valor del parámetro typeid"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "No es posible analizar el valor del parámetro typeidversion"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "No es posible analizar ram de vídeo '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "Tipo de secreto '%1$s'es nulo"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "falta el nombre del volumen gluster para la ruta '%1$s'"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "faltan el nombre y la ruta del volumen gluster"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "solo por puertos seriales están admitidos"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "'ioeventfd' solo es compatible con el controlador virtio-scsi"

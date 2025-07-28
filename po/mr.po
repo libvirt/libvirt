@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3301,10 +3301,6 @@ msgstr "sys stat '%1$s' वाचणे अशक्य"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "वापरकर्ता stat '%1$s' वाचणे अशक्य"
 
-#, fuzzy
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "<Machine> 'uuid' गुणधर्म वाचणे अशक्य"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3574,10 +3570,6 @@ msgstr "सर्टिफिकेट %1$s वापर सर्टिफि�
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "सर्टिफिकेट %1$s वापर डिजिटल स्वाक्षरिकरिता परवानगी देत नाही"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "सर्टिफिकेट %1$s वापर कि एंसिफरमेंटकरिता परवानगी देत नाही"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -9872,6 +9864,21 @@ msgstr "इंटरफेस '%1$s' वरील नियम सुरू क�
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "इंटरफेस"
 
@@ -10590,10 +10597,6 @@ msgstr ""
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "अवैध पूल प्रकार '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "अवैध पोर्ट क्रमांक: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11630,10 +11633,6 @@ msgstr "नेटवर्क '%1$s' करिता dhcp व्याप्त�
 
 msgid "Missing 'target' element for lease"
 msgstr "लिज्करिता 'target' घटक आढळले नाही"
-
-#, fuzzy
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "NIC करिता 'link' गुणधर्म आढळले नाही"
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -13206,7 +13205,13 @@ msgstr "फक्त '%1$s' फाइलप्रणाली प्रकार
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13276,6 +13281,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "फक्त ब्रिज्ड veth साधनाला विलग करणे शक्य आहे"
 
@@ -13300,6 +13310,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -13307,6 +13320,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "फक्त ide व scsi डिस्क wwn करिता समर्थन पुरवते"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 #, fuzzy
@@ -14351,6 +14367,9 @@ msgstr "हायपरवाइजरसह पुनः जुळले"
 
 msgid "Reconnected to the hypervisor"
 msgstr "हायपरवाइजरसह पुनः जुळले"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18194,6 +18213,10 @@ msgstr "%1$s करिता फाइलप्रणाली ओळखण्�
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "स्टोरेज कंट्रोलर समाविष्ट करणे अशक्य"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "या प्लॅटफॉर्मवर माउंट तक्ता ओळखणे अशक्य"
 
@@ -18685,8 +18708,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "ह्या प्लॅटफॉर्मवर वर्च्युअल फंकशन्स् प्राप्त करणे अशक्य"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "CA प्रमाणपत्र सूची %1$s आयात करण्यास अशक्य"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20136,6 +20159,10 @@ msgstr "अपरिचीत क्रिप्टो हॅश %1$d"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "अपरिचीत स्रोत मोड '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22422,10 +22449,6 @@ msgstr "चलचित्र हेड्स् '%1$s' वाचण्यास
 msgid "can't shrink capacity below existing allocation"
 msgstr "अस्तित्वातील क्षमतापेक्षा कमी करणे अशक्य"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "transient क्षेत्र वर्णन अशक्य करणे अशक्य"
@@ -23355,12 +23378,6 @@ msgstr "साधनाचे समाप्ती स्थान वाचू
 msgid "cannot parse device start location"
 msgstr "साधनाचे प्रारंभ स्थान वाचू शकले नाही"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "instanceid घटकाला uuid म्हणून वाचणे अशक्य"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "uuid म्हणून interfaceid घटक वाचणे अशक्य"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23399,19 +23416,6 @@ msgstr "RAM फाइलप्रणालीकरिता वापर '%1$s'
 #, fuzzy, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "typeid घटकाचे मूल्य वाचणे अशक्य"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "managerid घटकाचे मूल्य वाचणे अशक्य"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "typeid घटकाचे मूल्य वाचणे अशक्य"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "typeidversion घटकाचे मूल्य वाचणे अशक्य"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "चलचित्र ram '%1$s' वाचण्यास अशक्य"
 
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27391,6 +27395,9 @@ msgstr "संवाद '%1$s' प्राप्त करण्यास अ�
 msgid "failed to get launch security policy"
 msgstr "मुख्य संग्रह प्राप्त करण्यास अपयशी"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "यजमानवरील %1$s इंटरफेसेस्ची सूची प्राप्त करण्यास अपयशी"
@@ -28010,6 +28017,12 @@ msgid "failed to setup stdout file handle"
 msgstr "stdout फाइल हॅन्डलची मांडणी करण्यास अपयशी"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, c-format
@@ -29142,6 +29155,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "डिबग स्तर %1$d, [%2$d-%3$d] व्याप्तिच्या बाहेर आहे, याकडे दुर्लक्ष करत आहे"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "प्रतिमा जादू अयोग्य आहे"
 
@@ -30034,10 +30051,6 @@ msgstr "अवैध सुरक्षा प्रकार %1$s"
 
 #, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "अवैध गोपणीय प्रकार '%1$s'"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
 msgstr "अवैध गोपणीय प्रकार '%1$s'"
 
 #, fuzzy
@@ -31005,6 +31018,9 @@ msgstr "'%2$s' करिता symlink '%1$s' निर्माण करण्
 #, fuzzy
 msgid "malformed QMP schema"
 msgstr "सदोषीत ipset फ्लॅग्स्"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32051,10 +32067,6 @@ msgstr "फिल्टर पॅरामिटिर तक्ता आढळ
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU क्षमता कॅशे अंतर्गत फ्लॅग नाव आढळले नाही"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "मार्ग '%1$s' करिता gluster वॉल्युम नाव आढळले नाही"
-
 msgid "missing group name"
 msgstr ""
 
@@ -32558,16 +32570,8 @@ msgstr "vlan टॅग डाटा आढळले नाही"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing volume name and path for gluster volume"
-msgstr "gluster स्रोत मार्ग '%s' मध्ये वॉल्युम नाव किंवा फाइल नाव आढळले नाही"
-
 msgid "missing volume name element"
 msgstr "न आढळलेले खंड नाव घटक"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr "gluster स्रोत मार्ग '%1$s' मध्ये वॉल्युम नाव किंवा फाइल नाव आढळले नाही"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "missing vporttype attribute in migration data"
@@ -33481,9 +33485,6 @@ msgstr "मिडीयम जोडण्या नाही"
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "मॉनीटर मार्ग आढळला नाही"
 
@@ -34055,6 +34056,9 @@ msgstr "फक्त एक TPM साधन समर्थीत आहे"
 msgid "only a single IOMMU device is supported"
 msgstr "फक्त एक TPM साधन समर्थीत आहे"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -34208,9 +34212,6 @@ msgstr "फक्त एक nvram साधन समर्थीत आहे"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-msgid "only two serial ports are supported"
-msgstr "फक्त दोन सिरिअल पोर्ट्स समर्थीत आहे"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -40742,6 +40743,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT करिता मूल्य"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -40886,6 +40892,64 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "डिस्क %1$s करिता blockdev फ्लॅगसाठी विनंती केली, परंतु फाइल '%2$s' ब्लॉक साधन नाही"
+
+#, fuzzy
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "<Machine> 'uuid' गुणधर्म वाचणे अशक्य"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "सर्टिफिकेट %1$s वापर कि एंसिफरमेंटकरिता परवानगी देत नाही"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "अवैध पोर्ट क्रमांक: %1$s"
+
+#, fuzzy
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "NIC करिता 'link' गुणधर्म आढळले नाही"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "CA प्रमाणपत्र सूची %1$s आयात करण्यास अशक्य"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "instanceid घटकाला uuid म्हणून वाचणे अशक्य"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "uuid म्हणून interfaceid घटक वाचणे अशक्य"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "managerid घटकाचे मूल्य वाचणे अशक्य"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "typeid घटकाचे मूल्य वाचणे अशक्य"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "typeidversion घटकाचे मूल्य वाचणे अशक्य"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "चलचित्र ram '%1$s' वाचण्यास अशक्य"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "अवैध गोपणीय प्रकार '%1$s'"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "मार्ग '%1$s' करिता gluster वॉल्युम नाव आढळले नाही"
+
+#, fuzzy
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "gluster स्रोत मार्ग '%s' मध्ये वॉल्युम नाव किंवा फाइल नाव आढळले नाही"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr "gluster स्रोत मार्ग '%1$s' मध्ये वॉल्युम नाव किंवा फाइल नाव आढळले नाही"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "फक्त दोन सिरिअल पोर्ट्स समर्थीत आहे"
 
 #, fuzzy
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"

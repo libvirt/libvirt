@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3447,11 +3447,6 @@ msgstr "Nepodařilo se zpracovat systémovou statistiku „%1$s“"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "Nedaří se zpracovat uživatelskou statistiku „%1$s“"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
-"Nedaří se zpracovat atribut uuid (nikde se neopakující identifikátor) prvku "
-"<address> (adresa)"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3740,10 +3735,6 @@ msgstr "Využití certifikátu %1$s nedovoluje podepisování certifikátů"
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "Využití certifikátu %1$s nedovoluje digitální podpis"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "Využití certifikátu %1$s nedovoluje šifrování klíče"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -10114,6 +10105,21 @@ msgstr "Instalace pravidel na rozhraní „%1$s“ se nezdařila"
 msgid "Integrity error in watchdog models"
 msgstr "Chyba neporučenosti v modelech resetátorů"
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "Rozhraní"
 
@@ -10861,10 +10867,6 @@ msgstr "Neplatná hodnota persistent_state – buď 'yes' nebo 'no'"
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "Neplatný typ fondu „%1$s“"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "Neplatné číslo portu: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11914,11 +11916,6 @@ msgstr "Chybí atribut 'start' (začátek) v dhcp rozsahu pro síť „%1$s“"
 
 msgid "Missing 'target' element for lease"
 msgstr "Chybí prvek pro zápůjčku „target“ (cíl)"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr ""
-"Chybí atribut 'uuid' (nikde se neopakující identifikátor) pro prvek "
-"<address> (adresa)"
 
 msgid "Missing <address> element"
 msgstr "Chybí prvek <address>"
@@ -13473,7 +13470,13 @@ msgstr "Je podporován pouze souborový systém typu „%1$s“"
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Podporovány jsou pouze plánovače 'credit' a 'credit2'"
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13537,6 +13540,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr "Pro tuto doménu je možné nastavit pouze jeden sériový port"
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "Odpojit je možné pouze veth zařízení v mostu"
 
@@ -13560,6 +13568,9 @@ msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 "Ovladač vz podporuje pouze souborové systémy založené na souboru nebo svazku."
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "Ovladač vz podporuje pouze pevné disky a mechaniky optických disků."
 
@@ -13567,6 +13578,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "wwn je podporováno pouze ide a scsi disky"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14625,6 +14639,9 @@ msgstr "Znovu připojeno ke správnímu serveru"
 
 msgid "Reconnected to the hypervisor"
 msgstr "Znovu se připojit k hypervizoru"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18569,6 +18586,10 @@ msgstr "Nedaří se zjistit stávající posun souboru: %1$s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "Nedaří se zjsitit model pro SCSI řadič idx=%1$d"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "Na této platformě se nedaří zjistit tabulku připojení (mount)"
 
@@ -19043,8 +19064,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "Na této platformě se nedaří získat virtuální funkce"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "Nedaří se importovat seznam certifikátu cert. autority %1$s"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20477,6 +20498,10 @@ msgstr "Neznámý kryptografický otisk %1$d"
 #, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "Neznámý datový zdroj „%1$s“"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22832,10 +22857,6 @@ msgstr "nedaří se změnit prázdný nebo pouze pro čtení disk „%1$s“"
 msgid "can't shrink capacity below existing allocation"
 msgstr "není možné snížit kapacitu pod existující přiřazení"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr "nedaří se rozdělit popis umístění „%1$s“ na název svazku a obrazu"
-
 msgid "can't undefine transient network"
 msgstr "není možné zrušit definování přechodné sítě"
 
@@ -23783,12 +23804,6 @@ msgstr "nedaří se zpracovat umístění konce umístění zařízení"
 msgid "cannot parse device start location"
 msgstr "nedaří se zpracovat umístění začátku umístění zařízení"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "nedaří se zpracovat parametr instanceid jako uuid"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "není možné zpracovat parametr interfaceid jako uuid"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23830,19 +23845,6 @@ msgstr ""
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "nedaří se zpracovat hodnotu '%1$s' pro coalesce parametr"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "nedaří se zpracovat hodnotu parametru managerid"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "nedaří se zpracovat hodnotu parametru typeid"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "nedaří se zpracovat hodnotu parametru typeidversion"
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "nedaří se zpracovat pořadové číslo virt. procesoru „%1$s“"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27826,6 +27828,9 @@ msgstr "nepodařilo se získat rozhraní '%1$s'"
 msgid "failed to get launch security policy"
 msgstr "nepodařilo se spustit zásadu zabezpečení spouštění"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "nepodařilo se získat seznam %1$s rozhraní na hostiteli"
@@ -28433,6 +28438,12 @@ msgstr "nepodařilo se nastavit obsluhu souboru standardního výstupu"
 
 msgid "failed to shutdown guest VM"
 msgstr "nepodařilo se vypnout virt. stroj hosta"
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
+msgstr ""
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -29589,6 +29600,10 @@ msgstr ""
 "ignoruje se úroveň podrobností ladících informací %1$d, která je mimo rozsah "
 "[%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "image magic není správné"
 
@@ -30510,10 +30525,6 @@ msgstr "neplatný typ tajemství %1$s"
 #, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "neplatný typ tajemství „%1$s“"
-
-#, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "neplatné uuid tajemství „%1$s“"
 
 msgid "invalid server address"
 msgstr "neplatná adresa serveru"
@@ -31483,6 +31494,9 @@ msgstr "nesprávně formulované QAPI schéma při dotazování „%1$s“ od �
 
 msgid "malformed QMP schema"
 msgstr "nesprávně formulované QMP schéma"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32536,10 +32550,6 @@ msgstr "chybí tabulka parametru filtru"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "chybí název příznaku v mezipaměti schopností QEMU"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "pro umístění „%1$s“ chybí název gluster svazku"
-
 msgid "missing group name"
 msgstr ""
 
@@ -33044,16 +33054,8 @@ msgstr "chybí údaje o vlan štítku"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-msgid "missing volume name and path for gluster volume"
-msgstr "chybí název svazku a popis umístění gluster svazku"
-
 msgid "missing volume name element"
 msgstr "chybí prvek svazku „name“"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
-"v popisu umístění „%1$s“ gluster zdroje chybí název svazku nebo název souboru"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "v migračních datech chybí atribut vporttype"
@@ -33972,9 +33974,6 @@ msgstr "žádná připojení médií"
 msgid "no memory device found"
 msgstr "nenalezeno žádné paměťové zařízení"
 
-msgid "no model provided for USB controller"
-msgstr "pro USB řadič nebyl zadán model"
-
 msgid "no monitor path"
 msgstr "žádný popis umístění monitoru"
 
@@ -34544,6 +34543,9 @@ msgstr "jsou podporována pouze USB vstupní zařízení"
 msgid "only a single IOMMU device is supported"
 msgstr "je podporováno pouze jediné IOMMU zařízení"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr "je podporováno pouze jediné TPM proxy zařízení"
 
@@ -34690,9 +34692,6 @@ msgstr "jsou podporována pouze vstupní zařízení typu tablet"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr "se síťovými disky je možné použít pouze ovladač 'qemu'"
-
-msgid "only two serial ports are supported"
-msgstr "jsou podporovány pouze dva sériové porty"
 
 msgid "only two source elements are allowed for character device"
 msgstr "pro znakové zařízení jsou povolené pouze dva zdrojové prvky"
@@ -41337,6 +41336,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "váha pro XEN_CREDIT"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr "pokud je zadáno nadřazené wwwn='%1$s', je třeba zadat také wwpn"
@@ -41483,6 +41487,74 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr ""
+#~ "Nedaří se zpracovat atribut uuid (nikde se neopakující identifikátor) "
+#~ "prvku <address> (adresa)"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "Využití certifikátu %1$s nedovoluje šifrování klíče"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "Neplatné číslo portu: %1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr ""
+#~ "Chybí atribut 'uuid' (nikde se neopakující identifikátor) pro prvek "
+#~ "<address> (adresa)"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "Nedaří se importovat seznam certifikátu cert. autority %1$s"
+
+#, c-format
+#~ msgid "can't split path '%1$s' into pool name and image name"
+#~ msgstr "nedaří se rozdělit popis umístění „%1$s“ na název svazku a obrazu"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "nedaří se zpracovat parametr instanceid jako uuid"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "není možné zpracovat parametr interfaceid jako uuid"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "nedaří se zpracovat hodnotu parametru managerid"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "nedaří se zpracovat hodnotu parametru typeid"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "nedaří se zpracovat hodnotu parametru typeidversion"
+
+#, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "nedaří se zpracovat pořadové číslo virt. procesoru „%1$s“"
+
+#, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "neplatné uuid tajemství „%1$s“"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "pro umístění „%1$s“ chybí název gluster svazku"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "chybí název svazku a popis umístění gluster svazku"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr ""
+#~ "v popisu umístění „%1$s“ gluster zdroje chybí název svazku nebo název "
+#~ "souboru"
+
+#~ msgid "no model provided for USB controller"
+#~ msgstr "pro USB řadič nebyl zadán model"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "jsou podporovány pouze dva sériové porty"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "'ioeventfd' je podporováno pouze řadičem virtio-scsi"

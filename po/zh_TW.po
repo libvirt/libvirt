@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-03-20 05:28+0000\n"
 "Last-Translator: hsu zangmen <chzang55@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://translate.fedoraproject.org/"
@@ -3108,9 +3108,6 @@ msgstr ""
 msgid "Cannot parse user stat '%1$s'"
 msgstr ""
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3381,10 +3378,6 @@ msgstr ""
 
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
-msgstr ""
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
 msgstr ""
 
 #, c-format
@@ -9664,6 +9657,21 @@ msgstr ""
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr ""
 
@@ -10377,10 +10385,6 @@ msgstr ""
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Invalid port number: %1$s"
-msgstr "無效的網路指標，於 %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11375,9 +11379,6 @@ msgstr ""
 #, fuzzy
 msgid "Missing 'target' element for lease"
 msgstr "找不到裝置的目標資訊"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr ""
 
 msgid "Missing <address> element"
 msgstr ""
@@ -12902,7 +12903,13 @@ msgstr ""
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -12971,6 +12978,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr ""
 
@@ -12992,6 +13004,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -12999,6 +13014,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr ""
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14004,6 +14022,9 @@ msgstr "連接客端主控台"
 #, fuzzy
 msgid "Reconnected to the hypervisor"
 msgstr "（重新）連至 hypervisor"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -17771,6 +17792,10 @@ msgstr ""
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr ""
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr ""
 
@@ -18263,9 +18288,9 @@ msgstr ""
 msgid "Unable to get virtual functions on this platform"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "無法載入憑證"
+#, c-format
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to import client certificate %1$s"
@@ -19711,6 +19736,10 @@ msgstr ""
 
 #, c-format
 msgid "Unknown data source '%1$s'"
+msgstr ""
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
 msgstr ""
 
 #, c-format
@@ -21952,10 +21981,6 @@ msgstr ""
 msgid "can't shrink capacity below existing allocation"
 msgstr ""
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "無法為網路 %s 取消定義"
@@ -22877,12 +22902,6 @@ msgstr ""
 msgid "cannot parse device start location"
 msgstr ""
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr ""
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr ""
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -22920,19 +22939,6 @@ msgstr ""
 
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
-msgstr ""
-
-msgid "cannot parse value of managerid parameter"
-msgstr ""
-
-msgid "cannot parse value of typeid parameter"
-msgstr ""
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr ""
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
 msgstr ""
 
 #, c-format
@@ -26879,6 +26885,9 @@ msgstr "無法消止 %1$s 介面"
 msgid "failed to get launch security policy"
 msgstr "無法取得 hypervisor 類型"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "無法消止 %1$s 介面"
@@ -27514,6 +27523,12 @@ msgid "failed to setup stdout file handle"
 msgstr "無法解析設定檔 %s"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -28634,6 +28649,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr ""
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr ""
 
@@ -29521,10 +29540,6 @@ msgstr "無效的連線指標，於 %1$s"
 #, fuzzy, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "無效的連線指標，於 %1$s"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "無效的網路指標，於 %1$s"
 
 msgid "invalid server address"
 msgstr ""
@@ -30492,6 +30507,9 @@ msgid "malformed QAPI schema when querying '%1$s' of '%2$s'"
 msgstr ""
 
 msgid "malformed QMP schema"
+msgstr ""
+
+msgid "malformed TDX panic data"
 msgstr ""
 
 #, c-format
@@ -31502,10 +31520,6 @@ msgstr ""
 msgid "missing flag name in QEMU capabilities cache"
 msgstr ""
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr ""
-
 msgid "missing group name"
 msgstr ""
 
@@ -32011,14 +32025,7 @@ msgstr ""
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-msgid "missing volume name and path for gluster volume"
-msgstr ""
-
 msgid "missing volume name element"
-msgstr ""
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
 msgstr ""
 
 #, fuzzy
@@ -32914,9 +32921,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr ""
 
@@ -33467,6 +33471,9 @@ msgstr "僅支援 x509 憑證"
 msgid "only a single IOMMU device is supported"
 msgstr ""
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -33611,10 +33618,6 @@ msgstr "僅支援 x509 憑證"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-#, fuzzy
-msgid "only two serial ports are supported"
-msgstr "僅支援 x509 憑證"
 
 msgid "only two source elements are allowed for character device"
 msgstr ""
@@ -40009,6 +40012,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr ""
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -40150,6 +40158,22 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "無效的網路指標，於 %1$s"
+
+#, fuzzy, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "無法載入憑證"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "無效的網路指標，於 %1$s"
+
+#, fuzzy
+#~ msgid "only two serial ports are supported"
+#~ msgstr "僅支援 x509 憑證"
 
 #, fuzzy, c-format
 #~ msgid "Failed to delete snapshot: %1$s"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-06-25 11:32+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -259,8 +259,8 @@ msgstr ""
 "         --no-pkttyagent    придушити реєстрацію pkttyagent\n"
 "    -v                      скорочена версія\n"
 "    -V                      розширена версія\n"
-"         --version[=ТИП]   версія, значенням ТИП може бути short або long ("
-"типово, short)\n"
+"         --version[=ТИП]   версія, значенням ТИП може бути short або long "
+"(типово, short)\n"
 "  команди (неінтерактивний режим):\n"
 "\n"
 
@@ -3587,9 +3587,6 @@ msgstr "Не вдалося обробити статистичні дані щ�
 msgid "Cannot parse user stat '%1$s'"
 msgstr "Не вдалося обробити статистичні дані щодо користувача «%1$s»"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "Не вдалося обробити атрибут uuid елемента <address>"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3897,11 +3894,6 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr ""
 "Обмеження використання сертифіката %1$s не дозволяють створення цифрових "
 "підписів"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr ""
-"Обмеження використання сертифіката %1$s не дозволяють шифрування ключем"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -10411,6 +10403,21 @@ msgstr "Помилка під час спроби конкретизації п�
 msgid "Integrity error in watchdog models"
 msgstr "Помилка цілісності у моделях засобу спостереження"
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "Інтерфейс"
 
@@ -11164,10 +11171,6 @@ msgstr "Некоректне значення persistent_state: мало бут�
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "Некоректний тип буфера «%1$s»"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "Некоректний номер порту: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -12240,9 +12243,6 @@ msgstr "У діапазоні DHCP мережі «%1$s» не вистачає �
 
 msgid "Missing 'target' element for lease"
 msgstr "Не вказано елемента «target» для надання"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "Пропущено атрибут «uuid» елемента <address>"
 
 msgid "Missing <address> element"
 msgstr "Пропущено елемент <address>"
@@ -13869,8 +13869,14 @@ msgstr "Передбачено підтримку лише типу файлов
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Передбачено підтримку лише планувальників «credit» і «credit2»"
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "Передбачено підтримку лише обробника «random»"
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
+msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr ""
@@ -13935,6 +13941,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr "Для цього домену можна налаштувати лише один послідовний вхід"
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "Можна долучати лише пристрої veth з містком"
 
@@ -13960,6 +13971,9 @@ msgstr ""
 "У драйвері vz передбачено підтримку лише файлових систем заснованих на "
 "файлах або томах."
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 "У драйвері vz передбачено підтримку лише жорстких дисків та пристроїв "
@@ -13970,6 +13984,9 @@ msgstr "Підтримку wwn передбачено лише для дискі
 
 msgid "Only ide, sata and scsi disk supports 'product'"
 msgstr "Підтримку «product» передбачено лише для дисків ide, sata і scsi"
+
+msgid "Only listening TCP sockets are supported"
+msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "Для простих файлів передбачено підтримку лише шифрування luks"
@@ -15071,6 +15088,9 @@ msgstr "Встановлено повторне з'єднання із адмі�
 
 msgid "Reconnected to the hypervisor"
 msgstr "З'єднання з гіпервізором встановлено повторно"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -19354,6 +19374,10 @@ msgstr "Не вдалося визначити відступ поточного
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "Не вдалося визначити модель контролера SCSI, idx=%1$d"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "Не вдалося визначити таблицю монтування на цій платформі"
 
@@ -19838,8 +19862,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "Не вдалося отримати віртуальні функції на цій платформі"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "Не вдалося імпортувати список сертифікатів служб сертифікації %1$s"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -21294,6 +21318,10 @@ msgstr "Невідомий криптографічний хеш %1$d"
 #, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "Невідоме джерело даних «%1$s»"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -23726,10 +23754,6 @@ msgstr ""
 "не можна зменшувати місткість так, щоб він став меншим за загальний об'єм "
 "вже отриманої пам'яті"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr "не вдалося поділити шлях «%1$s» на назву буфера і назву образу"
-
 msgid "can't undefine transient network"
 msgstr "не можна скасувати визначення тимчасової мережі"
 
@@ -24711,12 +24735,6 @@ msgstr "не вдалося обробити дані щодо кінця при
 msgid "cannot parse device start location"
 msgstr "не вдалося обробити дані щодо початку пристрою"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "не вдалося отримати UUID з параметра «instanceid»"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "не вдалося визначити за параметром interfaceid значення uuid"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr "не вдалося обробити openfiles «%1$s» для virtiofs"
@@ -24758,19 +24776,6 @@ msgstr ""
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "не вдалося обробити значення «%1$s» для параметра «coalesce»"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "не вдалося обробити значення параметра «managerid»"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "не вдалося обробити значення параметра «typeid»"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "не вдалося обробити значення параметра «typeidversion»"
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "не вдалося обробити значення індексу віртуального процесора, «%1$s»"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -28856,6 +28861,9 @@ msgstr "не вдалося отримати інтерфейс «%1$s»"
 msgid "failed to get launch security policy"
 msgstr "не вдалося отримати правила захисту від запуску"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "не вдалося отримати список інтерфейсів %1$s на вузлі"
@@ -29471,6 +29479,12 @@ msgstr "Не вдалося встановити дескриптор файла
 
 msgid "failed to shutdown guest VM"
 msgstr "не вдалося завершити роботу гостьової ВМ"
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
+msgstr ""
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -30691,6 +30705,10 @@ msgstr ""
 "ігноруємо рівень діагностики, %1$d, оскільки він лежить поза межами "
 "припустимого діапазону: [%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "неприпустима дія над образом"
 
@@ -31632,10 +31650,6 @@ msgstr "некоректний тип ключа, %1$s"
 #, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "некоректний тип ключа, «%1$s»"
-
-#, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "некоректне значення uuid ключа, «%1$s»"
 
 msgid "invalid server address"
 msgstr "некоректна адреса сервера"
@@ -32639,6 +32653,9 @@ msgstr "помилкове форматування схеми QAPI при оп�
 
 msgid "malformed QMP schema"
 msgstr "помилкове форматування схеми QMP"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -33733,10 +33750,6 @@ msgstr "не вказано таблиці фільтрування параме
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає назви прапорця"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "не вказано назви тому gluster для шляху «%1$s»"
-
 msgid "missing group name"
 msgstr "не вистачає назви групи"
 
@@ -34254,16 +34267,8 @@ msgstr ""
 "пропущено розділ vmstate при повернення до активного внутрішнього знімка "
 "«%1$s»"
 
-msgid "missing volume name and path for gluster volume"
-msgstr "для тому gluster не вказано назви тому і шляху"
-
 msgid "missing volume name element"
 msgstr "не вказано елемент назви тому"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
-"у шляху до джерела gluster, «%1$s», не вказано назви тому або назви файла"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "у даних щодо перенесення не вистачає атрибута vporttype"
@@ -35203,9 +35208,6 @@ msgstr "немає долучень носіїв даних"
 msgid "no memory device found"
 msgstr "не знайдено пристроїв пам'яті"
 
-msgid "no model provided for USB controller"
-msgstr "не передбачено моделі для контролера USB"
-
 msgid "no monitor path"
 msgstr "немає шляху до монітора"
 
@@ -35800,6 +35802,9 @@ msgstr "підтримку передбачено лише для пристро
 msgid "only a single IOMMU device is supported"
 msgstr "передбачено підтримку лише одинарного пристрою IOMMU"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr "передбачено підтримку лише одного проксі пристрою TPM"
 
@@ -35958,9 +35963,6 @@ msgstr "передбачено підтримку лише пристроїв в
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr "для мережевих дисків можна використовувати лише драйвер «qemu»"
-
-msgid "only two serial ports are supported"
-msgstr "передбачено підтримку лише двох послідовних портів"
 
 msgid "only two source elements are allowed for character device"
 msgstr "для символьного пристрою дозволено лише два елементи «source»"
@@ -42822,6 +42824,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "вага XEN_CREDIT"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr "якщо визначено батьківський wwnn='%1$s', має бути також визначено wwpn"
@@ -42974,6 +42981,70 @@ msgstr "нуль-копіюванням можна скористатися ли
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "надійшов запит щодо зони %1$s для мережі %2$s, але firewalld не задіяно"
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "Не вдалося обробити атрибут uuid елемента <address>"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr ""
+#~ "Обмеження використання сертифіката %1$s не дозволяють шифрування ключем"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "Некоректний номер порту: %1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "Пропущено атрибут «uuid» елемента <address>"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "Не вдалося імпортувати список сертифікатів служб сертифікації %1$s"
+
+#, c-format
+#~ msgid "can't split path '%1$s' into pool name and image name"
+#~ msgstr "не вдалося поділити шлях «%1$s» на назву буфера і назву образу"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "не вдалося отримати UUID з параметра «instanceid»"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "не вдалося визначити за параметром interfaceid значення uuid"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "не вдалося обробити значення параметра «managerid»"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "не вдалося обробити значення параметра «typeid»"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "не вдалося обробити значення параметра «typeidversion»"
+
+#, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "не вдалося обробити значення індексу віртуального процесора, «%1$s»"
+
+#, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "некоректне значення uuid ключа, «%1$s»"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "не вказано назви тому gluster для шляху «%1$s»"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "для тому gluster не вказано назви тому і шляху"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr ""
+#~ "у шляху до джерела gluster, «%1$s», не вказано назви тому або назви файла"
+
+#~ msgid "no model provided for USB controller"
+#~ msgstr "не передбачено моделі для контролера USB"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "передбачено підтримку лише двох послідовних портів"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "підтримку «ioeventfd» передбачено лише для контролерів virtio-scsi"

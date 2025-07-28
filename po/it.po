@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-06-14 19:41+0000\n"
 "Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3328,9 +3328,6 @@ msgstr "impossibile analizzare video ram '%1$s'"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "impossibile analizzare video ram '%1$s'"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "Errore nel parsing dell'attributo 'uuid' di <address>"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3607,10 +3604,6 @@ msgstr ""
 
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
-msgstr ""
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
 msgstr ""
 
 #, c-format
@@ -10028,6 +10021,21 @@ msgstr ""
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "Interfaccia"
 
@@ -10749,10 +10757,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "tipo di dominio non valido %1$s"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "Numero di porta non valido: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11796,9 +11800,6 @@ msgstr ""
 
 msgid "Missing 'target' element for lease"
 msgstr "Elemento 'target' mancante per lease"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "Attributo 'uuid' mancante nell'elemento <address>"
 
 msgid "Missing <address> element"
 msgstr "Elemento <address> mancante"
@@ -13361,7 +13362,13 @@ msgstr "È supportato solo il filesystem '%1$s'"
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13429,6 +13436,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr ""
 
@@ -13452,6 +13464,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "Sono supportati solo dischi rigidi e CD-ROM dal driver vz."
 
@@ -13459,6 +13474,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "Solo dischi IDE e SCSI supportano WWN"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14508,6 +14526,9 @@ msgstr "connettersi alla console guest"
 
 msgid "Reconnected to the hypervisor"
 msgstr "Riconnesso all'hypervisor"
+
+msgid "Recreation"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18411,6 +18432,10 @@ msgstr "impossibile creare rundir %s: %s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr ""
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to determine mount table on this platform"
 msgstr "informazioni sul nodo non implementate su questa piattaforma"
@@ -18942,9 +18967,9 @@ msgstr "informazioni sul nodo non implementate su questa piattaforma"
 msgid "Unable to get virtual functions on this platform"
 msgstr "informazioni sul nodo non implementate su questa piattaforma"
 
-#, fuzzy, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "Impossibile caricare il certificato"
+#, c-format
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20446,6 +20471,10 @@ msgstr "Release sconosciuta: %s"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "Modalità sorgente sconosciuta '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22748,10 +22777,6 @@ msgstr "impossibile analizzare le testine video '%1$s'"
 msgid "can't shrink capacity below existing allocation"
 msgstr ""
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "impossibile rimuovere la definizione di un dominio temporaneo"
@@ -23711,13 +23736,6 @@ msgstr "impossibile determinare la locazione finale del dispositivo"
 msgid "cannot parse device start location"
 msgstr "impossibile determinare la locazione d'inizio del dispositivo"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "errore nel parsing del valore del parametro instanceid"
-
-#, fuzzy
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "errore nel parsing del valore del parametro instanceid"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23759,19 +23777,6 @@ msgstr ""
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "errore nel parsing del valore '%1$s' del parametro di coalesce"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "errore nel parsing del valore del parametro managerid"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "errore nel parsing del valore del parametro typeid"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "errore nel parsing del valore del parametro typeidversion"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "impossibile analizzare video ram '%1$s'"
 
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27823,6 +27828,9 @@ msgstr "impossibile ottenere la rete '%1$s'"
 msgid "failed to get launch security policy"
 msgstr "impossibile ottenere il tipo di hypervisor"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
@@ -28455,6 +28463,12 @@ msgid "failed to setup stdout file handle"
 msgstr "impossibile impostare l'handle del file per lo stdout"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29607,6 +29621,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr ""
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "image magic non è corretto"
 
@@ -30527,10 +30545,6 @@ msgstr "tipo di dominio non valido %1$s"
 #, fuzzy, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "tipo di dominio non valido %1$s"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "uuid %1$s non valido"
 
 #, fuzzy
 msgid "invalid server address"
@@ -31533,6 +31547,9 @@ msgstr "Impossibile creare il symlink '%1$s' verso '%2$s'"
 #, fuzzy
 msgid "malformed QMP schema"
 msgstr "elemento uuid malformato"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32597,10 +32614,6 @@ msgstr "nome timer mancante"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "Nessun volume di storage con chiave o percorso '%1$s'"
-
 msgid "missing group name"
 msgstr ""
 
@@ -33115,16 +33128,8 @@ msgstr "stato del dominio mancante"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing volume name and path for gluster volume"
-msgstr "elemento name volume mancante"
-
 msgid "missing volume name element"
 msgstr "elemento name volume mancante"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
 
 #, fuzzy
 msgid "missing vporttype attribute in migration data"
@@ -34042,9 +34047,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "nessun percorso del monitor"
 
@@ -34620,6 +34622,9 @@ msgstr "viene supportato un solo dispositivo watchdog"
 msgid "only a single IOMMU device is supported"
 msgstr "è supportato solo un unico dispositivo IOMMU"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -34781,9 +34786,6 @@ msgstr "viene supportato un solo dispositivo watchdog"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-msgid "only two serial ports are supported"
-msgstr "Solo due porte seriali sono supportate"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -41343,6 +41345,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr "peso per XEN_CREDIT"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -41487,6 +41494,55 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "Errore nel parsing dell'attributo 'uuid' di <address>"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "Numero di porta non valido: %1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "Attributo 'uuid' mancante nell'elemento <address>"
+
+#, fuzzy, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "Impossibile caricare il certificato"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "errore nel parsing del valore del parametro instanceid"
+
+#, fuzzy
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "errore nel parsing del valore del parametro instanceid"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "errore nel parsing del valore del parametro managerid"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "errore nel parsing del valore del parametro typeid"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "errore nel parsing del valore del parametro typeidversion"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "impossibile analizzare video ram '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "uuid %1$s non valido"
+
+#, fuzzy, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "Nessun volume di storage con chiave o percorso '%1$s'"
+
+#, fuzzy
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "elemento name volume mancante"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "Solo due porte seriali sono supportate"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "'ioeventfd' è supportato solo da controller virtio-scsi"

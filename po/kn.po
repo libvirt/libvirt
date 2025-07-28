@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Kannada <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3344,9 +3344,6 @@ msgstr "sys '%1$s' ಅಂಕಿಅಂಶವನ್ನು ಪಾರ್ಸ್ ಮ�
 msgid "Cannot parse user stat '%1$s'"
 msgstr "ಬಳಕೆದಾರ '%1$s' ಅಂಕಿಅಂಶವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr ""
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3627,10 +3624,6 @@ msgstr "%1$s ಪ್ರಮಾಣಪತ್ರದ ಬಳಕೆಯು ಪ್ರಮ�
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "%1$s ಪ್ರಮಾಣಪತ್ರದ ಬಳಕೆಯು ಡಿಜಿಟಲ್ ಸಹಿಯನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "%1$s ಪ್ರಮಾಣಪತ್ರದ ಬಳಕೆಯು ಕೀಲಿ ಎನ್‌ಸಿಫರ್ಮೆಂಟ್ ಅನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -10043,6 +10036,21 @@ msgstr "'%1$s' ಸಂಪರ್ಕಸಾಧನದಲ್ಲಿ ನಿಯಮಗಳ 
 msgid "Integrity error in watchdog models"
 msgstr ""
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "ಸಂಪರ್ಕಸಾಧನ"
 
@@ -10766,10 +10774,6 @@ msgstr ""
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಪೂಲ್ ಬಗೆ '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "ಅಮಾನ್ಯವಾದ ಸಂಪರ್ಕಸ್ಥಾನ ಸಂಖ್ಯೆ : %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11823,10 +11827,6 @@ msgstr "ಜಾಲಬಂಧ '%1$s' ಕ್ಕಾಗಿನ dhcp ವ್ಯಾಪ್�
 
 msgid "Missing 'target' element for lease"
 msgstr "ಲೀಸ್‌ಗಾಗಿ 'target' ಘಟಕವು ಕಾಣುತ್ತಿಲ್ಲ"
-
-#, fuzzy
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "HyperV ಎನ್‌ಲೈಟನ್ಮೆಂಟ್ ಸೌಲಭ್ಯ '%s' ಕ್ಕಾಗಿ 'state' ಗುಣವಿಶೇಷವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #, fuzzy
 msgid "Missing <address> element"
@@ -13423,7 +13423,13 @@ msgstr "ಕೇವಲ '%1$s' ಕಡತವ್ಯವಸ್ಥೆಯ ಬಗೆಗೆ
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13494,6 +13500,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr ""
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "ಕೇವಲ ಬ್ರಿಜ್‌ ಮಾಡಲಾದ veth ಸಾಧನಗಳನ್ನು ಮಾತ್ರ ಲಗತ್ತಿಸಬಹುದು"
 
@@ -13519,6 +13530,9 @@ msgstr ""
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
 
@@ -13526,6 +13540,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "ಕೇವಲ ide ಮತ್ತು scsi ಡಿಸ್ಕ್ ಮಾತ್ರ wwn ಅನ್ನು ಬೆಂಬಲಿಸುತ್ತವೆ"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 #, fuzzy
@@ -14600,6 +14617,9 @@ msgstr "ಹೈಪರ್ವೈಸರಿಗೆ ಮರಳಿ ಸಂಪರ್ಕ ಕ
 
 msgid "Reconnected to the hypervisor"
 msgstr "ಹೈಪರ್ವೈಸರಿಗೆ ಮರಳಿ ಸಂಪರ್ಕ ಕಲ್ಪಿಸಲಾಗಿದೆ"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18543,6 +18563,10 @@ msgstr "%1$s ಗಾಗಿ ಕಡತವ್ಯವಸ್ಥೆಯನ್ನು ಪ�
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "%s ಸಂಪರ್ಕಸಾಧನಕ್ಕಾಗಿನ ಸೂಚಿಯನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to determine mount table on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿನ %s ನಲ್ಲಿ STP ಯನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -19053,9 +19077,9 @@ msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ವರ್ಚ�
 msgid "Unable to get virtual functions on this platform"
 msgstr "ಈ ಪ್ಲಾಟ್‌ಫಾರ್ಮಿನಲ್ಲಿ ವರ್ಚುವಲ್‌ ಕ್ರಿಯೆಗಳನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "%1$s ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+#, c-format
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20525,6 +20549,10 @@ msgstr "ಗೊತ್ತಿರದ ಕೆಲಸದ ಹಂತ %s"
 #, fuzzy, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "ಅಜ್ಞಾತ ಆಕರ ಮಾದರಿ '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22833,10 +22861,6 @@ msgstr "ವೀಡಿಯೊ ಹೆಡ್‌ಗಳನ್ನು '%1$s' ಅನ್ನ
 msgid "can't shrink capacity below existing allocation"
 msgstr "ಈಗಿರುವ ನಿಯೋಜನೆಯ ಕೆಳಗೆ ಸಾಮರ್ಥ್ಯವನ್ನು ಸಂಕುಚನೆ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr ""
-
 #, fuzzy
 msgid "can't undefine transient network"
 msgstr "ಅಸ್ಥಿರ ಡೊಮೇನ್‌ ಅನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -23785,12 +23809,6 @@ msgstr "ಸಾಧನದ ಅಂತ್ಯದ ಸ್ಥಳವನ್ನು ಪಾರ
 msgid "cannot parse device start location"
 msgstr "ಸಾಧನದ ಆರಂಭದ ಸ್ಥಳವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "instanceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "interfaceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr ""
@@ -23830,19 +23848,6 @@ msgstr "RAM ಕಡತವ್ಯವಸ್ಥೆಗಾಗಿ '%1$s' ವೈಶಿಷ
 #, fuzzy, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "typeid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "managerid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "typeid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "typeidversion ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
-
-#, fuzzy, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "ವೀಡಿಯೊ ram '%1$s' ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
 
 #, fuzzy, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27861,6 +27866,9 @@ msgstr "ಸಂಪರ್ಕ ಸಾಧನ '%1$s' ಅನ್ನು ಪಡೆದು�
 msgid "failed to get launch security policy"
 msgstr "ಮೂಲ ಪೂಲ್ ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "ಆತಿಥೇಯದಲ್ಲಿನ %1$s ಸಂಪರ್ಕಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -28488,6 +28496,12 @@ msgid "failed to setup stdout file handle"
 msgstr "stdout ಕಡತದ ಹ್ಯಾಂಡಲ್‌ ಅನ್ನು ಸಿದ್ಧಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 msgid "failed to shutdown guest VM"
+msgstr ""
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29646,6 +29660,10 @@ msgstr ""
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "ದೋಷ ನಿಧಾನ ಮಟ್ಟ %1$d ವ್ಯಾಪ್ತಿಯ ಹೊರಗಿದೆ [%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "ಚಿತ್ರಿಕೆಯ ಮ್ಯಾಜಿಕ್ ತಪ್ಪಾಗಿದೆ"
 
@@ -30555,10 +30573,6 @@ msgstr "ಅಮಾನ್ಯ ಸಿಕ್ರೆಟ್‌ನ ಬಗೆ %1$s"
 
 #, c-format
 msgid "invalid secret type '%1$s'"
-msgstr "ಅಮಾನ್ಯ ಸಿಕ್ರೆಟ್‌ನ ಬಗೆ '%1$s'"
-
-#, fuzzy, c-format
-msgid "invalid secret uuid '%1$s'"
 msgstr "ಅಮಾನ್ಯ ಸಿಕ್ರೆಟ್‌ನ ಬಗೆ '%1$s'"
 
 #, fuzzy
@@ -31554,6 +31568,9 @@ msgstr "ಸಿಮ್‌ಲಿಂಕ್‌ '%1$s' ಅನ್ನು '%2$s' ಗಾ�
 #, fuzzy
 msgid "malformed QMP schema"
 msgstr "ತಪ್ಪಾದ ipset ಫ್ಲ್ಯಾಗ್‌ಗಳು"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32612,10 +32629,6 @@ msgstr "ಫಿಲ್ಟರ್ ನಿಯತಾಂಕ ಕೋಷ್ಟಕವು ಕ
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "ವರ್ಗಾವನೆ ಸಾಮರ್ಥ್ಯದ ಹೆಸರು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-#, fuzzy, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "auth ಗಾಗಿ ಬಳಕೆದಾರ ಹೆಸರುಗಳು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 msgid "missing group name"
 msgstr ""
 
@@ -33129,16 +33142,8 @@ msgstr "vlan ಟ್ಯಾಗ್ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 
-#, fuzzy
-msgid "missing volume name and path for gluster volume"
-msgstr "ಪರಿಮಾಣದ ಹೆಸರಿನ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
 msgid "missing volume name element"
 msgstr "ಪರಿಮಾಣದ ಹೆಸರಿನ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr ""
 
 msgid "missing vporttype attribute in migration data"
 msgstr "ವರ್ಗಾವಣೆ ದತ್ತಾಂಶದ vporttype ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -34072,9 +34077,6 @@ msgstr ""
 msgid "no memory device found"
 msgstr ""
 
-msgid "no model provided for USB controller"
-msgstr ""
-
 msgid "no monitor path"
 msgstr "ಮಾನಿಟರ್ ಮಾರ್ಗವಿಲ್ಲ"
 
@@ -34652,6 +34654,9 @@ msgstr "ಕೇವಲ ಒಂದು TPM ಸಾಧನಕ್ಕೆ ಮಾತ್ರ �
 msgid "only a single IOMMU device is supported"
 msgstr "ಕೇವಲ ಒಂದು TPM ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಬೆಂಬಲವಿದೆ"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr ""
 
@@ -34807,10 +34812,6 @@ msgstr "ಕೇವಲ ಒಂದು nvram ಸಾಧನಕ್ಕೆ ಮಾತ್ರ
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr ""
-
-#, fuzzy
-msgid "only two serial ports are supported"
-msgstr "x509 ಪ್ರಮಾಣಪತ್ರಗಳಿಗೆ ಮಾತ್ರ ಬೆಂಬಲವಿರುತ್ತದೆ"
 
 #, fuzzy
 msgid "only two source elements are allowed for character device"
@@ -41431,6 +41432,11 @@ msgstr ""
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT ಗೆ ತೂಕ"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -41576,6 +41582,57 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "%1$s ಪ್ರಮಾಣಪತ್ರದ ಬಳಕೆಯು ಕೀಲಿ ಎನ್‌ಸಿಫರ್ಮೆಂಟ್ ಅನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "ಅಮಾನ್ಯವಾದ ಸಂಪರ್ಕಸ್ಥಾನ ಸಂಖ್ಯೆ : %1$s"
+
+#, fuzzy
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "HyperV ಎನ್‌ಲೈಟನ್ಮೆಂಟ್ ಸೌಲಭ್ಯ '%s' ಕ್ಕಾಗಿ 'state' ಗುಣವಿಶೇಷವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "%1$s ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "instanceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "interfaceid ನಿಯತಾಂಕವನ್ನು uuid ಆಗಿ ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "managerid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "typeid ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "typeidversion ನಿಯತಾಂಕದ ಮೌಲ್ಯವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "ವೀಡಿಯೊ ram '%1$s' ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ್ಲ"
+
+#, fuzzy, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "ಅಮಾನ್ಯ ಸಿಕ್ರೆಟ್‌ನ ಬಗೆ '%1$s'"
+
+#, fuzzy, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "auth ಗಾಗಿ ಬಳಕೆದಾರ ಹೆಸರುಗಳು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "ಪರಿಮಾಣದ ಹೆಸರಿನ ಘಟಕವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "only two serial ports are supported"
+#~ msgstr "x509 ಪ್ರಮಾಣಪತ್ರಗಳಿಗೆ ಮಾತ್ರ ಬೆಂಬಲವಿರುತ್ತದೆ"
 
 #, fuzzy
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"

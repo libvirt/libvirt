@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-05-08 15:49+0000\n"
 "Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -3308,9 +3308,6 @@ msgstr "无法解析系统统计 '%1$s'"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "无法解析用户统计 '%1$s'"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "无法解析元素 <address> 的 uuid 属性"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3583,10 +3580,6 @@ msgstr "证书 %1$s 用法不允许签署证书"
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "证书 %1$s 用法不允许数字签名"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "证书 %1$s 用法不允许 key 部分"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -9759,6 +9752,21 @@ msgstr "接口 '%1$s' 中的规则实例化失败"
 msgid "Integrity error in watchdog models"
 msgstr "watchdog模型中的完整性错误"
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "接口"
 
@@ -10465,10 +10473,6 @@ msgstr "无效的 persistent_state 值，可以是 'yes' 或 'no'"
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "无效的池类型 '%1$s'"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "无效端口号：%1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11460,9 +11464,6 @@ msgstr "在网络 '%1$s' 的 dhcp 范围中缺少 'start' 属性"
 
 msgid "Missing 'target' element for lease"
 msgstr "租约缺少 'target' 元素"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "缺少元素 <address> 的 'uuid' 属性"
 
 msgid "Missing <address> element"
 msgstr "缺少 <address> 元素"
@@ -12981,8 +12982,14 @@ msgstr "只支持文件系统类型 '%1$s'"
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "仅支持 'credit' 和 'credit2' 调度程序"
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "仅支持 'random' 后端模型"
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
+msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr "仅支持 'virio' RNG 设备模型"
@@ -13045,6 +13052,11 @@ msgstr "这个域只能配置一个控制台或串口"
 msgid "Only a single serial can be configured for this domain"
 msgstr "这个域只能配置一个串口"
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "只能端口桥接的 veth 设备"
 
@@ -13066,6 +13078,9 @@ msgstr "仅在网络 '%1$s' 中 <forward> 中的 <nat> 中指定结束地址 '%2
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr "vz 驱动程序仅支持基于文件或基于卷的文件系统。"
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "vz 驱动程序只支持硬盘和 CDROM。"
 
@@ -13074,6 +13089,9 @@ msgstr "只有 ide 和 scsi 磁盘支持 wwn"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
 msgstr "仅 ide、sata 和 scsi 磁盘支持 'product'"
+
+msgid "Only listening TCP sockets are supported"
+msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "原始文件只支持 luks 加密"
@@ -14076,6 +14094,9 @@ msgstr "重连admin server成功"
 
 msgid "Reconnected to the hypervisor"
 msgstr "重新连接管理程序（即虚拟化层）"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -17882,6 +17903,10 @@ msgstr "无法确定当前文件偏移：%1$s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "无法确定 SCSI 控制器 idx=%1$d 的型号"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "无法确定此平台上的挂载表"
 
@@ -18351,8 +18376,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "无法在这个平台中获取虚拟功能"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "无法导入 CA 证书列表 %1$s"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -19764,6 +19789,10 @@ msgstr "未知的加密哈希 %1$d"
 #, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "未知的数据源 '%1$s'"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22010,10 +22039,6 @@ msgstr "不能调整空的或只读磁盘 '%1$s' 的大小"
 msgid "can't shrink capacity below existing allocation"
 msgstr "无法缩小现有分配的容量"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr "无法将路径 '%1$s' 分成池名称和镜像名称"
-
 msgid "can't undefine transient network"
 msgstr "无法取消临时网络的定义"
 
@@ -22925,12 +22950,6 @@ msgstr "无法解析设备终止位置"
 msgid "cannot parse device start location"
 msgstr "无法解析设备起始位置"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "无法将 instanceid 参数解析为 uuid"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "无法将 interfaceid 参数解析为 uuid"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr "无法解析 virtiofs 的 openfiles '%1$s'"
@@ -22969,19 +22988,6 @@ msgstr "无法为 RAM 文件系统解析 usage '%1$s'"
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "无法解析 coalesce '参数的值 '%1$s'"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "无法解析 managerid 参数值"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "无法解析 typeid 参数值"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "无法解析 typeidversion 参数值"
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "无法解析 vcpu 索引 '%1$s'"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -26832,6 +26838,9 @@ msgstr "无法获得接口 '%1$s'"
 msgid "failed to get launch security policy"
 msgstr "无法获得启动安全策略"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "无法获得主机上 %1$s 接口的列表"
@@ -27429,6 +27438,12 @@ msgstr "无法将 stdout 设为文件句柄"
 
 msgid "failed to shutdown guest VM"
 msgstr "无法关闭客户虚拟机"
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
+msgstr ""
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -28530,6 +28545,10 @@ msgstr "忽略"
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "忽略调试级别 %1$d 。调试级别范围是 [%2$d-%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "镜像魔法不正确"
 
@@ -29407,10 +29426,6 @@ msgstr "无效 secret 类型 %1$s"
 #, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "无效 secret 类型 '%1$s'"
-
-#, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "无效的 secret uuid '%1$s'"
 
 msgid "invalid server address"
 msgstr "无效的服务器地址"
@@ -30340,6 +30355,9 @@ msgstr "查询 '%1$s' 的 '%2$s' 时格式错误的 QAPI 模式"
 
 msgid "malformed QMP schema"
 msgstr "格式错误的 QMP 模式"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -31324,10 +31342,6 @@ msgstr "缺少过滤器参数表"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU 功能 XML 中缺少标签名称"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "缺少路径 '%1$s' 的 gluster 卷名称"
-
 msgid "missing group name"
 msgstr "缺少组名称"
 
@@ -31800,15 +31814,8 @@ msgstr "缺少 vlan 标签数据"
 msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr "还原活动内部快照 '%1$s' 时缺少 vmstate 部分"
 
-msgid "missing volume name and path for gluster volume"
-msgstr "缺少 gluster 卷的卷名称和路径"
-
 msgid "missing volume name element"
 msgstr "缺少卷名称元素"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr "gluster 源路径 '%1$s' 中缺少卷名或文件名"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "迁移数据中缺少 vporttype 属性"
@@ -32689,9 +32696,6 @@ msgstr "没有中型附件"
 msgid "no memory device found"
 msgstr "没有找到内存设备"
 
-msgid "no model provided for USB controller"
-msgstr "没有为 USB 控制器提供的型号"
-
 msgid "no monitor path"
 msgstr "没有监视器路径"
 
@@ -33242,6 +33246,9 @@ msgstr "只支持 USB 输入设备"
 msgid "only a single IOMMU device is supported"
 msgstr "只支持单个 IOMMU 设备"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr "只支持单个 TPM 代理设备"
 
@@ -33383,9 +33390,6 @@ msgstr "只支持平板输入设备"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr "只有 'qemu' 驱动程序可以与网络磁盘一起使用"
-
-msgid "only two serial ports are supported"
-msgstr "只支持两个串口端口"
 
 msgid "only two source elements are allowed for character device"
 msgstr "字符设备只允许两个 source 元素"
@@ -39771,6 +39775,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT 重量"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr "当提供父 wwnn='%1$s' 时，也必须提供 wwpn"
@@ -39911,6 +39920,68 @@ msgstr "zero-copy 仅适用于并行迁移"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "无法解析元素 <address> 的 uuid 属性"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "证书 %1$s 用法不允许 key 部分"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "无效端口号：%1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "缺少元素 <address> 的 'uuid' 属性"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "无法导入 CA 证书列表 %1$s"
+
+#, c-format
+#~ msgid "can't split path '%1$s' into pool name and image name"
+#~ msgstr "无法将路径 '%1$s' 分成池名称和镜像名称"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "无法将 instanceid 参数解析为 uuid"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "无法将 interfaceid 参数解析为 uuid"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "无法解析 managerid 参数值"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "无法解析 typeid 参数值"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "无法解析 typeidversion 参数值"
+
+#, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "无法解析 vcpu 索引 '%1$s'"
+
+#, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "无效的 secret uuid '%1$s'"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "缺少路径 '%1$s' 的 gluster 卷名称"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "缺少 gluster 卷的卷名称和路径"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr "gluster 源路径 '%1$s' 中缺少卷名或文件名"
+
+#~ msgid "no model provided for USB controller"
+#~ msgstr "没有为 USB 控制器提供的型号"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "只支持两个串口端口"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "'ioeventfd' 只被 virtio-scsi 控制器支持"

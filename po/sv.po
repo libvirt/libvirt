@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-06-24 14:31+0000\n"
+"POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3436,9 +3436,6 @@ msgstr "Kan inte tolka systemstatus ”%1$s”"
 msgid "Cannot parse user stat '%1$s'"
 msgstr "Kan inte tolka användarstatus ”%1$s”"
 
-msgid "Cannot parse uuid attribute of element <address>"
-msgstr "Kan inte tolka attributet uuid i elementet <address>"
-
 #, c-format
 msgid ""
 "Cannot plug '%1$s' interface into '%2$s' because new combined inbound "
@@ -3728,10 +3725,6 @@ msgstr "Användning av certifikatet %1$s tillåter inte certifikatsignering"
 #, c-format
 msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "Användning av certifikatet %1$s tillåter inte digitala signaturer"
-
-#, c-format
-msgid "Certificate %1$s usage does not permit key encipherment"
-msgstr "Användningen av certifikatet %1$s tillåter inte nyckelchiffrering"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -10093,6 +10086,21 @@ msgstr "Instansiering av regler misslyckades för gränssnittet ”%1$s”"
 msgid "Integrity error in watchdog models"
 msgstr "Integritetsfel i vakthundsmodeller"
 
+msgid "Intel TDX launch security is not supported with PMU enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with SMM enabled"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with pflash loader"
+msgstr ""
+
+msgid "Intel TDX launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "Intel TDX launch security needs split kernel irqchip"
+msgstr ""
+
 msgid "Interface"
 msgstr "Gränssnitt"
 
@@ -10835,10 +10843,6 @@ msgstr "Felaktigt värde på persistent_state, antingen ”yes” eller ”no”
 #, c-format
 msgid "Invalid pool type '%1$s'"
 msgstr "Felaktig pooltyp ”%1$s”"
-
-#, c-format
-msgid "Invalid port number: %1$s"
-msgstr "Ogiltigt portnummer: %1$s"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
@@ -11874,9 +11878,6 @@ msgstr "Saknat attribut ”start” i dhcp-intervallet för nätverket ”%1$s�
 
 msgid "Missing 'target' element for lease"
 msgstr "Saknat ”target”-element för hyra"
-
-msgid "Missing 'uuid' attribute for element <address>"
-msgstr "Saknat attribut ”uuid” för elementet <address>"
 
 msgid "Missing <address> element"
 msgstr "Saknat element <address>"
@@ -13422,7 +13423,13 @@ msgstr "Endast ”%1$s” filsystemtyper stödjs"
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Endast schemaläggarna ”credit” och ”credit2” stödjs"
 
+msgid "Only 'nmdm' and 'tcp' console types are supported"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
+msgstr ""
+
+msgid "Only 'raw' protocol is supported for TCP sockets"
 msgstr ""
 
 msgid "Only 'virio' RNG device model is supported"
@@ -13486,6 +13493,11 @@ msgstr ""
 msgid "Only a single serial can be configured for this domain"
 msgstr "Endast en enda serieenhet kan konfigureras för denna domän"
 
+msgid ""
+"Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
+"security policy"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "Endast bryggade veth-enheter kan kopplas ifrån"
 
@@ -13512,6 +13524,9 @@ msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
 "Endast filbaserade eller volymbaserade filsystem stödjs av vz-drivrutinen."
 
+msgid "Only four serial ports are supported"
+msgstr ""
+
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "Endast hårddiskar och cdrom stödjs av vz-drivrutinen."
 
@@ -13519,6 +13534,9 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "Endast ide- och scsi-diskar stödjer wwn"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
+msgstr ""
+
+msgid "Only listening TCP sockets are supported"
 msgstr ""
 
 msgid "Only luks encryption is supported for raw files"
@@ -14566,6 +14584,9 @@ msgstr "Återanslöt till administrationsservern"
 
 msgid "Reconnected to the hypervisor"
 msgstr "Återansluten till hypervisorn"
+
+msgid "Recreation"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18510,6 +18531,10 @@ msgstr "Kan inte avgöra aktuellt filavstånd: %1$s"
 msgid "Unable to determine model for SCSI controller idx=%1$d"
 msgstr "Kan inte avgöra modellen för SCSI-styrenheten idx=%1$d"
 
+#, c-format
+msgid "Unable to determine model for USB controller idx=%1$d"
+msgstr ""
+
 msgid "Unable to determine mount table on this platform"
 msgstr "Kan inte avgöra monteringstabellen på denna plattform"
 
@@ -18981,8 +19006,8 @@ msgid "Unable to get virtual functions on this platform"
 msgstr "Kan inte hämta virtuella funktioner på denna plattform"
 
 #, c-format
-msgid "Unable to import CA certificate list %1$s"
-msgstr "Kan inte importera CA-certifikatlistan %1$s"
+msgid "Unable to import certificate list %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20405,6 +20430,10 @@ msgstr "Okänd kryptokontrollsumma %1$d"
 #, c-format
 msgid "Unknown data source '%1$s'"
 msgstr "Okänd datakälla ”%1$s”"
+
+#, c-format
+msgid "Unknown default_cpu_deprecated_features value %1$s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -22763,10 +22792,6 @@ msgstr "kan inte ändra storlek på en tom eller endast läsbar disk ”%1$s”"
 msgid "can't shrink capacity below existing allocation"
 msgstr "kan inte krympa kapaciteten under den nuvarande allokeringen"
 
-#, c-format
-msgid "can't split path '%1$s' into pool name and image name"
-msgstr "kan inte dela sökvägen ”%1$s” i pool-namn och avbildsnamn"
-
 msgid "can't undefine transient network"
 msgstr "kan inte avdefiniera ett transient nätverk"
 
@@ -23707,12 +23732,6 @@ msgstr "kan inte tolka enhetens slutplats"
 msgid "cannot parse device start location"
 msgstr "kan inte tolka enhetens startplats"
 
-msgid "cannot parse instanceid parameter as a uuid"
-msgstr "kan inte tolka parametern instanceid som ett uuid"
-
-msgid "cannot parse interfaceid parameter as a uuid"
-msgstr "kan inte tolka parametern interfaceid som ett uuid"
-
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
 msgstr "kan inte tolka openfiles ”%1$s” för virtiofs"
@@ -23753,19 +23772,6 @@ msgstr "kan inte tolka användningen ”%1$s” för RAM-filsystem"
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
 msgstr "kan inte tolka värdet ”%1$s” på parametern coalesce"
-
-msgid "cannot parse value of managerid parameter"
-msgstr "kan inte tolka värdet av parametern managerid"
-
-msgid "cannot parse value of typeid parameter"
-msgstr "kan inte tolka värdet på parametern typeid"
-
-msgid "cannot parse value of typeidversion parameter"
-msgstr "kan inte tolka värdet av parametern typeidversion"
-
-#, c-format
-msgid "cannot parse vcpu index '%1$s'"
-msgstr "kan inte tolka vcpu-index ”%1$s”"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
@@ -27733,6 +27739,9 @@ msgstr "misslyckades med hämta gränssnittet ”%1$s”"
 msgid "failed to get launch security policy"
 msgstr "misslyckades att starta säkerhetspolicyn"
 
+msgid "failed to get launch security policy for launch security type TDX"
+msgstr ""
+
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
 msgstr "misslyckades med få listan av %1$s gränssnitt på värden"
@@ -28340,6 +28349,12 @@ msgstr "misslyckades att sätta upp standard ut-filhandtag"
 
 msgid "failed to shutdown guest VM"
 msgstr "misslyckades att stänga av gäst-VM"
+
+#, c-format
+msgid ""
+"failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
+"components"
+msgstr ""
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -29482,6 +29497,10 @@ msgstr "ignorera"
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
 msgstr "ignorerar felsökningsnivån %1$d utanför intervallet [%2$d–%3$d]"
 
+msgid ""
+"ignoring host is only allowed when computing baseline from multiple CPUs"
+msgstr ""
+
 msgid "image magic is incorrect"
 msgstr "avbildens magi är felaktig"
 
@@ -30403,10 +30422,6 @@ msgstr "felaktig hemlighetstyp %1$s"
 #, c-format
 msgid "invalid secret type '%1$s'"
 msgstr "felaktig hemlighetstyp ”%1$s”"
-
-#, c-format
-msgid "invalid secret uuid '%1$s'"
-msgstr "felaktigt hemlighets-uuid ”%1$s”"
 
 msgid "invalid server address"
 msgstr "felaktig serveradress"
@@ -31368,6 +31383,9 @@ msgstr "felformaterat QAPI-schema vid fråga av ”%1$s” om ”%2$s”"
 
 msgid "malformed QMP schema"
 msgstr "felformaterat QMP-schema"
+
+msgid "malformed TDX panic data"
+msgstr ""
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -32388,10 +32406,6 @@ msgstr "filterparametertabellen saknas"
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "flaggnamn saknas i QEMU-förmågecachen"
 
-#, c-format
-msgid "missing gluster volume name for path '%1$s'"
-msgstr "glustervolymnamn saknas för sökvägen ”%1$s”"
-
 msgid "missing group name"
 msgstr ""
 
@@ -32891,15 +32905,8 @@ msgid "missing vmstate section when reverting active internal snapshot '%1$s'"
 msgstr ""
 "saknad vmstate-sektion när en aktiv intern ögonblicksbild återställdes ”%1$s”"
 
-msgid "missing volume name and path for gluster volume"
-msgstr "volymnamn och sökväg saknas till gluster-volymen"
-
 msgid "missing volume name element"
 msgstr "elementet volymnamn saknas"
-
-#, c-format
-msgid "missing volume name or file name in gluster source path '%1$s'"
-msgstr "volymnamn eller filnamn saknas i gluster-källsökvägen ”%1$s”"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "attributet vporttype saknas i migreringsdata"
@@ -33808,9 +33815,6 @@ msgstr "inga medieinkopplingar"
 msgid "no memory device found"
 msgstr "ingen minnesenhet finns"
 
-msgid "no model provided for USB controller"
-msgstr "ingen modell given på USB-styrenheten"
-
 msgid "no monitor path"
 msgstr "ingen monitorsökväg"
 
@@ -34376,6 +34380,9 @@ msgstr "endast USB-inmatningsenheter stödjs"
 msgid "only a single IOMMU device is supported"
 msgstr "bara en enda IOMMU-enhet stödjs"
 
+msgid "only a single QGS element is supported"
+msgstr ""
+
 msgid "only a single TPM Proxy device is supported"
 msgstr "bara en enda TPM-Proxy-enhet stödjs"
 
@@ -34517,9 +34524,6 @@ msgstr "endast inmatningsenheten platta stödjs"
 
 msgid "only the 'qemu' driver can be used with network disks"
 msgstr "endast drivrutinen ”qemu” kan användas med nätverksdiskar"
-
-msgid "only two serial ports are supported"
-msgstr "endast två serieportar stödjs"
 
 msgid "only two source elements are allowed for character device"
 msgstr "endast två källelement tillåts för en teckenenhet"
@@ -41119,6 +41123,11 @@ msgstr "web-uttag (webSocket)"
 msgid "weight for XEN_CREDIT"
 msgstr "vikt för XEN_CREDIT"
 
+msgid ""
+"when computing baseline from several CPUs, do not take hypervisor "
+"capabilities into account and work with input data only"
+msgstr ""
+
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
 msgstr ""
@@ -41265,6 +41274,68 @@ msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
+
+#~ msgid "Cannot parse uuid attribute of element <address>"
+#~ msgstr "Kan inte tolka attributet uuid i elementet <address>"
+
+#, c-format
+#~ msgid "Certificate %1$s usage does not permit key encipherment"
+#~ msgstr "Användningen av certifikatet %1$s tillåter inte nyckelchiffrering"
+
+#, c-format
+#~ msgid "Invalid port number: %1$s"
+#~ msgstr "Ogiltigt portnummer: %1$s"
+
+#~ msgid "Missing 'uuid' attribute for element <address>"
+#~ msgstr "Saknat attribut ”uuid” för elementet <address>"
+
+#, c-format
+#~ msgid "Unable to import CA certificate list %1$s"
+#~ msgstr "Kan inte importera CA-certifikatlistan %1$s"
+
+#, c-format
+#~ msgid "can't split path '%1$s' into pool name and image name"
+#~ msgstr "kan inte dela sökvägen ”%1$s” i pool-namn och avbildsnamn"
+
+#~ msgid "cannot parse instanceid parameter as a uuid"
+#~ msgstr "kan inte tolka parametern instanceid som ett uuid"
+
+#~ msgid "cannot parse interfaceid parameter as a uuid"
+#~ msgstr "kan inte tolka parametern interfaceid som ett uuid"
+
+#~ msgid "cannot parse value of managerid parameter"
+#~ msgstr "kan inte tolka värdet av parametern managerid"
+
+#~ msgid "cannot parse value of typeid parameter"
+#~ msgstr "kan inte tolka värdet på parametern typeid"
+
+#~ msgid "cannot parse value of typeidversion parameter"
+#~ msgstr "kan inte tolka värdet av parametern typeidversion"
+
+#, c-format
+#~ msgid "cannot parse vcpu index '%1$s'"
+#~ msgstr "kan inte tolka vcpu-index ”%1$s”"
+
+#, c-format
+#~ msgid "invalid secret uuid '%1$s'"
+#~ msgstr "felaktigt hemlighets-uuid ”%1$s”"
+
+#, c-format
+#~ msgid "missing gluster volume name for path '%1$s'"
+#~ msgstr "glustervolymnamn saknas för sökvägen ”%1$s”"
+
+#~ msgid "missing volume name and path for gluster volume"
+#~ msgstr "volymnamn och sökväg saknas till gluster-volymen"
+
+#, c-format
+#~ msgid "missing volume name or file name in gluster source path '%1$s'"
+#~ msgstr "volymnamn eller filnamn saknas i gluster-källsökvägen ”%1$s”"
+
+#~ msgid "no model provided for USB controller"
+#~ msgstr "ingen modell given på USB-styrenheten"
+
+#~ msgid "only two serial ports are supported"
+#~ msgstr "endast två serieportar stödjs"
 
 #~ msgid "'ioeventfd' is only supported by virtio-scsi controller"
 #~ msgstr "”ioeventfd” stödjs endast av styrenheten virtio-scsi"
