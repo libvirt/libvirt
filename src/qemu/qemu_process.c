@@ -476,7 +476,7 @@ qemuProcessFakeRebootViaRecreate(virDomainObj *vm, bool locked)
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STOPPED,
-                                              VIR_DOMAIN_EVENT_STOPPED_RECREATION);
+                                              VIR_DOMAIN_EVENT_STOPPED_RECREATED);
     virObjectEventStateQueue(driver->domainEventState, event);
 
     /* skip remove inactive domain from active list */
@@ -501,7 +501,7 @@ qemuProcessFakeRebootViaRecreate(virDomainObj *vm, bool locked)
     virDomainAuditStart(vm, "booted", true);
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STARTED,
-                                              VIR_DOMAIN_EVENT_STARTED_RECREATION);
+                                              VIR_DOMAIN_EVENT_STARTED_RECREATED);
     virObjectEventStateQueue(driver->domainEventState, event);
 
     qemuDomainSaveStatus(vm);
