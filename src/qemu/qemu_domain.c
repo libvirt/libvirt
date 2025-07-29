@@ -8604,21 +8604,6 @@ qemuDomainRefreshVcpuInfo(virDomainObj *vm,
 }
 
 /**
- * qemuDomainGetVcpuHalted:
- * @vm: domain object
- * @vcpu: cpu id
- *
- * Returns the vCPU halted state.
-  */
-bool
-qemuDomainGetVcpuHalted(virDomainObj *vm,
-                        unsigned int vcpuid)
-{
-    virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
-    return QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->halted;
-}
-
-/**
  * qemuDomainRefreshVcpuHalted:
  * @driver: qemu driver data
  * @vm: domain object

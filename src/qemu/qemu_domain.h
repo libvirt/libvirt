@@ -870,7 +870,6 @@ int qemuDomainValidateVcpuInfo(virDomainObj *vm);
 int qemuDomainRefreshVcpuInfo(virDomainObj *vm,
                               int asyncJob,
                               bool state);
-bool qemuDomainGetVcpuHalted(virDomainObj *vm, unsigned int vcpu);
 int qemuDomainRefreshVcpuHalted(virDomainObj *vm,
                                 int asyncJob);
 
