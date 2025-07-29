@@ -409,7 +409,7 @@ virCHProcessSetupEmulatorThreads(virDomainObj *vm)
  *
  * Returns 0 on success, -1 on error.
  */
-int
+static int
 virCHProcessSetupVcpu(virDomainObj *vm,
                       unsigned int vcpuid)
 {
