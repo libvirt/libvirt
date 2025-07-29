@@ -4,10 +4,14 @@
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <os>
+  <os firmware='efi'>
     <type arch='aarch64' machine='virt-4.0'>hvm</type>
-    <loader readonly='yes' type='pflash' format='raw'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram template='/usr/share/AAVMF/AAVMF_VARS.fd' templateFormat='raw' format='raw'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+    <firmware>
+      <feature enabled='no' name='enrolled-keys'/>
+      <feature enabled='no' name='secure-boot'/>
+    </firmware>
+    <loader readonly='yes' type='pflash' format='raw'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
+    <nvram template='/usr/share/edk2/aarch64/vars-template-pflash.raw' templateFormat='raw' format='raw'>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>
