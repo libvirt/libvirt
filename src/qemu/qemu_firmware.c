@@ -33,7 +33,6 @@
 #include "viralloc.h"
 #include "virenum.h"
 #include "virstring.h"
-#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -940,23 +939,23 @@ qemuFirmwareMatchesPaths(const qemuFirmware *fw,
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         if (loader && loader->path &&
-            !virFileComparePaths(loader->path, flash->executable.filename))
+            STRNEQ(loader->path, flash->executable.filename))
             return false;
         if (loader && loader->nvramTemplate) {
             if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT)
                 return false;
-            if (!virFileComparePaths(loader->nvramTemplate, flash->nvram_template.filename))
+            if (STRNEQ(loader->nvramTemplate, flash->nvram_template.filename))
                 return false;
         }
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (loader && loader->path &&
-            !virFileComparePaths(loader->path, memory->filename))
+            STRNEQ(loader->path, memory->filename))
             return false;
         break;
     case QEMU_FIRMWARE_DEVICE_KERNEL:
         if (kernelPath &&
-            !virFileComparePaths(kernelPath, kernel->filename))
+            STRNEQ(kernelPath, kernel->filename))
             return false;
         break;
     case QEMU_FIRMWARE_DEVICE_NONE:
@@ -1677,7 +1676,7 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
     for (i = 0; i < cfg->nfirmwares; i++) {
         virFirmware *fw = cfg->firmwares[i];
 
-        if (!virFileComparePaths(fw->name, loader->path)) {
+        if (STRNEQ(fw->name, loader->path)) {
             VIR_DEBUG("Not matching loader path '%s' for user provided path '%s'",
                       fw->name, loader->path);
             continue;
