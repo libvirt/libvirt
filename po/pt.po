@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-07-29 19:33+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -26009,7 +26009,7 @@ msgid "done"
 msgstr "feito"
 
 msgid "download volume contents to a file"
-msgstr "Descarrega conteúdos de volume para um ficheiro"
+msgstr "descarrega conteúdos de volume para um ficheiro"
 
 #, c-format
 msgid "driver does not support FD passing for disk '%1$s'"
