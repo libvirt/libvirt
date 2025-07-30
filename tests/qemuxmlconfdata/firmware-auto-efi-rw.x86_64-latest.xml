@@ -6,11 +6,15 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='x86_64' machine='pc-q35-10.0'>hvm</type>
-    <loader readonly='no' format='raw'/>
+    <firmware>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader readonly='no' secure='yes' type='pflash' format='raw'>/usr/share/edk2/ovmf/OVMF.combined.fd</loader>
     <boot dev='hd'/>
   </os>
   <features>
     <acpi/>
+    <smm state='on'/>
   </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>

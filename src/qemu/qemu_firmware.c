@@ -1301,16 +1301,21 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             return false;
         }
 
-        if (loader && loader->stateless == VIR_TRISTATE_BOOL_YES) {
-            if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
-                VIR_DEBUG("Discarding loader without stateless flash");
-                return false;
-            }
-        } else {
-            if (flash->mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-                VIR_DEBUG("Discarding loader without split flash");
-                return false;
-            }
+        /* Explicit requests for either a stateless or stateful
+         * firmware should be fulfilled, but if no preference is
+         * provided either one is fine as long as the other match
+         * criteria are satisfied */
+        if (loader &&
+            loader->stateless == VIR_TRISTATE_BOOL_NO &&
+            flash->mode == QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
+            VIR_DEBUG("Discarding stateless loader");
+            return false;
+        }
+        if (loader &&
+            loader->stateless == VIR_TRISTATE_BOOL_YES &&
+            flash->mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
+            VIR_DEBUG("Discarding non-stateless loader");
+            return false;
         }
 
         if (loader &&
@@ -1345,6 +1350,11 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         if (loader && loader->type &&
             loader->type != VIR_DOMAIN_LOADER_TYPE_ROM) {
             VIR_DEBUG("Discarding rom loader");
+            return false;
+        }
+
+        if (loader && loader->stateless == VIR_TRISTATE_BOOL_NO) {
+            VIR_DEBUG("Discarding stateless loader");
             return false;
         }
 
@@ -1425,8 +1435,16 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
         loader = def->os.loader;
 
         loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
-        loader->readonly = VIR_TRISTATE_BOOL_YES;
         loader->format = format;
+
+        /* Combined mode implies read/write, other modes imply read-only */
+        if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_COMBINED)
+            loader->readonly = VIR_TRISTATE_BOOL_NO;
+        else
+            loader->readonly = VIR_TRISTATE_BOOL_YES;
+
+        if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_STATELESS)
+            loader->stateless = VIR_TRISTATE_BOOL_YES;
 
         VIR_FREE(loader->path);
         loader->path = g_strdup(flash->executable.filename);
