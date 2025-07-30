@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-29 19:35+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-30 03:43+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -10543,7 +10543,7 @@ msgstr "ID de classe inválido %1$d"
 
 #, c-format
 msgid "Invalid collection period value '%1$d'"
-msgstr "Valor de período de coleção inválido '%1$d'"
+msgstr "Valor de período de recolha inválido '%1$d'"
 
 #, c-format
 msgid "Invalid compressed save format %1$d"
@@ -12973,16 +12973,16 @@ msgstr "Nenhuns IOThreads encontrados para o domínio"
 
 #, c-format
 msgid "No IP address for host '%1$s' found: %2$s"
-msgstr ""
+msgstr "Nenhum endereço IP encontrado para máquina '%1$s': %2$s"
 
 msgid "No JSON parser implementation is available"
-msgstr ""
+msgstr "Nenhuma implementação de analisar JSON disponível"
 
 msgid "No PCI buses available"
-msgstr ""
+msgstr "Nenhuns barramentos PCI disponíveis"
 
 msgid "No UNIX caller UID available"
-msgstr ""
+msgstr "Nenhum UID de chamador UNIX disponível"
 
 msgid ""
 "No URI is provided and cannot identify any listening daemon socket path to "
@@ -12990,74 +12990,79 @@ msgid ""
 "and/or provide an explicit URI. For more information see https://libvirt.org/"
 "kbase/failed_connection_after_install.html"
 msgstr ""
+"Nenhum URI foi fornecido e não posso identificar nenhum caminho de socket de "
+"daemon a escutar para tentar ligar a ele. Por favor certifique que os "
+"sockets de daemon esperados estão activos e/ou forneça um URI explícito. "
+"Para mais informação veja https://libvirt.org/kbase/"
+"failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
-msgstr ""
+msgstr "Nenhum esquema de URI especificado"
 
 #, c-format
 msgid "No URI scheme specified: %1$s"
-msgstr ""
+msgstr "Nenhum esquema de URI especificado: %1$s"
 
 msgid "No access manager registered"
 msgstr "Nenhum gestor de acesso registrado"
 
 #, c-format
 msgid "No active block job '%1$s'"
-msgstr ""
+msgstr "Nenhum trabalho de bloco activo '%1$s'"
 
 msgid "No addresses to bind to"
-msgstr ""
+msgstr "Nenhum endereço para vincular a"
 
 msgid "No authentication callback available"
 msgstr "Nenhuma chamada de retorno de autenticação disponível"
 
 msgid "No authentication methods and credentials provided"
-msgstr ""
+msgstr "Nenhuns métodos de autenticação e credenciais fornecidos"
 
 msgid "No authentication methods supplied"
 msgstr "Nenhuns métodos de autenticação fornecidos"
 
 msgid "No available USB controller and port, and failed to attach a new one"
-msgstr ""
+msgstr "Nenhum controlador e porto USB disponível, e falhou ao anexar um novo"
 
 msgid "No bhyve command-line argument specified"
-msgstr ""
+msgstr "Nenhum argumento de linha e comandos bhyve especificado"
 
 msgid "No bridge name specified"
-msgstr ""
+msgstr "Nenhum nome de ponte especificado"
 
 msgid "No bridge node in xml document"
-msgstr ""
+msgstr "Nenhum nó de ponte em documento xml"
 
 msgid "No category range available"
-msgstr ""
+msgstr "Nenhuma gama de categoria disponível"
 
 msgid "No channel command provided"
 msgstr "Nenhum comando de canal fornecido"
 
 #, c-format
 msgid "No client with matching ID '%1$llu'"
-msgstr ""
+msgstr "Nenhum cliente com ID correspondente '%1$llu'"
 
 #, c-format
 msgid "No complete agent response found in %1$d bytes"
-msgstr ""
+msgstr "Nenhuma resposta de agente completa encontrada em %1$d bytes"
 
 msgid "No compression algorithm selected for parallel migration"
-msgstr ""
+msgstr "Nenhum algoritmo de compressão selecionado para migração paralela"
 
 #, c-format
 msgid "No current block job for %1$s"
-msgstr ""
+msgstr "Nenhum trabalho de bloco atual para %1$s"
 
 msgid "No current identity"
-msgstr ""
+msgstr "Nenhuma identidade atual"
 
 msgid "No current identity to elevate"
-msgstr ""
+msgstr "Nenhuma identidade atual para elevar"
 
 msgid "No data supplied for <initarg> element"
-msgstr ""
+msgstr "Nenhuns dados fornecidos para elemento <initarg>"
 
 msgid "No default server names provided"
 msgstr "Nenhuns nomes de servidor predefinido fornecidos"
@@ -13068,49 +13073,50 @@ msgstr "Nenhuma descrição para domínio: %1$s"
 
 #, c-format
 msgid "No description for network: %1$s"
-msgstr ""
+msgstr "Nenhuma descrição para rede: %1$s"
 
 msgid "No device model command-line argument specified"
 msgstr ""
+"Nenhum argumento de linha de comandos de modelo de dispositivo especificado"
 
 #, c-format
 msgid "No device with bus '%1$s' and target '%2$s'"
-msgstr ""
+msgstr "Nenhuma dispositivo com barramento '%1$s' e alvo '%2$s'"
 
 #, c-format
 msgid "No disk found whose source path or target is %1$s"
-msgstr ""
+msgstr "Nenhum disco encontrado cujo caminho de fonte ou alvo seja %1$s"
 
 #, c-format
 msgid "No disk with bus '%1$s' and target '%2$s'"
-msgstr ""
+msgstr "Nenhum disco com barramento '%1$s' e alvo '%2$s'"
 
 msgid "No dnsmasq options value specified"
-msgstr ""
+msgstr "Nenhuns valores de opções dnsmasq especificados"
 
 #, c-format
 msgid "No domain with ID %1$d"
-msgstr ""
+msgstr "Nenhum domínio com ID %1$d"
 
 #, c-format
 msgid "No domain with UUID %1$s"
-msgstr ""
+msgstr "Nenhum domínio com UUID %1$s"
 
 #, c-format
 msgid "No domain with matching ID '%1$d'"
-msgstr ""
+msgstr "Nenhum domínio com ID correspondente '%1$d'"
 
 #, c-format
 msgid "No domain with matching id %1$d"
-msgstr ""
+msgstr "Nenhum domínio com id correspondente %1$d"
 
 #, c-format
 msgid "No domain with matching name '%1$s'"
-msgstr ""
+msgstr "Nenhum domínio com nome correspondente '%1$s'"
 
 #, c-format
 msgid "No domain with matching uuid '%1$s'"
-msgstr ""
+msgstr "Nenhum domínio com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "No domain with name %1$s"
@@ -13118,10 +13124,10 @@ msgstr "Nenhum domínio com nome %1$s"
 
 #, c-format
 msgid "No emulator found for arch '%1$s'"
-msgstr ""
+msgstr "Nenhum emulador encontrado para arquitectura '%1$s'"
 
 msgid "No emulator found for cloud-hypervisor"
-msgstr ""
+msgstr "Nenhum emulador encontrado para nuvem-hipervisor"
 
 msgid "No error message from child failure"
 msgstr "Nenhuma mensagem de erro da falha do filho"
@@ -13134,152 +13140,161 @@ msgstr "Nenhum erro encontrado\n"
 
 #, c-format
 msgid "No event expected with procedure 0x%1$x"
-msgstr ""
+msgstr "Nenhum evento esperado com procedimento 0x%1$x"
 
 msgid "No filesystems are mounted in the domain"
-msgstr ""
+msgstr "Nenhuns sistemas de ficheiros estão montados no domínio"
 
 msgid "No firewall backend is available"
-msgstr ""
+msgstr "Nenhum backend de firewall está disponível"
 
 msgid "No free NBD devices"
-msgstr ""
+msgstr "Nenhuns dispositivos NBD livres"
 
 msgid "No free USB ports"
-msgstr ""
+msgstr "Nenhuns portos USB livres"
 
 #, c-format
 msgid ""
 "No free busNr lower than current lowest busNr is available to auto-assign to "
 "bus %1$d. Must be manually assigned"
 msgstr ""
+"Nenhum busNr livre inferior ao busNr mais baixo atual está disponível para "
+"auto-atribuição ao barramento %1$d. Tem de ser atribuído manualmente"
 
 msgid "No graphical display found"
-msgstr ""
+msgstr "Nenhum mostrador gráfico encontrado"
 
 #, c-format
 msgid "No graphical display with type '%1$s' found"
-msgstr ""
+msgstr "Nenhum mostrador gráfico com tipo '%1$s' encontrado"
 
 #, c-format
 msgid "No graphics backend with index %1$d"
-msgstr ""
+msgstr "Nenhum backend gráfico com índice %1$d"
 
 msgid "No identity information available for client"
-msgstr ""
+msgstr "Nenhuma informação de identidade disponível para cliente"
 
 msgid "No interface attached to bridge"
-msgstr ""
+msgstr "Nenhuma interface anexada a ponte"
 
 #, c-format
 msgid "No interface found whose type is %1$s"
-msgstr ""
+msgstr "Nenhuma interface encontrada cujo tipo seja %1$s"
 
 #, c-format
 msgid "No interface with MAC address %1$s was found"
-msgstr ""
+msgstr "Nenhuma interface com endereço MAC %1$s foi encontrada"
 
 msgid "No lxc environment type specified"
-msgstr ""
+msgstr "Nenhum tipo de ambiente lxc especificado"
 
 msgid "No master USB controller specified"
-msgstr ""
+msgstr "Nenhum controlador USB mestre especificado"
 
 #, c-format
 msgid "No matches for socket service '%1$s': %2$s"
-msgstr ""
+msgstr "Nenhuma correspondência para serviço de socket '%1$s': %2$s"
 
 msgid "No memory balloon device configured, can not set the collection period"
 msgstr ""
+"Nenhum dispositivo de balão de memória configurado, não posso definir o "
+"período de recolha"
 
 msgid "No message in the queue"
-msgstr ""
+msgstr "Nenhuma mensagem na fila"
 
 msgid "No more available PCI slots"
-msgstr ""
+msgstr "Não há mais slots PCI disponíveis"
 
 msgid "No name supplied for <initenv> element"
-msgstr ""
+msgstr "Nenhum nome fornecido para elemento <initenv>"
 
 #, c-format
 msgid "No net with mac '%1$s'"
-msgstr ""
+msgstr "Nenhuma rede com mac '%1$s'"
 
 #, c-format
 msgid "No network found with property '%1$s' = '%2$s'"
-msgstr ""
+msgstr "Nenhuma rede encontrada com propriedade '%1$s' = '%2$s'"
 
 msgid "No network socket associated with client"
-msgstr ""
+msgstr "Nenhum socket de rede associado com cliente"
 
 #, c-format
 msgid "No open log file %1$s"
 msgstr "Nenhum ficheiro log aberto %1$s"
 
 msgid "No per-CPU stats available"
-msgstr ""
+msgstr "Nenhumas estatísticas por-CPU disponíveis"
 
 msgid "No process ID available"
-msgstr ""
+msgstr "Nenhum ID de processo disponível"
 
 msgid "No process start time available"
-msgstr ""
+msgstr "Nenhum tempo de inicio de processo disponível"
 
 msgid "No qemu command-line argument specified"
-msgstr ""
+msgstr "Nenhum argumento de linha de comandos do qemu especificado"
 
 msgid "No qemu environment name specified"
-msgstr ""
+msgstr "Nenhum nome de ambiente qemu especificado"
 
 msgid "No runstatedir specified"
-msgstr ""
+msgstr "Nenhum runstatedir especificado"
 
 msgid "No server certificate path set to match server key"
 msgstr ""
+"Nenhum caminho de certificado de servidor definido para corresponder a chave "
+"de servidor"
 
 msgid "No server key path set to match server cert"
 msgstr ""
+"Nenhum caminho de chave de servidor definido para corresponder a certificado "
+"de servidor"
 
 #, c-format
 msgid "No server named '%1$s'"
-msgstr ""
+msgstr "Nenhum servidor chamado '%1$s'"
 
 msgid "No socket address provided"
 msgstr "Nenhum endereço de socket fornecido"
 
 #, c-format
 msgid "No socket addresses found for '%1$s'"
-msgstr ""
+msgstr "Nenhum endereço de socket encontrado para '%1$s'"
 
 #, c-format
 msgid "No source device specified when formatting pool '%1$s'"
-msgstr ""
+msgstr "Nenhum dispositivo fonte especificado ao formatar pool '%1$s'"
 
 #, c-format
 msgid "No storage volume with key or path '%1$s'"
-msgstr ""
+msgstr "Nenhum volume de armazenamento com chave ou caminho '%1$s'"
 
 #, c-format
 msgid "No stub driver configured for PCI device %1$s"
-msgstr ""
+msgstr "Nenhum controlador stub configurado para dispositivo PCI %1$s"
 
 #, c-format
 msgid "No such disk in media registry %1$s"
-msgstr ""
+msgstr "Nenhum tal disco em registro de meio %1$s"
 
 #, c-format
 msgid "No support for %1$s in command 'attach-disk'"
-msgstr ""
+msgstr "Nenhum suporte para %1$s no comando 'attach-disk'"
 
 #, c-format
 msgid "No support for %1$s in command 'attach-interface'"
-msgstr ""
+msgstr "Nenhum suporte para %1$s no comando 'attach-interface'"
 
 msgid "No support for domain XML entry 'vcpu' attribute 'current'"
 msgstr ""
+"Nenhum suporte para atributo 'current' na entrada 'vcpu' do XML de domínio"
 
 msgid "No support for multiple video devices"
-msgstr ""
+msgstr "Nenhum suporte para múltiplos dispositivos de vídeo"
 
 #, c-format
 msgid "No title for domain: %1$s"
@@ -13287,13 +13302,13 @@ msgstr "Nenhum título para domínio: %1$s"
 
 #, c-format
 msgid "No title for network: %1$s"
-msgstr ""
+msgstr "Nenhum título para rede: %1$s"
 
 msgid "No total stats available"
-msgstr ""
+msgstr "Nenhumas estatísticas totais disponíveis"
 
 msgid "No transaction is set"
-msgstr ""
+msgstr "Nenhuma transação está definida"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
@@ -18032,7 +18047,7 @@ msgid "Unable to change MaxMemorySize"
 msgstr "Incapaz de alterar o MaxMemorySize"
 
 msgid "Unable to change balloon collection period."
-msgstr "Incapaz de alterar o período de coleção do balão."
+msgstr "Incapaz de alterar o período de recolha do balão."
 
 msgid "Unable to change blkio parameters"
 msgstr "Incapaz de alterar parâmetros blkio"
@@ -32324,7 +32339,7 @@ msgid "model type"
 msgstr ""
 
 msgid "modifies an existing IOThread of the guest domain"
-msgstr "Modifica um IOThread existente do domínio convidado."
+msgstr "modifica um IOThread existente do domínio convidado"
 
 msgid "modify cpu state in the guest"
 msgstr ""
@@ -37626,7 +37641,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr "Incapaz de obter índice de interface para %1$s"
+msgstr "incapaz de obter índice de interface para %1$s"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -37842,7 +37857,7 @@ msgid "unable to set SELinux security context '%1$s' for '%2$s'"
 msgstr "incapaz de definir contexto de segurança SELinux '%1$s' para '%2$s'"
 
 msgid "unable to set balloon driver collection period"
-msgstr "incapaz de definir período de coleção de controlador de balão"
+msgstr "incapaz de definir período de recolha de controlador de balão"
 
 #, c-format
 msgid "unable to set blocking mode for '%1$s'"
