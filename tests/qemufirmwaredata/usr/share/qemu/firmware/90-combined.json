@@ -1,5 +1,5 @@
 {
-    "description": "OVMF with SB+SMM, SB enabled, MS certs enrolled",
+    "description": "OVMF with SB+SMM, SB enabled, MS certs enrolled (combined)",
     "interface-types": [
         "uefi"
     ],
@@ -7,7 +7,7 @@
         "device": "flash",
         "mode": "combined",
         "executable": {
-            "filename": "/usr/share/edk2/ovmf/OVMF.secboot.fd",
+            "filename": "/usr/share/edk2/ovmf/OVMF.combined.fd",
             "format": "raw"
         }
     },

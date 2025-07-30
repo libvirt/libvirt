@@ -317,7 +317,7 @@ mymain(void)
                       "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd:"
                       "/usr/share/edk2/ovmf/OVMF_CODE_4M.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2:"
                       "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd:"
-                      "/usr/share/edk2/ovmf/OVMF.secboot.fd:NULL:"
+                      "/usr/share/edk2/ovmf/OVMF.combined.fd:NULL:"
                       "/usr/share/edk2/ovmf/OVMF.amdsev.fd:NULL:"
                       "/usr/share/edk2/ovmf/OVMF.inteltdx.secboot.fd:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
