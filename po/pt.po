@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-29 19:27+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"PO-Revision-Date: 2025-07-29 19:28+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -22760,7 +22760,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create directory %1$s"
-msgstr ""
+msgstr "Não pode criar directório '%1$s'"
 
 #, c-format
 msgid "cannot create file %1$s"
@@ -22772,7 +22772,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot create log directory %1$s"
-msgstr ""
+msgstr "Não pode criar directório de relatórios '%1$s'"
 
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
@@ -23042,7 +23042,7 @@ msgid "cannot get machine name"
 msgstr ""
 
 msgid "cannot get medium"
-msgstr ""
+msgstr "Não pode obter meio"
 
 msgid "cannot get medium attachment type"
 msgstr ""
