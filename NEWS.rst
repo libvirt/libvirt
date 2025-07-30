@@ -77,6 +77,12 @@ v11.6.0 (unreleased)
     Timeout values are set using the ``bhyveload_timeout`` and
     ``bhyveload_timeout_kill`` configuration options in ``bhyve.conf``.
 
+  * nss: Improve debugging
+
+    Debugging messages from NSS modules can be now enabled by setting the
+    ``LIBVIRT_NSS_DEBUG`` environment variable. So far, there is no special
+    meaning to its value.
+
 * **Bug fixes**
 
   * bhyve: Fix resetting of the autostart flag of the domain on destroy.
