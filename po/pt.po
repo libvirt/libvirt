@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-27 22:57+0000\n"
+"PO-Revision-Date: 2025-07-29 08:42+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -10167,19 +10167,22 @@ msgid "Integrity error in watchdog models"
 msgstr "Erro de integridade em modelos de watchdog"
 
 msgid "Intel TDX launch security is not supported with PMU enabled"
-msgstr ""
+msgstr "Segurança de lançamento TDX da Intel não é suportada com PMU activo"
 
 msgid "Intel TDX launch security is not supported with SMM enabled"
-msgstr ""
+msgstr "Segurança de lançamento TDX da Intel não é suportada com SMM activo"
 
 msgid "Intel TDX launch security is not supported with pflash loader"
 msgstr ""
+"Segurança de lançamento TDX da Intel não é suportada com carregador pflash"
 
 msgid "Intel TDX launch security is not supported with this QEMU binary"
 msgstr ""
+"Segurança de lançamento TDX da Intel não é suportada com este binário QEMU"
 
 msgid "Intel TDX launch security needs split kernel irqchip"
 msgstr ""
+"Segurança de lançamento TDX da Intel precisa de divisão de kernel irqchip"
 
 msgid "Interface"
 msgstr "Interface"
@@ -12289,6 +12292,8 @@ msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
+"Atributo 'start' em falta ou inválido em <port> em <nat> em <forward> na "
+"rede %1$s"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr "'unicast' em falta ou inválido em resposta de query-rx-filter"
@@ -12320,24 +12325,30 @@ msgid ""
 "Missing or invalid element %1$zu of 'multicast' list in query-rx-filter "
 "response"
 msgstr ""
+"Elemento %1$zu em falta ou inválido da lista 'multicast' na resposta de "
+"query-rx-filter"
 
 #, c-format
 msgid ""
 "Missing or invalid element %1$zu of 'unicast' list in query-rx-filter "
 "response"
 msgstr ""
+"Elemento %1$zu em falta ou inválido da lista 'unicast' na resposta de query-"
+"rx-filter"
 
 #, c-format
 msgid ""
 "Missing or invalid element %1$zu of 'vlan-table' array in query-rx-filter "
 "response"
 msgstr ""
+"Elemento %1$zu em falta ou inválido da lista 'vlan-table' na resposta de "
+"query-rx-filter"
 
 msgid "Missing or invalid name in query-rx-filter response"
-msgstr ""
+msgstr "Nome em falta ou inválido na resposta de query-rx-filter"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
-msgstr ""
+msgstr "Valor 'unique_id' de adaptador scsi em falta ou inválido"
 
 msgid "Missing ownerId data in JSON document"
 msgstr "Dados ownerId em falta em documento JSON"
@@ -12352,71 +12363,73 @@ msgid "Missing ownerUUID data in JSON document"
 msgstr "Dados ownerUUID em falta em documento JSON"
 
 msgid "Missing password"
-msgstr ""
+msgstr "Palavra passe em falta"
 
 msgid "Missing path or lockspace for lease resource"
-msgstr ""
+msgstr "Caminho ou espaço de tranca em falta para recurso de aluguer"
 
 msgid "Missing pid data in JSON document"
 msgstr "Dados pid em falta em documento JSON"
 
 msgid "Missing plugin initialization symbol 'virLockDriverImpl'"
-msgstr ""
+msgstr "Símbolo 'virLockDriverImpl' de inicialização de plugin em falta"
 
 msgid "Missing priority_workers data in JSON document"
 msgstr "Dados priority_workers em falta em documento JSON"
 
 msgid "Missing privateData field in JSON state document"
-msgstr ""
+msgstr "Campo privateData em falta em documento de estado do JSON"
 
 #, c-format
 msgid "Missing property '%1$s' in answer"
-msgstr ""
+msgstr "Propriedade '%1$s' em falta na resposta"
 
 msgid "Missing readonly field in JSON state document"
-msgstr ""
+msgstr "Campo readonly em falta em documento de estado do JSON"
 
 #, c-format
 msgid "Missing ref property on ccw_device in members for '%1$s'"
-msgstr ""
+msgstr "Propriedade ref em falta em ccw_device em membros para '%1$s'"
 
 #, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%1$s'"
-msgstr ""
+msgstr "Atributo necessário 'service' em falta no registo SRV da rede '%1$s'"
 
 #, c-format
 msgid "Missing required address attribute in network '%1$s'"
-msgstr ""
+msgstr "Atributo de endereço necessário em falta na rede '%1$s'"
 
 msgid "Missing required address in <ip>"
-msgstr ""
+msgstr "Endereço necessário em falta em <ip>"
 
 #, c-format
 msgid "Missing required attribute '%1$s' in element '%2$s'"
-msgstr ""
+msgstr "Atributo necessário '%1$s' em falta no elemento '%2$s'"
 
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network "
 "%1$s"
 msgstr ""
+"Atributo dev necessário em falta em elemento <forward> <interface> da rede "
+"%1$s"
 
 #, c-format
 msgid "Missing required dev attribute in <pf> element of network '%1$s'"
-msgstr ""
+msgstr "Atributo dev necessário em falta em elemento <pf> da rede '%1$s'"
 
 msgid "Missing required name attribute in portgroup"
-msgstr ""
+msgstr "Atributo name necessário em falta em portgroup"
 
 #, c-format
 msgid "Missing required name or value in DNS TXT record of network %1$s"
-msgstr ""
+msgstr "Nome ou valor necessário em falta no registo DNS TXT da rede %1$s"
 
 msgid "Missing required nodeset attribute in memnode element"
-msgstr ""
+msgstr "Atributo nodeset necessário em falta no elemento memnode"
 
 msgid "Missing resctrl monitor alloc"
-msgstr ""
+msgstr "Alocação de monitor resctrl em falta"
 
 msgid "Missing resource fd in JSON document"
 msgstr "Recurso fd a faltar em documento JSON"
@@ -12425,44 +12438,44 @@ msgid "Missing resource flags in JSON document"
 msgstr "Bandeiras de recurso a faltar em documento JSON"
 
 msgid "Missing resource lockHeld in JSON document"
-msgstr ""
+msgstr "lockHeld de recurso em falta em documento JSON"
 
 msgid "Missing resource name in JSON document"
 msgstr "Nome de recurso a faltar em documento JSON"
 
 msgid "Missing resource owners in JSON document"
-msgstr ""
+msgstr "Proprietários de recurso em falta em documento JSON"
 
 msgid "Missing resource path in JSON document"
 msgstr "Caminho de recurso a faltar em documento JSON"
 
 msgid "Missing resources value in JSON document"
-msgstr ""
+msgstr "Valor de recursos em falta em documento JSON"
 
 msgid "Missing restricted data in JSON document"
-msgstr ""
+msgstr "Dados restritos em falta em documento JSON"
 
 msgid "Missing scsi_host PCI address element"
-msgstr ""
+msgstr "Elemento de endereço PCI scsi_host em falta"
 
 #, c-format
 msgid "Missing separator in sched info '%1$s'"
 msgstr "Separador a faltar em informação de agenda '%1$s'"
 
 msgid "Missing server data from JSON file"
-msgstr ""
+msgstr "Dados de servidor em falta de ficheiro JSON"
 
 msgid "Missing service data in JSON document"
-msgstr ""
+msgstr "Dados de serviço em falta em documento JSON"
 
 msgid "Missing services data in JSON document"
-msgstr ""
+msgstr "Dados de serviços em falta em documento JSON"
 
 msgid "Missing sock field in JSON state document"
-msgstr ""
+msgstr "Campo sock em falta em documento de estado do JSON"
 
 msgid "Missing socks field in JSON state document"
-msgstr ""
+msgstr "Campo socks em falta em documento de estado do JSON"
 
 msgid "Missing source channel attribute for char device"
 msgstr "Atributo de canal fonte a faltar para dispositivo de caractere"
@@ -12477,10 +12490,10 @@ msgid "Missing source service attribute for char device"
 msgstr "Atributo de serviço fonte a faltar para dispositivo de caractere"
 
 msgid "Missing storage block path"
-msgstr ""
+msgstr "Caminho de bloco de armazenamento em falta"
 
 msgid "Missing storage host block path"
-msgstr ""
+msgstr "Caminho de bloco de máquina de armazenamento em falta"
 
 #, c-format
 msgid "Missing storage volume name for disk '%1$s'"
@@ -12488,7 +12501,7 @@ msgstr "Nome de volume de armazenamento a faltar para disco '%1$s'"
 
 #, c-format
 msgid "Missing udev property '%1$s' on '%2$s'"
-msgstr ""
+msgstr "Propriedade udev '%1$s' em falta em '%2$s'"
 
 #, c-format
 msgid "Missing vendor string for CPU vendor %1$s"
@@ -12499,110 +12512,121 @@ msgstr "Modelo"
 
 #, c-format
 msgid "Model %1$s too big for destination"
-msgstr ""
+msgstr "Modelo %1$s demasiado grande para destino"
 
 msgid "Model name contains invalid characters"
-msgstr ""
+msgstr "Nome de modelo contém caracteres inválidos"
 
 msgid "Modifies an existing IOThread of the guest domain."
-msgstr ""
+msgstr "Modifica um IOThread existente do domínio convidado."
 
 msgid "Monitor local virtualized systems"
-msgstr ""
+msgstr "Monitor de sistemas virtualizados locais"
 
 #, c-format
 msgid "Monitor path %1$s too big for destination"
-msgstr ""
+msgstr "Caminho de monitor %1$s demasiado grande para destino"
 
 msgid "Monitor vcpus conflicts with allocation"
-msgstr ""
+msgstr "vcpus de monitor faz conflito com alocação"
 
 msgid "Mount namespace support is required"
-msgstr ""
+msgstr "É requirido suporte a espaço de nome de montagem"
 
 msgid "Mountpoint"
 msgstr "Ponto de Montagem"
 
 msgid "Multi-head video devices are unsupported"
-msgstr ""
+msgstr "Dispositivos de vídeo de multi-cabeça não são suportados"
 
 #, c-format
 msgid "Multiple '%1$s' controllers with index '%2$d'"
-msgstr ""
+msgstr "Múltiplos controladores '%1$s' com índice '%2$d'"
 
 msgid "Multiple <model> elements in controller definition not allowed"
-msgstr ""
+msgstr "Múltiplos elementos <model> na definição de controlador não é permitido"
 
 msgid "Multiple <target> elements in controller definition not allowed"
 msgstr ""
+"Múltiplos elementos <target> na definição de controlador não é permitido"
 
 msgid ""
 "Multiple IPv4 dhcp sections found -- dhcp is supported only for a single "
 "IPv4 address on each network"
 msgstr ""
+"Múltiplas secções dhcp IPv4 encontradas - dhcp é suportado apenas para um "
+"único endereço IPv4 em cada rede"
 
 msgid ""
 "Multiple IPv6 dhcp sections found -- dhcp is supported only for a single "
 "IPv6 address on each network"
 msgstr ""
+"Múltiplas secções dhcp IPv6 encontradas - dhcp é suportado apenas para um "
+"único endereço IPv6 em cada rede"
 
 #, c-format
 msgid ""
 "Multiple USB devices for %1$x:%2$x were found, but none of them is at bus:"
 "%3$u device:%4$u"
 msgstr ""
+"Múltiplos dispositivos USB para %1$x:%2$x foram encontrados, mas nenhum "
+"deles está em barramento:%3$u dispositivo:%4$u"
 
 #, c-format
 msgid "Multiple USB devices for %1$x:%2$x, use <address> to specify one"
 msgstr ""
+"Múltiplos dispositivos USB para %1$x:%2$x, use <address> para especificar um"
 
 #, c-format
 msgid "Multiple definitions of CPU model '%1$s'"
-msgstr ""
+msgstr "Múltiplas definições de modelo de CPU '%1$s'"
 
 #, c-format
 msgid ""
 "Multiple domains exist with the name '%1$s': repeat the request using a UUID"
 msgstr ""
+"Múltiplos domínios existem com o mesmo '%1$s': repita o pedido usando um UUID"
 
 msgid "Multiple graphics devices are not supported"
-msgstr ""
+msgstr "Múltiplos dispositivos gráficos não são suportados"
 
 msgid "Multiple interfaces attached to bridge"
-msgstr ""
+msgstr "Múltiplas interfaces anexadas a porte"
 
 #, c-format
 msgid "Multiple memnode elements with cellid %1$u"
-msgstr ""
+msgstr "Múltiplos elementos memnode com cellid %1$u"
 
 #, c-format
 msgid "Multiple panic devices with model '%1$s'"
-msgstr ""
+msgstr "Múltiplos dispositivos de pânico com modelo '%1$s'"
 
 msgid "Multiple serial devices are not supported by xen-xm"
-msgstr ""
+msgstr "Múltiplos dispositivos série não são suportados pelo xen-xm"
 
 msgid "Multiqueue devices are not supported on this system"
-msgstr ""
+msgstr "Dispositivos multi-fila não são suportados neste sistema"
 
 #, c-format
 msgid "Must use --rename or --clone to change %1$s to %2$s"
-msgstr ""
+msgstr "Tem de usar --rename ou --clone para mudar %1$s para %2$s"
 
 msgid "N/A"
 msgstr "N/D"
 
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
+"URI de NBD tem de ser fornecido quando URI de migração usa método de "
+"transporte UNIX"
 
 msgid "NBD migration with TLS is not supported over UNIX socket"
-msgstr ""
+msgstr "Migração NBD com TLS não é suportada sobre socket UNIX"
 
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
-msgstr ""
+msgstr "Modelo de NIC 'e1000' não é suportado pelo binário bhyve fornecido"
 
 msgid "NIC model is not supported"
-msgstr ""
+msgstr "Modelo de NIC não é suportado"
 
 msgid "NOTE"
 msgstr "NOTA"
@@ -12611,24 +12635,26 @@ msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
 msgstr ""
+"NOTA: Ligar a um daemon predefinido. Especifique o daemon usando '-c' (ex. "
+"virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
-msgstr ""
+msgstr "Tipo de JSON NULO não pode ser convertido em linha de comandos"
 
 msgid "NULL NetworkDef"
-msgstr ""
+msgstr "NetworkDef NULO"
 
 #, c-format
 msgid "NULL argument - %1$p %2$p"
-msgstr ""
+msgstr "Argumento NULO - %1$p %2$p"
 
 #, c-format
 msgid "NULL string parameter '%1$s'"
-msgstr ""
+msgstr "Parâmetro de cadeia NULO '%1$s'"
 
 #, c-format
 msgid "NULL value for field '%1$s'"
-msgstr ""
+msgstr "Valor NULO para campo '%1$s'"
 
 msgid "NUMA cell number"
 msgstr "Número da célula NUMA"
@@ -12638,10 +12664,10 @@ msgstr "Células NUMA:"
 
 #, c-format
 msgid "NUMA cells %1$u and %2$zu have overlapping vCPU ids"
-msgstr ""
+msgstr "Células NUMA %1$u e %2$z têm ids de vCPU sobrepostos"
 
 msgid "NUMA distances defined without siblings"
-msgstr ""
+msgstr "Distâncias NUMA definidas sem irmãos"
 
 msgid "NUMA free memory"
 msgstr "Memória livre do NUMA"
@@ -12650,97 +12676,99 @@ msgid "NUMA free pages"
 msgstr "Páginas livres NUMA"
 
 msgid "NUMA isn't available on this host"
-msgstr ""
+msgstr "NUMA não está disponível nesta máquina"
 
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
-msgstr ""
+msgstr "Afinação de memória NUMA em modo 'preferido' apenas suporta nó singular"
 
 msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
 msgstr ""
+"Modo NUMA, um de strict, preferred e interleave ou um número a partir de "
+"virDomainNumatuneMemMode enum"
 
 #, c-format
 msgid "NUMA node %1$d is not available"
-msgstr ""
+msgstr "Nó NUMA %1$d não está disponível"
 
 #, c-format
 msgid "NUMA node %1$d is out of range"
-msgstr ""
+msgstr "Nó NUMA %1$d está fora de alcance"
 
 #, c-format
 msgid "NUMA node %1$zd is unavailable"
-msgstr ""
+msgstr "Nó NUMA %1$zd não está disponível"
 
 #, c-format
 msgid "NUMA node %1$zu is not available"
-msgstr ""
+msgstr "Nó NUMA %1$zu não está disponível"
 
 msgid "NUMA node selections to set"
-msgstr ""
+msgstr "Seleções de nó NUMA para definir"
 
 msgid "NUMA nodes are not supported for virtio-mem-ccw"
-msgstr ""
+msgstr "Nós NUMA não são suportados para virtio-mem-ccw"
 
 msgid "NUMA nodes without CPUs can't be initiator"
-msgstr ""
+msgstr "Nós NUMA sem CPUs não podem ser iniciador"
 
 msgid "NUMA topology defined without NUMA cells"
-msgstr ""
+msgstr "Topologia NUMA definida sem células NUMA"
 
 msgid "NUMA tuning is not available in session mode"
-msgstr ""
+msgstr "Afinação de NUMA não está disponível em modo de sessão"
 
 #, c-format
 msgid "NVMe NSID %1$d out of [0..14] range"
-msgstr ""
+msgstr "NSID de NVMe %1$d fora de alcance [0..14]"
 
 #, c-format
 msgid "NVMe controller index %1$d out of [0..3] range"
-msgstr ""
+msgstr "Índice de controlador NVMe %1$d fora de alcance [0..3]"
 
 msgid "NVMe controllers are not supported with this QEMU binary"
-msgstr ""
+msgstr "Controladores NVMe não são suportados com este binário QEMU"
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
-msgstr ""
+msgstr "Dispositivo NVMe %1$s já em uso pelo controlador %2$s no domínio %3$s"
 
 #, c-format
 msgid "NVMe device %1$s namespace %2$u is already on the list"
-msgstr ""
+msgstr "Espaço de nome %2$u do dispositivo NVMe %1$s já está na lista"
 
 #, c-format
 msgid "NVMe device %1$s namespace %2$u not found"
-msgstr ""
+msgstr "Espaço de nome %2$u do dispositivo NVMe %1$s não encontrado"
 
 msgid "NVMe disk source is missing address"
-msgstr ""
+msgstr "Falta endereço na fonte de disco NVMe"
 
 msgid "NVMe disks are not supported with this QEMU binary"
-msgstr ""
+msgstr "Discos NVMe não são suportados com este binário QEMU"
 
 msgid "NVMe namespace can't be zero"
-msgstr ""
+msgstr "Espaço de nome NVMe não pode ser zero"
 
 msgid "NVRAM is not permitted when loader is stateless"
-msgstr ""
+msgstr "NVRAM não é permitido quando o carregador está sem estado"
 
 msgid "NVRAM template is not permitted when loader is stateless"
-msgstr ""
+msgstr "Modelo NVRAM não é permitido quando o carregador está sem estado"
 
 msgid "Name"
 msgstr "Nome"
 
 #, c-format
 msgid "Name of chain is longer than %1$u characters"
-msgstr ""
+msgstr "Nome de cadeia é maior que %1$u caracteres"
 
 msgid "Name:"
 msgstr "Nome:"
 
 msgid "Namespaces are not supported on this platform"
-msgstr ""
+msgstr "Espaços de nome não são suportados nesta plataforma"
 
 #, c-format
 msgid "Network %1$s XML configuration edited.\n"
@@ -12748,7 +12776,7 @@ msgstr "Configuração XML %1$s de rede editada.\n"
 
 #, c-format
 msgid "Network %1$s XML configuration not changed.\n"
-msgstr ""
+msgstr "Configuração XML %1$s de rede não alterada.\n"
 
 #, c-format
 msgid "Network %1$s created from %2$s\n"
@@ -12781,6 +12809,8 @@ msgstr "A rede %1$s foi desmarcada como de arranque automático\n"
 #, c-format
 msgid "Network '%1$s' IP address cannot have both a prefix and a netmask"
 msgstr ""
+"Endereço IP de rede '%1$s' não pode ter ambos um prefixo e uma máscara de "
+"rede"
 
 #, c-format
 msgid "Network '%1$s' is already running"
@@ -12795,12 +12825,13 @@ msgstr "Eventos de Rede"
 
 msgid "Network bandwidth tuning is not available in session mode"
 msgstr ""
+"Afinação de largura de banda de rede não está disponível em modo de sessão"
 
 msgid "Network config change transaction committed\n"
-msgstr ""
+msgstr "Transação de alteração de configuração de rede cometida\n"
 
 msgid "Network config change transaction rolled back\n"
-msgstr ""
+msgstr "Transação de alteração de configuração de rede revertida\n"
 
 msgid "Network config change transaction started\n"
 msgstr "Transação de alteração de configuração de rede iniciada\n"
@@ -12808,22 +12839,24 @@ msgstr "Transação de alteração de configuração de rede iniciada\n"
 #, c-format
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
 msgstr ""
+"Nome de ficheiro de configuração de rede '%1$s' não corresponde ao nome da "
+"rede '%2$s'"
 
 msgid "Network description not changed\n"
-msgstr ""
+msgstr "Descrição de rede não alterada\n"
 
 msgid "Network description updated successfully"
-msgstr ""
+msgstr "Descrição de rede atualizada com sucesso"
 
 #, c-format
 msgid "Network device %1$s already exists"
 msgstr "Dispositivo de rede %1$s já existe"
 
 msgid "Network device configuration is not supported on this platform"
-msgstr ""
+msgstr "Configuração de dispositivo de rede não é suportada nesta plataforma"
 
 msgid "Network device type is not supported"
-msgstr ""
+msgstr "Tipo de dispositivo de rede não é suportado"
 
 #, c-format
 msgid "Network filter %1$s XML configuration edited.\n"
@@ -12854,7 +12887,7 @@ msgstr "Vínculo de filtro de rede em %1$s criado a partir de %2$s\n"
 
 #, c-format
 msgid "Network filter binding on %1$s deleted\n"
-msgstr ""
+msgstr "Vínculo de filtro de rede em %1$s apagado\n"
 
 msgid "Network filter not found"
 msgstr "Filtro de rede não encontrado"
@@ -12869,13 +12902,13 @@ msgstr "Nome de interface de rede '%1$s' é muito longo"
 
 #, c-format
 msgid "Network is already in use by interface %1$s"
-msgstr ""
+msgstr "Rede já está a ser usada pela interface %1$s"
 
 msgid "Network migration data already present"
-msgstr ""
+msgstr "Dados de migração de rede já presentes"
 
 msgid "Network namespace support is recommended"
-msgstr ""
+msgstr "É recomendado suporte a espaço de nome de rede"
 
 msgid "Network not found"
 msgstr "A rede não foi encontrada"
@@ -12894,45 +12927,49 @@ msgstr "Porto de rede %1$s apagado\n"
 
 #, c-format
 msgid "Network port with UUID %1$s already exists"
-msgstr ""
+msgstr "Porto de rede com UUID %1$s já existe"
 
 #, c-format
 msgid "Network port with UUID %1$s does not exist"
-msgstr ""
+msgstr "Porto de rede com UUID %1$s não existe"
 
 msgid "Network title can't contain newlines"
-msgstr ""
+msgstr "Título de rede não pode conter novas linhas"
 
 msgid "Network title not changed\n"
-msgstr ""
+msgstr "Título de rede não alterado\n"
 
 msgid "Network title updated successfully"
-msgstr ""
+msgstr "Título de rede atualizado com sucesso"
 
 msgid "New disk media source was not specified"
-msgstr ""
+msgstr "Nova fonte de meio de disco não foi especificada"
 
 msgid "New resctrl 'id' cannot be NULL"
-msgstr ""
+msgstr "Novo 'id' de resctrl não pode ser NULO"
 
 msgid "New size of the block device, as scaled integer (default KiB)"
 msgstr ""
+"Novo tamanho do dispositivo de bloco, como inteiro escalado (predefinição "
+"KiB)"
 
 msgid "Nicdev support unavailable"
-msgstr ""
+msgstr "Suporte a nicdev não disponível"
 
 msgid "No CA certificate path set to match server key/cert"
 msgstr ""
+"Nenhum caminho de certificado CA que corresponde a chave/certificado do "
+"servidor"
 
 msgid "No DRM render nodes available"
-msgstr ""
+msgstr "Nenhuns nós renderizadores de DRM disponíveis"
 
 #, c-format
 msgid "No FD available at slot %1$zu"
-msgstr ""
+msgstr "Nenhum FD disponível na slot %1$zu"
 
 msgid "No IOThreads found for the domain"
-msgstr ""
+msgstr "Nenhuns IOThreads encontrados para o domínio"
 
 #, c-format
 msgid "No IP address for host '%1$s' found: %2$s"
