@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-29 19:32+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-07-29 19:33+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -23685,7 +23685,7 @@ msgid "cannot set initial memory size greater than the maximum memory size"
 msgstr ""
 
 msgid "cannot set memory higher than max memory"
-msgstr "Não pode definir memória mais alta que a memória máxima"
+msgstr "não pode definir memória mais alta que a memória máxima"
 
 #, c-format
 msgid "cannot set mode of '%1$s' to %2$04o"
@@ -23943,7 +23943,7 @@ msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
 msgid "change the current directory"
-msgstr "Mudar o directório atual."
+msgstr "mudar o directório atual"
 
 msgid "changed"
 msgstr ""
