@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-07-29 19:30+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -23045,7 +23045,7 @@ msgid "cannot get medium"
 msgstr "não pode obter meio"
 
 msgid "cannot get medium attachment type"
-msgstr ""
+msgstr "Não pode obter tipo de anexação de meio"
 
 msgid "cannot get medium attachments"
 msgstr ""
@@ -23685,7 +23685,7 @@ msgid "cannot set initial memory size greater than the maximum memory size"
 msgstr ""
 
 msgid "cannot set memory higher than max memory"
-msgstr ""
+msgstr "Não pode definir memória mais alta que a memória máxima"
 
 #, c-format
 msgid "cannot set mode of '%1$s' to %2$04o"
