@@ -1318,6 +1318,13 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             return false;
         }
 
+        /* Same for read-only status */
+        if (loader &&
+            loader->readonly == VIR_TRISTATE_BOOL_YES &&
+            flash->mode == QEMU_FIRMWARE_FLASH_MODE_COMBINED) {
+            VIR_DEBUG("Discarding read/write loader");
+            return false;
+        }
         if (loader &&
             loader->readonly == VIR_TRISTATE_BOOL_NO &&
             flash->mode != QEMU_FIRMWARE_FLASH_MODE_COMBINED) {
