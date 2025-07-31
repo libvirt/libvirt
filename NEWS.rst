@@ -51,6 +51,10 @@ v11.6.0 (unreleased)
 
     Additionally, number of supported consoles increased to 4.
 
+  * qemu: Add support for RBD namespaces
+
+    Allow specifying the 'namespace' within a RBD image pool.
+
 * **Improvements**
 
   * qemu: Change default SCSI controller model to ``virtio-scsi`` for ARM and RISC-V
@@ -83,6 +87,13 @@ v11.6.0 (unreleased)
     ``LIBVIRT_NSS_DEBUG`` environment variable. So far, there is no special
     meaning to its value.
 
+  * rpc: Removed requirement for TLS certificates to support 'key encipherment'
+
+    With TLS 1.3, key encipherment is not required even for RSA keys. Other key
+    types didn't even support it so they were wrongly refused even in cases when
+    they would work with libvirt. The TLS certificate validation now no longer
+    requires 'key encipherment' to be enabled.
+
 * **Bug fixes**
 
   * bhyve: Fix resetting of the autostart flag of the domain on destroy.
@@ -95,6 +106,14 @@ v11.6.0 (unreleased)
     filtered. It now handles iptables/ip6tables the same way as
     ebtables, creating the base chains only if they did not already
     exist.
+
+  * Fix systemd unit ordering for auto-shutdown of domains via the daemon
+
+    The ordering of systemd units created by libvirt for individual machines
+    needed to be adapted when the shutdown of VMs on host shutdown is done
+    via the virt daemon itself (rather than ``libvirt-guests.service``) to
+    ensure that the VMs are not terminated before the virt daemon can deal with
+    them.
 
 v11.5.0 (2025-07-01)
 ====================
