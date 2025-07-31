@@ -254,7 +254,7 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     return 0;
 }
 
-int
+void
 virCHDomainRefreshThreadInfo(virDomainObj *vm)
 {
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
@@ -291,8 +291,6 @@ virCHDomainRefreshThreadInfo(virDomainObj *vm)
     if (ncpus != maxvcpus)
         VIR_WARN("Mismatch in the number of cpus, expected: %u, actual: %zu",
                  maxvcpus, ncpus);
-
-    return 0;
 }
 
 virDomainDefParserConfig virCHDriverDomainDefParserConfig = {

@@ -62,7 +62,7 @@ void
 virCHDomainRemoveInactive(virCHDriver *driver,
                           virDomainObj *vm);
 
-int
+void
 virCHDomainRefreshThreadInfo(virDomainObj *vm);
 
 pid_t
