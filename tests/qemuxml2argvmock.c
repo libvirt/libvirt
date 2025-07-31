@@ -33,6 +33,7 @@
 #include "virscsivhost.h"
 #include "virtpm.h"
 #include "virutil.h"
+#include "virfile.h"
 #include "qemu/qemu_interface.h"
 #include "qemu/qemu_command.h"
 #include "domain_interface.h"
@@ -295,4 +296,38 @@ virNetDevSetMTU(const char *ifname G_GNUC_UNUSED,
                 int mtu G_GNUC_UNUSED)
 {
     return 0;
+}
+
+static char *(*real_virFileCanonicalizePath)(const char *path);
+
+char *
+virFileCanonicalizePath(const char *path)
+{
+    size_t i;
+    const char *fws[] = {
+        /* These are locations from our firmware descriptors
+         * stored in qemufirmwaredata/. */
+        "/usr/share/edk2/",
+        "/usr/share/OVMF/",
+        "/usr/share/AAVMF/",
+        "/usr/share/seabios/",
+
+        /* These are 'random' locations from domain XMLs stored
+         * in qemuxmlconfdata/. */
+        "/path/to/OVMF_CODE.fd",
+        "/path/to/guest_BOTH.fd",
+        "/path/to/OVMF_VARS.fd",
+    };
+
+    for (i = 0; i < G_N_ELEMENTS(fws); i++) {
+        if (STRPREFIX(path, fws[i])) {
+            return g_strdup(path);
+        }
+    }
+
+    if (!real_virFileCanonicalizePath) {
+        VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
+    }
+
+    return real_virFileCanonicalizePath(path);
 }
