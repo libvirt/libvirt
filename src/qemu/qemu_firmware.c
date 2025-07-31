@@ -1540,6 +1540,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
     bool requiresSMM = false;
     bool supportsSecureBoot = false;
     bool hasEnrolledKeys = false;
+    bool isConfidential = false;
 
     for (i = 0; i < fw->nfeatures; i++) {
         switch (fw->features[i]) {
@@ -1552,13 +1553,15 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
             hasEnrolledKeys = true;
             break;
-        case QEMU_FIRMWARE_FEATURE_NONE:
-        case QEMU_FIRMWARE_FEATURE_ACPI_S3:
-        case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
         case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
+            isConfidential = true;
+            break;
+        case QEMU_FIRMWARE_FEATURE_NONE:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S3:
+        case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_LAST:
@@ -1566,7 +1569,15 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         }
     }
 
-    if ((supportsSecureBoot != requiresSMM) ||
+    /*
+     * NB, SMM is normally required to protect EFI variables from
+     * unauthorized guest modifications, but confidential VMs don't
+     * support SMM. This is OK, because EFI binaries for confidential
+     * VMs also don't support EFI variable storage in NVRAM, instead
+     * the secureboot state is hardcoded to enabled.
+     */
+    if ((!isConfidential &&
+         (supportsSecureBoot != requiresSMM)) ||
         (hasEnrolledKeys && !supportsSecureBoot)) {
         VIR_WARN("Firmware description '%s' has invalid set of features: "
                  "%s = %d, %s = %d, %s = %d",
