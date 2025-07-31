@@ -276,10 +276,15 @@ virCHDomainRefreshThreadInfo(virDomainObj *vm)
 
         /* TODO: hotplug support */
         vcpuInfo = &info[i].vcpuInfo;
-        vcpu = virDomainDefGetVcpu(vm->def, vcpuInfo->cpuid);
-        vcpupriv = CH_DOMAIN_VCPU_PRIVATE(vcpu);
-        vcpupriv->tid = vcpuInfo->tid;
-        ncpus++;
+
+        if ((vcpu = virDomainDefGetVcpu(vm->def, vcpuInfo->cpuid))) {
+            vcpupriv = CH_DOMAIN_VCPU_PRIVATE(vcpu);
+            vcpupriv->tid = vcpuInfo->tid;
+            ncpus++;
+        } else {
+            VIR_WARN("vcpu '%d' reported by hypervisor but not found in definition",
+                     vcpuInfo->cpuid);
+        }
     }
 
     /* TODO: Remove the warning when hotplug is implemented.*/
