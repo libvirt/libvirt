@@ -36,6 +36,11 @@ v11.8.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix selection of stateless/combined firmware
+
+    A stateless firmware will now be correctly chosen when appropriate,
+    e.g. for domains configured to use SEV-SNP.
+
 
 v11.7.0 (2025-09-01)
 ====================
