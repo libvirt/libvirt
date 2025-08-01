@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-30 03:43+0000\n"
+"PO-Revision-Date: 2025-08-01 08:04+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -1005,15 +1005,15 @@ msgstr "%1$s: esperado um inteiro sinalizado para parâmetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string for '%2$s' parameter"
-msgstr "%1$s: esperado uma cadeia de texto para parâmetro '%2$s'"
+msgstr "%1$s: esperado uma string de texto para parâmetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string list for '%2$s' parameter"
-msgstr "%1$s: esperado uma lista de cadeias para parâmetro '%2$s'"
+msgstr "%1$s: esperado uma lista de strings para parâmetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected a string or string list for '%2$s' parameter"
-msgstr "%1$s: esperado uma cadeia ou lista de cadeias para parâmetro '%2$s'"
+msgstr "%1$s: esperado uma string ou lista de strings para parâmetro '%2$s'"
 
 #, c-format
 msgid "%1$s: expected an unsigned integer for '%2$s' parameter"
@@ -3033,15 +3033,15 @@ msgid "Cannot complete within timeout period"
 msgstr "Não pode completar dentro do período de tempo limite"
 
 msgid "Cannot convert domain name to wide character string"
-msgstr "Não pode converter nome de domínio para cadeia de caracteres ampla"
+msgstr "Não pode converter nome de domínio para string de caracteres ampla"
 
 #, c-format
 msgid "Cannot convert socket address to string: %1$s"
-msgstr "Não pode converter endereço de socket em cadeia: %1$s"
+msgstr "Não pode converter endereço de socket em string: %1$s"
 
 msgid "Cannot convert wide character string back to multi-byte domain name"
 msgstr ""
-"Não pode converter cadeia de caracteres ampla de volta para nome de domínio "
+"Não pode converter string de caracteres ampla de volta para nome de domínio "
 "multi-byte"
 
 #, c-format
@@ -3466,7 +3466,7 @@ msgid "Cannot parse cbm_mask from resctrl cache info"
 msgstr "Não pode analisar cbm_mask a partir da informação de cache resctrl"
 
 msgid "Cannot parse mode string"
-msgstr "Não pode analisar cadeia de modo"
+msgstr "Não pode analisar string de modo"
 
 #, c-format
 msgid "Cannot parse resctrl schema level '%1$s'"
@@ -3788,7 +3788,7 @@ msgid "Cgroup backend '%1$s' already registered."
 msgstr "Backend cgroup '%1$s' já registrado."
 
 msgid "Chain name contains invalid characters"
-msgstr "Nome de cadeia contém caracteres inválidos"
+msgstr "Nome de string contém caracteres inválidos"
 
 msgid "Change bottom limit to number of workers."
 msgstr "Mudar limite do fundo para número de trabalhadores."
@@ -4321,7 +4321,7 @@ msgstr ""
 "domínio."
 
 msgid "Copy a disk backing image chain to dest."
-msgstr "Copiar uma cadeia de imagem de apoio de disco para destino."
+msgstr "Copiar uma string de imagem de apoio de disco para destino."
 
 msgid "Copy aborted"
 msgstr "Cópia abortada"
@@ -5064,7 +5064,7 @@ msgstr "Não pude analisar UUID de '%1$s'"
 
 #, c-format
 msgid "Could not parse UUID from string '%1$s'"
-msgstr "Não pude analisar UUID da cadeia '%1$s'"
+msgstr "Não pude analisar UUID da string '%1$s'"
 
 #, c-format
 msgid "Could not parse VI API version '%1$s'"
@@ -5088,7 +5088,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
-msgstr "Não pude analisar prioridade de cadeia '%1$s'"
+msgstr "Não pude analisar prioridade de string '%1$s'"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -9259,12 +9259,12 @@ msgid "Feature %1$s required by CPU model %2$s not found"
 msgstr "Funcionalidade %1$s requirida por modelo de CPU %2$s não encontrada"
 
 msgid "Fibre Channel 'appid' is not a printable string"
-msgstr "Canal de Fibra 'appid' não é uma cadeia que se possa imprimir"
+msgstr "Canal de Fibra 'appid' não é uma string que se possa imprimir"
 
 #, c-format
 msgid "Fibre Channel 'appid' string length must be between [%1$d, %2$d]"
 msgstr ""
-"Comprimento da cadeia Canal de Fibra 'appid' tem de estar entre [%1$d, %2$d]"
+"Comprimento da string Canal de Fibra 'appid' tem de estar entre [%1$d, %2$d]"
 
 #, c-format
 msgid "Field '%1$s' too long for destination"
@@ -10523,8 +10523,8 @@ msgid ""
 "Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
 "the following prefixes: "
 msgstr ""
-"Nome de cadeia inválido '%1$s'. Por favor use um nome de cadeia chamado "
-"'%2$s' ou qualquer um dos seguintes prefixos: "
+"Nome de string inválido '%1$s'. Por favor use um nome de string chamado '%2$"
+"s' ou qualquer um dos seguintes prefixos: "
 
 #, c-format
 msgid "Invalid character '%1$c' in id '%2$s' of network '%3$s'"
@@ -11260,7 +11260,7 @@ msgstr ""
 "formato aninhado"
 
 msgid "JSON string array contains non-string element"
-msgstr "Matriz de cadeia JSON contém elemento não-cadeia"
+msgstr "Matriz de string JSON contém elemento não-string"
 
 #, c-format
 msgid "Job submission failed on interface '%1$s'"
@@ -12650,7 +12650,7 @@ msgstr "Argumento NULO - %1$p %2$p"
 
 #, c-format
 msgid "NULL string parameter '%1$s'"
-msgstr "Parâmetro de cadeia NULO '%1$s'"
+msgstr "Parâmetro de string NULO '%1$s'"
 
 #, c-format
 msgid "NULL value for field '%1$s'"
@@ -12762,7 +12762,7 @@ msgstr "Nome"
 
 #, c-format
 msgid "Name of chain is longer than %1$u characters"
-msgstr "Nome de cadeia é maior que %1$u caracteres"
+msgstr "Nome de string é maior que %1$u caracteres"
 
 msgid "Name:"
 msgstr "Nome:"
@@ -13312,51 +13312,57 @@ msgstr "Nenhuma transação está definida"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %1$s"
-msgstr ""
+msgstr "Nenhuns Vf utilizáveis presentes em SRIOV PF %1$s"
 
 #, c-format
 msgid "No usable target index found for %1$d"
-msgstr ""
+msgstr "Nenhum índice de alvo utilizável encontrado para %1$d"
 
 msgid "No usable vsock found"
-msgstr ""
+msgstr "Nenhum vsock utilizável encontrado"
 
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
 "interactive authentication"
 msgstr ""
+"Nenhuma chamada de retorno de interação de utilizador fornecida: Não posso "
+"obter entrada a partir de autenticação interativa de teclado"
 
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
 msgstr ""
+"Nenhuma chamada de retorno de interação de utilizador fornecida: Não posso "
+"recuperar frase passe de chave privada"
 
 msgid ""
 "No user interaction callback provided: Can't verify the session host key"
 msgstr ""
+"Nenhuma chamada de retorno de interação de utilizador fornecida: Não posso "
+"verificar a chave de máquina de sessão"
 
 #, c-format
 msgid "No valid cgroup for machine %1$s"
-msgstr ""
+msgstr "Nenhum cgroup válido para máquina %1$s"
 
 #, c-format
 msgid "No value supplied for <initenv name='%1$s'> element"
-msgstr ""
+msgstr "Nenhum valor fornecido para elemento <initenv name='%1$s'>"
 
 #, c-format
 msgid "No yet handled value '%1$s' for VMX entry '%2$s'"
-msgstr ""
+msgstr "Valor ainda não manuseado '%1$s' para entrada VMX '%2$s'"
 
 #, c-format
 msgid "No zPCI %1$s to reserve"
-msgstr ""
+msgstr "Nenhum zPCI %1$s para reservar"
 
 #, c-format
 msgid "Node %1$d:\n"
-msgstr ""
+msgstr "Nó %1$d:\n"
 
 #, c-format
 msgid "Node %1$zu out of range"
-msgstr ""
+msgstr "Nó %1$zu fora de alcance"
 
 msgid "Node Device Events"
 msgstr "Eventos de Dispositivo de Nó"
@@ -13381,58 +13387,60 @@ msgid "Node device not found: %1$s"
 msgstr "Dispositivo de nó não encontrado: %1$s"
 
 msgid "Non-blocking streams are not supported yet"
-msgstr ""
+msgstr "Fluxos de não-bloqueio ainda não são suportados"
 
 msgid "Non-cancelable task is blocked by an unanswered question"
-msgstr ""
+msgstr "Tarefa não-cancelável está bloqueada por uma questão não respondida"
 
 msgid "Non-empty feature list specified without CPU model"
-msgstr ""
+msgstr "Lista de funcionalidades não-vazia especificada sem modelo de CPU"
 
 msgid "Non-endpoint PCI devices cannot be assigned to guests"
-msgstr ""
+msgstr "Dispositivos PCI não-ponto final não podem ser atribuídos a convidados"
 
 msgid "None"
 msgstr "Nenhum"
 
 msgid ""
 "None of the requested authentication methods are supported by the server"
-msgstr ""
+msgstr "Nenhum dos métodos de autenticação pedidos é suportado pelo servidor"
 
 msgid "Normal data:"
-msgstr ""
+msgstr "Dados normais:"
 
 msgid "Normal pages:"
-msgstr ""
+msgstr "Páginas normais:"
 
 msgid "Not a download stream"
-msgstr ""
+msgstr "Não é um fluxo de descarga"
 
 msgid "Not all servers restored, cannot run server"
-msgstr ""
+msgstr "Nem todos os servidores restaurados, não posso correr servidor"
 
 msgid "Not an upload stream"
-msgstr ""
+msgstr "Não é um fluxo de envio"
 
 #, c-format
 msgid "Not detaching active device %1$s"
 msgstr "A não desanexar dispositivo activo %1$s"
 
 msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+msgstr "Não foram passados argumentos suficientes, nada a definir"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%1$s'"
-msgstr ""
+msgstr "Espaço livre não suficiente em pool para volume '%1$s'"
 
 #, c-format
 msgid ""
 "Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
 "scope type '%4$s'"
 msgstr ""
+"Espaço não suficiente para alocação de %1$llu bytes para nível %2$u cache %3$"
+"u tipo de escopo '%4$s'"
 
 msgid "Not enough space left in storage pool"
-msgstr ""
+msgstr "Espaço e sobra não suficiente em pool de armazenamento"
 
 #, c-format
 msgid "Not reattaching active device %1$s"
@@ -13440,344 +13448,367 @@ msgstr "A não reanexar dispositivo activo %1$s"
 
 #, c-format
 msgid "Not resetting active device %1$s"
-msgstr ""
+msgstr "A não reiniciar dispositivo activo %1$s"
 
 #, sh-format
 msgid "Not shutting down transient guests on URI: $uri: "
-msgstr ""
+msgstr "A não desligar convidados transientes em URI: $uri: "
 
 msgid "Not supported"
 msgstr "Não suportado"
 
 msgid "Not supported on this platform"
-msgstr ""
+msgstr "Não suportado nesta plataforma"
 
 #, sh-format
 msgid "Not suspending transient guests on URI: $uri: "
-msgstr ""
+msgstr "A não suspender convidados transientes em URI: $uri: "
 
 msgid "Now in mirroring phase"
-msgstr ""
+msgstr "Agora em fase de espelhamento"
 
 msgid "Now in synchronized phase"
-msgstr ""
+msgstr "Agora em fase sincronizada"
 
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
-msgstr ""
+msgstr "Número de CPUs em <numa> excede a contagem <vcpu>"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
-msgstr ""
+msgstr "Número de CPUs em <numa> excede a contagem vcpu máxima desejada"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
 msgstr ""
+"Número de registos de estatutos de domínio é %1$d, o que excede o limite "
+"máximo: %2$d"
 
 #, c-format
 msgid "Number of interfaces, %1$d exceeds the max limit: %2$d"
-msgstr ""
+msgstr "Número de interfaces, %1$d excede o limite máximo: %2$d"
 
 #, c-format
 msgid "Number of keys %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "Número de chaves %1$d, o que excede o limite máximo: %2$d"
 
 #, c-format
 msgid "Number of leases is %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "Número de alugueres é %1$d, o que excede o limite máximo: %2$d"
 
 #, c-format
 msgid "Number of msgs %1$d, which exceeds max limit: %2$d"
-msgstr ""
+msgstr "Número de mensagens %1$d, o que excede o limite máximo: %2$d"
 
 msgid "Number of shown CPUs at most"
-msgstr ""
+msgstr "Número menos CPUs mostradas no máximo"
 
 #, c-format
 msgid "Number of stats entries is %1$d, which exceeds max limit: %2$d"
 msgstr ""
+"Número de entradas de estatutos é %1$d, o que excede o limite máximo: %2$d"
 
 msgid "Number of vCPUs should be >= 1"
-msgstr ""
+msgstr "Número de vCPUs deveria ser >= 1"
 
 #, c-format
 msgid "Numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
+"Valor numérico '%1$s' para opção <%2$s> está mal formado ou fora de alcance"
 
 #, c-format
 msgid "Numeric value '%1$u' for <%2$s> option is malformed or out of range"
 msgstr ""
+"Valor numérico '%1$u' para opção <%2$s> está mal formado ou fora de alcance"
 
 msgid "OS Type:"
 msgstr "Tipo de SO:"
 
 msgid "O_DIRECT read needs entire seekable file"
-msgstr ""
+msgstr "Leitura O_DIRECT precisa de ficheiro sondável inteiro"
 
 msgid "O_DIRECT unsupported on this platform"
-msgstr ""
+msgstr "O_DIRECT não suportado nesta plataforma"
 
 msgid "O_DIRECT write needs empty seekable file"
-msgstr ""
+msgstr "Escrita O_DIRECT precisa de ficheiro sondável vazio"
 
 msgid "ObjectContent does not reference a virtual machine"
-msgstr ""
+msgstr "ObjectContent não faz referência a uma máquina virtual"
 
 msgid "Offset must be zero for this lock manager"
-msgstr ""
+msgstr "Desvio tem de ser zero para este gestor de tranca"
 
 msgid "One of options --enable or --disable is required by option --cpulist"
-msgstr ""
+msgstr "Uma das opções --enable ou --disable é requirida pela opção --cpulist"
 
 msgid "One or more references were leaked after disconnect from the hypervisor"
-msgstr ""
+msgstr "Uma ou mais referências foram vazadas após desligar do hipervisor"
 
 #, c-format
 msgid "Only %1$d CPUs available to show\n"
-msgstr ""
+msgstr "Apenas %1$d CPUs disponíveis para mostrar\n"
 
 #, c-format
 msgid "Only '%1$s' filesystem type is supported"
-msgstr ""
+msgstr "Apenas '%1$s' tipo de sistema de ficheiros é suportado"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
-msgstr ""
+msgstr "Apenas agendamentos 'credit' e 'credit2' são suportados"
 
 msgid "Only 'nmdm' and 'tcp' console types are supported"
-msgstr ""
+msgstr "Apenas tipos de consola 'nmdm' e 'tcp' são suportados"
 
 msgid "Only 'random' backend model is supported"
-msgstr ""
+msgstr "Apenas modelo de backend 'random' é suportado"
 
 msgid "Only 'raw' protocol is supported for TCP sockets"
-msgstr ""
+msgstr "Apenas protocolo 'raw' é suportado para sockets TCP"
 
 msgid "Only 'virio' RNG device model is supported"
-msgstr ""
+msgstr "Apenas modelo de dispositivo RNG 'virio' é suportado"
 
 msgid "Only /dev/random source is supported"
-msgstr ""
+msgstr "Apenas fonte /dev/random é suportada"
 
 msgid "Only 1 IDE controller is supported"
-msgstr ""
+msgstr "Apenas 1 controlador IDE é suportado"
 
 msgid "Only 1 cluster per die is supported"
-msgstr ""
+msgstr "Apenas 1 agrupamento por die é suportado"
 
 msgid "Only 1 die per socket is supported"
-msgstr ""
+msgstr "Apenas 1 die por socket é suportado"
 
 msgid "Only 1 fdc bus is supported"
-msgstr ""
+msgstr "Apenas 1 barramento fdc é suportado"
 
 msgid "Only 1 fdc controller is supported"
-msgstr ""
+msgstr "Apenas 1 controlador fdc é suportado"
 
 msgid "Only 1 thread per core is supported"
-msgstr ""
+msgstr "Apenas 1 linha de execução por núcleo é suportado"
 
 msgid "Only EFI firmware permits NVRAM"
-msgstr ""
+msgstr "Apenas firmware EFI permite NVRAM"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
-msgstr ""
+msgstr "Apenas endereços IPv4 ou IPv6 podem ser usados com um prefixo"
 
 msgid "Only PCI device addresses with function=0 are supported"
-msgstr ""
+msgstr "Apenas endereços de dispositivo PCI com function=0 são suportados"
 
 msgid "Only PTY console types are supported"
-msgstr ""
+msgstr "Apenas tipos de consola PTY são suportados"
 
 msgid "Only RANDOM backend is supported for RNG devices"
-msgstr ""
+msgstr "Apenas o backend RANDOM é suportado para dispositivos RNG"
 
 msgid "Only VNC supported"
-msgstr ""
+msgstr "Apenas VNC suportado"
 
 msgid "Only a single ACPI table is supported"
-msgstr ""
+msgstr "Apenas uma única tabela ACPI é suportada"
 
 msgid "Only a single IDE controller is supported for this machine type"
-msgstr ""
+msgstr "Apenas um único controlador IDE é suportado para este tipo de máquina"
 
 msgid "Only a single RNG device can be configured for this domain"
-msgstr ""
+msgstr "Apenas um único dispositivo RNG pode ser configurado para este domínio"
 
 msgid "Only a single console can be configured for this domain"
-msgstr ""
+msgstr "Apenas uma única consola pode ser configurada para este domínio"
 
 msgid "Only a single console or serial can be configured for this domain"
 msgstr ""
+"Apenas uma única consola ou série pode ser configurada para este domínio"
 
 msgid "Only a single serial can be configured for this domain"
-msgstr ""
+msgstr "Apenas um único série pode ser configurado para este domínio"
 
 msgid ""
 "Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
 "security policy"
 msgstr ""
+"Apenas bit0(debug) e bit28(sept-ve-disable) são políticas suportadas de "
+"segurança de lançamento TDX da Intel"
 
 msgid "Only bridged veth devices can be detached"
-msgstr ""
+msgstr "Apenas dispositivos veth em ponte podem ser desanexados"
 
 msgid "Only disk and block storage types are supported by vz driver."
 msgstr ""
+"Apenas os tipos de armazenamento disco e bloco são suportados pelo "
+"controlador vz."
 
 msgid "Only disk image supported for resize"
-msgstr ""
+msgstr "Apenas imagem de disco suportada para redimensionar"
 
 msgid ""
 "Only emulated CPUs are available, performance will be significantly limited"
 msgstr ""
+"Apenas CPUs emulados estão disponíveis, a performance será "
+"significativamente limitada"
 
 #, c-format
 msgid ""
 "Only end address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr ""
+"Apenas endereço final '%1$s' especificado em <nat> em <forward> na rede "
+"'%2$s'"
 
 msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr ""
+"Apenas sistemas de ficheiros baseados em ficheiro ou baseados em volume são "
+"suportados pelo controlador vz."
 
 msgid "Only four serial ports are supported"
-msgstr ""
+msgstr "Apenas quatro portos série são suportados"
 
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr ""
+"Apenas discos rijos e leitores de cd são suportados pelo controlador vz."
 
 msgid "Only ide and scsi disk support wwn"
-msgstr ""
+msgstr "Apenas disco ide e scsi suportam wwn"
 
 msgid "Only ide, sata and scsi disk supports 'product'"
-msgstr ""
+msgstr "Apenas disco ide, sata e scsi suportam 'product'"
 
 msgid "Only listening TCP sockets are supported"
-msgstr ""
+msgstr "Apenas sockets TCP de escuta são suportados"
 
 msgid "Only luks encryption is supported for raw files"
-msgstr ""
+msgstr "Apenas encriptação luks é suportada para ficheiros crús"
 
 msgid "Only mac option can be specified for virt-net"
-msgstr ""
+msgstr "Apenas a opção mac pode ser especificada para virt-net"
 
 msgid "Only native iomode is supported by vz driver."
-msgstr ""
+msgstr "Apenas iomode nativo é suportado pelo controlador vz."
 
 #, c-format
 msgid ""
 "Only one <address> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
+"Apenas um elemento <address> é permitido em <nat> em <forward> na rede %1$s"
 
 #, c-format
 msgid "Only one <nat> element is allowed in <forward> of network %1$s"
-msgstr ""
+msgstr "Apenas um elemento <nat> é permitido em <forward> da rede %1$s"
 
 #, c-format
 msgid "Only one <pf> element is allowed in <forward> of network %1$s"
-msgstr ""
+msgstr "Apenas um elemento <pf> é permitido em <forward> da rede %1$s"
 
 #, c-format
 msgid ""
 "Only one <port> element is allowed in <nat> in <forward> in network %1$s"
 msgstr ""
+"Apenas um elemento <port> é permitido em <nat> em <forward> na rede %1$s"
 
 msgid "Only one IPv4 address per interface is allowed"
-msgstr ""
+msgstr "Apenas é permitido um endereço IPv4 por interface"
 
 msgid "Only one IPv6 address per interface is allowed"
-msgstr ""
+msgstr "Apenas é permitido um endereço IPv6 por interface"
 
 msgid "Only one argument from --table and --uuid may be specified."
-msgstr ""
+msgstr "Apenas um argumento de --table e --uuid pode ser especificado."
 
 msgid "Only one argument from --table, --name and --uuid may be specified."
-msgstr ""
+msgstr "Apenas um argumento de --table , --name e --uuid pode ser especificado."
 
 msgid "Only one boot device is supported"
-msgstr ""
+msgstr "Apenas um dispositivo de arranque é suportado"
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
+"Apenas um método de compressão pode ser especificado com compressão paralela"
 
 msgid "Only one hostdev of model vfio-ap is supported"
-msgstr ""
+msgstr "Apenas um hostdev do modelo vfio-ap é suportado"
 
 msgid "Only one primary video device is supported"
-msgstr ""
+msgstr "Apenas um dispositivo de vídeo primário é suportado"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
-msgstr ""
+msgstr "Apenas um dispositivo vgpu pode ter 'ramfb' activo"
 
 msgid "Only pflash loader type permits NVRAM"
-msgstr ""
+msgstr "Apenas o tipo de carregar pflash permite NVRAM"
 
 msgid "Only ploop disk images are supported by vz driver."
-msgstr ""
+msgstr "Apenas imagens de disco ploop são suportadas pelo controlador vz."
 
 msgid "Only ploop fs driver is supported by vz driver."
-msgstr ""
+msgstr "Apenas o controlador fs ploop é suportado pelo controlador vz."
 
 msgid "Only read-only pflash is supported."
-msgstr ""
+msgstr "Apenas pflash de só-leitura é suportado."
 
 msgid "Only scsi disk supports 'vendor'"
-msgstr ""
+msgstr "Apenas disco scsi suporta 'vendor'"
 
 #, c-format
 msgid ""
 "Only start address '%1$s' specified in <nat> in <forward> in network '%2$s'"
 msgstr ""
+"Apenas endereço inicial '%1$s' especificado em <nat> em <forward> na rede "
+"'%2$s'"
 
 msgid "Only tap devices supported"
-msgstr ""
+msgstr "Apenas dispositivos tap suportados"
 
 msgid ""
 "Only the PCI controller with index 0 can have target index 0, and vice versa"
 msgstr ""
+"Apenas o controlador PCI com índice 0 pode ter alvo índice 0, e vice versa"
 
 msgid "Only the first console can be a serial port"
-msgstr ""
+msgstr "Apenas a primeira consola pode ser um porto série"
 
 msgid "Only the init process may be killed"
-msgstr ""
+msgstr "Apenas o processo de iniciação pode ser morto"
 
 #, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
-msgstr ""
+msgstr "Apenas tipos de barramento virtio são suportados para '%1$s'"
 
 msgid "Only virtio model is supported for RNG devices"
-msgstr ""
+msgstr "Apenas o modelo virtio é suportado para dispositivos RNG"
 
 msgid "Only vpxmigr:// migration URIs are supported"
-msgstr ""
+msgstr "Apenas URIs de migração vpxmigr:// são suportados"
 
 msgid "Only x509 certificates are supported"
-msgstr ""
+msgstr "Apenas certificados x509 são suportados"
 
 msgid "Open domain device"
-msgstr ""
+msgstr "Abrir dispositivo de domínio"
 
 msgid "Open domain graphics"
-msgstr ""
+msgstr "Abrir gráficos de domínio"
 
 msgid "Open domain namespace"
-msgstr ""
+msgstr "Abrir espaço de nome de domínio"
 
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
-msgstr ""
+msgstr "OpenRemoteSession/LaunchVMProcess falhou, domínio não pode ser iniciado"
 
 msgid "OpenVZ control file /proc/vz does not exist"
-msgstr ""
+msgstr "Ficheiro de controle OpenVZ /proc/vz não existe"
 
 msgid "OpenVZ control file /proc/vz is not accessible"
-msgstr ""
+msgstr "Ficheiro de controle OpenVZ /proc/vz não está acessível"
 
 msgid "Opening domain devices requires authorization"
-msgstr ""
+msgstr "Abrir dispositivos de domínio requer autorização"
 
 msgid "Opening domain graphics console requires authorization"
-msgstr ""
+msgstr "Abrir consola gráfica de domínio requer autorização"
 
 msgid "Opening domain namespaces requires authorization"
-msgstr ""
+msgstr "Abrir espaços de nome de domínio requer autorização"
 
 msgid "Operation cancelled by client"
 msgstr "Operação cancelada pelo cliente"
@@ -13797,61 +13828,67 @@ msgid ""
 "Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
 "'%3$s' and modelName '%4$s'"
 msgstr ""
+"Opção '%1$s' tem valor inválido para controlador PCI com índice '%2$d', "
+"modelo '%3$s' e modelName '%4$s'"
 
 #, c-format
 msgid "Option '%1$s' is not supported by '%2$s' device with this QEMU binary"
 msgstr ""
+"Opção '%1$s' não é suportada pelo dispositivo '%2$s' com este binário QEMU"
 
 #, c-format
 msgid ""
 "Option '%1$s' is not valid for PCI controller with index '%2$d', model "
 "'%3$s' and modelName '%4$s'"
 msgstr ""
+"Opção '%1$s' não é válida para controlador PCI com índice '%2$d', modelo '%3$"
+"s' e modelName '%4$s'"
 
 #, c-format
 msgid "Option --%1$s is required by option --%2$s"
-msgstr ""
+msgstr "Opção --%1$s é requirida pela opção --%2$s"
 
 msgid "Option --all is incompatible with --inactive"
-msgstr ""
+msgstr "Opção --all é incompatível com --inactive"
 
 msgid "Option --file is required"
-msgstr ""
+msgstr "Opção --file é requirida"
 
 msgid "Option --transient is incompatible with --persistent and --inactive"
-msgstr ""
+msgstr "Opção --transient é incompatível com --persistent e --inactive"
 
 msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
+"Opção --tree é incompatível com --cap, --inactive, --persistent e --transient"
 
 msgid "Option argument is empty"
-msgstr ""
+msgstr "Argumento opção está vazio"
 
 msgid "Optional flags or --rawstats are not supported by the daemon"
-msgstr ""
+msgstr "Bandeiras opcionais ou --rawstats não são suportados pelo daemon"
 
 #, c-format
 msgid "Options --%1$s and --%2$s are mutually exclusive"
-msgstr ""
+msgstr "Opções --%1$s e --%2$s são mutuamente exclusivas"
 
 msgid "Options:"
 msgstr "Opções:"
 
 msgid "Other tasks are pending for this domain"
-msgstr ""
+msgstr "Outras tarefas estão pendentes para este domínio"
 
 #, c-format
 msgid "Our own certificate %1$s failed validation against %2$s: %3$s"
-msgstr ""
+msgstr "O seu próprio certificado %1$s falhou a validação contra %2$s: %3$s"
 
 msgid "Out of memory"
 msgstr "Memória esgotada"
 
 #, c-format
 msgid "Out of space while reading log output: %1$s"
-msgstr ""
+msgstr "Espaço esgotado ao ler saída de relatório: %1$s"
 
 msgid "Outgoing migration"
 msgstr "Migração para fora"
@@ -13907,90 +13944,104 @@ msgid "Output the vol information as an XML dump to stdout."
 msgstr "Devolve informação do volume numa descarga XML para a saída standard."
 
 msgid "Overlapping vcpus in resctrls"
-msgstr ""
+msgstr "vcpus sobrepostas em resctrls"
 
 msgid "PASS"
-msgstr ""
+msgstr "PASSE"
 
 #, c-format
 msgid ""
 "PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
 "be larger than bus"
 msgstr ""
+"Controlador PCI no índice %1$d (0x%2$02x) tem barramento='0x%3$02x', mas o "
+"índice tem de ser maior que o barramento"
 
 #, c-format
 msgid "PCI controller busNr '%1$d' out of range - must be 1-254"
 msgstr ""
+"Número de barramento de controlador PCI '%1$d' fora de alcance - tem de ser "
+"1-254"
 
 #, c-format
 msgid "PCI controller chassis '%1$d' out of range - must be 0-255"
-msgstr ""
+msgstr "Chassis de controlador PCI '%1$d' fora de alcance - tem de ser 0-255"
 
 #, c-format
 msgid "PCI controller chassisNr '%1$d' out of range - must be 1-255"
 msgstr ""
+"Número de chassis de controlador PCI '%1$d' fora de alcance - tem de ser "
+"1-255"
 
 #, c-format
 msgid "PCI controller index %1$d too high, maximum is 255"
-msgstr ""
+msgstr "Índice de controlador PCI %1$d muito alto, máximo é 255"
 
 msgid "PCI controller model was not set correctly"
-msgstr ""
+msgstr "Modelo de controlador PCI não foi definido corretamente"
 
 #, c-format
 msgid "PCI controller port '%1$d' out of range - must be 0-255"
-msgstr ""
+msgstr "Porto de controlador PCI '%1$d' fora de alcance - tem de ser 0-255"
 
 #, c-format
 msgid "PCI controller target index '%1$d' out of range - must be 0-30"
 msgstr ""
+"Índice de alvo de controlador PCI '%1$d' fora de alcance - tem de ser 0-30"
 
 #, c-format
 msgid ""
 "PCI device %1$04x:%2$02x:%3$02x.%4$x allocated from network %5$s is already "
 "in use by domain %6$s"
 msgstr ""
+"Dispositivo PCI %1$04x:%2$02x:%3$02x.%4$x alocado da rede %5$s já está a ser "
+"usado pelo domínio %6$s"
 
 #, c-format
 msgid "PCI device %1$s is in use"
-msgstr ""
+msgstr "Dispositivo PCI %1$s está a ser usado"
 
 #, c-format
 msgid "PCI device %1$s is in use by driver %2$s, domain %3$s"
 msgstr ""
+"Dispositivo PCI %1$s já está a ser usado pelo controlador %2$s, domínio %3$s"
 
 #, c-format
 msgid "PCI device %1$s is not assignable"
-msgstr ""
+msgstr "Dispositivo PCI %1$s não é atribuível"
 
 #, c-format
 msgid ""
 "PCI device '%1$04x:%2$02x:%3$02x.%4$x' can only be listed once in network "
 "%5$s"
 msgstr ""
+"Dispositivo PCI '%1$04x:%2$02x:%3$02x.%4$x' só pode ser listado ma vez na "
+"rede %5$s"
 
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
 msgstr ""
+"Dispositivos de máquina PCI têm de usar o tipo de endereço 'pci' ou "
+"'unassigned'"
 
 msgid "PID file (unless overridden by -p):"
-msgstr ""
+msgstr "Ficheiro PID (a menos que sobreposto por -p):"
 
 msgid "PID namespace support is required"
-msgstr ""
+msgstr "É requerido suporte a espaço de nome PID"
 
 msgid "PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"
-msgstr ""
+msgstr "Controlador USB PIIX3 no índice 0 tem de ter endereço PCI 0:0:1.2"
 
 #, c-format
 msgid "PMSuspend type %1$d not supported by libxenlight driver"
-msgstr ""
+msgstr "O tipo PMSuspend %1$d não é suportado pelo controlador libxenlight"
 
 msgid "PMSuspended"
-msgstr ""
+msgstr "PMSuspended"
 
 #, c-format
 msgid "PMU is always enabled for architecture '%1$s'"
-msgstr ""
+msgstr "PMU está sempre activo para arquitectura '%1$s'"
 
 msgid "POST operation failed"
 msgstr "A operação POST falhou"
@@ -14003,12 +14054,14 @@ msgstr "A operação POST falhou: %1$s"
 msgid ""
 "PTR domain for %1$s network with prefix %2$u cannot be automatically created"
 msgstr ""
+"Domínio PTR para rede %1$s com prefixo %2$u não pode ser criado "
+"automaticamente"
 
 msgid "PTY device is not yet assigned"
-msgstr ""
+msgstr "Dispositivo PTY ainda não está atribuído"
 
 msgid "PVH guest os type not supported"
-msgstr ""
+msgstr "Tipo de so convidado PVH não suportado"
 
 msgid "Page size:"
 msgstr "Tamanho da página:"
@@ -14017,100 +14070,102 @@ msgid "Panicked"
 msgstr "Em pânico"
 
 msgid "Parallel devices are not supported by libxl"
-msgstr ""
+msgstr "Dispositivos paralelos não são suportados pelo libxl"
 
 #, c-format
 msgid "Parallel port index %1$d out of [0..2] range"
-msgstr ""
+msgstr "Índice de porto paralelo %1$d fora de alcance [0..2]"
 
 msgid "Parallel save is only supported with the 'sparse' save image format"
-msgstr ""
+msgstr "Salva paralela só é suportada com o formato de imagem de salva 'sparse'"
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
-msgstr ""
+msgstr "Parâmetro '%1$s' não é uma string"
 
 #, c-format
 msgid "Parameter '%1$s' is not supported by this kernel"
-msgstr ""
+msgstr "Parâmetro '%1$s' não é suportado por este kernel"
 
 msgid "Parameter 'min_guarantee' not supported by QEMU."
-msgstr ""
+msgstr "Parâmetro 'min_guarantee' não suportado pelo QEMU."
 
 msgid "Parent"
-msgstr "Pai"
+msgstr "Parent"
 
 #, c-format
 msgid ""
 "Parent attribute '%1$s' does not match parent '%2$s' determined for the "
 "'%3$s' wwnn/wwpn lookup."
 msgstr ""
+"Atributo parent '%1$s' não corresponde ao pai '%2$s' determinado para a "
+"pesquisa wwnn/wwpn '%3$s'."
 
 #, c-format
 msgid "Parent device %1$s is not capable of vport operations"
-msgstr ""
+msgstr "Dispositivo pai %1$s não é capaz de operações vport"
 
 msgid "Parent device's JSON object data is not an array"
-msgstr ""
+msgstr "Dados do objeto JSON do dispositivo pai não é uma matriz"
 
 msgid "Parent:"
 msgstr "Pai:"
 
 #, c-format
 msgid "Parsed JSON reply '%1$s' isn't an object"
-msgstr ""
+msgstr "Responta JSON analisada '%1$s' não é um objeto"
 
 #, c-format
 msgid "Partition path '%1$s' must start with '/'"
-msgstr ""
+msgstr "Caminho de partição '%1$s' tem de começar com '/'"
 
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr ""
+msgstr "Passar valor secreto como argumento de linha de comandos não é seguro!"
 
 #, c-format
 msgid "Passphrase for key '%1$s'"
-msgstr ""
+msgstr "Frase passe para chave '%1$s'"
 
 msgid "Password may not contain ',' character"
-msgstr ""
+msgstr "Palavra passe não pode conter o caractere ','"
 
 #, c-format
 msgid "Password set successfully for %1$s in %2$s"
-msgstr ""
+msgstr "Palavra passe definida com sucesso para %1$s em %2$s"
 
 msgid "Path"
 msgstr "Caminho"
 
 #, c-format
 msgid "Path %1$s too long for unix socket"
-msgstr ""
+msgstr "Caminho %1$s é muito longo para socket unix"
 
 #, c-format
 msgid "Path '%1$s' does not specify a compute resource"
-msgstr ""
+msgstr "Caminho '%1$s' não especifica um recurso de computação"
 
 #, c-format
 msgid "Path '%1$s' does not specify a datacenter"
-msgstr ""
+msgstr "Caminho '%1$s' não especifica um centro de dados"
 
 #, c-format
 msgid "Path '%1$s' does not specify a host system"
-msgstr ""
+msgstr "Caminho '%1$s' não especifica um sistema anfitrião"
 
 #, c-format
 msgid "Path '%1$s' ends with an excess item"
-msgstr ""
+msgstr "Caminho '%1$s' termina com um item em excesso"
 
 #, c-format
 msgid "Path '%1$s' is not accessible"
-msgstr ""
+msgstr "Caminho '%1$s' não é acessível"
 
 #, c-format
 msgid "Path '%1$s' must be a block device"
-msgstr ""
+msgstr "Caminho '%1$s' tem de ser um dispositivo de bloco"
 
 msgid "Path has to specify the datacenter and compute resource"
-msgstr ""
+msgstr "Caminho tem de especificar o centro de dados e recurso de computação"
 
 msgid "Paused"
 msgstr "Em pausa"
@@ -14120,36 +14175,43 @@ msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', no "
 "possible answers"
 msgstr ""
+"Questão pendente bloqueia execução de máquina virtual, a questão é '%1$s', "
+"nenhuma resposta possível"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s"
 msgstr ""
+"Questão pendente bloqueia execução de máquina virtual, a questão é '%1$s', "
+"respostas possíveis são %2$s"
 
 #, c-format
 msgid ""
 "Pending question blocks virtual machine execution, question is '%1$s', "
 "possible answers are %2$s, but no default answer is specified"
 msgstr ""
+"Questão pendente bloqueia execução de máquina virtual, a questão é '%1$s', "
+"respostas possíveis são %2$s, mas nenhuma resposta predefinida foi "
+"especificada"
 
 msgid "Per-node binding is not compatible with automatic NUMA placement."
-msgstr ""
+msgstr "Vinculação por-nó não é compatível com colocação NUMA automática."
 
 msgid "Perf not supported on this platform"
-msgstr ""
+msgstr "Perf não suportado nesta plataforma"
 
 msgid "Persistent"
-msgstr ""
+msgstr "Persistente"
 
 msgid "Persistent:"
-msgstr ""
+msgstr "Persistente:"
 
 msgid "Physical"
-msgstr ""
+msgstr "Física"
 
 msgid "Physical:"
-msgstr ""
+msgstr "Física:"
 
 msgid "Pin domain IOThreads to host physical CPUs."
 msgstr "Fixar IOThreads do domínio para as CPUs físicas da máquina."
@@ -14163,22 +14225,22 @@ msgstr ""
 
 #, c-format
 msgid "Plugin %1$s not accessible"
-msgstr ""
+msgstr "Plugin %1$s não acessível"
 
 #, c-format
 msgid "Policy kit denied action %1$s from <anonymous>"
-msgstr ""
+msgstr "Conjunto de política negou acção %1$s de <anonymous>"
 
 msgid "Polkit auth attempted, even though polkit is not available"
-msgstr ""
+msgstr "Autenticação polkit tentada, apesar de o polkit não estar disponível"
 
 #, c-format
 msgid "Poll on sock %1$d failed"
-msgstr ""
+msgstr "Poll em sock %1$d falhou"
 
 #, c-format
 msgid "Poll on sock %1$d timed out"
-msgstr ""
+msgstr "Poll em sock %1$d atingiu tempo limite"
 
 #, c-format
 msgid "Pool %1$s XML configuration edited.\n"
@@ -14237,7 +14299,7 @@ msgid "Pool %1$s unmarked as autostarted\n"
 msgstr "Pool %1$s desmarcado com arranque automático\n"
 
 msgid "Populate a disk from its backing image."
-msgstr ""
+msgstr "Povoar um disco a partir da sua imagem de apoio."
 
 msgid "Port Dev"
 msgstr ""
@@ -19178,7 +19240,7 @@ msgid "Unable to parse secret uuid '%1$s'"
 msgstr "Incapaz de analisar uuid de segredo '%1$s'"
 
 msgid "Unable to parse string parameter"
-msgstr "Incapaz de analisar parâmetro de cadeia"
+msgstr "Incapaz de analisar parâmetro de string"
 
 msgid "Unable to parse the xml"
 msgstr "Incapaz de analisar o xml"
@@ -24468,7 +24530,7 @@ msgid "copy_on_read is not supported with vhostuser disk"
 msgstr ""
 
 msgid "corrupted profileid string"
-msgstr "cadeia profileid corrompida"
+msgstr "string profileid corrompida"
 
 msgid "could not allocate memory"
 msgstr "não pude alocar memória"
@@ -27169,7 +27231,7 @@ msgid "failed to find iothread id for '%1$s'"
 msgstr "falhou ao encontrar id de iothread para '%1$s'"
 
 msgid "failed to find parent disk source in backing chain"
-msgstr "falhou ao encontrar fonte de disco pai em cadeia de apoio"
+msgstr "falhou ao encontrar fonte de disco pai em string de apoio"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%1$s'"
@@ -29496,7 +29558,7 @@ msgstr "protocolo de apoio inválido '%1$s'"
 
 #, c-format
 msgid "invalid backing protocol string '%1$s'"
-msgstr "cadeia de protocolo de apoio inválida '%1$s'"
+msgstr "string de protocolo de apoio inválida '%1$s'"
 
 #, c-format
 msgid "invalid capability_filters capability '%1$s'"
@@ -29906,7 +29968,7 @@ msgid ""
 "invalid string value for '%1$s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-"valor de cadeia inválido para propriedade de modelo de CPU de máquina '%1$s' "
+"valor de string inválido para propriedade de modelo de CPU de máquina '%1$s' "
 "na cache de capacidades do QEMU"
 
 #, c-format
@@ -31869,10 +31931,10 @@ msgid "missing iothread mapping for queue '%1$zd'"
 msgstr ""
 
 msgid "missing ivgen info name string"
-msgstr "a faltar cadeia de nome de informação ivgen"
+msgstr "a faltar string de nome de informação ivgen"
 
 msgid "missing job chain data"
-msgstr "a faltar dados de cadeia de tarefa"
+msgstr "a faltar dados de string de tarefa"
 
 msgid "missing kernel information"
 msgstr "falta a informação do kernel"
