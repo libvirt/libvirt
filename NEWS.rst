@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v11.6.0 (unreleased)
+v11.6.0 (2025-08-01)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -114,6 +110,7 @@ v11.6.0 (unreleased)
     via the virt daemon itself (rather than ``libvirt-guests.service``) to
     ensure that the VMs are not terminated before the virt daemon can deal with
     them.
+
 
 v11.5.0 (2025-07-01)
 ====================
