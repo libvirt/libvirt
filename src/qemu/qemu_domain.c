@@ -4348,9 +4348,7 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
             return VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
 
-        /* Allow piix3-uhci and pci-ohci (USB1) as fallback */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-            return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+        /* Allow pci-ohci (USB1) as fallback */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
             return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
 
@@ -4387,10 +4385,8 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
     }
 
     /* Most common architectures and machine types have been already
-     * handled above; for the remaining cases, use piix3-uhci or
-     * pci-ohci (USB1) as the most reasonable fallback */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-        return VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+     * handled above; for the remaining cases, use pci-ohci (USB1)
+     * as the most reasonable fallback */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
         return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
 

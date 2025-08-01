@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -kernel /media/ram/uImage \
 -initrd /media/ram/ramdisk \
 -append 'root=/dev/ram rw console=ttyS0,115200' \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1"}' \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
