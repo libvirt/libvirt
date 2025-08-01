@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-06-27 10:18+0000\n"
+"PO-Revision-Date: 2025-08-01 03:20+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -9985,19 +9985,19 @@ msgid "Integrity error in watchdog models"
 msgstr "와치독 모델에서 무결성 오류"
 
 msgid "Intel TDX launch security is not supported with PMU enabled"
-msgstr ""
+msgstr "인텔 TDX 실행 보안은 활성화된 PMU를 지원하지 않습니다"
 
 msgid "Intel TDX launch security is not supported with SMM enabled"
-msgstr ""
+msgstr "인텔 TDX 실행 보안은 활성화된 SMM을 지원하지 않습니다"
 
 msgid "Intel TDX launch security is not supported with pflash loader"
-msgstr ""
+msgstr "인텔 TDX 실행 보안은 pflash loader를 지원하지 않습니다"
 
 msgid "Intel TDX launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "인텔 TDX 실행 보안은 이와 같은 QEMU 바이너리를 지원하지 않습니다"
 
 msgid "Intel TDX launch security needs split kernel irqchip"
-msgstr ""
+msgstr "인텔 TDX 실행 보안은 분기 커널 irqchip이 필요합니다"
 
 msgid "Interface"
 msgstr "연결장치"
@@ -13288,13 +13288,13 @@ msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "'credit' 및 'credit2' 스케줄러만 지원됩니다"
 
 msgid "Only 'nmdm' and 'tcp' console types are supported"
-msgstr ""
+msgstr "'nmdm' 및 'tcp' 콘솔 유형만 지원됩니다"
 
 msgid "Only 'random' backend model is supported"
 msgstr "'random' 백엔드 모델만 지원됩니다"
 
 msgid "Only 'raw' protocol is supported for TCP sockets"
-msgstr ""
+msgstr "'raw' 통신규약만 TCP 소켓을 지원합니다"
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr "'virio' RNG 장치 모델만 지원됩니다"
