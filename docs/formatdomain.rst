@@ -60,7 +60,7 @@ General metadata
    between using the ``hwuuid`` element and simply providing an alternative UUID
    via a `SMBIOS System Information`_ specification is that the ``hwuuid`` affects
    all devices that expose the UUID to the guest.
-   :since:`Since 11.6.0 QEMU/KVM only`
+   :since:`Since 11.7.0 QEMU/KVM only`
 ``genid``
    :since:`Since 4.4.0`, the ``genid`` element can be used to add a Virtual
    Machine Generation ID which exposes a 128-bit, cryptographically random,
