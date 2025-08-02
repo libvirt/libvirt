@@ -72,8 +72,9 @@ bhyveFirmwareEnsureNVRAM(virDomainDef *def,
         /* otherwise we want to reset and re-populate the definition */
         virObjectUnref(loader->nvram);
     } else {
-        /* Also do nothing if NVRAM is not requested */
-        return;
+        /* Only add nvram for "<os firmware='efi'/>" */
+        if (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI)
+            return;
     }
 
     loader->nvram = virStorageSourceNew();
