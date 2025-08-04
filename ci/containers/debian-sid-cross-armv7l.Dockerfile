@@ -88,7 +88,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libssh2-1-dev:armhf \
                       libtirpc-dev:armhf \
                       libudev-dev:armhf \
-                      libxen-dev:armhf \
                       libxml2-dev:armhf \
                       systemtap-sdt-dev:armhf && \
     eatmydata apt-get autoremove -y && \

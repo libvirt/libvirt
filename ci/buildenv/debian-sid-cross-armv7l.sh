@@ -77,7 +77,6 @@ function install_buildenv() {
             libssh2-1-dev:armhf \
             libtirpc-dev:armhf \
             libudev-dev:armhf \
-            libxen-dev:armhf \
             libxml2-dev:armhf \
             systemtap-sdt-dev:armhf
     mkdir -p /usr/local/share/meson/cross
