@@ -2090,7 +2090,7 @@ mymain(void)
                  ARG_CAPS_ARCH, "armv7l",
                  ARG_CAPS_VER, "latest",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-realview", "aarch64");
@@ -2098,7 +2098,7 @@ mymain(void)
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_FULL("usb-controller-automatic-unavailable-pseries", ".ppc64-latest",
@@ -2209,7 +2209,7 @@ mymain(void)
                  ARG_CAPS_ARCH, "armv7l",
                  ARG_CAPS_VER, "latest",
                  ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-default-realview", "aarch64");
@@ -2221,7 +2221,8 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-realview", ".aarch64-latest",
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     /* The '-nousb' test case tests machine without a built-in USB controller */
@@ -2234,7 +2235,8 @@ mymain(void)
     DO_TEST_FULL("usb-controller-default-unavailable-nousb", ".aarch64-latest",
                  ARG_CAPS_ARCH, "aarch64",
                  ARG_CAPS_VER, "latest",
-                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
+                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_DEVICE_QEMU_XHCI, QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_PIIX3_USB_UHCI, QEMU_CAPS_PCI_OHCI, QEMU_CAPS_LAST,
                  ARG_END);
 
     DO_TEST_FULL("usb-controller-default-fallback-g3beige", ".ppc64-latest",
