@@ -2074,9 +2074,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("chardev-reconnect-invalid-timeout");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("chardev-reconnect-generated-path");
 
-    DO_TEST_CAPS_LATEST("usb-controller-implicit-isapc");
-    DO_TEST_CAPS_LATEST("usb-controller-implicit-i440fx");
-    DO_TEST_CAPS_LATEST("usb-controller-implicit-q35");
+    DO_TEST_CAPS_LATEST("usb-controller-automatic-isapc");
+    DO_TEST_CAPS_LATEST("usb-controller-automatic-i440fx");
+    DO_TEST_CAPS_LATEST("usb-controller-automatic-q35");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-default-isapc");
     DO_TEST_CAPS_LATEST("usb-controller-default-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-default-q35");
