@@ -208,7 +208,7 @@ v11.5.0 (2025-07-01)
   * qemu: Properly emulate USB cdrom device
 
     CD-ROM devices on USB bus are now properly emulated as such which was not
-    the case since libvirt switched to the modern qemu commandline sytnax for
+    the case since libvirt switched to the modern qemu commandline syntax for
     storage backends.
 
 
@@ -515,7 +515,7 @@ v11.1.0 (2025-03-03)
   * ch: Support handling events from cloud-hypervisor
 
     The ch driver now supports handling events from the cloud-hypervisor.
-    Events include VM lifecyle operations such as  shutdown, pause, resume,
+    Events include VM lifecycle operations such as  shutdown, pause, resume,
     etc. Libvirt will now read these events and take actions such as
     updating domain state, etc.
 
@@ -669,7 +669,7 @@ v10.10.0 (2024-12-02)
   * qemu: Support for the 'data-file' QCOW2 image feature
 
     The QEMU hypervisor driver now supports QCOW2 images with 'data-file'
-    feature present (both when probing form the image itself and when specified
+    feature present (both when probing from the image itself and when specified
     explicitly via ``<dataStore>`` element). This can be useful when it's
     required to keep data "raw" on disk, but the use case requires features
     of the QCOW2 format such as incremental backups.
@@ -751,7 +751,7 @@ v10.9.0 (2024-11-01)
 
       warning : qemuSnapshotActiveInternalDeleteGetDevices:3841 : inconsistent internal snapshot state (deletion): VM='snap' snapshot='1727959843' missing='vda ' unexpected='' extra=''
 
-    Users are encouraged to report any occurence of the above message along
+    Users are encouraged to report any occurrence of the above message along
     with steps they took to the upstream tracker.
 
   * qemu: improve documentation of image format settings
@@ -787,7 +787,7 @@ v10.8.0 (2024-10-01)
     the bridge interface (normally it would not be set, as is done
     with other forward modes).
 
-  * storage: Lessen dependancy on the ``showmount`` program
+  * storage: Lessen dependency on the ``showmount`` program
 
     Libvirt now automatically detects presence of ``showmount`` during runtime
     as we do with other helper programs and also the
@@ -834,7 +834,7 @@ v10.8.0 (2024-10-01)
   * qemu: backup: Fix possible crashes when running monitoring commands during backup job
 
     The qemu monitor code was fixed to not crash in specific cases when
-    monitoing APIs are called during a backup job.
+    monitoring APIs are called during a backup job.
 
   * Fix various memleaks and overflows
 
@@ -1342,7 +1342,7 @@ v10.1.0 (2024-03-01)
 
     ``virt-admin`` doesn't try to guess the URI of the daemon to manage so a
     failure to connect may be confusing for users if modular daemons are used.
-    Add a hint to use the URI of the dameon to manage.
+    Add a hint to use the URI of the daemon to manage.
 
 * **Bug fixes**
 
@@ -1388,7 +1388,7 @@ v10.1.0 (2024-03-01)
 
   * qemu: Fix reservation of manually specified port for disk migration
 
-    A manually specified port would not be relased after disk migration making
+    A manually specified port would not be released after disk migration making
     it impossible to use it again.
 
 
@@ -1741,7 +1741,8 @@ v9.5.0 (2023-07-03)
 
 * **Bug fixes**
 
-  * lxc: Allow seeking in ``/proc/meminfo`` to resove failure with new ``procps`` package
+  * lxc: Allow seeking in ``/proc/meminfo`` to resolve failure with new
+    ``procps`` package
 
     New version of the ``free`` command from ``procps`` package seeks into the
     ``/proc/meminfo`` file, which was not supported by the instance of the file
@@ -5983,7 +5984,7 @@ v4.5.0 (2018-07-02)
   * qemu: Fix a potential libvirtd crash on VM reconnect
 
     Initialization of the driver worker pool needs to come before libvirtd
-    trying to reconnect to all machines, since one of the QEMU processes migh
+    trying to reconnect to all machines, since one of the QEMU processes might
     have already emitted events which need to be handled prior to us getting to
     the worker pool initialization.
 
@@ -7323,7 +7324,7 @@ v3.0.0 (2017-01-17)
 
   * Event notifications for the secret object
 
-    The secret object now supports event notifications, covering lifcycle
+    The secret object now supports event notifications, covering lifecycle
     changes and secret value changes.
 
   * New localPtr attribute for "ip" element in network XML
