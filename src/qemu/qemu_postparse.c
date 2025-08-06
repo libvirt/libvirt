@@ -1299,7 +1299,8 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         if (STREQ(def->os.machine, "versatilepb") ||
             STRPREFIX(def->os.machine, "realview")) {
             addDefaultUSB = true;
-            usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                usbModel = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
         }
 
         if (qemuDomainIsARMVirt(def))

@@ -1,1 +1,1 @@
-unsupported configuration: USB controller model 'pci-ohci' not supported in this QEMU binary
+internal error: Unable to determine model for USB controller idx=0
