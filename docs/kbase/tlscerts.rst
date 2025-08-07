@@ -317,10 +317,32 @@ briefly cover the steps.
 Troubleshooting TLS certificate problems
 ----------------------------------------
 
-failed to verify client's certificate
-   On the server side, run the libvirtd server with the '--listen' and
-   '--verbose' options while the client is connecting. The verbose log messages
-   should tell you enough to diagnose the problem.
+* TLS socket
+
+  After setting up your sever certificates you'll have to start libvirt's
+  tls socket and restart the corresponding daemon if it was already running,
+  i.e.
+
+ * for modular daemon setup run
+
+   ::
+
+       systemctl start virtproxyd-tls.socket
+       systemctl try-start virtproxyd.service
+
+ * for monolithic daemon setup run
+
+   ::
+
+       systemctl start libvirtd-tls.socket
+       systemctl try-start libvirtd.service
+
+
+* failed to verify client's certificate
+
+  On the server side, run the libvirtd server with the '--listen' and
+  '--verbose' options while the client is connecting. The verbose log messages
+  should tell you enough to diagnose the problem.
 
 You can use the virt-pki-validate shell script to analyze the setup on the
 client or server machines, preferably as root. It will try to point out the
