@@ -2457,6 +2457,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("video-device-pciaddr-default");
     DO_TEST_CAPS_LATEST("video-vga-device");
     DO_TEST_CAPS_LATEST("video-vga-device-vgamem");
+    DO_TEST_CAPS_LATEST("video-vga-edid-none");
+    DO_TEST_CAPS_LATEST("video-vga-edid-off");
+    DO_TEST_CAPS_LATEST("video-vga-edid-on");
     DO_TEST_CAPS_LATEST("video-qxl-device");
     DO_TEST_CAPS_LATEST("video-qxl-device-vgamem");
     DO_TEST_CAPS_LATEST("video-qxl-device-vram64");
@@ -2467,6 +2470,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("video-vga-qxl-heads");
     DO_TEST_CAPS_LATEST("video-qxl-noheads");
     DO_TEST_CAPS_LATEST("video-qxl-resolution");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("video-qxl-edid-off-fail");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("video-qxl-edid-on-fail");
     DO_TEST_CAPS_LATEST("video-virtio-gpu-device");
     DO_TEST_CAPS_LATEST("video-virtio-gpu-virgl");
     DO_TEST_CAPS_LATEST("video-virtio-gpu-spice-gl");
@@ -2476,7 +2481,13 @@ mymain(void)
     DO_TEST_CAPS_LATEST("video-virtio-blob-on");
     DO_TEST_CAPS_LATEST("video-virtio-blob-off");
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
+    DO_TEST_CAPS_LATEST("video-virtio-edid-none");
+    DO_TEST_CAPS_LATEST("video-virtio-edid-off");
+    DO_TEST_CAPS_LATEST("video-virtio-edid-on");
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
+    DO_TEST_CAPS_LATEST("video-bochs-edid-none");
+    DO_TEST_CAPS_LATEST("video-bochs-edid-off");
+    DO_TEST_CAPS_LATEST("video-bochs-edid-on");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("video-ramfb-display-device-pci-address");
     DO_TEST_CAPS_LATEST("video-none-device");
