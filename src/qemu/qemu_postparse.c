@@ -1252,12 +1252,11 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     switch (def->os.arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
-        addDefaultMemballoon = true;
-
         if (STREQ(def->os.machine, "isapc")) {
             break;
         }
 
+        addDefaultMemballoon = true;
         addDefaultUSB = true;
 
         if (qemuDomainIsQ35(def)) {
