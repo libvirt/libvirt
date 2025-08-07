@@ -104,6 +104,18 @@ connect provided they have a valid certificate issued by the CA for their own IP
 address. You may want to change this to make it less (or more) permissive,
 depending on your needs.
 
+The following sections will describe how to created the data needed for the TLS
+setup. They use templates to create Certificate Authority, server and client
+certificates.
+
+Important: versions of libvirt before 11.6.0 also required the ``encryption_key``
+flag in the server and client template. This is no longer mandated since it is
+not applicable for use with many modern cryptographic algorithms, but it is
+harmless if present as it will be ignored. If compatibility with both old and
+new libvirt versions is required, then this extra flag must be added when
+creating the certificate.
+
+
 Setting up a Certificate Authority (CA)
 ---------------------------------------
 
