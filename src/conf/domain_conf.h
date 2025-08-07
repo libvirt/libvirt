@@ -1895,6 +1895,7 @@ struct _virDomainVideoDef {
     virDomainDeviceInfo info;
     virDomainVirtioOptions *virtio;
     virDomainVideoBackendType backend;
+    virTristateSwitch edid;
 };
 
 /* graphics console modes */

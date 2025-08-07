@@ -7110,6 +7110,14 @@ A video device.
    sub-element is valid for model types "vga", "qxl", "bochs", "gop",
    and "virtio".
 
+   :since:`Since 11.7.0` (QEMU driver only), the ``model`` element may have an
+   optional ``edid`` attribute that can be set to ``on`` or ``off``. If the
+   ``edid`` attribute is not specified then the device will use its default value.
+   Otherwise setting ``edid`` to ``on`` will expose the device EDID blob to the
+   guest, whilst setting it to ``off`` will hide the device EDID blob from the
+   guest. The ``edid`` attribute is only valid for model types ``vga``, ``bochs``,
+   and ``virtio``.
+
 ``acceleration``
    Configure if video acceleration should be enabled.
 

@@ -13547,6 +13547,9 @@ virDomainVideoModelDefParseXML(virDomainVideoDef *def,
     if (virXMLPropTristateSwitch(node, "blob", VIR_XML_PROP_NONE, &def->blob) < 0)
         return -1;
 
+    if (virXMLPropTristateSwitch(node, "edid", VIR_XML_PROP_NONE, &def->edid) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -21051,6 +21054,14 @@ virDomainVideoDefCheckABIStability(virDomainVideoDef *src,
         }
     }
 
+    if (src->edid != dst->edid) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target video card edid %1$s does not match source %2$s"),
+                       virTristateSwitchTypeToString(dst->type),
+                       virTristateSwitchTypeToString(src->type));
+        return false;
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 
@@ -26657,6 +26668,8 @@ virDomainVideoDefFormat(virBuffer *buf,
         virBufferAddLit(buf, " primary='yes'");
     if (def->blob != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(buf, " blob='%s'", virTristateSwitchTypeToString(def->blob));
+    if (def->edid != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, " edid='%s'", virTristateSwitchTypeToString(def->edid));
     if (def->accel || def->res) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);

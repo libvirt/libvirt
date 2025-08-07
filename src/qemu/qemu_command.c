@@ -4739,6 +4739,9 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
             return -1;
     }
 
+    if (virJSONValueObjectAdd(&props, "T:edid", video->edid, NULL) < 0)
+        return -1;
+
     if (video->res) {
         if (virJSONValueObjectAdd(&props,
                                   "p:xres", video->res->x,
