@@ -286,6 +286,9 @@ virDomainPCIControllerConnectTypeToModel(virDomainPCIConnectFlags flags)
     if (flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE)
         return VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
 
+    if (flags & VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE;
+
     /* some connect types don't correspond to a controller model */
     return -1;
 }
