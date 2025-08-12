@@ -719,7 +719,7 @@ FreeBSD, and :since:`since 1.3.2` experimental support for `ZFS on
 Linux <https://zfsonlinux.org/>`__ version 0.6.4 or newer is available.
 
 A pool could either be created manually using the ``zpool create`` command and
-its name specified in the source section or :since:` since 1.2.9` source devices
+its name specified in the source section or :since:`since 1.2.9` source devices
 could be specified to create a pool using libvirt.
 
 Please refer to the ZFS documentation for details on a pool creation.
