@@ -48,7 +48,6 @@
       <feature policy='require' name='hypervisor'/>
       <feature policy='require' name='tsc_adjust'/>
       <feature policy='require' name='stibp'/>
-      <feature policy='require' name='arch-capabilities'/>
       <feature policy='require' name='ssbd'/>
       <feature policy='require' name='cmp_legacy'/>
       <feature policy='require' name='overflow-recov'/>
@@ -68,12 +67,6 @@
       <feature policy='require' name='lfence-always-serializing'/>
       <feature policy='require' name='null-sel-clr-base'/>
       <feature policy='require' name='ibpb-brtype'/>
-      <feature policy='require' name='rdctl-no'/>
-      <feature policy='require' name='skip-l1dfl-vmentry'/>
-      <feature policy='require' name='mds-no'/>
-      <feature policy='require' name='pschange-mc-no'/>
-      <feature policy='require' name='gds-no'/>
-      <feature policy='require' name='rfds-no'/>
       <feature policy='disable' name='xsaves'/>
     </mode>
     <mode name='custom' supported='yes'>
@@ -157,6 +150,7 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v3'>Cascadelake-Server-noTSX</model>
       <blockers model='Cascadelake-Server-noTSX'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
@@ -188,6 +182,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v2</model>
       <blockers model='Cascadelake-Server-v2'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
@@ -205,6 +200,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v3</model>
       <blockers model='Cascadelake-Server-v3'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
@@ -220,6 +216,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v4</model>
       <blockers model='Cascadelake-Server-v4'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
@@ -235,6 +232,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v5</model>
       <blockers model='Cascadelake-Server-v5'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
         <feature name='avx512dq'/>
@@ -253,6 +251,7 @@
       <model usable='yes' vendor='Intel'>Conroe-v1</model>
       <model usable='no' vendor='Intel' canonical='Cooperlake-v1'>Cooperlake</model>
       <blockers model='Cooperlake'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -272,6 +271,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cooperlake-v1</model>
       <blockers model='Cooperlake-v1'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -291,6 +291,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cooperlake-v2</model>
       <blockers model='Cooperlake-v2'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512bw'/>
         <feature name='avx512cd'/>
@@ -311,23 +312,27 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Denverton-v1'>Denverton</model>
       <blockers model='Denverton'>
+        <feature name='arch-capabilities'/>
         <feature name='erms'/>
         <feature name='mpx'/>
         <feature name='spec-ctrl'/>
       </blockers>
       <model usable='no' vendor='Intel'>Denverton-v1</model>
       <blockers model='Denverton-v1'>
+        <feature name='arch-capabilities'/>
         <feature name='erms'/>
         <feature name='mpx'/>
         <feature name='spec-ctrl'/>
       </blockers>
       <model usable='no' vendor='Intel'>Denverton-v2</model>
       <blockers model='Denverton-v2'>
+        <feature name='arch-capabilities'/>
         <feature name='erms'/>
         <feature name='spec-ctrl'/>
       </blockers>
       <model usable='no' vendor='Intel'>Denverton-v3</model>
       <blockers model='Denverton-v3'>
+        <feature name='arch-capabilities'/>
         <feature name='erms'/>
         <feature name='spec-ctrl'/>
         <feature name='xsaves'/>
@@ -473,6 +478,7 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -522,6 +528,7 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -571,6 +578,7 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx10'/>
         <feature name='avx10-128'/>
@@ -776,6 +784,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v3</model>
       <blockers model='Icelake-Server-v3'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
         <feature name='avx512bw'/>
@@ -800,6 +809,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v4</model>
       <blockers model='Icelake-Server-v4'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
         <feature name='avx512bw'/>
@@ -826,6 +836,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v5</model>
       <blockers model='Icelake-Server-v5'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
         <feature name='avx512bw'/>
@@ -853,6 +864,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v6</model>
       <blockers model='Icelake-Server-v6'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
         <feature name='avx512bw'/>
@@ -880,6 +892,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v7</model>
       <blockers model='Icelake-Server-v7'>
+        <feature name='arch-capabilities'/>
         <feature name='avx512-vpopcntdq'/>
         <feature name='avx512bitalg'/>
         <feature name='avx512bw'/>
@@ -1004,6 +1017,7 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -1046,6 +1060,7 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -1088,6 +1103,7 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -1133,6 +1149,7 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
         <feature name='avx-vnni'/>
         <feature name='avx512-bf16'/>
         <feature name='avx512-fp16'/>
@@ -1179,6 +1196,7 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
+        <feature name='arch-capabilities'/>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni'/>
@@ -1206,6 +1224,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>SierraForest-v1</model>
       <blockers model='SierraForest-v1'>
+        <feature name='arch-capabilities'/>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni'/>
@@ -1400,6 +1419,7 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Snowridge-v1'>Snowridge</model>
       <blockers model='Snowridge'>
+        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='erms'/>
@@ -1412,6 +1432,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v1</model>
       <blockers model='Snowridge-v1'>
+        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='erms'/>
@@ -1424,6 +1445,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v2</model>
       <blockers model='Snowridge-v2'>
+        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='erms'/>
@@ -1435,6 +1457,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v3</model>
       <blockers model='Snowridge-v3'>
+        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='erms'/>
@@ -1447,6 +1470,7 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v4</model>
       <blockers model='Snowridge-v4'>
+        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='erms'/>
         <feature name='gfni'/>
