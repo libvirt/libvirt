@@ -17,6 +17,11 @@ v11.7.0 (unreleased)
 
 * **New features**
 
+  * Allow setting the log level of Cloud Hypervisor
+
+    Users can now configure the verbosity of Cloud Hypervisor by setting
+    the "log_level" option in ch.conf
+
 * **Improvements**
 
 * **Bug fixes**
