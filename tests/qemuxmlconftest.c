@@ -537,6 +537,12 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                 } else {
                     g_assert_not_reached();
                 }
+            } else if (!usb->device && !usb->vendor && !usb->product) {
+                if (usb->bus == 2 && STREQ(usb->port, "3")) {
+                    usb->device = 4;
+                } else {
+                    g_assert_not_reached();
+                }
             }
         }
     }
@@ -2392,6 +2398,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hostdev-usb-address-device-boot");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-usb-duplicate");
     DO_TEST_CAPS_LATEST("hostdev-usb-vendor-product");
+    DO_TEST_CAPS_LATEST("hostdev-usb-address-port");
     DO_TEST_CAPS_LATEST("hostdev-pci-address");
     DO_TEST_CAPS_LATEST("hostdev-pci-address-device");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdev-pci-duplicate");
