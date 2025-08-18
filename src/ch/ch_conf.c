@@ -22,6 +22,7 @@
 
 #include "configmake.h"
 #include "vircommand.h"
+#include "virconf.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virobject.h"
@@ -79,6 +80,25 @@ virCaps *virCHDriverCapsInit(void)
     }
 
     return g_steal_pointer(&caps);
+}
+
+int virCHDriverConfigLoadFile(virCHDriverConfig *cfg G_GNUC_UNUSED,
+                              const char *filename)
+{
+    g_autoptr(virConf) conf = NULL;
+
+    /* Just check the file is readable before opening it, otherwise
+     * libvirt emits an error.
+     */
+    if (access(filename, R_OK) == -1) {
+        VIR_INFO("Could not read ch config file %s", filename);
+        return 0;
+    }
+
+    if (!(conf = virConfReadFile(filename, 0)))
+        return -1;
+
+    return 0;
 }
 
 /**
@@ -149,6 +169,7 @@ virCHDriverConfigNew(bool privileged)
         cfg->logDir = g_strdup_printf("%s/log/libvirt/ch", LOCALSTATEDIR);
         cfg->stateDir = g_strdup_printf("%s/libvirt/ch", RUNSTATEDIR);
         cfg->saveDir = g_strdup_printf("%s/lib/libvirt/ch/save", LOCALSTATEDIR);
+        cfg->configDir = g_strdup_printf("%s/lib/libvirt/ch", LOCALSTATEDIR);
 
     } else {
         g_autofree char *rundir = NULL;
@@ -164,6 +185,7 @@ virCHDriverConfigNew(bool privileged)
 
         configbasedir = virGetUserConfigDirectory();
         cfg->saveDir = g_strdup_printf("%s/ch/save", configbasedir);
+        cfg->configDir = g_strdup_printf("%s/ch", configbasedir);
     }
 
     return cfg;

@@ -38,6 +38,7 @@ struct _virCHDriverConfig {
     GObject parent;
 
     char *stateDir;
+    char *configDir;
     char *logDir;
     char *saveDir;
 
@@ -103,6 +104,8 @@ struct _CHSaveXMLHeader {
     uint32_t unused[11];
 };
 
+int virCHDriverConfigLoadFile(virCHDriverConfig *cfg,
+                                const char *filename);
 virCaps *virCHDriverCapsInit(void);
 virCaps *virCHDriverGetCapabilities(virCHDriver *driver,
                                       bool refresh);

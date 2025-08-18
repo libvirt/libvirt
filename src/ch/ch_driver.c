@@ -1411,6 +1411,7 @@ chStateInitialize(bool privileged,
                   virStateInhibitCallback callback G_GNUC_UNUSED,
                   void *opaque G_GNUC_UNUSED)
 {
+    g_autofree char *driverConf = NULL;
     int ret = VIR_DRV_STATE_INIT_ERROR;
     int rv;
 
@@ -1445,6 +1446,11 @@ chStateInitialize(bool privileged,
         goto cleanup;
 
     if (!(ch_driver->config = virCHDriverConfigNew(privileged)))
+        goto cleanup;
+
+    driverConf = g_strdup_printf("%s/ch.conf", ch_driver->config->configDir);
+
+    if (virCHDriverConfigLoadFile(ch_driver->config, driverConf) < 0)
         goto cleanup;
 
     if (!(ch_driver->hostdevMgr = virHostdevManagerGetDefault()))
