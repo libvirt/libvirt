@@ -34,6 +34,7 @@ typedef enum {
     USB_DEVICE_ALL = 0,
     USB_DEVICE_FIND_BY_VENDOR = 1 << 0,
     USB_DEVICE_FIND_BY_DEVICE = 1 << 1,
+    USB_DEVICE_FIND_BY_PORT = 1 << 2,
 } virUSBDeviceFindFlags;
 
 virUSBDevice *virUSBDeviceNew(unsigned int bus,
@@ -44,6 +45,7 @@ int virUSBDeviceFind(unsigned int vendor,
                      unsigned int product,
                      unsigned int bus,
                      unsigned int devno,
+                     const char *port,
                      const char *vroot,
                      bool mandatory,
                      unsigned int flags,

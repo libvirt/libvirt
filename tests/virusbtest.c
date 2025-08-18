@@ -28,7 +28,9 @@
 typedef enum {
     FIND_BY_VENDOR,
     FIND_BY_DEVICE,
+    FIND_BY_PORT,
     FIND_BY_VENDOR_AND_DEVICE,
+    FIND_BY_VENDOR_AND_PORT
 } testUSBFindFlags;
 
 struct findTestInfo {
@@ -37,6 +39,7 @@ struct findTestInfo {
     unsigned int product;
     unsigned int bus;
     unsigned int devno;
+    const char *port;
     const char *vroot;
     bool mandatory;
     int how;
@@ -79,14 +82,21 @@ static int testDeviceFind(const void *opaque)
     case FIND_BY_DEVICE:
         flags = USB_DEVICE_FIND_BY_DEVICE;
         break;
+    case FIND_BY_PORT:
+        flags = USB_DEVICE_FIND_BY_PORT;
+        break;
     case FIND_BY_VENDOR_AND_DEVICE:
         flags = USB_DEVICE_FIND_BY_VENDOR |
                 USB_DEVICE_FIND_BY_DEVICE;
         break;
+    case FIND_BY_VENDOR_AND_PORT:
+        flags = USB_DEVICE_FIND_BY_VENDOR |
+                USB_DEVICE_FIND_BY_PORT;
+        break;
     }
 
     rv = virUSBDeviceFind(info->vendor, info->product,
-                          info->bus, info->devno,
+                          info->bus, info->devno, info->port,
                           info->vroot, info->mandatory, flags, &devs);
 
     if (info->expectFailure) {
@@ -112,7 +122,9 @@ static int testDeviceFind(const void *opaque)
 
     switch (info->how) {
     case FIND_BY_DEVICE:
+    case FIND_BY_PORT:
     case FIND_BY_VENDOR_AND_DEVICE:
+    case FIND_BY_VENDOR_AND_PORT:
         if (virUSBDeviceFileIterate(dev, testDeviceFileActor, NULL) < 0)
             goto cleanup;
         break;
@@ -166,7 +178,7 @@ testUSBList(const void *opaque G_GNUC_UNUSED)
         goto cleanup;
 
 #define EXPECTED_NDEVS_ONE 3
-    if (virUSBDeviceFind(0x1d6b, 0x0002, 0, 0, NULL, true,
+    if (virUSBDeviceFind(0x1d6b, 0x0002, 0, 0, NULL, NULL, true,
                          USB_DEVICE_FIND_BY_VENDOR, &devlist) < 0)
         goto cleanup;
 
@@ -190,7 +202,7 @@ testUSBList(const void *opaque G_GNUC_UNUSED)
         goto cleanup;
 
 #define EXPECTED_NDEVS_TWO 3
-    if (virUSBDeviceFind(0x18d1, 0x4e22, 0, 0, NULL, true,
+    if (virUSBDeviceFind(0x18d1, 0x4e22, 0, 0, NULL, NULL, true,
                          USB_DEVICE_FIND_BY_VENDOR, &devlist) < 0)
         goto cleanup;
 
@@ -211,7 +223,7 @@ testUSBList(const void *opaque G_GNUC_UNUSED)
                        EXPECTED_NDEVS_ONE + EXPECTED_NDEVS_TWO) < 0)
         goto cleanup;
 
-    rv = virUSBDeviceFind(0x18d1, 0x4e22, 1, 20, NULL, true,
+    rv = virUSBDeviceFind(0x18d1, 0x4e22, 1, 20, NULL, NULL, true,
                             USB_DEVICE_FIND_BY_VENDOR |
                             USB_DEVICE_FIND_BY_DEVICE, &devs);
     if (rv != 1) {
@@ -253,35 +265,49 @@ mymain(void)
     int rv = 0;
 
 #define DO_TEST_FIND_FULL(name, vend, prod, bus, devno, \
-                          vroot, mand, how, fail) \
+                          port, vroot, mand, how, fail) \
     do { \
         struct findTestInfo data = { name, vend, prod, bus, \
-            devno, vroot, mand, how, fail \
+            devno, port, vroot, mand, how, fail \
         }; \
         if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0) \
             rv = -1; \
     } while (0)
 
 #define DO_TEST_FIND_BY_VENDOR(name, vend, prod) \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, NULL, true, \
                       FIND_BY_VENDOR, false)
 #define DO_TEST_FIND_BY_VENDOR_FAIL(name, vend, prod) \
-    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, true, \
+    DO_TEST_FIND_FULL(name, vend, prod, 123, 456, NULL, NULL, true, \
                       FIND_BY_VENDOR, true)
 
 #define DO_TEST_FIND_BY_DEVICE(name, bus, devno) \
-    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, devno, NULL, true, \
+    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, devno, NULL, NULL, true, \
                       FIND_BY_DEVICE, false)
 #define DO_TEST_FIND_BY_DEVICE_FAIL(name, bus, devno) \
-    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, devno, NULL, true, \
+    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, devno, NULL, NULL, true, \
                       FIND_BY_DEVICE, true)
 
+#define DO_TEST_FIND_BY_PORT(name, bus, port) \
+    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, 456, port, NULL, true, \
+                      FIND_BY_PORT, false)
+#define DO_TEST_FIND_BY_PORT_FAIL(name, bus, port) \
+    DO_TEST_FIND_FULL(name, 0x1010, 0x2020, bus, 456, port, NULL, true, \
+                      FIND_BY_PORT, true)
+
 #define DO_TEST_FIND_BY_VENDOR_AND_DEVICE(name, vend, prod, bus, devno) \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, NULL, true, \
                       FIND_BY_VENDOR_AND_DEVICE, false)
 #define DO_TEST_FIND_BY_VENDOR_AND_DEVICE_FAIL(name, vend, prod, bus, devno) \
-    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, true, \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, devno, NULL, NULL, true, \
                       FIND_BY_VENDOR_AND_DEVICE, true)
+
+#define DO_TEST_FIND_BY_VENDOR_AND_PORT(name, vend, prod, bus, port) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, 456, port, NULL, true, \
+                      FIND_BY_VENDOR_AND_PORT, false)
+#define DO_TEST_FIND_BY_VENDOR_AND_PORT_FAIL(name, vend, prod, bus, port) \
+    DO_TEST_FIND_FULL(name, vend, prod, bus, 456, port, NULL, true, \
+                      FIND_BY_VENDOR_AND_PORT, true)
 
     DO_TEST_FIND_BY_DEVICE("integrated camera", 1, 5);
     DO_TEST_FIND_BY_DEVICE_FAIL("wrong bus/devno combination", 2, 20);
@@ -292,10 +318,20 @@ mymain(void)
     DO_TEST_FIND_BY_VENDOR_FAIL("Bogus vendor and product", 0xf00d, 0xbeef);
     DO_TEST_FIND_BY_VENDOR_FAIL("Valid vendor", 0x1d6b, 0xbeef);
 
+    DO_TEST_FIND_BY_PORT("Logitech mouse", 1, "1.5.3.3");
+    DO_TEST_FIND_BY_PORT_FAIL("wrong bus/port combination", 2, "1.5.3.3");
+    DO_TEST_FIND_BY_PORT_FAIL("missing bus", 5, "1.5.3.3");
+    DO_TEST_FIND_BY_PORT_FAIL("missing port", 1, "8.2.5");
+
     DO_TEST_FIND_BY_VENDOR_AND_DEVICE("Nexus", 0x18d1, 0x4e22, 1, 20);
     DO_TEST_FIND_BY_VENDOR_AND_DEVICE_FAIL("Bogus vendor and product", 0xf00d, 0xbeef, 1, 25);
     DO_TEST_FIND_BY_VENDOR_AND_DEVICE_FAIL("Nexus wrong devnum", 0x18d1, 0x4e22, 1, 25);
     DO_TEST_FIND_BY_VENDOR_AND_DEVICE_FAIL("Bogus", 0xf00d, 0xbeef, 1024, 768);
+
+    DO_TEST_FIND_BY_VENDOR_AND_PORT("Nexus", 0x046d, 0xc069, 1, "1.5.3.3");
+    DO_TEST_FIND_BY_VENDOR_AND_PORT_FAIL("Bogus vendor and product", 0xf00d, 0xbeef, 1, "1.5.3.3");
+    DO_TEST_FIND_BY_VENDOR_AND_PORT_FAIL("Nexus wrong port", 0x18d1, 0x4e22, 1, "8.2.5");
+    DO_TEST_FIND_BY_VENDOR_AND_PORT_FAIL("Bogus", 0xf00d, 0xbeef, 1024, "1.1.1.1");
 
     if (virTestRun("USB List test", testUSBList, NULL) < 0)
         rv = -1;

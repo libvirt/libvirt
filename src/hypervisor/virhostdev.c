@@ -1373,7 +1373,7 @@ virHostdevFindUSBDeviceWithFlags(virDomainHostdevDef *hostdev,
     g_autoptr(virUSBDeviceList) devs = NULL;
     int rc;
 
-    rc = virUSBDeviceFind(vendor, product, bus, device, NULL,
+    rc = virUSBDeviceFind(vendor, product, bus, device, NULL, NULL,
                           mandatory, flags, &devs);
     if (rc < 0)
         return -1;
