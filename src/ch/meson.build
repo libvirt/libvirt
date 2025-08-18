@@ -77,6 +77,18 @@ if conf.has('WITH_CH')
     ],
   }
 
+  ch_conf = files('ch.conf')
+  virt_conf_files += ch_conf
+  virt_aug_files += files('libvirtd_ch.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_ch.aug',
+    'aug': files('test_libvirtd_ch.aug.in'),
+    'conf': ch_conf,
+    'test_name': 'libvirtd_ch',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
+  }
+
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'ch',
     localstatedir / 'log' / 'libvirt' / 'ch',

@@ -34,6 +34,19 @@ typedef struct _virCHDriver virCHDriver;
 
 typedef struct _virCHDriverConfig virCHDriverConfig;
 
+typedef enum {
+    /* Standard log level only showing warning and error messages. */
+    VIR_CH_LOGLEVEL_DEFAULT = 0,
+
+    /* Additional info messages are shown. Will not spam the log. */
+    VIR_CH_LOGLEVEL_INFO,
+
+    /* Additional debug messages are shown. Will be very verbose. */
+    VIR_CH_LOGLEVEL_DEBUG,
+
+    VIR_CH_LOGLEVEL_LAST
+} virCHLogLevel;
+
 struct _virCHDriverConfig {
     GObject parent;
 
@@ -48,6 +61,8 @@ struct _virCHDriverConfig {
     gid_t group;
 
     bool stdioLogD;
+
+    virCHLogLevel logLevel;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHDriverConfig, virObjectUnref);

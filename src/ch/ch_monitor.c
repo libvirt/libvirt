@@ -698,6 +698,12 @@ virCHMonitorNew(virDomainObj *vm, virCHDriverConfig *cfg, int logfile)
         return NULL;
     }
 
+    if (cfg->logLevel == VIR_CH_LOGLEVEL_INFO) {
+        virCommandAddArg(cmd, "-v");
+    } else if (cfg->logLevel == VIR_CH_LOGLEVEL_DEBUG) {
+        virCommandAddArg(cmd, "-vv");
+    }
+
     virCommandAddArg(cmd, "--api-socket");
     virCommandAddArgFormat(cmd, "fd=%d", socket_fd);
     virCommandPassFD(cmd, socket_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);

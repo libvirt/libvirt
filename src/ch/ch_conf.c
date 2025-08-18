@@ -82,7 +82,7 @@ virCaps *virCHDriverCapsInit(void)
     return g_steal_pointer(&caps);
 }
 
-int virCHDriverConfigLoadFile(virCHDriverConfig *cfg G_GNUC_UNUSED,
+int virCHDriverConfigLoadFile(virCHDriverConfig *cfg,
                               const char *filename)
 {
     g_autoptr(virConf) conf = NULL;
@@ -97,6 +97,15 @@ int virCHDriverConfigLoadFile(virCHDriverConfig *cfg G_GNUC_UNUSED,
 
     if (!(conf = virConfReadFile(filename, 0)))
         return -1;
+
+    if (virConfGetValueUInt(conf, "log_level", &cfg->logLevel) < 0)
+        return -1;
+
+    if (!(cfg->logLevel < VIR_CH_LOGLEVEL_LAST)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid log_level %1$u"),
+                       cfg->logLevel);
+        return -1;
+    }
 
     return 0;
 }

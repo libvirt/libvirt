@@ -23,7 +23,7 @@ module Libvirtd_ch =
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
    (* Config entry grouped by function - same order as example config *)
-   let config_entry = bool_entry "placeholder"
+   let config_entry = int_entry "log_level"
 
    (* Each entry in the config is one of the following three ... *)
    let entry = config_entry
