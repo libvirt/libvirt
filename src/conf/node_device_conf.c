@@ -432,6 +432,9 @@ virNodeDeviceCapUSBDevDefFormat(virBuffer *buf,
     virBufferAsprintf(buf, "<bus>%d</bus>\n", data->usb_dev.bus);
     virBufferAsprintf(buf, "<device>%d</device>\n",
                       data->usb_dev.device);
+    if (data->usb_dev.port)
+        virBufferEscapeString(buf, "<port>%s</port>\n",
+                              data->usb_dev.port);
     virBufferAsprintf(buf, "<product id='0x%04x'",
                       data->usb_dev.product);
     if (data->usb_dev.product_name)
@@ -2083,6 +2086,7 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
                                     _("invalid USB product ID supplied for '%1$s'")) < 0)
         return -1;
 
+    usb_dev->port  = virXPathString("string(./port[1])", ctxt);
     usb_dev->vendor_name  = virXPathString("string(./vendor[1])", ctxt);
     usb_dev->product_name = virXPathString("string(./product[1])", ctxt);
 
@@ -2802,6 +2806,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
     case VIR_NODE_DEV_CAP_USB_DEV:
         g_free(data->usb_dev.product_name);
         g_free(data->usb_dev.vendor_name);
+        g_free(data->usb_dev.port);
         break;
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
         g_free(data->usb_if.description);

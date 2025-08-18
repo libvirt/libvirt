@@ -288,6 +288,9 @@
     <element name="device">
       <ref name="unsignedLong"/>
     </element>
+    <element name="port">
+      <ref name="unsignedLong"/>
+    </element>
 
     <element name="product">
       <attribute name="id">

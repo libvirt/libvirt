@@ -211,6 +211,7 @@ typedef struct _virNodeDevCapUSBDev virNodeDevCapUSBDev;
 struct _virNodeDevCapUSBDev {
    unsigned int bus;
    unsigned int device;
+   char *port;
    unsigned int product;
    unsigned int vendor;
    char *product_name;

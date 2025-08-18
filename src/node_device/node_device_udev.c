@@ -595,6 +595,10 @@ udevProcessUSBDevice(struct udev_device *device,
         return -1;
     if (udevGetUintProperty(device, "ID_VENDOR_ID", &usb_dev->vendor, 16) < 0)
         return -1;
+    if (!usb_dev->port) {
+        udevGetStringSysfsAttr(device, "devpath",
+                               &usb_dev->port);
+    }
 
     udevGetStringProperty(device,
                           "ID_VENDOR_FROM_DATABASE",

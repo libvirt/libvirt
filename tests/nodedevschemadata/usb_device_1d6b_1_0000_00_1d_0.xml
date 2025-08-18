@@ -4,6 +4,7 @@
   <capability type='usb_device'>
     <bus>2</bus>
     <device>1</device>
+    <port>3</port>
     <product id='0x0001'>1.1 root hub</product>
     <vendor id='0x1d6b'>Linux Foundation</vendor>
   </capability>
