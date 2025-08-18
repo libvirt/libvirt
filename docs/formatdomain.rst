@@ -4885,19 +4885,22 @@ or:
    tweak the loading process further using the ``bar`` or ``file`` attributes
    will be rejected. :since:`Since 4.3.0 (QEMU and KVM only)`.
 ``address``
-   The ``address`` element for USB devices has a ``bus`` and ``device``
-   attribute to specify the USB bus and device number the device appears at on
-   the host. The values of these attributes can be given in decimal, hexadecimal
-   (starting with 0x) or octal (starting with 0) form. For PCI devices the
-   element carries 4 attributes allowing to designate the device as can be found
-   with the ``lspci`` or with ``virsh nodedev-list``. For SCSI devices a 'drive'
-   address type must be used. For mediated devices, which are software-only
-   devices defining an allocation of resources on the physical parent device,
-   the address type used must conform to the ``model`` attribute of element
-   ``hostdev``, e.g. any address type other than PCI for ``vfio-pci`` device API
-   or any address type other than CCW for ``vfio-ccw`` device API will result in
-   an error. See the `Device Addresses`_ section for more details on the address
-   element.
+   The ``address`` element for USB devices has a ``bus`` attribute to specify
+   the USB bus. In addition, either a ``device`` attribute or a ``port``
+   attribute is required to identify the device on the host. While the device
+   number is assigned upon connection of the device, the port number is a
+   stable identifier of the physical host port. Bus and device number can be
+   given in decimal, hexadecimal (starting with 0x) or octal (starting with 0)
+   form. The port number is a dotted path (examples: ``2``, ``1.2.5``). For PCI
+   devices the element carries 4 attributes allowing to designate the device as
+   can be found with the ``lspci`` or with ``virsh nodedev-list``. For SCSI
+   devices a 'drive' address type must be used. For mediated devices, which are
+   software-only devices defining an allocation of resources on the physical
+   parent device, the address type used must conform to the ``model`` attribute
+   of element ``hostdev``, e.g. any address type other than PCI for ``vfio-pci``
+   device API or any address type other than CCW for ``vfio-ccw`` device API
+   will result in an error. See the `Device Addresses`_ section for more details
+   on the address element.
 ``driver``
    PCI hostdev devices can have an optional ``driver`` subelement that
    specifies which host driver to bind to the device when preparing it
