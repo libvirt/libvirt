@@ -6835,9 +6835,14 @@
       <attribute name="bus">
         <ref name="usbAddr"/>
       </attribute>
-      <attribute name="device">
-        <ref name="usbAddr"/>
-      </attribute>
+      <choice>
+        <attribute name="device">
+          <ref name="usbAddr"/>
+        </attribute>
+        <attribute name="port">
+          <ref name="usbPort"/>
+        </attribute>
+      </choice>
     </element>
   </define>
   <define name="scsiaddress">
