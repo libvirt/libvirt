@@ -30,22 +30,15 @@ typedef struct _virUSBDeviceList virUSBDeviceList;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virUSBDeviceList, virObjectUnref);
 
+typedef enum {
+    USB_DEVICE_ALL = 0,
+    USB_DEVICE_FIND_BY_VENDOR = 1 << 0,
+    USB_DEVICE_FIND_BY_DEVICE = 1 << 1,
+} virUSBDeviceFindFlags;
 
 virUSBDevice *virUSBDeviceNew(unsigned int bus,
                                 unsigned int devno,
                                 const char *vroot);
-
-int virUSBDeviceFindByBus(unsigned int bus,
-                          unsigned int devno,
-                          const char *vroot,
-                          bool mandatory,
-                          virUSBDevice **usb);
-
-int virUSBDeviceFindByVendor(unsigned int vendor,
-                             unsigned int product,
-                             const char *vroot,
-                             bool mandatory,
-                             virUSBDeviceList **devices);
 
 int virUSBDeviceFind(unsigned int vendor,
                      unsigned int product,
@@ -53,7 +46,8 @@ int virUSBDeviceFind(unsigned int vendor,
                      unsigned int devno,
                      const char *vroot,
                      bool mandatory,
-                     virUSBDevice **usb);
+                     unsigned int flags,
+                     virUSBDeviceList **devices);
 
 void virUSBDeviceFree(virUSBDevice *dev);
 int virUSBDeviceSetUsedBy(virUSBDevice *dev,
