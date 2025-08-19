@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 import sys
+import re
 
 
 class qrtException(Exception):
@@ -434,6 +435,61 @@ def dump_device_list_properties(conv):
         print('(dev) ' + d)
 
 
+# Sort helper for version string e.g. '11.0', '1.2' etc. Tolerates empty version.
+def machine_type_sorter(item):
+    key = item[0]
+
+    if key == '':
+        return [0]
+
+    return list(map(int, key.split('.')))
+
+
+def dump_machine_types(conv):
+    machines = dict()
+    aliases = []
+
+    for c in conv:
+        if c['cmd']['execute'] == 'query-machines':
+            for machine in c['rep']['return']:
+                deprecated = False
+                name = machine['name']
+                version = ''
+                match = re.fullmatch(r'(.+)-(\d+\.\d+)', name)
+
+                if match is not None:
+                    name = match.group(1)
+                    version = match.group(2)
+
+                if 'deprecated' in machine:
+                    deprecated = machine['deprecated']
+
+                if 'alias' in machine:
+                    aliases.append('%s -> %s' % (machine['alias'], machine['name']))
+
+                if name not in machines:
+                    machines[name] = {}
+
+                machines[name][version] = deprecated
+            break
+
+    for (machine, versions) in sorted(machines.items()):
+        for (version, deprecated) in sorted(versions.items(), key=machine_type_sorter):
+            d = ''
+            if deprecated:
+                d = ' (deprecated)'
+
+            if len(version) > 0:
+                version = '-' + version
+
+            print('(machine) %s%s%s' % (machine, version, d))
+
+    aliases.sort()
+
+    for a in aliases:
+        print('(machine alias) ' + a)
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
@@ -452,6 +508,7 @@ def process_one(filename, args):
         if args.dump_all:
             dump_qom_list_types(conv)
             dump_device_list_properties(conv)
+            dump_machine_types(conv)
             dumped = True
 
         if dumped:
