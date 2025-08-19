@@ -5167,6 +5167,39 @@ lxcDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 }
 
 
+static int
+lxcDomainGetMessages(virDomainPtr dom,
+                     char ***msgs,
+                     unsigned int flags)
+{
+    g_autoptr(GPtrArray) m = g_ptr_array_new_with_free_func(g_free);
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_MESSAGE_DEPRECATION |
+                  VIR_DOMAIN_MESSAGE_TAINTING |
+                  VIR_DOMAIN_MESSAGE_IOERRORS, -1);
+
+    if (!(vm = lxcDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainGetMessagesEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    virDomainObjGetMessages(vm, m, flags);
+
+    ret = m->len;
+    if (m->len > 0) {
+        g_ptr_array_add(m, NULL);
+        *msgs = (char **) g_ptr_array_steal(m, NULL);
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 /* Function Tables */
 static virHypervisorDriver lxcHypervisorDriver = {
     .name = LXC_DRIVER_NAME,
@@ -5263,6 +5296,7 @@ static virHypervisorDriver lxcHypervisorDriver = {
     .nodeGetFreePages = lxcNodeGetFreePages, /* 1.2.6 */
     .nodeAllocPages = lxcNodeAllocPages, /* 1.2.9 */
     .domainHasManagedSaveImage = lxcDomainHasManagedSaveImage, /* 1.2.13 */
+    .domainGetMessages = lxcDomainGetMessages, /* 12.10.0 */
 };
 
 static virConnectDriver lxcConnectDriver = {
