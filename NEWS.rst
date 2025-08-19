@@ -19,6 +19,12 @@ v11.9.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Improvements to USB controller model selection
+
+    Virtualization-friendly USB3 controllers are now used in more situations,
+    Intel-specific USB controllers are relegated to x86 guests, and model
+    selection overall behaves more consistently across architectures.
+
 * **Bug fixes**
 
 
