@@ -4331,7 +4331,7 @@ qemuDomainDefaultUSBControllerModel(const virDomainDef *def,
         return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
     }
 
-    if (def->os.arch == VIR_ARCH_AARCH64) {
+    if (ARCH_IS_ARM(def->os.arch)) {
         /* Prefer qemu-xhci or nec-xhci (USB3) */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
             return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
