@@ -208,10 +208,21 @@ update_include_file(const char *include_file, const char *included_files,
             return -1;
     }
 
-    if (append && virFileExists(include_file))
+    if (append && existing) {
+        /* Duplicate check: include_files might contain multiple rules
+         * the best is to check for each rule (separated by \n) but
+         * it might be overkilled, just do the check for the whole
+         * include_files.
+         * Most of the time, include_files contains only one rule
+         * so this check is OK to avoid the overflow of the profile
+         * duplicates might still exist though.
+         */
+        if (strstr(existing, included_files) != NULL)
+            return 0;
         pcontent = g_strdup_printf("%s%s", existing, included_files);
-    else
+    } else {
         pcontent = g_strdup_printf("%s%s", warning, included_files);
+    }
 
     plen = strlen(pcontent);
     if (plen > MAX_FILE_LEN) {
