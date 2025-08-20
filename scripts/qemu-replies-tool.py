@@ -401,6 +401,8 @@ def dump_qom_list_types(conv, dumpprefix):
 
                 types.append(qomtype['name'])
 
+            c['processed'] = True
+
             break
 
     types.sort()
@@ -421,7 +423,12 @@ def dump_device_and_object_properties(conv, dumpprefix):
         if c['cmd']['execute'] == 'qom-list-properties':
             prefix = '(qom-prop)'
 
-        if prefix is None or 'return' not in c['rep']:
+        if prefix is None:
+            continue
+
+        c['processed'] = True
+
+        if 'return' not in c['rep']:
             continue
 
         for arg in c['rep']['return']:
@@ -458,9 +465,16 @@ def machine_type_sorter(item):
 def dump_machine_types(conv, dumpprefix):
     machines = dict()
     aliases = []
+    dumped_kvm = False
 
     for c in conv:
         if c['cmd']['execute'] == 'query-machines':
+
+            c['processed'] = True
+
+            if dumped_kvm:
+                continue
+
             for machine in c['rep']['return']:
                 deprecated = False
                 name = machine['name']
@@ -481,7 +495,9 @@ def dump_machine_types(conv, dumpprefix):
                     machines[name] = {}
 
                 machines[name][version] = deprecated
-            break
+
+                # Dump only the machines for the first occurence of 'query-machines'
+                dumped_kvm = True
 
     for (machine, versions) in sorted(machines.items()):
         for (version, deprecated) in sorted(versions.items(), key=machine_type_sorter):
@@ -521,17 +537,47 @@ def dump_other(conv, dumpprefix):
                                                c['rep']['return']['qemu']['minor'],
                                                c['rep']['return']['qemu']['micro'],
                                                c['rep']['return']['package']))
+            c['processed'] = True
 
         if c['cmd']['execute'] == 'query-target':
             print('%s(target) %s' % (dumpprefix, c['rep']['return']['arch']))
+            c['processed'] = True
 
         if c['cmd']['execute'] == 'query-kvm':
             print('%s(kvm) present:%s enabled:%s' % (dumpprefix,
                                                      c['rep']['return']['present'],
                                                      c['rep']['return']['enabled']))
+            c['processed'] = True
 
         if c['cmd']['execute'] == 'query-command-line-options':
             dump_command_line_options(c, dumpprefix)
+            c['processed'] = True
+
+
+# dumps the parts of the .replies file which are not handled by the various dump_
+# helpers
+def dump_unprocessed(conv):
+    actual = ''
+
+    for c in conv:
+        if 'processed' in c and c['processed'] is True:
+            continue
+
+        # skip stuf not making sense to be processed:
+        # 'qmp_capabilities' - startup of QMP, no interesting data
+        # 'query-cpu-model-expansion' - too host dependant, nothing relevant
+        if c['cmd']['execute'] in ['qmp_capabilities', 'query-cpu-model-expansion']:
+            continue
+
+        # skip commands not having successful return
+        if 'return' not in c['rep']:
+            continue
+
+        actual += json.dumps(c['cmd'], indent=2) + '\n\n' + json.dumps(c['rep'], indent=2)
+
+    if actual != '':
+        for line in actual.split('\n'):
+            print('(unprocessed) ' + line)
 
 
 def process_one(filename, args):
@@ -551,6 +597,7 @@ def process_one(filename, args):
 
                 if args.dump_all or args.dump_qmp_query_strings:
                     dump_qmp_probe_strings(c['rep']['return'], dumpprefix)
+                    c['processed'] = True
                     dumped = True
 
         if args.dump_all:
@@ -558,6 +605,10 @@ def process_one(filename, args):
             dump_qom_list_types(conv, dumpprefix)
             dump_device_and_object_properties(conv, dumpprefix)
             dump_machine_types(conv, dumpprefix)
+            dumped = True
+
+        if args.dump_unprocessed:
+            dump_unprocessed(conv)
             dumped = True
 
         if dumped:
@@ -634,6 +685,10 @@ parser.add_argument('--dump-all', action='store_true',
 
 parser.add_argument('--dump-qmp-query-strings', action='store_true',
                     help='dump QMP schema in form of query strings used to probe capabilities')
+
+
+parser.add_argument('--dump-unprocessed', action='store_true',
+                    help='dump JSON of commands unprocessed by any of the --dump-* options')
 
 args = parser.parse_args()
 
