@@ -1298,8 +1298,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
             qemuPasstPrepareVhostUser(vm, net);
 
-            if (qemuPasstStart(vm, net) < 0)
-                goto cleanup;
         } else {
             if (virNetDevOpenvswitchGetVhostuserIfname(net->data.vhostuser->data.nix.path,
                                                        net->data.vhostuser->data.nix.listen,
@@ -1313,13 +1311,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
-
-            if (qemuPasstStart(vm, net) < 0)
-                goto cleanup;
-
-        } else if (!priv->disableSlirp &&
-                   virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
+        if (!priv->disableSlirp &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
 
             if (qemuInterfacePrepareSlirp(driver, net) < 0)
                 goto cleanup;
@@ -1353,6 +1346,12 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("hotplug of interface type of %1$s is not implemented yet"),
                        virDomainNetTypeToString(actualType));
+        goto cleanup;
+    }
+
+    /* both NET_TYPE_USER and NET_TYPE_VHOSTUSER might use passt */
+    if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
+        qemuPasstStart(vm, net) < 0) {
         goto cleanup;
     }
 
@@ -1539,10 +1538,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
         qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+    if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
         qemuPasstStop(vm, net);
-    }
 
     qemuDomainObjEnterMonitor(vm);
     if (charDevPlugged &&
@@ -5112,10 +5109,8 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
         qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
 
-    if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-        net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+    if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
         qemuPasstStop(vm, net);
-    }
 
     virDomainAuditNet(vm, net, NULL, "detach", true);
 

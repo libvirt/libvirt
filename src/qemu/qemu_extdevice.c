@@ -213,11 +213,6 @@ qemuExtDevicesStart(virQEMUDriver *driver,
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
 
-        if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
-            net->type != VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-            continue;
-        }
-
         if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
             if (qemuPasstStart(vm, net) < 0)
                 return -1;
@@ -310,10 +305,8 @@ qemuExtDevicesStop(virQEMUDriver *driver,
         if (slirp)
             qemuSlirpStop(slirp, vm, driver, net);
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-            net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST) {
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
             qemuPasstStop(vm, net);
-        }
 
         if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET && net->downscript)
             virNetDevRunEthernetScript(net->ifname, net->downscript);
@@ -373,8 +366,7 @@ qemuExtDevicesHasDevice(virDomainDef *def)
         if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
             return true;
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-            net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST)
             return true;
     }
 
@@ -455,8 +447,7 @@ qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
         if (slirp && qemuSlirpSetupCgroup(slirp, cgroup) < 0)
             return -1;
 
-        if (net->type == VIR_DOMAIN_NET_TYPE_USER &&
-            net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
+        if (net->backend.type == VIR_DOMAIN_NET_BACKEND_PASST &&
             qemuPasstSetupCgroup(vm, net, cgroup) < 0) {
             return -1;
         }
