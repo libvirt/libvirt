@@ -29,7 +29,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-07-25 11:29+0000\n"
+"PO-Revision-Date: 2025-08-08 17:33+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -453,10 +453,10 @@ msgid ""
 "session URI\n"
 msgstr ""
 "\n"
-"Uso:\n"
+"Modo de empleo:\n"
 "%1$s host puerto\n"
 "\n"
-"host debería tener uno de los siguientes formatos:\n"
+"El nombre de host debería tener uno de los siguientes formularios:\n"
 "\n"
 "  qemu:system/$nombredominio\t\tpara dominios bajo qemu:///system\n"
 "  qemu:session/$nombredominio\t\tpara dominios bajo qemu:///session\n"
@@ -544,16 +544,16 @@ msgstr ""
 " cur=%3$llu\n"
 " end=%4$llu\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "!!! SSH HOST KEY VERIFICATION FAILED !!!: Identity of host '%1$s:%2$d' "
 "differs from stored identity. Please verify the new host key '%3$s' to avoid "
 "possible man in the middle attack. The key is stored in '%4$s'."
 msgstr ""
-"¡VERIFICACIÓN DE CLAVE SSH DEL ANFITRIÓN INCORRECTA!: la identidad del "
-"anfitrión «%1$s:%2$d» difiere de la identidad almacenada. Verifique la clave "
-"de anfitrión nueva, «%3$s», para evitar potenciales ataques de "
-"intermediario. La clave se almacena en «%4$s»."
+"¡VERIFICACIÓN DE CLAVE SSH DEL HOST INCORRECTA!: la identidad del host "
+"«%1$s:%2$d» difiere de la identidad almacenada. Verifique la clave de host "
+"nueva, «%3$s», para evitar potenciales ataques de intermediario. La clave se "
+"almacena en «%4$s»."
 
 #, c-format
 msgid "$%1$s value should be between 0 and %2$d"
@@ -9627,6 +9627,7 @@ msgstr "El formateo de dirección IP para el host '%1$s' falló: %2$s"
 
 msgid "Formatting storage pool data requires authorization"
 msgstr ""
+"El formateo de los datos del grupo de almacenamiento requiere autorización"
 
 msgid "Formatting storage volume data requires authorization"
 msgstr ""
@@ -9641,6 +9642,8 @@ msgid ""
 "Found duplicate drive address for disk with target name '%1$s' "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
+"Dirección de unidad duplicada encontrada para disco con nombre destino '%1$"
+"s' controlador='%2$u' bus='%3$u' destino='%4$u' unidad='%5$u'"
 
 #, c-format
 msgid "Found invalid device link '%1$s' in '%2$s'"
@@ -9794,7 +9797,7 @@ msgstr "Obtener el resumen de dispositivos de bloque para un dominio."
 
 #, fuzzy
 msgid "Get the summary of throttle groups for a domain."
-msgstr "Obtiene el sumario de grupos acelerador para un dominio."
+msgstr "Obtiene el resumen de grupos de regulador para un dominio."
 
 msgid "Get the summary of virtual interfaces for a domain."
 msgstr "Obtenga el resumen de interfaces virtuales para un dominio."
@@ -9846,9 +9849,8 @@ msgstr ""
 msgid "Guest %1$s got signal %2$d and crashed"
 msgstr "Invitado %1$s obtuvo señal %2$d y se colgó"
 
-#, fuzzy
 msgid "Guest agent disappeared while executing command"
-msgstr "Agente invitado desaparecido mientras ejecutaba instrucción"
+msgstr "Agente invitado desaparecido mientras ejecutaba comando"
 
 msgid "Guest agent is not responding"
 msgstr "Agente de huésped no responde"
@@ -9908,48 +9910,46 @@ msgstr "Hibernar dominio"
 msgid "Holes are not supported with this stream"
 msgstr "Huecos no están admitidos con este flujo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hook for %1$s, failed to find operation #%2$d"
-msgstr "Enganchado por %1$s, ha fallado al encontrar la operación nº %2$d"
+msgstr "Gancho para %1$s, ha fallado al encontrar la operación nº %2$d"
 
-#, fuzzy
 msgid "Hook script execution failed"
 msgstr "Gancho en ejecución del script incorrecto"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hook script execution failed: %1$s"
-msgstr "Error en la ejecución del script de enganche: %1$s"
+msgstr "Incorrecto en la ejecución del script de enganche: %1$s"
 
 msgid "Host CPU does not provide required features"
 msgstr "CPU de host no proporciona funcionalidades prohibidas"
 
 #, c-format
 msgid "Host CPU does not provide required features: %1$s"
-msgstr ""
+msgstr "CPU de host no proporciona características requeridas: %1$s"
 
 msgid "Host CPU does not strictly match guest CPU: Extra features"
 msgstr ""
 "CPU de host no coincide estrictamente con CPU de huésped: Funcionalidades "
 "adicionales"
 
-#, fuzzy
 msgid "Host CPU does not support compatibility modes"
-msgstr "el grupo de almacenamiento no tiene soporte para volúmenes cifrados"
+msgstr "La CPU del host no admite modos de compatibilidad"
 
 #, c-format
 msgid "Host CPU is a superset of CPU described in %1$s\n"
-msgstr "La CPU del equipo es superior a la CPU descrita en %1$s\n"
+msgstr "La CPU del host es superior a la CPU descrita en %1$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Host CPU model does not match required CPU vendor %1$s or(and) model %2$s"
 msgstr ""
-"Modelo de CPU hospedaje no coincide el proveedor %1$s de CPU requerido o(y) "
+"Modelo de CPU host no coincide el proveedor %1$s de CPU requerido o(y) "
 "modelo %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Host CPU provides forbidden feature '%1$s'"
-msgstr "CPU de host proporciona funcionalidad '%1$s' prohibidas"
+msgstr "CPU de host proporciona funcionalidad '%1$s' prohibida"
 
 msgid "Host CPU provides forbidden features"
 msgstr "CPU de host proporciona funcionalidades prohibidas"
@@ -9957,10 +9957,14 @@ msgstr "CPU de host proporciona funcionalidades prohibidas"
 msgid "Host SMBIOS information is not available"
 msgstr "Información de Host SMBIOS no está disponible"
 
+#, fuzzy
 msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
 msgstr ""
+"Host no compatible con KVM; no se encontraron las funciones de "
+"virtualización de hardware de la CPU. Solo están disponibles las CPU "
+"emuladas; el rendimiento se verá significativamente limitado"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
@@ -9990,13 +9994,12 @@ msgid "Hostdev already exists in the domain configuration"
 msgstr ""
 "Ya existe dispositivo de hospedaje interno a la configuración del dominio"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hostdev source %1$s must be a block device"
 msgstr "Origen de hostdev %1$s debe ser un dispositivo de bloque"
 
-#, fuzzy
 msgid "Hostname"
-msgstr "Nombre de anfitrión"
+msgstr "Nombre de host"
 
 msgid "Hostname is needed for host key verification"
 msgstr "Se necesita nombre de host para verificar clave"
@@ -10005,18 +10008,17 @@ msgstr "Se necesita nombre de host para verificar clave"
 msgid "Hostname of '%1$s' is unset"
 msgstr "Nombre de host de '%1$s' no establecido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hotplug unsupported for char device type '%1$s'"
 msgstr ""
 "Enchufe caliente no mantenido para tipo de dispositivo de carácter '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Human monitor command is not available to run %1$s"
-msgstr "Instrucción de 'human monitor' no está disponible para ejecutar %1$s"
+msgstr "Comando de 'human monitor' no está disponible para ejecutar %1$s"
 
-#, fuzzy
 msgid "Human readable output"
-msgstr "Salida más legible por humanos"
+msgstr "Salida legible por humanos"
 
 msgid "Hybrid-Suspend"
 msgstr "Suspensión híbrida"
@@ -10031,15 +10033,15 @@ msgstr ""
 msgid ""
 "HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"
 msgstr ""
-"El recuento de intentos spinlock de HyperV difiere: origen: '%1$u', destino: "
+"El recuento de intentos cerrojo de HyperV difiere: origen: '%1$u', destino: "
 "'%2$u'"
 
 msgid "HyperV spinlock retry count must be at least 4095"
-msgstr "Cerrojo en bucle HyperV debe ser al menos de 4095"
+msgstr "Reintento de conteo de cerrojo HyperV debe ser de al menos 4.095"
 
-#, c-format
+#, c-format, fuzzy
 msgid "HyperV vendor_id differs: source: '%1$s', destination: '%2$s'"
-msgstr ""
+msgstr "El ID del proveedor de HyperV difiere: origen: '%1$s', destino: '%2$s'"
 
 #, fuzzy
 msgid "HyperV vendor_id value is invalid"
@@ -10059,20 +10061,21 @@ msgstr ""
 
 #, fuzzy
 msgid "Hypervisor reported CPU models"
-msgstr "El supervisor informó modelos de CPU"
+msgstr "Modelos de CPU informados por el hipervisor"
 
-#, fuzzy
 msgid "I/O Error"
 msgstr "Error de E/S"
 
 msgid "I/O error"
 msgstr "Error de E/S"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "I/O error: disk='%1$s', index='%2$d', path='%3$s', timestamp='%4$s', "
 "message='%5$s'"
 msgstr ""
+"Error de E/S: disco='%1$s', índice='%2$d', ruta='%3$s', marca de tiempo='%4$"
+"s', mensaje='%5$s'"
 
 #, fuzzy
 msgid "I/O size in bytes"
@@ -10089,8 +10092,11 @@ msgstr "El índice %1$d del bus IDE se encuentra fuera de [0..1] rango"
 msgid "IDE controller index %1$d out of [0] range"
 msgstr "El índice %1$d del controlador IDE se encuentra fuera de [0] rango"
 
+#, fuzzy
 msgid "IDE controllers are unsupported for this QEMU binary or machine type"
 msgstr ""
+"Los controladores IDE no son compatibles con este binario o tipo de máquina "
+"QEMU"
 
 #, c-format
 msgid "IDE disk index (parsed from '%1$s') is too large"
@@ -10106,29 +10112,27 @@ msgstr "No se encuentra IFLA_PORT_SELF"
 msgid "IFLA_VF_PORTS is missing"
 msgstr "No se encuentra IFLA_VF_PORTS"
 
-#, fuzzy
 msgid "IO Weight"
 msgstr "Ponderación E/S"
 
-#, fuzzy
 msgid "IO error on stdin"
-msgstr "Error E/S en entrada estándar"
+msgstr "Error de E/S por stdin"
 
-#, fuzzy
 msgid "IO error stdout"
-msgstr "Error de E/S por salida estándar"
+msgstr "Error de E/S por stdout"
 
 #, c-format
 msgid "IOMMU device: '%1$s' is not supported with this QEMU binary"
 msgstr "Dispositivo IOMMU: '%1$s' no es compatible con este binario de QEMU"
 
-#, c-format
+#, c-format, fuzzy
 msgid "IOMMU device: '%1$s' is only supported with ARM Virt machines"
-msgstr ""
+msgstr "Dispositivo IOMMU: '%1$s' solo es compatible con máquinas ARM Virt"
 
-#, c-format
+#, c-format, fuzzy
 msgid "IOMMU device: '%1$s' is only supported with Q35 and ARM Virt machines"
 msgstr ""
+"Dispositivo IOMMU: '%1$s' solo es compatible con máquinas Q35 y ARM Virt"
 
 #, fuzzy, c-format
 msgid "IOMMU device: '%1$s' is only supported with Q35 machines"
@@ -10142,40 +10146,53 @@ msgstr "Dispositivo IOMMU: '%1$s' necesita una dirección PCI"
 msgid "IOMMU device: '%1$s' requires ACPI"
 msgstr "Dispositivo IOMM: '%1$s' requiere ACPI"
 
+#, fuzzy
 msgid "IOMMU eim requires interrupt remapping to be enabled"
 msgstr ""
+"IOMMU eim requiere que la reasignación de interrupciones esté habilitada"
 
+#, fuzzy
 msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
+"La reasignación de interrupciones de IOMMU requiere una API de E/S dividida ("
+"controlador ioapic='qemu')"
 
+#, fuzzy
 msgid "IORT table header ended early"
-msgstr ""
+msgstr "El encabezado de la tabla IORT finalizó antes de tiempo"
 
+#, fuzzy
 msgid "IORT table node header ended early"
-msgstr ""
+msgstr "El encabezado del nodo de la tabla IORT finalizó antes de tiempo"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "IORT table node type %1$s has invalid length: got %2$u, expected at least "
 "%3$zu"
 msgstr ""
+"El tipo de nodo de tabla IORT %1$s tiene una longitud no válida: se obtuvo "
+"%2$u, se esperaba al menos %3$zu"
 
 msgid "IOThread ID"
-msgstr ""
+msgstr "ID de IOThread"
 
-#, fuzzy
 msgid "IOThread ID number"
 msgstr "Número ID de IOThread"
 
-#, c-format
+#, c-format, fuzzy
 msgid "IOThread mapping for disk '%1$s' is not available with this QEMU binary"
 msgstr ""
+"La asignación de IOThread para el disco '%1$s' no está disponible con este "
+"binario QEMU"
 
+#, fuzzy
 msgid ""
 "IOThread mapping for virtio-scsi controllers is not available with this QEMU "
 "binary"
 msgstr ""
+"El mapeo de IOThread para controladores virtio-scsi no está disponible con "
+"este binario QEMU"
 
 #, fuzzy
 msgid "IOThread to be used by supported device"
@@ -10185,9 +10202,8 @@ msgstr "Operación no tiene soporte para dispositivo: %s"
 msgid "IOThreads not available for bus %1$s target %2$s"
 msgstr "IOThreads no se encuentra disponible para el bus %1$s con destino %2$s"
 
-#, fuzzy
 msgid "IP address"
-msgstr "dirección MAC"
+msgstr "Dirección IP"
 
 #, c-format
 msgid "IP address lookup for host '%1$s' failed: %2$s"
@@ -10207,8 +10223,9 @@ msgstr ""
 "El parámetro IP debe ser ofrecido, ya que no es posible descubrir la "
 "dirección IP, tal vez debido a la falta de algunas herramientas"
 
+#, fuzzy
 msgid "IPC namespace support is required"
-msgstr ""
+msgstr "Se requiere compatibilidad con el espacio de nombres IPC"
 
 msgid "ISession object is null"
 msgstr "El objeto ISession es nulo"
@@ -10247,21 +10264,23 @@ msgstr ""
 msgid "In use"
 msgstr "En uso"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Inappropriate new pci controller index %1$zu exceeds addrs array length"
 msgstr ""
+"El nuevo índice de controlador PCI inapropiado %1$zu excede la longitud de "
+"la matriz de direcciones"
 
 #, c-format
 msgid "Incoming cookie data had unexpected UUID %1$s vs %2$s"
-msgstr "Datos de cookies de entrada tienen un UUID inesperado %1$s vs %2$s"
+msgstr "Datos de cookies de entrada tuvieron un UUID inesperado %1$s vs %2$s"
 
 #, c-format
 msgid "Incoming cookie data had unexpected name %1$s vs %2$s"
-msgstr "Datos de cookies de entrada tienen un nombre inesperado %1$s vs %2$s"
+msgstr "Datos de cookies de entrada tuvieron un nombre inesperado %1$s vs %2$s"
 
 #, fuzzy
 msgid "Incoming migration"
-msgstr "Migración desconectada"
+msgstr "Migración de entrada"
 
 #, c-format
 msgid "Incomplete vnuma configuration for vnode %1$zu"
@@ -10288,14 +10307,14 @@ msgstr "xpath '%1$s' incorrecto"
 
 #, c-format
 msgid "Index for '%1$s' controllers must be 0"
-msgstr ""
+msgstr "Índice para controladores '%1$s' debe ser 0"
 
 #, c-format
 msgid "Index for '%1$s' controllers must be > 0"
-msgstr ""
+msgstr "Índice para controladoras '%1$s' debe ser > 0"
 
 msgid "Init pid is not yet available"
-msgstr "Init PID no está disponible"
+msgstr "Init PID aún no está disponible"
 
 msgid "Init process ID is not yet known"
 msgstr "ID de proceso aún no se conoce"
@@ -10318,57 +10337,70 @@ msgid "Inject NMI to the guest domain."
 msgstr "Inyectar NMI al dominio de huésped."
 
 msgid "Inject domain NMI"
-msgstr ""
+msgstr "Inyecta dominio NMI"
 
 msgid "Injecting interrupt requires authorization"
-msgstr ""
+msgstr "Inyectar interrupción requiere autorización"
 
 msgid "Input devices are not supported by this virtualization driver."
-msgstr "Este controlador de virtualización no admite dispositivos de entrada."
+msgstr ""
+"Dispositivos de entrada no están admitidos por esta virtualización de "
+"controlador."
 
-#, fuzzy
 msgid "Input secret value is missing"
-msgstr "No se encuentra la etiqueta de seguridad"
+msgstr "Falta el valor secreto de entrada"
 
 msgid "Insert the media"
-msgstr "Insertar los medios"
+msgstr "Insertar el medio"
 
-#, fuzzy
 msgid "Installed bhyve binary does not support UEFI loader"
 msgstr "El binario de bhyve instalado no soporta cargador UEFI"
 
-#, fuzzy
 msgid "Installed bhyve binary does not support UTC clock"
 msgstr "El binario de bhyve instalado no admite reloj UTC"
 
-#, fuzzy
 msgid "Installed bhyve binary does not support bootrom"
 msgstr "El binario de bhyve instalado no admite bootrom"
 
+#, fuzzy
 msgid "Installed bhyve binary does not support defining CPU topology"
 msgstr ""
+"El binario bhyve instalado no admite la definición de la topología de la CPU"
 
 #, c-format
 msgid "Instantiation of rules failed on interface '%1$s'"
 msgstr "Error en la creación de instancia de reglas en interfaz '%1$s'"
 
+#, fuzzy
 msgid "Integrity error in watchdog models"
-msgstr ""
+msgstr "Error de integridad en los modelos de vigilancia"
 
+#, fuzzy
 msgid "Intel TDX launch security is not supported with PMU enabled"
 msgstr ""
+"La seguridad de lanzamiento de Intel TDX no es compatible con PMU habilitado"
 
+#, fuzzy
 msgid "Intel TDX launch security is not supported with SMM enabled"
 msgstr ""
+"La seguridad de lanzamiento de Intel TDX no es compatible con SMM habilitado"
 
+#, fuzzy
 msgid "Intel TDX launch security is not supported with pflash loader"
 msgstr ""
+"La seguridad de lanzamiento de Intel TDX no es compatible con el cargador "
+"pflash"
 
+#, fuzzy
 msgid "Intel TDX launch security is not supported with this QEMU binary"
 msgstr ""
+"La seguridad de lanzamiento de Intel TDX no es compatible con este binario "
+"QEMU"
 
+#, fuzzy
 msgid "Intel TDX launch security needs split kernel irqchip"
 msgstr ""
+"La seguridad del lanzamiento de Intel TDX requiere un núcleo dividido irqchip"
 
 msgid "Interface"
 msgstr "Interfaz"
@@ -10412,10 +10444,10 @@ msgid "Interface backend parameters are not supported by vz driver."
 msgstr "El controlador vz no admite argumentos del backend de la interfaz."
 
 msgid "Interface detached successfully\n"
-msgstr "La interfaz ha sido desmontada exitosamente\n"
+msgstr "La interfaz ha sido desmontada correctamente\n"
 
 msgid "Interface doesn't have any statistics"
-msgstr ""
+msgstr "Interfaz no tiene ninguna estadística"
 
 #, c-format
 msgid "Interface name from config %1$s doesn't match given supplied name %2$s"
@@ -10423,9 +10455,8 @@ msgstr ""
 "El nombre de la interfaz de configuración %1$s no coincide con el nombre "
 "provisto %2$s"
 
-#, fuzzy
 msgid "Interface name not provided"
-msgstr "No se encontró interfaz"
+msgstr "Nombre de interfaz no proporcionado"
 
 msgid "Interface not found"
 msgstr "No se encontró interfaz"
@@ -10435,7 +10466,7 @@ msgid "Interface not found: %1$s"
 msgstr "No se encontró interfaz: %1$s"
 
 msgid "Interface transactions"
-msgstr ""
+msgstr "Transacciones de interfaz"
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
@@ -10444,14 +10475,14 @@ msgstr ""
 "Tipo de interfaz hostdev tiene soporte actualmente en funciones SR-IOV "
 "Virtual únicamente"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid %1$s attribute 'vcpus' value '%2$s'"
-msgstr "Atributo 'vcpus' %1$s no admitido con valor '%2$s'"
+msgstr "Atributo 'vcpus' %1$s no válido con valor '%2$s'"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "Datos 'cpu.max' no válidos."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid --with-loader-nvram list: %1$s"
 msgstr "Listado --with-loader-nvram no válido: %1$s"
 
@@ -10476,14 +10507,17 @@ msgstr "Familia de firmas de CPU no válida en el modelo %1$s"
 msgid "Invalid CPU signature model in model %1$s"
 msgstr "Modelo de firma de CPU no válido en el modelo %1$s"
 
+#, fuzzy
 msgid ""
 "Invalid CPU topology: total number of vCPUs must equal the product of "
 "sockets, cores, and threads"
 msgstr ""
+"Topología de CPU no válida: el número total de vCPU debe ser igual al "
+"producto de sockets, núcleos y subprocesos"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid CPU vendor string '%1$s'"
-msgstr "Cadena '%1$s' de vendedor de CPU no válida"
+msgstr "Cadena '%1$s' de proveedor de CPU no válida"
 
 #, fuzzy, c-format
 msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
@@ -10501,16 +10535,17 @@ msgstr "Dirección IP no válida en red de registro DNS HOST '%1$s'"
 msgid "Invalid IP address in static host definition for network '%1$s'"
 msgstr "Dirección IP no válida en definición de host estático para red '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid IPv4 prefix '%1$u' in network '%2$s'"
-msgstr ""
+msgstr "Prefijo IPv4 no válido '%1$u' en la red '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid IPv6 prefix '%1$u' in network '%2$s'"
-msgstr ""
+msgstr "Prefijo IPv6 no válido '%1$u' en la red '%2$s'"
 
+#, fuzzy
 msgid "Invalid NULL callback provided"
-msgstr "Llamada NULL provista no válida"
+msgstr "Se proporcionó una devolución de invocación NULL no válida"
 
 #, fuzzy, c-format
 msgid "Invalid PCI address %1$s. Only PCI buses up to %2$zu are available"
@@ -10525,34 +10560,37 @@ msgstr "Dirección PCI %1$s inválida. Solo está disponible el dominio PCI 0"
 msgid "Invalid PCI address %1$s. function must be <= %2$u"
 msgstr "Dirección PCI %1$s no válida. La función debe ser <= %2$u"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address %1$s. slot must be <= %2$zu"
-msgstr ""
+msgstr "Dirección PCI no válida %1$s. La ranura debe ser <= %2$zu"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address %1$s. slot must be >= %2$zu"
-msgstr ""
+msgstr "Dirección PCI no válida %1$s. La ranura debe ser >= %2$zu"
 
+#, fuzzy
 msgid ""
 "Invalid PCI address 0000:00:00, at least one of domain, bus, or slot must be "
 "> 0"
 msgstr ""
+"Dirección PCI no válida 0000:00:00, al menos uno de los dominios, bus o "
+"ranura debe ser > 0"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address bus='0x%1$x', must be <= 0xFF"
-msgstr ""
+msgstr "Dirección PCI no válida bus='0x%1$x', debe ser <= 0xFF"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address function=0x%1$x, must be <= 7"
-msgstr ""
+msgstr "Función de dirección PCI no válida = 0x%1$x, debe ser <= 7"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address slot='0x%1$x', must be <= 0x1F"
-msgstr ""
+msgstr "Ranura de dirección PCI no válida='0x%1$x', debe ser <= 0x1F"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid PCI address uid='0x%1$.4x', must be > 0x0000 and <= 0x%2$.4x"
-msgstr ""
+msgstr "Dirección PCI no válida uid='0x%1$.4x', debe ser > 0x0000 y <= 0x%2$.4x"
 
 #, c-format
 msgid "Invalid PID %1$d for VM"
@@ -10570,13 +10608,11 @@ msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
 
 #, c-format
 msgid "Invalid USB Class code 0x%1$x"
-msgstr ""
+msgstr "Código 0x%1$x de Clase USB no válido"
 
-#, fuzzy
 msgid "Invalid UUID"
 msgstr "UUID no válido"
 
-#, fuzzy
 msgid "Invalid XML response"
 msgstr "Respuesta XML no válida"
 
@@ -10590,7 +10626,7 @@ msgstr "Dirección '%1$s' no válida en <ip>"
 
 #, c-format
 msgid "Invalid address '%1$s' in <portForward>"
-msgstr ""
+msgstr "Dirección '%1$s' no válida en <portForward>"
 
 #, c-format
 msgid "Invalid address '%1$s' in network '%2$s'"
@@ -10611,33 +10647,44 @@ msgid "Invalid argument"
 msgstr "Argumento no válido"
 
 msgid "Invalid async job start"
-msgstr ""
+msgstr "Arranque de tarea asíncrona no válida"
 
 #, c-format
 msgid ""
 "Invalid attempt to reset PCI device %1$s. Only PCI endpoint devices can be "
 "reset"
 msgstr ""
+"Intento no válido para restablecer dispositivo %1$s de PCI. Solo "
+"dispositivos PCI en punto final pueden ser restablecidos"
 
 msgid ""
 "Invalid attempt to set network interface guest-side IP address info, not "
 "supported by QEMU"
 msgstr ""
+"Intento no válido para establecer interfaz de red con informe de dirección "
+"IP en lado invitado, no mantenido por QEMU"
 
+#, fuzzy
 msgid ""
 "Invalid attempt to set network interface guest-side IP route, not supported "
 "by QEMU"
 msgstr ""
+"Intento no válido de establecer la ruta IP del lado del invitado de la "
+"interfaz de red, no compatible con QEMU"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid attempt to set network interface host-side IP route and/or address "
 "info on interface of type '%1$s'. This is only supported on interfaces of "
 "type 'ethernet'"
 msgstr ""
+"Intento no válido de establecer la ruta IP del host de la interfaz de red y/"
+"o la información de dirección en la interfaz de tipo '%1$s'. Esto solo es "
+"compatible con interfaces de tipo 'ethernet'."
 
+#, fuzzy
 msgid "Invalid attempt to set peer IP for guest"
-msgstr ""
+msgstr "Intento no válido de establecer la IP del par para el invitado"
 
 msgid "Invalid auth_pending and auth combination in JSON state document"
 msgstr ""
@@ -10732,21 +10779,23 @@ msgstr "Contexto no válido"
 msgid "Invalid controller id '%1$d'"
 msgstr "Valor de periodo de colección '%1$d' no es válido"
 
+#, fuzzy
 msgid "Invalid controller type for LUN"
-msgstr ""
+msgstr "Tipo de controlador no válido para LUN"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid cpuNum in %1$s"
-msgstr "cpuNum en %1$s es no válido"
+msgstr "cpuNum en %1$s no es válido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid cpuid[%1$zu]"
-msgstr ""
+msgstr "CPUid no válido[%1$zu]"
 
 #, fuzzy, c-format
 msgid "Invalid cpulist '%1$s'"
-msgstr "cpuNum en %1$s es no válido"
+msgstr "cpulist en %1$s no es válido"
 
+#, fuzzy
 msgid "Invalid data provided by guest agent"
 msgstr "Los datos provistos por el agente huésped no son válidos"
 
@@ -10754,14 +10803,16 @@ msgstr "Los datos provistos por el agente huésped no son válidos"
 msgid "Invalid delay value in network '%1$s'"
 msgstr "Valor de demora no válido en la red '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid device %1$s driver file %2$s is not a symlink"
-msgstr "Archivo de controlador %1$s de dispositivo%2$s no es un symlink"
+msgstr ""
+"Archivo de controlador %1$s de dispositivo%2$s no es un enlace simbólico"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid device %1$s iommu_group file %2$s is not a symlink"
 msgstr ""
-"Archivo %1$s iommu_group de dispositivo %2$s es no válido no es un symlink"
+"Archivo %1$s iommu_group de dispositivo %2$s es no válido no es un enlace "
+"simbólico"
 
 #, fuzzy, c-format
 msgid "Invalid device type supplied: %1$s"
@@ -10775,15 +10826,13 @@ msgstr "Bus del disco no válido en definición"
 msgid "Invalid disk read error policy: '%1$s'"
 msgstr "Normativa de error de lectura del disco inválido: '%1$s'"
 
-#, fuzzy
 msgid "Invalid domain checkpoint"
-msgstr "Punto de comprobación de dominio no válido"
+msgstr "Punto de control de dominio no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid domain checkpoint: %1$s"
 msgstr "Punto de control de dominio no válido: %1$s"
 
-#, fuzzy
 msgid "Invalid domain snapshot"
 msgstr "Instantánea del dominio no válido"
 
@@ -10854,7 +10903,7 @@ msgstr ""
 
 msgid "Invalid environment name, it must begin with a letter or underscore"
 msgstr ""
-"Nombre de entorno no válido, debe comenzar con una letra o un guión bajo"
+"Nombre de entorno no válido, debe comenzar con una letra o un guion bajo"
 
 msgid ""
 "Invalid environment name, it must contain only alphanumerics and underscore"
@@ -10869,15 +10918,18 @@ msgstr "Atributo de respaldo no válido"
 msgid "Invalid file descriptor while waiting for agent"
 msgstr "El descriptor del archivo es no válido al esperar por monitor"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
 msgstr ""
+"Descriptor de archivo no válido mientras se espera el monitor (vm='%1$s')"
 
+#, fuzzy
 msgid "Invalid firewall command has 0 arguments"
-msgstr ""
+msgstr "El comando de firewall no válido tiene 0 argumentos"
 
+#, fuzzy
 msgid "Invalid firmware name"
-msgstr ""
+msgstr "Nombre de firmware no válido"
 
 #, c-format
 msgid "Invalid floppy device name: %1$s"
@@ -10891,18 +10943,24 @@ msgstr "Formato no válido para 'bonding/arp_validate' para '%1$s'"
 msgid "Invalid format for 'bonding/mode' for '%1$s'"
 msgstr "Formato 'bonding/mode' no válido para '%1$s'"
 
+#, fuzzy
 msgid "Invalid format for launch security cbitpos"
-msgstr ""
+msgstr "Formato no válido para la seguridad de lanzamiento cbitpos"
 
+#, fuzzy
 msgid "Invalid format for launch security reduced-phys-bits"
 msgstr ""
+"Formato no válido para seguridad de lanzamiento de bits físicos reducidos"
 
 #, fuzzy, c-format
 msgid "Invalid forwarder IP address '%1$s' in network '%2$s'"
-msgstr "dirección de puente mac '%1$s' no válida en la red '%2$s'"
+msgstr "Dirección IP de reenvío no válida '%1$s' en la red '%2$s'"
 
+#, fuzzy
 msgid "Invalid forwarder element, must contain at least one of addr or domain"
 msgstr ""
+"Elemento de reenvío no válido, debe contener al menos uno de dirección o "
+"dominio"
 
 #, c-format
 msgid "Invalid harddisk device name: %1$s"
@@ -10920,17 +10978,17 @@ msgstr "Nombre de enganche no válido para #%1$d"
 msgid "Invalid host key verification method: '%1$s'"
 msgstr "Método de verificación de clave de host no válida: '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid host_data provided. Expected '%1$zu' bytes"
-msgstr ""
+msgstr "Host_data proporcionado no válido. Se esperaban '%1$zu' bytes"
 
 #, fuzzy, c-format
 msgid "Invalid hostdev protocol '%1$s'"
 msgstr "Atributo de modo no válido '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid image_format '%1$s'"
-msgstr ""
+msgstr "Formato de imagen no válido '%1$s'"
 
 #, fuzzy, c-format
 msgid "Invalid integer value '%1$s' in file '%2$s'"
@@ -10940,9 +10998,9 @@ msgstr "La máscara de red es no válida '%1$s' en red '%2$s'"
 msgid "Invalid ipv6 setting '%1$s' in network '%2$s'"
 msgstr "Parámetro ipv6 '%1$s' no válido en red '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid libxl cpuid key=value element: %1$s"
-msgstr ""
+msgstr "Elemento clave=valor de cpuid de libxl no válido: %1$s"
 
 #, c-format
 msgid "Invalid libxl cpuid value: %1$s"
@@ -10956,17 +11014,18 @@ msgstr "Acción lifecycle no válida: '%1$s'."
 msgid "Invalid lifecycle type '%1$s'."
 msgstr "El tipo de ciclo de vida '%1$s' no es válido."
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid log destination '%1$s' for log output '%2$s'"
-msgstr ""
+msgstr "Destino de registro no válido '%1$s' para la salida de registro '%2$s'"
 
 #, c-format
 msgid "Invalid log priority %1$d"
 msgstr "Prioridad de registro %1$d no válida"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr ""
+"Prioridad de registro no válida '%1$s' para la salida de registro '%2$s'"
 
 #, c-format
 msgid "Invalid lookup from '%1$s'"
@@ -10995,13 +11054,13 @@ msgstr "Configuración de macTableManager '%1$s' no válida en el puerto de red"
 msgid "Invalid match string '%1$s'"
 msgstr "Atributo de modo no válido '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid message prog=%1$d type=%2$d serial=%3$u proc=%4$d"
-msgstr ""
+msgstr "Mensaje no válido prog=%1$d tipo=%2$d serial=%3$u proc=%4$d"
 
 #, fuzzy
 msgid "Invalid migration cookie"
-msgstr "Duración no válida"
+msgstr "Cookie de migración no válida"
 
 #, c-format
 msgid "Invalid mode attribute '%1$s'"
@@ -11019,15 +11078,15 @@ msgstr "Modo no válido: %1$s"
 msgid "Invalid monitor cache level '%1$d'"
 msgstr "Valor de periodo de colección '%1$d' no es válido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid msr[%1$zu]"
-msgstr ""
+msgstr "No validado msr[%1$zu]"
 
 #, fuzzy, c-format
 msgid "Invalid mtu size '%1$s' in network '%2$s'"
-msgstr "La máscara de red es no válida '%1$s' en red '%2$s'"
+msgstr "La máscara de red no es válida '%1$s' en red '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid multicast bridge mac address '%1$s' in network '%2$s'"
 msgstr "Dirección MAC de puente multidifusión no válido '%1$s' en red '%2$s'"
 
@@ -11093,9 +11152,9 @@ msgstr "Parámetro no válido"
 msgid "Invalid parameter type passed to free"
 msgstr "Parámetro no válido hacia virXPathNode()"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid parameters macaddr=%1$p allowRetry=%2$p"
-msgstr ""
+msgstr "Parámetros no válidos macaddr=%1$p allowRetry=%2$p"
 
 #, fuzzy
 msgid "Invalid partial specification for virtio ccw address"
@@ -11112,20 +11171,21 @@ msgstr "Modo no válido: %1$s"
 msgid "Invalid peer '%1$s' in <ip>"
 msgstr "Tipo de bus '%1$s' para disco no válido"
 
+#, fuzzy
 msgid "Invalid persistent_state value, either 'yes' or 'no'"
-msgstr ""
+msgstr "Valor persistent_state no válido, ya sea 'sí' o 'no'"
 
 #, fuzzy, c-format
 msgid "Invalid pool type '%1$s'"
-msgstr "Tipo de secreto '%1$s'es nulo"
+msgstr "Tipo de consorcio no válido '%1$s'"
 
 #, c-format
 msgid "Invalid port range '%1$u-%2$u'."
-msgstr "Rango de puerto no válido '%1$u-%2$u'."
+msgstr "Intervalo de puerto '%1$u-%2$u' no válido."
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid portForward proto value %1$u"
-msgstr ""
+msgstr "Valor de protocolo portForward no válido %1$u"
 
 #, c-format
 msgid "Invalid prefix or netmask for '%1$s'"
@@ -11133,7 +11193,7 @@ msgstr "Prefijo no válido o máscara de red para '%1$s'"
 
 #, fuzzy, c-format
 msgid "Invalid prefix value '%1$s' in <ip>"
-msgstr "Es no válido el valor fromConfig: %1$s"
+msgstr "Valor de prefijo '%1$s' no válido en <ip>"
 
 #, c-format
 msgid "Invalid priority '%1$s' for filter '%2$s'"
@@ -11150,9 +11210,9 @@ msgstr "Ruta relativa '%1$s' no válida"
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl no válido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid save_image_format '%1$s'"
-msgstr ""
+msgstr "Inválido save_image_format '%1$s'"
 
 msgid "Invalid secret"
 msgstr "Secreto no válido"
@@ -11173,23 +11233,25 @@ msgstr "Etiqueta de seguridad '%1$s' no válida"
 msgid "Invalid setting for HPT resizing"
 msgstr "Estado no válido para esta operación"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr ""
+msgstr "Configuración no válida para la función pseries '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid snapshot_image_format '%1$s'"
-msgstr ""
+msgstr "Formato de imagen de instantánea no válido '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid source mode: %1$s"
-msgstr ""
+msgstr "Modo de origen no válido: %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%1$x' ssid='0x%2$x' "
 "devno='0x%3$04x'"
 msgstr ""
+"Especificación no válida para la dirección ccw de virtio: cssid='0x%1$x' "
+"ssid='0x%2$x' devno='0x%3$04x'"
 
 #, c-format
 msgid "Invalid state '%1$s' in domain snapshot XML"
@@ -11302,34 +11364,44 @@ msgstr ""
 "Valor para atributo '%1$s' interno a elemento '%2$s' no válido: '%3$s': "
 "Esperaba UUID"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected "
 "integer value"
 msgstr ""
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
+"esperaba un valor entero."
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected long "
 "long integer value"
 msgstr ""
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
+"esperaba un valor entero largo."
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-"
 "negative integer value"
 msgstr ""
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
+"esperaba un valor entero no negativo."
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-"
 "negative value"
 msgstr ""
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
+"esperaba un valor no negativo"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': Zero is not permitted"
 msgstr ""
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': No se permite "
+"el valor cero"
 
 #, c-format
 msgid "Invalid value for field '%1$s': expected double"
@@ -11358,15 +11430,17 @@ msgstr "Valor para número de CPU a mostrar es no válido"
 msgid "Invalid value for option %1$s"
 msgstr "Valor no admitido para la opción %1$s"
 
+#, fuzzy
 msgid "Invalid value for start CPU"
-msgstr "Valor para iniciar CPU es no válido"
+msgstr "Valor para iniciar CPU no es válido"
 
+#, fuzzy
 msgid "Invalid value for timeout"
-msgstr "Valor para tiempo de espera no válido"
+msgstr "Valor para vencimiento no válido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid value of %1$d for I/O weight"
-msgstr "Valor no válido de %1$d para peso de E/S"
+msgstr "Valor no válido de %1$d para ponderación de E/S"
 
 #, c-format
 msgid "Invalid value of 'cpuset': %1$s"
@@ -11384,15 +11458,17 @@ msgstr "Valor no admitido de 'nodeset': %1$s"
 msgid "Invalid vendor element in CPU model %1$s"
 msgstr "El elemento del proveedor no es válido en el modelo de CPU %1$s"
 
+#, fuzzy
 msgid "Invalid virNetLibsshSession *"
-msgstr ""
+msgstr "Sin validez de virNetLibsshSession *"
 
+#, fuzzy
 msgid "Invalid virNetSSHSession *"
-msgstr ""
+msgstr "Sin validez de virNetSSHSession *"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Invalid vlan filter command %1$d"
-msgstr ""
+msgstr "Comando de filtro de VLAN no válido %1$d"
 
 #, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
@@ -11400,7 +11476,7 @@ msgstr "Configuración de vnuma no válida para el vnodo %1$zu"
 
 #, fuzzy, c-format
 msgid "Invalid volume name %1$s"
-msgstr "cpuNum en %1$s es no válido"
+msgstr "Nombre de volumen no válido %1$s"
 
 #, c-format
 msgid "Invalid vport operation (%1$d)"
@@ -11413,61 +11489,75 @@ msgstr "Invocación de %1$s retornó un error: %2$s (%3$d)"
 msgid "Invoke fstrim on domain's mounted filesystems."
 msgstr "Invocar fstrim en sistemas de archivos montados de dominio."
 
-#, fuzzy
 msgid "Iteration:"
-msgstr "Ubicación:"
+msgstr "Iteración:"
 
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %1$u"
 msgstr "El ID de iterador excede el ID máximo de %1$u"
 
+#, fuzzy
 msgid "JSON array -> commandline conversion function not provided"
 msgstr ""
+"No se proporciona la función de conversión de matriz JSON → línea de comandos"
 
-#, c-format
+#, c-format, fuzzy
 msgid "JSON backing volume definition '%1$s' lacks 'file' object"
 msgstr ""
+"La definición del volumen de respaldo JSON '%1$s' carece del objeto 'archivo'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "JSON backing volume definition '%1$s' lacks driver name"
 msgstr ""
+"La definición del volumen de respaldo JSON '%1$s' carece de nombre de "
+"controlador"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "JSON backing volume definition '%1$s' must not have nested format drivers"
 msgstr ""
+"La definición del volumen de respaldo JSON '%1$s' no debe tener "
+"controladores de formato anidados"
 
+#, fuzzy
 msgid "JSON string array contains non-string element"
-msgstr ""
+msgstr "La matriz de cadenas JSON contiene un elemento que no es una cadena"
 
 #, c-format
 msgid "Job submission failed on interface '%1$s'"
 msgstr "Error en el envío de tarea en interfaz '%1$s'"
 
 msgid "Job type:"
-msgstr "Tipo de trabajo:"
+msgstr "Tipo de tarea:"
 
+#, fuzzy
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
-msgstr "Como consejo, ignore rangos libres contiguos menores (Bytes)"
+msgstr "Como consejo, ignore intervalos libres contiguos menores (Bytes)"
 
 #, fuzzy
 msgid "KVM is not supported on this platform"
-msgstr "E/S cruda no tiene soporte en esta plataforma"
+msgstr "KVM no es admitido sobre esta plataforma"
 
+#, fuzzy
 msgid "Kernel does not provide mount namespace"
 msgstr "El kernel no proporciona espacio de nombres de montura"
 
+#, fuzzy
 msgid "Kernel does not support private devpts"
-msgstr "Kernel no soporta devpts privados"
+msgstr "El kernel no admite devpts privados"
 
 msgid "Kernel doesn't support user namespace"
 msgstr "El kernel no admite espacio de nombre de usuario"
 
+#, fuzzy
 msgid "Kernel image path in this domain is not defined"
-msgstr ""
+msgstr "La ruta de la imagen del kernel en este dominio no está definida"
 
+#, fuzzy
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr ""
+"La ruta de la imagen del kernel no está definida. Con sev_snp=on, pasar una "
+"ruta igvm."
 
 #, fuzzy
 msgid "Key file path must be provided for private key authentication"
@@ -11479,18 +11569,23 @@ msgid "Key of the current session differs from the key at last login"
 msgstr ""
 "La llave de la sesión actual es diferente a la llave del último registro"
 
+#, fuzzy
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
+"Conocido, pero hay un formato de etiqueta diferente, requiere compilación "
+"--overwrite"
 
 msgid "LXC Guest Enter Namespace"
 msgstr "Entrar al Espacio de Nombres del huésped LXC"
 
+#, fuzzy
 msgid "LXC containers are running"
-msgstr ""
+msgstr "Los contenedores LXC se están ejecutando"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Lease %1$s in lockspace %2$s already exists"
-msgstr "Arriendo %1$s en lockspace %2$s ya existe"
+msgstr ""
+"El contrato de arrendamiento %1$s en el espacio de bloqueo %2$s ya existe"
 
 #, c-format
 msgid "Lease %1$s in lockspace %2$s does not exist"
@@ -11509,120 +11604,151 @@ msgstr ""
 "La función de la biblioteca devolvió un error pero no estableció virError"
 
 msgid "Libvirt LXC"
-msgstr ""
+msgstr "Libvirt LXC"
 
 msgid "Libvirt Network"
-msgstr ""
+msgstr "Red Libvirt"
 
 msgid "Libvirt QEMU"
-msgstr ""
+msgstr "QEMU Libvirt"
 
 msgid "Libvirt Secret"
-msgstr ""
+msgstr "Secret Libvirt"
 
 msgid "Libvirt Xen"
-msgstr ""
+msgstr "Xen Libvirt"
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
 msgstr "El evento del ciclo de vida '%1$s' no admite la acción '%2$s'"
 
 msgid "Link already defined"
-msgstr ""
-
-msgid "List all manageable clients connected to <server>."
-msgstr ""
-
-msgid "List all manageable servers on a daemon."
-msgstr ""
+msgstr "Enlace ya definido"
 
 #, fuzzy
+msgid "List all manageable clients connected to <server>."
+msgstr "Enumere todos los clientes administrables conectados a <servidor>."
+
+#, fuzzy
+msgid "List all manageable servers on a daemon."
+msgstr "Enumera todos los servidores administrables en un demonio."
+
 msgid "List checkpoints for a domain"
-msgstr "Muestra las capturas instantáneas de un dominio"
+msgstr "Listado de puntos de control para un dominio"
 
 msgid "List domains"
-msgstr ""
+msgstr "Listado de dominios"
 
+#, fuzzy
 msgid "List event types, or wait for domain events to occur"
 msgstr ""
+"Enumere los tipos de eventos o espere a que se produzcan los eventos del "
+"dominio"
 
+#, fuzzy
 msgid "List event types, or wait for network events to occur"
-msgstr ""
+msgstr "Enumere los tipos de eventos o espere a que se produzcan eventos de red"
 
+#, fuzzy
 msgid "List event types, or wait for node device events to occur"
 msgstr ""
+"Enumere los tipos de eventos o espere a que se produzcan los eventos del "
+"dispositivo del nodo"
 
+#, fuzzy
 msgid "List event types, or wait for secret events to occur"
-msgstr ""
+msgstr "Enumere los tipos de eventos o espere a que ocurran eventos secretos"
 
+#, fuzzy
 msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
+"Enumere los tipos de eventos o espere a que se produzcan eventos del grupo "
+"de almacenamiento"
 
 msgid "List interfaces"
-msgstr ""
+msgstr "Listado de interfaces"
 
+#, fuzzy
 msgid "List network filter bindings"
-msgstr ""
+msgstr "Lista de enlaces de filtros de red"
 
+#, fuzzy
 msgid "List network filters"
-msgstr ""
+msgstr "Listado de filtros de red"
 
 msgid "List network ports"
-msgstr ""
+msgstr "Listados de puertos de red"
 
 msgid "List networks"
-msgstr ""
+msgstr "Listado de redes"
 
 msgid "List node devices"
-msgstr ""
+msgstr "Listado de dispositivos de nodo"
 
 msgid "List secrets"
-msgstr ""
+msgstr "Listado de secretos"
 
+#, fuzzy
 msgid "List snapshots for a domain"
 msgstr "Muestra las capturas instantáneas de un dominio"
 
+#, fuzzy
 msgid "List storage pool volumes"
-msgstr ""
+msgstr "Lista de volúmenes del grupo de almacenamiento"
 
+#, fuzzy
 msgid "List storage pools"
-msgstr ""
+msgstr "Lista de grupos de almacenamiento"
 
+#, fuzzy
 msgid "Listen for QEMU Monitor Events"
-msgstr ""
+msgstr "Escuche los eventos del monitor QEMU"
 
+#, fuzzy
 msgid "Listen for TCP/IP connections"
-msgstr ""
+msgstr "Escuchar conexiones TCP/IP"
 
+#, fuzzy
 msgid "Listing domains or using domain events requires authorization"
 msgstr ""
+"Para listar dominios o utilizar eventos de dominio se requiere autorización"
 
+#, fuzzy
 msgid "Listing interfaces requires authorization"
-msgstr ""
+msgstr "El listado de interfaces requiere autorización"
 
+#, fuzzy
 msgid "Listing network filter bindings requires authorization"
-msgstr ""
+msgstr "Para listar los enlaces de filtros de red se requiere autorización"
 
+#, fuzzy
 msgid "Listing network filters requires authorization"
-msgstr ""
+msgstr "Para listar filtros de red se requiere autorización"
 
+#, fuzzy
 msgid "Listing network ports requires authorization"
-msgstr ""
+msgstr "Para listar los puertos de red se requiere autorización"
 
+#, fuzzy
 msgid "Listing networks or using network events requires authorization"
-msgstr ""
+msgstr "Para listar redes o utilizar eventos de red se requiere autorización"
 
+#, fuzzy
 msgid "Listing node devices requires authorization"
-msgstr ""
+msgstr "Para listar dispositivos de nodo se requiere autorización"
 
+#, fuzzy
 msgid "Listing secrets requires authorization"
-msgstr ""
+msgstr "El listado de secretos requiere autorización"
 
+#, fuzzy
 msgid "Listing storage pool volumes requires authorization"
 msgstr ""
+"Para listar volúmenes de grupos de almacenamiento se requiere autorización"
 
+#, fuzzy
 msgid "Listing storage pools requires authorization"
-msgstr ""
+msgstr "Para listar grupos de almacenamiento se requiere autorización"
 
 #, fuzzy
 msgid "Load kvm_hv for better performance"
@@ -11666,17 +11792,21 @@ msgstr "Recurso Lockspace '%1$s' está bloqueado"
 msgid "Lockspace resource '%1$s' is not locked"
 msgstr "Valor de recursos Lockspace '%1$s' no está bloqueado"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Log output '%1$s' does not meet the format requirements for destination type "
 "'%2$s'"
 msgstr ""
+"La salida del registro '%1$s' no cumple con los requisitos de formato para "
+"el tipo de destino '%2$s'"
 
+#, fuzzy
 msgid "Logging filters: "
-msgstr ""
+msgstr "Filtros de registro: "
 
+#, fuzzy
 msgid "Logging outputs: "
-msgstr ""
+msgstr "Registro de salidas: "
 
 #, c-format
 msgid "Lookup of value at index %1$u resulted in a NULL pointer"
@@ -11702,11 +11832,13 @@ msgstr "Nivel MCS para etiqueta de dominio %1$s ya está reservado"
 msgid "MD5 hash '%1$s' unexpectedly larger than %2$d characters"
 msgstr "Hash MD5 '%1$s' excede %2$d caracteres"
 
+#, fuzzy
 msgid "Machine is Null"
-msgstr ""
+msgstr "Máquina es Nula"
 
+#, fuzzy
 msgid "Machine is null"
-msgstr ""
+msgstr "Máquina es nula"
 
 msgid "Malformatted array index"
 msgstr "Índice de array malformado"
@@ -11793,9 +11925,9 @@ msgstr "Tamaño %s erróneo"
 msgid "Malformed format for filter '%1$s'"
 msgstr "Puerto nbd '%1$s' es incorrecto"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Malformed format for log output '%1$s'"
-msgstr ""
+msgstr "Formato mal formado para la salida de bitácora '%1$s'"
 
 msgid "Malformed id field in JSON state document"
 msgstr "Campo id incorrecto en el documento de estado JSON"
@@ -11816,39 +11948,41 @@ msgstr "No se pueden establecer datos max_clients en documento JSON"
 msgid "Malformed nbd port '%1$s'"
 msgstr "Puerto nbd '%1$s' es incorrecto"
 
+#, fuzzy
 msgid "Malformed output of dmidecode"
-msgstr ""
+msgstr "Salida mal formada de dmidecode"
 
 #, fuzzy
 msgid "Malformed ovs-vsctl output"
-msgstr "modo octal erróneo"
+msgstr "Salida de ovs-vsctl mal formada"
 
+#, fuzzy
 msgid "Malformed owner value in JSON document"
-msgstr "Valor de propietario es incorrecto en documento JSON"
+msgstr "Valor de propietario mal formado en un documento JSON"
 
 #, fuzzy
 msgid "Malformed owners array"
-msgstr "elemento dueño erróneo"
+msgstr "Matriz de propietarios malformada"
 
 #, fuzzy
 msgid "Malformed resources array"
-msgstr "valor de retorno mal formado"
+msgstr "Matriz de recursos malformada"
 
 #, fuzzy
 msgid "Malformed servers data in JSON document"
-msgstr "Valor de propietario es incorrecto en documento JSON"
+msgstr "Datos de servidores malformados en un documento JSON"
 
 #, fuzzy
 msgid "Malformed services array"
-msgstr "Tamaño %s erróneo"
+msgstr "Matriz de servicios malformada"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Malformed size %1$s"
-msgstr "Tamaño %1$s erróneo"
+msgstr "Tamaño %1$s malformado"
 
 #, fuzzy
 msgid "Malformed socks array"
-msgstr "Índice de array malformado"
+msgstr "Matriz de zócalos malformado"
 
 #, fuzzy
 msgid "Malformed stream hole packet"
@@ -11856,26 +11990,32 @@ msgstr "Desplazamiento de destino de arrendamiento incorrecto %s"
 
 #, c-format
 msgid "Malformed wwn: %1$s"
-msgstr "wwn errado: %1$s"
+msgstr "wwn malformado: %1$s"
 
 msgid "Manage active block operations"
-msgstr "Administrar operaciones de bloque activas"
+msgstr "Gestionar operaciones de bloque activas"
 
+#, fuzzy
 msgid "Manage local virtualized systems"
-msgstr ""
+msgstr "Gestionar sistemas de virtualizados local"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Managed save image of Domain '%1$s' XML configuration edited.\n"
 msgstr ""
+"Gestionar imagen guardada de Dominio '%1$s' XML de configuración editada.\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Managed save image of domain '%1$s' XML configuration not changed.\n"
 msgstr ""
+"Guardado gestionado de imagen de dominio '%1$s' en configuración XML no "
+"modificado.\n"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Managed save state file of domain '%1$s' updated.\n"
 msgstr ""
+"Se actualizó el archivo de estado guardado administrado del dominio '%1$s'.\n"
 
+#, fuzzy
 msgid "Managed save:"
 msgstr "Guardar administrado:"
 
@@ -11885,41 +12025,49 @@ msgstr "ManagedObjectReference no posee la propiedad 'type'"
 msgid "Managedsave"
 msgstr "Managedsave"
 
+#, fuzzy
 msgid "Mandatory option not present"
 msgstr "Opción obligatoria no está presente"
 
+#, fuzzy
 msgid "Manipulate pages pool size"
-msgstr ""
+msgstr "Manipular el tamaño del grupo de páginas"
 
 #, fuzzy, c-format
 msgid "Max backup %1$zu must be less than or equal to %2$d"
-msgstr "%1$zu máximo de la copia de seguridad debe ser menor o igual a %2$d"
+msgstr "%1$zu máx. del respaldo debe ser menor o igual a %2$d"
 
+#, fuzzy
 msgid "Max memory plus swap, as scaled integer (default KiB)"
-msgstr "Memoria máxima más swap, como entero escalado (predeterminado Kib)"
+msgstr ""
+"Memoria máxima agrega intercambio, como entero escalado (predeterminado Kib)"
 
 msgid "Max memory, as scaled integer (default KiB)"
-msgstr "Memoria máxima como entero escalado (predeterminado Kib)"
+msgstr "Memoria máxima, como entero escalado (predeterminado Kib)"
 
 msgid "Max memory:"
-msgstr "Memoria máxima:"
+msgstr "Memoria máx:"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Maximum CPUs greater than specified machine type limit %1$u"
-msgstr ""
+msgstr "Máximo de CPU mayor que el límite del tipo de máquina especificado %1$u"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Maximum supported number of ISA serial ports is '%1$d'"
-msgstr ""
+msgstr "El número máximo admitido de puertos serie ISA es '%1$d'"
 
+#, fuzzy
 msgid "Media Registry is null"
-msgstr ""
+msgstr "El registro de medios es nulo"
 
+#, fuzzy
 msgid "Media registry is null"
-msgstr ""
+msgstr "El registro de medios es nulo"
 
+#, fuzzy
 msgid "Mediated host device assignment requires VFIO support"
 msgstr ""
+"La asignación de dispositivo host mediado requiere compatibilidad con VFIO"
 
 msgid "Memory"
 msgstr "Memoria"
@@ -11952,10 +12100,11 @@ msgstr ""
 
 #, fuzzy
 msgid "Memory bandwidth:"
-msgstr "Memoria restante:"
+msgstr "Ancho de banda de memoria:"
 
+#, fuzzy
 msgid "Memory cgroup is not available on this host"
-msgstr "Cgroup de memoria no está disponible en este host"
+msgstr "No está disponible la memoria de cgroup en este host"
 
 msgid "Memory during contention, as scaled integer (default KiB)"
 msgstr "Memoria durante contención, como entero escalado (predeterminado Kib)"
@@ -11970,9 +12119,12 @@ msgstr "Memoria procesada:"
 msgid "Memory remaining:"
 msgstr "Memoria restante:"
 
+#, fuzzy
 msgid ""
 "Memory size must be specified via <memory> or in the <numa> configuration"
 msgstr ""
+"El tamaño de la memoria debe especificarse mediante <memory> o en la "
+"configuración <numa>"
 
 msgid "Memory size should be multiple of 1Mb."
 msgstr "Tamaño de memoria debe ser múltiplo de 1Mb."
@@ -12024,7 +12176,7 @@ msgid "Migrated"
 msgstr "migrado"
 
 msgid "Migrating domain requires authorization"
-msgstr ""
+msgstr "La migración de dominio requiere autorización"
 
 msgid "Migration"
 msgstr "Migración"
@@ -12041,23 +12193,31 @@ msgstr ""
 "La URI de migración tiene que especificar el grupo de recursos y el sistema "
 "del equipo"
 
+#, fuzzy
 msgid "Migration capabilities can only be set by a migration job"
 msgstr ""
+"Las capacidades de migración solo se pueden configurar mediante una tarea de "
+"migración"
 
+#, fuzzy
 msgid "Migration cookie parameters are not provided."
 msgstr "No se proveyeron argumentos de 'cookie' de migración."
 
+#, fuzzy
 msgid "Migration cookie was not NULL terminated"
 msgstr "Migración de cookies no fue terminada NULL"
 
 #, fuzzy
 msgid "Migration failed. Domain is not running on destination host"
-msgstr "El host de destino no soporta migración desconectada"
+msgstr ""
+"Migración incorrecta. El dominio no se está ejecutando en el host de destino."
 
 #, fuzzy, c-format
 msgid ""
 "Migration failed. No domain on destination host with matching name '%1$s'"
-msgstr "no existe una captura instantánea coincidente con el nombre '%1$s'"
+msgstr ""
+"Migración incorrecta. No hay ningún dominio en el host de destino con el "
+"nombre coincidente '%1$s'"
 
 msgid "Migration graphics data already present"
 msgstr "Datos de migración de gráficas ya están presentes"
@@ -12158,8 +12318,11 @@ msgstr "Falta el atributo 'cpus' en celda de NUMA"
 msgid "Missing 'name' property in %1$s lookup"
 msgstr "Falta propiedad de 'name' en búsqueda %1$s"
 
+#, fuzzy
 msgid "Missing 'path' attribute to 'target' element for lease"
 msgstr ""
+"Falta el atributo 'path' en el elemento 'target' para el contrato de "
+"arrendamiento"
 
 msgid "Missing 'path' field in JSON document"
 msgstr "Falta el campo 'path' en documento JSON"
@@ -12180,7 +12343,7 @@ msgstr "No se encuentra el elemento 'target' para arrendamiento"
 
 #, fuzzy
 msgid "Missing <address> element"
-msgstr "Falta dirección"
+msgstr "Falta elemento <address> para dirección"
 
 msgid "Missing <block> element in hostdev storage device"
 msgstr "Falta el elemento <block> en dispositivo de almacenamiento hostdev"
