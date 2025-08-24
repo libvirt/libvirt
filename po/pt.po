@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-08-03 22:08+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-08-03 22:09+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -33192,11 +33192,11 @@ msgstr ""
 
 #, c-format
 msgid "no domain with matching id %1$d"
-msgstr "Nenhum domínio com id correspondente %1$d"
+msgstr "nenhum domínio com id correspondente %1$d"
 
 #, c-format
 msgid "no domain with matching id '%1$d'"
-msgstr "Nenhum domínio com id correspondente %1$d"
+msgstr "nenhum domínio com id correspondente '%1$d'"
 
 #, c-format
 msgid "no domain with matching name '%1$s'"
