@@ -30,7 +30,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
 "PO-Revision-Date: 2025-08-08 17:33+0000\n"
-"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -12140,7 +12140,7 @@ msgid "Memory tuning is not available in session mode"
 msgstr "Ajuste de CPU no está disponible en este host"
 
 msgid "Messages:"
-msgstr ""
+msgstr "Mensajes"
 
 #, fuzzy
 msgid "Metadata modified"
