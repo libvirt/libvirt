@@ -25,13 +25,14 @@
 # "Daniel P. Berrange" <berrange@redhat.com>, 2025.
 # QiangWei Zhang <zhang.qiangwei@zte.com.cn>, 2025.
 # Poesty Li <poesty7450@gmail.com>, 2025.
+# Charles Lee <lchopn@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-05-08 15:49+0000\n"
-"Last-Translator: Poesty Li <poesty7450@gmail.com>\n"
+"PO-Revision-Date: 2025-08-12 18:08+0000\n"
+"Last-Translator: Charles Lee <lchopn@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -39,7 +40,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.11.3\n"
+"X-Generator: Weblate 5.12.2\n"
 
 msgid ""
 "\n"
@@ -482,7 +483,7 @@ msgstr " %1$s (指定关键字'%2$s'时可以显示此部分帮助信息)\n"
 msgid " %1$s (help keyword '%2$s'):\n"
 msgstr " %1$s (使用关键字 '%2$s' 来显示帮助信息):\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid " --%1$s <string>..."
 msgstr " --%1$s <string>..."
 
@@ -570,9 +571,9 @@ msgstr "%1$s 无法解析 GID '%2$s'"
 msgid "%1$s cannot parse UID '%2$s'"
 msgstr "%1$s 无法解析 UID '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s disk is not supported with this QEMU binary"
-msgstr "此 QEMU 二进制文件不支持%1$s 磁盘"
+msgstr "此 QEMU 二进制文件不支持 %1$s 磁盘"
 
 #, c-format
 msgid "%1$s does not support file storage"
