@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-08-01 03:20+0000\n"
+"PO-Revision-Date: 2025-08-03 13:53+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -13359,7 +13359,7 @@ msgstr "단일 시리얼만이 해당 도메인을 위해 구성 될 수 있습�
 msgid ""
 "Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
 "security policy"
-msgstr ""
+msgstr "bit0(debug) 및 bit28(sept-ve-disable)만 인텔 TDX 실행 보한 정책을 지원합니다"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "오직 브리지된 veth 장치만 분리할 수 있습니다"
@@ -13384,7 +13384,7 @@ msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr "vz 드라이버는 파일 기반 또는 볼륨 기반 파일 시스템만 지원합니다."
 
 msgid "Only four serial ports are supported"
-msgstr ""
+msgstr "4개의 직렬 포트만 지원됩니다"
 
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "vz 드라이버는 하드 디스크와 cdrom만 지원합니다."
@@ -13396,7 +13396,7 @@ msgid "Only ide, sata and scsi disk supports 'product'"
 msgstr "ide, sata 및 scsi 디스크만 'product'를 지원합니다"
 
 msgid "Only listening TCP sockets are supported"
-msgstr ""
+msgstr "수신 TCP 소켓만 지원됩니다"
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "luks 암호화만 단순 파일을 지원합니다"
@@ -14440,7 +14440,7 @@ msgid "Reconnected to the hypervisor"
 msgstr "하이퍼바이저로 재연결 됨"
 
 msgid "Recreation"
-msgstr ""
+msgstr "재정의"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -18363,7 +18363,7 @@ msgstr "SCSI 컨트롤러 idx=%1$d의 모델을 확인할 수 없습니다"
 
 #, c-format
 msgid "Unable to determine model for USB controller idx=%1$d"
-msgstr ""
+msgstr "USB 제어기 idx=%1$d 를 위한 모델을 결정 할 수 없음"
 
 msgid "Unable to determine mount table on this platform"
 msgstr "이 기술환경에서 적재 테이블을 결정 할 수 없습니다"
@@ -18835,7 +18835,7 @@ msgstr "이 기술환경에서 가상 기능을 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to import certificate list %1$s"
-msgstr ""
+msgstr "인증서 목록 %1$s 를 가져올 수 없음"
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20262,7 +20262,7 @@ msgstr "알 수 없는 데이터 소스 '%1$s'"
 
 #, c-format
 msgid "Unknown default_cpu_deprecated_features value %1$s"
-msgstr ""
+msgstr "알 수 없는 default_cpu_deprecated_features 값 %1$s"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -27463,7 +27463,7 @@ msgid "failed to get launch security policy"
 msgstr "시작 보안 정책을 가져오지 못했습니다"
 
 msgid "failed to get launch security policy for launch security type TDX"
-msgstr ""
+msgstr "실행 보안 유형 TDX를 위한 실행 보안 정책을 가져오는 데 실패함"
 
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
@@ -28074,7 +28074,8 @@ msgstr "게스트 가상장비(VM)을 종료하지 못했습니다"
 msgid ""
 "failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
 "components"
-msgstr ""
+msgstr "경로 '%1$s'를 'pool/image' 또는 'pool/namespace/image' 구성 요소로 분할하는 "
+"데 실패함"
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -29202,7 +29203,7 @@ msgstr "[%1$d-%2$d] 범위를 벗어난 디버그 수준 %3$d를 무시합니다
 
 msgid ""
 "ignoring host is only allowed when computing baseline from multiple CPUs"
-msgstr ""
+msgstr "호스트 무시하기는 다중 CPU에서 기준선을 연산 할 때만 허용됩니다"
 
 msgid "image magic is incorrect"
 msgstr "이미지 매직이 잘못되었습니다"
@@ -31055,7 +31056,7 @@ msgid "malformed QMP schema"
 msgstr "잘못된 QMP 스키마"
 
 msgid "malformed TDX panic data"
-msgstr ""
+msgstr "잘못된 TDX 치명적 오류 자료"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -34007,7 +34008,7 @@ msgid "only a single IOMMU device is supported"
 msgstr "단일 IOMMU 장치만 지원됨"
 
 msgid "only a single QGS element is supported"
-msgstr ""
+msgstr "단일 QGS 요소만 지원됩니다"
 
 msgid "only a single TPM Proxy device is supported"
 msgstr "단일 TPM 프락시 장치만이 지원됨"
@@ -40671,7 +40672,8 @@ msgstr "XEN_CREDIT의 weight"
 msgid ""
 "when computing baseline from several CPUs, do not take hypervisor "
 "capabilities into account and work with input data only"
-msgstr ""
+msgstr "여러 CPU에서 기준선을 연산 할 때에, 하이퍼바이저 기능을 고려하지 않고 입력 "
+"자료만 작업합니다"
 
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
