@@ -30150,28 +30150,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-36"
-}
-
-{
-  "return": [],
-  "id": "libvirt-36"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-37"
-}
-
-{
-  "return": [],
-  "id": "libvirt-37"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-38"
+  "id": "libvirt-36"
 }
 
 {
@@ -31487,5 +31467,5 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-36"
 }

@@ -3389,29 +3389,6 @@ virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
 
 
 static int
-virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps G_GNUC_UNUSED,
-                       qemuMonitor *mon)
-{
-    g_auto(GStrv) models = NULL;
-    g_auto(GStrv) types = NULL;
-
-    if (qemuMonitorGetTPMModels(mon, &models) < 0)
-        return -1;
-
-    if (!models)
-        return 0;
-
-    if (qemuMonitorGetTPMTypes(mon, &types) < 0)
-        return -1;
-
-    if (!types)
-        return 0;
-
-    return 0;
-}
-
-
-static int
 virQEMUCapsProbeQMPKVMState(virQEMUCaps *qemuCaps,
                             qemuMonitor *mon)
 {
@@ -5723,8 +5700,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPMachineProps(qemuCaps, type, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPCPUDefinitions(qemuCaps, accel, mon) < 0)
-        return -1;
-    if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
         return -1;

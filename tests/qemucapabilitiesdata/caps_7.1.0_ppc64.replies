@@ -30266,33 +30266,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-39"
-}
-
-{
-  "return": [
-    "tpm-spapr"
-  ],
-  "id": "libvirt-39"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-40"
-}
-
-{
-  "return": [
-    "passthrough",
-    "emulator"
-  ],
-  "id": "libvirt-40"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -31479,7 +31454,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {

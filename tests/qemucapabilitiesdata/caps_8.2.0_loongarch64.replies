@@ -28557,28 +28557,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-37"
-}
-
-{
-  "return": [],
-  "id": "libvirt-37"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-38"
-}
-
-{
-  "return": [],
-  "id": "libvirt-38"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
@@ -29893,7 +29873,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
@@ -29904,11 +29884,11 @@
       "name": "host"
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
-  "id": "libvirt-40",
+  "id": "libvirt-38",
   "error": {
     "class": "GenericError",
     "desc": "The CPU type 'host' is not a recognized LoongArch CPU type"

@@ -32794,34 +32794,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-44"
-}
-
-{
-  "return": [
-    "tpm-crb",
-    "tpm-tis"
-  ],
-  "id": "libvirt-44"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-45"
-}
-
-{
-  "return": [
-    "passthrough",
-    "emulator"
-  ],
-  "id": "libvirt-45"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-46"
+  "id": "libvirt-44"
 }
 
 {
@@ -34145,16 +34119,16 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-47"
+  "id": "libvirt-45"
 }
 
 {
-  "id": "libvirt-47",
+  "id": "libvirt-45",
   "error": {
     "class": "GenericError",
     "desc": "SEV: Failed to open /dev/sev: No such file or directory"
@@ -34163,11 +34137,11 @@
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-48"
+  "id": "libvirt-46"
 }
 
 {
-  "id": "libvirt-48",
+  "id": "libvirt-46",
   "error": {
     "class": "GenericError",
     "desc": "SGX is not enabled in KVM"
@@ -34182,7 +34156,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-47"
 }
 
 {
@@ -34520,7 +34494,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-47"
 }
 
 {
@@ -34534,7 +34508,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-48"
 }
 
 {
@@ -34872,7 +34846,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-48"
 }
 
 {
@@ -34887,7 +34861,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-49"
 }
 
 {
@@ -35225,7 +35199,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-49"
 }
 
 {

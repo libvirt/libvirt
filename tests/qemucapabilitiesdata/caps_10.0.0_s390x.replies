@@ -31838,28 +31838,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-38"
-}
-
-{
-  "return": [],
-  "id": "libvirt-38"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-39"
-}
-
-{
-  "return": [],
-  "id": "libvirt-39"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
@@ -33137,7 +33117,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
@@ -33148,7 +33128,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -33220,7 +33200,7 @@
       }
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -33231,7 +33211,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
@@ -33387,7 +33367,7 @@
       }
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {

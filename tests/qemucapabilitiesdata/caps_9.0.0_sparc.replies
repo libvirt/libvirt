@@ -24764,28 +24764,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-21"
-}
-
-{
-  "return": [],
-  "id": "libvirt-21"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-22"
-}
-
-{
-  "return": [],
-  "id": "libvirt-22"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-23"
+  "id": "libvirt-21"
 }
 
 {
@@ -26118,5 +26098,5 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-21"
 }

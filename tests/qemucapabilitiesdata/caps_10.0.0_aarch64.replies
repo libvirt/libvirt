@@ -34287,34 +34287,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-38"
-}
-
-{
-  "return": [
-    "tpm-tis",
-    "tpm-tis"
-  ],
-  "id": "libvirt-38"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-39"
-}
-
-{
-  "return": [
-    "passthrough",
-    "emulator"
-  ],
-  "id": "libvirt-39"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
@@ -35781,12 +35755,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -35802,7 +35776,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-39"
 }
 
 {
@@ -35813,7 +35787,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
@@ -35846,7 +35820,7 @@
       }
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-40"
 }
 
 {
@@ -35861,11 +35835,11 @@
       }
     }
   },
-  "id": "libvirt-43"
+  "id": "libvirt-41"
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-41",
   "error": {
     "class": "GenericError",
     "desc": "Parameter 'model.props.hv-passthrough' is unexpected"

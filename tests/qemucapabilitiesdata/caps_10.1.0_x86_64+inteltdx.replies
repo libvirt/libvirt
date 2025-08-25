@@ -36346,34 +36346,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-42"
-}
-
-{
-  "return": [
-    "tpm-crb",
-    "tpm-tis"
-  ],
-  "id": "libvirt-42"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-43"
-}
-
-{
-  "return": [
-    "passthrough",
-    "emulator"
-  ],
-  "id": "libvirt-43"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-42"
 }
 
 {
@@ -37707,16 +37681,16 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-43"
 }
 
 {
-  "id": "libvirt-45",
+  "id": "libvirt-43",
   "error": {
     "class": "GenericError",
     "desc": "SEV is not enabled in KVM"
@@ -37725,7 +37699,7 @@
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-46"
+  "id": "libvirt-44"
 }
 
 {
@@ -37753,7 +37727,7 @@
     ],
     "flc": true
   },
-  "id": "libvirt-46"
+  "id": "libvirt-44"
 }
 
 {
@@ -37764,7 +37738,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-45"
 }
 
 {
@@ -38169,7 +38143,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-45"
 }
 
 {
@@ -38183,7 +38157,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-46"
 }
 
 {
@@ -38588,7 +38562,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-46"
 }
 
 {
@@ -38599,7 +38573,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-47"
 }
 
 {
@@ -39115,7 +39089,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-47"
 }
 
 {
@@ -39130,7 +39104,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-48"
 }
 
 {
@@ -39646,7 +39620,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-48"
 }
 
 {

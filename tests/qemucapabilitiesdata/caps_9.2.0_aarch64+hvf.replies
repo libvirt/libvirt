@@ -32517,33 +32517,8 @@
 }
 
 {
-  "execute": "query-tpm-models",
-  "id": "libvirt-34"
-}
-
-{
-  "return": [
-    "tpm-tis",
-    "tpm-tis"
-  ],
-  "id": "libvirt-34"
-}
-
-{
-  "execute": "query-tpm-types",
-  "id": "libvirt-35"
-}
-
-{
-  "return": [
-    "emulator"
-  ],
-  "id": "libvirt-35"
-}
-
-{
   "execute": "query-command-line-options",
-  "id": "libvirt-36"
+  "id": "libvirt-34"
 }
 
 {
@@ -33859,12 +33834,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-37"
+  "id": "libvirt-35"
 }
 
 {
@@ -33880,7 +33855,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-35"
 }
 
 {
@@ -33891,11 +33866,11 @@
       "name": "host"
     }
   },
-  "id": "libvirt-38"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-38",
+  "id": "libvirt-36",
   "error": {
     "class": "GenericError",
     "desc": "The CPU type 'host' requires KVM"
@@ -33914,11 +33889,11 @@
       }
     }
   },
-  "id": "libvirt-39"
+  "id": "libvirt-37"
 }
 
 {
-  "id": "libvirt-39",
+  "id": "libvirt-37",
   "error": {
     "class": "GenericError",
     "desc": "The CPU type 'host' requires KVM"
