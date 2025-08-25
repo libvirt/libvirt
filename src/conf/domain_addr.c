@@ -691,7 +691,8 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSet *addrs,
             }
         }
     } else if (flags & (VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
-                        VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT)) {
+                        VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT |
+                        VIR_PCI_CONNECT_TYPE_PCIE_TO_PCI_BRIDGE)) {
         model = VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
     } else {
         /* The types of devices that we can't auto-add a controller for:
