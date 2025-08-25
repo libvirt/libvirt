@@ -409,30 +409,40 @@ def dump_qom_list_types(conv):
         print('(qom) ' + t)
 
 
-def dump_device_list_properties(conv):
-    devices = []
+def dump_device_and_object_properties(conv):
+    ent = []
 
     for c in conv:
+        prefix = None
+
         if c['cmd']['execute'] == 'device-list-properties':
-            if 'return' in c['rep']:
-                for arg in c['rep']['return']:
-                    for k in arg:
-                        if k not in ['name', 'type', 'description', 'default-value']:
-                            raise Exception("Unhandled 'device-list-properties' typename '%s' field '%s'" % (c['cmd']['arguments']['typename'], k))
+            prefix = '(dev-prop)'
 
-                    if 'default-value' in arg:
-                        defval = ' (%s)' % str(arg['default-value'])
-                    else:
-                        defval = ''
+        if c['cmd']['execute'] == 'qom-list-properties':
+            prefix = '(qom-prop)'
 
-                    devices.append('%s %s %s%s' % (c['cmd']['arguments']['typename'],
-                                                   arg['name'],
-                                                   arg['type'],
-                                                   defval))
-    devices.sort()
+        if prefix is None or 'return' not in c['rep']:
+            continue
 
-    for d in devices:
-        print('(dev) ' + d)
+        for arg in c['rep']['return']:
+            for k in arg:
+                if k not in ['name', 'type', 'description', 'default-value']:
+                    raise Exception("Unhandled 'device-list-properties'/'qom-list-properties' typename '%s' field '%s'" % (c['cmd']['arguments']['typename'], k))
+
+                if 'default-value' in arg:
+                    defval = ' (%s)' % str(arg['default-value'])
+                else:
+                    defval = ''
+
+                    ent.append('%s %s %s %s%s' % (prefix,
+                                                  c['cmd']['arguments']['typename'],
+                                                  arg['name'],
+                                                  arg['type'],
+                                                  defval))
+    ent.sort()
+
+    for e in ent:
+        print(e)
 
 
 # Sort helper for version string e.g. '11.0', '1.2' etc. Tolerates empty version.
@@ -507,7 +517,7 @@ def process_one(filename, args):
 
         if args.dump_all:
             dump_qom_list_types(conv)
-            dump_device_list_properties(conv)
+            dump_device_and_object_properties(conv)
             dump_machine_types(conv)
             dumped = True
 
