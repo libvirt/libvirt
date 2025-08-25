@@ -1268,6 +1268,7 @@ typedef const char *(*qemuMonitorCPUFeatureTranslationCallback)(virArch arch,
 
 int qemuMonitorGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
+                           bool qomListGet,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
                            virCPUData **enabled,

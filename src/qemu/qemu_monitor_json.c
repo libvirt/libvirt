@@ -6596,6 +6596,7 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitor *mon,
 
 struct _qemuMonitorJSONCPUPropsFilterData {
     qemuMonitor *mon;
+    bool values;
     const char *cpuQOMPath;
 };
 
@@ -6604,17 +6605,32 @@ qemuMonitorJSONCPUPropsFilter(const char *name,
                               virJSONValue *propData,
                               void *opaque)
 {
-    qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
     struct _qemuMonitorJSONCPUPropsFilterData *data = opaque;
+    bool enabled = false;
 
     if (STRNEQ_NULLABLE(virJSONValueObjectGetString(propData, "type"), "bool"))
         return 1;
 
-    if (qemuMonitorJSONGetObjectProperty(data->mon, data->cpuQOMPath,
-                                         name, &prop) < 0)
-        return -1;
+    if (data->values) {
+        if (virJSONValueObjectGetBoolean(propData, "value", &enabled) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("property '%1$s' in reply data was missing value"),
+                           name);
+            return -1;
+        }
+    } else {
+        qemuMonitorJSONObjectProperty prop = {
+            .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN
+        };
 
-    if (!prop.val.b)
+        if (qemuMonitorJSONGetObjectProperty(data->mon, data->cpuQOMPath,
+                                             name, &prop) < 0)
+            return -1;
+
+        enabled = prop.val.b;
+    }
+
+    if (!enabled)
         return 1;
 
     return 0;
@@ -6623,6 +6639,7 @@ qemuMonitorJSONCPUPropsFilter(const char *name,
 
 static int
 qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
+                                bool qomListGet,
                                 const char *cpuQOMPath,
                                 char ***props)
 {
@@ -6631,14 +6648,28 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
     virJSONValue *array;
     struct _qemuMonitorJSONCPUPropsFilterData filterData = {
         .mon = mon,
+        .values = qomListGet,
         .cpuQOMPath = cpuQOMPath,
     };
 
     *props = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
-                                           "s:path", cpuQOMPath,
-                                           NULL)))
+    if (qomListGet) {
+        g_autoptr(virJSONValue) paths = virJSONValueNewArray();
+
+        if (virJSONValueArrayAppendString(paths, cpuQOMPath) < 0)
+            return -1;
+
+        cmd = qemuMonitorJSONMakeCommand("qom-list-get",
+                                         "a:paths", &paths,
+                                         NULL);
+    } else {
+        cmd = qemuMonitorJSONMakeCommand("qom-list",
+                                         "s:path", cpuQOMPath,
+                                         NULL);
+    }
+
+    if (!cmd)
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -6650,6 +6681,22 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
     if (!(array = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
         return -1;
 
+    if (qomListGet) {
+        if (virJSONValueArraySize(array) != 1) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'qom-list-get' returned unexpected number of paths"));
+            return -1;
+        }
+
+        array = virJSONValueObjectGetArray(virJSONValueArrayGet(array, 0),
+                                           "properties");
+        if (!array) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                          _("reply data was missing 'properties' array"));
+            return -1;
+        }
+    }
+
     return qemuMonitorJSONParsePropsList(array, qemuMonitorJSONCPUPropsFilter,
                                          &filterData, props);
 }
@@ -6657,6 +6704,7 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
 
 static int
 qemuMonitorJSONGetCPUData(qemuMonitor *mon,
+                          bool qomListGet,
                           const char *cpuQOMPath,
                           qemuMonitorCPUFeatureTranslationCallback translate,
                           virCPUData *data)
@@ -6664,7 +6712,7 @@ qemuMonitorJSONGetCPUData(qemuMonitor *mon,
     g_auto(GStrv) props = NULL;
     char **p;
 
-    if (qemuMonitorJSONGetCPUProperties(mon, cpuQOMPath, &props) < 0)
+    if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath, &props) < 0)
         return -1;
 
     for (p = props; p && *p; p++) {
@@ -6712,6 +6760,8 @@ qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
  * qemuMonitorJSONGetGuestCPU:
  * @mon: Pointer to the monitor
  * @arch: CPU architecture
+ * @qomListGet: QEMU supports getting list of features and their values using
+ *      a single qom-list-get QMP command
  * @cpuQOMPath: QOM path of a CPU to probe
  * @translate: callback for translating CPU feature names from QEMU to libvirt
  * @opaque: data for @translate callback
@@ -6726,6 +6776,7 @@ qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
 int
 qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
+                           bool qomListGet,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
                            virCPUData **enabled,
@@ -6738,7 +6789,8 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
         !(cpuDisabled = virCPUDataNew(arch)))
         return -1;
 
-    if (qemuMonitorJSONGetCPUData(mon, cpuQOMPath, translate, cpuEnabled) < 0)
+    if (qemuMonitorJSONGetCPUData(mon, qomListGet, cpuQOMPath,
+                                  translate, cpuEnabled) < 0)
         return -1;
 
     if (disabled &&

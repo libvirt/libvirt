@@ -3673,6 +3673,8 @@ qemuMonitorSetDomainLog(qemuMonitor *mon,
  * qemuMonitorGetGuestCPU:
  * @mon: Pointer to the monitor
  * @arch: CPU architecture
+ * @qomListGet: QEMU supports getting list of features and their values using
+ *      a single qom-list-get QMP command
  * @cpuQOMPath: QOM path of a CPU to probe
  * @translate: callback for translating CPU feature names from QEMU to libvirt
  * @opaque: data for @translate callback
@@ -3687,13 +3689,16 @@ qemuMonitorSetDomainLog(qemuMonitor *mon,
 int
 qemuMonitorGetGuestCPU(qemuMonitor *mon,
                        virArch arch,
+                       bool qomListGet,
                        const char *cpuQOMPath,
                        qemuMonitorCPUFeatureTranslationCallback translate,
                        virCPUData **enabled,
                        virCPUData **disabled)
 {
-    VIR_DEBUG("arch=%s cpuQOMPath=%s translate=%p enabled=%p disabled=%p",
-              virArchToString(arch), cpuQOMPath, translate, enabled, disabled);
+    VIR_DEBUG("arch=%s qomListGet=%d cpuQOMPath=%s translate=%p "
+              "enabled=%p disabled=%p",
+              virArchToString(arch), qomListGet, cpuQOMPath, translate,
+              enabled, disabled);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -3701,8 +3706,8 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
     if (disabled)
         *disabled = NULL;
 
-    return qemuMonitorJSONGetGuestCPU(mon, arch, cpuQOMPath, translate,
-                                      enabled, disabled);
+    return qemuMonitorJSONGetGuestCPU(mon, arch, qomListGet, cpuQOMPath,
+                                      translate, enabled, disabled);
 }
 
 

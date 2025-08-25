@@ -2773,6 +2773,7 @@ testQemuMonitorJSONGetSEVInfo(const void *opaque)
 
 struct testQemuMonitorJSONGetGuestCPUData {
     const char *name;
+    bool qomListGet;
     virQEMUDriver driver;
     GHashTable *schema;
 };
@@ -2791,8 +2792,9 @@ testQemuMonitorJSONGetGuestCPU(const void *opaque)
     g_autofree char *enabled = NULL;
     g_autofree char *disabled = NULL;
     bool failed = false;
+    const char *legacy = data->qomListGet ? "" : "-legacy";
 
-    fileJSON = g_strdup_printf("%s-%s.json", base, data->name);
+    fileJSON = g_strdup_printf("%s-%s%s.json", base, data->name, legacy);
     fileEnabled = g_strdup_printf("%s-%s-enabled.xml", base, data->name);
     fileDisabled = g_strdup_printf("%s-%s-disabled.xml", base, data->name);
 
@@ -2802,6 +2804,7 @@ testQemuMonitorJSONGetGuestCPU(const void *opaque)
 
     if (qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(mon),
                                    VIR_ARCH_X86_64,
+                                   data->qomListGet,
                                    "/machine/unattached/device[0]",
                                    virQEMUCapsCPUFeatureFromQEMU,
                                    &dataEnabled, &dataDisabled) < 0)
@@ -2884,11 +2887,13 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-#define DO_TEST_GET_GUEST_CPU(name) \
+#define DO_TEST_GET_GUEST_CPU(name, qomListGet) \
     do { \
         struct testQemuMonitorJSONGetGuestCPUData data = { \
-            name, driver, qapiData.schema }; \
-        if (virTestRun("GetGuestCPU(" name ")", \
+            name, qomListGet, driver, qapiData.schema }; \
+        g_autofree char *label = NULL; \
+        label = g_strdup_printf("GetGuestCPU(%s, legacy=%d)", name, qomListGet); \
+        if (virTestRun(label, \
                        testQemuMonitorJSONGetGuestCPU, \
                        &data) < 0) \
             ret = -1; \
@@ -2984,8 +2989,8 @@ mymain(void)
 
     DO_TEST_CPU_INFO("s390", 2);
 
-    DO_TEST_GET_GUEST_CPU("SierraForest");
-    DO_TEST_GET_GUEST_CPU("SkylakeClient");
+    DO_TEST_GET_GUEST_CPU("SierraForest", false);
+    DO_TEST_GET_GUEST_CPU("SkylakeClient", false);
 
 
 #define DO_TEST_QAPI_QUERY(nme, qry, scc, rplobj) \

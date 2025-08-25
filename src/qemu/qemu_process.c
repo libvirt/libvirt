@@ -4592,6 +4592,7 @@ qemuProcessFetchGuestCPU(virDomainObj *vm,
 
     rc = qemuMonitorGetGuestCPU(priv->mon,
                                 vm->def->os.arch,
+                                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QOM_LIST_GET),
                                 cpuQOMPath,
                                 virQEMUCapsCPUFeatureFromQEMU,
                                 &dataEnabled, &dataDisabled);
