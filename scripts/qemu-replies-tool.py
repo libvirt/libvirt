@@ -371,7 +371,7 @@ def dump_qmp_probe_strings_iter(name, cur, trace, schema):
             dump_qmp_probe_strings_iter(var['type'], cur, trace, schema)
 
 
-def dump_qmp_probe_strings(schemalist):
+def dump_qmp_probe_strings(schemalist, dumpprefix):
     schemadict = {}
     toplevel = []
 
@@ -384,10 +384,10 @@ def dump_qmp_probe_strings(schemalist):
     toplevel.sort()
 
     for c in toplevel:
-        dump_qmp_probe_strings_iter(c, '(qmp) ' + c, [], schemadict)
+        dump_qmp_probe_strings_iter(c, dumpprefix + '(qmp) ' + c, [], schemadict)
 
 
-def dump_qom_list_types(conv):
+def dump_qom_list_types(conv, dumpprefix):
     types = []
 
     for c in conv:
@@ -406,10 +406,10 @@ def dump_qom_list_types(conv):
     types.sort()
 
     for t in types:
-        print('(qom) ' + t)
+        print(dumpprefix + '(qom) ' + t)
 
 
-def dump_device_and_object_properties(conv):
+def dump_device_and_object_properties(conv, dumpprefix):
     ent = []
 
     for c in conv:
@@ -442,7 +442,7 @@ def dump_device_and_object_properties(conv):
     ent.sort()
 
     for e in ent:
-        print(e)
+        print(dumpprefix + e)
 
 
 # Sort helper for version string e.g. '11.0', '1.2' etc. Tolerates empty version.
@@ -455,7 +455,7 @@ def machine_type_sorter(item):
     return list(map(int, key.split('.')))
 
 
-def dump_machine_types(conv):
+def dump_machine_types(conv, dumpprefix):
     machines = dict()
     aliases = []
 
@@ -497,13 +497,17 @@ def dump_machine_types(conv):
     aliases.sort()
 
     for a in aliases:
-        print('(machine alias) ' + a)
+        print(dumpprefix + '(machine alias) ' + a)
 
 
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
         dumped = False
+        dumpprefix = ''
+
+        if args.repliesdir:
+            dumpprefix = filename + ': '
 
         modify_replies(conv)
 
@@ -512,13 +516,13 @@ def process_one(filename, args):
                 validate_qmp_schema(c['rep']['return'])
 
                 if args.dump_all or args.dump_qmp_query_strings:
-                    dump_qmp_probe_strings(c['rep']['return'])
+                    dump_qmp_probe_strings(c['rep']['return'], dumpprefix)
                     dumped = True
 
         if args.dump_all:
-            dump_qom_list_types(conv)
-            dump_device_and_object_properties(conv)
-            dump_machine_types(conv)
+            dump_qom_list_types(conv, dumpprefix)
+            dump_device_and_object_properties(conv, dumpprefix)
+            dump_machine_types(conv, dumpprefix)
             dumped = True
 
         if dumped:
