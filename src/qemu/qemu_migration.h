@@ -274,8 +274,7 @@ qemuMigrationDstErrorReport(virQEMUDriver *driver,
                             const char *name);
 
 int
-qemuMigrationDstCheckProtocol(virQEMUCaps *qemuCaps,
-                              const char *migrateFrom);
+qemuMigrationDstCheckProtocol(const char *migrateFrom);
 
 char *
 qemuMigrationDstGetURI(const char *migrateFrom,

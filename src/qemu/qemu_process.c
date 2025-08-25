@@ -4997,7 +4997,7 @@ qemuProcessIncomingDefNew(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuProcessIncomingDef *inc = NULL;
 
-    if (qemuMigrationDstCheckProtocol(priv->qemuCaps, migrateFrom) < 0)
+    if (qemuMigrationDstCheckProtocol(migrateFrom) < 0)
         return NULL;
 
     inc = g_new0(qemuProcessIncomingDef, 1);

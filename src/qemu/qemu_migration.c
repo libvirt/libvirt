@@ -2387,20 +2387,14 @@ qemuMigrationDstOPDRelocate(virQEMUDriver *driver G_GNUC_UNUSED,
 
 
 int
-qemuMigrationDstCheckProtocol(virQEMUCaps *qemuCaps,
-                              const char *migrateFrom)
+qemuMigrationDstCheckProtocol(const char *migrateFrom)
 {
-    if (STRPREFIX(migrateFrom, "rdma")) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("incoming RDMA migration is not supported with this QEMU binary"));
-            return -1;
-        }
-    } else if (!STRPREFIX(migrateFrom, "tcp") &&
-               !STRPREFIX(migrateFrom, "exec") &&
-               !STRPREFIX(migrateFrom, "fd") &&
-               !STRPREFIX(migrateFrom, "unix") &&
-               STRNEQ(migrateFrom, "stdio")) {
+    if (!STRPREFIX(migrateFrom, "tcp") &&
+        !STRPREFIX(migrateFrom, "exec") &&
+        !STRPREFIX(migrateFrom, "fd") &&
+        !STRPREFIX(migrateFrom, "unix") &&
+        !STRPREFIX(migrateFrom, "rdma") &&
+        STRNEQ(migrateFrom, "stdio")) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("unknown migration protocol"));
         return -1;
@@ -5330,7 +5324,6 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
                               qemuMigrationParams *migParams,
                               const char *nbdURI)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virURI) uribits = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
@@ -5353,11 +5346,6 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
     }
 
     if (STREQ(uribits->scheme, "rdma")) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATE_RDMA)) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("outgoing RDMA migration is not supported with this QEMU binary"));
-            return -1;
-        }
         if (!virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("cannot start RDMA migration with no memory hard limit set"));
