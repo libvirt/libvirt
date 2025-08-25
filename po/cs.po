@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2024-11-13 20:38+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3077,6 +3077,9 @@ msgstr "Nedaří se zjistit popis umístění zařízení výplně v operační 
 
 msgid "Cannot determine system clock HZ"
 msgstr "Nedaří se zjistit frekvenci systémových hodin"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Nedaří se vypnout příznak close-on-exec"
@@ -10722,6 +10725,10 @@ msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr "Neplatná priorita záznamu '%1$s' pro výstup záznamu událostí '%2$s'"
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "Neplatné hledání od „%1$s“"
 
@@ -13506,6 +13513,9 @@ msgstr "Je podporováno pouze jedno vlákno na jádro"
 msgid "Only EFI firmware permits NVRAM"
 msgstr "NVRAM je k dispozici pouze v případě EFI firmware"
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "S předponou je možné použít pouze IPv4 nebo iPv6 adresy"
 
@@ -14640,7 +14650,7 @@ msgstr "Znovu připojeno ke správnímu serveru"
 msgid "Reconnected to the hypervisor"
 msgstr "Znovu se připojit k hypervizoru"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, c-format
@@ -17088,6 +17098,10 @@ msgid "Target video card acceleration does not match source"
 msgstr "Akcelerace cílové grafické karty neodpovídá zdrojové"
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr "Počet výstupů cílové grafické karty %1$u neodpovídá zdrojovému %2$u"
 
@@ -18082,6 +18096,9 @@ msgstr ""
 msgid "UUID is not supported for NVDIMM device"
 msgstr "UUID není v případě NVDIMM zařízení podporováno"
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid> a <sysinfo>se nerovnají"
 
@@ -18883,6 +18900,9 @@ msgstr "Nedaří se získat informace o filtrech záznamu událostí procesu slu
 msgid "Unable to get daemon logging outputs information"
 msgstr "Nedaří se získat informace o výstupech záznamu událostí procesu služby"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 msgid "Unable to get device master from netlink on this platform"
 msgstr "Na této platformě nelze získat nadřízené zařízení z netlink"
 
@@ -19473,6 +19493,9 @@ msgstr "Nedaří se dotázat kontext zabezpečení protějšku"
 
 msgid "Unable to query process ID start time"
 msgstr "Nedaří se dotázat na okamžik spuštění identifikátoru procesu"
+
+msgid "Unable to query process stats"
+msgstr ""
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -31541,6 +31564,9 @@ msgstr ""
 "nesprávně formulované http cookie '%1$s' v definici úložiště, na kterém je "
 "založeno '%2$s'"
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 msgid "malformed hyperv panic data"
 msgstr "nesprávně formulovaná data hyperv paniky"
 
@@ -39901,10 +39927,6 @@ msgstr "neznámý typ virtualizace (virttype): %1$s"
 msgid "unknown virtualization type"
 msgstr "neznámý typ virtualizace"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "neznámý typ virtualport %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "neznámý formát šifrování svazku"
 
@@ -40834,6 +40856,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr "video typu '%1$s' nepodporuje blob prostředky"
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr "video typu '%1$s' nepodporuje vícero 'heads' (výstupů)"
 
@@ -41487,6 +41513,15 @@ msgstr "zero-copy není k dispozici pro paralelní stěhování"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "neznámý typ virtualport %1$s"
 
 #~ msgid "Cannot parse uuid attribute of element <address>"
 #~ msgstr ""

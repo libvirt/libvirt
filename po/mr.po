@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -2931,6 +2931,9 @@ msgstr "बलून साधन मार्ग ओळखणे अशक्�
 
 msgid "Cannot determine system clock HZ"
 msgstr "सिस्टम क्लॉक HZ ओळखणे अशक्य"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec फ्लॅग बंद करणे अशक्य"
@@ -10453,6 +10456,10 @@ msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr ""
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "'%1$s' पासून अवैध लूकअप"
 
@@ -13246,6 +13253,9 @@ msgstr "फक्त एकच प्राथमिक व्हिडिओ �
 msgid "Only EFI firmware permits NVRAM"
 msgstr ""
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 
@@ -14368,7 +14378,7 @@ msgstr "हायपरवाइजरसह पुनः जुळले"
 msgid "Reconnected to the hypervisor"
 msgstr "हायपरवाइजरसह पुनः जुळले"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, c-format
@@ -16748,6 +16758,10 @@ msgid "Target video card acceleration does not match source"
 msgstr "लक्ष्य व्हिडिओ कार्ड ॲक्सिलरेशन स्रोत सह जुळत नाही"
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr "लक्ष्य व्हिडिओ कार्ड हेडस् %1$u स्रोत %2$u सह जुळत नाही"
 
@@ -17709,6 +17723,9 @@ msgstr "सदोषीत संयोजना फाइल अंतर्ग
 msgid "UUID is not supported for NVDIMM device"
 msgstr ""
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid> व <sysinfo> अंतर्गत UUID जोडणी आढळली नाही"
 
@@ -18519,6 +18536,9 @@ msgstr "संवादपटाविषयी माहिती मिळव�
 msgid "Unable to get daemon logging outputs information"
 msgstr "डीस्क विषयी माहिती मिळवण्यात अपयशी"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "ह्या प्लॅटफॉर्मवर वर्च्युअल फंकशन्स् प्राप्त करणे अशक्य"
@@ -19125,6 +19145,9 @@ msgstr "पिअर सुरक्षा संदर्भाची चौक
 
 msgid "Unable to query process ID start time"
 msgstr "प्रोसेस IDच्या सुरू वेळची चौकशी अशक्य"
+
+msgid "Unable to query process stats"
+msgstr ""
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -31058,6 +31081,9 @@ msgstr "माइग्रेशन डाटामध्ये सदोषी�
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 #, fuzzy
 msgid "malformed hyperv panic data"
 msgstr "सदोषीत char साधन अक्षरमाळा"
@@ -39336,10 +39362,6 @@ msgstr "अपरिचीत virttype: %1$s"
 msgid "unknown virtualization type"
 msgstr "अपरिचीत विभाजन प्रकार"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "अपरिचीत virtualport प्रकार %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "अपरिचीत खंड एनक्रिप्शन रूपण"
 
@@ -40247,6 +40269,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr ""
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr ""
 
@@ -40892,6 +40918,15 @@ msgstr ""
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
 "डिस्क %1$s करिता blockdev फ्लॅगसाठी विनंती केली, परंतु फाइल '%2$s' ब्लॉक साधन नाही"
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "अपरिचीत virtualport प्रकार %1$s"
 
 #, fuzzy
 #~ msgid "Cannot parse uuid attribute of element <address>"

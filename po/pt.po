@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2025-08-25 08:08+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
@@ -3128,6 +3128,9 @@ msgstr "Não pode determinar caminho de dispositivo balloon"
 
 msgid "Cannot determine system clock HZ"
 msgstr "Não pode determinar HZ do relógio do sistema"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Não pode desactivar bandeira close-on-exec"
@@ -9474,8 +9477,8 @@ msgid ""
 "Found duplicate drive address for disk with target name '%1$s' "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u'"
 msgstr ""
-"Encontrado endereço de controlador duplicado para disco com nome de alvo '%1$"
-"s' controlador='%2$u' barramento='%3$u' alvo='%4$u' unidade=%5$u'"
+"Encontrado endereço de controlador duplicado para disco com nome de alvo "
+"'%1$s' controlador='%2$u' barramento='%3$u' alvo='%4$u' unidade=%5$u'"
 
 #, c-format
 msgid "Found invalid device link '%1$s' in '%2$s'"
@@ -10524,8 +10527,8 @@ msgid ""
 "Invalid chain name '%1$s'. Please use a chain name called '%2$s' or any of "
 "the following prefixes: "
 msgstr ""
-"Nome de string inválido '%1$s'. Por favor use um nome de string chamado '%2$"
-"s' ou qualquer um dos seguintes prefixos: "
+"Nome de string inválido '%1$s'. Por favor use um nome de string chamado "
+"'%2$s' ou qualquer um dos seguintes prefixos: "
 
 #, c-format
 msgid "Invalid character '%1$c' in id '%2$s' of network '%3$s'"
@@ -10790,6 +10793,10 @@ msgstr "Prioridade de relatório inválida %1$d"
 #, c-format
 msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr "Prioridade de relatório inválida '%1$s' para saída de relatório '%2$s'"
+
+#, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
 
 #, c-format
 msgid "Invalid lookup from '%1$s'"
@@ -12545,7 +12552,8 @@ msgid "Multiple '%1$s' controllers with index '%2$d'"
 msgstr "Múltiplos controladores '%1$s' com índice '%2$d'"
 
 msgid "Multiple <model> elements in controller definition not allowed"
-msgstr "Múltiplos elementos <model> na definição de controlador não é permitido"
+msgstr ""
+"Múltiplos elementos <model> na definição de controlador não é permitido"
 
 msgid "Multiple <target> elements in controller definition not allowed"
 msgstr ""
@@ -12680,7 +12688,8 @@ msgid "NUMA isn't available on this host"
 msgstr "NUMA não está disponível nesta máquina"
 
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
-msgstr "Afinação de memória NUMA em modo 'preferido' apenas suporta nó singular"
+msgstr ""
+"Afinação de memória NUMA em modo 'preferido' apenas suporta nó singular"
 
 msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
@@ -13437,8 +13446,8 @@ msgid ""
 "Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
 "scope type '%4$s'"
 msgstr ""
-"Espaço não suficiente para alocação de %1$llu bytes para nível %2$u cache %3$"
-"u tipo de escopo '%4$s'"
+"Espaço não suficiente para alocação de %1$llu bytes para nível %2$u cache "
+"%3$u tipo de escopo '%4$s'"
 
 msgid "Not enough space left in storage pool"
 msgstr "Espaço e sobra não suficiente em pool de armazenamento"
@@ -13591,6 +13600,9 @@ msgstr "Apenas 1 linha de execução por núcleo é suportado"
 msgid "Only EFI firmware permits NVRAM"
 msgstr "Apenas firmware EFI permite NVRAM"
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "Apenas endereços IPv4 ou IPv6 podem ser usados com um prefixo"
 
@@ -13716,7 +13728,8 @@ msgid "Only one argument from --table and --uuid may be specified."
 msgstr "Apenas um argumento de --table e --uuid pode ser especificado."
 
 msgid "Only one argument from --table, --name and --uuid may be specified."
-msgstr "Apenas um argumento de --table , --name e --uuid pode ser especificado."
+msgstr ""
+"Apenas um argumento de --table , --name e --uuid pode ser especificado."
 
 msgid "Only one boot device is supported"
 msgstr "Apenas um dispositivo de arranque é suportado"
@@ -13794,7 +13807,8 @@ msgid "Open domain namespace"
 msgstr "Abrir espaço de nome de domínio"
 
 msgid "OpenRemoteSession/LaunchVMProcess failed, domain can't be started"
-msgstr "OpenRemoteSession/LaunchVMProcess falhou, domínio não pode ser iniciado"
+msgstr ""
+"OpenRemoteSession/LaunchVMProcess falhou, domínio não pode ser iniciado"
 
 msgid "OpenVZ control file /proc/vz does not exist"
 msgstr "Ficheiro de controle OpenVZ /proc/vz não existe"
@@ -13842,8 +13856,8 @@ msgid ""
 "Option '%1$s' is not valid for PCI controller with index '%2$d', model "
 "'%3$s' and modelName '%4$s'"
 msgstr ""
-"Opção '%1$s' não é válida para controlador PCI com índice '%2$d', modelo '%3$"
-"s' e modelName '%4$s'"
+"Opção '%1$s' não é válida para controlador PCI com índice '%2$d', modelo "
+"'%3$s' e modelName '%4$s'"
 
 #, c-format
 msgid "Option --%1$s is required by option --%2$s"
@@ -14078,7 +14092,8 @@ msgid "Parallel port index %1$d out of [0..2] range"
 msgstr "Índice de porto paralelo %1$d fora de alcance [0..2]"
 
 msgid "Parallel save is only supported with the 'sparse' save image format"
-msgstr "Salva paralela só é suportada com o formato de imagem de salva 'sparse'"
+msgstr ""
+"Salva paralela só é suportada com o formato de imagem de salva 'sparse'"
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -14533,8 +14548,8 @@ msgid ""
 "Query parameter 'proxy' contains unexpected type '%1$s' (should be (http|"
 "socks(|4|4a|5))"
 msgstr ""
-"Parâmetro de consulta 'proxy' contém tipo inesperado '%1$s' (deve ser "
-"(http|socks(|4|4a|5))"
+"Parâmetro de consulta 'proxy' contém tipo inesperado '%1$s' (deve ser (http|"
+"socks(|4|4a|5))"
 
 msgid "Query parameter 'proxy' doesn't contain a hostname"
 msgstr "Parâmetro de consulta 'proxy' não contém um nome de máquina"
@@ -14552,8 +14567,8 @@ msgid ""
 "Query parameter 'transport' has unexpected value '%1$s' (should be http|"
 "https)"
 msgstr ""
-"Parâmetro de consulta 'transport' tem valor inesperado '%1$s' (deve ser "
-"http|https)"
+"Parâmetro de consulta 'transport' tem valor inesperado '%1$s' (deve ser http|"
+"https)"
 
 msgid "Query, adjust speed, or cancel active block operations."
 msgstr "Consultar, ajustar velocidade, ou cancelar operações de bloco activas."
@@ -14739,8 +14754,8 @@ msgstr "Re-ligado ao servidor de administração"
 msgid "Reconnected to the hypervisor"
 msgstr "Re-ligado ao hipervisor"
 
-msgid "Recreation"
-msgstr "Recriação"
+msgid "Recreated"
+msgstr ""
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -14823,8 +14838,8 @@ msgid ""
 "%3$llu] Hz) around host frequency %4$llu Hz and TSC scaling is not supported "
 "by the host CPU"
 msgstr ""
-"Frequência TSC requisitada %1$llu Hz está fora da tolerância de alcence ("
-"[%2$llu, %3$llu] Hz) acerca da frequência de máquina %4$llu Hz e "
+"Frequência TSC requisitada %1$llu Hz está fora da tolerância de alcence "
+"([%2$llu, %3$llu] Hz) acerca da frequência de máquina %4$llu Hz e "
 "escalonamento TSC não é suportado pela CPU da máquina"
 
 #, c-format
@@ -14872,8 +14887,8 @@ msgid ""
 "Required option '%1$s' is not set for PCI controller with index '%2$d', "
 "model '%3$s' and modelName '%4$s'"
 msgstr ""
-"Opção pedida '%1$s' não está definida para controlador PCI com índice '%2$"
-"d', modelo '%3$s' e modelName '%4$s'"
+"Opção pedida '%1$s' não está definida para controlador PCI com índice "
+"'%2$d', modelo '%3$s' e modelName '%4$s'"
 
 #, c-format
 msgid ""
@@ -15540,7 +15555,8 @@ msgid "Server private key:"
 msgstr "Chave privada de servidor:"
 
 msgid "Server to alter the client-related configuration limits on."
-msgstr "Servidor aonde alterar limites de configuração relacionada com cliente."
+msgstr ""
+"Servidor aonde alterar limites de configuração relacionada com cliente."
 
 msgid "Server to alter threadpool attributes on."
 msgstr "Servidor aonde alterar atributos de threadpool."
@@ -15625,7 +15641,8 @@ msgid "Setting different SELinux label on %1$s which is already in use"
 msgstr "Definir etiqueta SELinux diferente em %1$s o qual já está em uso"
 
 msgid "Setting disk block sizes is not supported by vz driver."
-msgstr "Definir tamanhos de bloco de disco não é suportado pelo controlador vz."
+msgstr ""
+"Definir tamanhos de bloco de disco não é suportado pelo controlador vz."
 
 msgid "Setting disk error policy is not supported by vz driver."
 msgstr "Definir política de erro de disco não é suportado pelo controlador vz."
@@ -15794,7 +15811,8 @@ msgstr ""
 
 #, c-format
 msgid "Size of target NUMA node %1$zu (%2$llu) doesn't match source (%3$llu)"
-msgstr "Tamanho de nó NUMA alvo %1$zu (%2$llu) não corresponde à fonte (%3$llu)"
+msgstr ""
+"Tamanho de nó NUMA alvo %1$zu (%2$llu) não corresponde à fonte (%3$llu)"
 
 #, c-format
 msgid "Size of volume '%1$s' successfully changed by %2$s\n"
@@ -16115,7 +16133,8 @@ msgstr "Estatísticas %1$s muito grandes para destino"
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon"
-msgstr "Bits de tipos de estatísticas 0x%1$x não são suportados por este daemon"
+msgstr ""
+"Bits de tipos de estatísticas 0x%1$x não são suportados por este daemon"
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon or QEMU"
@@ -16287,7 +16306,8 @@ msgstr "Duração de suspensão em segundos, pelo menos 60"
 
 #, c-format
 msgid "Suspend duration is too short, must be at least %1$u seconds"
-msgstr "Duração de suspensão é muito curta, tem de ter pelo menos %1$u segundos"
+msgstr ""
+"Duração de suspensão é muito curta, tem de ter pelo menos %1$u segundos"
 
 msgid "Suspend operation already in progress"
 msgstr "Operação de suspensão já em progresso"
@@ -16749,7 +16769,8 @@ msgstr "Tamanho de fila de disco alvo %1$u não corresponde a fonte %2$u"
 
 #, c-format
 msgid "Target disk rotation rate %1$u RPM does not match source %2$u RPM"
-msgstr "Taxa de rotação de disco alvo %1$u RPM não corresponde a fonte %2$u RPM"
+msgstr ""
+"Taxa de rotação de disco alvo %1$u RPM não corresponde a fonte %2$u RPM"
 
 #, c-format
 msgid "Target disk serial %1$s does not match source %2$s"
@@ -16848,7 +16869,8 @@ msgstr "Contagem de canal do domínio alvo %1$zu não corresponde a fonte %2$zu"
 
 #, c-format
 msgid "Target domain console count %1$zu does not match source %2$zu"
-msgstr "Contagem de consola do domínio alvo %1$zu não corresponde a fonte %2$zu"
+msgstr ""
+"Contagem de consola do domínio alvo %1$zu não corresponde a fonte %2$zu"
 
 #, c-format
 msgid "Target domain controller count %1$zu does not match source %2$zu"
@@ -16996,7 +17018,8 @@ msgstr ""
 
 #, c-format
 msgid "Target domain virt type %1$s does not match source %2$s"
-msgstr "Tipo de virtualização de domínio alvo %1$s não corresponde a fonte %2$s"
+msgstr ""
+"Tipo de virtualização de domínio alvo %1$s não corresponde a fonte %2$s"
 
 msgid "Target domain vsock device count does not match source"
 msgstr "Contagem de dispositivo vsock de domínio alvo não corresponde a fonte"
@@ -17267,6 +17290,10 @@ msgstr ""
 
 msgid "Target video card acceleration does not match source"
 msgstr "Aceleração de placa de vídeo apontada não corresponde a fonte"
+
+#, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
 
 #, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
@@ -17655,7 +17682,8 @@ msgid "The machine has no snapshot and it should have it"
 msgstr "A máquina não tem um instantâneo e deveria ter"
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
-msgstr "O valor máximo de 'start' para <clock offset='absolute'> é 253402300799"
+msgstr ""
+"O valor máximo de 'start' para <clock offset='absolute'> é 253402300799"
 
 msgid "The minimum lease time should be greater than 2 minutes"
 msgstr "O tempo de aluguer mínimo deve ser maior que 2 minutos"
@@ -18329,6 +18357,9 @@ msgstr "UUID mal formado em ficheiro de configuração"
 msgid "UUID is not supported for NVDIMM device"
 msgstr "UUID não é suportado para dispositivo NVDIMM"
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "Incompatibilidade de UUID entre <uuid> e <sysinfo>"
 
@@ -18615,7 +18646,8 @@ msgstr "Incapaz de construir tabela de nomes alternativos de dispositivos"
 
 #, c-format
 msgid "Unable to convert lease expiry time to long long: %1$s"
-msgstr "Incapaz de converter tempo de expiração de aluguer para long long: %1$s"
+msgstr ""
+"Incapaz de converter tempo de expiração de aluguer para long long: %1$s"
 
 msgid "Unable to convert time"
 msgstr "Incapaz de converter tempo"
@@ -18820,7 +18852,8 @@ msgid "Unable to detect filesystem for %1$s"
 msgstr "Incapaz de detectar sistema de ficheiros para %1$s"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
-msgstr "Incapaz de determinar Tipo de Partição, requer --overwrite a compilação"
+msgstr ""
+"Incapaz de determinar Tipo de Partição, requer --overwrite a compilação"
 
 #, c-format
 msgid "Unable to determine current file inode: %1$s"
@@ -19130,6 +19163,9 @@ msgstr "Incapaz de obter informação de filtros de registo do daemon"
 
 msgid "Unable to get daemon logging outputs information"
 msgstr "Incapaz de obter informação dos resultados de registo do daemon"
+
+msgid "Unable to get default interface name"
+msgstr ""
 
 msgid "Unable to get device master from netlink on this platform"
 msgstr "Incapaz de obter dispositivo mestre de netlink nesta plataforma"
@@ -19723,6 +19759,9 @@ msgstr "Incapaz de consultar contexto de segurança de peer"
 msgid "Unable to query process ID start time"
 msgstr "Incapaz de consultar hora de arranque de ID de processo"
 
+msgid "Unable to query process stats"
+msgstr ""
+
 #, c-format
 msgid "Unable to query sector size %1$s"
 msgstr "Incapaz de consultar tamanho de sector %1$s"
@@ -19915,7 +19954,8 @@ msgstr ""
 
 #, c-format
 msgid "Unable to resolve device %1$s iommu_group symlink %2$s"
-msgstr "Incapaz de resolver link simbólico iommu_group de dispositivo %1$s %2$s"
+msgstr ""
+"Incapaz de resolver link simbólico iommu_group de dispositivo %1$s %2$s"
 
 #, c-format
 msgid "Unable to resolve device subsystem symlink %1$s"
@@ -19966,8 +20006,8 @@ msgstr ""
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
 msgstr ""
-"Incapaz de correr comado para definir dados de porto OVS para interface %1$s:"
-" %2$s"
+"Incapaz de correr comado para definir dados de porto OVS para interface "
+"%1$s: %2$s"
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "Incapaz de correr inicializador GDBus de uma vez"
@@ -20163,7 +20203,8 @@ msgid "Unable to set monitor close-on-exec flag"
 msgstr "Incapaz de definir bandeira close-on-exec de monitor"
 
 msgid "Unable to set net device config on this platform"
-msgstr "Incapaz de definir configuração de dispositivo de rede nesta plataforma"
+msgstr ""
+"Incapaz de definir configuração de dispositivo de rede nesta plataforma"
 
 msgid "Unable to set network bandwidth on direct interfaces"
 msgstr "Incapaz de definir largura de banda de rede em interfaces diretas"
@@ -21119,7 +21160,8 @@ msgstr "Tipo de barramento não suportado '%1$s' para %2$s"
 
 #, c-format
 msgid "Unsupported bus type '%1$s' for device type '%2$s'"
-msgstr "Tipo de barramento não suportado '%1$s' para tipo de dispositivo '%2$s'"
+msgstr ""
+"Tipo de barramento não suportado '%1$s' para tipo de dispositivo '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
 msgstr "Relação capacidade-para-alocação não suportada"
@@ -21175,7 +21217,8 @@ msgstr "Tipo de dispositivo não suportado '%1$s'"
 
 #, c-format
 msgid "Unsupported device-mapper version. Expected %1$d got %2$d"
-msgstr "Versão de dispositivo-mapeador não suportada. Esperado %1$d obtido %2$d"
+msgstr ""
+"Versão de dispositivo-mapeador não suportada. Esperado %1$d obtido %2$d"
 
 msgid "Unsupported disk address type"
 msgstr "Tipo de endereço de disco não suportado"
@@ -21308,7 +21351,8 @@ msgstr "Nome de alvo de spicevmc não suportado '%1$s'"
 
 #, c-format
 msgid "Unsupported storage type %1$s, the only supported type is %2$s"
-msgstr "Tipo de armazenamento não suportado %1$s, o único tipo suportado é %2$s"
+msgstr ""
+"Tipo de armazenamento não suportado %1$s, o único tipo suportado é %2$s"
 
 #, c-format
 msgid "Unsupported vbox device type: %1$d"
@@ -21597,7 +21641,8 @@ msgstr ""
 "Atribuição de dispositivo VFIO PCI não é suportado por esta versão do qemu"
 
 msgid "VFIO device assignment is currently not supported on this system"
-msgstr "Atribuição de dispositivo VFIO é atualmente não suportado neste sistema"
+msgstr ""
+"Atribuição de dispositivo VFIO é atualmente não suportado neste sistema"
 
 msgid "VFIO device assignment is not available on this platform"
 msgstr "Atribuição de dispositivo VFIO não está disponível nesta plataforma"
@@ -21684,7 +21729,8 @@ msgid "Virt-admin command line tool of libvirt %1$s\n"
 msgstr "Ferramenta de linha de comandos virt-admin do libvirt %1$s\n"
 
 msgid "Virtual network portgroups are not supported by vz driver."
-msgstr "Grupos de porto de rede virtual não são suportados pelo controlador vz."
+msgstr ""
+"Grupos de porto de rede virtual não são suportados pelo controlador vz."
 
 msgid "Virtual networks are active"
 msgstr "Redes virtuais estão activas"
@@ -22404,8 +22450,8 @@ msgstr ""
 msgid ""
 "attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"
 msgstr ""
-"tentativa de fusão de portos virtuais com ids de perfil incompatíveis ('%1$"
-"s' e '%2$s')"
+"tentativa de fusão de portos virtuais com ids de perfil incompatíveis "
+"('%1$s' e '%2$s')"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"
@@ -22789,8 +22835,8 @@ msgstr "tarefas de bloco não são suportadas em disco vhostuser '%1$s'"
 #, c-format
 msgid "block peek request too large for remote protocol, %1$zi > %2$d"
 msgstr ""
-"pedido de visualização de bloco demasiado grande para protocolo remoto, %1$"
-"zi > %2$d"
+"pedido de visualização de bloco demasiado grande para protocolo remoto, "
+"%1$zi > %2$d"
 
 msgid "block resize is not supported for vhostuser disk"
 msgstr "redimensionar de bloco não é suportado para disco vhostuser"
@@ -22813,7 +22859,8 @@ msgid "block stats are not supported for vhostuser disk"
 msgstr "estatísticas de bloco não suportadas para disco vhostuser"
 
 msgid "block_io_throttle device entry was not in expected format"
-msgstr "entrada de dispositivo block_io_throttle não estava no formato esperado"
+msgstr ""
+"entrada de dispositivo block_io_throttle não estava no formato esperado"
 
 #, c-format
 msgid "block_io_throttle field '%1$s' missing in qemu's output"
@@ -23146,7 +23193,8 @@ msgid "can't update unrecognized section of network"
 msgstr "não pode atualizar secção irreconhecida da rede"
 
 msgid "can't upload volume, all existing snapshots will be lost"
-msgstr "não pode enviar volume, todos os instantâneos existentes serão perdidos"
+msgstr ""
+"não pode enviar volume, todos os instantâneos existentes serão perdidos"
 
 #, c-format
 msgid "can't use data file definition '%1$s'"
@@ -23789,16 +23837,16 @@ msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - controller not found"
 msgstr ""
-"não posso desligar dispositivo %1$s com endereço convidado PCI: "
-"%2$04x:%3$02x:%4$02x.%5$d - controlador não encontrado"
+"não posso desligar dispositivo %1$s com endereço convidado PCI: %2$04x:"
+"%3$02x:%4$02x.%5$d - controlador não encontrado"
 
 #, c-format
 msgid ""
 "cannot hot unplug %1$s device with PCI guest address: %2$04x:%3$02x:%4$02x."
 "%5$d - not allowed by controller"
 msgstr ""
-"não posso desligar dispositivo %1$s com endereço convidado PCI: "
-"%2$04x:%3$02x:%4$02x.%5$d - não permitido pelo controlador"
+"não posso desligar dispositivo %1$s com endereço convidado PCI: %2$04x:"
+"%3$02x:%4$02x.%5$d - não permitido pelo controlador"
 
 #, c-format
 msgid ""
@@ -24431,7 +24479,8 @@ msgid "cannot set supplemental groups"
 msgstr "não pode definir grupos suplementais"
 
 msgid "cannot set time: qemu doesn't support rtc-reset-reinjection command"
-msgstr "não pode definir hora: qemu não suporta o comando rtc-reset-reinjection"
+msgstr ""
+"não pode definir hora: qemu não suporta o comando rtc-reset-reinjection"
 
 #, c-format
 msgid "cannot set to start of '%1$s'"
@@ -24890,7 +24939,8 @@ msgstr "lista separada por vírgulas de discos a migrar"
 
 msgid ""
 "comma separated list of disks to be migrated with zero detection enabled"
-msgstr "lista separada por vírgulas de discos a migrar com detecção zero activa"
+msgstr ""
+"lista separada por vírgulas de discos a migrar com detecção zero activa"
 
 msgid "comma separated list of throttle groups to be applied"
 msgstr "lista separada por vírgulas de grupos de acelerador a serem aplicados"
@@ -24997,7 +25047,8 @@ msgstr "compara CPU do anfitrião com uma CPU descrita por um ficheiro XML"
 
 #, c-format
 msgid "comparing with the hypervisor CPU is not supported for arch %1$s"
-msgstr "comparar com a CPU do hipervisor não é suportado para arquitectura %1$s"
+msgstr ""
+"comparar com a CPU do hipervisor não é suportado para arquitectura %1$s"
 
 msgid "compatibility option only available with qcow2"
 msgstr "opção de compatibilidade apenas disponível com qcow2"
@@ -25744,7 +25795,8 @@ msgstr ""
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
-msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou um erro: %1$s (%2$d)"
+msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou um erro: %1$s (%2$d)"
 
 #, c-format
 msgid ""
@@ -31596,6 +31648,9 @@ msgstr ""
 
 #, c-format
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
+msgstr ""
+
+msgid "malformed hwuuid element"
 msgstr ""
 
 msgid "malformed hyperv panic data"
@@ -39575,10 +39630,6 @@ msgstr "virttype desconhecido: %1$s"
 msgid "unknown virtualization type"
 msgstr "tipo de virtualização desconhecido"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "tipo de porto virtual desconhecido %1$s"
-
 msgid "unknown volume encryption format"
 msgstr ""
 
@@ -40471,6 +40522,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr ""
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr ""
 
@@ -40937,7 +40992,8 @@ msgstr "watchdog"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr "watchdogs com ações diferentes não são suportados com este binário QEMU"
+msgstr ""
+"watchdogs com ações diferentes não são suportados com este binário QEMU"
 
 msgid "webSocket"
 msgstr ""
@@ -41090,6 +41146,18 @@ msgstr "zero-copy só está disponível para migração paralela"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zona %1$s pedida para rede %2$s mas o firewalld não está activo"
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#~ msgid "Recreation"
+#~ msgstr "Recriação"
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "tipo de porto virtual desconhecido %1$s"
 
 #~ msgid "Cannot parse uuid attribute of element <address>"
 #~ msgstr "Não pode analisar atributo uuid do elemento <address>"

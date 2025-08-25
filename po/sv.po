@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3077,6 +3077,9 @@ msgstr "Kan inte avgöra ballongenhetens sökväg"
 
 msgid "Cannot determine system clock HZ"
 msgstr "Kan inte avgöra systemklockans Hz"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Kan inte avaktivera flaggan close-on-exec"
@@ -10699,6 +10702,10 @@ msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr "Felaktig loggprioritet ”%1$s” för loggutdata ”%2$s”"
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "Felaktigt uppslagningsformulär ”%1$s”"
 
@@ -13459,6 +13466,9 @@ msgstr "Endast 1 tråd per kärna stödjs"
 msgid "Only EFI firmware permits NVRAM"
 msgstr "Endast fast programvara EFI tillåter NVRAM"
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "Endast IPv4- eller IPv6-adresser kan användas med ett prefix"
 
@@ -14585,7 +14595,7 @@ msgstr "Återanslöt till administrationsservern"
 msgid "Reconnected to the hypervisor"
 msgstr "Återansluten till hypervisorn"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, c-format
@@ -16995,6 +17005,10 @@ msgid "Target video card acceleration does not match source"
 msgstr "Målets videokortsacceleration stämmer inte med källan"
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr "Målvideokortshuvuden %1$u stämmer inte med källan %2$u"
 
@@ -18028,6 +18042,9 @@ msgstr "UUID i konfigurationsfilen är felformaterat"
 msgid "UUID is not supported for NVDIMM device"
 msgstr "UUID stödjs inte för en NVDIMM-enhet"
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID stämmer inte mellan <uuid> och <sysinfo>"
 
@@ -18825,6 +18842,9 @@ msgstr "Kan inte hämta demonloggningsinformation"
 msgid "Unable to get daemon logging outputs information"
 msgstr "Kan inte hämta demonloggningsutmatningsinformation"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 msgid "Unable to get device master from netlink on this platform"
 msgstr "Kan inte hämta enhetsmaster från netlink på denna plattform"
 
@@ -19413,6 +19433,9 @@ msgstr "Kan inte fråga om motpartens säkerhetskontext"
 
 msgid "Unable to query process ID start time"
 msgstr "Kan inte fråga om process-ID:s starttid"
+
+msgid "Unable to query process stats"
+msgstr ""
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -31422,6 +31445,9 @@ msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
 "felformaterad http-kaka ”%1$s” i definition av bakomliggande lagring ”%2$s”"
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 msgid "malformed hyperv panic data"
 msgstr "felformaterade hyperv-panikdata"
 
@@ -39697,10 +39723,6 @@ msgstr "okänd virttyp: %1$s"
 msgid "unknown virtualization type"
 msgstr "okänd virtualiseringstyp"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "okänd virtualport-typ %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "okänt volymkrypteringsformat"
 
@@ -40623,6 +40645,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr "videotypen ”%1$s” stödjer inte blob-resurser"
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr "videotypen ”%1$s” stödjer inte multipla ”huvuden”"
 
@@ -41274,6 +41300,15 @@ msgstr "nollkopiering är endast tillgängligt för parallell migrering"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "okänd virtualport-typ %1$s"
 
 #~ msgid "Cannot parse uuid attribute of element <address>"
 #~ msgstr "Kan inte tolka attributet uuid i elementet <address>"

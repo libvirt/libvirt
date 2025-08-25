@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://translate.fedoraproject.org/projects/libvirt/"
@@ -2819,6 +2819,9 @@ msgstr ""
 #, fuzzy
 msgid "Cannot determine system clock HZ"
 msgstr "kan bestandssysteem voor %s niet bepalen"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 #, fuzzy
 msgid "Cannot disable close-on-exec flag"
@@ -10542,6 +10545,10 @@ msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr ""
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "Ongeldig opzoeken uit '%1$s'"
 
@@ -13339,6 +13346,9 @@ msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 msgid "Only EFI firmware permits NVRAM"
 msgstr ""
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 
@@ -14469,7 +14479,7 @@ msgstr "Opnieuw verbinden met de hypervisor"
 msgid "Reconnected to the hypervisor"
 msgstr "Opnieuw verbinden met de hypervisor"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16890,6 +16900,10 @@ msgid "Target video card acceleration does not match source"
 msgstr ""
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr ""
 
@@ -17868,6 +17882,9 @@ msgstr "UUID in config bestand is ongeldig"
 msgid "UUID is not supported for NVDIMM device"
 msgstr ""
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID mismatch tussen <uuid> en <sysinfo>"
 
@@ -18724,6 +18741,9 @@ msgstr "Verkrijgen van interface informatie mislukte"
 msgid "Unable to get daemon logging outputs information"
 msgstr "Verkrijgen van schijf informatie mislukte"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "node info niet geïmplementeerd op dit platform"
@@ -19385,6 +19405,9 @@ msgid "Unable to query peer security context"
 msgstr "kan PID %d beveiliging context niet krijgen"
 
 msgid "Unable to query process ID start time"
+msgstr ""
+
+msgid "Unable to query process stats"
 msgstr ""
 
 #, fuzzy, c-format
@@ -31537,6 +31560,9 @@ msgstr "ongeldig uuid element voor '%s'"
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 #, fuzzy
 msgid "malformed hyperv panic data"
 msgstr "ongeldige char apparaat string"
@@ -39905,10 +39931,6 @@ msgstr "onbekend type '%1$s'"
 msgid "unknown virtualization type"
 msgstr "onbekend partitie type"
 
-#, fuzzy, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "onbekend volume formaat type %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "onbekend volume encryptie formaat"
 
@@ -40824,6 +40846,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr ""
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr ""
 
@@ -41470,6 +41496,15 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "onbekend volume formaat type %1$s"
 
 #, c-format
 #~ msgid "Invalid port number: %1$s"

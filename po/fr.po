@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3189,6 +3189,9 @@ msgstr "Impossible de déterminer le chemin du périphérique de ballon"
 
 msgid "Cannot determine system clock HZ"
 msgstr "Impossible de déterminer l'horloge du système HZ"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Impossible de désactiver l'indicateur close-on-exec"
@@ -11014,6 +11017,10 @@ msgstr ""
 "'%2$s'"
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "Recherche non valide à partir de '%1$s'"
 
@@ -13900,6 +13907,9 @@ msgstr "Un seul thread par cœur est pris en charge"
 msgid "Only EFI firmware permits NVRAM"
 msgstr "Seul le firmware EFI autorise la NVRAM"
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 "Seules les adresses IPv4 ou IPv6 peuvent être utilisées avec un préfixe"
@@ -15091,7 +15101,7 @@ msgstr "Reconnexion au serveur d'administration"
 msgid "Reconnected to the hypervisor"
 msgstr "Reconnexion à l'hyperviseur"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, c-format
@@ -17748,6 +17758,10 @@ msgid "Target video card acceleration does not match source"
 msgstr "L’accélération de la carte vidéo cible ne correspond pas à la source"
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr "La carte vidéo cible heads %1$u ne correspond pas à la source %2$u"
 
@@ -18766,6 +18780,9 @@ msgstr "UUID dans le fichier de configuration malformé"
 msgid "UUID is not supported for NVDIMM device"
 msgstr "L'UUID n'est pas pris en charge par le périphérique NVDIMM"
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "Incohérence de l’UUID entre <uuid> et <sysinfo>"
 
@@ -19588,6 +19605,9 @@ msgstr ""
 "Impossible d'obtenir des informations sur les sorties de journalisation du "
 "démon"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 msgid "Unable to get device master from netlink on this platform"
 msgstr ""
 "Impossible d'obtenir l'appareil maître de netlink sur cette plate-forme"
@@ -20190,6 +20210,9 @@ msgstr "Impossible d'interroger le contexte de sécurité d'un pair"
 
 msgid "Unable to query process ID start time"
 msgstr "Impossible de demander l'heure de début du processus ID"
+
+msgid "Unable to query process stats"
+msgstr ""
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -32627,6 +32650,9 @@ msgstr ""
 "cookie http malformé '%1$s' dans la définition du magasin de sauvegarde "
 "'%2$s'"
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 msgid "malformed hyperv panic data"
 msgstr "données hyperv panique malformées"
 
@@ -41270,10 +41296,6 @@ msgstr "virttype inconnu : %1$s"
 msgid "unknown virtualization type"
 msgstr "type de virtualisation inconnu"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "type inconnu de port virtuel %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "format de cryptage de volume inconnu"
 
@@ -42215,6 +42237,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr "Le type vidéo '%1$s' ne supporte pas les ressources « blob »"
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr "Le type de vidéo '%1$s' ne prend pas en charge les têtes multiples"
 
@@ -42905,6 +42931,15 @@ msgstr "la copie zéro n'est disponible que pour la migration parallèle"
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "type inconnu de port virtuel %1$s"
 
 #~ msgid "Cannot parse uuid attribute of element <address>"
 #~ msgstr "Impossible d'analyser l'attribut uuid d'un élément <address>"

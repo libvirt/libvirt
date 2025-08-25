@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-07-28 08:26+0000\n"
+"POT-Creation-Date: 2025-08-25 08:36+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -2907,6 +2907,9 @@ msgstr "balloon ഡിവൈസ് പാഥ് കണ്ടുപിടിയ�
 
 msgid "Cannot determine system clock HZ"
 msgstr "സിസ്റ്റം ക്ലോക്ക് HZ കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+msgid "Cannot determine the default interface"
+msgstr ""
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "close-on-exec ഫ്ലാഗ് പ്രവര്‍ത്തന രഹിതമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -10514,6 +10517,10 @@ msgid "Invalid log priority '%1$s' for log output '%2$s'"
 msgstr ""
 
 #, c-format
+msgid "Invalid log_level %1$u"
+msgstr ""
+
+#, c-format
 msgid "Invalid lookup from '%1$s'"
 msgstr "'%1$s'-ല്‍ നിന്നും തെറ്റായ തെരച്ചില്‍"
 
@@ -13329,6 +13336,9 @@ msgstr "ഒറ്റ പ്രൈമറി വീഡിയോ ഡിവൈസ്
 msgid "Only EFI firmware permits NVRAM"
 msgstr ""
 
+msgid "Only IPv4 is supported"
+msgstr ""
+
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr ""
 
@@ -14479,7 +14489,7 @@ msgstr "ഹൈപ്പര്‍വൈസറിലേക്കു് വീണ�
 msgid "Reconnected to the hypervisor"
 msgstr "ഹൈപ്പര്‍വൈസറിലേക്കു് വീണ്ടും കണക്ട് ചെയ്യുന്നു"
 
-msgid "Recreation"
+msgid "Recreated"
 msgstr ""
 
 #, c-format
@@ -16913,6 +16923,10 @@ msgid "Target video card acceleration does not match source"
 msgstr "ലക്ഷ്യമായ വീഡിയോ കാര്‍ഡ്‌ ആക്സലറേഷന്‍ ഉറവിടവുമായി യോജിക്കുന്നില്ല"
 
 #, c-format
+msgid "Target video card edid %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
 msgstr "ലക്ഷ്യമായ വീഡിയോ കാര്‍ഡ്‌ ഹെട്സ് %1$u ഉറവിടം %2$u-ഉമായി യോജിക്കുന്നില്ല"
 
@@ -17886,6 +17900,9 @@ msgstr "ക്രമീകരണ ഫയലിലുള്ള UUID തെറ്�
 msgid "UUID is not supported for NVDIMM device"
 msgstr ""
 
+msgid "UUID mismatch between <hwuuid> and <sysinfo>"
+msgstr ""
+
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid>, <sysinfo> തമ്മില്‍ യുയുഐഡി പൊരുത്തക്കേടു്"
 
@@ -18716,6 +18733,9 @@ msgstr "സംയോജക ഘടകത്തിന്‍റെ വിവരം 
 msgid "Unable to get daemon logging outputs information"
 msgstr "ഡിസ്കിന്റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+msgid "Unable to get default interface name"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "ഈ പ്ലാറ്റ്ഫോമിലെ വിര്‍ച്ച്വല്‍ ഫങ്ഷനുകള്‍ കാണാന്‍ സാധിച്ചില്ല"
@@ -19341,6 +19361,9 @@ msgstr "പിയര്‍ സുരക്ഷ കോണ്‍ടെക്സ്�
 
 msgid "Unable to query process ID start time"
 msgstr "പ്രക്രിയ ഐഡിയുടെ പ്രാരംഭ സമയം ചോദ്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+msgid "Unable to query process stats"
+msgstr ""
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -31400,6 +31423,9 @@ msgstr "ഡേറ്റാ നീക്കുമ്പോള്‍ തെറ്�
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
 
+msgid "malformed hwuuid element"
+msgstr ""
+
 #, fuzzy
 msgid "malformed hyperv panic data"
 msgstr "തെറ്റായ ക്യാര്‍ ഡിവൈസ് സ്ട്രിങ്"
@@ -39741,10 +39767,6 @@ msgstr "അപരിചിതമായ രീതി %1$s"
 msgid "unknown virtualization type"
 msgstr "അപരിചിതമായ പാര്‍ട്ടീഷന്‍ തരം"
 
-#, c-format
-msgid "unknown virtualport type %1$s"
-msgstr "അപരിചിതമായ virtualport തരം %1$s"
-
 msgid "unknown volume encryption format"
 msgstr "അപ്രതീക്ഷിതമായ വോള്യം എന്‍ക്രിപ്ഷന്‍ മാതൃക"
 
@@ -40654,6 +40676,10 @@ msgid "video type '%1$s' does not support blob resources"
 msgstr ""
 
 #, c-format
+msgid "video type '%1$s' does not support edid"
+msgstr ""
+
+#, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
 msgstr ""
 
@@ -41302,6 +41328,15 @@ msgstr ""
 #, c-format
 msgid "zone %1$s requested for network %2$s but firewalld is not active"
 msgstr ""
+
+#, c-format
+msgid ""
+"zone %1$s requested for network %2$s but firewalld is not supported on BSD"
+msgstr ""
+
+#, c-format
+#~ msgid "unknown virtualport type %1$s"
+#~ msgstr "അപരിചിതമായ virtualport തരം %1$s"
 
 #, c-format
 #~ msgid "Certificate %1$s usage does not permit key encipherment"
