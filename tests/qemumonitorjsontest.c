@@ -30,7 +30,6 @@
 #include "qemu/qemu_alias.h"
 #include "qemu/qemu_chardev.h"
 #include "virerror.h"
-#include "cpu/cpu.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_migration_params.h"
 #define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
@@ -2109,108 +2108,6 @@ testQemuMonitorJSONqemuMonitorJSONGetDumpGuestMemoryCapability(const void *opaqu
     return 0;
 }
 
-struct testCPUData {
-    const char *name;
-    virDomainXMLOption *xmlopt;
-    GHashTable *schema;
-};
-
-
-static int
-testQemuMonitorJSONGetCPUData(const void *opaque)
-{
-    const struct testCPUData *data = opaque;
-    g_autoptr(virCPUData) cpuData = NULL;
-    g_autofree char *jsonFile = NULL;
-    g_autofree char *dataFile = NULL;
-    g_autofree char *jsonStr = NULL;
-    g_autofree char *actual = NULL;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
-        return -1;
-
-    jsonFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.json",
-                               abs_srcdir, data->name);
-    dataFile = g_strdup_printf("%s/qemumonitorjsondata/qemumonitorjson-getcpu-%s.data",
-                               abs_srcdir, data->name);
-
-    if (virTestLoadFile(jsonFile, &jsonStr) < 0)
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "qom-list",
-                               "{"
-                               "    \"return\": ["
-                               "        {"
-                               "            \"name\": \"filtered-features\","
-                               "            \"type\": \"X86CPUFeatureWordInfo\""
-                               "        },"
-                               "        {"
-                               "            \"name\": \"feature-words\","
-                               "            \"type\": \"X86CPUFeatureWordInfo\""
-                               "        }"
-                               "    ],"
-                               "    \"id\": \"libvirt-19\""
-                               "}") < 0)
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "qom-get", jsonStr) < 0)
-        return -1;
-
-    if (qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
-                                      "dummy",
-                                      &cpuData, NULL) < 0)
-        return -1;
-
-    if (!(actual = virCPUDataFormat(cpuData)))
-        return -1;
-
-    if (virTestCompareToFile(actual, dataFile) < 0)
-        return -1;
-
-    return 0;
-}
-
-static int
-testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    g_autoptr(virCPUData) cpuData = NULL;
-    int rv;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "qom-list",
-                               "{"
-                               "    \"id\": \"libvirt-7\","
-                               "    \"error\": {"
-                               "        \"class\": \"CommandNotFound\","
-                               "        \"desc\": \"The command qom-list has not been found\""
-                               "    }"
-                               "}") < 0)
-        return -1;
-
-    rv = qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
-                                       "dummy",
-                                       &cpuData, NULL);
-    if (rv != -2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Unexpected return value %d, expecting -2", rv);
-        return -1;
-    }
-
-    if (cpuData) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Unexpected allocation of data = %p, expecting NULL",
-                       cpuData);
-        return -1;
-    }
-
-    return 0;
-}
 
 static int
 testQemuMonitorJSONGetIOThreads(const void *opaque)
@@ -2924,14 +2821,6 @@ mymain(void)
 #define DO_TEST_GEN_DEPRECATED(name, removed, ...) \
     DO_TEST_GEN_FULL(name, true, removed, __VA_ARGS__)
 
-#define DO_TEST_CPU_DATA(name) \
-    do { \
-        struct testCPUData data = { name, driver.xmlopt, qapiData.schema }; \
-        const char *label = "GetCPUData(" name ")"; \
-        if (virTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0) \
-            ret = -1; \
-    } while (0)
-
 #define DO_TEST_CPU_INFO(name, maxvcpus) \
     do { \
         struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt, \
@@ -2953,7 +2842,6 @@ mymain(void)
     DO_TEST(SetObjectProperty);
     DO_TEST(GetDeviceAliases);
     DO_TEST(CPU);
-    DO_TEST(GetNonExistingCPUData);
     DO_TEST(GetIOThreads);
     DO_TEST(GetSEVInfo);
     DO_TEST(Transaction);
@@ -3014,10 +2902,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONNBDServerStart);
     DO_TEST(qemuMonitorJSONSnapshot);
     DO_TEST(qemuMonitorJSONBlockdevSetActive);
-
-    DO_TEST_CPU_DATA("host");
-    DO_TEST_CPU_DATA("full");
-    DO_TEST_CPU_DATA("ecx");
 
     DO_TEST_CPU_INFO("x86-basic-pluggable", 8);
     DO_TEST_CPU_INFO("x86-full", 11);

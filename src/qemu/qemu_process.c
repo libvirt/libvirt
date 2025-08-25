@@ -4579,29 +4579,22 @@ qemuProcessFetchGuestCPU(virDomainObj *vm,
     g_autoptr(virCPUData) dataEnabled = NULL;
     g_autoptr(virCPUData) dataDisabled = NULL;
     const char *cpuQOMPath = qemuProcessGetVCPUQOMPath(vm);
-    bool generic;
     int rc;
 
     *enabled = NULL;
     *disabled = NULL;
 
-    generic = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES);
-
-    if (!generic && !ARCH_IS_X86(vm->def->os.arch))
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
-    if (generic) {
-        rc = qemuMonitorGetGuestCPU(priv->mon,
-                                    vm->def->os.arch,
-                                    cpuQOMPath,
-                                    virQEMUCapsCPUFeatureFromQEMU,
-                                    &dataEnabled, &dataDisabled);
-    } else {
-        rc = qemuMonitorGetGuestCPUx86(priv->mon, cpuQOMPath, &dataEnabled, &dataDisabled);
-    }
+    rc = qemuMonitorGetGuestCPU(priv->mon,
+                                vm->def->os.arch,
+                                cpuQOMPath,
+                                virQEMUCapsCPUFeatureFromQEMU,
+                                &dataEnabled, &dataDisabled);
 
     qemuDomainObjExitMonitor(vm);
 

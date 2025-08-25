@@ -559,12 +559,6 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitor *mon,
                                 char ***aliases);
 
 int
-qemuMonitorJSONGetGuestCPUx86(qemuMonitor *mon,
-                              const char *cpuQOMPath,
-                              virCPUData **data,
-                              virCPUData **disabled);
-
-int
 qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            virArch arch,
                            const char *cpuQOMPath,

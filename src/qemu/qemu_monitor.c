@@ -3670,36 +3670,6 @@ qemuMonitorSetDomainLog(qemuMonitor *mon,
 
 
 /**
- * qemuMonitorJSONGetGuestCPUx86:
- * @mon: Pointer to the monitor
- * @cpuQOMPath: QOM path of a CPU to probe
- * @data: returns the cpu data
- * @disabled: returns the CPU data for features which were disabled by QEMU
- *
- * Retrieve the definition of the guest CPU from a running qemu instance.
- *
- * Returns 0 on success, -2 if the operation is not supported by the guest,
- * -1 on other errors.
- */
-int
-qemuMonitorGetGuestCPUx86(qemuMonitor *mon,
-                          const char *cpuQOMPath,
-                          virCPUData **data,
-                          virCPUData **disabled)
-{
-    VIR_DEBUG("cpuQOMPath=%s data=%p disabled=%p", cpuQOMPath, data, disabled);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    *data = NULL;
-    if (disabled)
-        *disabled = NULL;
-
-    return qemuMonitorJSONGetGuestCPUx86(mon, cpuQOMPath, data, disabled);
-}
-
-
-/**
  * qemuMonitorGetGuestCPU:
  * @mon: Pointer to the monitor
  * @arch: CPU architecture

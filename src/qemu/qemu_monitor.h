@@ -1263,11 +1263,6 @@ void qemuMonitorSetDomainLog(qemuMonitor *mon,
                              void *opaque,
                              virFreeCallback destroy);
 
-int qemuMonitorGetGuestCPUx86(qemuMonitor *mon,
-                              const char *cpuQOMPath,
-                              virCPUData **data,
-                              virCPUData **disabled);
-
 typedef const char *(*qemuMonitorCPUFeatureTranslationCallback)(virArch arch,
                                                                 const char *name);
 
