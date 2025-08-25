@@ -449,11 +449,8 @@ def process_one(filename, args):
                     dump_qmp_probe_strings(c['rep']['return'])
                     dumped = True
 
-        if args.dump_all or args.dump_qom_list_types:
+        if args.dump_all:
             dump_qom_list_types(conv)
-            dumped = True
-
-        if args.dump_all or args.dump_device_list_properties:
             dump_device_list_properties(conv)
             dumped = True
 
@@ -492,7 +489,8 @@ In 'dump' mode if '-dump-all' or one of the specific '-dump-*' flags (below)
 is selected the script outputs information gathered from the given '.replies'
 file. The data is also usable for comparing two '.replies' files in a "diffable"
 fashion as many of the query commands may change ordering or naming without
-functional impact on libvirt.
+functional impact on libvirt. The following specific dump options are useful
+on it's own:
 
   --dump-qmp-query-strings
 
@@ -500,16 +498,6 @@ functional impact on libvirt.
     qemu version in format used by virQEMUQAPISchemaPathGet or
     virQEMUCapsQMPSchemaQueries. It's useful to find specific query string
     without having to piece the information together from 'query-qmp-schema'
-
-  --dump-qom-list-types
-
-    Dumps all types returned by 'qom-list-types' in a stable order with the
-    'parent' property dropped as it's not relevant for libvirt.
-
-  --dump-device-list-properties
-
-    Dumps all properties of all devices queried by libvirt in stable order
-    along with types and default values.
 
 The tool can be also used to programmaticaly modify the '.replies' file by
 editing the 'modify_replies' method directly in the source, or for
@@ -540,12 +528,6 @@ parser.add_argument('--dump-all', action='store_true',
 
 parser.add_argument('--dump-qmp-query-strings', action='store_true',
                     help='dump QMP schema in form of query strings used to probe capabilities')
-
-parser.add_argument('--dump-qom-list-types', action='store_true',
-                    help='dump data from qom-list-types in a stable order')
-
-parser.add_argument('--dump-device-list-properties', action='store_true',
-                    help='dump all devices and their properties')
 
 args = parser.parse_args()
 
