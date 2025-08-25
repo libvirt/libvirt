@@ -492,52 +492,6 @@ testQemuMonitorJSONGetCPUDefinitions(const void *opaque)
 }
 
 
-static int
-testQemuMonitorJSONGetTPMModels(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    g_auto(GStrv) tpmmodels = NULL;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    if (qemuMonitorTestAddItem(test, "query-tpm-models",
-                               "{ "
-                               "  \"return\": [ "
-                               "  \"passthrough\""
-                               "  ]"
-                               "}") < 0)
-        return -1;
-
-    if (qemuMonitorGetTPMModels(qemuMonitorTestGetMonitor(test), &tpmmodels) < 0)
-        return -1;
-
-    if (g_strv_length(tpmmodels) != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "expected 1 tpm model");
-        return -1;
-    }
-
-#define CHECK(i, wantname) \
-    do { \
-        if (STRNEQ(tpmmodels[i], (wantname))) { \
-            virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "name %s is not %s", \
-                           tpmmodels[i], (wantname)); \
-            return -1; \
-        } \
-    } while (0)
-
-    CHECK(0, "passthrough");
-
-#undef CHECK
-
-    return 0;
-}
-
-
 struct qemuMonitorJSONTestAttachChardevData {
     virDomainChrSourceDef *chr;
     const char *expectPty;
@@ -2996,7 +2950,6 @@ mymain(void)
     DO_TEST(GetVersion);
     DO_TEST(GetMachines);
     DO_TEST(GetCPUDefinitions);
-    DO_TEST(GetTPMModels);
     if (qemuMonitorJSONTestAttachChardev(driver.xmlopt, qapiData.schema) < 0)
         ret = -1;
     DO_TEST(DetachChardev);

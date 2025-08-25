@@ -547,16 +547,6 @@ qemuMonitorJSONBlockExportAdd(qemuMonitor *mon,
                               virJSONValue **props);
 
 int
-qemuMonitorJSONGetTPMModels(qemuMonitor *mon,
-                            char ***tpmmodels)
-    ATTRIBUTE_NONNULL(2);
-
-int
-qemuMonitorJSONGetTPMTypes(qemuMonitor *mon,
-                           char ***tpmtypes)
-    ATTRIBUTE_NONNULL(2);
-
-int
 qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
                              virJSONValue **props,
                              char **ptypath);

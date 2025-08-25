@@ -1242,12 +1242,6 @@ int qemuMonitorNBDServerStop(qemuMonitor *mon);
 int qemuMonitorBlockExportAdd(qemuMonitor *mon,
                               virJSONValue **props);
 
-int qemuMonitorGetTPMModels(qemuMonitor *mon,
-                            char ***tpmmodels);
-
-int qemuMonitorGetTPMTypes(qemuMonitor *mon,
-                           char ***tpmtypes);
-
 int qemuMonitorAttachCharDev(qemuMonitor *mon,
                              virJSONValue **props,
                              char **ptypath);

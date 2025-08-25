@@ -6496,49 +6496,6 @@ qemuMonitorJSONBlockExportAdd(qemuMonitor *mon,
 }
 
 
-static int
-qemuMonitorJSONGetStringArray(qemuMonitor *mon,
-                              const char *qmpCmd,
-                              char ***array)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-    virJSONValue *data;
-
-    *array = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand(qmpCmd, NULL)))
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
-        return 0;
-
-    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
-        return -1;
-
-    if (!(*array = virJSONValueArrayToStringList(data)))
-        return -1;
-
-    return 0;
-}
-
-int qemuMonitorJSONGetTPMModels(qemuMonitor *mon,
-                                char ***tpmmodels)
-{
-    return qemuMonitorJSONGetStringArray(mon, "query-tpm-models", tpmmodels);
-}
-
-
-int qemuMonitorJSONGetTPMTypes(qemuMonitor *mon,
-                               char ***tpmtypes)
-{
-    return qemuMonitorJSONGetStringArray(mon, "query-tpm-types", tpmtypes);
-}
-
-
 int
 qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
                              virJSONValue **props,

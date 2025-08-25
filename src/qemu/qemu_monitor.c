@@ -3586,30 +3586,6 @@ qemuMonitorBlockExportAdd(qemuMonitor *mon,
 
 
 int
-qemuMonitorGetTPMModels(qemuMonitor *mon,
-                        char ***tpmmodels)
-{
-    VIR_DEBUG("tpmmodels=%p", tpmmodels);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetTPMModels(mon, tpmmodels);
-}
-
-
-int
-qemuMonitorGetTPMTypes(qemuMonitor *mon,
-                       char ***tpmtypes)
-{
-    VIR_DEBUG("tpmtypes=%p", tpmtypes);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetTPMTypes(mon, tpmtypes);
-}
-
-
-int
 qemuMonitorAttachCharDev(qemuMonitor *mon,
                          virJSONValue **props,
                          char **ptypath)
