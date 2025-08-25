@@ -11,7 +11,6 @@
   <flag name='vnc'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
-  <flag name='migrate-rdma'/>
   <flag name='spice-gl'/>
   <flag name='spice-rendernode'/>
   <flag name='chardev-reconnect'/>

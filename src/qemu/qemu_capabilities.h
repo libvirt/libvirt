@@ -291,7 +291,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_OBJECT_IOTHREAD, /* -object iothread */
 
     /* 175 */
-    QEMU_CAPS_MIGRATE_RDMA, /* have rdma migration */
+    X_QEMU_CAPS_MIGRATE_RDMA, /* have rdma migration */
     X_QEMU_CAPS_DEVICE_IVSHMEM, /* -device ivshmem */
     X_QEMU_CAPS_DRIVE_IOTUNE_MAX, /* -drive bps_max= and friends */
     QEMU_CAPS_VGA_VGAMEM, /* -device VGA.vgamem_mb */

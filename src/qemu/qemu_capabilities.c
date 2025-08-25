@@ -311,7 +311,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "iothread", /* X_QEMU_CAPS_OBJECT_IOTHREAD */
 
               /* 175 */
-              "migrate-rdma", /* QEMU_CAPS_MIGRATE_RDMA */
+              "migrate-rdma", /* X_QEMU_CAPS_MIGRATE_RDMA */
               "ivshmem", /* X_QEMU_CAPS_DEVICE_IVSHMEM */
               "drive-iotune-max", /* X_QEMU_CAPS_DRIVE_IOTUNE_MAX */
               "VGA.vgamem_mb", /* QEMU_CAPS_VGA_VGAMEM */
@@ -1259,7 +1259,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
-    { "rdma-pin-all", QEMU_CAPS_MIGRATE_RDMA },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {

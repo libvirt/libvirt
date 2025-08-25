@@ -23,7 +23,6 @@
   <flag name='usb-storage'/>
   <flag name='usb-kbd'/>
   <flag name='usb-audio'/>
-  <flag name='migrate-rdma'/>
   <flag name='virtio-net'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-keyboard'/>
