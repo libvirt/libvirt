@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-07-28 08:26+0000\n"
-"PO-Revision-Date: 2025-08-24 17:53+0000\n"
+"PO-Revision-Date: 2025-08-25 08:08+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -24811,7 +24811,7 @@ msgstr "nome de ponto de verificação"
 
 #, c-format
 msgid "child didn't write error (status=%1$d)"
-msgstr ""
+msgstr "filho não teve erro de escrita (estado=%1$d)"
 
 #, c-format
 msgid "child failed to create directory '%1$s'"
@@ -25602,48 +25602,51 @@ msgid ""
 "count of memory devices requiring memory slots '%1$zu' exceeds slots count "
 "'%2$u'"
 msgstr ""
+"contagem de dispositivos de memória a requerer slots de memória '%1$zu' "
+"excede contagem de slots '%2$u'"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
-msgstr ""
+msgstr "funcionalidade cow só pode ser usada para pools 'fs' e 'dir'"
 
 msgid "cpu affinity is not supported"
 msgstr "afinidade de cpu não é suportada"
 
 msgid "cpu count too large"
-msgstr ""
+msgstr "contagem de cpu muito grande"
 
 msgid "cpu hotplug is not supported"
-msgstr ""
+msgstr "ligação a quente de cpu não é suportada"
 
 msgid "cpu parameter is missing a model name"
-msgstr ""
+msgstr "parâmetro de cpu tem um falta um nome de modelo"
 
 #, c-format
 msgid "cpu topology results in more than %1$u cpus"
-msgstr ""
+msgstr "topologia de cpu resulta em mais do que %1$u cpus"
 
 #, c-format
 msgid "cpuNum in %1$s only accepts %2$d as a negative value"
-msgstr ""
+msgstr "cpuNum em %1$s apenas aceita %2$d com um valor negativo"
 
 msgid "cpuacct parse error"
 msgstr "erro de análise cpuacct"
 
 #, c-format
 msgid "cpuid starting with %1$s is not supported, only libxl format is"
-msgstr ""
+msgstr "id de cpu a começar com %1$s não é suportado, apenas o formato libxl é"
 
 msgid "cputune is not supported by vz driver"
-msgstr ""
+msgstr "afinação de cpu não é suportada pelo controlador vz"
 
 msgid "crash the domain after core dump"
-msgstr ""
+msgstr "colidir o domínio após despejo do núcleo"
 
 msgid "crashed"
 msgstr "estoirado"
 
 msgid "create a bridge device and attach an existing network device to it"
 msgstr ""
+"cria um dispositivo ponte e anexa um dispositivo de rede existente a ele"
 
 msgid "create a device defined by an XML file on the node"
 msgstr "criar um dispositivo definido por um ficheiro XML no nó"
@@ -25670,6 +25673,8 @@ msgid ""
 "create a snapshot of current interfaces settings, which can be later "
 "committed (iface-commit) or restored (iface-rollback)"
 msgstr ""
+"cria um instantâneo das definições de interfaces atuais, o qual pode ser "
+"mais tarde cometido (iface-commit) ou restaurado (iface-rollback)"
 
 msgid "create a vol from an XML file"
 msgstr "criar um volume a partir de um ficheiro XML"
@@ -25684,83 +25689,93 @@ msgid ""
 "creating a new group/updating existing with all tune parameters zero is not "
 "supported"
 msgstr ""
+"criar um novo grupo/atualizar existente com todos os parâmetros de afinação "
+"a zero não é suportado"
 
 msgid "creating snapshot"
 msgstr "a criar instantâneo"
 
 msgid "creation of images with slice type='storage' is not supported"
-msgstr ""
+msgstr "criação de imagens com tipo de fatia='storage' não é suportado"
 
 msgid "creation of non-raw file images is not supported without qemu-img."
-msgstr ""
+msgstr "criação de imagens de ficheiro não-crú não é suportada sem o qemu-img."
 
 msgid "creation of pid file requires daemonized command"
-msgstr ""
+msgstr "criação de ficheiro pid requer comando daemonizado"
 
 msgid "creation of qcow/qcow2 files supports only 'luks' encryption"
-msgstr ""
+msgstr "criação de ficheiros qcow/qcow2 suporta apenas encriptação 'luks'"
 
 msgid "creation of qcow2 encrypted image is not supported"
-msgstr ""
+msgstr "criação de imagem encriptada qcow2 não é suportada"
 
 msgid "creation of storage images with <dataStore> feature is not supported"
 msgstr ""
+"criação de imagens de armazenamento com funcionalidade <dataStore> não é "
+"suportada"
 
 #, c-format
 msgid "crypto backend %1$s is not supported"
-msgstr ""
+msgstr "backend de criptografia %1$s não é suportado"
 
 #, c-format
 msgid "crypto model %1$s is not supported"
-msgstr ""
+msgstr "modelo de criptografia %1$s não é suportado"
 
 #, c-format
 msgid "crypto type %1$s is not supported"
-msgstr ""
+msgstr "tipo de criptografia %1$s não é suportado"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_REDIRECT_URL) returned an error: %1$s (%2$d) : "
 "%3$s"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_REDIRECT_URL) retornou um error: %1$s (%2$d) : "
+"%3$s"
 
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned a negative response code"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou um código de resposta "
+"negativo"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
-msgstr ""
+msgstr "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou um erro: %1$s (%2$d)"
 
 #, c-format
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d) : "
 "%3$s"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) retornou um erro: %1$s (%2$d) : "
+"%3$s"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d)"
-msgstr ""
+msgstr "curl_easy_perform() retornou um erro: %1$s (%2$d)"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d) : %3$s"
-msgstr ""
+msgstr "curl_easy_perform() retornou um erro: %1$s (%2$d) : %3$s"
 
 msgid "current"
 msgstr "atual"
 
 msgid "current bridge device name"
-msgstr ""
+msgstr "nome de dispositivo ponte atual"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
+msgstr "trabalho atual não está a efetuar migração em modo pós-cópia"
 
 msgid "current vcpu count must equal maximum"
-msgstr ""
+msgstr "contagem de vcpu atual tem de igualar o máximo"
 
 msgid "current vcpus must be equal to maxvcpus"
-msgstr ""
+msgstr "vcpus atuais têm de ser igual a maxvcpus"
 
 msgid "custom alias name of disk device"
 msgstr "nome de alias personalizado de dispositivo de disco"
@@ -25769,19 +25784,19 @@ msgid "custom alias name of interface device"
 msgstr "nome de alias personalizado de dispositivo de interface"
 
 msgid "custom configuration parameters specified"
-msgstr ""
+msgstr "parâmetros de configuração personalizada especificados"
 
 msgid "custom device configuration"
-msgstr ""
+msgstr "configuração de dispositivo personalizada"
 
 msgid "custom device tree blob used"
-msgstr ""
+msgstr "usada bolha de árvore de dispositivo personalizado"
 
 msgid "custom guest agent control commands issued"
-msgstr ""
+msgstr "emitidos comandos de controle de agente convidado personalizado"
 
 msgid "custom monitor control commands issued"
-msgstr ""
+msgstr "emitidos comandos de controle de monitor personalizado"
 
 msgid "daemon"
 msgstr "daemon"
@@ -25791,42 +25806,44 @@ msgstr "URI de ligação ao servidor administrador do deamon"
 
 #, c-format
 msgid "daemonized command cannot set working directory %1$s"
-msgstr ""
+msgstr "comando daemonizado não consegue definir directório de trabalho %1$s"
 
 msgid "daemonized command cannot use virCommandRunAsync"
-msgstr ""
+msgstr "comando daemonizado não consegue usar virCommandRunAsync"
 
 msgid "dangling \\"
 msgstr "pendente \\"
 
 msgid "data sinks cannot be used for non-blocking streams"
-msgstr ""
+msgstr "pias de dados não podem ser usadas para fluxos de não-bloqueio"
 
 msgid "data sources cannot be used for non-blocking streams"
-msgstr ""
+msgstr "fontes de dados não podem ser usadas para fluxos de não-bloqueio"
 
 #, c-format
 msgid "dbus-daemon %1$s didn't show up"
-msgstr ""
+msgstr "daemon de dbus %1$s não apareceu"
 
 #, c-format
 msgid ""
 "dbus-daemon died and reported:\n"
 "%1$s"
 msgstr ""
+"daemon de dbus morreu e reportou:\n"
+"%1$s"
 
 msgid "default"
 msgstr "predefinição"
 
 #, c-format
 msgid "default_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "directório default_tls_x509_cert_dir '%1$s' não existe"
 
 msgid "define (but don't start) a domain from an XML file"
 msgstr "definir (mas não iniciar) um domínio a partir de um ficheiro XML"
 
 msgid "define a pool from a set of args"
-msgstr ""
+msgstr "define um pool a partir de um conjunto de argumentos"
 
 msgid ""
 "define an inactive persistent physical host interface or modify an existing "
@@ -25851,14 +25868,14 @@ msgstr "definir ou modificar um filtro de rede a partir de um ficheiro XML"
 
 #, c-format
 msgid "definition for checkpoint %1$s must use uuid %2$s"
-msgstr ""
+msgstr "definição para ponto de verificação %1$s tem de usar uuid %2$s"
 
 #, c-format
 msgid "definition for snapshot %1$s must use uuid %2$s"
-msgstr ""
+msgstr "definição para instantâneo %1$s tem de usar uuid %2$s"
 
 msgid "deflate-on-oom is not supported by this QEMU binary"
-msgstr ""
+msgstr "deflate-on-oom não é suportado com este binário QEMU"
 
 msgid "degraded"
 msgstr "degradado"
@@ -25876,16 +25893,16 @@ msgid "delete an IOThread from the guest domain"
 msgstr "apagar um IOThread do domínio convidado"
 
 msgid "delete checkpoint and all children"
-msgstr ""
+msgstr "apaga ponto de verificação e todos os filhos"
 
 msgid "delete children but not checkpoint"
-msgstr ""
+msgstr "apaga filhos mas não o ponto de verificação"
 
 msgid "delete children but not snapshot"
-msgstr ""
+msgstr "apaga filhos mas não o instantâneo"
 
 msgid "delete current snapshot"
-msgstr ""
+msgstr "apaga instantâneo atual"
 
 msgid "delete files that were successfully committed"
 msgstr ""
@@ -25897,7 +25914,7 @@ msgid "delete only libvirt metadata, leaving snapshot contents behind"
 msgstr ""
 
 msgid "delete snapshot and all children"
-msgstr ""
+msgstr "apaga instantâneo e todos os filhos"
 
 msgid ""
 "delete snapshots associated with volume (must be supported by storage driver)"
@@ -25945,16 +25962,16 @@ msgstr ""
 
 #, c-format
 msgid "deprecated configuration: %1$s"
-msgstr ""
+msgstr "configuração descontinuada: %1$s"
 
 msgid "description"
 msgstr "descrição"
 
 msgid "description of checkpoint"
-msgstr ""
+msgstr "descrição de ponto de verificação"
 
 msgid "description of snapshot"
-msgstr ""
+msgstr "descrição de instantâneo"
 
 msgid "destroy (stop) a device on the node"
 msgstr "destrói (pára) um dispositivo no nó"
@@ -29156,7 +29173,7 @@ msgid "found lease without mac-address"
 msgstr ""
 
 msgid "freePageReporting is not supported by this QEMU binary"
-msgstr ""
+msgstr "freePageReporting não é suportado com este binário QEMU"
 
 msgid "from snapshot"
 msgstr "a partir do instantâneo"
@@ -29794,7 +29811,7 @@ msgid "includes the password into the connection URI if available"
 msgstr ""
 
 msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "migração RDMA chegada não é suportada com este binário QEMU"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -30748,7 +30765,7 @@ msgid "io policy of disk device"
 msgstr "política io do dispositivo de disco"
 
 msgid "io uring is not supported by this QEMU binary"
-msgstr ""
+msgstr "io uring não é suportado com este binário QEMU"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
 msgstr ""
@@ -30772,22 +30789,23 @@ msgid "iommu model '%1$s' doesn't support some additional attributes"
 msgstr ""
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: aw_bits não é suportado com este binário QEMU"
 
 msgid "iommu: caching mode is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: modo de cache não é suportado com este binário QEMU"
 
 msgid "iommu: device IOTLB is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: dispositivo IOTLB não é suportado com este binário QEMU"
 
 msgid "iommu: eim is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: eim não é suportado com este binário QEMU"
 
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
 msgstr ""
+"iommu: remapeamento de interrupção não é suportado com este binário QEMU"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
-msgstr ""
+msgstr "iommu: atualizar tradução dma não é suportado com este binário QEMU"
 
 #, c-format
 msgid "iothread %1$d not found"
@@ -30960,13 +30978,13 @@ msgid "library call failed: %1$s"
 msgstr "chamada de biblioteca falhou: %1$s"
 
 msgid "librbd encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "encriptação de librbd não é suportada com este binário QEMU"
 
 msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
-msgstr ""
+msgstr "acamar de encriptação de librbd não é suportado com este binário QEMU"
 
 msgid "libssh transport error"
 msgstr ""
@@ -31448,7 +31466,7 @@ msgid "lower boundary for worker thread pool"
 msgstr ""
 
 msgid "luks-any encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "encriptação luks-any não é suportada com este binário QEMU"
 
 msgid "lxc state driver is not active"
 msgstr ""
@@ -33156,7 +33174,7 @@ msgid "msi option is only supported with a server"
 msgstr ""
 
 msgid "mtp is not supported with this QEMU binary"
-msgstr ""
+msgstr "mtp não é suportado com este binário QEMU"
 
 msgid "mtp only supports passthrough accessmode"
 msgstr ""
@@ -33168,7 +33186,7 @@ msgid ""
 msgstr ""
 
 msgid "multidevs is not supported with this QEMU binary"
-msgstr ""
+msgstr "multidevs não é suportado com este binário QEMU"
 
 #, c-format
 msgid ""
@@ -34347,7 +34365,7 @@ msgid "nvram address type must be spaprvio"
 msgstr ""
 
 msgid "nvram device is not supported by this QEMU binary"
-msgstr ""
+msgstr "dispositivo nvram não é suportado por este binário QEMU"
 
 msgid "nvram device is only supported for PPC64"
 msgstr ""
@@ -34721,7 +34739,7 @@ msgid "outbound rate larger than maximum %1$u"
 msgstr ""
 
 msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "migração RDMA de saída não é suportada com este binário QEMU"
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
@@ -36095,7 +36113,7 @@ msgid "resctrl locking is not supported on this platform"
 msgstr "trancamento de resctrl não suportado nesta plataforma"
 
 msgid "reservations not supported with this QEMU binary"
-msgstr ""
+msgstr "reservas não suportadas com este binário QEMU"
 
 msgid "reset"
 msgstr "reiniciar"
@@ -36303,7 +36321,7 @@ msgstr "salvar cancelado"
 
 #, c-format
 msgid "save image format %1$s is not supported by this QEMU binary"
-msgstr ""
+msgstr "formato de imagem de salva %1$s não é suportado por este binário QEMU"
 
 msgid "save image is incomplete"
 msgstr ""
@@ -36602,6 +36620,8 @@ msgid ""
 "setting the '%1$s' property on a '%2$s' device is not supported by this QEMU "
 "binary"
 msgstr ""
+"definir a propriedade '%1$s' num dispositivo '%2$s' não é suportado por este "
+"binário QEMU"
 
 msgid "setting the panic device address is not supported for model 'hyperv'"
 msgstr ""
@@ -36614,6 +36634,7 @@ msgstr ""
 
 msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr ""
+"definir ordem de arranque de virtiofs não é suportado com este binário QEMU"
 
 msgid "setting virtiofs boot order is supported only with PCI bus"
 msgstr ""
@@ -36666,7 +36687,7 @@ msgid "shares '%1$llu' must be in range [%2$llu, %3$llu]"
 msgstr ""
 
 msgid "shim is not supported by this QEMU binary"
-msgstr ""
+msgstr "shim não é suportado por este binário QEMU"
 
 msgid "shim only allowed with kernel option"
 msgstr ""
@@ -37424,7 +37445,7 @@ msgstr "testOpen: Indique um caminho ou use test:///default"
 
 #, c-format
 msgid "the '%1$s' network backend is not supported with this QEMU binary"
-msgstr ""
+msgstr "o backend de rede '%1$s' não é suportado com este binário QEMU"
 
 #, c-format
 msgid ""
@@ -37689,6 +37710,7 @@ msgstr ""
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
 msgstr ""
+"thread_pool_min e thread_pool_max não são suportados por este binário QEMU"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
 msgstr ""
@@ -40058,10 +40080,10 @@ msgid "usb device not found"
 msgstr "dispositivo usb não encontrado"
 
 msgid "usb keyboard is not supported by this QEMU binary"
-msgstr ""
+msgstr "teclado usb não é suportado por este binário QEMU"
 
 msgid "usb-audio controller is not supported by this QEMU binary"
-msgstr ""
+msgstr "controlador usb-áudio não é suportado por este binário QEMU"
 
 msgid "usb-hub not supported by QEMU binary"
 msgstr "usb-hub não suportado pelo binário QEMU"
@@ -40198,7 +40220,7 @@ msgid "vDPA chardev path '%1$s' does not exist"
 msgstr ""
 
 msgid "vDPA devices are not supported with this QEMU binary"
-msgstr ""
+msgstr "dispositivos vDPA não suportados com este binário QEMU"
 
 msgid "vDPA devices cannot be migrated"
 msgstr ""
@@ -40415,7 +40437,7 @@ msgid "vgamem attribute only supported for video type qxl"
 msgstr ""
 
 msgid "vhost-net is not supported with this QEMU binary"
-msgstr ""
+msgstr "vhost-net não é suportado com este binário QEMU"
 
 msgid "vhost-net is only supported for virtio network interfaces"
 msgstr "vhost-net é apenas suportado para interfaces de rede virtio"
@@ -40584,10 +40606,10 @@ msgid "virtio non-transitional model not supported for this qemu"
 msgstr ""
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
-msgstr ""
+msgstr "reportar cinza rss de virtio não é suportado com este binário QEMU"
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "rss de virtio não é suportado com este binário QEMU"
 
 #, c-format
 msgid "virtio rx_queue_size option %1$d is not same with tx_queue_size %2$d"
@@ -40673,7 +40695,7 @@ msgid "virtiofs does not support wrpolicy"
 msgstr ""
 
 msgid "virtiofs is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtiofs não é suportado com este binário QEMU"
 
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
@@ -40838,7 +40860,7 @@ msgid "vram64 attribute only supported for video type qxl"
 msgstr ""
 
 msgid "vsock device is not supported with this QEMU binary"
-msgstr ""
+msgstr "dispositivo vsock não é suportado com este binário QEMU"
 
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr ""
@@ -40915,7 +40937,7 @@ msgstr "watchdog"
 
 msgid ""
 "watchdogs with different actions are not supported with this QEMU binary"
-msgstr ""
+msgstr "watchdogs com ações diferentes não são suportados com este binário QEMU"
 
 msgid "webSocket"
 msgstr ""
