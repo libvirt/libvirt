@@ -37711,111 +37711,12 @@
 }
 
 {
-  "execute": "query-migrate-capabilities",
-  "id": "libvirt-45"
-}
-
-{
-  "return": [
-    {
-      "state": false,
-      "capability": "xbzrle"
-    },
-    {
-      "state": false,
-      "capability": "rdma-pin-all"
-    },
-    {
-      "state": false,
-      "capability": "auto-converge"
-    },
-    {
-      "state": false,
-      "capability": "zero-blocks"
-    },
-    {
-      "state": false,
-      "capability": "events"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-ram"
-    },
-    {
-      "state": false,
-      "capability": "x-colo"
-    },
-    {
-      "state": false,
-      "capability": "release-ram"
-    },
-    {
-      "state": false,
-      "capability": "return-path"
-    },
-    {
-      "state": false,
-      "capability": "pause-before-switchover"
-    },
-    {
-      "state": false,
-      "capability": "multifd"
-    },
-    {
-      "state": false,
-      "capability": "dirty-bitmaps"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-blocktime"
-    },
-    {
-      "state": false,
-      "capability": "late-block-activate"
-    },
-    {
-      "state": false,
-      "capability": "x-ignore-shared"
-    },
-    {
-      "state": false,
-      "capability": "validate-uuid"
-    },
-    {
-      "state": false,
-      "capability": "background-snapshot"
-    },
-    {
-      "state": false,
-      "capability": "zero-copy-send"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-preempt"
-    },
-    {
-      "state": false,
-      "capability": "switchover-ack"
-    },
-    {
-      "state": false,
-      "capability": "dirty-limit"
-    },
-    {
-      "state": false,
-      "capability": "mapped-ram"
-    }
-  ],
-  "id": "libvirt-45"
-}
-
-{
   "execute": "query-sev-capabilities",
-  "id": "libvirt-46"
+  "id": "libvirt-45"
 }
 
 {
-  "id": "libvirt-46",
+  "id": "libvirt-45",
   "error": {
     "class": "GenericError",
     "desc": "SEV is not enabled in KVM"
@@ -37824,7 +37725,7 @@
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-47"
+  "id": "libvirt-46"
 }
 
 {
@@ -37852,7 +37753,7 @@
     ],
     "flc": true
   },
-  "id": "libvirt-47"
+  "id": "libvirt-46"
 }
 
 {
@@ -37863,7 +37764,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-47"
 }
 
 {
@@ -38268,7 +38169,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-47"
 }
 
 {
@@ -38282,7 +38183,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-48"
 }
 
 {
@@ -38687,7 +38588,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-48"
 }
 
 {
@@ -38698,7 +38599,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-49"
 }
 
 {
@@ -39214,7 +39115,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-49"
 }
 
 {
@@ -39229,7 +39130,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-50"
 }
 
 {
@@ -39745,7 +39646,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-50"
 }
 
 {

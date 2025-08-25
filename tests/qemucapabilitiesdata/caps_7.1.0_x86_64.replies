@@ -33152,107 +33152,12 @@
 }
 
 {
-  "execute": "query-migrate-capabilities",
-  "id": "libvirt-47"
-}
-
-{
-  "return": [
-    {
-      "state": false,
-      "capability": "xbzrle"
-    },
-    {
-      "state": false,
-      "capability": "rdma-pin-all"
-    },
-    {
-      "state": false,
-      "capability": "auto-converge"
-    },
-    {
-      "state": false,
-      "capability": "zero-blocks"
-    },
-    {
-      "state": false,
-      "capability": "compress"
-    },
-    {
-      "state": false,
-      "capability": "events"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-ram"
-    },
-    {
-      "state": false,
-      "capability": "x-colo"
-    },
-    {
-      "state": false,
-      "capability": "release-ram"
-    },
-    {
-      "state": false,
-      "capability": "block"
-    },
-    {
-      "state": false,
-      "capability": "return-path"
-    },
-    {
-      "state": false,
-      "capability": "pause-before-switchover"
-    },
-    {
-      "state": false,
-      "capability": "multifd"
-    },
-    {
-      "state": false,
-      "capability": "dirty-bitmaps"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-blocktime"
-    },
-    {
-      "state": false,
-      "capability": "late-block-activate"
-    },
-    {
-      "state": false,
-      "capability": "x-ignore-shared"
-    },
-    {
-      "state": false,
-      "capability": "validate-uuid"
-    },
-    {
-      "state": false,
-      "capability": "background-snapshot"
-    },
-    {
-      "state": false,
-      "capability": "zero-copy-send"
-    },
-    {
-      "state": false,
-      "capability": "postcopy-preempt"
-    }
-  ],
-  "id": "libvirt-47"
-}
-
-{
   "execute": "query-sev-capabilities",
-  "id": "libvirt-48"
+  "id": "libvirt-47"
 }
 
 {
-  "id": "libvirt-48",
+  "id": "libvirt-47",
   "error": {
     "class": "GenericError",
     "desc": "SEV: Failed to open /dev/sev: No such file or directory"
@@ -33261,11 +33166,11 @@
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-49"
+  "id": "libvirt-48"
 }
 
 {
-  "id": "libvirt-49",
+  "id": "libvirt-48",
   "error": {
     "class": "GenericError",
     "desc": "SGX is not enabled in KVM"
@@ -33280,7 +33185,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-49"
 }
 
 {
@@ -33618,7 +33523,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-49"
 }
 
 {
@@ -33632,7 +33537,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-50"
 }
 
 {
@@ -33970,7 +33875,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-50"
 }
 
 {
@@ -33985,7 +33890,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-51"
 }
 
 {
@@ -34323,7 +34228,7 @@
       }
     }
   },
-  "id": "libvirt-52"
+  "id": "libvirt-51"
 }
 
 {

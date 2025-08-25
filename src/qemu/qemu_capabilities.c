@@ -1258,9 +1258,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "blockdev-set-active", QEMU_CAPS_BLOCKDEV_SET_ACTIVE },
 };
 
-struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
-};
-
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "hda-duplex", QEMU_CAPS_HDA_DUPLEX },
     { "hda-micro", QEMU_CAPS_HDA_MICRO },
@@ -3550,23 +3547,6 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCaps *qemuCaps,
     return 0;
 }
 
-static int
-virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCaps *qemuCaps,
-                                         qemuMonitor *mon)
-{
-    g_auto(GStrv) caps = NULL;
-
-    if (qemuMonitorGetMigrationCapabilities(mon, &caps) < 0)
-        return -1;
-
-    virQEMUCapsProcessStringFlags(qemuCaps,
-                                  G_N_ELEMENTS(virQEMUCapsMigration),
-                                  virQEMUCapsMigration,
-                                  caps);
-
-    return 0;
-}
-
 /**
  * virQEMUCapsProbeQMPGICCapabilities:
  * @qemuCaps: QEMU binary capabilities
@@ -5784,8 +5764,6 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPTPM(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
-        return -1;
-    if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
         return -1;
     if (virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         return -1;
