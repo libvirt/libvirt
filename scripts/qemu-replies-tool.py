@@ -36,13 +36,13 @@ def qemu_replies_load(filename):
                     if command is None:
                         command = json.loads(jsonstr)
                     else:
-                        conv.append((command, json.loads(jsonstr)))
+                        conv.append({'cmd': command, 'rep': json.loads(jsonstr)})
                         command = None
 
                     jsonstr = ''
 
             if command is not None and jsonstr != '':
-                conv.append((command, json.loads(jsonstr)))
+                conv.append({'cmd': command, 'rep': json.loads(jsonstr)})
                 command = None
                 jsonstr = ''
 
@@ -67,14 +67,14 @@ def qemu_replies_compare_or_replace(filename, conv, regenerate_on_error):
     seq = 9999  # poison the initial counter state
 
     # possibly fix mis-ordererd 'id' fields
-    for (cmd, rep) in conv:
+    for c in conv:
         # 'qmp_capabilities' command restarts the numbering sequence
-        if cmd['execute'] == 'qmp_capabilities':
+        if c['cmd']['execute'] == 'qmp_capabilities':
             seq = 1
 
         newid = 'libvirt-%d' % seq
-        cmd['id'] = newid
-        rep['id'] = newid
+        c['cmd']['id'] = newid
+        c['rep']['id'] = newid
 
         seq += 1
 
@@ -82,7 +82,7 @@ def qemu_replies_compare_or_replace(filename, conv, regenerate_on_error):
         if len(actual) != 0:
             actual += '\n\n'
 
-        actual += json.dumps(cmd, indent=2) + '\n\n' + json.dumps(rep, indent=2)
+        actual += json.dumps(c['cmd'], indent=2) + '\n\n' + json.dumps(c['rep'], indent=2)
 
     expect = ''
     actual += '\n'
@@ -114,9 +114,9 @@ def modify_replies(conv):
     version = None  # filled with a dictionary  with 'major', 'minor', 'micro' keys
 
     # find version of current qemu for later use
-    for (cmd, rep) in conv:
-        if cmd['execute'] == 'query-version':
-            version = rep['return']['qemu']
+    for c in conv:
+        if c['cmd']['execute'] == 'query-version':
+            version = c['rep']['return']['qemu']
             break
 
     if version is None:
@@ -126,9 +126,9 @@ def modify_replies(conv):
     # Find index of a command, in this case we're looking for the last
     # invocation of given command
     for i in range(len(conv)):
-        (cmd, rep) = conv[i]
+        c = conv[i]
 
-        if cmd['execute'] == 'device-list-properties':
+        if c['cmd']['execute'] == 'device-list-properties':
             idx = i
 
     if idx == -1:
@@ -161,9 +161,9 @@ def modify_replies(conv):
 
     # insert command into the QMP conversation based on version of qemu
     if version['major'] >= 8 and version['minor'] > 0:
-        conv.insert(idx, (cmd, reply))
+        conv.insert(idx, {'cmd': cmd, 'rep': reply})
     else:
-        conv.insert(idx, (cmd, reply_unsupp))
+        conv.insert(idx, {'cmd': cmd, 'rep': reply_unsupp})
 
 
 # Validates that 'entry' (an member of the QMP schema):
@@ -389,9 +389,9 @@ def dump_qmp_probe_strings(schemalist):
 def dump_qom_list_types(conv):
     types = []
 
-    for (cmd, rep) in conv:
-        if cmd['execute'] == 'qom-list-types':
-            for qomtype in rep['return']:
+    for c in conv:
+        if c['cmd']['execute'] == 'qom-list-types':
+            for qomtype in c['rep']['return']:
                 # validate known fields:
                 # 'parent' is ignored below as it causes output churn
                 for k in qomtype:
@@ -411,20 +411,20 @@ def dump_qom_list_types(conv):
 def dump_device_list_properties(conv):
     devices = []
 
-    for (cmd, rep) in conv:
-        if cmd['execute'] == 'device-list-properties':
-            if 'return' in rep:
-                for arg in rep['return']:
+    for c in conv:
+        if c['cmd']['execute'] == 'device-list-properties':
+            if 'return' in c['rep']:
+                for arg in c['rep']['return']:
                     for k in arg:
                         if k not in ['name', 'type', 'description', 'default-value']:
-                            raise Exception("Unhandled 'device-list-properties' typename '%s' field '%s'" % (cmd['arguments']['typename'], k))
+                            raise Exception("Unhandled 'device-list-properties' typename '%s' field '%s'" % (c['cmd']['arguments']['typename'], k))
 
                     if 'default-value' in arg:
                         defval = ' (%s)' % str(arg['default-value'])
                     else:
                         defval = ''
 
-                    devices.append('%s %s %s%s' % (cmd['arguments']['typename'],
+                    devices.append('%s %s %s%s' % (c['cmd']['arguments']['typename'],
                                                    arg['name'],
                                                    arg['type'],
                                                    defval))
@@ -441,12 +441,12 @@ def process_one(filename, args):
 
         modify_replies(conv)
 
-        for (cmd, rep) in conv:
-            if cmd['execute'] == 'query-qmp-schema':
-                validate_qmp_schema(rep['return'])
+        for c in conv:
+            if c['cmd']['execute'] == 'query-qmp-schema':
+                validate_qmp_schema(c['rep']['return'])
 
                 if args.dump_all or args.dump_qmp_query_strings:
-                    dump_qmp_probe_strings(rep['return'])
+                    dump_qmp_probe_strings(c['rep']['return'])
                     dumped = True
 
         if args.dump_all or args.dump_qom_list_types:
