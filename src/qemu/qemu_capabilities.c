@@ -1427,6 +1427,13 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "amd-iommu", QEMU_CAPS_AMD_IOMMU },
     { "usb-bot", QEMU_CAPS_DEVICE_USB_BOT },
     { "tdx-guest", QEMU_CAPS_TDX_GUEST},
+    { "tpm-crb", QEMU_CAPS_DEVICE_TPM_CRB },
+    { "tpm-tis", QEMU_CAPS_DEVICE_TPM_TIS },
+    { "tpm-tis-device", QEMU_CAPS_DEVICE_TPM_TIS },
+    { "tpm-tis-i2c", QEMU_CAPS_DEVICE_TPM_TIS },
+    { "tpm-spapr", QEMU_CAPS_DEVICE_TPM_SPAPR },
+    { "tpm-emulator", QEMU_CAPS_DEVICE_TPM_EMULATOR },
+    { "tpm-passthrough", QEMU_CAPS_DEVICE_TPM_PASSTHROUGH },
 };
 
 
@@ -3381,44 +3388,12 @@ virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
 }
 
 
-struct tpmTypeToCaps {
-    int type;
-    virQEMUCapsFlags caps;
-};
-
-static const struct tpmTypeToCaps virQEMUCapsTPMTypesToCaps[] = {
-    {
-        .type = VIR_DOMAIN_TPM_TYPE_PASSTHROUGH,
-        .caps = QEMU_CAPS_DEVICE_TPM_PASSTHROUGH,
-    },
-    {
-        .type = VIR_DOMAIN_TPM_TYPE_EMULATOR,
-        .caps = QEMU_CAPS_DEVICE_TPM_EMULATOR,
-    },
-};
-
-const struct tpmTypeToCaps virQEMUCapsTPMModelsToCaps[] = {
-    {
-        .type = VIR_DOMAIN_TPM_MODEL_TIS,
-        .caps = QEMU_CAPS_DEVICE_TPM_TIS,
-    },
-    {
-        .type = VIR_DOMAIN_TPM_MODEL_CRB,
-        .caps = QEMU_CAPS_DEVICE_TPM_CRB,
-    },
-    {
-        .type = VIR_DOMAIN_TPM_MODEL_SPAPR,
-        .caps = QEMU_CAPS_DEVICE_TPM_SPAPR,
-    },
-};
-
 static int
-virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps,
+virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                        qemuMonitor *mon)
 {
     g_auto(GStrv) models = NULL;
     g_auto(GStrv) types = NULL;
-    size_t i;
 
     if (qemuMonitorGetTPMModels(mon, &models) < 0)
         return -1;
@@ -3426,23 +3401,11 @@ virQEMUCapsProbeQMPTPM(virQEMUCaps *qemuCaps,
     if (!models)
         return 0;
 
-    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMModelsToCaps); i++) {
-        const char *needle = virDomainTPMModelTypeToString(virQEMUCapsTPMModelsToCaps[i].type);
-        if (g_strv_contains((const char **)models, needle))
-            virQEMUCapsSet(qemuCaps, virQEMUCapsTPMModelsToCaps[i].caps);
-    }
-
     if (qemuMonitorGetTPMTypes(mon, &types) < 0)
         return -1;
 
     if (!types)
         return 0;
-
-    for (i = 0; i < G_N_ELEMENTS(virQEMUCapsTPMTypesToCaps); i++) {
-        const char *needle = virDomainTPMBackendTypeToString(virQEMUCapsTPMTypesToCaps[i].type);
-        if (g_strv_contains((const char **)types, needle))
-            virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
-    }
 
     return 0;
 }
