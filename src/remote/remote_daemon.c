@@ -108,6 +108,7 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
     case VIR_ERR_NO_CLIENT:
     case VIR_ERR_NO_HOSTNAME:
     case VIR_ERR_NO_NETWORK_METADATA:
+    case VIR_ERR_NO_SUPPORT:
         return VIR_LOG_DEBUG;
     }
 
