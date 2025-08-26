@@ -704,7 +704,7 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSet *addrs,
          *  and we can't automatically decide which numa node to
          *  associate it with)
          *
-         * VIR_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT - we ndon't
+         * VIR_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT - we don't
          *  support this, because it can only plug into an
          *  upstream-port, and the upstream port might need a
          *  root-port; supporting this extra layer needlessly
@@ -717,20 +717,41 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSet *addrs,
          *  devices on the host, and are also outside the scope of our
          *  "automatic-bus-expansion".
          *
-         * VIR_PCI_CONNECT_TYPE_PCI_BRIDGE (when the root bus is
-         *  pci-root) - see the comment above in the case that handles
-         *  adding a slot for pci-bridge to a guest with pcie-root.
+         * VIR_PCI_CONNECT_TYPE_PCI_BRIDGE if the root bus is pci-root
+         *  but there are no free slots already available to plug in a
+         *  pci-bridge, then the battle is already lost - the only way
+         *  to get another open slot would be to auto-add a pci-bridge
+         *  device, but that's what we're already trying to do - by
+         *  definition either we wouldn't get here in the first place,
+         *  or it's already too late.
+         *
+         *  Alternatively if the root bus *isn't* pci-root, then
+         *  either the root bus is pcie-root (in which case the user
+         *  should be using a pcie-to-pci-bridge instead), or there is
+         *  no PCI supported *at all*, and in both of those cases we
+         *  should fail.
+         *
+         * Additionally, we obviously can't auto-add any type of PCIe
+         * controller if the root bus is pci-root, or if there is no
+         * PCI supported at all.
          *
          */
         int existingContModel = virDomainPCIControllerConnectTypeToModel(flags);
 
         if (existingContModel >= 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("a PCI slot is needed to connect a PCI controller model='%1$s', but none is available, and it cannot be automatically added"),
-                           virDomainControllerModelPCITypeToString(existingContModel));
+            if (existingContModel == VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS ||
+                existingContModel == VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("a conventional PCI slot is needed to connect a PCI controller model='%1$s', but none is available, and it cannot be automatically added"),
+                               virDomainControllerModelPCITypeToString(existingContModel));
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("a PCIe slot is needed to connect a PCI controller model='%1$s', but none is available, and it cannot be automatically added"),
+                               virDomainControllerModelPCITypeToString(existingContModel));
+            }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"),
+                           _("Cannot automatically add a new PCI bus for a device with unrecognized connect flags %1$.2x"),
                            flags);
         }
         return -1;
