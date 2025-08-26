@@ -6620,10 +6620,13 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
 
     rc = qemuDomainDeleteDevice(vm, info->alias);
     if (rc < 0) {
+        /* we want to report succesful detach if device doesn't exist any more in qemu */
+        if (virDomainObjIsActive(vm))
+            qemuDomainRemoveAuditDevice(vm, &detach, rc == -2);
+
         if (rc == -2)
             ret = qemuDomainRemoveDevice(driver, vm, &detach);
-        if (virDomainObjIsActive(vm))
-            qemuDomainRemoveAuditDevice(vm, &detach, false);
+
         goto cleanup;
     }
 
