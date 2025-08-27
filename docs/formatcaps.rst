@@ -97,6 +97,50 @@ The ``<host/>`` element consists of the following child elements:
    parse this element. In contrast with the former elements, this is repeated
    for each security model the libvirt daemon currently supports.
 
+Host CPU model and features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As described previously in this section, libvirt exposes to
+users the list of Host CPU features. Libvirt has a special way to
+expose this list: Instead of providing the full (and thereby often
+very long) set of features, libvirt specifies a CPU model as
+baseline and additional features on top of it (as can be seen in
+`Examples`_ where the baseline is ``Skylake-Client-noTSX-IBRS``).
+
+The ideal case would be that the baseline CPU model definition matches
+exactly the CPU present in the system, and no additional feature is
+needed to express the capabilities of the CPU. For example, if you are
+running on a Server CPU you bought as ``Icelake`` type, the returned
+CPU model name could be ``Icelake-Server``. However, this ideal
+situation rarely happens, for two main reasons:
+
+- Manufacturers do not ship a single type of CPU under a given name,
+  there are various different SKUs with different features under the
+  same name. Yet it is not practical to have a database listing all of
+  those variants.
+
+- Some features might be in the hardware but unavailable for various
+  reasons (BIOS and kernel configuration, disabled for security,
+  ...). One typical example where this situation happens is related to
+  the `TSX mitigation <https://docs.kernel.org/arch/x86/tsx_async_abort.html>`__.
+  As a mitigation to the TAA side channel attack, the Linux kernel disables
+  by default TSX and its 2 features, ``rtm`` and ``hle``. Since many Linux
+  distributions keep this safer default behavior, these 2 features appear
+  as missing.
+
+Because for backward compatibility reasons, host capabilities cannot
+list features that would need to be removed from the baseline model to
+describe the host CPU, libvirt has to often use a rather old CPU
+model, for example, ``Broadwell`` rather than ``Icelake``. Therefore,
+users *should not* expect the reported CPU model name to have any
+implications other than that of a named baseline to build the complete
+available feature set of the Host CPU.
+
+`Domain capabilities <formatdomaincaps.html#cpu-configuration>`_ do
+not have such limitation, and the ``host-model`` CPU definition would
+show the correct CPU model in almost all cases.
+
+
 Guest capabilities
 ~~~~~~~~~~~~~~~~~~
 
