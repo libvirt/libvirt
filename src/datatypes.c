@@ -349,23 +349,16 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virNetworkClass)))
-        goto error;
-
+    ret = virObjectNew(virNetworkClass);
     ret->name = g_strdup(name);
-
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 /**
@@ -410,20 +403,14 @@ virGetNetworkPort(virNetworkPtr net, const unsigned char *uuid)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckNetworkGoto(net, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckNetworkReturn(net, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virNetworkPortClass)))
-        goto error;
-
+    ret = virObjectNew(virNetworkPortClass);
     ret->net = virObjectRef(net);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 /**
@@ -468,26 +455,19 @@ virGetInterface(virConnectPtr conn, const char *name, const char *mac)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
 
     /* a NULL mac from caller is okay. Treat it as blank */
     if (mac == NULL)
        mac = "";
 
-    if (!(ret = virObjectNew(virInterfaceClass)))
-        goto error;
-
+    ret = virObjectNew(virInterfaceClass);
     ret->name = g_strdup(name);
     ret->mac = g_strdup(mac);
-
     ret->conn = virObjectRef(conn);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 /**
@@ -535,15 +515,12 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virStoragePoolClass)))
-        goto error;
-
+    ret = virObjectNew(virStoragePoolClass);
     ret->name = g_strdup(name);
-
     ret->conn = virObjectRef(conn);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
@@ -552,10 +529,6 @@ virGetStoragePool(virConnectPtr conn, const char *name,
     ret->privateDataFreeFunc = freeFunc;
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -609,18 +582,15 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(pool, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(key, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(pool, NULL);
+    virCheckNonNullArgReturn(name, NULL);
+    virCheckNonNullArgReturn(key, NULL);
 
-    if (!(ret = virObjectNew(virStorageVolClass)))
-        goto error;
-
+    ret = virObjectNew(virStorageVolClass);
     ret->pool = g_strdup(pool);
     ret->name = g_strdup(name);
     ret->key = g_strdup(key);
-
     ret->conn = virObjectRef(conn);
 
     /* set driver specific data */
@@ -628,10 +598,6 @@ virGetStorageVol(virConnectPtr conn, const char *pool, const char *name,
     ret->privateDataFreeFunc = freeFunc;
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -679,20 +645,14 @@ virGetNodeDevice(virConnectPtr conn, const char *name)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
 
-    if (!(ret = virObjectNew(virNodeDeviceClass)))
-        goto error;
-
+    ret = virObjectNew(virNodeDeviceClass);
     ret->name = g_strdup(name);
-
     ret->conn = virObjectRef(conn);
-    return ret;
 
- error:
-    virObjectUnref(ret);
-    return NULL;
+    return ret;
 }
 
 
@@ -738,23 +698,16 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virSecretClass)))
-        return NULL;
-
+    ret = virObjectNew(virSecretClass);
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
     ret->usageID = g_strdup(NULLSTR_EMPTY(usageID));
-
     ret->conn = virObjectRef(conn);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 /**
@@ -800,9 +753,7 @@ virGetStream(virConnectPtr conn)
 
     virCheckConnectReturn(conn, NULL);
 
-    if (!(ret = virObjectNew(virStreamClass)))
-        return NULL;
-
+    ret = virObjectNew(virStreamClass);
     ret->conn = virObjectRef(conn);
 
     return ret;
@@ -850,24 +801,16 @@ virGetNWFilter(virConnectPtr conn, const char *name,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(name, error);
-    virCheckNonNullArgGoto(uuid, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(name, NULL);
+    virCheckNonNullArgReturn(uuid, NULL);
 
-    if (!(ret = virObjectNew(virNWFilterClass)))
-        goto error;
-
+    ret = virObjectNew(virNWFilterClass);
     ret->name = g_strdup(name);
-
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
-
     ret->conn = virObjectRef(conn);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -915,23 +858,15 @@ virGetNWFilterBinding(virConnectPtr conn, const char *portdev,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckConnectGoto(conn, error);
-    virCheckNonNullArgGoto(portdev, error);
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgReturn(portdev, NULL);
 
-    if (!(ret = virObjectNew(virNWFilterBindingClass)))
-        goto error;
-
+    ret = virObjectNew(virNWFilterBindingClass);
     ret->portdev = g_strdup(portdev);
-
     ret->filtername = g_strdup(filtername);
-
     ret->conn = virObjectRef(conn);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -977,20 +912,14 @@ virGetDomainCheckpoint(virDomainPtr domain,
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckDomainGoto(domain, error);
-    virCheckNonNullArgGoto(name, error);
+    virCheckDomainReturn(domain, NULL);
+    virCheckNonNullArgReturn(name, NULL);
 
-    if (!(ret = virObjectNew(virDomainCheckpointClass)))
-        goto error;
+    ret = virObjectNew(virDomainCheckpointClass);
     ret->name = g_strdup(name);
-
     ret->domain = virObjectRef(domain);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -1033,20 +962,14 @@ virGetDomainSnapshot(virDomainPtr domain, const char *name)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
-    virCheckDomainGoto(domain, error);
-    virCheckNonNullArgGoto(name, error);
+    virCheckDomainReturn(domain, NULL);
+    virCheckNonNullArgReturn(name, NULL);
 
-    if (!(ret = virObjectNew(virDomainSnapshotClass)))
-        goto error;
+    ret = virObjectNew(virDomainSnapshotClass);
     ret->name = g_strdup(name);
-
     ret->domain = virObjectRef(domain);
 
     return ret;
-
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 
@@ -1171,18 +1094,13 @@ virAdmGetServer(virAdmConnectPtr conn, const char *name)
     virAdmServerPtr ret = NULL;
 
     if (virDataTypesInitialize() < 0)
-        goto error;
+        return NULL;
 
-    if (!(ret = virObjectNew(virAdmServerClass)))
-        goto error;
+    ret = virObjectNew(virAdmServerClass);
     ret->name = g_strdup(name);
-
     ret->conn = virObjectRef(conn);
 
     return ret;
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 static void
@@ -1202,20 +1120,15 @@ virAdmGetClient(virAdmServerPtr srv, const unsigned long long id,
     virAdmClientPtr ret = NULL;
 
     if (virDataTypesInitialize() < 0)
-        goto error;
+        return NULL;
 
-    if (!(ret = virObjectNew(virAdmClientClass)))
-        goto error;
-
+    ret = virObjectNew(virAdmClientClass);
     ret->id = id;
     ret->timestamp = timestamp;
     ret->transport = transport;
     ret->srv = virObjectRef(srv);
 
     return ret;
- error:
-    virObjectUnref(ret);
-    return NULL;
 }
 
 static void
