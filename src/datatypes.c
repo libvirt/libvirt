@@ -798,6 +798,8 @@ virGetStream(virConnectPtr conn)
     if (virDataTypesInitialize() < 0)
         return NULL;
 
+    virCheckConnectReturn(conn, NULL);
+
     if (!(ret = virObjectNew(virStreamClass)))
         return NULL;
 
