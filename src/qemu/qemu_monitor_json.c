@@ -6595,12 +6595,27 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitor *mon,
 }
 
 
+struct _qemuMonitorJSONCPUPropsFilterData {
+    qemuMonitor *mon;
+    const char *cpuQOMPath;
+};
+
 static int
-qemuMonitorJSONCPUPropsFilter(const char *name G_GNUC_UNUSED,
+qemuMonitorJSONCPUPropsFilter(const char *name,
                               virJSONValue *propData,
-                              void *data G_GNUC_UNUSED)
+                              void *opaque)
 {
+    qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
+    struct _qemuMonitorJSONCPUPropsFilterData *data = opaque;
+
     if (STRNEQ_NULLABLE(virJSONValueObjectGetString(propData, "type"), "bool"))
+        return 1;
+
+    if (qemuMonitorJSONGetObjectProperty(data->mon, data->cpuQOMPath,
+                                         name, &prop) < 0)
+        return -1;
+
+    if (!prop.val.b)
         return 1;
 
     return 0;
@@ -6614,6 +6629,10 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    struct _qemuMonitorJSONCPUPropsFilterData filterData = {
+        .mon = mon,
+        .cpuQOMPath = cpuQOMPath,
+    };
 
     *props = NULL;
 
@@ -6629,7 +6648,7 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
         return 0;
 
     return qemuMonitorJSONParsePropsList(cmd, reply,
-                                         qemuMonitorJSONCPUPropsFilter, NULL,
+                                         qemuMonitorJSONCPUPropsFilter, &filterData,
                                          props);
 }
 
@@ -6640,7 +6659,6 @@ qemuMonitorJSONGetCPUData(qemuMonitor *mon,
                           qemuMonitorCPUFeatureTranslationCallback translate,
                           virCPUData *data)
 {
-    qemuMonitorJSONObjectProperty prop = { .type = QEMU_MONITOR_OBJECT_PROPERTY_BOOLEAN };
     g_auto(GStrv) props = NULL;
     char **p;
 
@@ -6649,12 +6667,6 @@ qemuMonitorJSONGetCPUData(qemuMonitor *mon,
 
     for (p = props; p && *p; p++) {
         const char *name = *p;
-
-        if (qemuMonitorJSONGetObjectProperty(mon, cpuQOMPath, name, &prop) < 0)
-            return -1;
-
-        if (!prop.val.b)
-            continue;
 
         if (translate)
             name = translate(data->arch, name);
