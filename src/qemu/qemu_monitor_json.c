@@ -5837,10 +5837,21 @@ int qemuMonitorJSONSetObjectProperty(qemuMonitor *mon,
 #undef MAKE_SET_CMD
 
 
+/* A filter callback for qemuMonitorJSONParsePropsList.
+ *
+ * Returns 0 if the property should be included in the list,
+ *         1 if the property should be ignored,
+ *        -1 on error.
+ */
+typedef int (*qemuMonitorJSONPropsListFilter)(const char *name,
+                                              virJSONValue *propData,
+                                              void *data);
+
 static int
 qemuMonitorJSONParsePropsList(virJSONValue *cmd,
                               virJSONValue *reply,
-                              const char *type,
+                              qemuMonitorJSONPropsListFilter propFilter,
+                              void *filterData,
                               char ***props)
 {
     virJSONValue *data;
@@ -5859,19 +5870,25 @@ qemuMonitorJSONParsePropsList(virJSONValue *cmd,
 
     for (i = 0; i < n; i++) {
         virJSONValue *child = virJSONValueArrayGet(data, i);
-        const char *tmp;
+        const char *name = virJSONValueObjectGetString(child, "name");
 
-        if (type &&
-            STRNEQ_NULLABLE(virJSONValueObjectGetString(child, "type"), type))
-            continue;
-
-        if (!(tmp = virJSONValueObjectGetString(child, "name"))) {
+        if (!name) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("reply data was missing 'name'"));
             return -1;
         }
 
-        proplist[count++] = g_strdup(tmp);
+        if (propFilter) {
+            int rc = propFilter(name, child, filterData);
+
+            if (rc < 0)
+                return -1;
+
+            if (rc != 0)
+                continue;
+        }
+
+        proplist[count++] = g_strdup(name);
     }
 
     *props = g_steal_pointer(&proplist);
@@ -5954,7 +5971,7 @@ qemuMonitorJSONGetObjectProps(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
         return 0;
 
-    return qemuMonitorJSONParsePropsList(cmd, reply, NULL, props);
+    return qemuMonitorJSONParsePropsList(cmd, reply, NULL, NULL, props);
 }
 
 
@@ -6579,6 +6596,18 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitor *mon,
 
 
 static int
+qemuMonitorJSONCPUPropsFilter(const char *name G_GNUC_UNUSED,
+                              virJSONValue *propData,
+                              void *data G_GNUC_UNUSED)
+{
+    if (STRNEQ_NULLABLE(virJSONValueObjectGetString(propData, "type"), "bool"))
+        return 1;
+
+    return 0;
+}
+
+
+static int
 qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
                                 const char *cpuQOMPath,
                                 char ***props)
@@ -6599,7 +6628,9 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
         return 0;
 
-    return qemuMonitorJSONParsePropsList(cmd, reply, "bool", props);
+    return qemuMonitorJSONParsePropsList(cmd, reply,
+                                         qemuMonitorJSONCPUPropsFilter, NULL,
+                                         props);
 }
 
 
