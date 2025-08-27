@@ -126,7 +126,7 @@ it.
 
     base.raw <-- overlay1.qcow2 (live QEMU)
 
-  .. note::
+   .. note::
     Above, if you have QEMU guest agent installed in your virtual
     machine, use the ``--quiesce`` option with ``virsh
     snapshot-create-as [...]`` to ensure you have a consistent disk
