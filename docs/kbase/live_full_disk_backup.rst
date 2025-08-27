@@ -13,7 +13,7 @@ that using libvirt's APIs.  This method involves concepts: the notion of
 `backing chains <backing_chains.html>`_,
 `QCOW2 overlays
 <https://www.qemu.org/docs/master/interop/live-block-operations.html#disk-image-backing-chain-notation>`_,
-and a special operation called "active block-commit", which allows
+and a special operation called *active block-commit*, which allows
 live-merging an overlay disk image into its backing file.
 
 Two kinds of backup: "push" and "pull"
@@ -43,7 +43,7 @@ This document covers only the full backups using the "push" mode.
 Full disk backup using "push" mode
 ==================================
 
-The below approach uses the modern backup API, virDomainBackupBegin().
+The below approach uses the modern backup API, ``virDomainBackupBegin()``.
 This requires libvirt-7.2.0 and QEMU-4.2, or higher versions.
 
 #. Start the guest::
@@ -92,8 +92,13 @@ This is the alternative in case you cannot use libvirt-7.2.0 and
 QEMU-4.2 for some reason.  But this assumes you're using *at least* QEMU
 2.1 and libvirt-1.2.9.
 
+.. warning::
+   We strongly suggest that the backup api (``virsh backup-begin``) is used
+   as it doesn't require deleting files as deleting a wrong file can lead
+   to data loss.
+
 This backup approach is slightly more involved, and predates the
-virDomainBackupBegin() API: Assuming a guest with a single disk image,
+``virDomainBackupBegin()`` API: Assuming a guest with a single disk image,
 create a temporary live QCOW2 overlay (commonly called as "external
 snapshot") to track the live guest writes.  Then backup the original
 disk image while the guest (live QEMU) keeps writing to the temporary
@@ -120,7 +125,7 @@ it.
 
     $ virsh snapshot-create-as --domain vm1 overlay1 \
         --diskspec vda,file=/var/lib/libvirt/images/overlay1.qcow2 \
-        --disk-only
+        --disk-only --no-metadata
 
    The disk image chain looks as follows::
 
@@ -141,8 +146,7 @@ it.
 #. Now, take a backup the original image, ``base.raw``, to a different
    location using ``cp`` or ``rsync``::
 
-    $ cp /var/lib/libvirt/images/base.raw
-        /export/backups/copy1_base.raw
+    $ cp /var/lib/libvirt/images/base.raw /export/backups/copy1_base.raw
 
     # Or:
 
@@ -156,7 +160,7 @@ it.
     $ virsh domblklist vm1
     Target     Source
     ------------------------------------------------
-    vda        vda,file=/var/lib/libvirt/images/overlay1.qcow2
+    vda        /var/lib/libvirt/images/overlay1.qcow2
 
 #. Once the backup of the original image completes, now perform the
    "active block-commit" to live-merge the contents of
