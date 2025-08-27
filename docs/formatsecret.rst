@@ -321,9 +321,10 @@ be omitted if the file contents are base64-encoded.
    # virsh secret-set-value 6dd3e4a5-1d76-44ce-961f-f119f5aad935 --file secretinfile --plain
    Secret value set
 
-**WARNING** The following approach is **insecure** and deprecated. The secret
-can also be set via an argument. Note that other users may see the actual secret
-in the process listing! The secret must be base64 encoded.
+.. warning::
+   The following approach is **insecure** and deprecated. The secret
+   can also be set via an argument. Note that other users may see the actual
+   secret in the process listing! The secret must be base64 encoded.
 
 ::
 
