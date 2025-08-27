@@ -22,7 +22,22 @@ v11.7.0 (unreleased)
     Users can now configure the verbosity of Cloud Hypervisor by setting
     the "log_level" option in ch.conf
 
+  * bhyve: experimental NAT networking support
+
+    The bhyve driver now has experimental NAT networking support
+    using the Packet Filter (pf) firewall.
+
+  * bhyve: domain statistics reporting
+
+    The bhyve driver now supports querying domain block, interface,
+    and memory statistics. Not all statistics fields are supported though.
+
 * **Improvements**
+
+  * bhyve: improve 'efi' configuration autofill
+
+    When a domain is configured with ``<os firmware='efi'/>``, NVRAM configuration
+    is now autofilled.
 
 * **Bug fixes**
 
