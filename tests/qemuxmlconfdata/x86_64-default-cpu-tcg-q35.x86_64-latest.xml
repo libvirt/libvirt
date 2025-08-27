@@ -1,11 +1,11 @@
-<domain type='kvm'>
+<domain type='qemu'>
   <name>guest</name>
   <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>
   <vcpu placement='static'>4</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-q35-4.2'>hvm</type>
+    <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
