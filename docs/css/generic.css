@@ -91,6 +91,32 @@ pre {
     padding: 1em;
 }
 
+.admonition-title {
+    font-size: 110%;
+    font-weight: bold;
+}
+
+div.admonition,
+aside.admonition {
+    border: 1px solid #999999;
+}
+
+.admonition p {
+    padding: 0 1em 0 1em;
+}
+
+.note .admonition-title  {
+    margin: 0;
+    padding: 0.5em 1em 0.5em 1em;
+    background: #6cb5ac;
+}
+
+.warning .admonition-title {
+    margin: 0;
+    padding: 0.5em 1em 0.5em 1em;
+    background: #ffcc44;
+}
+
 a {
     color: rgb(0, 95, 97);
 }
