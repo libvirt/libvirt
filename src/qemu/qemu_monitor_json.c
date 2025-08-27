@@ -5848,28 +5848,23 @@ typedef int (*qemuMonitorJSONPropsListFilter)(const char *name,
                                               void *data);
 
 static int
-qemuMonitorJSONParsePropsList(virJSONValue *cmd,
-                              virJSONValue *reply,
+qemuMonitorJSONParsePropsList(virJSONValue *array,
                               qemuMonitorJSONPropsListFilter propFilter,
                               void *filterData,
                               char ***props)
 {
-    virJSONValue *data;
     g_auto(GStrv) proplist = NULL;
     size_t n = 0;
     size_t count = 0;
     size_t i;
 
-    if (!(data = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
-        return -1;
-
-    n = virJSONValueArraySize(data);
+    n = virJSONValueArraySize(array);
 
     /* null-terminated list */
     proplist = g_new0(char *, n + 1);
 
     for (i = 0; i < n; i++) {
-        virJSONValue *child = virJSONValueArrayGet(data, i);
+        virJSONValue *child = virJSONValueArrayGet(array, i);
         const char *name = virJSONValueObjectGetString(child, "name");
 
         if (!name) {
@@ -5957,6 +5952,7 @@ qemuMonitorJSONGetObjectProps(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *array;
 
     *props = NULL;
 
@@ -5971,7 +5967,10 @@ qemuMonitorJSONGetObjectProps(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
         return 0;
 
-    return qemuMonitorJSONParsePropsList(cmd, reply, NULL, NULL, props);
+    if (!(array = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
+        return -1;
+
+    return qemuMonitorJSONParsePropsList(array, NULL, NULL, props);
 }
 
 
@@ -6629,6 +6628,7 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *array;
     struct _qemuMonitorJSONCPUPropsFilterData filterData = {
         .mon = mon,
         .cpuQOMPath = cpuQOMPath,
@@ -6647,9 +6647,11 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
     if (qemuMonitorJSONHasError(reply, "DeviceNotFound"))
         return 0;
 
-    return qemuMonitorJSONParsePropsList(cmd, reply,
-                                         qemuMonitorJSONCPUPropsFilter, &filterData,
-                                         props);
+    if (!(array = qemuMonitorJSONGetReply(cmd, reply, VIR_JSON_TYPE_ARRAY)))
+        return -1;
+
+    return qemuMonitorJSONParsePropsList(array, qemuMonitorJSONCPUPropsFilter,
+                                         &filterData, props);
 }
 
 
