@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-08-25 08:08+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"PO-Revision-Date: 2025-08-26 22:53+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -36571,7 +36571,7 @@ msgid ""
 msgstr ""
 
 msgid "set a secret value"
-msgstr ""
+msgstr "Define um valor secreto."
 
 msgid "set domain to be paused on next start"
 msgstr ""
@@ -37279,7 +37279,7 @@ msgid "stream is closed"
 msgstr ""
 
 msgid "stream is not open"
-msgstr ""
+msgstr "Fluxo não está aberto"
 
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
@@ -40110,7 +40110,7 @@ msgid "updating device type '%1$s' is unsupported"
 msgstr ""
 
 msgid "upload file contents to a volume"
-msgstr ""
+msgstr "Enviar conteúdos de ficheiro para um volume"
 
 msgid "upper boundary for worker thread pool"
 msgstr ""
