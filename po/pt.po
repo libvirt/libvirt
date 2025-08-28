@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-08-26 22:53+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-08-28 07:01+0000\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -3130,7 +3130,7 @@ msgid "Cannot determine system clock HZ"
 msgstr "Não pode determinar HZ do relógio do sistema"
 
 msgid "Cannot determine the default interface"
-msgstr ""
+msgstr "Não posso determinar a interface predefinida"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Não pode desactivar bandeira close-on-exec"
@@ -10796,7 +10796,7 @@ msgstr "Prioridade de relatório inválida '%1$s' para saída de relatório '%2$
 
 #, c-format
 msgid "Invalid log_level %1$u"
-msgstr ""
+msgstr "Nível de log inválido %1$u"
 
 #, c-format
 msgid "Invalid lookup from '%1$s'"
@@ -13601,7 +13601,7 @@ msgid "Only EFI firmware permits NVRAM"
 msgstr "Apenas firmware EFI permite NVRAM"
 
 msgid "Only IPv4 is supported"
-msgstr ""
+msgstr "Apenas IPv4 é suportado"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "Apenas endereços IPv4 ou IPv6 podem ser usados com um prefixo"
@@ -14755,7 +14755,7 @@ msgid "Reconnected to the hypervisor"
 msgstr "Re-ligado ao hipervisor"
 
 msgid "Recreated"
-msgstr ""
+msgstr "Recriado"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -17293,7 +17293,7 @@ msgstr "Aceleração de placa de vídeo apontada não corresponde a fonte"
 
 #, c-format
 msgid "Target video card edid %1$s does not match source %2$s"
-msgstr ""
+msgstr "Edid de placa de vídeo alvo %1$s não corresponde a fonte %2$s"
 
 #, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
@@ -18358,7 +18358,7 @@ msgid "UUID is not supported for NVDIMM device"
 msgstr "UUID não é suportado para dispositivo NVDIMM"
 
 msgid "UUID mismatch between <hwuuid> and <sysinfo>"
-msgstr ""
+msgstr "Incompatibilidade de UUID entre <hwuuid> e <sysinfo>"
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "Incompatibilidade de UUID entre <uuid> e <sysinfo>"
@@ -19165,7 +19165,7 @@ msgid "Unable to get daemon logging outputs information"
 msgstr "Incapaz de obter informação dos resultados de registo do daemon"
 
 msgid "Unable to get default interface name"
-msgstr ""
+msgstr "Incapaz de obter nome de interface predefinida"
 
 msgid "Unable to get device master from netlink on this platform"
 msgstr "Incapaz de obter dispositivo mestre de netlink nesta plataforma"
@@ -19760,7 +19760,7 @@ msgid "Unable to query process ID start time"
 msgstr "Incapaz de consultar hora de arranque de ID de processo"
 
 msgid "Unable to query process stats"
-msgstr ""
+msgstr "Incapaz de consultar estatísticas de processo"
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -25901,16 +25901,22 @@ msgid ""
 "define an inactive persistent physical host interface or modify an existing "
 "persistent one from an XML file"
 msgstr ""
+"define uma interface de máquina física persistente inactiva ou modifica uma "
+"persistente existente a partir de um ficheiro XML"
 
 msgid ""
 "define an inactive persistent storage pool or modify an existing persistent "
 "one from an XML file"
 msgstr ""
+"define um pool de armazenamento persistente inactivo ou modifica um "
+"persistente existente a partir de um ficheiro XML"
 
 msgid ""
 "define an inactive persistent virtual network or modify an existing "
 "persistent one from an XML file"
 msgstr ""
+"define uma rede virtual persistente inactiva ou modifica uma persistente "
+"existente a partir de um ficheiro XML"
 
 msgid "define or modify a secret from an XML file"
 msgstr "definir ou modificar um segredo a partir dum ficheiro XML"
@@ -25957,13 +25963,17 @@ msgid "delete current snapshot"
 msgstr "apaga instantâneo atual"
 
 msgid "delete files that were successfully committed"
-msgstr ""
+msgstr "apaga ficheiros que foram cometidos com sucesso"
 
 msgid "delete only libvirt metadata, leaving checkpoint contents behind"
 msgstr ""
+"apaga apenas metadados do libvirt, deixando conteúdos do ponto de "
+"verificação para trás"
 
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
 msgstr ""
+"apaga apenas metadados do libvirt, deixando conteúdos do instantâneo para "
+"trás"
 
 msgid "delete snapshot and all children"
 msgstr "apaga instantâneo e todos os filhos"
@@ -25971,11 +25981,15 @@ msgstr "apaga instantâneo e todos os filhos"
 msgid ""
 "delete snapshots associated with volume (must be supported by storage driver)"
 msgstr ""
+"apaga instantâneos associados ao volume (tem de ser suportado pelo "
+"controlador de armazenamento)"
 
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
 msgstr ""
+"apaga instantâneos associados ao volume(s), requer --remove-all-storage (tem "
+"de ser suportado pelo controlador de armazenamento)"
 
 msgid "delete the specified network port"
 msgstr "apagar o porto de rede especificado"
@@ -25983,34 +25997,43 @@ msgstr "apagar o porto de rede especificado"
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
 msgstr ""
+"apagar instantâneo externo que tem instantâneo interno como pai não é "
+"suportado"
 
 msgid ""
 "deletion of active external snapshot that is not a leaf snapshot is not "
 "supported"
 msgstr ""
+"apagar de instantâneo externo que activo que não é um instantâneo folha não "
+"é suportado"
 
 msgid "deletion of external and internal children disk snapshots not supported"
 msgstr ""
+"apagar de instantâneos de disco filho externo ou interno não é suportado"
 
 msgid "deletion of external children disk snapshots not supported"
-msgstr ""
+msgstr "apagar de instantâneos de disco filho externo não é suportado"
 
 msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
 msgstr ""
+"apagar de instantâneo de disco externo com múltiplos instantâneos filhos não "
+"é suportado"
 
 msgid "deletion of external disk snapshots with children not supported"
-msgstr ""
+msgstr "apagar de instantâneos de disco externo com filhos não é suportado"
 
 #, c-format
 msgid "deletion of internal snapshot '%1$s' job failed: %2$s"
-msgstr ""
+msgstr "trabalho de apagar instantâneo interno '%1$s' falhou: %2$s"
 
 msgid ""
 "deletion of non-leaf external snapshot that is not in active chain is not "
 "supported"
 msgstr ""
+"apagar de instantâneo externo não-folha que não está na cadeia activa não é "
+"suportado"
 
 #, c-format
 msgid "deprecated configuration: %1$s"
@@ -26061,39 +26084,43 @@ msgstr "desanexa dispositivo de nó do seu controlador de dispositivo"
 
 #, c-format
 msgid "detaching device type '%1$s' is unsupported"
-msgstr ""
+msgstr "desanexar tipo de dispositivo '%1$s' não é suportado"
 
 msgid "detaching network device from VM is unsupported"
-msgstr ""
+msgstr "desanexar dispositivo de rede de VM não é suportado"
 
 msgid ""
 "detaching of <console/> is unsupported. Try corresponding <serial/> instead"
 msgstr ""
+"desanexar de <console/> não é suportado. Tente corresponder <serial/> em vez "
+"disto"
 
 msgid "detaching serial console is not supported"
-msgstr ""
+msgstr "desanexar consola série não é suportado"
 
 msgid "detailed domain vcpu information"
 msgstr "informação de vcpu de domínio detalhada"
 
 msgid "detect_zeroes is not supported with vhostuser disk"
-msgstr ""
+msgstr "detect_zeroes não é suportado com disco vhostuser"
 
 #, c-format
 msgid "dev->id buffer overflow: %1$d %2$d"
-msgstr ""
+msgstr "buffer dev->id transbordou: %1$d %2$d"
 
 #, c-format
 msgid "dev->id buffer overflow: %1$s %2$s"
-msgstr ""
+msgstr "buffer dev->id transbordou: %1$s %2$s"
 
 #, c-format
 msgid "dev->name buffer overflow: %1$.3d:%2$.3d"
-msgstr ""
+msgstr "buffer dev->name transbordou: %1$.3d:%2$.3d"
 
 #, c-format
 msgid "device %1$s iommu_group symlink %2$s has invalid group number %3$s"
 msgstr ""
+"link simbólico %2$s de dispositivo %1$s de grupo iommu tem número de grupo "
+"inválido %3$s"
 
 #, c-format
 msgid "device %1$s is already in use"
@@ -26105,39 +26132,41 @@ msgstr "dispositivo %1$s não é um dispositivo PCI"
 
 #, c-format
 msgid "device '%1$s' in network '%2$s' is not an SR-IOV Virtual Function"
-msgstr ""
+msgstr "dispositivo '%1$s' na rede '%2$s' não é uma Função Virtual SR-IOV"
 
 #, c-format
 msgid "device API '%1$s' not supported yet"
-msgstr ""
+msgstr "API de dispositivo '%1$s' ainda não é suportado"
 
 msgid "device alias"
-msgstr ""
+msgstr "nome alternativo de dispositivo"
 
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
+"nome alternativo de dispositivo não encontrado: não posso definir estado de "
+"ligação para em baixo"
 
 msgid "device cannot be detached: device is busy"
-msgstr ""
+msgstr "dispositivo não pode ser desanexado: dispositivo ocupado"
 
 msgid "device is already in the domain configuration"
-msgstr ""
+msgstr "dispositivo já está na configuração do domínio"
 
 msgid "device key"
-msgstr ""
+msgstr "chave de dispositivo"
 
 msgid "device list is not an object"
-msgstr ""
+msgstr "lista de dispositivos não é um objeto"
 
 #, c-format
 msgid "device modalias file %1$s content has improper format"
-msgstr ""
+msgstr "conteúdo do ficheiro %1$s modalias de dispositivo tem formato impróprio"
 
 msgid "device name"
-msgstr ""
+msgstr "nome de dispositivo"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
-msgstr ""
+msgstr "nome de dispositivo ou par wwn em formato 'wwnn,wwpn'"
 
 msgid "device not found"
 msgstr "dispositivo não encontrado"
@@ -26151,82 +26180,88 @@ msgstr "dispositivo não presente na configuração do domínio"
 
 #, c-format
 msgid "device of type '%1$s' has no device info"
-msgstr ""
+msgstr "dispositivo do tipo '%1$s' não tem informação de dispositivo"
 
 #, c-format
 msgid "device path '%1$s' doesn't exist"
-msgstr ""
+msgstr "caminho de dispositivo '%1$s' não existe"
 
 msgid "device to set threshold for"
-msgstr ""
+msgstr "dispositivo para definir limiar para"
 
 #, c-format
 msgid "device type '%1$s' cannot be attached"
-msgstr ""
+msgstr "tipo de dispositivo '%1$s' não pode ser anexado"
 
 #, c-format
 msgid "device type '%1$s' cannot be detached"
-msgstr ""
+msgstr "tipo de dispositivo '%1$s' não pode ser desanexado"
 
 #, c-format
 msgid "device type '%1$s' cannot be updated"
-msgstr ""
+msgstr "tipo de dispositivo '%1$s' não pode ser atualizado"
 
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
-msgstr ""
+msgstr "tipo de dispositivo '%1$s' não pode ser desligado a quente"
 
 msgid "devices cgroup isn't mounted"
-msgstr ""
+msgstr "cgroup de dispositivos não está montado"
 
 #, c-format
 msgid "dhcp is supported only for a single %1$s address on each network"
-msgstr ""
+msgstr "dhcp é suportado apenas para um único endereço %1$s em cada rede"
 
 msgid "dhcp ranges cannot be modified, only added or deleted"
-msgstr ""
+msgstr "gamas dhcp não podem ser modificadas, apenas adicionadas ou apagadas"
 
 #, c-format
 msgid "different iotunes for disks %1$s and %2$s"
-msgstr ""
+msgstr "iotunes diferentes para discos %1$s e %2$s"
 
 msgid "dimm memory info data is missing 'id'"
-msgstr ""
+msgstr "dados de informação de memória dimm tem em falta 'id'"
 
 msgid "dir"
-msgstr ""
+msgstr "dir"
 
 msgid "direct migration"
 msgstr "migração direta"
 
 msgid "direct migration is not supported by the source host"
-msgstr ""
+msgstr "migração direta não é suportada pelo anfitrião fonte"
 
 #, c-format
 msgid ""
 "direct setting of the vlan tag is not allowed for hostdev devices using %1$s "
 "mode"
 msgstr ""
+"definição direta da etiqueta vlan não é permitida para dispositivos hostdev "
+"a usar modo %1$s"
 
 msgid "directory to switch to (default: home or else root)"
-msgstr ""
+msgstr "directório para mudar para (predefinição: home ou então root)"
 
 msgid ""
 "dirty page rate calculation mode, either of these 3 options 'page-sampling, "
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
+"modo de cálculo de taxa de páginas sujas, uma destas 3 opções 'page-"
+"sampling, dirty-bitmap, dirty-ring' pode ser especificada."
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
-msgstr ""
+msgstr "anel de sujidade tem de ser potência de 2 e gamas [1024, 65536]"
 
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%1$s' differs: source: '%2$d', destination: "
 "'%3$d'"
 msgstr ""
+"tamanho de anel sujo da funcionalidade KVM '%1$s' difere: fonte: '%2$d'. "
+"destino: '%3$d'"
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
-msgstr ""
+msgstr "modo de cálculo dirty-ring requer a funcionalidade dirty-ring activa."
 
 msgid "disable"
 msgstr "desativar"
@@ -26235,27 +26270,27 @@ msgid "disable autostarting"
 msgstr "desactivar o arranque automático"
 
 msgid "disable cpus specified by cpulist"
-msgstr ""
+msgstr "desactiva cpus especificadas pela cpulist"
 
 msgid "disable cpus specified by cpumap"
-msgstr ""
+msgstr "desactiva cpus especificadas por cpumap"
 
 msgid "disabled"
 msgstr "desativado"
 
 #, c-format
 msgid "discard is not supported for model '%1$s'"
-msgstr ""
+msgstr "descartar não é suportado para modelo '%1$s'"
 
 msgid "discard is not supported for nvdimms"
-msgstr ""
+msgstr "descartar não é suportado para nvdimms"
 
 msgid "discard is not supported with vhostuser disk"
-msgstr ""
+msgstr "descartar não é suportado com disco vhostuser"
 
 #, c-format
 msgid "discarding %1$llu bytes failed on RBD image %2$s at offset %3$llu"
-msgstr ""
+msgstr "o descartar de %1$llu bytes falhou em imagem RBD %2$s no desvio %3$llu"
 
 msgid "disconnect"
 msgstr "desligar"
@@ -26264,7 +26299,7 @@ msgid "disconnected"
 msgstr "desligado"
 
 msgid "discover potential storage pool sources"
-msgstr ""
+msgstr "descobre potenciais fontes de pool de armazenamento"
 
 #, c-format
 msgid "disk %1$s does not have an active block job"
@@ -26272,7 +26307,7 @@ msgstr "disco '%1$s' não tem um trabalho de bloco activo"
 
 #, c-format
 msgid "disk %1$s has no source file to be committed"
-msgstr ""
+msgstr "disco %1$s não tem ficheiro de fonte para ser cometido"
 
 #, c-format
 msgid "disk %1$s not found"
@@ -26284,11 +26319,11 @@ msgstr "disco '%1$s' já está em trabalho de bloco activo"
 
 #, c-format
 msgid "disk '%1$s' does not currently have a source assigned"
-msgstr ""
+msgstr "disco '%1$s' não tem atualmente uma fonte atribuída"
 
 #, c-format
 msgid "disk '%1$s' has a blockjob assigned"
-msgstr ""
+msgstr "disco '%1$s' tem um trabalho de bloqueio atribuído"
 
 #, c-format
 msgid "disk '%1$s' has no media"
@@ -26300,7 +26335,7 @@ msgstr "disco '%1$s' está vazio ou é só-leitura"
 
 #, c-format
 msgid "disk '%1$s' must use snapshot mode '%2$s'"
-msgstr ""
+msgstr "disco '%1$s' tem de usar modo de instantâneo '%2$s'"
 
 #, c-format
 msgid "disk '%1$s' not found"
@@ -26315,11 +26350,15 @@ msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the VM definition of "
 "the deleted snapshot"
 msgstr ""
+"disco '%1$s' referenciado pelo instantâneo '%2$s' não encontrado na "
+"definição VM do instantâneo apagado"
 
 #, c-format
 msgid ""
 "disk '%1$s' referenced by snapshot '%2$s' not found in the current definition"
 msgstr ""
+"disco '%1$s' referenciado pelo instantâneo '%2$s' não encontrado na "
+"definição atual"
 
 #, c-format
 msgid "disk '%1$s' specified twice"
@@ -26327,34 +26366,38 @@ msgstr "disco '%1$s' especificado duas vezes"
 
 #, c-format
 msgid "disk '%1$s' was not found in the domain config"
-msgstr ""
+msgstr "disco '%1$s' não foi encontrado na configuração do domínio"
 
 msgid "disk attributes: disk[,checkpoint=type][,bitmap=name]"
-msgstr ""
+msgstr "atributos de disco: disk[,checkpoint=type][,bitmap=name]"
 
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
 msgstr ""
+"atributos de disco: disk[,snapshot=type][,driver=type][,stype=type]"
+"[,file=name]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
-msgstr ""
+msgstr "backend de disco não suportado: %1$s"
 
 #, c-format
 msgid "disk bus '%1$s' cannot be hot unplugged."
-msgstr ""
+msgstr "barramento de disco '%1$s' não pode ser desligado a quente."
 
 #, c-format
 msgid "disk bus '%1$s' cannot be hotplugged."
-msgstr ""
+msgstr "barramento de disco '%1$s' não pode ser desligado."
 
 #, c-format
 msgid "disk bus '%1$s' cannot be updated."
-msgstr ""
+msgstr "barramento de disco '%1$s' não pode ser atualizado."
 
 #, c-format
 msgid "disk bus '%1$s' doesn't support transiend disk backing image sharing"
 msgstr ""
+"barramento de disco '%1$s' não suporta partilha de imagem de apoio de disco "
+"transiente"
 
 msgid "disk device 'lun' doesn't support encryption"
 msgstr "dispositivo de disco 'lun' não suporta encriptação"
@@ -26367,32 +26410,34 @@ msgstr "dispositivo de disco 'lun' tem de usar formato 'raw'"
 
 #, c-format
 msgid "disk device type '%1$s' cannot be detached"
-msgstr ""
+msgstr "tipo de dispositivo de disco '%1$s' não pode ser desanexado"
 
 #, c-format
 msgid "disk device type '%1$s' cannot be hotplugged"
-msgstr ""
+msgstr "tipo de dispositivo de disco '%1$s' não pode ser desligado"
 
 #, c-format
 msgid "disk device='lun' is not supported for bus='%1$s'"
-msgstr ""
+msgstr "dispositivo de disco='lun' não é suportado para barramento='%1$s'"
 
 #, c-format
 msgid "disk device='lun' is not supported for protocol='%1$s'"
-msgstr ""
+msgstr "dispositivo de disco='lun' não é suportado para protocolo='%1$s'"
 
 msgid "disk device='lun' is not supported for usb bus"
-msgstr ""
+msgstr "dispositivo de disco='lun' não é suportado para barramento usb"
 
 msgid "disk device='lun' is only valid for block type disk source"
 msgstr ""
+"dispositivo de disco='lun' é apenas válido para fonte de disco do tipo de "
+"bloco"
 
 msgid "disk does not have an alias"
-msgstr ""
+msgstr "disco não tem um nome alternativo"
 
 #, c-format
 msgid "disk driver %1$s is not supported"
-msgstr ""
+msgstr "controlador de disco %1$s não é suportado"
 
 msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
@@ -26404,7 +26449,7 @@ msgstr ""
 
 #, c-format
 msgid "disk format %1$s is not supported"
-msgstr ""
+msgstr "formato de disco %1$s não é suportado"
 
 #, c-format
 msgid ""
@@ -26414,14 +26459,14 @@ msgstr ""
 
 #, c-format
 msgid "disk image format not supported: %1$s"
-msgstr ""
+msgstr "formato de imagem de disco não suportado: %1$s"
 
 msgid "disk ioeventfd mode supported only for virtio bus"
-msgstr ""
+msgstr "modo ioeventfd de disco suportado apelas para barramento virtio"
 
 #, c-format
 msgid "disk iotune field '%1$s' must be an integer"
-msgstr ""
+msgstr "campo iotune de disco '%1$s' tem de ser um inteiro"
 
 msgid "disk migration was active, but 'remaining' data was missing"
 msgstr ""
@@ -26434,10 +26479,10 @@ msgstr ""
 
 #, c-format
 msgid "disk model '%1$s' not supported for bus '%2$s'"
-msgstr ""
+msgstr "modelo de disco '%1$s' não suportado para barramento '%2$s'"
 
 msgid "disk port address is not supported by tunnelled migration"
-msgstr ""
+msgstr "endereço de porto de disco não é suportado para migração em túnel"
 
 #, c-format
 msgid "disk product is more than %1$zu characters"
@@ -26448,19 +26493,21 @@ msgstr ""
 
 #, c-format
 msgid "disk snapshot image path '%1$s' must be absolute"
-msgstr ""
+msgstr "caminho de imagem de instantâneo de disco '%1$s' tem de ser absoluto"
 
 msgid "disk snapshots not supported yet"
-msgstr ""
+msgstr "instantâneos de disco ainda não suportados"
 
 msgid "disk source can be changed only in removable drives"
 msgstr ""
 
 msgid "disk source mode is only valid when storage pool is of iscsi type"
 msgstr ""
+"modo de fonte de disto é valido apenas quando o pool de armazenamento é do "
+"tipo iscsi"
 
 msgid "disk source path is missing"
-msgstr ""
+msgstr "caminho de fonte de disco está em falta"
 
 #, c-format
 msgid "disk startupPolicy '%1$s' is not allowed for disk of '%2$s' type"
@@ -26471,11 +26518,11 @@ msgstr ""
 
 #, c-format
 msgid "disk target %1$s not found"
-msgstr ""
+msgstr "alvo disco %1$s não encontrado"
 
 #, c-format
 msgid "disk type '%1$s' requires cache mode '%2$s' or '%3$s'"
-msgstr ""
+msgstr "tipo de disco '%1$s' requer modo de cache '%2$s' ou '%3$s'"
 
 #, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
@@ -26500,7 +26547,7 @@ msgid "display"
 msgstr "mostrador"
 
 msgid "display all block devices info"
-msgstr ""
+msgstr "mostra informação de todos os dispositivos de bloco"
 
 msgid "display available free memory for the NUMA cell."
 msgstr "mostrar a memória livre disponível para a célula NUMA."
@@ -26509,19 +26556,19 @@ msgid "display available free pages for the NUMA cell."
 msgstr "mostrar páginas livres disponíveis para a célula NUMA."
 
 msgid "display extended details for pools"
-msgstr ""
+msgstr "mostra detalhes extensos para pools"
 
 msgid "display extended details for volumes"
-msgstr ""
+msgstr "mostra detalhes extensos para volumes"
 
 msgid "display the progress of dump"
-msgstr ""
+msgstr "mostra o progresso do despejar"
 
 msgid "display the progress of migration"
 msgstr "mostra o progresso da migração"
 
 msgid "display the progress of save"
-msgstr ""
+msgstr "mostra o progresso da salva"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
@@ -26796,7 +26843,7 @@ msgid "domain type is not defined"
 msgstr "o tipo de domínio não está definido"
 
 msgid "domain vcpu counts"
-msgstr ""
+msgstr "contagens de vcpu de domínio"
 
 msgid "domain with a managed saved state can't be renamed"
 msgstr ""
@@ -36571,7 +36618,7 @@ msgid ""
 msgstr ""
 
 msgid "set a secret value"
-msgstr "Define um valor secreto."
+msgstr "define um valor secreto"
 
 msgid "set domain to be paused on next start"
 msgstr ""
@@ -37279,7 +37326,7 @@ msgid "stream is closed"
 msgstr ""
 
 msgid "stream is not open"
-msgstr "Fluxo não está aberto"
+msgstr "fluxo não está aberto"
 
 #, c-format
 msgid "stream must match connection of domain '%1$s'"
@@ -40110,7 +40157,7 @@ msgid "updating device type '%1$s' is unsupported"
 msgstr ""
 
 msgid "upload file contents to a volume"
-msgstr "Enviar conteúdos de ficheiro para um volume"
+msgstr "enviar conteúdo de ficheiro para um volume"
 
 msgid "upper boundary for worker thread pool"
 msgstr ""
