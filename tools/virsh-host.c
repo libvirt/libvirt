@@ -743,6 +743,7 @@ typedef enum {
     VIRSH_CPU_IDLE,
     VIRSH_CPU_IOWAIT,
     VIRSH_CPU_INTR,
+    VIRSH_CPU_GUEST,
     VIRSH_CPU_USAGE,
     VIRSH_CPU_LAST
 } virshCPUStats;
@@ -755,6 +756,7 @@ VIR_ENUM_IMPL(virshCPUStats,
               VIR_NODE_CPU_STATS_IDLE,
               VIR_NODE_CPU_STATS_IOWAIT,
               VIR_NODE_CPU_STATS_INTR,
+              VIR_NODE_CPU_STATS_GUEST,
               VIR_NODE_CPU_STATS_UTILIZATION);
 
 const char *virshCPUOutput[] = {
@@ -763,6 +765,7 @@ const char *virshCPUOutput[] = {
     N_("idle:"),
     N_("iowait:"),
     N_("intr:"),
+    N_("guest:"),
     N_("usage:")
 };
 

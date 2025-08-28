@@ -182,7 +182,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
 
-# define LINUX_NB_CPU_STATS 4
+# define LINUX_NB_CPU_STATS 5
 
 int
 virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
@@ -855,6 +855,9 @@ virHostCPUGetStatsLinux(FILE *procstat,
                                       iowait * TICK_TO_NSEC) < 0)
                 return -1;
 
+            if (virHostCPUStatsAssign(&params[4], VIR_NODE_CPU_STATS_GUEST,
+                                      guest * TICK_TO_NSEC) < 0)
+                return -1;
             return 0;
         }
     }

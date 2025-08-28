@@ -4435,7 +4435,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
     return ret;
 }
 
-#define TEST_NB_CPU_STATS 4
+#define TEST_NB_CPU_STATS 5
 
 static int
 testNodeGetCPUStats(virConnectPtr conn G_GNUC_UNUSED,
@@ -4453,7 +4453,7 @@ testNodeGetCPUStats(virConnectPtr conn G_GNUC_UNUSED,
         return 0;
     }
 
-    for (i = 0; i < *nparams && i < 4; i++) {
+    for (i = 0; i < *nparams && i < 5; i++) {
         switch (i) {
         case 0:
             if (virHostCPUStatsAssign(&params[i],
@@ -4473,6 +4473,11 @@ testNodeGetCPUStats(virConnectPtr conn G_GNUC_UNUSED,
         case 3:
             if (virHostCPUStatsAssign(&params[i],
                                       VIR_NODE_CPU_STATS_IOWAIT, 763600000) < 0)
+                return -1;
+            break;
+        case 4:
+            if (virHostCPUStatsAssign(&params[i],
+                                      VIR_NODE_CPU_STATS_GUEST, 1797400000) < 0)
                 return -1;
             break;
         }
