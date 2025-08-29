@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-08-28 07:01+0000\n"
+"PO-Revision-Date: 2025-08-29 02:59+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -26443,9 +26443,11 @@ msgid ""
 "disk driver 'iothread' attribute can't be used together with 'iothreads' "
 "subelement"
 msgstr ""
+"atributo 'iothread' de controlador de disco não pode ser usado juntamente "
+"com sub-elemento 'iothreads'"
 
 msgid "disk event_idx mode supported only for virtio bus"
-msgstr ""
+msgstr "modo event_idx de disco suportado apenas para barramento virtio"
 
 #, c-format
 msgid "disk format %1$s is not supported"
@@ -26456,6 +26458,8 @@ msgid ""
 "disk image '%1$s' for internal snapshot '%2$s' is not the same as disk image "
 "currently used by VM"
 msgstr ""
+"imagem de disco '%1$s' para instantâneo interno '%2$s' não é a mesma que a "
+"imagem de disco atualmente usada por VM"
 
 #, c-format
 msgid "disk image format not supported: %1$s"
@@ -26469,13 +26473,14 @@ msgid "disk iotune field '%1$s' must be an integer"
 msgstr "campo iotune de disco '%1$s' tem de ser um inteiro"
 
 msgid "disk migration was active, but 'remaining' data was missing"
-msgstr ""
+msgstr "migração de disco estava activa, mas o dado 'restante' estava em falta"
 
 msgid "disk migration was active, but 'total' data was missing"
-msgstr ""
+msgstr "migração de disco estava activa, mas o dado 'total' estava em falta"
 
 msgid "disk migration was active, but 'transferred' data was missing"
 msgstr ""
+"migração de disco estava activa, mas o dado 'transferido' estava em falta"
 
 #, c-format
 msgid "disk model '%1$s' not supported for bus '%2$s'"
@@ -26486,10 +26491,10 @@ msgstr "endereço de porto de disco não é suportado para migração em túnel"
 
 #, c-format
 msgid "disk product is more than %1$zu characters"
-msgstr ""
+msgstr "produto de disco é mais do que %1$zu caracteres"
 
 msgid "disk product is not printable string"
-msgstr ""
+msgstr "produto de disco não é uma string passível de escrita"
 
 #, c-format
 msgid "disk snapshot image path '%1$s' must be absolute"
@@ -26499,7 +26504,7 @@ msgid "disk snapshots not supported yet"
 msgstr "instantâneos de disco ainda não suportados"
 
 msgid "disk source can be changed only in removable drives"
-msgstr ""
+msgstr "fonte de disco pode ser mudada apenas em discos amovíveis"
 
 msgid "disk source mode is only valid when storage pool is of iscsi type"
 msgstr ""
@@ -26512,9 +26517,13 @@ msgstr "caminho de fonte de disco está em falta"
 #, c-format
 msgid "disk startupPolicy '%1$s' is not allowed for disk of '%2$s' type"
 msgstr ""
+"Política de arranque de disco '%1$s' não é permitida para disco do tipo "
+"'%2$s'"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
 msgstr ""
+"'requisito' de Política de arranque de disco é permitido apenas para cdrom "
+"ou disquete"
 
 #, c-format
 msgid "disk target %1$s not found"
@@ -26526,22 +26535,24 @@ msgstr "tipo de disco '%1$s' requer modo de cache '%2$s' ou '%3$s'"
 
 #, c-format
 msgid "disk type of '%1$s' does not support ejectable media"
-msgstr ""
+msgstr "tipo de disco de '%1$s' não suporta meio ejectável"
 
 #, c-format
 msgid "disk vendor is more than %1$d characters"
-msgstr ""
+msgstr "fornecedor de disco tem mais de %1$d caracteres"
 
 msgid "disk vendor is not printable string"
-msgstr ""
+msgstr "fornecedor de disco não é uma string passível de escrever"
 
 #, c-format
 msgid "disk-only flag for snapshot %1$s requires disk-snapshot state"
-msgstr ""
+msgstr "bandeira disk-only para instantâneo %1$s requer estado disk-snapshot"
 
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr ""
+"instantâneos disk-only requerem pelo menos um disco a ser selecionado para "
+"instantâneo"
 
 msgid "display"
 msgstr "mostrador"
@@ -26572,19 +26583,19 @@ msgstr "mostra o progresso da salva"
 
 #, c-format
 msgid "dnsmasq version >= %1$u.%2$u required but %3$llu.%4$llu found"
-msgstr ""
+msgstr "dnsmasq de versão >= %1$u.%2$u requerida mas %3$llu.%4$llu encontrada"
 
 msgid "do not enable STP for this bridge"
-msgstr ""
+msgstr "não activa STP para esta ponte"
 
 msgid "do not overwrite any existing data"
-msgstr ""
+msgstr "não sobrescreve nenhuns dados existentes"
 
 msgid "do not pretty-print the fields"
-msgstr ""
+msgstr "não faz impressão bonita dos campos"
 
 msgid "do not restart the domain on the destination host"
-msgstr ""
+msgstr "não reinicia o domínio na máquina de destino"
 
 #, c-format
 msgid "domain %1$s exists already"
@@ -26701,20 +26712,22 @@ msgstr "XML de ponto de verificação do domínio"
 
 msgid "domain config update needs VIR_DOMAIN_AFFECT_CONFIG flag to be set"
 msgstr ""
+"atualização de configuração de domínio precisa que a bandeira "
+"VIR_DOMAIN_AFFECT_CONFIG seja definida"
 
 #, c-format
 msgid "domain configuration does not support rng model '%1$s'"
-msgstr ""
+msgstr "configuração de domínio não suporta modelo mg '%1$s'"
 
 #, c-format
 msgid "domain configuration does not support video model '%1$s'"
-msgstr ""
+msgstr "configuração de domínio não suporta modelo de vídeo '%1$s'"
 
 msgid "domain control interface state"
 msgstr "estado da interface de controle do domínio"
 
 msgid "domain core dump"
-msgstr ""
+msgstr "despejar núcleo de domínio"
 
 msgid "domain display connection URI"
 msgstr "URI de ligação a mostrador do domínio"
@@ -26728,7 +26741,7 @@ msgstr "evento de domínio %1$d não registado"
 
 #, c-format
 msgid "domain event callback %1$d not registered"
-msgstr ""
+msgstr "chamada de retorno de evento de domínio %1$d não registada"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr ""
