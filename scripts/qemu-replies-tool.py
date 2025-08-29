@@ -500,6 +500,19 @@ def dump_machine_types(conv, dumpprefix):
         print(dumpprefix + '(machine alias) ' + a)
 
 
+def dump_command_line_options(c, dumpprefix):
+    optpar = []
+
+    for opt in c['rep']['return']:
+        for par in opt['parameters']:
+            optpar.append('%s %s' % (opt['option'], par['name']))
+
+    optpar.sort()
+
+    for o in optpar:
+        print(dumpprefix + '(cl-opt) ' + o)
+
+
 def dump_other(conv, dumpprefix):
     for c in conv:
         if c['cmd']['execute'] == 'query-version':
@@ -516,6 +529,9 @@ def dump_other(conv, dumpprefix):
             print('%s(kvm) present:%s enabled:%s' % (dumpprefix,
                                                      c['rep']['return']['present'],
                                                      c['rep']['return']['enabled']))
+
+        if c['cmd']['execute'] == 'query-command-line-options':
+            dump_command_line_options(c, dumpprefix)
 
 
 def process_one(filename, args):
