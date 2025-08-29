@@ -500,6 +500,24 @@ def dump_machine_types(conv, dumpprefix):
         print(dumpprefix + '(machine alias) ' + a)
 
 
+def dump_other(conv, dumpprefix):
+    for c in conv:
+        if c['cmd']['execute'] == 'query-version':
+            print('%s(version) %s.%s.%s %s' % (dumpprefix,
+                                               c['rep']['return']['qemu']['major'],
+                                               c['rep']['return']['qemu']['minor'],
+                                               c['rep']['return']['qemu']['micro'],
+                                               c['rep']['return']['package']))
+
+        if c['cmd']['execute'] == 'query-target':
+            print('%s(target) %s' % (dumpprefix, c['rep']['return']['arch']))
+
+        if c['cmd']['execute'] == 'query-kvm':
+            print('%s(kvm) present:%s enabled:%s' % (dumpprefix,
+                                                     c['rep']['return']['present'],
+                                                     c['rep']['return']['enabled']))
+
+
 def process_one(filename, args):
     try:
         conv = qemu_replies_load(filename)
@@ -520,6 +538,7 @@ def process_one(filename, args):
                     dumped = True
 
         if args.dump_all:
+            dump_other(conv, dumpprefix)
             dump_qom_list_types(conv, dumpprefix)
             dump_device_and_object_properties(conv, dumpprefix)
             dump_machine_types(conv, dumpprefix)
