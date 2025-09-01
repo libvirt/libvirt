@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v11.7.0 (unreleased)
+v11.7.0 (2025-09-01)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -38,8 +34,6 @@ v11.7.0 (unreleased)
 
     When a domain is configured with ``<os firmware='efi'/>``, NVRAM configuration
     is now autofilled.
-
-* **Bug fixes**
 
 
 v11.6.0 (2025-08-01)
