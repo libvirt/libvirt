@@ -315,13 +315,13 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
     }
 
     curl_easy_setopt(curl->handle, CURLOPT_USERAGENT, "libvirt-esx");
-    curl_easy_setopt(curl->handle, CURLOPT_NOSIGNAL, 1);
-    curl_easy_setopt(curl->handle, CURLOPT_HEADER, 0);
-    curl_easy_setopt(curl->handle, CURLOPT_FOLLOWLOCATION, 0);
+    curl_easy_setopt(curl->handle, CURLOPT_NOSIGNAL, 1L);
+    curl_easy_setopt(curl->handle, CURLOPT_HEADER, 0L);
+    curl_easy_setopt(curl->handle, CURLOPT_FOLLOWLOCATION, 0L);
     curl_easy_setopt(curl->handle, CURLOPT_SSL_VERIFYPEER,
-                     parsedUri->noVerify ? 0 : 1);
+                     parsedUri->noVerify ? 0L : 1L);
     curl_easy_setopt(curl->handle, CURLOPT_SSL_VERIFYHOST,
-                     parsedUri->noVerify ? 0 : 2);
+                     parsedUri->noVerify ? 0L : 2L);
     curl_easy_setopt(curl->handle, CURLOPT_COOKIEFILE, "");
     curl_easy_setopt(curl->handle, CURLOPT_HTTPHEADER, curl->headers);
     curl_easy_setopt(curl->handle, CURLOPT_READFUNCTION,
@@ -331,16 +331,16 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
     curl_easy_setopt(curl->handle, CURLOPT_ERRORBUFFER, curl->error);
 #if ESX_VI__CURL__ENABLE_DEBUG_OUTPUT
     curl_easy_setopt(curl->handle, CURLOPT_DEBUGFUNCTION, esxVI_CURL_Debug);
-    curl_easy_setopt(curl->handle, CURLOPT_VERBOSE, 1);
+    curl_easy_setopt(curl->handle, CURLOPT_VERBOSE, 1L);
 #endif
 
     if (parsedUri->proxy) {
         curl_easy_setopt(curl->handle, CURLOPT_PROXY,
                          parsedUri->proxy_hostname);
         curl_easy_setopt(curl->handle, CURLOPT_PROXYTYPE,
-                         parsedUri->proxy_type);
+                         (long) parsedUri->proxy_type);
         curl_easy_setopt(curl->handle, CURLOPT_PROXYPORT,
-                         parsedUri->proxy_port);
+                         (long) parsedUri->proxy_port);
     }
 
     if (parsedUri->cacert)
@@ -386,8 +386,8 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
         curl_easy_setopt(curl->handle, CURLOPT_URL, url);
         curl_easy_setopt(curl->handle, CURLOPT_RANGE, range);
         curl_easy_setopt(curl->handle, CURLOPT_WRITEDATA, &buffer);
-        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0);
-        curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1);
+        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0L);
+        curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1L);
 
         responseCode = esxVI_CURL_Perform(curl, url);
     }
@@ -426,7 +426,7 @@ esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
         curl_easy_setopt(curl->handle, CURLOPT_URL, url);
         curl_easy_setopt(curl->handle, CURLOPT_RANGE, NULL);
         curl_easy_setopt(curl->handle, CURLOPT_READDATA, &content);
-        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1);
+        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(curl->handle, CURLOPT_INFILESIZE, strlen(content));
 
         responseCode = esxVI_CURL_Perform(curl, url);
@@ -1223,7 +1223,7 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
         curl_easy_setopt(ctx->curl->handle, CURLOPT_URL, ctx->url);
         curl_easy_setopt(ctx->curl->handle, CURLOPT_RANGE, NULL);
         curl_easy_setopt(ctx->curl->handle, CURLOPT_WRITEDATA, &buffer);
-        curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0L);
         curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDS, request);
         curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDSIZE, strlen(request));
 

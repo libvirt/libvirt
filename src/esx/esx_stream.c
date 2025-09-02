@@ -405,13 +405,13 @@ esxStreamOpen(virStreamPtr stream, esxPrivate *priv, const char *url,
         goto cleanup;
 
     if (mode == ESX_STREAM_MODE_UPLOAD) {
-        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_UPLOAD, 1);
+        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(streamPriv->curl->handle, CURLOPT_READFUNCTION,
                          esxVI_CURL_ReadStream);
         curl_easy_setopt(streamPriv->curl->handle, CURLOPT_READDATA, streamPriv);
     } else {
-        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_UPLOAD, 0);
-        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_HTTPGET, 1);
+        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_UPLOAD, 0L);
+        curl_easy_setopt(streamPriv->curl->handle, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(streamPriv->curl->handle, CURLOPT_WRITEFUNCTION,
                          esxVI_CURL_WriteStream);
         curl_easy_setopt(streamPriv->curl->handle, CURLOPT_WRITEDATA, streamPriv);
