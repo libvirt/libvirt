@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-08-31 21:53+0000\n"
+"PO-Revision-Date: 2025-09-02 07:53+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -28186,6 +28186,8 @@ msgstr "falhou ao obter política de segurança de lançamento"
 
 msgid "failed to get launch security policy for launch security type TDX"
 msgstr ""
+"falhou ao obter política de segurança de lançamento para tipo de segurança "
+"de lançamento TDX"
 
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
@@ -29452,22 +29454,22 @@ msgstr "uuid dado não corresponde ao uuid de XML"
 
 #, c-format
 msgid "gluster pool name '%1$s' must not contain /"
-msgstr ""
+msgstr "nome de pool gluster '%1$s' não pode conter /"
 
 #, c-format
 msgid "gluster pool path '%1$s' must start with /"
-msgstr ""
+msgstr "caminho de pool gluster '%1$s' tem de começar com /"
 
 #, c-format
 msgid "got unexpected RPC call prog %1$d vers %2$d proc %3$d type %4$d"
 msgstr ""
 
 msgid "got unknown HTTP error code"
-msgstr ""
+msgstr "obtido código de erro HTTP desconhecido"
 
 #, c-format
 msgid "got unknown HTTP error code %1$s"
-msgstr ""
+msgstr "obtido código de erro HTTP desconhecido %1$s"
 
 #, c-format
 msgid ""
@@ -29483,7 +29485,7 @@ msgid "gracefully shutdown a domain"
 msgstr "encerrar um domínio graciosamente"
 
 msgid "granularity must be power of 2"
-msgstr ""
+msgstr "granularidade tem de ser potência de 2"
 
 #, c-format
 msgid ""
@@ -29504,7 +29506,7 @@ msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
 
 msgid "graphics display type"
-msgstr ""
+msgstr "tipo de mostrador gráfico"
 
 msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
@@ -29515,129 +29517,134 @@ msgid "group name to share I/O quota between multiple drives"
 msgstr ""
 
 msgid "group_name can be configured only together with settings"
-msgstr ""
+msgstr "group_name só pode ser configurado juntamente com definições"
 
 msgid "guest"
 msgstr "convidado"
 
 msgid "guest CIDs must be >= 3"
-msgstr ""
+msgstr "CIDs de convidado tem de ser >= 3"
 
 msgid "guest CPU doesn't match specification"
-msgstr ""
+msgstr "CPU convidada não corresponde a especificação"
 
 #, c-format
 msgid "guest CPU doesn't match specification: extra features: %1$s"
 msgstr ""
+"CPU convidada não corresponde a especificação: funcionalidades extra: %1$s"
 
 #, c-format
 msgid ""
 "guest CPU doesn't match specification: extra features: %1$s, missing "
 "features: %2$s"
 msgstr ""
+"CPU convidada não corresponde a especificação: funcionalidades extra: %1$s, "
+"funcionalidades em falta: %2$s"
 
 #, c-format
 msgid "guest CPU doesn't match specification: missing features: %1$s"
 msgstr ""
+"CPU convidada não corresponde a especificação: funcionalidades em falta: %1$s"
 
 msgid "guest agent command failed"
-msgstr ""
+msgstr "comando de agente convidado falhou"
 
 #, c-format
 msgid "guest agent command failed: %1$s"
-msgstr ""
+msgstr "comando de agente convidado falhou: %1$s"
 
 msgid "guest agent command timed out"
-msgstr ""
+msgstr "comando de agente convidado esgotou tempo limite"
 
 #, c-format
 msgid "guest agent command timed out: %1$s"
-msgstr ""
+msgstr "comando de agente convidado esgotou tempo limite: %1$s"
 
 #, c-format
 msgid "guest agent didn't respond to command within '%1$d' seconds"
-msgstr ""
+msgstr "agente convidado não respondeu a comando dentro de '%1$d' segundos"
 
 #, c-format
 msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
 msgstr ""
+"agente convidado não respondeu a sincronização dentro de '%1$d' segundos"
 
 msgid "guest agent replied with wrong id to guest-sync command"
-msgstr ""
+msgstr "agente convidado respondeu com id errado a comando guest-sync"
 
 #, c-format
 msgid "guest agent replied with wrong id to guest-sync command: %1$s"
-msgstr ""
+msgstr "agente convidado respondeu com id errado a comando guest-sync: %1$s"
 
 msgid "guest agent reports less cpu than requested"
-msgstr ""
+msgstr "agente convidado reporta menos cpu que o requisitado"
 
 msgid "guest agent returned malformed or invalid return value"
-msgstr ""
+msgstr "agente convidado retornou valor de retorno mal formado ou inválido"
 
 #, c-format
 msgid "guest agent timeout '%1$d' is less than the minimum '%2$d'"
-msgstr ""
+msgstr "tempo limite de agente convidado '%1$d' é menor que o mínimo '%2$d'"
 
 msgid "guest crashed while connecting to the guest agent"
-msgstr ""
+msgstr "convidado colidiu ao ligar ao agente convidado"
 
 #, c-format
 msgid "guest failed to start: %1$s"
 msgstr "convidado falhou ao arrancar: %1$s"
 
 msgid "guest failed to start: terminated abnormally"
-msgstr ""
+msgstr "convidado falhou ao arrancar: terminado anormalmente"
 
 #, c-format
 msgid "guest failed to start: unexpected exit status %1$d"
-msgstr ""
+msgstr "convidado falhou ao arrancar: estado de saída inesperado %1$d"
 
 msgid "guest interface"
 msgstr "interface convidada"
 
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
-msgstr ""
+msgstr "convidado tem em falta vCPUs '%1$s'"
 
 msgid "guest unexpectedly quit"
-msgstr ""
+msgstr "convidado saiu inesperadamente"
 
 msgid "guest unexpectedly quit during hotplug"
-msgstr ""
+msgstr "convidado saiu inesperadamente durante ligação a quente"
 
 msgid "guest-get-fsinfo reply was missing or not an array"
-msgstr ""
+msgstr "resposta de guest-get-fsinfo estava em falta ou não era matriz"
 
 msgid "guest-get-osinfo reply was missing return data"
-msgstr ""
+msgstr "resposta de guest-get-osinfo tinha em falta dados de retorno"
 
 msgid "guest-get-timezone reply was missing return data"
-msgstr ""
+msgstr "resposta de guest-get-timezone tinha em falta dados de retorno"
 
 msgid "guest-get-users reply was missing return data"
-msgstr ""
+msgstr "resposta de guest-get-users tinha em falta dados de retorno"
 
 msgid "guest-get-vcpus reply was missing return data"
-msgstr ""
+msgstr "resposta de guest-get-vcpus tinha em falta dados de retorno"
 
 msgid "guestReset is not supported with this version of QEMU"
-msgstr ""
+msgstr "guestReset não é suportado com esta versão de QEMU"
 
 msgid "guestfwd channel does not define a target address"
-msgstr ""
+msgstr "canal guestfwd não define um endereço alvo"
 
 msgid "guestfwd channel only supports IPv4 addresses"
-msgstr ""
+msgstr "canal guestfwd apenas suporta endereços IPv4"
 
 msgid "halt domain after snapshot is created"
-msgstr ""
+msgstr "pára domínio após instantâneo ser criado"
 
 msgid "handler failed to wait on condition"
 msgstr "tratador falhou ao esperar por condição"
 
 msgid "hash lookup resulted in NULL pointer"
-msgstr ""
+msgstr "procura de cinza resultou em ponteiro NULO"
 
 #, c-format
 msgid "host CPU model does not match required CPU model %1$s"
@@ -29662,57 +29669,57 @@ msgid "host cpu counting not implemented on this platform"
 msgstr ""
 
 msgid "host cpu number(s) to set"
-msgstr ""
+msgstr "número(s) de cpu da máquina não definido"
 
 msgid "host cpu number(s) to set, or omit option to query"
-msgstr ""
+msgstr "número(s) de cpu da máquina a definir, ou omitor opção para consulta"
 
 msgid "host device already exists"
-msgstr ""
+msgstr "dispositivo de máquina já existe"
 
 msgid "host doesn't support VFIO PCI passthrough"
-msgstr ""
+msgstr "máquina não suporta passagem VFIO PCI"
 
 #, c-format
 msgid "host doesn't support hyperv '%1$s' feature"
-msgstr ""
+msgstr "máquina não suporta funcionalidade hyperv '%1$s'"
 
 #, c-format
 msgid "host doesn't support hyperv stimer '%1$s' feature"
-msgstr ""
+msgstr "máquina não suporta funcionalidade hyperv stimer '%1$s"
 
 #, c-format
 msgid "host doesn't support hyperv tlbflush '%1$s' feature"
-msgstr ""
+msgstr "máquina não suporta funcionalidade hyperv tlbflush '%1$s'"
 
 msgid "host doesn't support invariant TSC"
-msgstr ""
+msgstr "máquina não suporta TSC invariante"
 
 msgid "host doesn't support legacy PCI passthrough"
-msgstr ""
+msgstr "máquina não suporta passagem PCI legada"
 
 msgid "host doesn't support paravirtual spinlocks"
 msgstr ""
 
 msgid "host doesn't support passthrough of host PCI devices"
-msgstr ""
+msgstr "máquina não suporta passagem de dispositivos PCI de máquina"
 
 msgid "host isn't capable of IPv6"
-msgstr ""
+msgstr "máquina não é capaz de IPv6"
 
 msgid "host migration TLS directory not configured"
-msgstr ""
+msgstr "directório TLS de migração de máquina não configurado"
 
 msgid "host name for source of disk device"
-msgstr ""
+msgstr "nome de máquina para fonte de dispositivo de disco"
 
 #, c-format
 msgid "host pci device %1$04x:%2$02x:%3$02x.%4$d not found"
-msgstr ""
+msgstr "dispositivo pci de máquina %1$04x:%2$02x:%3$02x.%4$d não encontrado"
 
 #, c-format
 msgid "host pci device %1$s not found"
-msgstr ""
+msgstr "dispositivo pci de máquina %1$s não encontrado"
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %1$d > %2$d"
@@ -29720,11 +29727,11 @@ msgstr ""
 
 #, c-format
 msgid "host reports too many vCPUs: %1$d > %2$d"
-msgstr ""
+msgstr "máquina reporta demasiadas vCPUs: %1$d > %2$d"
 
 #, c-format
 msgid "host scsi device %1$s:%2$u:%3$u.%4$llu not found"
-msgstr ""
+msgstr "dispositivo scsi de máquina %1$s:%2$u:%3$u.%4$llu não encontrado"
 
 #, c-format
 msgid "host scsi iSCSI path %1$s not found"
