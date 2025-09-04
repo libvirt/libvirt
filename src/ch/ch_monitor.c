@@ -318,6 +318,26 @@ virCHMonitorBuildDisksJson(virJSONValue *content, virDomainDef *vmdef)
     return 0;
 }
 
+int
+virCHMonitorAddDisk(virCHMonitor *monitor,
+                    virDomainDiskDef *diskdef)
+{
+    g_autoptr(virJSONValue) disk = virCHMonitorBuildDiskJson(diskdef);
+    g_autoptr(virJSONValue) response = NULL;
+
+    if (!disk) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not build disk json"));
+        return -1;
+    }
+
+    return virCHMonitorPut(monitor,
+                           URL_VM_ADD_DISK,
+                           disk,
+                           NULL,
+                           NULL);
+}
+
 static int
 virCHMonitorBuildRngJson(virJSONValue *content, virDomainDef *vmdef)
 {

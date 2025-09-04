@@ -40,6 +40,7 @@
 #define URL_VM_INFO "vm.info"
 #define URL_VM_SAVE "vm.snapshot"
 #define URL_VM_RESTORE "vm.restore"
+#define URL_VM_ADD_DISK "vm.add-disk"
 
 #define VIRCH_THREAD_NAME_LEN   16
 
@@ -138,6 +139,10 @@ int
 virCHMonitorBuildNetJson(virDomainNetDef *netdef,
                          int netindex,
                          char **jsonstr);
+int
+virCHMonitorAddDisk(virCHMonitor* mon,
+                    virDomainDiskDef *diskdef);
+
 int virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
                                  const char *from,
                                  char **jsonstr);
