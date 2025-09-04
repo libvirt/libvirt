@@ -249,6 +249,11 @@ virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
                            _("Missing disk file path in domain"));
             return -1;
         }
+        if (!diskdef->info.alias) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing disk alias"));
+            return -1;
+        }
         if (diskdef->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Only virtio bus types are supported for '%1$s'"),
@@ -260,6 +265,9 @@ virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
         if (diskdef->src->readonly) {
             if (virJSONValueObjectAppendBoolean(disk, "readonly", true) < 0)
                 return -1;
+        }
+        if (virJSONValueObjectAppendString(disk, "id", diskdef->info.alias) < 0) {
+            return -1;
         }
         if (virJSONValueArrayAppend(disks, &disk) < 0)
             return -1;
