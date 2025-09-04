@@ -1,0 +1,8671 @@
+{
+  "execute": "qom-list",
+  "arguments": {
+    "path": "/machine/unattached/device[0]"
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "parent_bus",
+      "type": "link<bus>"
+    },
+    {
+      "name": "realized",
+      "type": "bool"
+    },
+    {
+      "name": "hotplugged",
+      "type": "bool"
+    },
+    {
+      "name": "hotpluggable",
+      "type": "bool"
+    },
+    {
+      "name": "memory",
+      "type": "link<memory-region>"
+    },
+    {
+      "name": "legacy-memory",
+      "type": "str"
+    },
+    {
+      "name": "start-powered-off",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invept-single-context",
+      "type": "bool"
+    },
+    {
+      "name": "core-capability",
+      "type": "bool"
+    },
+    {
+      "name": "popcnt",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-debug",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-poll-control",
+      "type": "bool"
+    },
+    {
+      "name": "dtes64",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invvpid-single-addr",
+      "type": "bool"
+    },
+    {
+      "name": "xstore",
+      "type": "bool"
+    },
+    {
+      "name": "min-xlevel2",
+      "type": "uint32"
+    },
+    {
+      "name": "stepping",
+      "type": "int"
+    },
+    {
+      "name": "x-vendor-cpuid-only-v2",
+      "type": "bool"
+    },
+    {
+      "name": "sm4",
+      "type": "bool"
+    },
+    {
+      "name": "hv-emsr-bitmap",
+      "type": "bool"
+    },
+    {
+      "name": "pse36",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-4vnniw",
+      "type": "bool"
+    },
+    {
+      "name": "x-intel-pt-auto-level",
+      "type": "bool"
+    },
+    {
+      "name": "fma4",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-vp2intersect",
+      "type": "bool"
+    },
+    {
+      "name": "avx2",
+      "type": "bool"
+    },
+    {
+      "name": "amd-psfd",
+      "type": "bool"
+    },
+    {
+      "name": "amd-stibp",
+      "type": "bool"
+    },
+    {
+      "name": "sgxlc",
+      "type": "bool"
+    },
+    {
+      "name": "sm3",
+      "type": "bool"
+    },
+    {
+      "name": "family",
+      "type": "int"
+    },
+    {
+      "name": "vmx-ept-advanced-exitinfo",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-store-lma",
+      "type": "bool"
+    },
+    {
+      "name": "msr-imm",
+      "type": "bool"
+    },
+    {
+      "name": "vmware-cpuid-freq",
+      "type": "bool"
+    },
+    {
+      "name": "hv-spinlocks",
+      "type": "uint32"
+    },
+    {
+      "name": "x-force-cpuid-0x1f",
+      "type": "bool"
+    },
+    {
+      "name": "ddpd-u",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-nested-exception",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-noload-debugctl",
+      "type": "bool"
+    },
+    {
+      "name": "bhi-no",
+      "type": "bool"
+    },
+    {
+      "name": "amx-fp16",
+      "type": "bool"
+    },
+    {
+      "name": "erms",
+      "type": "bool"
+    },
+    {
+      "name": "vaes",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-eptad",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-activity-wait-sipi",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-flexpriority",
+      "type": "bool"
+    },
+    {
+      "name": "hv-reset",
+      "type": "bool"
+    },
+    {
+      "name": "rdrand",
+      "type": "bool"
+    },
+    {
+      "name": "lam",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-pause-exit",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-shadow-vmcs",
+      "type": "bool"
+    },
+    {
+      "name": "model",
+      "type": "int"
+    },
+    {
+      "name": "avx512-vpopcntdq",
+      "type": "bool"
+    },
+    {
+      "name": "xcrypt",
+      "type": "bool"
+    },
+    {
+      "name": "tbm",
+      "type": "bool"
+    },
+    {
+      "name": "movdiri",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-monitor-exit",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-eoi",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-spack",
+      "type": "uint32"
+    },
+    {
+      "name": "lm",
+      "type": "bool"
+    },
+    {
+      "name": "x-vendor-cpuid-only",
+      "type": "bool"
+    },
+    {
+      "name": "pbrsb-no",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-unrestricted-guest",
+      "type": "bool"
+    },
+    {
+      "name": "host-phys-bits-limit",
+      "type": "uint8"
+    },
+    {
+      "name": "pae",
+      "type": "bool"
+    },
+    {
+      "name": "ssse3",
+      "type": "bool"
+    },
+    {
+      "name": "hv-runtime",
+      "type": "bool"
+    },
+    {
+      "name": "phe",
+      "type": "bool"
+    },
+    {
+      "name": "guest-phys-bits",
+      "type": "uint32"
+    },
+    {
+      "name": "host-phys-bits",
+      "type": "bool"
+    },
+    {
+      "name": "taa-no",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-aex-notify",
+      "type": "bool"
+    },
+    {
+      "name": "full-width-write",
+      "type": "bool"
+    },
+    {
+      "name": "arat",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vbmi2",
+      "type": "bool"
+    },
+    {
+      "name": "sha512",
+      "type": "bool"
+    },
+    {
+      "name": "arch-lbr",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-vnmi-pending",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-any-errcode",
+      "type": "bool"
+    },
+    {
+      "name": "x2apic",
+      "type": "bool"
+    },
+    {
+      "name": "npt",
+      "type": "bool"
+    },
+    {
+      "name": "pmm-en",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invpcid-exit",
+      "type": "bool"
+    },
+    {
+      "name": "avx512ifma",
+      "type": "bool"
+    },
+    {
+      "name": "ibpb-brtype",
+      "type": "bool"
+    },
+    {
+      "name": "model-id",
+      "type": "string"
+    },
+    {
+      "name": "ucode-rev",
+      "type": "uint64"
+    },
+    {
+      "name": "hv-evmcs",
+      "type": "bool"
+    },
+    {
+      "name": "srso-user-kernel-no",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-io-exit",
+      "type": "bool"
+    },
+    {
+      "name": "tsc",
+      "type": "bool"
+    },
+    {
+      "name": "x-force-features",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ins-outs",
+      "type": "bool"
+    },
+    {
+      "name": "dca",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-apicv-x2apic",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr-core",
+      "type": "bool"
+    },
+    {
+      "name": "ia64",
+      "type": "bool"
+    },
+    {
+      "name": "fdp-excptn-only",
+      "type": "bool"
+    },
+    {
+      "name": "hv-stimer-direct",
+      "type": "bool"
+    },
+    {
+      "name": "gds-no",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-secondary-ctls",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-cr3-load-noexit",
+      "type": "bool"
+    },
+    {
+      "name": "rfds-no",
+      "type": "bool"
+    },
+    {
+      "name": "pmu",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-rtit-ctl",
+      "type": "bool"
+    },
+    {
+      "name": "kvmclock",
+      "type": "bool"
+    },
+    {
+      "name": "avx10",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invept-single-context-noglobals",
+      "type": "bool"
+    },
+    {
+      "name": "xen-vapic",
+      "type": "bool"
+    },
+    {
+      "name": "md-clear",
+      "type": "bool"
+    },
+    {
+      "name": "invtsc",
+      "type": "bool"
+    },
+    {
+      "name": "pn",
+      "type": "bool"
+    },
+    {
+      "name": "avx512cd",
+      "type": "bool"
+    },
+    {
+      "name": "cmp-legacy",
+      "type": "bool"
+    },
+    {
+      "name": "cx16",
+      "type": "bool"
+    },
+    {
+      "name": "avx512dq",
+      "type": "bool"
+    },
+    {
+      "name": "abm",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-activity-shutdown",
+      "type": "bool"
+    },
+    {
+      "name": "auto-ibrs",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-ipi",
+      "type": "bool"
+    },
+    {
+      "name": "avx10-128",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-apicv-register",
+      "type": "bool"
+    },
+    {
+      "name": "fxsr-opt",
+      "type": "bool"
+    },
+    {
+      "name": "skip-l1dfl-vmentry",
+      "type": "bool"
+    },
+    {
+      "name": "fill-mtrr-mask",
+      "type": "bool"
+    },
+    {
+      "name": "x-migrate-smi-count",
+      "type": "bool"
+    },
+    {
+      "name": "wbnoinvd",
+      "type": "bool"
+    },
+    {
+      "name": "sgx1",
+      "type": "bool"
+    },
+    {
+      "name": "rdpid",
+      "type": "bool"
+    },
+    {
+      "name": "pcid",
+      "type": "bool"
+    },
+    {
+      "name": "bhi-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "syscall",
+      "type": "bool"
+    },
+    {
+      "name": "pse",
+      "type": "bool"
+    },
+    {
+      "name": "rrsba-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "avx-ne-convert",
+      "type": "bool"
+    },
+    {
+      "name": "xsaves",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-pat",
+      "type": "bool"
+    },
+    {
+      "name": "vgif",
+      "type": "bool"
+    },
+    {
+      "name": "mce",
+      "type": "bool"
+    },
+    {
+      "name": "xfd",
+      "type": "bool"
+    },
+    {
+      "name": "node-id",
+      "type": "int32"
+    },
+    {
+      "name": "sgx-tokenkey",
+      "type": "bool"
+    },
+    {
+      "name": "ibpb",
+      "type": "bool"
+    },
+    {
+      "name": "x-amd-topoext-features-only",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-apicv-xapic",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-hlt-exit",
+      "type": "bool"
+    },
+    {
+      "name": "lwp",
+      "type": "bool"
+    },
+    {
+      "name": "eraps",
+      "type": "bool"
+    },
+    {
+      "name": "cldemote",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-load-pkrs",
+      "type": "bool"
+    },
+    {
+      "name": "rtm",
+      "type": "bool"
+    },
+    {
+      "name": "hv-tlbflush",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-steal-time",
+      "type": "bool"
+    },
+    {
+      "name": "cpuid-0xb",
+      "type": "bool"
+    },
+    {
+      "name": "fsrs",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-provisionkey",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-eptp-switching",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invlpg-exit",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-efer",
+      "type": "bool"
+    },
+    {
+      "name": "level-func7",
+      "type": "uint32"
+    },
+    {
+      "name": "die-id",
+      "type": "int32"
+    },
+    {
+      "name": "vmx-exit-save-efer",
+      "type": "bool"
+    },
+    {
+      "name": "x-l1-cache-per-thread",
+      "type": "bool"
+    },
+    {
+      "name": "vme",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-unhalt",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-desc-exit",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-kss",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invvpid",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-ia32e-mode",
+      "type": "bool"
+    },
+    {
+      "name": "svm",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-hint-dedicated",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ept-execonly",
+      "type": "bool"
+    },
+    {
+      "name": "avx-ifma",
+      "type": "bool"
+    },
+    {
+      "name": "module-id",
+      "type": "int32"
+    },
+    {
+      "name": "mca",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-tsc-scaling",
+      "type": "bool"
+    },
+    {
+      "name": "mtrr",
+      "type": "bool"
+    },
+    {
+      "name": "cid",
+      "type": "bool"
+    },
+    {
+      "name": "pfthreshold",
+      "type": "bool"
+    },
+    {
+      "name": "pmm",
+      "type": "bool"
+    },
+    {
+      "name": "lahf-lm",
+      "type": "bool"
+    },
+    {
+      "name": "zero-fcs-fds",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-build",
+      "type": "uint32"
+    },
+    {
+      "name": "vmx-entry-load-pkrs",
+      "type": "bool"
+    },
+    {
+      "name": "tcg-cpuid",
+      "type": "bool"
+    },
+    {
+      "name": "no-nested-data-bp",
+      "type": "bool"
+    },
+    {
+      "name": "legacy-multi-node",
+      "type": "bool"
+    },
+    {
+      "name": "x-hv-max-vps",
+      "type": "int32"
+    },
+    {
+      "name": "tm",
+      "type": "bool"
+    },
+    {
+      "name": "pbe",
+      "type": "bool"
+    },
+    {
+      "name": "amx-int8",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-rdpmc-exit",
+      "type": "bool"
+    },
+    {
+      "name": "intel-psfd",
+      "type": "bool"
+    },
+    {
+      "name": "fs-gs-base-ns",
+      "type": "bool"
+    },
+    {
+      "name": "split-lock-detect",
+      "type": "bool"
+    },
+    {
+      "name": "apic-id",
+      "type": "uint32"
+    },
+    {
+      "name": "fpu",
+      "type": "bool"
+    },
+    {
+      "name": "skinit",
+      "type": "bool"
+    },
+    {
+      "name": "l3-cache",
+      "type": "bool"
+    },
+    {
+      "name": "sep",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-load-pat",
+      "type": "bool"
+    },
+    {
+      "name": "intel-pt-lip",
+      "type": "bool"
+    },
+    {
+      "name": "avx10-512",
+      "type": "bool"
+    },
+    {
+      "name": "hv-tlbflush-direct",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-bf16",
+      "type": "bool"
+    },
+    {
+      "name": "overflow-recov",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-vnmi",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-rdtscp-exit",
+      "type": "bool"
+    },
+    {
+      "name": "amx-complex",
+      "type": "bool"
+    },
+    {
+      "name": "nx",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invvpid-all-context",
+      "type": "bool"
+    },
+    {
+      "name": "avx-vnni-int8",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-vmwrite-vmexit-fields",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-page-walk-4",
+      "type": "bool"
+    },
+    {
+      "name": "rfds-clear",
+      "type": "bool"
+    },
+    {
+      "name": "pause-filter",
+      "type": "bool"
+    },
+    {
+      "name": "ds-cpl",
+      "type": "bool"
+    },
+    {
+      "name": "succor",
+      "type": "bool"
+    },
+    {
+      "name": "fred",
+      "type": "bool"
+    },
+    {
+      "name": "fsrm",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-load-efer",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-mtf",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-fred",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ept",
+      "type": "bool"
+    },
+    {
+      "name": "fb-clear",
+      "type": "bool"
+    },
+    {
+      "name": "nodeid-msr",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-clear-bndcfgs",
+      "type": "bool"
+    },
+    {
+      "name": "smap",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-io-bitmap",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-preemption-timer",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invept-all-context",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-intr-exit",
+      "type": "bool"
+    },
+    {
+      "name": "prefetchiti",
+      "type": "bool"
+    },
+    {
+      "name": "psdp-no",
+      "type": "bool"
+    },
+    {
+      "name": "cr8legacy",
+      "type": "bool"
+    },
+    {
+      "name": "xlevel",
+      "type": "uint32"
+    },
+    {
+      "name": "vmx-vpid",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-zero-len-inject",
+      "type": "bool"
+    },
+    {
+      "name": "pschange-mc-no",
+      "type": "bool"
+    },
+    {
+      "name": "virt-ssbd",
+      "type": "bool"
+    },
+    {
+      "name": "umip",
+      "type": "bool"
+    },
+    {
+      "name": "avx512er",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-vintr-pending",
+      "type": "bool"
+    },
+    {
+      "name": "xstore-en",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vl",
+      "type": "bool"
+    },
+    {
+      "name": "ibrs",
+      "type": "bool"
+    },
+    {
+      "name": "rsba",
+      "type": "bool"
+    },
+    {
+      "name": "cmov",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-posted-intr",
+      "type": "bool"
+    },
+    {
+      "name": "xcrypt-en",
+      "type": "bool"
+    },
+    {
+      "name": "tm2",
+      "type": "bool"
+    },
+    {
+      "name": "lbrv",
+      "type": "bool"
+    },
+    {
+      "name": "tsc-scale",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-secondary-ctls",
+      "type": "bool"
+    },
+    {
+      "name": "xsaveerptr",
+      "type": "bool"
+    },
+    {
+      "name": "fsgsbase",
+      "type": "bool"
+    },
+    {
+      "name": "x-hv-synic-kvm-only",
+      "type": "bool"
+    },
+    {
+      "name": "avx512bw",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-minor",
+      "type": "uint16"
+    },
+    {
+      "name": "tce",
+      "type": "bool"
+    },
+    {
+      "name": "tsc-frequency",
+      "type": "int"
+    },
+    {
+      "name": "smx",
+      "type": "bool"
+    },
+    {
+      "name": "hle",
+      "type": "bool"
+    },
+    {
+      "name": "monitor",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-fp16",
+      "type": "bool"
+    },
+    {
+      "name": "sse4a",
+      "type": "bool"
+    },
+    {
+      "name": "vpclmulqdq",
+      "type": "bool"
+    },
+    {
+      "name": "hv-frequencies",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-tlb-flush",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-rdtsc-exit",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-activity-hlt",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-bndcfgs",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-edeccssa",
+      "type": "bool"
+    },
+    {
+      "name": "xsavec",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-cr8-load-exit",
+      "type": "bool"
+    },
+    {
+      "name": "mds-no",
+      "type": "bool"
+    },
+    {
+      "name": "svme-addr-chk",
+      "type": "bool"
+    },
+    {
+      "name": "amd-no-ssb",
+      "type": "bool"
+    },
+    {
+      "name": "xop",
+      "type": "bool"
+    },
+    {
+      "name": "adx",
+      "type": "bool"
+    },
+    {
+      "name": "perfmon-v2",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-sbranch",
+      "type": "uint8"
+    },
+    {
+      "name": "crash-information",
+      "type": "GuestPanicInformation"
+    },
+    {
+      "name": "min-level",
+      "type": "uint32"
+    },
+    {
+      "name": "full-cpuid-auto-level",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-ack-intr",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-rdseed-exit",
+      "type": "bool"
+    },
+    {
+      "name": "pclmulqdq",
+      "type": "bool"
+    },
+    {
+      "name": "msr",
+      "type": "bool"
+    },
+    {
+      "name": "wrmsrns",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-enforce-cpuid",
+      "type": "bool"
+    },
+    {
+      "name": "ssb-no",
+      "type": "bool"
+    },
+    {
+      "name": "clflush",
+      "type": "bool"
+    },
+    {
+      "name": "xlevel2",
+      "type": "uint32"
+    },
+    {
+      "name": "mpx",
+      "type": "bool"
+    },
+    {
+      "name": "extapic",
+      "type": "bool"
+    },
+    {
+      "name": "lfence-always-serializing",
+      "type": "bool"
+    },
+    {
+      "name": "hv-enforce-cpuid",
+      "type": "bool"
+    },
+    {
+      "name": "hv-stimer",
+      "type": "bool"
+    },
+    {
+      "name": "sgx2",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-asyncpf-vmexit",
+      "type": "bool"
+    },
+    {
+      "name": "smep",
+      "type": "bool"
+    },
+    {
+      "name": "vnmi",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-mwait-exit",
+      "type": "bool"
+    },
+    {
+      "name": "hv-synic",
+      "type": "bool"
+    },
+    {
+      "name": "cx8",
+      "type": "bool"
+    },
+    {
+      "name": "vmcb-clean",
+      "type": "bool"
+    },
+    {
+      "name": "pku",
+      "type": "bool"
+    },
+    {
+      "name": "kvm",
+      "type": "bool"
+    },
+    {
+      "name": "srso-no",
+      "type": "bool"
+    },
+    {
+      "name": "hv-passthrough",
+      "type": "bool"
+    },
+    {
+      "name": "lkgs",
+      "type": "bool"
+    },
+    {
+      "name": "tsx-ldtrk",
+      "type": "bool"
+    },
+    {
+      "name": "hv-tlbflush-ext",
+      "type": "bool"
+    },
+    {
+      "name": "stibp",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-cr3-store-noexit",
+      "type": "bool"
+    },
+    {
+      "name": "tsx-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "clzero",
+      "type": "bool"
+    },
+    {
+      "name": "svm-lock",
+      "type": "bool"
+    },
+    {
+      "name": "hv-reenlightenment",
+      "type": "bool"
+    },
+    {
+      "name": "x-consistent-cache",
+      "type": "bool"
+    },
+    {
+      "name": "avic",
+      "type": "bool"
+    },
+    {
+      "name": "hv-vpindex",
+      "type": "bool"
+    },
+    {
+      "name": "osvw",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-exinfo",
+      "type": "bool"
+    },
+    {
+      "name": "legacy-cache",
+      "type": "bool"
+    },
+    {
+      "name": "sse",
+      "type": "bool"
+    },
+    {
+      "name": "fsrc",
+      "type": "bool"
+    },
+    {
+      "name": "ds",
+      "type": "bool"
+    },
+    {
+      "name": "pks",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ept-2mb",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-true-ctls",
+      "type": "bool"
+    },
+    {
+      "name": "movdir64b",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ept-1gb",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-invept",
+      "type": "bool"
+    },
+    {
+      "name": "ipred-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-rdrand-exit",
+      "type": "bool"
+    },
+    {
+      "name": "acpi",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-encls-exit",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-cr8-store-exit",
+      "type": "bool"
+    },
+    {
+      "name": "sbdr-ssdp-no",
+      "type": "bool"
+    },
+    {
+      "name": "its-no",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-mmu",
+      "type": "bool"
+    },
+    {
+      "name": "3dnowprefetch",
+      "type": "bool"
+    },
+    {
+      "name": "nrip-save",
+      "type": "bool"
+    },
+    {
+      "name": "gfni",
+      "type": "bool"
+    },
+    {
+      "name": "flush-l1d",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-msi-ext-dest-id",
+      "type": "bool"
+    },
+    {
+      "name": "fzrm",
+      "type": "bool"
+    },
+    {
+      "name": "serialize",
+      "type": "bool"
+    },
+    {
+      "name": "avx512bitalg",
+      "type": "bool"
+    },
+    {
+      "name": "rdseed",
+      "type": "bool"
+    },
+    {
+      "name": "sha-ni",
+      "type": "bool"
+    },
+    {
+      "name": "ace2",
+      "type": "bool"
+    },
+    {
+      "name": "lmce",
+      "type": "bool"
+    },
+    {
+      "name": "avx10-version",
+      "type": "uint8"
+    },
+    {
+      "name": "topoext",
+      "type": "bool"
+    },
+    {
+      "name": "f16c",
+      "type": "bool"
+    },
+    {
+      "name": "waitpkg",
+      "type": "bool"
+    },
+    {
+      "name": "avx512-4fmaps",
+      "type": "bool"
+    },
+    {
+      "name": "fbsdp-no",
+      "type": "bool"
+    },
+    {
+      "name": "avx",
+      "type": "bool"
+    },
+    {
+      "name": "sse2",
+      "type": "bool"
+    },
+    {
+      "name": "rdctl-no",
+      "type": "bool"
+    },
+    {
+      "name": "mmx",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-major",
+      "type": "uint16"
+    },
+    {
+      "name": "level",
+      "type": "uint32"
+    },
+    {
+      "name": "avx512vnni",
+      "type": "bool"
+    },
+    {
+      "name": "pni",
+      "type": "bool"
+    },
+    {
+      "name": "movbe",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-ple",
+      "type": "bool"
+    },
+    {
+      "name": "mmxext",
+      "type": "bool"
+    },
+    {
+      "name": "lbr-fmt",
+      "type": "uint64"
+    },
+    {
+      "name": "bus-lock-detect",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-apicv-vid",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-page-walk-5",
+      "type": "bool"
+    },
+    {
+      "name": "flushbyasid",
+      "type": "bool"
+    },
+    {
+      "name": "rdtscp",
+      "type": "bool"
+    },
+    {
+      "name": "clwb",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-pv-sched-yield",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-asyncpf",
+      "type": "bool"
+    },
+    {
+      "name": "avx-vnni-int16",
+      "type": "bool"
+    },
+    {
+      "name": "decodeassists",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-wbinvd-exit",
+      "type": "bool"
+    },
+    {
+      "name": "pat",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-clear-rtit-ctl",
+      "type": "bool"
+    },
+    {
+      "name": "invpcid",
+      "type": "bool"
+    },
+    {
+      "name": "pdpe1gb",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-save-pat",
+      "type": "bool"
+    },
+    {
+      "name": "unavailable-features",
+      "type": "strList"
+    },
+    {
+      "name": "tsc-adjust",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-enable-user-wait-pause",
+      "type": "bool"
+    },
+    {
+      "name": "ht",
+      "type": "bool"
+    },
+    {
+      "name": "amx-tile",
+      "type": "bool"
+    },
+    {
+      "name": "clflushopt",
+      "type": "bool"
+    },
+    {
+      "name": "hv-xmm-input",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-tsc-offset",
+      "type": "bool"
+    },
+    {
+      "name": "ssbd",
+      "type": "bool"
+    },
+    {
+      "name": "3dnowext",
+      "type": "bool"
+    },
+    {
+      "name": "xtpr",
+      "type": "bool"
+    },
+    {
+      "name": "sgx",
+      "type": "bool"
+    },
+    {
+      "name": "hv-crash",
+      "type": "bool"
+    },
+    {
+      "name": "xsave",
+      "type": "bool"
+    },
+    {
+      "name": "pdcm",
+      "type": "bool"
+    },
+    {
+      "name": "hv-vendor-id",
+      "type": "str"
+    },
+    {
+      "name": "est",
+      "type": "bool"
+    },
+    {
+      "name": "vendor",
+      "type": "string"
+    },
+    {
+      "name": "pge",
+      "type": "bool"
+    },
+    {
+      "name": "pcommit",
+      "type": "bool"
+    },
+    {
+      "name": "ibs",
+      "type": "bool"
+    },
+    {
+      "name": "tsc-deadline",
+      "type": "bool"
+    },
+    {
+      "name": "sgx-mode64",
+      "type": "bool"
+    },
+    {
+      "name": "kvmclock-stable-bit",
+      "type": "bool"
+    },
+    {
+      "name": "misalignsse",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-msr-bitmap",
+      "type": "bool"
+    },
+    {
+      "name": "check",
+      "type": "bool"
+    },
+    {
+      "name": "hv-time",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr-nb",
+      "type": "bool"
+    },
+    {
+      "name": "hv-avic",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-vmfunc",
+      "type": "bool"
+    },
+    {
+      "name": "phys-bits",
+      "type": "uint32"
+    },
+    {
+      "name": "apic",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-save-preemption-timer",
+      "type": "bool"
+    },
+    {
+      "name": "prefetchi",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-nmi-exit",
+      "type": "bool"
+    },
+    {
+      "name": "avx512vbmi",
+      "type": "bool"
+    },
+    {
+      "name": "thread-id",
+      "type": "int32"
+    },
+    {
+      "name": "min-xlevel",
+      "type": "uint32"
+    },
+    {
+      "name": "socket-id",
+      "type": "int32"
+    },
+    {
+      "name": "vmx-exit-nosave-debugctl",
+      "type": "bool"
+    },
+    {
+      "name": "bmi2",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-xsaves",
+      "type": "bool"
+    },
+    {
+      "name": "avx512f",
+      "type": "bool"
+    },
+    {
+      "name": "arch-capabilities",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-exit-load-perf-global-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-pml",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-entry-load-perf-global-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "ace2-en",
+      "type": "bool"
+    },
+    {
+      "name": "wdt",
+      "type": "bool"
+    },
+    {
+      "name": "intel-pt",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-nopiodelay",
+      "type": "bool"
+    },
+    {
+      "name": "cmpccxadd",
+      "type": "bool"
+    },
+    {
+      "name": "v-vmsave-vmload",
+      "type": "bool"
+    },
+    {
+      "name": "avx512pf",
+      "type": "bool"
+    },
+    {
+      "name": "bmi1",
+      "type": "bool"
+    },
+    {
+      "name": "enforce",
+      "type": "bool"
+    },
+    {
+      "name": "sse4.2",
+      "type": "bool"
+    },
+    {
+      "name": "hv-syndbg",
+      "type": "bool"
+    },
+    {
+      "name": "ibrs-all",
+      "type": "bool"
+    },
+    {
+      "name": "xgetbv1",
+      "type": "bool"
+    },
+    {
+      "name": "mcdt-no",
+      "type": "bool"
+    },
+    {
+      "name": "spec-ctrl",
+      "type": "bool"
+    },
+    {
+      "name": "3dnow",
+      "type": "bool"
+    },
+    {
+      "name": "kvm-asyncpf-int",
+      "type": "bool"
+    },
+    {
+      "name": "vmx",
+      "type": "bool"
+    },
+    {
+      "name": "la57",
+      "type": "bool"
+    },
+    {
+      "name": "hv-no-nonarch-coresharing",
+      "type": "OnOffAuto"
+    },
+    {
+      "name": "amx-bf16",
+      "type": "bool"
+    },
+    {
+      "name": "sse4.1",
+      "type": "bool"
+    },
+    {
+      "name": "xsaveopt",
+      "type": "bool"
+    },
+    {
+      "name": "hv-relaxed",
+      "type": "bool"
+    },
+    {
+      "name": "hv-version-id-snumber",
+      "type": "uint32"
+    },
+    {
+      "name": "stibp-always-on",
+      "type": "bool"
+    },
+    {
+      "name": "sbpb",
+      "type": "bool"
+    },
+    {
+      "name": "avx-vnni",
+      "type": "bool"
+    },
+    {
+      "name": "fxsr",
+      "type": "bool"
+    },
+    {
+      "name": "phe-en",
+      "type": "bool"
+    },
+    {
+      "name": "hv-vapic",
+      "type": "bool"
+    },
+    {
+      "name": "hv-ipi",
+      "type": "bool"
+    },
+    {
+      "name": "null-sel-clr-base",
+      "type": "bool"
+    },
+    {
+      "name": "hypervisor",
+      "type": "bool"
+    },
+    {
+      "name": "avx10-256",
+      "type": "bool"
+    },
+    {
+      "name": "aes",
+      "type": "bool"
+    },
+    {
+      "name": "amd-ssbd",
+      "type": "bool"
+    },
+    {
+      "name": "core-id",
+      "type": "int32"
+    },
+    {
+      "name": "de",
+      "type": "bool"
+    },
+    {
+      "name": "ss",
+      "type": "bool"
+    },
+    {
+      "name": "vmx-movdr-exit",
+      "type": "bool"
+    },
+    {
+      "name": "fma",
+      "type": "bool"
+    },
+    {
+      "name": "lahf_lm",
+      "type": "bool"
+    },
+    {
+      "name": "lapic",
+      "type": "child<kvm-apic>"
+    },
+    {
+      "name": "tsc_adjust",
+      "type": "bool"
+    },
+    {
+      "name": "svm_lock",
+      "type": "bool"
+    },
+    {
+      "name": "vmcb_clean",
+      "type": "bool"
+    },
+    {
+      "name": "nrip_save",
+      "type": "bool"
+    },
+    {
+      "name": "lbr_fmt",
+      "type": "uint64"
+    },
+    {
+      "name": "pclmuldq",
+      "type": "bool"
+    },
+    {
+      "name": "ffxsr",
+      "type": "bool"
+    },
+    {
+      "name": "sse4-2",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_asyncpf_int",
+      "type": "bool"
+    },
+    {
+      "name": "cmp_legacy",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_nopiodelay",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr_core",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_pv_unhalt",
+      "type": "bool"
+    },
+    {
+      "name": "ds_cpl",
+      "type": "bool"
+    },
+    {
+      "name": "sse4-1",
+      "type": "bool"
+    },
+    {
+      "name": "perfctr_nb",
+      "type": "bool"
+    },
+    {
+      "name": "sse3",
+      "type": "bool"
+    },
+    {
+      "name": "tsc_scale",
+      "type": "bool"
+    },
+    {
+      "name": "pause_filter",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_asyncpf",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_steal_time",
+      "type": "bool"
+    },
+    {
+      "name": "feature-words",
+      "type": "X86CPUFeatureWordInfo"
+    },
+    {
+      "name": "kvm_mmu",
+      "type": "bool"
+    },
+    {
+      "name": "filtered-features",
+      "type": "X86CPUFeatureWordInfo"
+    },
+    {
+      "name": "sse4_2",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_poll_control",
+      "type": "bool"
+    },
+    {
+      "name": "fxsr_opt",
+      "type": "bool"
+    },
+    {
+      "name": "nodeid_msr",
+      "type": "bool"
+    },
+    {
+      "name": "kvm_pv_eoi",
+      "type": "bool"
+    },
+    {
+      "name": "i64",
+      "type": "bool"
+    },
+    {
+      "name": "hv-apicv",
+      "type": "bool"
+    },
+    {
+      "name": "xd",
+      "type": "bool"
+    },
+    {
+      "name": "sse4_1",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-1"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "realized"
+  },
+  "id": "libvirt-2"
+}
+
+{
+  "return": true,
+  "id": "libvirt-2"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hotplugged"
+  },
+  "id": "libvirt-3"
+}
+
+{
+  "return": false,
+  "id": "libvirt-3"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hotpluggable"
+  },
+  "id": "libvirt-4"
+}
+
+{
+  "return": true,
+  "id": "libvirt-4"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "start-powered-off"
+  },
+  "id": "libvirt-5"
+}
+
+{
+  "return": false,
+  "id": "libvirt-5"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invept-single-context"
+  },
+  "id": "libvirt-6"
+}
+
+{
+  "return": false,
+  "id": "libvirt-6"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "core-capability"
+  },
+  "id": "libvirt-7"
+}
+
+{
+  "return": false,
+  "id": "libvirt-7"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "popcnt"
+  },
+  "id": "libvirt-8"
+}
+
+{
+  "return": true,
+  "id": "libvirt-8"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-debug"
+  },
+  "id": "libvirt-9"
+}
+
+{
+  "return": false,
+  "id": "libvirt-9"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-poll-control"
+  },
+  "id": "libvirt-10"
+}
+
+{
+  "return": false,
+  "id": "libvirt-10"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "dtes64"
+  },
+  "id": "libvirt-11"
+}
+
+{
+  "return": false,
+  "id": "libvirt-11"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invvpid-single-addr"
+  },
+  "id": "libvirt-12"
+}
+
+{
+  "return": false,
+  "id": "libvirt-12"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xstore"
+  },
+  "id": "libvirt-13"
+}
+
+{
+  "return": false,
+  "id": "libvirt-13"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-vendor-cpuid-only-v2"
+  },
+  "id": "libvirt-14"
+}
+
+{
+  "return": false,
+  "id": "libvirt-14"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sm4"
+  },
+  "id": "libvirt-15"
+}
+
+{
+  "return": false,
+  "id": "libvirt-15"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-emsr-bitmap"
+  },
+  "id": "libvirt-16"
+}
+
+{
+  "return": false,
+  "id": "libvirt-16"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pse36"
+  },
+  "id": "libvirt-17"
+}
+
+{
+  "return": true,
+  "id": "libvirt-17"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-4vnniw"
+  },
+  "id": "libvirt-18"
+}
+
+{
+  "return": false,
+  "id": "libvirt-18"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-intel-pt-auto-level"
+  },
+  "id": "libvirt-19"
+}
+
+{
+  "return": true,
+  "id": "libvirt-19"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fma4"
+  },
+  "id": "libvirt-20"
+}
+
+{
+  "return": false,
+  "id": "libvirt-20"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-vp2intersect"
+  },
+  "id": "libvirt-21"
+}
+
+{
+  "return": false,
+  "id": "libvirt-21"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx2"
+  },
+  "id": "libvirt-22"
+}
+
+{
+  "return": true,
+  "id": "libvirt-22"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amd-psfd"
+  },
+  "id": "libvirt-23"
+}
+
+{
+  "return": false,
+  "id": "libvirt-23"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amd-stibp"
+  },
+  "id": "libvirt-24"
+}
+
+{
+  "return": false,
+  "id": "libvirt-24"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgxlc"
+  },
+  "id": "libvirt-25"
+}
+
+{
+  "return": false,
+  "id": "libvirt-25"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sm3"
+  },
+  "id": "libvirt-26"
+}
+
+{
+  "return": false,
+  "id": "libvirt-26"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ept-advanced-exitinfo"
+  },
+  "id": "libvirt-27"
+}
+
+{
+  "return": false,
+  "id": "libvirt-27"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-store-lma"
+  },
+  "id": "libvirt-28"
+}
+
+{
+  "return": false,
+  "id": "libvirt-28"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "msr-imm"
+  },
+  "id": "libvirt-29"
+}
+
+{
+  "return": false,
+  "id": "libvirt-29"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmware-cpuid-freq"
+  },
+  "id": "libvirt-30"
+}
+
+{
+  "return": true,
+  "id": "libvirt-30"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-force-cpuid-0x1f"
+  },
+  "id": "libvirt-31"
+}
+
+{
+  "return": false,
+  "id": "libvirt-31"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ddpd-u"
+  },
+  "id": "libvirt-32"
+}
+
+{
+  "return": false,
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-nested-exception"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "return": false,
+  "id": "libvirt-33"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-noload-debugctl"
+  },
+  "id": "libvirt-34"
+}
+
+{
+  "return": false,
+  "id": "libvirt-34"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "bhi-no"
+  },
+  "id": "libvirt-35"
+}
+
+{
+  "return": false,
+  "id": "libvirt-35"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amx-fp16"
+  },
+  "id": "libvirt-36"
+}
+
+{
+  "return": false,
+  "id": "libvirt-36"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "erms"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "return": true,
+  "id": "libvirt-37"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vaes"
+  },
+  "id": "libvirt-38"
+}
+
+{
+  "return": false,
+  "id": "libvirt-38"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-eptad"
+  },
+  "id": "libvirt-39"
+}
+
+{
+  "return": false,
+  "id": "libvirt-39"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-activity-wait-sipi"
+  },
+  "id": "libvirt-40"
+}
+
+{
+  "return": false,
+  "id": "libvirt-40"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-flexpriority"
+  },
+  "id": "libvirt-41"
+}
+
+{
+  "return": false,
+  "id": "libvirt-41"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-reset"
+  },
+  "id": "libvirt-42"
+}
+
+{
+  "return": false,
+  "id": "libvirt-42"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rdrand"
+  },
+  "id": "libvirt-43"
+}
+
+{
+  "return": true,
+  "id": "libvirt-43"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lam"
+  },
+  "id": "libvirt-44"
+}
+
+{
+  "return": false,
+  "id": "libvirt-44"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-pause-exit"
+  },
+  "id": "libvirt-45"
+}
+
+{
+  "return": false,
+  "id": "libvirt-45"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-shadow-vmcs"
+  },
+  "id": "libvirt-46"
+}
+
+{
+  "return": false,
+  "id": "libvirt-46"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-vpopcntdq"
+  },
+  "id": "libvirt-47"
+}
+
+{
+  "return": false,
+  "id": "libvirt-47"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xcrypt"
+  },
+  "id": "libvirt-48"
+}
+
+{
+  "return": false,
+  "id": "libvirt-48"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tbm"
+  },
+  "id": "libvirt-49"
+}
+
+{
+  "return": false,
+  "id": "libvirt-49"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "movdiri"
+  },
+  "id": "libvirt-50"
+}
+
+{
+  "return": false,
+  "id": "libvirt-50"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-monitor-exit"
+  },
+  "id": "libvirt-51"
+}
+
+{
+  "return": false,
+  "id": "libvirt-51"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-eoi"
+  },
+  "id": "libvirt-52"
+}
+
+{
+  "return": true,
+  "id": "libvirt-52"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lm"
+  },
+  "id": "libvirt-53"
+}
+
+{
+  "return": true,
+  "id": "libvirt-53"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-vendor-cpuid-only"
+  },
+  "id": "libvirt-54"
+}
+
+{
+  "return": true,
+  "id": "libvirt-54"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pbrsb-no"
+  },
+  "id": "libvirt-55"
+}
+
+{
+  "return": false,
+  "id": "libvirt-55"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-unrestricted-guest"
+  },
+  "id": "libvirt-56"
+}
+
+{
+  "return": false,
+  "id": "libvirt-56"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pae"
+  },
+  "id": "libvirt-57"
+}
+
+{
+  "return": true,
+  "id": "libvirt-57"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ssse3"
+  },
+  "id": "libvirt-58"
+}
+
+{
+  "return": true,
+  "id": "libvirt-58"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-runtime"
+  },
+  "id": "libvirt-59"
+}
+
+{
+  "return": false,
+  "id": "libvirt-59"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "phe"
+  },
+  "id": "libvirt-60"
+}
+
+{
+  "return": false,
+  "id": "libvirt-60"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "host-phys-bits"
+  },
+  "id": "libvirt-61"
+}
+
+{
+  "return": false,
+  "id": "libvirt-61"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "taa-no"
+  },
+  "id": "libvirt-62"
+}
+
+{
+  "return": false,
+  "id": "libvirt-62"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-aex-notify"
+  },
+  "id": "libvirt-63"
+}
+
+{
+  "return": false,
+  "id": "libvirt-63"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "full-width-write"
+  },
+  "id": "libvirt-64"
+}
+
+{
+  "return": false,
+  "id": "libvirt-64"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "arat"
+  },
+  "id": "libvirt-65"
+}
+
+{
+  "return": true,
+  "id": "libvirt-65"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512vbmi2"
+  },
+  "id": "libvirt-66"
+}
+
+{
+  "return": false,
+  "id": "libvirt-66"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sha512"
+  },
+  "id": "libvirt-67"
+}
+
+{
+  "return": false,
+  "id": "libvirt-67"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "arch-lbr"
+  },
+  "id": "libvirt-68"
+}
+
+{
+  "return": false,
+  "id": "libvirt-68"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vnmi-pending"
+  },
+  "id": "libvirt-69"
+}
+
+{
+  "return": false,
+  "id": "libvirt-69"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-any-errcode"
+  },
+  "id": "libvirt-70"
+}
+
+{
+  "return": false,
+  "id": "libvirt-70"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x2apic"
+  },
+  "id": "libvirt-71"
+}
+
+{
+  "return": true,
+  "id": "libvirt-71"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "npt"
+  },
+  "id": "libvirt-72"
+}
+
+{
+  "return": false,
+  "id": "libvirt-72"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pmm-en"
+  },
+  "id": "libvirt-73"
+}
+
+{
+  "return": false,
+  "id": "libvirt-73"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invpcid-exit"
+  },
+  "id": "libvirt-74"
+}
+
+{
+  "return": false,
+  "id": "libvirt-74"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512ifma"
+  },
+  "id": "libvirt-75"
+}
+
+{
+  "return": false,
+  "id": "libvirt-75"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ibpb-brtype"
+  },
+  "id": "libvirt-76"
+}
+
+{
+  "return": false,
+  "id": "libvirt-76"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-evmcs"
+  },
+  "id": "libvirt-77"
+}
+
+{
+  "return": false,
+  "id": "libvirt-77"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "srso-user-kernel-no"
+  },
+  "id": "libvirt-78"
+}
+
+{
+  "return": false,
+  "id": "libvirt-78"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-io-exit"
+  },
+  "id": "libvirt-79"
+}
+
+{
+  "return": false,
+  "id": "libvirt-79"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc"
+  },
+  "id": "libvirt-80"
+}
+
+{
+  "return": true,
+  "id": "libvirt-80"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-force-features"
+  },
+  "id": "libvirt-81"
+}
+
+{
+  "return": false,
+  "id": "libvirt-81"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ins-outs"
+  },
+  "id": "libvirt-82"
+}
+
+{
+  "return": false,
+  "id": "libvirt-82"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "dca"
+  },
+  "id": "libvirt-83"
+}
+
+{
+  "return": false,
+  "id": "libvirt-83"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-apicv-x2apic"
+  },
+  "id": "libvirt-84"
+}
+
+{
+  "return": false,
+  "id": "libvirt-84"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "perfctr-core"
+  },
+  "id": "libvirt-85"
+}
+
+{
+  "return": false,
+  "id": "libvirt-85"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ia64"
+  },
+  "id": "libvirt-86"
+}
+
+{
+  "return": false,
+  "id": "libvirt-86"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fdp-excptn-only"
+  },
+  "id": "libvirt-87"
+}
+
+{
+  "return": false,
+  "id": "libvirt-87"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-stimer-direct"
+  },
+  "id": "libvirt-88"
+}
+
+{
+  "return": false,
+  "id": "libvirt-88"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "gds-no"
+  },
+  "id": "libvirt-89"
+}
+
+{
+  "return": false,
+  "id": "libvirt-89"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-secondary-ctls"
+  },
+  "id": "libvirt-90"
+}
+
+{
+  "return": false,
+  "id": "libvirt-90"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-cr3-load-noexit"
+  },
+  "id": "libvirt-91"
+}
+
+{
+  "return": false,
+  "id": "libvirt-91"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rfds-no"
+  },
+  "id": "libvirt-92"
+}
+
+{
+  "return": false,
+  "id": "libvirt-92"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pmu"
+  },
+  "id": "libvirt-93"
+}
+
+{
+  "return": false,
+  "id": "libvirt-93"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-rtit-ctl"
+  },
+  "id": "libvirt-94"
+}
+
+{
+  "return": false,
+  "id": "libvirt-94"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvmclock"
+  },
+  "id": "libvirt-95"
+}
+
+{
+  "return": true,
+  "id": "libvirt-95"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx10"
+  },
+  "id": "libvirt-96"
+}
+
+{
+  "return": false,
+  "id": "libvirt-96"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invept-single-context-noglobals"
+  },
+  "id": "libvirt-97"
+}
+
+{
+  "return": false,
+  "id": "libvirt-97"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xen-vapic"
+  },
+  "id": "libvirt-98"
+}
+
+{
+  "return": false,
+  "id": "libvirt-98"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "md-clear"
+  },
+  "id": "libvirt-99"
+}
+
+{
+  "return": false,
+  "id": "libvirt-99"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "invtsc"
+  },
+  "id": "libvirt-100"
+}
+
+{
+  "return": false,
+  "id": "libvirt-100"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pn"
+  },
+  "id": "libvirt-101"
+}
+
+{
+  "return": false,
+  "id": "libvirt-101"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512cd"
+  },
+  "id": "libvirt-102"
+}
+
+{
+  "return": false,
+  "id": "libvirt-102"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cmp-legacy"
+  },
+  "id": "libvirt-103"
+}
+
+{
+  "return": false,
+  "id": "libvirt-103"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cx16"
+  },
+  "id": "libvirt-104"
+}
+
+{
+  "return": true,
+  "id": "libvirt-104"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512dq"
+  },
+  "id": "libvirt-105"
+}
+
+{
+  "return": false,
+  "id": "libvirt-105"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "abm"
+  },
+  "id": "libvirt-106"
+}
+
+{
+  "return": true,
+  "id": "libvirt-106"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-activity-shutdown"
+  },
+  "id": "libvirt-107"
+}
+
+{
+  "return": false,
+  "id": "libvirt-107"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "auto-ibrs"
+  },
+  "id": "libvirt-108"
+}
+
+{
+  "return": false,
+  "id": "libvirt-108"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-ipi"
+  },
+  "id": "libvirt-109"
+}
+
+{
+  "return": false,
+  "id": "libvirt-109"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx10-128"
+  },
+  "id": "libvirt-110"
+}
+
+{
+  "return": false,
+  "id": "libvirt-110"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-apicv-register"
+  },
+  "id": "libvirt-111"
+}
+
+{
+  "return": false,
+  "id": "libvirt-111"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fxsr-opt"
+  },
+  "id": "libvirt-112"
+}
+
+{
+  "return": false,
+  "id": "libvirt-112"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "skip-l1dfl-vmentry"
+  },
+  "id": "libvirt-113"
+}
+
+{
+  "return": false,
+  "id": "libvirt-113"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fill-mtrr-mask"
+  },
+  "id": "libvirt-114"
+}
+
+{
+  "return": true,
+  "id": "libvirt-114"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-migrate-smi-count"
+  },
+  "id": "libvirt-115"
+}
+
+{
+  "return": true,
+  "id": "libvirt-115"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "wbnoinvd"
+  },
+  "id": "libvirt-116"
+}
+
+{
+  "return": false,
+  "id": "libvirt-116"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx1"
+  },
+  "id": "libvirt-117"
+}
+
+{
+  "return": false,
+  "id": "libvirt-117"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rdpid"
+  },
+  "id": "libvirt-118"
+}
+
+{
+  "return": false,
+  "id": "libvirt-118"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pcid"
+  },
+  "id": "libvirt-119"
+}
+
+{
+  "return": true,
+  "id": "libvirt-119"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "bhi-ctrl"
+  },
+  "id": "libvirt-120"
+}
+
+{
+  "return": false,
+  "id": "libvirt-120"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "syscall"
+  },
+  "id": "libvirt-121"
+}
+
+{
+  "return": true,
+  "id": "libvirt-121"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pse"
+  },
+  "id": "libvirt-122"
+}
+
+{
+  "return": true,
+  "id": "libvirt-122"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rrsba-ctrl"
+  },
+  "id": "libvirt-123"
+}
+
+{
+  "return": false,
+  "id": "libvirt-123"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx-ne-convert"
+  },
+  "id": "libvirt-124"
+}
+
+{
+  "return": false,
+  "id": "libvirt-124"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xsaves"
+  },
+  "id": "libvirt-125"
+}
+
+{
+  "return": true,
+  "id": "libvirt-125"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-pat"
+  },
+  "id": "libvirt-126"
+}
+
+{
+  "return": false,
+  "id": "libvirt-126"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vgif"
+  },
+  "id": "libvirt-127"
+}
+
+{
+  "return": false,
+  "id": "libvirt-127"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mce"
+  },
+  "id": "libvirt-128"
+}
+
+{
+  "return": true,
+  "id": "libvirt-128"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xfd"
+  },
+  "id": "libvirt-129"
+}
+
+{
+  "return": false,
+  "id": "libvirt-129"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-tokenkey"
+  },
+  "id": "libvirt-130"
+}
+
+{
+  "return": false,
+  "id": "libvirt-130"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ibpb"
+  },
+  "id": "libvirt-131"
+}
+
+{
+  "return": false,
+  "id": "libvirt-131"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-amd-topoext-features-only"
+  },
+  "id": "libvirt-132"
+}
+
+{
+  "return": true,
+  "id": "libvirt-132"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-apicv-xapic"
+  },
+  "id": "libvirt-133"
+}
+
+{
+  "return": false,
+  "id": "libvirt-133"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-hlt-exit"
+  },
+  "id": "libvirt-134"
+}
+
+{
+  "return": false,
+  "id": "libvirt-134"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lwp"
+  },
+  "id": "libvirt-135"
+}
+
+{
+  "return": false,
+  "id": "libvirt-135"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "eraps"
+  },
+  "id": "libvirt-136"
+}
+
+{
+  "return": false,
+  "id": "libvirt-136"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cldemote"
+  },
+  "id": "libvirt-137"
+}
+
+{
+  "return": false,
+  "id": "libvirt-137"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-load-pkrs"
+  },
+  "id": "libvirt-138"
+}
+
+{
+  "return": false,
+  "id": "libvirt-138"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rtm"
+  },
+  "id": "libvirt-139"
+}
+
+{
+  "return": false,
+  "id": "libvirt-139"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-tlbflush"
+  },
+  "id": "libvirt-140"
+}
+
+{
+  "return": false,
+  "id": "libvirt-140"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-steal-time"
+  },
+  "id": "libvirt-141"
+}
+
+{
+  "return": true,
+  "id": "libvirt-141"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cpuid-0xb"
+  },
+  "id": "libvirt-142"
+}
+
+{
+  "return": true,
+  "id": "libvirt-142"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fsrs"
+  },
+  "id": "libvirt-143"
+}
+
+{
+  "return": false,
+  "id": "libvirt-143"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-provisionkey"
+  },
+  "id": "libvirt-144"
+}
+
+{
+  "return": false,
+  "id": "libvirt-144"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-eptp-switching"
+  },
+  "id": "libvirt-145"
+}
+
+{
+  "return": false,
+  "id": "libvirt-145"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invlpg-exit"
+  },
+  "id": "libvirt-146"
+}
+
+{
+  "return": false,
+  "id": "libvirt-146"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-efer"
+  },
+  "id": "libvirt-147"
+}
+
+{
+  "return": false,
+  "id": "libvirt-147"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-save-efer"
+  },
+  "id": "libvirt-148"
+}
+
+{
+  "return": false,
+  "id": "libvirt-148"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-l1-cache-per-thread"
+  },
+  "id": "libvirt-149"
+}
+
+{
+  "return": true,
+  "id": "libvirt-149"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vme"
+  },
+  "id": "libvirt-150"
+}
+
+{
+  "return": true,
+  "id": "libvirt-150"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-unhalt"
+  },
+  "id": "libvirt-151"
+}
+
+{
+  "return": false,
+  "id": "libvirt-151"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-desc-exit"
+  },
+  "id": "libvirt-152"
+}
+
+{
+  "return": false,
+  "id": "libvirt-152"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-kss"
+  },
+  "id": "libvirt-153"
+}
+
+{
+  "return": false,
+  "id": "libvirt-153"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invvpid"
+  },
+  "id": "libvirt-154"
+}
+
+{
+  "return": false,
+  "id": "libvirt-154"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-ia32e-mode"
+  },
+  "id": "libvirt-155"
+}
+
+{
+  "return": false,
+  "id": "libvirt-155"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "svm"
+  },
+  "id": "libvirt-156"
+}
+
+{
+  "return": false,
+  "id": "libvirt-156"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-hint-dedicated"
+  },
+  "id": "libvirt-157"
+}
+
+{
+  "return": false,
+  "id": "libvirt-157"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ept-execonly"
+  },
+  "id": "libvirt-158"
+}
+
+{
+  "return": false,
+  "id": "libvirt-158"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx-ifma"
+  },
+  "id": "libvirt-159"
+}
+
+{
+  "return": false,
+  "id": "libvirt-159"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mca"
+  },
+  "id": "libvirt-160"
+}
+
+{
+  "return": true,
+  "id": "libvirt-160"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-tsc-scaling"
+  },
+  "id": "libvirt-161"
+}
+
+{
+  "return": false,
+  "id": "libvirt-161"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mtrr"
+  },
+  "id": "libvirt-162"
+}
+
+{
+  "return": true,
+  "id": "libvirt-162"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cid"
+  },
+  "id": "libvirt-163"
+}
+
+{
+  "return": false,
+  "id": "libvirt-163"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pfthreshold"
+  },
+  "id": "libvirt-164"
+}
+
+{
+  "return": false,
+  "id": "libvirt-164"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pmm"
+  },
+  "id": "libvirt-165"
+}
+
+{
+  "return": false,
+  "id": "libvirt-165"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lahf-lm"
+  },
+  "id": "libvirt-166"
+}
+
+{
+  "return": true,
+  "id": "libvirt-166"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "zero-fcs-fds"
+  },
+  "id": "libvirt-167"
+}
+
+{
+  "return": false,
+  "id": "libvirt-167"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-pkrs"
+  },
+  "id": "libvirt-168"
+}
+
+{
+  "return": false,
+  "id": "libvirt-168"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tcg-cpuid"
+  },
+  "id": "libvirt-169"
+}
+
+{
+  "return": true,
+  "id": "libvirt-169"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "no-nested-data-bp"
+  },
+  "id": "libvirt-170"
+}
+
+{
+  "return": false,
+  "id": "libvirt-170"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "legacy-multi-node"
+  },
+  "id": "libvirt-171"
+}
+
+{
+  "return": false,
+  "id": "libvirt-171"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tm"
+  },
+  "id": "libvirt-172"
+}
+
+{
+  "return": false,
+  "id": "libvirt-172"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pbe"
+  },
+  "id": "libvirt-173"
+}
+
+{
+  "return": false,
+  "id": "libvirt-173"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amx-int8"
+  },
+  "id": "libvirt-174"
+}
+
+{
+  "return": false,
+  "id": "libvirt-174"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-rdpmc-exit"
+  },
+  "id": "libvirt-175"
+}
+
+{
+  "return": false,
+  "id": "libvirt-175"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "intel-psfd"
+  },
+  "id": "libvirt-176"
+}
+
+{
+  "return": false,
+  "id": "libvirt-176"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fs-gs-base-ns"
+  },
+  "id": "libvirt-177"
+}
+
+{
+  "return": false,
+  "id": "libvirt-177"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "split-lock-detect"
+  },
+  "id": "libvirt-178"
+}
+
+{
+  "return": false,
+  "id": "libvirt-178"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fpu"
+  },
+  "id": "libvirt-179"
+}
+
+{
+  "return": true,
+  "id": "libvirt-179"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "skinit"
+  },
+  "id": "libvirt-180"
+}
+
+{
+  "return": false,
+  "id": "libvirt-180"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "l3-cache"
+  },
+  "id": "libvirt-181"
+}
+
+{
+  "return": true,
+  "id": "libvirt-181"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sep"
+  },
+  "id": "libvirt-182"
+}
+
+{
+  "return": true,
+  "id": "libvirt-182"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-load-pat"
+  },
+  "id": "libvirt-183"
+}
+
+{
+  "return": false,
+  "id": "libvirt-183"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "intel-pt-lip"
+  },
+  "id": "libvirt-184"
+}
+
+{
+  "return": false,
+  "id": "libvirt-184"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx10-512"
+  },
+  "id": "libvirt-185"
+}
+
+{
+  "return": false,
+  "id": "libvirt-185"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-tlbflush-direct"
+  },
+  "id": "libvirt-186"
+}
+
+{
+  "return": false,
+  "id": "libvirt-186"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-bf16"
+  },
+  "id": "libvirt-187"
+}
+
+{
+  "return": false,
+  "id": "libvirt-187"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "overflow-recov"
+  },
+  "id": "libvirt-188"
+}
+
+{
+  "return": false,
+  "id": "libvirt-188"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vnmi"
+  },
+  "id": "libvirt-189"
+}
+
+{
+  "return": false,
+  "id": "libvirt-189"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-rdtscp-exit"
+  },
+  "id": "libvirt-190"
+}
+
+{
+  "return": false,
+  "id": "libvirt-190"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amx-complex"
+  },
+  "id": "libvirt-191"
+}
+
+{
+  "return": false,
+  "id": "libvirt-191"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "nx"
+  },
+  "id": "libvirt-192"
+}
+
+{
+  "return": true,
+  "id": "libvirt-192"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invvpid-all-context"
+  },
+  "id": "libvirt-193"
+}
+
+{
+  "return": false,
+  "id": "libvirt-193"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx-vnni-int8"
+  },
+  "id": "libvirt-194"
+}
+
+{
+  "return": false,
+  "id": "libvirt-194"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vmwrite-vmexit-fields"
+  },
+  "id": "libvirt-195"
+}
+
+{
+  "return": false,
+  "id": "libvirt-195"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-page-walk-4"
+  },
+  "id": "libvirt-196"
+}
+
+{
+  "return": false,
+  "id": "libvirt-196"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rfds-clear"
+  },
+  "id": "libvirt-197"
+}
+
+{
+  "return": false,
+  "id": "libvirt-197"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pause-filter"
+  },
+  "id": "libvirt-198"
+}
+
+{
+  "return": false,
+  "id": "libvirt-198"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ds-cpl"
+  },
+  "id": "libvirt-199"
+}
+
+{
+  "return": false,
+  "id": "libvirt-199"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "succor"
+  },
+  "id": "libvirt-200"
+}
+
+{
+  "return": false,
+  "id": "libvirt-200"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fred"
+  },
+  "id": "libvirt-201"
+}
+
+{
+  "return": false,
+  "id": "libvirt-201"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fsrm"
+  },
+  "id": "libvirt-202"
+}
+
+{
+  "return": false,
+  "id": "libvirt-202"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-load-efer"
+  },
+  "id": "libvirt-203"
+}
+
+{
+  "return": false,
+  "id": "libvirt-203"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-mtf"
+  },
+  "id": "libvirt-204"
+}
+
+{
+  "return": false,
+  "id": "libvirt-204"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-fred"
+  },
+  "id": "libvirt-205"
+}
+
+{
+  "return": false,
+  "id": "libvirt-205"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ept"
+  },
+  "id": "libvirt-206"
+}
+
+{
+  "return": false,
+  "id": "libvirt-206"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fb-clear"
+  },
+  "id": "libvirt-207"
+}
+
+{
+  "return": false,
+  "id": "libvirt-207"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "nodeid-msr"
+  },
+  "id": "libvirt-208"
+}
+
+{
+  "return": false,
+  "id": "libvirt-208"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-clear-bndcfgs"
+  },
+  "id": "libvirt-209"
+}
+
+{
+  "return": false,
+  "id": "libvirt-209"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "smap"
+  },
+  "id": "libvirt-210"
+}
+
+{
+  "return": true,
+  "id": "libvirt-210"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-io-bitmap"
+  },
+  "id": "libvirt-211"
+}
+
+{
+  "return": false,
+  "id": "libvirt-211"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-preemption-timer"
+  },
+  "id": "libvirt-212"
+}
+
+{
+  "return": false,
+  "id": "libvirt-212"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invept-all-context"
+  },
+  "id": "libvirt-213"
+}
+
+{
+  "return": false,
+  "id": "libvirt-213"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-intr-exit"
+  },
+  "id": "libvirt-214"
+}
+
+{
+  "return": false,
+  "id": "libvirt-214"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "prefetchiti"
+  },
+  "id": "libvirt-215"
+}
+
+{
+  "return": false,
+  "id": "libvirt-215"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "psdp-no"
+  },
+  "id": "libvirt-216"
+}
+
+{
+  "return": false,
+  "id": "libvirt-216"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cr8legacy"
+  },
+  "id": "libvirt-217"
+}
+
+{
+  "return": false,
+  "id": "libvirt-217"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vpid"
+  },
+  "id": "libvirt-218"
+}
+
+{
+  "return": false,
+  "id": "libvirt-218"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-zero-len-inject"
+  },
+  "id": "libvirt-219"
+}
+
+{
+  "return": false,
+  "id": "libvirt-219"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pschange-mc-no"
+  },
+  "id": "libvirt-220"
+}
+
+{
+  "return": false,
+  "id": "libvirt-220"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "virt-ssbd"
+  },
+  "id": "libvirt-221"
+}
+
+{
+  "return": false,
+  "id": "libvirt-221"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "umip"
+  },
+  "id": "libvirt-222"
+}
+
+{
+  "return": false,
+  "id": "libvirt-222"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512er"
+  },
+  "id": "libvirt-223"
+}
+
+{
+  "return": false,
+  "id": "libvirt-223"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vintr-pending"
+  },
+  "id": "libvirt-224"
+}
+
+{
+  "return": false,
+  "id": "libvirt-224"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xstore-en"
+  },
+  "id": "libvirt-225"
+}
+
+{
+  "return": false,
+  "id": "libvirt-225"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512vl"
+  },
+  "id": "libvirt-226"
+}
+
+{
+  "return": false,
+  "id": "libvirt-226"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ibrs"
+  },
+  "id": "libvirt-227"
+}
+
+{
+  "return": false,
+  "id": "libvirt-227"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rsba"
+  },
+  "id": "libvirt-228"
+}
+
+{
+  "return": false,
+  "id": "libvirt-228"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cmov"
+  },
+  "id": "libvirt-229"
+}
+
+{
+  "return": true,
+  "id": "libvirt-229"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-posted-intr"
+  },
+  "id": "libvirt-230"
+}
+
+{
+  "return": false,
+  "id": "libvirt-230"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xcrypt-en"
+  },
+  "id": "libvirt-231"
+}
+
+{
+  "return": false,
+  "id": "libvirt-231"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tm2"
+  },
+  "id": "libvirt-232"
+}
+
+{
+  "return": false,
+  "id": "libvirt-232"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lbrv"
+  },
+  "id": "libvirt-233"
+}
+
+{
+  "return": false,
+  "id": "libvirt-233"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc-scale"
+  },
+  "id": "libvirt-234"
+}
+
+{
+  "return": false,
+  "id": "libvirt-234"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-secondary-ctls"
+  },
+  "id": "libvirt-235"
+}
+
+{
+  "return": false,
+  "id": "libvirt-235"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xsaveerptr"
+  },
+  "id": "libvirt-236"
+}
+
+{
+  "return": false,
+  "id": "libvirt-236"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fsgsbase"
+  },
+  "id": "libvirt-237"
+}
+
+{
+  "return": true,
+  "id": "libvirt-237"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-hv-synic-kvm-only"
+  },
+  "id": "libvirt-238"
+}
+
+{
+  "return": false,
+  "id": "libvirt-238"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512bw"
+  },
+  "id": "libvirt-239"
+}
+
+{
+  "return": false,
+  "id": "libvirt-239"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tce"
+  },
+  "id": "libvirt-240"
+}
+
+{
+  "return": false,
+  "id": "libvirt-240"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "smx"
+  },
+  "id": "libvirt-241"
+}
+
+{
+  "return": false,
+  "id": "libvirt-241"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hle"
+  },
+  "id": "libvirt-242"
+}
+
+{
+  "return": false,
+  "id": "libvirt-242"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "monitor"
+  },
+  "id": "libvirt-243"
+}
+
+{
+  "return": false,
+  "id": "libvirt-243"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-fp16"
+  },
+  "id": "libvirt-244"
+}
+
+{
+  "return": false,
+  "id": "libvirt-244"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4a"
+  },
+  "id": "libvirt-245"
+}
+
+{
+  "return": false,
+  "id": "libvirt-245"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vpclmulqdq"
+  },
+  "id": "libvirt-246"
+}
+
+{
+  "return": false,
+  "id": "libvirt-246"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-frequencies"
+  },
+  "id": "libvirt-247"
+}
+
+{
+  "return": false,
+  "id": "libvirt-247"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-tlb-flush"
+  },
+  "id": "libvirt-248"
+}
+
+{
+  "return": false,
+  "id": "libvirt-248"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-rdtsc-exit"
+  },
+  "id": "libvirt-249"
+}
+
+{
+  "return": false,
+  "id": "libvirt-249"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-activity-hlt"
+  },
+  "id": "libvirt-250"
+}
+
+{
+  "return": false,
+  "id": "libvirt-250"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-bndcfgs"
+  },
+  "id": "libvirt-251"
+}
+
+{
+  "return": false,
+  "id": "libvirt-251"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-edeccssa"
+  },
+  "id": "libvirt-252"
+}
+
+{
+  "return": false,
+  "id": "libvirt-252"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xsavec"
+  },
+  "id": "libvirt-253"
+}
+
+{
+  "return": true,
+  "id": "libvirt-253"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-cr8-load-exit"
+  },
+  "id": "libvirt-254"
+}
+
+{
+  "return": false,
+  "id": "libvirt-254"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mds-no"
+  },
+  "id": "libvirt-255"
+}
+
+{
+  "return": false,
+  "id": "libvirt-255"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "svme-addr-chk"
+  },
+  "id": "libvirt-256"
+}
+
+{
+  "return": false,
+  "id": "libvirt-256"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amd-no-ssb"
+  },
+  "id": "libvirt-257"
+}
+
+{
+  "return": false,
+  "id": "libvirt-257"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xop"
+  },
+  "id": "libvirt-258"
+}
+
+{
+  "return": false,
+  "id": "libvirt-258"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "adx"
+  },
+  "id": "libvirt-259"
+}
+
+{
+  "return": true,
+  "id": "libvirt-259"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "perfmon-v2"
+  },
+  "id": "libvirt-260"
+}
+
+{
+  "return": false,
+  "id": "libvirt-260"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "full-cpuid-auto-level"
+  },
+  "id": "libvirt-261"
+}
+
+{
+  "return": true,
+  "id": "libvirt-261"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-ack-intr"
+  },
+  "id": "libvirt-262"
+}
+
+{
+  "return": false,
+  "id": "libvirt-262"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-rdseed-exit"
+  },
+  "id": "libvirt-263"
+}
+
+{
+  "return": false,
+  "id": "libvirt-263"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pclmulqdq"
+  },
+  "id": "libvirt-264"
+}
+
+{
+  "return": true,
+  "id": "libvirt-264"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "msr"
+  },
+  "id": "libvirt-265"
+}
+
+{
+  "return": true,
+  "id": "libvirt-265"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "wrmsrns"
+  },
+  "id": "libvirt-266"
+}
+
+{
+  "return": false,
+  "id": "libvirt-266"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-enforce-cpuid"
+  },
+  "id": "libvirt-267"
+}
+
+{
+  "return": false,
+  "id": "libvirt-267"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ssb-no"
+  },
+  "id": "libvirt-268"
+}
+
+{
+  "return": false,
+  "id": "libvirt-268"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "clflush"
+  },
+  "id": "libvirt-269"
+}
+
+{
+  "return": true,
+  "id": "libvirt-269"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mpx"
+  },
+  "id": "libvirt-270"
+}
+
+{
+  "return": false,
+  "id": "libvirt-270"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "extapic"
+  },
+  "id": "libvirt-271"
+}
+
+{
+  "return": false,
+  "id": "libvirt-271"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lfence-always-serializing"
+  },
+  "id": "libvirt-272"
+}
+
+{
+  "return": false,
+  "id": "libvirt-272"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-enforce-cpuid"
+  },
+  "id": "libvirt-273"
+}
+
+{
+  "return": false,
+  "id": "libvirt-273"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-stimer"
+  },
+  "id": "libvirt-274"
+}
+
+{
+  "return": false,
+  "id": "libvirt-274"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx2"
+  },
+  "id": "libvirt-275"
+}
+
+{
+  "return": false,
+  "id": "libvirt-275"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-asyncpf-vmexit"
+  },
+  "id": "libvirt-276"
+}
+
+{
+  "return": false,
+  "id": "libvirt-276"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "smep"
+  },
+  "id": "libvirt-277"
+}
+
+{
+  "return": true,
+  "id": "libvirt-277"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vnmi"
+  },
+  "id": "libvirt-278"
+}
+
+{
+  "return": false,
+  "id": "libvirt-278"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-mwait-exit"
+  },
+  "id": "libvirt-279"
+}
+
+{
+  "return": false,
+  "id": "libvirt-279"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-synic"
+  },
+  "id": "libvirt-280"
+}
+
+{
+  "return": false,
+  "id": "libvirt-280"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cx8"
+  },
+  "id": "libvirt-281"
+}
+
+{
+  "return": true,
+  "id": "libvirt-281"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmcb-clean"
+  },
+  "id": "libvirt-282"
+}
+
+{
+  "return": false,
+  "id": "libvirt-282"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pku"
+  },
+  "id": "libvirt-283"
+}
+
+{
+  "return": false,
+  "id": "libvirt-283"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm"
+  },
+  "id": "libvirt-284"
+}
+
+{
+  "return": true,
+  "id": "libvirt-284"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "srso-no"
+  },
+  "id": "libvirt-285"
+}
+
+{
+  "return": false,
+  "id": "libvirt-285"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-passthrough"
+  },
+  "id": "libvirt-286"
+}
+
+{
+  "return": false,
+  "id": "libvirt-286"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lkgs"
+  },
+  "id": "libvirt-287"
+}
+
+{
+  "return": false,
+  "id": "libvirt-287"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsx-ldtrk"
+  },
+  "id": "libvirt-288"
+}
+
+{
+  "return": false,
+  "id": "libvirt-288"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-tlbflush-ext"
+  },
+  "id": "libvirt-289"
+}
+
+{
+  "return": false,
+  "id": "libvirt-289"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "stibp"
+  },
+  "id": "libvirt-290"
+}
+
+{
+  "return": false,
+  "id": "libvirt-290"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-cr3-store-noexit"
+  },
+  "id": "libvirt-291"
+}
+
+{
+  "return": false,
+  "id": "libvirt-291"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsx-ctrl"
+  },
+  "id": "libvirt-292"
+}
+
+{
+  "return": false,
+  "id": "libvirt-292"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "clzero"
+  },
+  "id": "libvirt-293"
+}
+
+{
+  "return": false,
+  "id": "libvirt-293"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "svm-lock"
+  },
+  "id": "libvirt-294"
+}
+
+{
+  "return": false,
+  "id": "libvirt-294"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-reenlightenment"
+  },
+  "id": "libvirt-295"
+}
+
+{
+  "return": false,
+  "id": "libvirt-295"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "x-consistent-cache"
+  },
+  "id": "libvirt-296"
+}
+
+{
+  "return": false,
+  "id": "libvirt-296"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avic"
+  },
+  "id": "libvirt-297"
+}
+
+{
+  "return": false,
+  "id": "libvirt-297"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-vpindex"
+  },
+  "id": "libvirt-298"
+}
+
+{
+  "return": false,
+  "id": "libvirt-298"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "osvw"
+  },
+  "id": "libvirt-299"
+}
+
+{
+  "return": false,
+  "id": "libvirt-299"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-exinfo"
+  },
+  "id": "libvirt-300"
+}
+
+{
+  "return": false,
+  "id": "libvirt-300"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "legacy-cache"
+  },
+  "id": "libvirt-301"
+}
+
+{
+  "return": true,
+  "id": "libvirt-301"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse"
+  },
+  "id": "libvirt-302"
+}
+
+{
+  "return": true,
+  "id": "libvirt-302"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fsrc"
+  },
+  "id": "libvirt-303"
+}
+
+{
+  "return": false,
+  "id": "libvirt-303"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ds"
+  },
+  "id": "libvirt-304"
+}
+
+{
+  "return": false,
+  "id": "libvirt-304"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pks"
+  },
+  "id": "libvirt-305"
+}
+
+{
+  "return": false,
+  "id": "libvirt-305"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ept-2mb"
+  },
+  "id": "libvirt-306"
+}
+
+{
+  "return": false,
+  "id": "libvirt-306"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-true-ctls"
+  },
+  "id": "libvirt-307"
+}
+
+{
+  "return": false,
+  "id": "libvirt-307"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "movdir64b"
+  },
+  "id": "libvirt-308"
+}
+
+{
+  "return": false,
+  "id": "libvirt-308"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ept-1gb"
+  },
+  "id": "libvirt-309"
+}
+
+{
+  "return": false,
+  "id": "libvirt-309"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-invept"
+  },
+  "id": "libvirt-310"
+}
+
+{
+  "return": false,
+  "id": "libvirt-310"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ipred-ctrl"
+  },
+  "id": "libvirt-311"
+}
+
+{
+  "return": false,
+  "id": "libvirt-311"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-rdrand-exit"
+  },
+  "id": "libvirt-312"
+}
+
+{
+  "return": false,
+  "id": "libvirt-312"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "acpi"
+  },
+  "id": "libvirt-313"
+}
+
+{
+  "return": false,
+  "id": "libvirt-313"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-encls-exit"
+  },
+  "id": "libvirt-314"
+}
+
+{
+  "return": false,
+  "id": "libvirt-314"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-cr8-store-exit"
+  },
+  "id": "libvirt-315"
+}
+
+{
+  "return": false,
+  "id": "libvirt-315"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sbdr-ssdp-no"
+  },
+  "id": "libvirt-316"
+}
+
+{
+  "return": false,
+  "id": "libvirt-316"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "its-no"
+  },
+  "id": "libvirt-317"
+}
+
+{
+  "return": false,
+  "id": "libvirt-317"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-mmu"
+  },
+  "id": "libvirt-318"
+}
+
+{
+  "return": false,
+  "id": "libvirt-318"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "3dnowprefetch"
+  },
+  "id": "libvirt-319"
+}
+
+{
+  "return": true,
+  "id": "libvirt-319"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "nrip-save"
+  },
+  "id": "libvirt-320"
+}
+
+{
+  "return": false,
+  "id": "libvirt-320"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "gfni"
+  },
+  "id": "libvirt-321"
+}
+
+{
+  "return": false,
+  "id": "libvirt-321"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "flush-l1d"
+  },
+  "id": "libvirt-322"
+}
+
+{
+  "return": false,
+  "id": "libvirt-322"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-msi-ext-dest-id"
+  },
+  "id": "libvirt-323"
+}
+
+{
+  "return": false,
+  "id": "libvirt-323"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fzrm"
+  },
+  "id": "libvirt-324"
+}
+
+{
+  "return": false,
+  "id": "libvirt-324"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "serialize"
+  },
+  "id": "libvirt-325"
+}
+
+{
+  "return": false,
+  "id": "libvirt-325"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512bitalg"
+  },
+  "id": "libvirt-326"
+}
+
+{
+  "return": false,
+  "id": "libvirt-326"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rdseed"
+  },
+  "id": "libvirt-327"
+}
+
+{
+  "return": true,
+  "id": "libvirt-327"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sha-ni"
+  },
+  "id": "libvirt-328"
+}
+
+{
+  "return": false,
+  "id": "libvirt-328"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ace2"
+  },
+  "id": "libvirt-329"
+}
+
+{
+  "return": false,
+  "id": "libvirt-329"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lmce"
+  },
+  "id": "libvirt-330"
+}
+
+{
+  "return": false,
+  "id": "libvirt-330"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "topoext"
+  },
+  "id": "libvirt-331"
+}
+
+{
+  "return": false,
+  "id": "libvirt-331"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "f16c"
+  },
+  "id": "libvirt-332"
+}
+
+{
+  "return": true,
+  "id": "libvirt-332"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "waitpkg"
+  },
+  "id": "libvirt-333"
+}
+
+{
+  "return": false,
+  "id": "libvirt-333"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512-4fmaps"
+  },
+  "id": "libvirt-334"
+}
+
+{
+  "return": false,
+  "id": "libvirt-334"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fbsdp-no"
+  },
+  "id": "libvirt-335"
+}
+
+{
+  "return": false,
+  "id": "libvirt-335"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx"
+  },
+  "id": "libvirt-336"
+}
+
+{
+  "return": true,
+  "id": "libvirt-336"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse2"
+  },
+  "id": "libvirt-337"
+}
+
+{
+  "return": true,
+  "id": "libvirt-337"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rdctl-no"
+  },
+  "id": "libvirt-338"
+}
+
+{
+  "return": false,
+  "id": "libvirt-338"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mmx"
+  },
+  "id": "libvirt-339"
+}
+
+{
+  "return": true,
+  "id": "libvirt-339"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512vnni"
+  },
+  "id": "libvirt-340"
+}
+
+{
+  "return": false,
+  "id": "libvirt-340"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pni"
+  },
+  "id": "libvirt-341"
+}
+
+{
+  "return": true,
+  "id": "libvirt-341"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "movbe"
+  },
+  "id": "libvirt-342"
+}
+
+{
+  "return": true,
+  "id": "libvirt-342"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-ple"
+  },
+  "id": "libvirt-343"
+}
+
+{
+  "return": false,
+  "id": "libvirt-343"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mmxext"
+  },
+  "id": "libvirt-344"
+}
+
+{
+  "return": false,
+  "id": "libvirt-344"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "bus-lock-detect"
+  },
+  "id": "libvirt-345"
+}
+
+{
+  "return": false,
+  "id": "libvirt-345"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-apicv-vid"
+  },
+  "id": "libvirt-346"
+}
+
+{
+  "return": false,
+  "id": "libvirt-346"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-page-walk-5"
+  },
+  "id": "libvirt-347"
+}
+
+{
+  "return": false,
+  "id": "libvirt-347"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "flushbyasid"
+  },
+  "id": "libvirt-348"
+}
+
+{
+  "return": false,
+  "id": "libvirt-348"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "rdtscp"
+  },
+  "id": "libvirt-349"
+}
+
+{
+  "return": true,
+  "id": "libvirt-349"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "clwb"
+  },
+  "id": "libvirt-350"
+}
+
+{
+  "return": false,
+  "id": "libvirt-350"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-pv-sched-yield"
+  },
+  "id": "libvirt-351"
+}
+
+{
+  "return": false,
+  "id": "libvirt-351"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-asyncpf"
+  },
+  "id": "libvirt-352"
+}
+
+{
+  "return": true,
+  "id": "libvirt-352"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx-vnni-int16"
+  },
+  "id": "libvirt-353"
+}
+
+{
+  "return": false,
+  "id": "libvirt-353"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "decodeassists"
+  },
+  "id": "libvirt-354"
+}
+
+{
+  "return": false,
+  "id": "libvirt-354"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-wbinvd-exit"
+  },
+  "id": "libvirt-355"
+}
+
+{
+  "return": false,
+  "id": "libvirt-355"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pat"
+  },
+  "id": "libvirt-356"
+}
+
+{
+  "return": true,
+  "id": "libvirt-356"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-clear-rtit-ctl"
+  },
+  "id": "libvirt-357"
+}
+
+{
+  "return": false,
+  "id": "libvirt-357"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "invpcid"
+  },
+  "id": "libvirt-358"
+}
+
+{
+  "return": true,
+  "id": "libvirt-358"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pdpe1gb"
+  },
+  "id": "libvirt-359"
+}
+
+{
+  "return": false,
+  "id": "libvirt-359"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-save-pat"
+  },
+  "id": "libvirt-360"
+}
+
+{
+  "return": false,
+  "id": "libvirt-360"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc-adjust"
+  },
+  "id": "libvirt-361"
+}
+
+{
+  "return": false,
+  "id": "libvirt-361"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-enable-user-wait-pause"
+  },
+  "id": "libvirt-362"
+}
+
+{
+  "return": false,
+  "id": "libvirt-362"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ht"
+  },
+  "id": "libvirt-363"
+}
+
+{
+  "return": false,
+  "id": "libvirt-363"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amx-tile"
+  },
+  "id": "libvirt-364"
+}
+
+{
+  "return": false,
+  "id": "libvirt-364"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "clflushopt"
+  },
+  "id": "libvirt-365"
+}
+
+{
+  "return": false,
+  "id": "libvirt-365"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-xmm-input"
+  },
+  "id": "libvirt-366"
+}
+
+{
+  "return": false,
+  "id": "libvirt-366"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-tsc-offset"
+  },
+  "id": "libvirt-367"
+}
+
+{
+  "return": false,
+  "id": "libvirt-367"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ssbd"
+  },
+  "id": "libvirt-368"
+}
+
+{
+  "return": false,
+  "id": "libvirt-368"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "3dnowext"
+  },
+  "id": "libvirt-369"
+}
+
+{
+  "return": false,
+  "id": "libvirt-369"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xtpr"
+  },
+  "id": "libvirt-370"
+}
+
+{
+  "return": false,
+  "id": "libvirt-370"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx"
+  },
+  "id": "libvirt-371"
+}
+
+{
+  "return": false,
+  "id": "libvirt-371"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-crash"
+  },
+  "id": "libvirt-372"
+}
+
+{
+  "return": false,
+  "id": "libvirt-372"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xsave"
+  },
+  "id": "libvirt-373"
+}
+
+{
+  "return": true,
+  "id": "libvirt-373"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pdcm"
+  },
+  "id": "libvirt-374"
+}
+
+{
+  "return": false,
+  "id": "libvirt-374"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "est"
+  },
+  "id": "libvirt-375"
+}
+
+{
+  "return": false,
+  "id": "libvirt-375"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pge"
+  },
+  "id": "libvirt-376"
+}
+
+{
+  "return": true,
+  "id": "libvirt-376"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pcommit"
+  },
+  "id": "libvirt-377"
+}
+
+{
+  "return": false,
+  "id": "libvirt-377"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ibs"
+  },
+  "id": "libvirt-378"
+}
+
+{
+  "return": false,
+  "id": "libvirt-378"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc-deadline"
+  },
+  "id": "libvirt-379"
+}
+
+{
+  "return": true,
+  "id": "libvirt-379"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sgx-mode64"
+  },
+  "id": "libvirt-380"
+}
+
+{
+  "return": false,
+  "id": "libvirt-380"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvmclock-stable-bit"
+  },
+  "id": "libvirt-381"
+}
+
+{
+  "return": true,
+  "id": "libvirt-381"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "misalignsse"
+  },
+  "id": "libvirt-382"
+}
+
+{
+  "return": false,
+  "id": "libvirt-382"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-msr-bitmap"
+  },
+  "id": "libvirt-383"
+}
+
+{
+  "return": false,
+  "id": "libvirt-383"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "check"
+  },
+  "id": "libvirt-384"
+}
+
+{
+  "return": true,
+  "id": "libvirt-384"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-time"
+  },
+  "id": "libvirt-385"
+}
+
+{
+  "return": false,
+  "id": "libvirt-385"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "perfctr-nb"
+  },
+  "id": "libvirt-386"
+}
+
+{
+  "return": false,
+  "id": "libvirt-386"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-avic"
+  },
+  "id": "libvirt-387"
+}
+
+{
+  "return": false,
+  "id": "libvirt-387"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-vmfunc"
+  },
+  "id": "libvirt-388"
+}
+
+{
+  "return": false,
+  "id": "libvirt-388"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "apic"
+  },
+  "id": "libvirt-389"
+}
+
+{
+  "return": true,
+  "id": "libvirt-389"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-save-preemption-timer"
+  },
+  "id": "libvirt-390"
+}
+
+{
+  "return": false,
+  "id": "libvirt-390"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "prefetchi"
+  },
+  "id": "libvirt-391"
+}
+
+{
+  "return": false,
+  "id": "libvirt-391"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-nmi-exit"
+  },
+  "id": "libvirt-392"
+}
+
+{
+  "return": false,
+  "id": "libvirt-392"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512vbmi"
+  },
+  "id": "libvirt-393"
+}
+
+{
+  "return": false,
+  "id": "libvirt-393"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-nosave-debugctl"
+  },
+  "id": "libvirt-394"
+}
+
+{
+  "return": false,
+  "id": "libvirt-394"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "bmi2"
+  },
+  "id": "libvirt-395"
+}
+
+{
+  "return": true,
+  "id": "libvirt-395"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-xsaves"
+  },
+  "id": "libvirt-396"
+}
+
+{
+  "return": false,
+  "id": "libvirt-396"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512f"
+  },
+  "id": "libvirt-397"
+}
+
+{
+  "return": false,
+  "id": "libvirt-397"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "arch-capabilities"
+  },
+  "id": "libvirt-398"
+}
+
+{
+  "return": false,
+  "id": "libvirt-398"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-exit-load-perf-global-ctrl"
+  },
+  "id": "libvirt-399"
+}
+
+{
+  "return": false,
+  "id": "libvirt-399"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-pml"
+  },
+  "id": "libvirt-400"
+}
+
+{
+  "return": false,
+  "id": "libvirt-400"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-entry-load-perf-global-ctrl"
+  },
+  "id": "libvirt-401"
+}
+
+{
+  "return": false,
+  "id": "libvirt-401"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ace2-en"
+  },
+  "id": "libvirt-402"
+}
+
+{
+  "return": false,
+  "id": "libvirt-402"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "wdt"
+  },
+  "id": "libvirt-403"
+}
+
+{
+  "return": false,
+  "id": "libvirt-403"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "intel-pt"
+  },
+  "id": "libvirt-404"
+}
+
+{
+  "return": false,
+  "id": "libvirt-404"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-nopiodelay"
+  },
+  "id": "libvirt-405"
+}
+
+{
+  "return": true,
+  "id": "libvirt-405"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cmpccxadd"
+  },
+  "id": "libvirt-406"
+}
+
+{
+  "return": false,
+  "id": "libvirt-406"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "v-vmsave-vmload"
+  },
+  "id": "libvirt-407"
+}
+
+{
+  "return": false,
+  "id": "libvirt-407"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx512pf"
+  },
+  "id": "libvirt-408"
+}
+
+{
+  "return": false,
+  "id": "libvirt-408"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "bmi1"
+  },
+  "id": "libvirt-409"
+}
+
+{
+  "return": true,
+  "id": "libvirt-409"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "enforce"
+  },
+  "id": "libvirt-410"
+}
+
+{
+  "return": false,
+  "id": "libvirt-410"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4.2"
+  },
+  "id": "libvirt-411"
+}
+
+{
+  "return": true,
+  "id": "libvirt-411"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-syndbg"
+  },
+  "id": "libvirt-412"
+}
+
+{
+  "return": false,
+  "id": "libvirt-412"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ibrs-all"
+  },
+  "id": "libvirt-413"
+}
+
+{
+  "return": false,
+  "id": "libvirt-413"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xgetbv1"
+  },
+  "id": "libvirt-414"
+}
+
+{
+  "return": true,
+  "id": "libvirt-414"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "mcdt-no"
+  },
+  "id": "libvirt-415"
+}
+
+{
+  "return": false,
+  "id": "libvirt-415"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "spec-ctrl"
+  },
+  "id": "libvirt-416"
+}
+
+{
+  "return": true,
+  "id": "libvirt-416"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "3dnow"
+  },
+  "id": "libvirt-417"
+}
+
+{
+  "return": false,
+  "id": "libvirt-417"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm-asyncpf-int"
+  },
+  "id": "libvirt-418"
+}
+
+{
+  "return": false,
+  "id": "libvirt-418"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx"
+  },
+  "id": "libvirt-419"
+}
+
+{
+  "return": false,
+  "id": "libvirt-419"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "la57"
+  },
+  "id": "libvirt-420"
+}
+
+{
+  "return": false,
+  "id": "libvirt-420"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amx-bf16"
+  },
+  "id": "libvirt-421"
+}
+
+{
+  "return": false,
+  "id": "libvirt-421"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4.1"
+  },
+  "id": "libvirt-422"
+}
+
+{
+  "return": true,
+  "id": "libvirt-422"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xsaveopt"
+  },
+  "id": "libvirt-423"
+}
+
+{
+  "return": true,
+  "id": "libvirt-423"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-relaxed"
+  },
+  "id": "libvirt-424"
+}
+
+{
+  "return": false,
+  "id": "libvirt-424"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "stibp-always-on"
+  },
+  "id": "libvirt-425"
+}
+
+{
+  "return": false,
+  "id": "libvirt-425"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sbpb"
+  },
+  "id": "libvirt-426"
+}
+
+{
+  "return": false,
+  "id": "libvirt-426"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx-vnni"
+  },
+  "id": "libvirt-427"
+}
+
+{
+  "return": false,
+  "id": "libvirt-427"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fxsr"
+  },
+  "id": "libvirt-428"
+}
+
+{
+  "return": true,
+  "id": "libvirt-428"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "phe-en"
+  },
+  "id": "libvirt-429"
+}
+
+{
+  "return": false,
+  "id": "libvirt-429"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-vapic"
+  },
+  "id": "libvirt-430"
+}
+
+{
+  "return": false,
+  "id": "libvirt-430"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-ipi"
+  },
+  "id": "libvirt-431"
+}
+
+{
+  "return": false,
+  "id": "libvirt-431"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "null-sel-clr-base"
+  },
+  "id": "libvirt-432"
+}
+
+{
+  "return": false,
+  "id": "libvirt-432"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hypervisor"
+  },
+  "id": "libvirt-433"
+}
+
+{
+  "return": true,
+  "id": "libvirt-433"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "avx10-256"
+  },
+  "id": "libvirt-434"
+}
+
+{
+  "return": false,
+  "id": "libvirt-434"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "aes"
+  },
+  "id": "libvirt-435"
+}
+
+{
+  "return": true,
+  "id": "libvirt-435"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "amd-ssbd"
+  },
+  "id": "libvirt-436"
+}
+
+{
+  "return": false,
+  "id": "libvirt-436"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "de"
+  },
+  "id": "libvirt-437"
+}
+
+{
+  "return": true,
+  "id": "libvirt-437"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ss"
+  },
+  "id": "libvirt-438"
+}
+
+{
+  "return": false,
+  "id": "libvirt-438"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmx-movdr-exit"
+  },
+  "id": "libvirt-439"
+}
+
+{
+  "return": false,
+  "id": "libvirt-439"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fma"
+  },
+  "id": "libvirt-440"
+}
+
+{
+  "return": true,
+  "id": "libvirt-440"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "lahf_lm"
+  },
+  "id": "libvirt-441"
+}
+
+{
+  "return": true,
+  "id": "libvirt-441"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc_adjust"
+  },
+  "id": "libvirt-442"
+}
+
+{
+  "return": false,
+  "id": "libvirt-442"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "svm_lock"
+  },
+  "id": "libvirt-443"
+}
+
+{
+  "return": false,
+  "id": "libvirt-443"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "vmcb_clean"
+  },
+  "id": "libvirt-444"
+}
+
+{
+  "return": false,
+  "id": "libvirt-444"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "nrip_save"
+  },
+  "id": "libvirt-445"
+}
+
+{
+  "return": false,
+  "id": "libvirt-445"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pclmuldq"
+  },
+  "id": "libvirt-446"
+}
+
+{
+  "return": true,
+  "id": "libvirt-446"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ffxsr"
+  },
+  "id": "libvirt-447"
+}
+
+{
+  "return": false,
+  "id": "libvirt-447"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4-2"
+  },
+  "id": "libvirt-448"
+}
+
+{
+  "return": true,
+  "id": "libvirt-448"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_asyncpf_int"
+  },
+  "id": "libvirt-449"
+}
+
+{
+  "return": false,
+  "id": "libvirt-449"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "cmp_legacy"
+  },
+  "id": "libvirt-450"
+}
+
+{
+  "return": false,
+  "id": "libvirt-450"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_nopiodelay"
+  },
+  "id": "libvirt-451"
+}
+
+{
+  "return": true,
+  "id": "libvirt-451"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "perfctr_core"
+  },
+  "id": "libvirt-452"
+}
+
+{
+  "return": false,
+  "id": "libvirt-452"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_pv_unhalt"
+  },
+  "id": "libvirt-453"
+}
+
+{
+  "return": false,
+  "id": "libvirt-453"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "ds_cpl"
+  },
+  "id": "libvirt-454"
+}
+
+{
+  "return": false,
+  "id": "libvirt-454"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4-1"
+  },
+  "id": "libvirt-455"
+}
+
+{
+  "return": true,
+  "id": "libvirt-455"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "perfctr_nb"
+  },
+  "id": "libvirt-456"
+}
+
+{
+  "return": false,
+  "id": "libvirt-456"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse3"
+  },
+  "id": "libvirt-457"
+}
+
+{
+  "return": true,
+  "id": "libvirt-457"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "tsc_scale"
+  },
+  "id": "libvirt-458"
+}
+
+{
+  "return": false,
+  "id": "libvirt-458"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "pause_filter"
+  },
+  "id": "libvirt-459"
+}
+
+{
+  "return": false,
+  "id": "libvirt-459"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_asyncpf"
+  },
+  "id": "libvirt-460"
+}
+
+{
+  "return": true,
+  "id": "libvirt-460"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_steal_time"
+  },
+  "id": "libvirt-461"
+}
+
+{
+  "return": true,
+  "id": "libvirt-461"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_mmu"
+  },
+  "id": "libvirt-462"
+}
+
+{
+  "return": false,
+  "id": "libvirt-462"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4_2"
+  },
+  "id": "libvirt-463"
+}
+
+{
+  "return": true,
+  "id": "libvirt-463"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_poll_control"
+  },
+  "id": "libvirt-464"
+}
+
+{
+  "return": false,
+  "id": "libvirt-464"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "fxsr_opt"
+  },
+  "id": "libvirt-465"
+}
+
+{
+  "return": false,
+  "id": "libvirt-465"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "nodeid_msr"
+  },
+  "id": "libvirt-466"
+}
+
+{
+  "return": false,
+  "id": "libvirt-466"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "kvm_pv_eoi"
+  },
+  "id": "libvirt-467"
+}
+
+{
+  "return": true,
+  "id": "libvirt-467"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "i64"
+  },
+  "id": "libvirt-468"
+}
+
+{
+  "return": true,
+  "id": "libvirt-468"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "hv-apicv"
+  },
+  "id": "libvirt-469"
+}
+
+{
+  "return": false,
+  "id": "libvirt-469"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "xd"
+  },
+  "id": "libvirt-470"
+}
+
+{
+  "return": true,
+  "id": "libvirt-470"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "sse4_1"
+  },
+  "id": "libvirt-471"
+}
+
+{
+  "return": true,
+  "id": "libvirt-471"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "unavailable-features"
+  },
+  "id": "libvirt-472"
+}
+
+{
+  "return": [],
+  "id": "libvirt-472"
+}

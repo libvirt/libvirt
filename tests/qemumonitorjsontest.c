@@ -2985,6 +2985,7 @@ mymain(void)
     DO_TEST_CPU_INFO("s390", 2);
 
     DO_TEST_GET_GUEST_CPU("SierraForest");
+    DO_TEST_GET_GUEST_CPU("SkylakeClient");
 
 
 #define DO_TEST_QAPI_QUERY(nme, qry, scc, rplobj) \
