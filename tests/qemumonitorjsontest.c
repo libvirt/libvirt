@@ -2770,6 +2770,60 @@ testQemuMonitorJSONGetSEVInfo(const void *opaque)
     return 0;
 }
 
+
+struct testQemuMonitorJSONGetGuestCPUData {
+    const char *name;
+    virQEMUDriver driver;
+    GHashTable *schema;
+};
+
+static int
+testQemuMonitorJSONGetGuestCPU(const void *opaque)
+{
+    struct testQemuMonitorJSONGetGuestCPUData *data = (void *) opaque;
+    const char *base = abs_srcdir "/qemumonitorjsondata/get-guest-cpu";
+    g_autofree char *fileJSON = NULL;
+    g_autofree char *fileEnabled = NULL;
+    g_autofree char *fileDisabled = NULL;
+    g_autoptr(qemuMonitorTest) mon = NULL;
+    g_autoptr(virCPUData) dataEnabled = NULL;
+    g_autoptr(virCPUData) dataDisabled = NULL;
+    g_autofree char *enabled = NULL;
+    g_autofree char *disabled = NULL;
+    bool failed = false;
+
+    fileJSON = g_strdup_printf("%s-%s.json", base, data->name);
+    fileEnabled = g_strdup_printf("%s-%s-enabled.xml", base, data->name);
+    fileDisabled = g_strdup_printf("%s-%s-disabled.xml", base, data->name);
+
+    if (!(mon = qemuMonitorTestNewFromFileFull(fileJSON, &data->driver,
+                                               NULL, data->schema)))
+        return -1;
+
+    if (qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(mon),
+                                   VIR_ARCH_X86_64,
+                                   "/machine/unattached/device[0]",
+                                   virQEMUCapsCPUFeatureFromQEMU,
+                                   &dataEnabled, &dataDisabled) < 0)
+        return -1;
+
+    if (!(enabled = virCPUDataFormat(dataEnabled)) ||
+        !(disabled = virCPUDataFormat(dataDisabled)))
+        return -1;
+
+    if (virTestCompareToFile(enabled, fileEnabled) < 0)
+        failed = true;
+
+    if (virTestCompareToFile(disabled, fileDisabled) < 0)
+        failed = true;
+
+    if (failed)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -2826,6 +2880,16 @@ mymain(void)
         struct testCPUInfoData data = {name, maxvcpus, driver.xmlopt, \
                                        qapiData.schema}; \
         if (virTestRun("GetCPUInfo(" name ")", testQemuMonitorCPUInfo, \
+                       &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+#define DO_TEST_GET_GUEST_CPU(name) \
+    do { \
+        struct testQemuMonitorJSONGetGuestCPUData data = { \
+            name, driver, qapiData.schema }; \
+        if (virTestRun("GetGuestCPU(" name ")", \
+                       testQemuMonitorJSONGetGuestCPU, \
                        &data) < 0) \
             ret = -1; \
     } while (0)
@@ -2919,6 +2983,8 @@ mymain(void)
     DO_TEST_CPU_INFO("aarch64-clusters", 16);
 
     DO_TEST_CPU_INFO("s390", 2);
+
+    DO_TEST_GET_GUEST_CPU("SierraForest");
 
 
 #define DO_TEST_QAPI_QUERY(nme, qry, scc, rplobj) \
