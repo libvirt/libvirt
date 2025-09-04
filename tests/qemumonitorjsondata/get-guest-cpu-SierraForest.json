@@ -1,0 +1,2985 @@
+{
+  "execute": "qom-list-get",
+  "arguments": {
+    "paths": [
+      "/machine/unattached/device[0]"
+    ]
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "properties": [
+        {
+          "name": "type",
+          "value": "SierraForest-v1-x86_64-cpu",
+          "type": "string"
+        },
+        {
+          "name": "parent_bus",
+          "value": "",
+          "type": "link<bus>"
+        },
+        {
+          "name": "realized",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hotplugged",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hotpluggable",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "memory",
+          "value": "/machine/unattached/system[0]",
+          "type": "link<memory-region>"
+        },
+        {
+          "name": "legacy-memory",
+          "type": "str"
+        },
+        {
+          "name": "start-powered-off",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invept-single-context",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "core-capability",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "popcnt",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-debug",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-poll-control",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "dtes64",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invvpid-single-addr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xstore",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "min-xlevel2",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "stepping",
+          "value": 0,
+          "type": "int"
+        },
+        {
+          "name": "x-vendor-cpuid-only-v2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sm4",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-emsr-bitmap",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pse36",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx512-4vnniw",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x-intel-pt-auto-level",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "fma4",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512-vp2intersect",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "amd-psfd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amd-stibp",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgxlc",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sm3",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "family",
+          "value": 6,
+          "type": "int"
+        },
+        {
+          "name": "vmx-ept-advanced-exitinfo",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-store-lma",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "msr-imm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmware-cpuid-freq",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-spinlocks",
+          "value": 4294967295,
+          "type": "uint32"
+        },
+        {
+          "name": "x-force-cpuid-0x1f",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ddpd-u",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-nested-exception",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-noload-debugctl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "bhi-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amx-fp16",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "erms",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vaes",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-eptad",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-activity-wait-sipi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-flexpriority",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-reset",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rdrand",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "lam",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-pause-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-shadow-vmcs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "model",
+          "value": 175,
+          "type": "int"
+        },
+        {
+          "name": "avx512-vpopcntdq",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xcrypt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tbm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "movdiri",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-monitor-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-eoi",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-spack",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "lm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "x-vendor-cpuid-only",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pbrsb-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-unrestricted-guest",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "host-phys-bits-limit",
+          "value": 0,
+          "type": "uint8"
+        },
+        {
+          "name": "pae",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "ssse3",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-runtime",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "phe",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "guest-phys-bits",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "host-phys-bits",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "taa-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-aex-notify",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "full-width-write",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "arat",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx512vbmi2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sha512",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "arch-lbr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-vnmi-pending",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-any-errcode",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x2apic",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "npt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pmm-en",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invpcid-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512ifma",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ibpb-brtype",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "model-id",
+          "value": "Intel Xeon Processor (SierraForest)",
+          "type": "string"
+        },
+        {
+          "name": "ucode-rev",
+          "value": 4294967296,
+          "type": "uint64"
+        },
+        {
+          "name": "hv-evmcs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "srso-user-kernel-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-io-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsc",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "x-force-features",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ins-outs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "dca",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-apicv-x2apic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "perfctr-core",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ia64",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fdp-excptn-only",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-stimer-direct",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "gds-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-secondary-ctls",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-cr3-load-noexit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rfds-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pmu",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-rtit-ctl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvmclock",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx10",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invept-single-context-noglobals",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xen-vapic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "md-clear",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "invtsc",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pn",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512cd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cmp-legacy",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cx16",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx512dq",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "abm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-activity-shutdown",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "auto-ibrs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-ipi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx10-128",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-apicv-register",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fxsr-opt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "skip-l1dfl-vmentry",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "fill-mtrr-mask",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "x-migrate-smi-count",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "wbnoinvd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx1",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rdpid",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pcid",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "bhi-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "syscall",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pse",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "rrsba-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx-ne-convert",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xsaves",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-pat",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vgif",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "mce",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "xfd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "node-id",
+          "value": -1,
+          "type": "int32"
+        },
+        {
+          "name": "sgx-tokenkey",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ibpb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x-amd-topoext-features-only",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-apicv-xapic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-hlt-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lwp",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "eraps",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cldemote",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-load-pkrs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rtm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-tlbflush",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-steal-time",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "cpuid-0xb",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "fsrs",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-provisionkey",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-eptp-switching",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invlpg-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-efer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "level-func7",
+          "value": 2,
+          "type": "uint32"
+        },
+        {
+          "name": "die-id",
+          "value": 0,
+          "type": "int32"
+        },
+        {
+          "name": "vmx-exit-save-efer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x-l1-cache-per-thread",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vme",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-unhalt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-desc-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-kss",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invvpid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-ia32e-mode",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "svm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-hint-dedicated",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ept-execonly",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx-ifma",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "module-id",
+          "value": 0,
+          "type": "int32"
+        },
+        {
+          "name": "mca",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-tsc-scaling",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "mtrr",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "cid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pfthreshold",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pmm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lahf-lm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "zero-fcs-fds",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-build",
+          "value": 14393,
+          "type": "uint32"
+        },
+        {
+          "name": "vmx-entry-load-pkrs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tcg-cpuid",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "no-nested-data-bp",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "legacy-multi-node",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x-hv-max-vps",
+          "value": -1,
+          "type": "int32"
+        },
+        {
+          "name": "tm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pbe",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amx-int8",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-rdpmc-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "intel-psfd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fs-gs-base-ns",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "split-lock-detect",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "apic-id",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "fpu",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "skinit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "l3-cache",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sep",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-load-pat",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "intel-pt-lip",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx10-512",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-tlbflush-direct",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512-bf16",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "overflow-recov",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-vnmi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-rdtscp-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amx-complex",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "nx",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invvpid-all-context",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx-vnni-int8",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-vmwrite-vmexit-fields",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-page-walk-4",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rfds-clear",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pause-filter",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ds-cpl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "succor",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fred",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fsrm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-load-efer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-mtf",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-fred",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ept",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fb-clear",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "nodeid-msr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-clear-bndcfgs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "smap",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-io-bitmap",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-preemption-timer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invept-all-context",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-intr-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "prefetchiti",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "psdp-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "cr8legacy",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xlevel",
+          "value": 2147483656,
+          "type": "uint32"
+        },
+        {
+          "name": "vmx-vpid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-zero-len-inject",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pschange-mc-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "virt-ssbd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "umip",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx512er",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-vintr-pending",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xstore-en",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512vl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ibrs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rsba",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cmov",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-posted-intr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xcrypt-en",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tm2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lbrv",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsc-scale",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-secondary-ctls",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xsaveerptr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fsgsbase",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "x-hv-synic-kvm-only",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512bw",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-minor",
+          "value": 0,
+          "type": "uint16"
+        },
+        {
+          "name": "tce",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsc-frequency",
+          "value": 2496000000,
+          "type": "int"
+        },
+        {
+          "name": "smx",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hle",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "monitor",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512-fp16",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse4a",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vpclmulqdq",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-frequencies",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-tlb-flush",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-rdtsc-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-activity-hlt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-bndcfgs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-edeccssa",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xsavec",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-cr8-load-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "mds-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "svme-addr-chk",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amd-no-ssb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xop",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "adx",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "perfmon-v2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-sbranch",
+          "value": 0,
+          "type": "uint8"
+        },
+        {
+          "name": "crash-information",
+          "type": "GuestPanicInformation"
+        },
+        {
+          "name": "min-level",
+          "value": 35,
+          "type": "uint32"
+        },
+        {
+          "name": "full-cpuid-auto-level",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-ack-intr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-rdseed-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pclmulqdq",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "msr",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "wrmsrns",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-enforce-cpuid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ssb-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "clflush",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "xlevel2",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "mpx",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "extapic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lfence-always-serializing",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-enforce-cpuid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-stimer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-asyncpf-vmexit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "smep",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vnmi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-mwait-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-synic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cx8",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmcb-clean",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pku",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "srso-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-passthrough",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lkgs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsx-ldtrk",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-tlbflush-ext",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "stibp",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-cr3-store-noexit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsx-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "clzero",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "svm-lock",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-reenlightenment",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "x-consistent-cache",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-vpindex",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "osvw",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-exinfo",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "legacy-cache",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sse",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "fsrc",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ds",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pks",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ept-2mb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-true-ctls",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "movdir64b",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ept-1gb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-invept",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ipred-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-rdrand-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "acpi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-encls-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-cr8-store-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sbdr-ssdp-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "its-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-mmu",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "3dnowprefetch",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "nrip-save",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "gfni",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "flush-l1d",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-msi-ext-dest-id",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fzrm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "serialize",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx512bitalg",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rdseed",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sha-ni",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "ace2",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lmce",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx10-version",
+          "value": 0,
+          "type": "uint8"
+        },
+        {
+          "name": "topoext",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "f16c",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "waitpkg",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512-4fmaps",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fbsdp-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sse2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "rdctl-no",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "mmx",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-major",
+          "value": 10,
+          "type": "uint16"
+        },
+        {
+          "name": "level",
+          "value": 35,
+          "type": "uint32"
+        },
+        {
+          "name": "avx512vnni",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pni",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "movbe",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-ple",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "mmxext",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lbr-fmt",
+          "value": 18446744073709551552,
+          "type": "uint64"
+        },
+        {
+          "name": "bus-lock-detect",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-apicv-vid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-page-walk-5",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "flushbyasid",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "rdtscp",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "clwb",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-pv-sched-yield",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-asyncpf",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx-vnni-int16",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "decodeassists",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-wbinvd-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pat",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-clear-rtit-ctl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "invpcid",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pdpe1gb",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-save-pat",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "unavailable-features",
+          "value": [
+            "bus-lock-detect",
+            "cmpccxadd",
+            "avx-ifma",
+            "wbnoinvd",
+            "pbrsb-no",
+            "avx-vnni-int8",
+            "avx-ne-convert",
+            "mcdt-no"
+          ],
+          "type": "strList"
+        },
+        {
+          "name": "tsc-adjust",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-enable-user-wait-pause",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ht",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "amx-tile",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "clflushopt",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-xmm-input",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-tsc-offset",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ssbd",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "3dnowext",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xtpr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sgx",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-crash",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xsave",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pdcm",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-vendor-id",
+          "value": "Microsoft Hv",
+          "type": "str"
+        },
+        {
+          "name": "est",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vendor",
+          "value": "GenuineIntel",
+          "type": "string"
+        },
+        {
+          "name": "pge",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "pcommit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ibs",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "tsc-deadline",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sgx-mode64",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvmclock-stable-bit",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "misalignsse",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-msr-bitmap",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "check",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-time",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "perfctr-nb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-avic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-vmfunc",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "phys-bits",
+          "value": 40,
+          "type": "uint32"
+        },
+        {
+          "name": "apic",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-save-preemption-timer",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "prefetchi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-nmi-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512vbmi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "thread-id",
+          "value": 0,
+          "type": "int32"
+        },
+        {
+          "name": "min-xlevel",
+          "value": 2147483656,
+          "type": "uint32"
+        },
+        {
+          "name": "socket-id",
+          "value": 0,
+          "type": "int32"
+        },
+        {
+          "name": "vmx-exit-nosave-debugctl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "bmi2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-xsaves",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512f",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "arch-capabilities",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-exit-load-perf-global-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-pml",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-entry-load-perf-global-ctrl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ace2-en",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "wdt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "intel-pt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-nopiodelay",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "cmpccxadd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "v-vmsave-vmload",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx512pf",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "bmi1",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "enforce",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse4.2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-syndbg",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ibrs-all",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "xgetbv1",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "mcdt-no",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "spec-ctrl",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "3dnow",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm-asyncpf-int",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "la57",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-no-nonarch-coresharing",
+          "value": "off",
+          "type": "OnOffAuto"
+        },
+        {
+          "name": "amx-bf16",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse4.1",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "xsaveopt",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-relaxed",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-version-id-snumber",
+          "value": 0,
+          "type": "uint32"
+        },
+        {
+          "name": "stibp-always-on",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sbpb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "avx-vnni",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "fxsr",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "phe-en",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-vapic",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hv-ipi",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "null-sel-clr-base",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "hypervisor",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "avx10-256",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "aes",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "amd-ssbd",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "core-id",
+          "value": 0,
+          "type": "int32"
+        },
+        {
+          "name": "de",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "ss",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmx-movdr-exit",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fma",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "lahf_lm",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "lapic",
+          "value": "/machine/unattached/device[0]/lapic",
+          "type": "child<kvm-apic>"
+        },
+        {
+          "name": "tsc_adjust",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "svm_lock",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "vmcb_clean",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "nrip_save",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "lbr_fmt",
+          "value": 18446744073709551552,
+          "type": "uint64"
+        },
+        {
+          "name": "pclmuldq",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "ffxsr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse4-2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_asyncpf_int",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "cmp_legacy",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_nopiodelay",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "perfctr_core",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_pv_unhalt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "ds_cpl",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse4-1",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "perfctr_nb",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "sse3",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "tsc_scale",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "pause_filter",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_asyncpf",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_steal_time",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "feature-words",
+          "value": [
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 36,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 2,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 20,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 13,
+              "features": 519
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 6,
+              "features": 4
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 15
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483658,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 1073741825,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 1073741825,
+              "features": 16777339
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 3221225473,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 2147483682,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483681,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 2147483681,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483656,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483655,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483655,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-eax": 2147483649,
+              "features": 289
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483649,
+              "features": 739248128
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 2064
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 2751479824
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 4196108
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 563873705
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-eax": 1,
+              "features": 4160369155
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 1,
+              "features": 126614527
+            }
+          ],
+          "type": "X86CPUFeatureWordInfo"
+        },
+        {
+          "name": "kvm_mmu",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "filtered-features",
+          "value": [
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 36,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 2,
+              "cpuid-input-eax": 7,
+              "features": 32
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 48
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 18,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 20,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 6,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 13,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483658,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 1073741825,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 1073741825,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 3221225473,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 2147483682,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483681,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-eax": 2147483681,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483656,
+              "features": 512
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483655,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-eax": 2147483655,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-eax": 2147483649,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 2147483649,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EAX",
+              "cpuid-input-ecx": 1,
+              "cpuid-input-eax": 7,
+              "features": 8388736
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 16777216
+            },
+            {
+              "cpuid-register": "EBX",
+              "cpuid-input-ecx": 0,
+              "cpuid-input-eax": 7,
+              "features": 0
+            },
+            {
+              "cpuid-register": "ECX",
+              "cpuid-input-eax": 1,
+              "features": 0
+            },
+            {
+              "cpuid-register": "EDX",
+              "cpuid-input-eax": 1,
+              "features": 0
+            }
+          ],
+          "type": "X86CPUFeatureWordInfo"
+        },
+        {
+          "name": "sse4_2",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_poll_control",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "fxsr_opt",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "nodeid_msr",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "kvm_pv_eoi",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "i64",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "hv-apicv",
+          "value": false,
+          "type": "bool"
+        },
+        {
+          "name": "xd",
+          "value": true,
+          "type": "bool"
+        },
+        {
+          "name": "sse4_1",
+          "value": true,
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "id": "libvirt-1"
+}
+
+{
+  "execute": "qom-get",
+  "arguments": {
+    "path": "/machine/unattached/device[0]",
+    "property": "unavailable-features"
+  },
+  "id": "libvirt-2"
+}
+
+{
+  "return": [
+    "bus-lock-detect",
+    "cmpccxadd",
+    "avx-ifma",
+    "wbnoinvd",
+    "pbrsb-no",
+    "avx-vnni-int8",
+    "avx-ne-convert",
+    "mcdt-no"
+  ],
+  "id": "libvirt-2"
+}
