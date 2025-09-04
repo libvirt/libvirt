@@ -41,6 +41,7 @@
 #define URL_VM_SAVE "vm.snapshot"
 #define URL_VM_RESTORE "vm.restore"
 #define URL_VM_ADD_DISK "vm.add-disk"
+#define URL_VM_REMOVE_DEVICE "vm.remove-device"
 
 #define VIRCH_THREAD_NAME_LEN   16
 
@@ -142,6 +143,9 @@ virCHMonitorBuildNetJson(virDomainNetDef *netdef,
 int
 virCHMonitorAddDisk(virCHMonitor* mon,
                     virDomainDiskDef *diskdef);
+
+int virCHMonitorRemoveDevice(virCHMonitor *mon,
+                             const char* device_id);
 
 int virCHMonitorBuildRestoreJson(virDomainDef *vmdef,
                                  const char *from,

@@ -612,6 +612,16 @@ virCHMonitorBuildKeyValueStringJson(char **jsonstr,
     return 0;
 }
 
+int virCHMonitorRemoveDevice(virCHMonitor *mon,
+                             const char* device_id)
+{
+    g_autoptr(virJSONValue) payload = virCHMonitorBuildKeyValueJson("id", device_id);
+
+    VIR_DEBUG("Remove device %s", device_id);
+
+    return virCHMonitorPut(mon, URL_VM_REMOVE_DEVICE, payload, NULL, NULL);
+}
+
 static int
 chMonitorCreateSocket(const char *socket_path)
 {
