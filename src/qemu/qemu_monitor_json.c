@@ -6703,17 +6703,11 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
 
 
 static int
-qemuMonitorJSONGetCPUData(qemuMonitor *mon,
-                          bool qomListGet,
-                          const char *cpuQOMPath,
-                          qemuMonitorCPUFeatureTranslationCallback translate,
-                          virCPUData *data)
+qemuMonitorJSONCPUDataAddFeatures(virCPUData *data,
+                                  GStrv props,
+                                  qemuMonitorCPUFeatureTranslationCallback translate)
 {
-    g_auto(GStrv) props = NULL;
     char **p;
-
-    if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath, &props) < 0)
-        return -1;
 
     for (p = props; p && *p; p++) {
         const char *name = *p;
@@ -6730,27 +6724,38 @@ qemuMonitorJSONGetCPUData(qemuMonitor *mon,
 
 
 static int
+qemuMonitorJSONGetCPUData(qemuMonitor *mon,
+                          bool qomListGet,
+                          const char *cpuQOMPath,
+                          qemuMonitorCPUFeatureTranslationCallback translate,
+                          virCPUData *data)
+{
+    g_auto(GStrv) props = NULL;
+
+    if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath, &props) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCPUDataAddFeatures(data, props, translate) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
                                   const char *cpuQOMPath,
                                   qemuMonitorCPUFeatureTranslationCallback translate,
                                   virCPUData *data)
 {
     g_auto(GStrv) props = NULL;
-    char **p;
 
     if (qemuMonitorJSONGetStringListProperty(mon, cpuQOMPath,
                                              "unavailable-features", &props) < 0)
         return -1;
 
-    for (p = props; p && *p; p++) {
-        const char *name = *p;
-
-        if (translate)
-            name = translate(data->arch, name);
-
-        if (virCPUDataAddFeature(data, name) < 0)
-            return -1;
-    }
+    if (qemuMonitorJSONCPUDataAddFeatures(data, props, translate) < 0)
+        return -1;
 
     return 0;
 }
