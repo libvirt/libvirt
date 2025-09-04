@@ -2360,7 +2360,6 @@ static int
 testQemuMonitorCPUInfo(const void *opaque)
 {
     const struct testCPUInfoData *data = opaque;
-    virDomainObj *vm = NULL;
     g_autofree char *queryCpusFile = NULL;
     g_autofree char *queryHotpluggableFile = NULL;
     g_autofree char *dataFile = NULL;
@@ -2393,10 +2392,6 @@ testQemuMonitorCPUInfo(const void *opaque)
         goto cleanup;
 
     if (qemuMonitorTestAddItem(test, "query-cpus-fast", queryCpusStr) < 0)
-        goto cleanup;
-
-    vm = qemuMonitorTestGetDomainObj(test);
-    if (!vm)
         goto cleanup;
 
     rc = qemuMonitorGetCPUInfo(qemuMonitorTestGetMonitor(test),
