@@ -6783,13 +6783,11 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
     if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled, translate) < 0)
         return -1;
 
-    if (disabled &&
-        qemuMonitorJSONGetCPUDataDisabled(mon, cpuQOMPath, translate, cpuDisabled) < 0)
+    if (qemuMonitorJSONGetCPUDataDisabled(mon, cpuQOMPath, translate, cpuDisabled) < 0)
         return -1;
 
     *enabled = g_steal_pointer(&cpuEnabled);
-    if (disabled)
-        *disabled = g_steal_pointer(&cpuDisabled);
+    *disabled = g_steal_pointer(&cpuDisabled);
 
     return 0;
 }

@@ -3703,8 +3703,7 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
     QEMU_CHECK_MONITOR(mon);
 
     *enabled = NULL;
-    if (disabled)
-        *disabled = NULL;
+    *disabled = NULL;
 
     return qemuMonitorJSONGetGuestCPU(mon, arch, qomListGet, cpuQOMPath,
                                       translate, enabled, disabled);
