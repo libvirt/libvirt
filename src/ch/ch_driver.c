@@ -25,6 +25,7 @@
 #include "ch_conf.h"
 #include "ch_domain.h"
 #include "ch_driver.h"
+#include "ch_hotplug.h"
 #include "ch_monitor.h"
 #include "ch_process.h"
 #include "domain_cgroup.h"
@@ -2344,6 +2345,47 @@ chDomainInterfaceAddresses(virDomain *dom,
     return ret;
 }
 
+static int
+chDomainAttachDeviceFlags(virDomainPtr dom,
+                          const char *xml,
+                          unsigned int flags)
+{
+    virCHDriver *driver = dom->conn->privateData;
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    if (!(vm = virCHDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainAttachDeviceFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        goto endjob;
+
+    if (chDomainAttachDeviceLiveAndUpdateConfig(vm, driver, xml, flags) < 0) {
+        goto endjob;
+    }
+
+    ret = 0;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+chDomainAttachDevice(virDomainPtr dom,
+                     const char *xml)
+{
+    return chDomainAttachDeviceFlags(dom, xml, VIR_DOMAIN_AFFECT_LIVE);
+}
 
 /* Function Tables */
 static virHypervisorDriver chHypervisorDriver = {
@@ -2406,6 +2448,8 @@ static virHypervisorDriver chHypervisorDriver = {
     .connectDomainEventRegisterAny = chConnectDomainEventRegisterAny,       /* 10.10.0 */
     .connectDomainEventDeregisterAny = chConnectDomainEventDeregisterAny,   /* 10.10.0 */
     .domainInterfaceAddresses = chDomainInterfaceAddresses, /* 11.0.0 */
+    .domainAttachDevice = chDomainAttachDevice, /* 11.8.0 */
+    .domainAttachDeviceFlags = chDomainAttachDeviceFlags, /* 11.8.0 */
 };
 
 static virConnectDriver chConnectDriver = {
