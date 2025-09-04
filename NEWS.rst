@@ -17,6 +17,11 @@ v11.8.0 (unreleased)
 
 * **New features**
 
+  * ch: Disk hotplug Support
+
+    Users can now attach and detach disks of Cloud Hypervisor domains at
+    runtime.
+
 * **Improvements**
 
 * **Bug fixes**
