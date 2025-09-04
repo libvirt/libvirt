@@ -6724,25 +6724,6 @@ qemuMonitorJSONCPUDataAddFeatures(virCPUData *data,
 
 
 static int
-qemuMonitorJSONGetCPUData(qemuMonitor *mon,
-                          bool qomListGet,
-                          const char *cpuQOMPath,
-                          qemuMonitorCPUFeatureTranslationCallback translate,
-                          virCPUData *data)
-{
-    g_auto(GStrv) props = NULL;
-
-    if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath, &props) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCPUDataAddFeatures(data, props, translate) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 qemuMonitorJSONGetCPUDataDisabled(qemuMonitor *mon,
                                   const char *cpuQOMPath,
                                   qemuMonitorCPUFeatureTranslationCallback translate,
@@ -6789,13 +6770,17 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
 {
     g_autoptr(virCPUData) cpuEnabled = NULL;
     g_autoptr(virCPUData) cpuDisabled = NULL;
+    g_auto(GStrv) propsEnabled = NULL;
 
     if (!(cpuEnabled = virCPUDataNew(arch)) ||
         !(cpuDisabled = virCPUDataNew(arch)))
         return -1;
 
-    if (qemuMonitorJSONGetCPUData(mon, qomListGet, cpuQOMPath,
-                                  translate, cpuEnabled) < 0)
+    if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath,
+                                        &propsEnabled) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled, translate) < 0)
         return -1;
 
     if (disabled &&
