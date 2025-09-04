@@ -2960,26 +2960,3 @@
   ],
   "id": "libvirt-1"
 }
-
-{
-  "execute": "qom-get",
-  "arguments": {
-    "path": "/machine/unattached/device[0]",
-    "property": "unavailable-features"
-  },
-  "id": "libvirt-2"
-}
-
-{
-  "return": [
-    "bus-lock-detect",
-    "cmpccxadd",
-    "avx-ifma",
-    "wbnoinvd",
-    "pbrsb-no",
-    "avx-vnni-int8",
-    "avx-ne-convert",
-    "mcdt-no"
-  ],
-  "id": "libvirt-2"
-}

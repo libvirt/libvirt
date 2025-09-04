@@ -6598,6 +6598,7 @@ struct _qemuMonitorJSONCPUPropsFilterData {
     qemuMonitor *mon;
     bool values;
     const char *cpuQOMPath;
+    virJSONValue *unavailableFeatures;
 };
 
 static int
@@ -6607,8 +6608,22 @@ qemuMonitorJSONCPUPropsFilter(const char *name,
 {
     struct _qemuMonitorJSONCPUPropsFilterData *data = opaque;
     bool enabled = false;
+    const char *type = virJSONValueObjectGetString(propData, "type");
 
-    if (STRNEQ_NULLABLE(virJSONValueObjectGetString(propData, "type"), "bool"))
+    if (data->values &&
+        STREQ(name, "unavailable-features") &&
+        STREQ_NULLABLE(type, "strList")) {
+        data->unavailableFeatures = virJSONValueObjectGetArray(propData, "value");
+        if (!data->unavailableFeatures) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("property '%1$s' in reply data was missing value"),
+                           name);
+            return -1;
+        }
+        return 1;
+    }
+
+    if (STRNEQ_NULLABLE(type, "bool"))
         return 1;
 
     if (data->values) {
@@ -6651,6 +6666,7 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
         .mon = mon,
         .values = qomListGet,
         .cpuQOMPath = cpuQOMPath,
+        .unavailableFeatures = NULL,
     };
 
     *propsEnabled = NULL;
@@ -6703,10 +6719,16 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
                                       &filterData, propsEnabled) < 0)
         return -1;
 
-    if (qemuMonitorJSONGetStringListProperty(mon, cpuQOMPath,
-                                             "unavailable-features",
-                                             propsDisabled) < 0)
-        return -1;
+    if (filterData.unavailableFeatures) {
+        *propsDisabled = virJSONValueArrayToStringList(filterData.unavailableFeatures);
+        if (!*propsDisabled)
+            return -1;
+    } else {
+        if (qemuMonitorJSONGetStringListProperty(mon, cpuQOMPath,
+                                                 "unavailable-features",
+                                                 propsDisabled) < 0)
+            return -1;
+    }
 
     return 0;
 }

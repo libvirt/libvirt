@@ -2951,17 +2951,3 @@
   ],
   "id": "libvirt-1"
 }
-
-{
-  "execute": "qom-get",
-  "arguments": {
-    "path": "/machine/unattached/device[0]",
-    "property": "unavailable-features"
-  },
-  "id": "libvirt-2"
-}
-
-{
-  "return": [],
-  "id": "libvirt-2"
-}
