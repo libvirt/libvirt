@@ -6641,7 +6641,8 @@ static int
 qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
                                 bool qomListGet,
                                 const char *cpuQOMPath,
-                                char ***props)
+                                char ***propsEnabled,
+                                char ***propsDisabled)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -6652,7 +6653,8 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
         .cpuQOMPath = cpuQOMPath,
     };
 
-    *props = NULL;
+    *propsEnabled = NULL;
+    *propsDisabled = NULL;
 
     if (qomListGet) {
         g_autoptr(virJSONValue) paths = virJSONValueNewArray();
@@ -6697,8 +6699,16 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
         }
     }
 
-    return qemuMonitorJSONParsePropsList(array, qemuMonitorJSONCPUPropsFilter,
-                                         &filterData, props);
+    if (qemuMonitorJSONParsePropsList(array, qemuMonitorJSONCPUPropsFilter,
+                                      &filterData, propsEnabled) < 0)
+        return -1;
+
+    if (qemuMonitorJSONGetStringListProperty(mon, cpuQOMPath,
+                                             "unavailable-features",
+                                             propsDisabled) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -6759,17 +6769,11 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
         return -1;
 
     if (qemuMonitorJSONGetCPUProperties(mon, qomListGet, cpuQOMPath,
-                                        &propsEnabled) < 0)
+                                        &propsEnabled, &propsDisabled) < 0)
         return -1;
 
-    if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled, translate) < 0)
-        return -1;
-
-    if (qemuMonitorJSONGetStringListProperty(mon, cpuQOMPath,
-                                             "unavailable-features", &propsDisabled) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCPUDataAddFeatures(cpuDisabled, propsDisabled, translate) < 0)
+    if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled, translate) < 0 ||
+        qemuMonitorJSONCPUDataAddFeatures(cpuDisabled, propsDisabled, translate) < 0)
         return -1;
 
     *enabled = g_steal_pointer(&cpuEnabled);
