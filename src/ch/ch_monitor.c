@@ -62,6 +62,12 @@ VIR_ONCE_GLOBAL_INIT(virCHMonitor);
 int virCHMonitorShutdownVMM(virCHMonitor *mon);
 int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
                              domainLogContext *logCtxt);
+static int
+virCHMonitorPut(virCHMonitor *mon,
+                const char *endpoint,
+                virJSONValue *payload,
+                domainLogContext *logCtxt,
+                virJSONValue **answer);
 
 static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
@@ -868,12 +874,16 @@ curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
     return content_size;
 }
 
-int
-virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
-                         domainLogContext *logCtxt)
+static int
+virCHMonitorPut(virCHMonitor *mon,
+                const char *endpoint,
+                virJSONValue *payload,
+                domainLogContext *logCtxt,
+                virJSONValue **answer)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(mon);
     g_autofree char *url = NULL;
+    g_autofree char *payload_str = NULL;
     int responseCode = 0;
     int ret = -1;
     struct curl_data data = {0};
@@ -891,26 +901,54 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint,
     curl_easy_setopt(mon->handle, CURLOPT_INFILESIZE, 0L);
 
     headers = curl_slist_append(headers, "Accept: application/json");
+
     curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, headers);
     curl_easy_setopt(mon->handle, CURLOPT_WRITEFUNCTION, curl_callback);
     curl_easy_setopt(mon->handle, CURLOPT_WRITEDATA, (void *)&data);
 
+    if (payload) {
+        payload_str = virJSONValueToString(payload, false);
+        curl_easy_setopt(mon->handle, CURLOPT_POSTFIELDS, payload_str);
+        curl_easy_setopt(mon->handle, CURLOPT_CUSTOMREQUEST, "PUT");
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+    }
+
     responseCode = virCHMonitorCurlPerform(mon->handle);
+
+    data.content = g_realloc(data.content, data.size + 1);
+    data.content[data.size] = '\0';
 
     if (logCtxt && data.size) {
         /* Do this to append a NULL char at the end of data */
-        data.content = g_realloc(data.content, data.size + 1);
-        data.content[data.size] = 0;
         domainLogContextWrite(logCtxt, "HTTP response code from CH: %d\n", responseCode);
         domainLogContextWrite(logCtxt, "Response = %s\n", data.content);
     }
 
-    if (responseCode == 200 || responseCode == 204)
-        ret = 0;
+    if (responseCode != 200 && responseCode != 204) {
+        ret = -1;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid HTTP response code from CH: %1$d"),
+                       responseCode);
+        goto cleanup;
+    }
 
+    if (answer)
+        *answer = virJSONValueFromString(data.content);
+
+    ret = 0;
+
+ cleanup:
     curl_slist_free_all(headers);
-
+    g_free(data.content);
     return ret;
+}
+
+int
+virCHMonitorPutNoContent(virCHMonitor *mon,
+                         const char *endpoint,
+                         domainLogContext *logCtxt)
+{
+    return virCHMonitorPut(mon, endpoint, NULL, logCtxt, NULL);
 }
 
 static int
