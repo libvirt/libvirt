@@ -2751,6 +2751,7 @@ qemuBlockThrottleFilterGetProps(virDomainThrottleFilterDef *filter,
                               "s:node-name", qemuBlockThrottleFilterGetNodename(filter),
                               "s:throttle-group", prefixed_group_name,
                               "s:file", parentNodeName,
+                              "s:discard", "unmap",
                               NULL) < 0)
         return NULL;
 
