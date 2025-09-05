@@ -270,7 +270,7 @@ typedef enum {
 /**
  * VIR_NODE_CPU_STATS_GUEST:
  *
- * The cumulative CPU time spent running guests,
+ * The cumulative CPU time spent running guest virtual CPUs,
  * since the node booting up (in nanoseconds).
  *
  * Since: 11.8.0
