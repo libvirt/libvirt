@@ -7820,7 +7820,9 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         }
     }
 
-    if (masterInitiator < 0) {
+    /* HMAT requires a master initiator, so when it's enabled, ensure that
+     * at least one NUMA node has CPUs assigned. */
+    if (hmat && masterInitiator < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("At least one NUMA node has to have CPUs"));
         goto cleanup;
@@ -7828,8 +7830,9 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
 
     for (i = 0; i < ncells; i++) {
         ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
+        unsigned long long memSize = virDomainNumaGetNodeMemorySize(def->numa, i);
 
-        if (needBackend) {
+        if (needBackend && memSize > 0) {
             g_autoptr(virJSONValue) tcProps = NULL;
 
             if (qemuBuildThreadContextProps(&tcProps, &nodeBackends[i],
@@ -7857,11 +7860,13 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
             virBufferAsprintf(&buf, ",initiator=%zd", initiator);
         }
 
-        if (needBackend)
-            virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
-        else
-            virBufferAsprintf(&buf, ",mem=%llu",
-                              virDomainNumaGetNodeMemorySize(def->numa, i) / 1024);
+        if (memSize > 0) {
+            if (needBackend) {
+                virBufferAsprintf(&buf, ",memdev=ram-node%zu", i);
+            } else {
+                virBufferAsprintf(&buf, ",mem=%llu", memSize / 1024);
+            }
+        }
 
         virCommandAddArgBuffer(cmd, &buf);
     }
