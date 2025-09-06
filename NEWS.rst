@@ -22,6 +22,16 @@ v11.8.0 (unreleased)
     Users can now attach and detach disks of Cloud Hypervisor domains at
     runtime.
 
+  * qemu: Add support for NUMA affinity of PCI devices
+
+    To support NVIDIA Multi-Instance GPU (MIG) configurations, libvirt now
+    handles QEMU's acpi-generic-initiator device internally. MIG enables
+    partitioning a physical GPU into multiple isolated instances, each
+    associated with one or more virtual NUMA nodes.
+
+    On the XML side, the existing <acpi> element has been extended with a
+    "nodeset" attribute to specify the NUMA node affinity of a PCI device.
+
 * **Improvements**
 
 * **Bug fixes**
