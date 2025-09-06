@@ -5223,6 +5223,43 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
 
 
 static int
+qemuBuildAcpiNodesetProps(virCommand *cmd,
+                          virDomainDeviceInfo *info)
+{
+    static unsigned int giIndex;
+    int node = -1;
+
+    if (!info->acpiNodeset)
+        return 0;
+
+    while ((node = virBitmapNextSetBit(info->acpiNodeset, node)) > -1) {
+        g_autoptr(virJSONValue) props = NULL;
+        g_autofree char *id = g_strdup_printf("gi%u", giIndex++);
+
+        if (virJSONValueObjectAdd(&props,
+                                  "s:qom-type", "acpi-generic-initiator",
+                                  "s:id", id,
+                                  "s:pci-dev", info->alias,
+                                  "i:node", node,
+                                  NULL) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to build acpi-generic-initiator properties"));
+
+            return -1;
+        }
+
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to build QEMU command line for acpi-generic-initiator"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildHostdevCommandLine(virCommand *cmd,
                             const virDomainDef *def,
                             virQEMUCaps *qemuCaps)
@@ -5264,6 +5301,10 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
 
             if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
                 return -1;
+
+            if (qemuBuildAcpiNodesetProps(cmd, hostdev->info) < 0)
+                return -1;
+
             break;
 
         /* SCSI */
