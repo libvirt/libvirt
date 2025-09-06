@@ -1717,6 +1717,14 @@ qemuValidateDomainDeviceInfo(const virDomainDeviceDef *dev,
         }
     }
 
+    if (info->acpiNodeset) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ACPI_GENERIC_INITIATOR)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI nodeset is not supported with this QEMU"));
+            return -1;
+        }
+    }
+
     if (info->romenabled || info->rombar || info->romfile) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
             info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
