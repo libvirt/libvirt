@@ -1,0 +1,55 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest2/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=QEMUGuest2,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest2/master-key.aes"}' \
+-machine q35,usb=off,dump-guest-core=off,acpi=off \
+-accel tcg \
+-cpu qemu64 \
+-m size=8388608k \
+-overcommit mem-lock=off \
+-smp 16,sockets=16,cores=1,threads=1 \
+-object '{"qom-type":"memory-backend-ram","id":"ram-node0","size":8589934592}' \
+-numa node,nodeid=0,cpus=0-15,memdev=ram-node0 \
+-numa node,nodeid=1 \
+-numa node,nodeid=2 \
+-numa node,nodeid=3 \
+-numa node,nodeid=4 \
+-numa node,nodeid=5 \
+-numa node,nodeid=6 \
+-numa node,nodeid=7 \
+-numa node,nodeid=8 \
+-uuid c7a5fdbd-edaf-9466-926a-d65c16db1809 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot strict=on \
+-device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
+-device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
+-device '{"driver":"qemu-xhci","id":"usb","bus":"pci.1","addr":"0x0"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-global ICH9-LPC.noreboot=off \
+-watchdog-action reset \
+-device '{"driver":"vfio-pci","host":"0000:06:12.1","id":"hostdev0","bus":"pcie.0","addr":"0x2"}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi0","pci-dev":"hostdev0","node":1}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi1","pci-dev":"hostdev0","node":2}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi2","pci-dev":"hostdev0","node":3}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi3","pci-dev":"hostdev0","node":4}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi4","pci-dev":"hostdev0","node":5}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi5","pci-dev":"hostdev0","node":6}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi6","pci-dev":"hostdev0","node":7}' \
+-object '{"qom-type":"acpi-generic-initiator","id":"gi7","pci-dev":"hostdev0","node":8}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pcie.0","addr":"0x6"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
