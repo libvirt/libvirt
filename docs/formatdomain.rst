@@ -4894,6 +4894,55 @@ or:
    host device. :since:`Since 1.0.6`, but only works as expected
    :since:`since 1.2.2`.
 
+ACPI Generic Initiators
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+A host device may include an ``<acpi>`` element to create ACPI Generic
+Initiator objects for the device in QEMU.
+
+This can be used for **NVIDIA Multi-Instance GPU (MIG)** configurations,
+where a physical GPU is partitioned into multiple isolated instances, each
+associated with one or more virtual NUMA nodes.
+
+By attaching an ``<acpi nodeset=.../>`` element to the MIG device in the
+domain XML, the guest will configure the correct partitioning for that
+instance.
+
+::
+
+   <numa>
+     <cell id='0' cpus='0-15' memory='8388608' unit='KiB'/>
+     <cell id='1' memory='0' unit='KiB'/>
+     <cell id='2' memory='0' unit='KiB'/>
+     <cell id='3' memory='0' unit='KiB'/>
+     <cell id='4' memory='0' unit='KiB'/>
+     <cell id='5' memory='0' unit='KiB'/>
+     <cell id='6' memory='0' unit='KiB'/>
+     <cell id='7' memory='0' unit='KiB'/>
+     <cell id='8' memory='0' unit='KiB'/>
+   </numa>
+   ...
+   <hostdev mode='subsystem' type='pci' managed='yes'>
+     <source>
+       <address domain='0x0000' bus='0x06' slot='0x12' function='0x1'/>
+     </source>
+     <acpi nodeset='1-8'/>
+     <address type='pci' domain='0x0000' bus='0x00'
+              slot='0x02' function='0x0'/>
+   </hostdev>
+
+Attributes of ``<acpi>``:
+
+``nodeset``
+   A list of NUMA node IDs that will be associated with the device.
+   Each node in the set causes libvirt to create an
+   ``acpi-generic-initiator`` object in QEMU, tied to this device.
+
+   The value uses the standard libvirt *nodeset* syntax (e.g. ``0-3,5``).
+
+If the ``<acpi>`` element is omitted, no acpi-generic-initiator objects are
+created for the device.
+
 Block / character devices
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
