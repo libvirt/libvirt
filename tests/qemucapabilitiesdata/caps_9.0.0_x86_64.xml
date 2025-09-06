@@ -204,6 +204,7 @@
   <flag name='nvme-ns'/>
   <flag name='amd-iommu'/>
   <flag name='usb-bot'/>
+  <flag name='acpi-generic-initiator'/>
   <version>9000000</version>
   <microcodeVersion>43100245</microcodeVersion>
   <package>v9.0.0</package>

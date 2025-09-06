@@ -725,6 +725,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_TDX_GUEST, /* -object tdx-guest,... */
     QEMU_CAPS_QOM_LIST_GET, /* qom-list-get QMP command */
 
+    /* 485 */
+    QEMU_CAPS_ACPI_GENERIC_INITIATOR, /* -object acpi-generic-initiator */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

@@ -743,6 +743,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "usb-bot", /* QEMU_CAPS_DEVICE_USB_BOT */
               "tdx-guest", /* QEMU_CAPS_TDX_GUEST */
               "qom-list-get", /* QEMU_CAPS_QOM_LIST_GET */
+
+              /* 485 */
+              "acpi-generic-initiator", /* QEMU_CAPS_ACPI_GENERIC_INITIATOR */
     );
 
 
@@ -1436,6 +1439,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "tpm-spapr", QEMU_CAPS_DEVICE_TPM_SPAPR },
     { "tpm-emulator", QEMU_CAPS_DEVICE_TPM_EMULATOR },
     { "tpm-passthrough", QEMU_CAPS_DEVICE_TPM_PASSTHROUGH },
+    { "acpi-generic-initiator", QEMU_CAPS_ACPI_GENERIC_INITIATOR },
 };
 
 

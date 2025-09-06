@@ -163,6 +163,7 @@
   <flag name='nvme'/>
   <flag name='nvme-ns'/>
   <flag name='usb-bot'/>
+  <flag name='acpi-generic-initiator'/>
   <version>10000000</version>
   <microcodeVersion>61700285</microcodeVersion>
   <package>v10.0.0</package>
