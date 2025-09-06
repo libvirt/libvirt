@@ -5558,8 +5558,20 @@ virDomainDeviceInfoFormat(virBuffer *buf,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (info->acpiIndex != 0)
-        virBufferAsprintf(buf, "<acpi index='%u'/>\n", info->acpiIndex);
+    if (info->acpiIndex != 0 || info->acpiNodeset) {
+        virBufferAddLit(buf, "<acpi");
+
+        if (info->acpiIndex != 0)
+            virBufferAsprintf(buf, " index='%u'", info->acpiIndex);
+
+        if (info->acpiNodeset) {
+            g_autofree char *nodeset = virBitmapFormat(info->acpiNodeset);
+            if (nodeset)
+                virBufferAsprintf(buf, " nodeset='%s'", nodeset);
+        }
+
+        virBufferAddLit(buf, "/>\n");
+    }
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390)
@@ -5884,9 +5896,23 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
     }
 
     if ((acpi = virXPathNode("./acpi", ctxt))) {
+        g_autofree char *nodeset = NULL;
+
         if (virXMLPropUInt(acpi, "index", 10, VIR_XML_PROP_NONZERO,
                            &info->acpiIndex) < 0)
             goto cleanup;
+
+        if ((nodeset = virXMLPropString(acpi, "nodeset"))) {
+            if (virBitmapParse(nodeset, &info->acpiNodeset,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(info->acpiNodeset)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'nodeset': %1$s"), nodeset);
+                goto cleanup;
+            }
+        }
     }
 
     if ((address = virXPathNode("./address", ctxt)) &&

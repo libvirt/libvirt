@@ -7454,6 +7454,11 @@
           <ref name="unsignedInt"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="nodeset">
+          <ref name="cpuset"/>
+        </attribute>
+      </optional>
     </element>
   </define>
 
