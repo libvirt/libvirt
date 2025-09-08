@@ -1805,13 +1805,9 @@ qemuMigrationSrcIsSafe(virDomainObj *vm,
          * which case cache mode doesn't matter) or used with cache=none or used with cache=directsync */
         if (disk->src->shared ||
             disk->cachemode == VIR_DOMAIN_DISK_CACHE_DISABLE ||
-            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC)
+            disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC ||
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_FILE_DROP_CACHE))
             continue;
-
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_FILE_DROP_CACHE)) {
-            VIR_DEBUG("QEMU supports flushing caches; migration is safe");
-            continue;
-        }
 
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration may lead to data corruption if disks use cache other than none or directsync"));
