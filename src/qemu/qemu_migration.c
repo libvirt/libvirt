@@ -1733,40 +1733,34 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
 }
 
 
-static bool
-qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
-                           virQEMUCaps *qemuCaps,
-                           virQEMUDriverConfig *cfg)
+static int
+qemuMigrationSrcCheckStorageSourceSafety(virStorageSource *src,
+                                         virQEMUDriverConfig *cfg,
+                                         bool *unsafe_storage,
+                                         bool *requires_safe_cache)
 {
-    virStorageType actualType = virStorageSourceGetActualType(disk->src);
-    bool unsafe = false;
-    int rc;
+    switch (virStorageSourceGetActualType(src)) {
+    case VIR_STORAGE_TYPE_FILE: {
+        int rc_cluster = virFileIsClusterFS(src->path);
+        int rc_shared = virFileIsSharedFS(src->path, cfg->sharedFilesystems);
 
-    /* Disks without any source (i.e. floppies and CD-ROMs) OR readonly are safe. */
-    if (virStorageSourceIsEmpty(disk->src) ||
-        disk->src->readonly)
-        return true;
+        if (rc_cluster < 0 || rc_shared < 0)
+            return -1;
 
-    /* However, disks on local FS (e.g. ext4) are not safe. */
-    switch (actualType) {
-    case VIR_STORAGE_TYPE_FILE:
-        if ((rc = virFileIsSharedFS(disk->src->path, cfg->sharedFilesystems)) < 0) {
-            return false;
-        } else if (rc == 0) {
-            unsafe = true;
+        if (rc_cluster == 0) {
+            *requires_safe_cache = true;
+
+            if (rc_shared == 0)
+                *unsafe_storage = true;
         }
-
-        if ((rc = virFileIsClusterFS(disk->src->path)) < 0)
-            return false;
-        else if (rc == 1)
-            return true;
+    }
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        return true;
+        break;
 
     case VIR_STORAGE_TYPE_NVME:
-        unsafe = true;
+        *unsafe_storage = true;
         break;
 
     case VIR_STORAGE_TYPE_VHOST_USER:
@@ -1776,10 +1770,32 @@ qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_VOLUME:
     case VIR_STORAGE_TYPE_LAST:
+        *requires_safe_cache = true;
         break;
     }
 
-    if (unsafe) {
+    return 0;
+}
+
+
+static bool
+qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
+                           virQEMUCaps *qemuCaps,
+                           virQEMUDriverConfig *cfg)
+{
+    bool unsafe_storage = false;
+    bool requires_safe_cache = false;
+
+    /* Disks without any source (i.e. floppies and CD-ROMs) OR readonly are safe. */
+    if (virStorageSourceIsEmpty(disk->src) ||
+        disk->src->readonly)
+        return true;
+
+    if (qemuMigrationSrcCheckStorageSourceSafety(disk->src, cfg, &unsafe_storage,
+                                                 &requires_safe_cache) < 0)
+        return false;
+
+    if (unsafe_storage) {
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration without shared storage is unsafe"));
         return false;
@@ -1787,7 +1803,8 @@ qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
 
     /* Our code elsewhere guarantees shared disks are either readonly (in
      * which case cache mode doesn't matter) or used with cache=none or used with cache=directsync */
-    if (!(disk->src->shared ||
+    if (requires_safe_cache &&
+        !(disk->src->shared ||
           disk->cachemode == VIR_DOMAIN_DISK_CACHE_DISABLE ||
           disk->cachemode == VIR_DOMAIN_DISK_CACHE_DIRECTSYNC ||
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_FILE_DROP_CACHE))) {
