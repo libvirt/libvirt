@@ -25,3 +25,9 @@ chDomainAttachDeviceLiveAndUpdateConfig(virDomainObj *vm,
                                         virCHDriver *driver,
                                         const char *xml,
                                         unsigned int flags);
+
+int
+chDomainDetachDeviceLiveAndUpdateConfig(virCHDriver *driver,
+                                        virDomainObj *vm,
+                                        const char *xml,
+                                        unsigned int flags);

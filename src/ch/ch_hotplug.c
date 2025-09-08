@@ -157,3 +157,239 @@ chDomainAttachDeviceLiveAndUpdateConfig(virDomainObj *vm,
 
     return 0;
 }
+
+static int
+chFindDiskId(virDomainDef *def, const char *dst)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (STREQ(def->disks[i]->dst, dst))
+            return i;
+    }
+
+    return -1;
+}
+
+
+/**
+ * chDomainFindDisk
+ *
+ * Helper function to find a disk device definition of a domain.
+ *
+ * Searches through the disk devices of a domain by comparing to 'match' and
+ * returns any match via the 'detach' out parameter.
+ */
+static int
+chDomainFindDisk(virDomainObj *vm,
+                 virDomainDiskDef *match,
+                 virDomainDiskDef **detach)
+{
+    virDomainDiskDef *disk;
+    int idx;
+
+    if ((idx = chFindDiskId(vm->def, match->dst)) < 0) {
+        virReportError(VIR_ERR_DEVICE_MISSING,
+                       _("disk %1$s not found"), match->dst);
+        return -1;
+    }
+    *detach = disk = vm->def->disks[idx];
+
+    return 0;
+}
+
+
+static int
+chDomainRemoveDevice(virDomainObj *vm,
+                     virDomainDeviceDef *device)
+{
+    size_t i;
+
+    VIR_DEBUG("Removing device %s from domain %p %s",
+              virDomainDeviceTypeToString(device->type), vm, vm->def->name);
+
+    switch (device->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        for (i = 0; i < vm->def->ndisks; i++) {
+            if (vm->def->disks[i] == device->data.disk) {
+                virDomainDiskRemove(vm->def, i);
+                break;
+            }
+        }
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_NONE:
+    default:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("don't know how to remove a %1$s device"),
+                       virDomainDeviceTypeToString(device->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+chDomainDetachDeviceLive(virDomainObj *vm,
+                         virDomainDeviceDef *match)
+{
+    virDomainDeviceDef detach = { .type = match->type };
+    virDomainDeviceInfo *info = NULL;
+    virCHDomainObjPrivate *priv = vm->privateData;
+    int idx = 0;
+
+    switch (match->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (chDomainFindDisk(vm, match->data.disk,
+                             &detach.data.disk) < 0) {
+            return -1;
+        }
+        break;
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_NONE:
+    default:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("live detach of device '%1$s' is not supported"),
+                       virDomainDeviceTypeToString(match->type));
+        return -1;
+    }
+
+    /* "detach" now points to the actual device we want to detach */
+
+    if (!(info = virDomainDeviceGetInfo(&detach))) {
+        /*
+         * This should never happen, since all of the device types in
+         * the switch cases that end with a "break" instead of a
+         * return have a virDeviceInfo in them.
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("device of type '%1$s' has no device info"),
+                       virDomainDeviceTypeToString(detach.type));
+        return -1;
+    }
+
+    /* Make generic validation checks common to all device types */
+
+    if (!info->alias) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Cannot detach %1$s device with no alias"),
+                       virDomainDeviceTypeToString(detach.type));
+        return -1;
+    }
+
+    if (virCHMonitorRemoveDevice(priv->monitor, info->alias) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid response from CH. Disk removal failed."));
+        return -1;
+    }
+
+    if (chDomainRemoveDevice(vm, match) < 0)
+        return -1;
+
+    if (match->type == VIR_DOMAIN_DEVICE_DISK) {
+        idx = chFindDiskId(vm->def, match->data.disk->dst);
+        if (idx >= 0) {
+            virDomainDiskRemove(vm->def, idx);
+        }
+    }
+
+    return 0;
+}
+
+int
+chDomainDetachDeviceLiveAndUpdateConfig(virCHDriver *driver,
+                                        virDomainObj *vm,
+                                        const char *xml,
+                                        unsigned int flags)
+{
+    g_autoptr(virCHDriverConfig) cfg = NULL;
+    g_autoptr(virDomainDeviceDef) dev_config = NULL;
+    g_autoptr(virDomainDeviceDef) dev_live = NULL;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
+    g_autoptr(virDomainDef) vmdef = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    cfg = virCHDriverGetConfig(driver);
+
+    if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
+        !(flags & VIR_DOMAIN_AFFECT_LIVE))
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Persistent domain state changes are not supported"));
+        return -1;
+    }
+
+    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (!(dev_live = virDomainDeviceDefParse(xml, vm->def, driver->xmlopt,
+                                                 NULL, parse_flags))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not parse domain definition"));
+            return -1;
+        }
+
+        if (chDomainDetachDeviceLive(vm, dev_live) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could detach device"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
