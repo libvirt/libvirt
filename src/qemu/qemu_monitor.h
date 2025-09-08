@@ -748,6 +748,9 @@ struct _qemuBlockNamedNodeData {
 
     /* qcow2 subcluster allocation -> extended_l2 */
     bool qcow2extendedL2;
+
+    /* qcow2 data file 'raw' feature is enabled */
+    bool qcow2dataFileRaw;
 };
 
 GHashTable *

@@ -2775,6 +2775,9 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
             ignore_value(virJSONValueObjectGetBoolean(qcow2props, "extended-l2",
                                                       &ent->qcow2extendedL2));
+
+            ignore_value(virJSONValueObjectGetBoolean(qcow2props, "data-file-raw",
+                                                      &ent->qcow2dataFileRaw));
         }
     }
 

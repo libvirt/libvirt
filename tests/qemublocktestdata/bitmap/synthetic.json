@@ -15,6 +15,7 @@
           "compat": "0.10",
           "compression-type": "zlib",
           "lazy-refcounts": false,
+          "data-file-raw": true,
           "bitmaps": [
             {
               "flags": [
