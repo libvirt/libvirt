@@ -742,6 +742,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "amd-iommu.pci-id", /* QEMU_CAPS_AMD_IOMMU_PCI_ID */
               "usb-bot", /* QEMU_CAPS_DEVICE_USB_BOT */
               "tdx-guest", /* QEMU_CAPS_TDX_GUEST */
+              "qom-list-get", /* QEMU_CAPS_QOM_LIST_GET */
     );
 
 
@@ -1256,6 +1257,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-stats-schemas", QEMU_CAPS_QUERY_STATS_SCHEMAS },
     { "display-reload", QEMU_CAPS_DISPLAY_RELOAD },
     { "blockdev-set-active", QEMU_CAPS_BLOCKDEV_SET_ACTIVE },
+    { "qom-list-get", QEMU_CAPS_QOM_LIST_GET },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
