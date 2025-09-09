@@ -336,7 +336,7 @@ chDomainDetachDeviceLive(virDomainObj *vm,
         return -1;
     }
 
-    if (chDomainRemoveDevice(vm, match) < 0)
+    if (chDomainRemoveDevice(vm, &detach) < 0)
         return -1;
 
     if (match->type == VIR_DOMAIN_DEVICE_DISK) {
