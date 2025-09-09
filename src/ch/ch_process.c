@@ -1003,7 +1003,9 @@ virCHProcessStart(virCHDriver *driver,
 
  cleanup:
     if (ret)
-        virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        virCHProcessStop(driver, vm,
+                         VIR_DOMAIN_SHUTOFF_FAILED,
+                         VIR_CH_PROCESS_STOP_FORCE);
 
     return ret;
 }
@@ -1011,7 +1013,8 @@ virCHProcessStart(virCHDriver *driver,
 int
 virCHProcessStop(virCHDriver *driver,
                  virDomainObj *vm,
-                 virDomainShutoffReason reason)
+                 virDomainShutoffReason reason,
+                 unsigned int flags)
 {
     g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
     int ret;
@@ -1022,13 +1025,18 @@ virCHProcessStop(virCHDriver *driver,
     virErrorPtr orig_err = NULL;
     size_t i;
 
-    VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
-              vm->def->name, (int)vm->pid, (int)reason);
+    VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d flags=0x%x",
+              vm->def->name, (int)vm->pid, (int)reason, flags);
 
     virErrorPreserveLast(&orig_err);
 
     if (priv->monitor) {
-        virProcessKillPainfully(vm->pid, true);
+        bool force = false;
+
+        if (flags & VIR_CH_PROCESS_STOP_FORCE)
+            force = true;
+
+        virProcessKillPainfully(vm->pid, force);
         g_clear_pointer(&priv->monitor, virCHMonitorClose);
     }
 
@@ -1180,6 +1188,8 @@ virCHProcessStartRestore(virCHDriver *driver, virDomainObj *vm, const char *from
     if (tapfds)
         chCloseFDs(tapfds, ntapfds);
     if (ret)
-        virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED);
+        virCHProcessStop(driver, vm,
+                         VIR_DOMAIN_SHUTOFF_FAILED,
+                         VIR_CH_PROCESS_STOP_FORCE);
     return ret;
 }

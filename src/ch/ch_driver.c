@@ -686,8 +686,11 @@ chDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED) < 0)
+    if (virCHProcessStop(driver, vm,
+                         VIR_DOMAIN_SHUTOFF_DESTROYED,
+                         VIR_CH_PROCESS_STOP_FORCE) < 0) {
         goto endjob;
+    }
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_STOPPED,
@@ -818,7 +821,8 @@ chDoDomainSave(virCHDriver *driver,
         goto end;
     }
 
-    if (virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SAVED) < 0) {
+    if (virCHProcessStop(driver, vm,
+                         VIR_DOMAIN_SHUTOFF_SAVED, VIR_CH_PROCESS_STOP_FORCE) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to shutoff after domain save"));
         goto end;
