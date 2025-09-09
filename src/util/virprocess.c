@@ -168,7 +168,8 @@ virProcessAbort(pid_t pid)
             }
         }
     }
-    VIR_DEBUG("failed to reap child %lld, abandoning it", (long long) pid);
+    VIR_DEBUG("failed to reap child %lld, abandoning it: %s",
+              (long long) pid, g_strerror(errno));
 
  cleanup:
     errno = saved_errno;
