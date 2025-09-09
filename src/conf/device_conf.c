@@ -137,7 +137,7 @@ virDomainDeviceInfoClear(virDomainDeviceInfo *info)
     info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
     VIR_FREE(info->romfile);
     VIR_FREE(info->loadparm);
-    virBitmapFree(info->acpiNodeset);
+    g_clear_pointer(&info->acpiNodeset, virBitmapFree);
     info->isolationGroup = 0;
     info->isolationGroupLocked = false;
 }
