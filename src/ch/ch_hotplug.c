@@ -52,23 +52,26 @@ chDomainAddDisk(virCHMonitor *mon,
 }
 
 static int
-chDomainAttachDeviceLive(virDomainObj *vm,
+chDomainAttachDeviceLive(virCHDriver *driver,
+                         virDomainObj *vm,
                          virDomainDeviceDef *dev)
 {
     int ret = -1;
     virCHDomainObjPrivate *priv = vm->privateData;
     virCHMonitor *mon = priv->monitor;
+    const char *alias = NULL;
 
     switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_DISK: {
+    case VIR_DOMAIN_DEVICE_DISK:
         if (chDomainAddDisk(mon, vm, dev->data.disk) < 0) {
             break;
         }
 
+        alias = dev->data.disk->info.alias;
         dev->data.disk = NULL;
         ret = 0;
         break;
-    }
+
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
@@ -102,6 +105,13 @@ chDomainAttachDeviceLive(virDomainObj *vm,
                        _("live attach of device '%1$s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
         break;
+    }
+
+    if (alias) {
+        virObjectEvent *event;
+
+        event = virDomainEventDeviceAddedNewFromObj(vm, alias);
+        virObjectEventStateQueue(driver->domainEventState, event);
     }
 
     return ret;
@@ -148,7 +158,7 @@ chDomainAttachDeviceLiveAndUpdateConfig(virDomainObj *vm,
             return -1;
         }
 
-        if (chDomainAttachDeviceLive(vm, devLive) < 0) {
+        if (chDomainAttachDeviceLive(driver, vm, devLive) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Failed to add device"));
             return -1;
