@@ -1795,6 +1795,12 @@ qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
                                                  &requires_safe_cache) < 0)
         return false;
 
+    if (disk->src->dataFileStore &&
+        qemuMigrationSrcCheckStorageSourceSafety(disk->src->dataFileStore,
+                                                 cfg, &unsafe_storage,
+                                                 &requires_safe_cache) < 0)
+        return false;
+
     if (unsafe_storage) {
         virReportError(VIR_ERR_MIGRATE_UNSAFE, "%s",
                        _("Migration without shared storage is unsafe"));
