@@ -263,7 +263,6 @@ chDomainDetachDeviceLive(virDomainObj *vm,
     virDomainDeviceDef detach = { .type = match->type };
     virDomainDeviceInfo *info = NULL;
     virCHDomainObjPrivate *priv = vm->privateData;
-    int idx = 0;
 
     switch (match->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -338,13 +337,6 @@ chDomainDetachDeviceLive(virDomainObj *vm,
 
     if (chDomainRemoveDevice(vm, &detach) < 0)
         return -1;
-
-    if (match->type == VIR_DOMAIN_DEVICE_DISK) {
-        idx = chFindDiskId(vm->def, match->data.disk->dst);
-        if (idx >= 0) {
-            virDomainDiskRemove(vm->def, idx);
-        }
-    }
 
     return 0;
 }
