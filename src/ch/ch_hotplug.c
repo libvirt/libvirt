@@ -267,12 +267,15 @@ chDomainRemoveDevice(virDomainObj *vm,
 
 
 static int
-chDomainDetachDeviceLive(virDomainObj *vm,
+chDomainDetachDeviceLive(virCHDriver *driver,
+                         virDomainObj *vm,
                          virDomainDeviceDef *match)
 {
     virDomainDeviceDef detach = { .type = match->type };
     virDomainDeviceInfo *info = NULL;
     virCHDomainObjPrivate *priv = vm->privateData;
+    virObjectEvent *event = NULL;
+    g_autofree char *alias = NULL;
 
     switch (match->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -339,6 +342,11 @@ chDomainDetachDeviceLive(virDomainObj *vm,
         return -1;
     }
 
+    /* Save the alias to use when sending a DEVICE_REMOVED event after all
+     * other tear down is complete.
+     */
+    alias = g_strdup(info->alias);
+
     if (virCHMonitorRemoveDevice(priv->monitor, info->alias) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid response from CH. Disk removal failed."));
@@ -347,6 +355,9 @@ chDomainDetachDeviceLive(virDomainObj *vm,
 
     if (chDomainRemoveDevice(vm, &detach) < 0)
         return -1;
+
+    event = virDomainEventDeviceRemovedNewFromObj(vm, alias);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
     return 0;
 }
@@ -386,7 +397,7 @@ chDomainDetachDeviceLiveAndUpdateConfig(virCHDriver *driver,
             return -1;
         }
 
-        if (chDomainDetachDeviceLive(vm, dev_live) < 0) {
+        if (chDomainDetachDeviceLive(driver, vm, dev_live) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Could detach device"));
             return -1;
