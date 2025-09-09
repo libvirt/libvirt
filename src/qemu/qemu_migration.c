@@ -1779,19 +1779,47 @@ qemuMigrationSrcCheckStorageSourceSafety(virStorageSource *src,
 
 
 static bool
-qemuMigrationSrcIsSafeDisk(virDomainDiskDef *disk,
+qemuMigrationSrcIsSafeDisk(virDomainObj *vm,
+                           virDomainDiskDef *disk,
                            virQEMUCaps *qemuCaps,
-                           virQEMUDriverConfig *cfg)
+                           virQEMUDriverConfig *cfg,
+                           GHashTable **blockNamedNodeData)
 {
     bool unsafe_storage = false;
     bool requires_safe_cache = false;
+    bool skip_overlay_check = false;
 
     /* Disks without any source (i.e. floppies and CD-ROMs) OR readonly are safe. */
     if (virStorageSourceIsEmpty(disk->src) ||
         disk->src->readonly)
         return true;
 
-    if (qemuMigrationSrcCheckStorageSourceSafety(disk->src, cfg, &unsafe_storage,
+    if (disk->src->dataFileStore &&
+        !virStorageSourceHasBacking(disk->src)) {
+        qemuBlockNamedNodeData *nodedata;
+
+        /* As a special case if the topmost disk image is a qcow2 with a
+         * data_file and the 'data_file_raw' option enabled, the overlay itself
+         * contains no useful data. Kubevirt uses this setup for migrations
+         * where the qcow2 overlay is used for block dirty bitmaps which are
+         * migrated using migration stream and kubevirt thus pre-creates the
+         * overlay rather than putting it on shared storage */
+
+        if (!*blockNamedNodeData &&
+            !(*blockNamedNodeData = qemuBlockGetNamedNodeData(vm,
+                                                              VIR_ASYNC_JOB_MIGRATION_OUT)))
+            return false;
+
+        if ((nodedata = virHashLookup(*blockNamedNodeData,
+                                      qemuBlockStorageSourceGetFormatNodename(disk->src)))) {
+
+            if (nodedata->qcow2dataFileRaw)
+                skip_overlay_check = true;
+        }
+    }
+
+    if (!skip_overlay_check &&
+        qemuMigrationSrcCheckStorageSourceSafety(disk->src, cfg, &unsafe_storage,
                                                  &requires_safe_cache) < 0)
         return false;
 
@@ -1831,6 +1859,7 @@ qemuMigrationSrcIsSafe(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
     bool storagemigration = flags & (VIR_MIGRATE_NON_SHARED_DISK |
                                      VIR_MIGRATE_NON_SHARED_INC);
     size_t i;
@@ -1843,7 +1872,7 @@ qemuMigrationSrcIsSafe(virDomainObj *vm,
             qemuMigrationAnyCopyDisk(disk, migrate_disks))
             continue;
 
-        if (!qemuMigrationSrcIsSafeDisk(disk, priv->qemuCaps, cfg))
+        if (!qemuMigrationSrcIsSafeDisk(vm, disk, priv->qemuCaps, cfg, &blockNamedNodeData))
             return false;
     }
 
