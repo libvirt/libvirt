@@ -22,35 +22,6 @@
 #include <glib/gstdio.h>
 #include <glib-object.h>
 
-#if !GLIB_CHECK_VERSION(2, 67, 0)
-
-/*
- * ...meanwhile GCC >= 11 has started issuing warnings about volatile
- * from the old G_DEFINE_TYPE macro impl. IOW the new macros impls fixed
- * new GCC, but broke CLang
- */
-# if !defined(__clang__) && __GNUC_PREREQ (11, 0)
-#  undef _G_DEFINE_TYPE_EXTENDED_BEGIN
-
-#  define _G_DEFINE_TYPE_EXTENDED_BEGIN(TypeName, type_name, TYPE_PARENT, flags) \
-    _Pragma("GCC diagnostic push") \
-    _Pragma("GCC diagnostic ignored \"-Wincompatible-pointer-types\"") \
-    _G_DEFINE_TYPE_EXTENDED_BEGIN_PRE(TypeName, type_name, TYPE_PARENT) \
-    _G_DEFINE_TYPE_EXTENDED_BEGIN_REGISTER(TypeName, type_name, TYPE_PARENT, flags) \
-    _Pragma("GCC diagnostic pop")
-# endif /* !clang && GCC >= 11.0 */
-
-#endif /* GLib < 2.67.0 */
-
-/* Drop once we require glib-2.68 at minimum */
-guint
-vir_g_string_replace(GString *string,
-                     const gchar *find,
-                     const gchar *replace,
-                     guint limit);
-#undef g_string_replace
-#define g_string_replace vir_g_string_replace
-
 #if !GLIB_CHECK_VERSION(2, 73, 2)
 # if (defined(__has_attribute) && __has_attribute(__noinline__)) || G_GNUC_CHECK_VERSION (2, 96)
 #  if defined (__cplusplus) && __cplusplus >= 201103L

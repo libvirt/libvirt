@@ -1899,10 +1899,6 @@ virStorageSourceUpdateCapacity;
 virStorageSourceUpdatePhysicalSize;
 
 
-# util/glibcompat.h
-vir_g_string_replace;
-
-
 # util/viracpi.c
 virAcpiHasSMMU;
 virAcpiParseIORT;

@@ -2070,8 +2070,8 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC))
         virQEMUCapsSGXInfoCopy(&ret->sgxCapabilities, qemuCaps->sgxCapabilities);
 
-    ret->hypervCapabilities = g_memdup(qemuCaps->hypervCapabilities,
-                                       sizeof(virDomainCapsFeatureHyperv));
+    ret->hypervCapabilities = g_memdup2(qemuCaps->hypervCapabilities,
+                                        sizeof(virDomainCapsFeatureHyperv));
 
     return g_steal_pointer(&ret);
 }
@@ -6930,8 +6930,8 @@ static void
 virQEMUCapsFillDomainFeatureHypervCaps(virQEMUCaps *qemuCaps,
                                        virDomainCaps *domCaps)
 {
-    domCaps->hyperv = g_memdup(qemuCaps->hypervCapabilities,
-                               sizeof(virDomainCapsFeatureHyperv));
+    domCaps->hyperv = g_memdup2(qemuCaps->hypervCapabilities,
+                                sizeof(virDomainCapsFeatureHyperv));
 }
 
 
