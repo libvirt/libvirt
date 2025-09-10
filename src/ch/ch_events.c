@@ -55,13 +55,12 @@ virCHEventStopProcess(virDomainObj *vm,
                       virDomainShutoffReason reason)
 {
     virCHDriver *driver = CH_DOMAIN_PRIVATE(vm)->driver;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
 
-    virObjectLock(vm);
     if (virDomainObjBeginJob(vm, VIR_JOB_DESTROY))
         return -1;
     virCHProcessStop(driver, vm, reason, VIR_CH_PROCESS_STOP_FORCE);
     virDomainObjEndJob(vm);
-    virObjectUnlock(vm);
 
     return 0;
 }
