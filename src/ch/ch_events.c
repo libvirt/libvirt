@@ -152,7 +152,6 @@ virCHProcessEvents(virCHMonitor *mon)
     virDomainObj *vm = mon->vm;
     char *buf = mon->event_buffer.buffer;
     ssize_t sz = mon->event_buffer.buf_fill_sz;
-    virJSONValue *obj = NULL;
     int blocks = 0;
     size_t i = 0;
     char *json_start;
@@ -168,6 +167,8 @@ virCHProcessEvents(virCHMonitor *mon)
         } else if (buf[i] == '}' && blocks > 0) {
             blocks--;
             if (blocks == 0) {
+                g_autoptr(virJSONValue) obj = NULL;
+
                 /* valid json document */
                 end_index = i;
 
@@ -182,7 +183,6 @@ virCHProcessEvents(virCHMonitor *mon)
                                   vm->def->name, json_start);
                         return -1;
                     }
-                    virJSONValueFree(obj);
                 } else {
                     VIR_ERROR(_("%1$s: Invalid JSON event doc: %2$s"),
                               vm->def->name, json_start);
