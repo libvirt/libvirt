@@ -2386,6 +2386,45 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
 }
 
 
+static void
+qemuMonitorJSONBlockStatsCollectDataTimedOne(virJSONValue *j,
+                                             struct qemuBlockStatsTimed *s)
+{
+    virJSONValueObjectGetNumberUlong(j, "interval_length", &s->interval_length);
+
+    virJSONValueObjectGetNumberUlong(j, "min_rd_latency_ns", &s->rd_latency_min);
+    virJSONValueObjectGetNumberUlong(j, "max_rd_latency_ns", &s->rd_latency_max);
+    virJSONValueObjectGetNumberUlong(j, "avg_rd_latency_ns", &s->rd_latency_avg);
+
+    virJSONValueObjectGetNumberUlong(j, "min_wr_latency_ns", &s->wr_latency_min);
+    virJSONValueObjectGetNumberUlong(j, "max_wr_latency_ns", &s->wr_latency_max);
+    virJSONValueObjectGetNumberUlong(j, "avg_wr_latency_ns", &s->wr_latency_avg);
+
+    virJSONValueObjectGetNumberUlong(j, "min_zone_append_latency_ns", &s->zone_append_latency_min);
+    virJSONValueObjectGetNumberUlong(j, "max_zone_append_latency_ns", &s->zone_append_latency_max);
+    virJSONValueObjectGetNumberUlong(j, "avg_zone_append_latency_ns", &s->zone_append_latency_avg);
+
+    virJSONValueObjectGetNumberDouble(j, "avg_rd_queue_depth", &s->rd_queue_depth_avg);
+    virJSONValueObjectGetNumberDouble(j, "avg_wr_queue_depth", &s->wr_queue_depth_avg);
+    virJSONValueObjectGetNumberDouble(j, "avg_zone_append_queue_depth", &s->zone_append_queue_depth_avg);
+}
+
+
+static void
+qemuMonitorJSONBlockStatsCollectDataTimed(virJSONValue *timed_stats,
+                                          qemuBlockStats *bstats)
+{
+    size_t i;
+
+    bstats->n_timed_stats = virJSONValueArraySize(timed_stats);
+    bstats->timed_stats = g_new0(struct qemuBlockStatsTimed, bstats->n_timed_stats);
+
+    for (i = 0; i < bstats->n_timed_stats; i++)
+        qemuMonitorJSONBlockStatsCollectDataTimedOne(virJSONValueArrayGet(timed_stats, i),
+                                                     bstats->timed_stats + i);
+}
+
+
 static qemuBlockStats *
 qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
                                      int *nstats)
@@ -2394,6 +2433,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
     virJSONValue *parent;
     virJSONValue *parentstats;
     virJSONValue *stats;
+    virJSONValue *timed_stats;
 
     if ((stats = virJSONValueObjectGetObject(dev, "stats")) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2428,6 +2468,10 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
                                              &bstats->wr_highest_offset) == 0)
             bstats->wr_highest_offset_valid = true;
     }
+
+    if ((timed_stats = virJSONValueObjectGetArray(stats, "timed_stats")) &&
+        virJSONValueArraySize(timed_stats) > 0)
+        qemuMonitorJSONBlockStatsCollectDataTimed(timed_stats, bstats);
 
     return g_steal_pointer(&bstats);
 }

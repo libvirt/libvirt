@@ -806,6 +806,31 @@ struct qemuBlockStatsLimits {
 };
 
 
+struct qemuBlockStatsTimed {
+    unsigned long long interval_length;
+
+    /* latencies are in nanoseconds */
+    unsigned long long rd_latency_min;
+    unsigned long long rd_latency_max;
+    unsigned long long rd_latency_avg;
+
+    unsigned long long wr_latency_min;
+    unsigned long long wr_latency_max;
+    unsigned long long wr_latency_avg;
+
+    unsigned long long zone_append_latency_min;
+    unsigned long long zone_append_latency_max;
+    unsigned long long zone_append_latency_avg;
+
+    unsigned long long flush_latency_min;
+    unsigned long long flush_latency_max;
+    unsigned long long flush_latency_avg;
+
+    double rd_queue_depth_avg;
+    double wr_queue_depth_avg;
+    double zone_append_queue_depth_avg;
+};
+
 struct _qemuBlockStats {
     GObject parent;
 
@@ -829,6 +854,10 @@ struct _qemuBlockStats {
     unsigned long long write_threshold;
 
     struct qemuBlockStatsLimits *limits;
+
+    /* block accounting/timed stats from qemu - one entry per interval configured */
+    size_t n_timed_stats;
+    struct qemuBlockStatsTimed *timed_stats;
 };
 G_DECLARE_FINAL_TYPE(qemuBlockStats, qemu_block_stats, QEMU, BLOCK_STATS, GObject);
 
