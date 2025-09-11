@@ -1967,6 +1967,42 @@ qemuMonitorGetBlockInfo(qemuMonitor *mon)
 }
 
 
+G_DEFINE_TYPE(qemuBlockStats, qemu_block_stats, G_TYPE_OBJECT);
+
+static void
+qemu_block_stats_init(qemuBlockStats *stats G_GNUC_UNUSED)
+{
+}
+
+
+static void
+qemuBlockStatsFinalize(GObject *object)
+{
+    qemuBlockStats *stats = QEMU_BLOCK_STATS(object);
+
+    if (!stats)
+        return;
+
+    G_OBJECT_CLASS(qemu_block_stats_parent_class)->finalize(object);
+}
+
+
+static void
+qemu_block_stats_class_init(qemuBlockStatsClass *klass)
+{
+    GObjectClass *obj = G_OBJECT_CLASS(klass);
+
+    obj->finalize = qemuBlockStatsFinalize;
+}
+
+
+qemuBlockStats *
+qemuBlockStatsNew(void)
+{
+    return g_object_new(qemu_block_stats_get_type(), NULL);
+}
+
+
 /**
  * qemuMonitorGetAllBlockStatsInfo:
  * @mon: monitor object
@@ -1982,7 +2018,7 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
                                 GHashTable **ret_stats)
 {
     int ret;
-    g_autoptr(GHashTable) stats = virHashNew(g_free);
+    g_autoptr(GHashTable) stats = virHashNew(g_object_unref);
 
     QEMU_CHECK_MONITOR(mon);
 

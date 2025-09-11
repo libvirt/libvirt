@@ -789,8 +789,9 @@ qemuMonitorBlockIOStatusToError(const char *status);
 GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitor *mon);
 
-typedef struct _qemuBlockStats qemuBlockStats;
 struct _qemuBlockStats {
+    GObject parent;
+
     unsigned long long rd_req;
     unsigned long long rd_bytes;
     unsigned long long wr_req;
@@ -810,6 +811,10 @@ struct _qemuBlockStats {
     /* write_threshold is valid only if it's non-zero, conforming to qemu semantics */
     unsigned long long write_threshold;
 };
+G_DECLARE_FINAL_TYPE(qemuBlockStats, qemu_block_stats, QEMU, BLOCK_STATS, GObject);
+
+qemuBlockStats *
+qemuBlockStatsNew(void);
 
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,

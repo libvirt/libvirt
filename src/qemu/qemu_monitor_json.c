@@ -2390,7 +2390,7 @@ static qemuBlockStats *
 qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
                                      int *nstats)
 {
-    g_autofree qemuBlockStats *bstats = NULL;
+    g_autoptr(qemuBlockStats) bstats = NULL;
     virJSONValue *parent;
     virJSONValue *parentstats;
     virJSONValue *stats;
@@ -2401,7 +2401,7 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
         return NULL;
     }
 
-    bstats = g_new0(qemuBlockStats, 1);
+    bstats = qemuBlockStatsNew();
 
 #define QEMU_MONITOR_BLOCK_STAT_GET(NAME, VAR, MANDATORY) \
     if (MANDATORY || virJSONValueObjectHasKey(stats, NAME)) { \
@@ -2434,33 +2434,12 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
 
 
 static int
-qemuMonitorJSONAddOneBlockStatsInfo(qemuBlockStats *bstats,
-                                    const char *name,
-                                    GHashTable *stats)
-{
-    qemuBlockStats *copy = NULL;
-
-    copy = g_new0(qemuBlockStats, 1);
-
-    if (bstats)
-        *copy = *bstats;
-
-    if (virHashAddEntry(stats, name, copy) < 0) {
-        VIR_FREE(copy);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
                                     const char *dev_name,
                                     int depth,
                                     GHashTable *hash)
 {
-    g_autofree qemuBlockStats *bstats = NULL;
+    g_autoptr(qemuBlockStats) bstats = NULL;
     int nstats = 0;
     const char *qdevname = NULL;
     const char *nodename = NULL;
@@ -2482,17 +2461,14 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
     if (!(bstats = qemuMonitorJSONBlockStatsCollectData(dev, &nstats)))
         return -1;
 
-    if (devicename &&
-        qemuMonitorJSONAddOneBlockStatsInfo(bstats, devicename, hash) < 0)
-        return -1;
+    if (devicename)
+        g_hash_table_insert(hash, g_strdup(devicename), g_object_ref(bstats));
 
-    if (qdevname && STRNEQ_NULLABLE(qdevname, devicename) &&
-        qemuMonitorJSONAddOneBlockStatsInfo(bstats, qdevname, hash) < 0)
-        return -1;
+    if (qdevname && STRNEQ_NULLABLE(qdevname, devicename))
+        g_hash_table_insert(hash, g_strdup(qdevname), g_object_ref(bstats));
 
-    if (nodename &&
-        qemuMonitorJSONAddOneBlockStatsInfo(bstats, nodename, hash) < 0)
-        return -1;
+    if (nodename)
+        g_hash_table_insert(hash, g_strdup(nodename), g_object_ref(bstats));
 
     if ((backing = virJSONValueObjectGetObject(dev, "backing")) &&
         qemuMonitorJSONGetOneBlockStatsInfo(backing, dev_name, depth + 1, hash) < 0)
@@ -2617,12 +2593,8 @@ qemuMonitorJSONBlockStatsUpdateCapacityData(virJSONValue *image,
     qemuBlockStats *bstats;
 
     if (!(bstats = virHashLookup(stats, name))) {
-        bstats = g_new0(qemuBlockStats, 1);
-
-        if (virHashAddEntry(stats, name, bstats) < 0) {
-            VIR_FREE(bstats);
-            return -1;
-        }
+        bstats = qemuBlockStatsNew();
+        g_hash_table_insert(stats, g_strdup(name), bstats);
     }
 
     if (entry)

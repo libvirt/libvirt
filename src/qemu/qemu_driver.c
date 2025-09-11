@@ -9613,7 +9613,6 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDiskDef *disk = NULL;
     g_autoptr(GHashTable) blockstats = NULL;
-    qemuBlockStats *stats;
     size_t i;
     int nstats;
     int rc = 0;
@@ -9654,29 +9653,15 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
     if (nstats < 0 || rc < 0)
         return -1;
 
-    *retstats = g_new0(qemuBlockStats, 1);
-
     if (entryname) {
-        qemuBlockStats *capstats;
-
-        if (!(stats = virHashLookup(blockstats, entryname))) {
+        if (!(*retstats = virHashSteal(blockstats, entryname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot find statistics for device '%1$s'"), entryname);
             return -1;
         }
-
-        **retstats = *stats;
-
-        /* capacity are reported only per node-name so we need to transfer them */
-        if (disk && disk->src &&
-            (capstats = virHashLookup(blockstats, qemuBlockStorageSourceGetEffectiveNodename(disk->src)))) {
-            (*retstats)->capacity = capstats->capacity;
-            (*retstats)->physical = capstats->physical;
-            (*retstats)->wr_highest_offset = capstats->wr_highest_offset;
-            (*retstats)->wr_highest_offset_valid = capstats->wr_highest_offset_valid;
-            (*retstats)->write_threshold = capstats->write_threshold;
-        }
     } else {
+        g_autoptr(qemuBlockStats) stats = qemuBlockStatsNew();
+
         for (i = 0; i < vm->def->ndisks; i++) {
             disk = vm->def->disks[i];
             entryname = disk->info.alias;
@@ -9699,6 +9684,8 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
             qemuDomainBlockStatsGatherTotals(stats, *retstats);
         }
+
+        *retstats = g_steal_pointer(&stats);
     }
 
     return nstats;
@@ -9710,7 +9697,7 @@ qemuDomainBlockStats(virDomainPtr dom,
                      const char *path,
                      virDomainBlockStatsPtr stats)
 {
-    qemuBlockStats *blockstats = NULL;
+    g_autoptr(qemuBlockStats) blockstats = NULL;
     int ret = -1;
     virDomainObj *vm;
 
@@ -9747,7 +9734,6 @@ qemuDomainBlockStats(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    VIR_FREE(blockstats);
     return ret;
 }
 
@@ -9760,7 +9746,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
                           unsigned int flags)
 {
     virDomainObj *vm;
-    qemuBlockStats *blockstats = NULL;
+    g_autoptr(qemuBlockStats) blockstats = NULL;
     int nstats;
     int ret = -1;
 
@@ -9833,7 +9819,6 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     virDomainObjEndJob(vm);
 
  cleanup:
-    VIR_FREE(blockstats);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -10565,7 +10550,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     int ret = -1;
     virDomainDiskDef *disk;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    qemuBlockStats *entry = NULL;
+    g_autoptr(qemuBlockStats) entry = NULL;
 
     virCheckFlags(0, -1);
 
@@ -10663,7 +10648,6 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
  endjob:
     virDomainObjEndJob(vm);
  cleanup:
-    VIR_FREE(entry);
     virDomainObjEndAPI(&vm);
     return ret;
 }
