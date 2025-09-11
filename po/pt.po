@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-09-02 07:53+0000\n"
+"PO-Revision-Date: 2025-09-11 09:29+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.13.2\n"
 
 msgid ""
 "\n"
@@ -27579,7 +27579,7 @@ msgid "events received: %1$d\n"
 msgstr "eventos recebidos: %1$d\n"
 
 msgid "exactly one of 'device' and 'nodename' need to be specified"
-msgstr ""
+msgstr "exatamente um de 'device' e 'nodename' precisa de ser especificado"
 
 msgid "exclude <domain> from XML"
 msgstr "exclui <domain> do XML"
@@ -27606,6 +27606,7 @@ msgstr "esperado exatamente 1 máquina para o pool de armazenamento"
 #, c-format
 msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
 msgstr ""
+"esperado protocolo '%1$s' mas obtido '%2$s' em definição de volume JSON URI"
 
 #, c-format
 msgid "expected syntax: --%1$s <number>"
@@ -27696,6 +27697,8 @@ msgid ""
 "external destination file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
+"ficheiro de destino exterior para disco %1$s já existe e não é um "
+"dispositivo de bloco: %2$s"
 
 #, c-format
 msgid "external inactive snapshots are not supported on '%1$s' disks"
@@ -27717,6 +27720,8 @@ msgid ""
 "external snapshot file for disk %1$s already exists and is not a block "
 "device: %2$s"
 msgstr ""
+"ficheiro de instantâneo exterior para disco %1$s já existe e não é um "
+"dispositivo de bloco: %2$s"
 
 #, c-format
 msgid "external snapshot format for disk %1$s is unsupported: %2$s"
@@ -27727,7 +27732,7 @@ msgid "extra %1$s unsupported in <virtualport type='%2$s'>"
 msgstr "%1$s extra não suportado em <tipo de porto virtual='%2$s'>"
 
 msgid "extract the value of the 'return' key from the returned string"
-msgstr ""
+msgstr "extraí o valor da chave 'return' a partir da string retornada"
 
 msgid "f - force, try to redefine again"
 msgstr "f - força, tenta redefinir de novo"
@@ -28712,6 +28717,8 @@ msgid ""
 "failed to retrieve client identity information for client '%1$llu' connected "
 "to server '%2$s'"
 msgstr ""
+"falhou ao recuperar informação de identidade de cliente '%1$llu' ligado ao "
+"servidor '%2$s'"
 
 msgid "failed to retrieve credentials"
 msgstr "falhou ao recuperar credenciais"
@@ -28888,7 +28895,7 @@ msgstr "falhou ao validar prefixo para um novo espaço de nome XML"
 
 #, c-format
 msgid "failed to verify if RBD snapshot %1$s@%2$s is protected"
-msgstr ""
+msgstr "falhou ao verificar se instantâneo RBD %1$s@%2$s está protegido"
 
 #, c-format
 msgid "failed to verify if snapshot '%1$s/%2$s@%3$s' is protected"
@@ -28913,7 +28920,7 @@ msgstr "falhou ao limpar imagem RBD %1$s"
 
 #, c-format
 msgid "failed to wrap arguments '%1$s' into a QMP command wrapper"
-msgstr ""
+msgstr "falhou ao envolver argumentos '%1$s' em um invólucro de comando QMP"
 
 msgid "failed to write configuration file"
 msgstr "falhou ao gravar o ficheiro de configuração"
@@ -29006,9 +29013,13 @@ msgstr "fdset '%1$u' já está a ser usado pelo qemu"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
+"busca ou define o conjunto definido atualmente de filtros de relatórios em "
+"daemon"
 
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
+"busca ou define o conjunto definido atualmente de saídas de relatórios em "
+"daemon"
 
 #, c-format
 msgid "field '%1$s' is malformed"
@@ -29067,10 +29078,13 @@ msgid ""
 "file descriptor group '%1$s' must contain only 1 file descriptor for NBD "
 "server"
 msgstr ""
+"grupo de descritor de ficheiro '%1$s' tem de conter apenas 1 descritor de "
+"ficheiro para servidor NBD"
 
 #, c-format
 msgid "file descriptor group '%1$s' was not associated with the domain"
 msgstr ""
+"grupo de descritor de ficheiro '%1$s' não estava associado com o domínio"
 
 msgid "file descriptors N,M,... to associate"
 msgstr "descritores de ficheiro N,M,... para associar"
@@ -29204,6 +29218,8 @@ msgstr "passo final ignorou que a migração foi cancelada"
 #, c-format
 msgid "finishing block job failed while deleting disk '%1$s' snapshot: '%2$s'"
 msgstr ""
+"terminar de trabalho de bloco falhou ao apagar instantâneo de disco '%1$s': "
+"'%2$s'"
 
 msgid ""
 "firewalld can't find the 'libvirt' zone that should have been installed with "
@@ -29219,6 +29235,8 @@ msgid ""
 "firmware feature 'enrolled-keys' cannot be enabled when firmware feature "
 "'secure-boot' is disabled"
 msgstr ""
+"funcionalidade de firmware 'enrolled-keys' não pode ser activa quando a "
+"funcionalidade de firmware 'secure-boot' está desativada"
 
 #, c-format
 msgid "firmware type '%1$s' does not support nvram"
@@ -29276,6 +29294,8 @@ msgid ""
 "force guest disk writes to be synchronously written to the destination to "
 "improve storage migration convergence"
 msgstr ""
+"força as escritas no disco convidado a serem sincronizadas com o escrever no "
+"destino para melhorar a convergência de migração de armazenamento"
 
 msgid "force media changing"
 msgstr "força mudança de meio"
@@ -29306,6 +29326,9 @@ msgid ""
 "image metadata (See https://libvirt.org/kbase/backing_chains.html for "
 "troubleshooting)"
 msgstr ""
+"formato da imagem de apoio '%1$s' da imagem '%2$s' não foi especificado nos "
+"metadados da imagem (veja https://libvirt.org/kbase/backing_chains.html para "
+"resolução de problemas)"
 
 msgid "format of backing volume if taking a snapshot"
 msgstr "formato de volume de apoio se receber um instantâneo"
@@ -29463,6 +29486,8 @@ msgstr "caminho de pool gluster '%1$s' tem de começar com /"
 #, c-format
 msgid "got unexpected RPC call prog %1$d vers %2$d proc %3$d type %4$d"
 msgstr ""
+"obtida chamada RPC inesperada programa %1$d versão %2$d processo %3$d tipo "
+"%4$d"
 
 msgid "got unknown HTTP error code"
 msgstr "obtido código de erro HTTP desconhecido"
@@ -29475,11 +29500,15 @@ msgstr "obtido código de erro HTTP desconhecido %1$s"
 msgid ""
 "got wrong number of IOThread ids from QEMU monitor. got %1$d, wanted %2$d"
 msgstr ""
+"obtido número errado de ids de IOThread do monitor QEMU. obtido %1$d, "
+"esperado %2$d"
 
 #, c-format
 msgid ""
 "got wrong number of IOThread pids from QEMU monitor. got %1$d, wanted %2$zu"
 msgstr ""
+"obtido número errado de pids de IOThread do monitor QEMU. obtido %1$d, "
+"esperado %2$zu"
 
 msgid "gracefully shutdown a domain"
 msgstr "encerrar um domínio graciosamente"
@@ -29492,18 +29521,24 @@ msgid ""
 "graphics 'listen' attribute '%1$s' must match 'address' attribute of first "
 "listen element (found '%2$s')"
 msgstr ""
+"atributo 'listen' de gráficos '%1$s' tem de corresponder ao atributo "
+"'address' do primeiro elemento de escuta (encontrado '%2$s')"
 
 #, c-format
 msgid ""
 "graphics 'socket' attribute '%1$s' must match 'socket' attribute of first "
 "listen element (found '%2$s')"
 msgstr ""
+"atributo 'socket' de gráficos '%1$s' tem de corresponder ao atributo "
+"'socket' do primeiro elemento de escuta (encontrado '%2$s')"
 
 msgid "graphics URI to be used for seamless graphics migration"
-msgstr ""
+msgstr "URI de gráficos a ser usado para migração de gráficos contínua"
 
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr ""
+"dispositivo gráfico é necessário para valor de atributo 'display=on' em "
+"<hostdev>"
 
 msgid "graphics display type"
 msgstr "tipo de mostrador gráfico"
@@ -29512,9 +29547,11 @@ msgid ""
 "graphics type 'egl-headless' is only supported with one of: 'vnc', 'spice' "
 "graphics types"
 msgstr ""
+"tipo de gráficos 'egl-headless' é apenas suportado com um dos tipos de "
+"gráficos: 'vnc', 'spice'"
 
 msgid "group name to share I/O quota between multiple drives"
-msgstr ""
+msgstr "nome de grupo para partilhar conta de I/O entre múltiplos controladores"
 
 msgid "group_name can be configured only together with settings"
 msgstr "group_name só pode ser configurado juntamente com definições"
@@ -29649,24 +29686,27 @@ msgstr "procura de cinza resultou em ponteiro NULO"
 #, c-format
 msgid "host CPU model does not match required CPU model %1$s"
 msgstr ""
+"modelo de CPU de máquina não corresponder ao modelo de CPU requerido %1$s"
 
 #, c-format
 msgid "host CPU vendor does not match required CPU vendor %1$s"
 msgstr ""
+"fornecedor de CPU de máquina não corresponder ao fornecedor de CPU requerido "
+"%1$s"
 
 #, c-format
 msgid "host USB device Busnum: %1$3x, Devnum: %2$3x not found"
-msgstr ""
+msgstr "dispositvo USB de máquina Busnum: %1$3x, Devnum: %2$3x não encontrado"
 
 msgid "host USB device already exists"
-msgstr ""
+msgstr "dispositvo USB de máquina já existe"
 
 #, c-format
 msgid "host arch %1$s is too big for destination"
-msgstr ""
+msgstr "arquitectura de máquina %1$s é demasiado grande para distino"
 
 msgid "host cpu counting not implemented on this platform"
-msgstr ""
+msgstr "contagem de cpu de máquina não implementada nesta plataforma"
 
 msgid "host cpu number(s) to set"
 msgstr "número(s) de cpu da máquina não definido"
@@ -29699,7 +29739,7 @@ msgid "host doesn't support legacy PCI passthrough"
 msgstr "máquina não suporta passagem PCI legada"
 
 msgid "host doesn't support paravirtual spinlocks"
-msgstr ""
+msgstr "máquina não suporta trancas giratórias para-virtuais"
 
 msgid "host doesn't support passthrough of host PCI devices"
 msgstr "máquina não suporta passagem de dispositivos PCI de máquina"
@@ -29724,6 +29764,8 @@ msgstr "dispositivo pci de máquina %1$s não encontrado"
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %1$d > %2$d"
 msgstr ""
+"máquina reporta que comprimento de buffer de mapa excede o máximo: %1$d > "
+"%2$d"
 
 #, c-format
 msgid "host reports too many vCPUs: %1$d > %2$d"
@@ -29735,129 +29777,138 @@ msgstr "dispositivo scsi de máquina %1$s:%2$u:%3$u.%4$llu não encontrado"
 
 #, c-format
 msgid "host scsi iSCSI path %1$s not found"
-msgstr ""
+msgstr "caminho iSCSI scsi e máquina %1$s não encontrado"
 
 msgid "host socket for source of disk device"
-msgstr ""
+msgstr "socket de máquina para fonte de dispositivo de disco"
 
 msgid "host transport for source of disk device"
-msgstr ""
+msgstr "transporte de máquina para fonte de dispositivo de disco"
 
 #, c-format
 msgid "host usb device %1$03d.%2$03d not found"
-msgstr ""
+msgstr "dispositivo usb de máquina %1$03d.%2$03d não encontrado"
 
 #, c-format
 msgid "host usb device vendor=0x%1$.4x product=0x%2$.4x not found"
 msgstr ""
+"dispositivo usb de máquina fornecedor=0x%1$.4x produto=0x%2$.4x não "
+"encontrado"
 
 msgid "host-certificates mode needs exactly three certificates"
-msgstr ""
+msgstr "modo host-certificates precisa exatamente de três certificados"
 
 msgid "hostName field not available (missing VMware Tools?)"
-msgstr ""
+msgstr "campo hostName não disponível (a faltar VMware Tools?)"
 
 #, c-format
 msgid "hostdev %1$s not found"
 msgstr "hostdev %1$s não encontrado"
 
 msgid "hostdev does not have an alias"
-msgstr ""
+msgstr "hostdev não tem um nome alternativo"
 
 msgid "hostdev interface missing hostdev data"
-msgstr ""
+msgstr "interface hostdev a faltar dados de hostdev"
 
 #, c-format
 msgid "hostdev invalid secret type '%1$s'"
-msgstr ""
+msgstr "tipo de segredo inválido de hostdev '%1$s'"
 
 #, c-format
 msgid "hostdev mode '%1$s' not supported"
-msgstr ""
+msgstr "modo de hostdev '%1$s' não é suportado"
 
 #, c-format
 msgid "hostdev mode 'capabilities' is not supported in %1$s"
-msgstr ""
+msgstr "'capacidades' de modo hostdev não são suportadas em %1$s"
 
 #, c-format
 msgid ""
 "hostdev network '%1$s' lists '%2$s' in the device pool, but hostdev networks "
 "require all devices to be listed by PCI address, not network device name"
 msgstr ""
+"rede hostdev '%1$s' lista '%2$s' no pool de dispositivo, mas as redes "
+"hostdev requerem que todos os dispositivos seja listados por endereços PCI, "
+"e não nome de dispositivo de rede"
 
 #, c-format
 msgid "hostdev subsys type '%1$s' not supported"
-msgstr ""
+msgstr "tipo de sub-sistema de hostdev '%1$s' não é suportado"
 
 msgid "hostname must be specified for gluster sources"
-msgstr ""
+msgstr "nome de máquina tem de ser especificado para fontes"
 
 msgid "hostname must be specified for iscsi sources"
-msgstr ""
+msgstr "nome de máquina tem de ser especificado para fontes iscsi"
 
 msgid "hostname must be specified for netfs sources"
-msgstr ""
+msgstr "nome de máquina tem de ser especificado para fontes netfs"
 
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
 msgstr ""
+"nome de máquina em destino resolvido para máquina local, mas a migração "
+"requer um"
 
 #, c-format
 msgid "hot unplug is not supported for hostdev mode '%1$s'"
-msgstr ""
+msgstr "desligar a quente não é suportado para modo hostdev '%1$s'"
 
 #, c-format
 msgid "hot unplug of watchdog of model %1$s is not supported"
-msgstr ""
+msgstr "desligar a quente de watchdog de modelo %1$s não é suportado"
 
 #, c-format
 msgid "hotplug is not supported for hostdev mode '%1$s'"
-msgstr ""
+msgstr "ligar a quente não é suportado para modo hostdev '%1$s'"
 
 #, c-format
 msgid "hotplug is not supported for hostdev subsys type '%1$s'"
-msgstr ""
+msgstr "ligar a quente não é suportado para tipo de sub-sistema hostdev '%1$s'"
 
 #, c-format
 msgid "hotplug is not supported for the %1$s device"
-msgstr ""
+msgstr "ligar a quente não é suportado para o dispositivo %1$s"
 
 #, c-format
 msgid "hotplug of interface type of %1$s is not implemented yet"
-msgstr ""
+msgstr "ligar a quente de tipo de interface de %1$s ainda não implementado"
 
 #, c-format
 msgid "hotplug of watchdog model '%1$s' is not supported"
-msgstr ""
+msgstr "ligar a quente de watchdog de modelo %1$s não é suportado"
 
 msgid "hpet timer is not supported by this architecture"
-msgstr ""
+msgstr "temporizador hpet não é suportado por esta arquitectura"
 
 msgid "http cookies are supported only with HTTP(S) protocol"
-msgstr ""
+msgstr "cookies http são suportados apenas com protocolo HTTP(S)"
 
 #, c-format
 msgid "hub type %1$s not supported"
 msgstr "tipo de centro %1$s não suportado"
 
 msgid "hugepage size can't be zero"
-msgstr ""
+msgstr "tamanho de página enorme não pode ser zero"
 
 msgid "hugepages are not allowed with anonymous memory source"
-msgstr ""
+msgstr "páginas enormes não são permitidas com fonte de memória anônima"
 
 msgid "hugepages are not allowed with memory allocation ondemand"
-msgstr ""
+msgstr "páginas enormes não são permitidas com alocação de memória a pedido"
 
 msgid "hugepages is not supported with memfd memory source"
-msgstr ""
+msgstr "páginas enormes não são permitidas com fonte de memória memfd"
 
 #, c-format
 msgid "hugepages: node %1$zd not found"
-msgstr ""
+msgstr "páginas enormes: nó %1$zd não encontrado"
 
 msgid "hugetlbfs filesystem is not mounted or disabled by administrator config"
 msgstr ""
+"sistema de ficheiros hugetlbfs não está montado ou está desativado pela "
+"configuração do administrador"
 
 msgid "hypervisor"
 msgstr "hipervisor"
@@ -29869,90 +29920,94 @@ msgid "hypervisor connection not open"
 msgstr "ligação ao hipervisor não aberta"
 
 msgid "hypervisor feature autodetection override"
-msgstr ""
+msgstr "sobreposição da auto-detecção de funcionalidades do hipervisor"
 
 #, c-format
 msgid ""
 "hypervisor provided conflicting CPU data: feature '%1$s' is both enabled and "
 "disabled at the same time"
 msgstr ""
+"hipervisor forneceu dados de CPU em conflito: a funcionalidade '%1$s' está "
+"tanto activa como desactiva ao mesmo tempo"
 
 msgid "i - turn off validation and try to redefine again"
-msgstr ""
+msgstr "i - desliga a validação e tenta redefinir de novo"
 
 msgid "iSCSI protocol accepts only one host"
-msgstr ""
+msgstr "protocolo iSCSI aceita apenas uma máquina"
 
 msgid "iSCSI storage pool does not support volume creation"
-msgstr ""
+msgstr "pool de armazenamento iSCSI não suporta criação de volume"
 
 msgid "iSCSI storage pool does not support volume deletion"
-msgstr ""
+msgstr "pool de armazenamento iSCSI não suporta apagar de volume"
 
 msgid "iSCSI storage pool does not support volume wiping"
-msgstr ""
+msgstr "pool de armazenamento iSCSI não suporta limpeza de volume"
 
 msgid "iSCSI usage specified, but target is missing"
-msgstr ""
+msgstr "utilização de iSCSI especificada, mas o alvo está em falta"
 
 msgid "idle"
-msgstr ""
+msgstr "inatividade"
 
 msgid "idle:"
-msgstr ""
+msgstr "inatividade:"
 
 msgid "ids of vcpus to manipulate"
-msgstr ""
+msgstr "ids de vcpus para manipular"
 
 #, c-format
 msgid "ifkey \"%1$s\" has no req"
-msgstr ""
+msgstr "ifkey \"%1$s\" não tem nenhum req"
 
 msgid "ignore"
 msgstr "ignorar"
 
 #, c-format
 msgid "ignoring debug level %1$d out of range [%2$d-%3$d]"
-msgstr ""
+msgstr "a ignorar nível de depuração %1$d fora de alcançe [%2$d-%3$d]"
 
 msgid ""
 "ignoring host is only allowed when computing baseline from multiple CPUs"
 msgstr ""
+"ignorar máquina é apenas permitido quando se computa em linha base a partir "
+"de múltiplas CPUs"
 
 msgid "image magic is incorrect"
-msgstr ""
+msgstr "magia de imagem está incorreta"
 
 #, c-format
 msgid "image of disk '%1$s' does not have internal snapshot '%2$s'"
-msgstr ""
+msgstr "imagem de disco '%1$s' não tem instantâneo interno '%2$s'"
 
 #, c-format
 msgid "image version is not supported (%1$d > %2$d)"
-msgstr ""
+msgstr "versão de imagem não é suportada (%1$d > %2$d)"
 
 msgid "implies --abort; conclude and pivot a copy or commit job"
-msgstr ""
+msgstr "implica --abort; conclui ou pivota uma cópia ou trabalho de cometer"
 
 msgid "implies --abort; request but don't wait for job end"
-msgstr ""
+msgstr "implica --abort; pede mas não espera o terminar do trabalho"
 
 msgid "implies --active --wait, pivot when commit is synced"
-msgstr ""
+msgstr "implica --active --wait, pivota quando o cometido é sincronizado"
 
 msgid "implies --active --wait, quit when commit is synced"
-msgstr ""
+msgstr "implica --active --wait, termina quando o cometido é sincronizado"
 
 msgid "implies --info; output details rather than human summary"
-msgstr ""
+msgstr "implica --info; detalhes de saída em vez de sumário humano"
 
 msgid "implies --wait, abort if copy exceeds timeout (in seconds)"
-msgstr ""
+msgstr "implica --wait, aborta se a cópia exceder o tempo limite (em segundos)"
 
 msgid "implies --wait, pivot when mirroring starts"
-msgstr ""
+msgstr "implica --wait, pivota quando o espelhar começa"
 
 msgid "implies --wait, quit when mirroring starts"
-msgstr ""
+msgstr "implica --wait, termina quando o espelhar começa"
 
 msgid "in shutdown"
 msgstr "em encerramento"
@@ -29962,26 +30017,27 @@ msgstr "inacessível"
 
 #, c-format
 msgid "inaccessible backing store volume %1$s"
-msgstr ""
+msgstr "volume de armazenamento de apoio inacessível %1$s"
 
 msgid "inactive"
 msgstr "inactivo"
 
 #, c-format
 msgid "inbound rate larger than maximum %1$u"
-msgstr ""
+msgstr "taxa de entrada maior que o máximo %1$u"
 
 msgid "include all CPU models known to the hypervisor for the architecture"
 msgstr ""
+"inclui todos os modelos de CPU conhecidos pelo hipervisor para a arquitectura"
 
 msgid "include backup size estimate in XML dump"
-msgstr ""
+msgstr "inclui estimativa de tamanho de salvaguarda no despejo XML"
 
 msgid "include security sensitive information in XML dump"
-msgstr ""
+msgstr "inclui informação sensitiva de segurança no despejo XML"
 
 msgid "includes the password into the connection URI if available"
-msgstr ""
+msgstr "inclui a palavra passe no URI de ligação se disponível"
 
 msgid "incoming RDMA migration is not supported with this QEMU binary"
 msgstr "migração RDMA chegada não é suportada com este binário QEMU"
@@ -29991,175 +30047,196 @@ msgid "incomplete metadata in '%1$s'"
 msgstr "metadados incompletos em '%1$s'"
 
 msgid "incomplete result, failed to get completed"
-msgstr ""
+msgstr "resultado incompleto, falhou ao obter completo"
 
 msgid "incomplete result, failed to get status"
-msgstr ""
+msgstr "resultado incompleto, falhou ao obter estatuto"
 
 msgid "incomplete result, failed to get total"
-msgstr ""
+msgstr "resultado incompleto, falhou ao obter total"
 
 #, c-format
 msgid "incomplete result, unknown status string '%1$s'"
-msgstr ""
+msgstr "resultado incompleto, string de estatuto desconhecida '%1$s'"
 
 #, c-format
 msgid "incomplete save header in '%1$s'"
-msgstr ""
+msgstr "cabeçalho de salva incompleto em '%1$s'"
 
 msgid "individual CPU state configuration is not supported"
-msgstr ""
+msgstr "configuração individual de estado de CPU não é suportada"
 
 msgid "info balloon reply was missing balloon data"
-msgstr ""
+msgstr "resposta de balão de informação tinha em falta dados do balão"
 
 msgid "info migration reply was missing return status"
-msgstr ""
+msgstr "resposta de migração de informação tinha em falta estado de retorno"
 
 msgid "info on current snapshot"
-msgstr ""
+msgstr "informação sobre instantâneo atual"
 
 msgid "init binary must be specified"
-msgstr ""
+msgstr "binário de iniciação tem de ser especificado"
 
 msgid "initial CPU throttling rate for auto-convergence"
-msgstr ""
+msgstr "taxa de aceleração de CPU inicial para auto-convergência"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
-msgstr ""
+msgstr "tamanho de alocação inicial, como inteiro escalado (predefinição bytes)"
 
 msgid ""
 "initial memory size of a domain with NUMA nodes cannot be modified with this "
 "API"
 msgstr ""
+"tamanho de memória inicial de um domínio com nós NUMA não pode ser "
+"modificado com esta API"
 
 msgid "initial memory size overflowed after alignment"
-msgstr ""
+msgstr "tamanho de memória inicial transbordou após alinhamento"
 
 msgid "initialize"
-msgstr ""
+msgstr "inicializar"
 
 msgid "initiator iqn for underlying storage"
-msgstr ""
+msgstr "iniciador iqn para armazenamento subjacente"
 
 msgid "inject"
-msgstr ""
+msgstr "injectar"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be detached"
-msgstr ""
+msgstr "dispositivo de entrada no barramento '%1$s' não pode ser desanexado"
 
 #, c-format
 msgid "input device on bus '%1$s' cannot be hot plugged."
 msgstr ""
+"dispositivo de entrada no barramento '%1$s' não pode ser ligado a quente."
 
 msgid "input devices without vnc are not supported"
-msgstr ""
+msgstr "dispositivos de entrada sem vnc não são suportados"
 
 msgid "input evdev doesn't support bus element"
-msgstr ""
+msgstr "evdev de entrada não suporta elemento de barramento"
 
 #, c-format
 msgid "input too large: %1$d * %2$d"
-msgstr ""
+msgstr "entrada demasiado grande: %1$d * %2$d"
 
 #, c-format
 msgid "input too large: %1$lu"
-msgstr ""
+msgstr "entrada demasiado grande: %1$lu"
 
 #, c-format
 msgid "input too large: %1$u * %2$u"
-msgstr ""
+msgstr "entrada demasiado grande: %1$u * %2$u"
 
 msgid "instead of setting given time, synchronize from domain's RTC"
-msgstr ""
+msgstr "em vez de definir hora dada, sincroniza a partir do RTC do domínio"
 
 msgid "instead of setting new pool size add pages to it"
-msgstr ""
+msgstr "em vez de definir novo tamanho de pool adiciona páginas nele"
 
 #, c-format
 msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
 msgstr ""
+"transbordo de inteiro em %1$s. Por favor contacte a equipa de "
+"desenvolvimento do libvirt em devel@lists.libvirt.org"
 
 #, c-format
 msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%2$s'"
 msgstr ""
+"interface %1$s - <port isolated='yes'/> não é suportada para interfaces de "
+"rede com tipo='%2$s'"
 
 #, c-format
 msgid ""
 "interface %1$s - <port isolated='yes'/> is not supported for network "
 "interfaces with virtualport type='%2$s'"
 msgstr ""
+"interface %1$s - <port isolated='yes'/> não é suportada para interfaces de "
+"rede com tipo de porto virtual='%2$s'"
 
 #, c-format
 msgid ""
 "interface %1$s - bandwidth settings are not supported for hostdev interfaces"
 msgstr ""
+"interface %1$s - definições de largura de banda não são suportadas para "
+"interfaces hostdev"
 
 #, c-format
 msgid ""
 "interface %1$s - custom tap device path is not supported for network "
 "interfaces of type %2$s"
 msgstr ""
+"interface %1$s - caminho de dispositivo tap personalizado não é suportado "
+"para interfaces de rede do tipo %2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - filterref is not supported for network interfaces of type "
 "%2$s"
 msgstr ""
+"interface %1$s - filterref não é suportado para interfaces de rede do tipo "
+"%2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - filterref is not supported for network interfaces with "
 "virtualport type %2$s"
 msgstr ""
+"interface %1$s - filterref não é suportado para interfaces de rede com tipo "
+"de porto virtual %2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - multiqueue is not supported for network interfaces of type "
 "%2$s"
 msgstr ""
+"interface %1$s - multi-fila não é suportado para interfaces de rede do tipo "
+"%2$s"
 
 #, c-format
 msgid ""
 "interface %1$s - teaming transient device must be type='hostdev', not '%2$s'"
 msgstr ""
+"interface %1$s - dispositivo transitório de equipa tem de ser do "
+"tipo='hostdev', não '%2$s'"
 
 #, c-format
 msgid "interface %1$s - vlan tag not supported for this connection type"
-msgstr ""
+msgstr "interface %1$s - etiqueta vlan não suportada para este tipo de ligação"
 
 #, c-format
 msgid "interface '%1$s' can only be listed once in network %2$s"
-msgstr ""
+msgstr "interface '%1$s' s+o pode ser listada uma vez na rede %2$s"
 
 #, c-format
 msgid "interface '%1$s' failing; reopening"
-msgstr ""
+msgstr "interface '%1$s' a falhar; a re-abrir"
 
 #, c-format
 msgid "interface '%1$s' not found"
-msgstr ""
+msgstr "interface '%1$s' não encontrada"
 
 msgid "interface device (MAC Address)"
-msgstr ""
+msgstr "dispositivo de interface (Endereço MAC)"
 
 msgid "interface device specified by name or MAC Address"
-msgstr ""
+msgstr "dispositivo de interface especificado por nome ou Endereço MAC"
 
 msgid "interface has no name"
-msgstr ""
+msgstr "interface não tem nome"
 
 #, c-format
 msgid "interface has unsupported type '%1$s'"
-msgstr ""
+msgstr "interface tem tipo não suportado '%1$s'"
 
 msgid "interface host IP"
-msgstr ""
+msgstr "IP de máquina da interface"
 
 msgid "interface information in XML"
 msgstr "informação da interface em XML"
@@ -30171,31 +30248,31 @@ msgid "interface is not running"
 msgstr "interface não está em execução"
 
 msgid "interface mac"
-msgstr ""
+msgstr "mac da interface"
 
 msgid "interface name"
 msgstr "nome da interface"
 
 #, c-format
 msgid "interface name %1$s does not fit into buffer"
-msgstr ""
+msgstr "nome da interface %1$s não cabe no buffer"
 
 msgid "interface name or MAC address"
-msgstr ""
+msgstr "nome da interface ou endereço MAC"
 
 #, c-format
 msgid "interface not set\n"
-msgstr ""
+msgstr "interface não definida\n"
 
 msgid "interface state driver is not active"
-msgstr ""
+msgstr "controlador de estado de interface não está activo"
 
 msgid "interface stats not implemented on this platform"
-msgstr ""
+msgstr "estatísticas de interface não implementado nesta plataforma"
 
 #, c-format
 msgid "interface type='%1$s' requires a 'source' element"
-msgstr ""
+msgstr "interface tipo='%1$s' requere um elemento 'source'"
 
 msgid "internal"
 msgstr "interno"
@@ -30207,12 +30284,14 @@ msgid ""
 "internal and full system snapshots require all disks to be selected for "
 "snapshot"
 msgstr ""
+"instantâneos internos e de todo o sistema requer que todos os discos sejam "
+"selecionados para instantâneo"
 
 msgid "internal command for autocompletion"
-msgstr ""
+msgstr "comando interno para auto-completação"
 
 msgid "internal command for testing virt shells"
-msgstr ""
+msgstr "comando interno para testar shells virtuais"
 
 msgid "internal error"
 msgstr "erro interno"
@@ -30223,65 +30302,74 @@ msgstr "erro interno: %1$s"
 
 #, c-format
 msgid "internal inactive snapshots are not supported on '%1$s' disks"
-msgstr ""
+msgstr "instantâneos inactivos internos não são suportados em discos '%1$s'"
 
 #, c-format
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using "
 "'%1$s' protocol"
 msgstr ""
+"instantâneos inactivos internos não suportados em discos de 'rede' que usam "
+"protocolo '%1$s'"
 
 msgid "internal parse requested with NULL current"
-msgstr ""
+msgstr "análise interna requisitada com NULO atual"
 
 #, c-format
 msgid "internal snapshot for disk %1$s unsupported for storage type %2$s"
 msgstr ""
+"instantâneo interno para disco %1$s não é suportado para tipo de "
+"armazenamento %2$s"
 
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
+"instantâneo interno de uma VM em execução tem de incluir o estado de memória"
 
 msgid ""
 "internal snapshots of a VM with pflash based firmware require QCOW2 nvram "
 "format"
 msgstr ""
+"instantâneos internos de uma VM com firmware baseado em pflash requer o "
+"formato nvram QCOW2"
 
 msgid "internal use only"
 msgstr "uso interno apenas"
 
 msgid "interrupt post-copy migration"
-msgstr ""
+msgstr "interrompe migração pós-cópia"
 
 msgid "intr:"
-msgstr ""
+msgstr "intr:"
 
 #, c-format
 msgid "invalid \"trunk='%1$s'\" in <vlan> - must be yes or no"
-msgstr ""
+msgstr "\"trunk='%1$s'\" inválido em <vlan> - tem de ser yes ou no"
 
 #, c-format
 msgid ""
 "invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
 "one vlan tag"
 msgstr ""
+"\"trunk='%1$s'\" inválido em <vlan> - é requirido trunk='yes' para mais do "
+"que uma etiqueta vlan"
 
 #, c-format
 msgid "invalid %1$s value: '%2$s'"
-msgstr ""
+msgstr "valor inválido %1$s: '%2$s'"
 
 #, c-format
 msgid "invalid %1$s: '%2$s'"
-msgstr ""
+msgstr "inválido %1$s: '%2$s'"
 
 #, c-format
 msgid "invalid '=' after option --%1$s"
 msgstr "'=' inválido após opção --%1$s"
 
 msgid "invalid 'type' attribute for vhostuser disk source"
-msgstr ""
+msgstr "atributo 'type' inválido para fonte de disco"
 
 msgid "invalid CPU cache level, must be in range [1,3]"
-msgstr ""
+msgstr "nível de cache de CPU inválido, tem de estar na gama [1,3]"
 
 #, c-format
 msgid "invalid CPU definition at index %1$zu"
@@ -30292,33 +30380,33 @@ msgstr "couto de definição de CPU inválido"
 
 #, c-format
 msgid "invalid DNS SRV port attribute for service '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "atributo port SRV DNS inválido para serviço '%1$s' na rede '%2$s'"
 
 #, c-format
 msgid "invalid DNS SRV weight attribute for service '%1$s' in network '%2$s'"
-msgstr ""
+msgstr "atributo weight SRV DNS inválido para serviço '%1$s' na rede '%2$s'"
 
 msgid "invalid MAC address"
-msgstr ""
+msgstr "endereço MAC inválido"
 
 #, c-format
 msgid "invalid MAC address: %1$s"
-msgstr ""
+msgstr "endereço MAC inválido: %1$s"
 
 #, c-format
 msgid "invalid NUMA node ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de nó NUMA inválido fornecido para '%1$s'"
 
 msgid "invalid NUMA node in target"
-msgstr ""
+msgstr "nó NUMA inválido no alvo"
 
 #, c-format
 msgid "invalid PCI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de barramento PCI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid PCI class supplied for '%1$s'"
-msgstr ""
+msgstr "classe PCI inválida fornecida para '%1$s'"
 
 #, c-format
 msgid "invalid PCI domain ID supplied for '%1$s'"
@@ -30330,77 +30418,77 @@ msgstr "ID de função PCI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid PCI passthrough type '%1$s'"
-msgstr ""
+msgstr "tipo de passagem PCI inválido '%1$s'"
 
 #, c-format
 msgid "invalid PCI product ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de produto PCI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid PCI slot ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de slot PCI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid PCI vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de fornecedor PCI inválido fornecido para '%1$s'"
 
 msgid "invalid RNG rate bytes value"
-msgstr ""
+msgstr "valor de bytes de taxa RNG inválido"
 
 msgid "invalid RNG rate period value"
-msgstr ""
+msgstr "valor de período de taxa RNG inválido"
 
 #, c-format
 msgid "invalid SCSI LUN ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID LUN de SCSI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid SCSI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de barramento SCSI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid SCSI host ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de máquina SCSI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid SCSI target ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de alvo SCSI inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid URI %1$s (maybe you want %2$s:///%3$s)"
-msgstr ""
+msgstr "URI inválido %1$s (talvez você queira %2$s:///%3$s)"
 
 #, c-format
 msgid "invalid USB bus number supplied for '%1$s'"
-msgstr ""
+msgstr "número de barramento USB inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid USB device number supplied for '%1$s'"
-msgstr ""
+msgstr "número de dispositivo USB inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid USB interface class supplied for '%1$s'"
-msgstr ""
+msgstr "classe de interface USB inválida fornecida para '%1$s'"
 
 #, c-format
 msgid "invalid USB interface number supplied for '%1$s'"
-msgstr ""
+msgstr "número de interface USB inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid USB interface protocol supplied for '%1$s'"
-msgstr ""
+msgstr "protocolo de interface USB inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid USB interface subclass supplied for '%1$s'"
-msgstr ""
+msgstr "sub-classe de interface USB inválida fornecida para '%1$s'"
 
 #, c-format
 msgid "invalid USB product ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de produto USB inválido fornecido para '%1$s'"
 
 #, c-format
 msgid "invalid USB vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "ID de fornecedor USB inválido fornecido para '%1$s'"
 
 msgid "invalid UUID"
 msgstr "UUID inválido"
@@ -30414,15 +30502,15 @@ msgstr "definição VM inválida"
 
 #, c-format
 msgid "invalid XML length: %1$d"
-msgstr ""
+msgstr "comprimento de XML inválido: %1$d"
 
 #, c-format
 msgid "invalid ap-adapter value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "valor ap-adapter inválido '%1$s' para '%2$s'"
 
 #, c-format
 msgid "invalid ap-domain value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "valor ap-domain inválido '%1$s' para '%2$s'"
 
 msgid "invalid argument"
 msgstr "argumento inválido"
@@ -30452,20 +30540,26 @@ msgid ""
 "invalid character in protocol attribute '%1$s' in DNS SRV record of network "
 "'%2$s'"
 msgstr ""
+"caractere inválido em atributo de protocolo '%1$s' no registo SRV DNS da "
+"rede '%2$s'"
 
 #, c-format
 msgid ""
 "invalid character in service attribute '%1$s' in DNS SRV record of network "
 "'%2$s'"
 msgstr ""
+"caractere inválido em atributo de serviço '%1$s' no registo SRV DNS da rede "
+"'%2$s'"
 
 msgid "invalid cipher size for TLS session"
-msgstr ""
+msgstr "tamanho de cifra inválido para sessão TLS"
 
 msgid ""
 "invalid configuration in <vlan> - \"trunk='no'\" is not allowed with a "
 "native vlan id"
 msgstr ""
+"configuração inválida em <vlan> - \"trunk='no'\" não é permitido com um id "
+"vlan nativo"
 
 msgid "invalid connection pointer in"
 msgstr "ponteiro de ligação inválido em"
@@ -30476,15 +30570,17 @@ msgstr "ponteiro de ligação inválido em %1$s"
 
 #, c-format
 msgid "invalid cssid value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "valor cssid inválido '%1$s' para '%2$s'"
 
 #, c-format
 msgid "invalid device API '%1$s' for device %2$s: device only supports '%3$s'"
 msgstr ""
+"API de dispositivo inválida '%1$s' para dispositivo %2$s: dispositivo apenas "
+"suporta '%3$s'"
 
 #, c-format
 msgid "invalid devno value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "valor devno inválido '%1$s' para '%2$s'"
 
 #, c-format
 msgid "invalid disk index '%1$s'"
@@ -30497,6 +30593,7 @@ msgstr "alvo de disco inválido '%1$s'"
 #, c-format
 msgid "invalid disk target '%1$s', partitions can't appear in disk targets"
 msgstr ""
+"alvo de disco inválido '%1$s', partições não podem aparecer em alvos de disco"
 
 #, c-format
 msgid "invalid dmode: '0%1$o'"
@@ -30522,11 +30619,11 @@ msgid "invalid domain type %1$s"
 msgstr "tipo de domínio inválido %1$s"
 
 msgid "invalid driver type for version detection"
-msgstr ""
+msgstr "tipo de controlador invalido para deteção de versão"
 
 #, c-format
 msgid "invalid empty data-file definition in '%1$s'"
-msgstr ""
+msgstr "definição de ficheiro-de-dados vazio inválida em '%1$s'"
 
 #, c-format
 msgid "invalid failure action: '%1$s'\n"
@@ -30548,24 +30645,24 @@ msgid "invalid fmode: '0%1$o'"
 msgstr "fmode inválido: '0%1$o'"
 
 msgid "invalid hasmanagedsave"
-msgstr ""
+msgstr "hasmanagedsave inválido"
 
 #, c-format
 msgid "invalid header data length: %1$d"
-msgstr ""
+msgstr "comprimento de dados de cabeçalho inválido: %1$d"
 
 #, c-format
 msgid "invalid host UUID: %1$s"
-msgstr ""
+msgstr "UUID de máquina inválido: %1$s"
 
 msgid "invalid hostdev mode"
-msgstr ""
+msgstr "modo hostdev inválido"
 
 msgid "invalid hostdev subsystem type"
-msgstr ""
+msgstr "tipo de sub-sistema hostdev inválido"
 
 msgid "invalid idmap start/target/count settings"
-msgstr ""
+msgstr "definições inicio/alvo/contagem de idmap inválidas"
 
 #, c-format
 msgid "invalid interface name %1$s"
@@ -30580,18 +30677,18 @@ msgstr "ponteiro de interface inválido em %1$s"
 
 #, c-format
 msgid "invalid iommuGroup number attribute for '%1$s'"
-msgstr ""
+msgstr "atributo de número iommuGroup inválido para '%1$s'"
 
 #, c-format
 msgid "invalid iothreads count '%1$s'"
 msgstr "contagem de iothreads inválida '%1$s'"
 
 msgid "invalid job statistics type"
-msgstr ""
+msgstr "tipo de estatísticas de trabalho inválido"
 
 #, c-format
 msgid "invalid job type '%1$d'"
-msgstr ""
+msgstr "tipo de trabalho inválido '%1$d'"
 
 #, c-format
 msgid "invalid json in file: %1$s"
@@ -30599,30 +30696,32 @@ msgstr "json inválido em ficheiro: %1$s"
 
 #, c-format
 msgid "invalid json in file: %1$s, rewriting it"
-msgstr ""
+msgstr "json inválido em ficheiro: %1$s, a rescrever-lo"
 
 #, c-format
 msgid "invalid json in net device saved config file '%1$s': '%2$.60s'"
 msgstr ""
+"json inválido em ficheiro de configuração salvado de dispositivo de rede "
+"'%1$s': '%2$.60s'"
 
 #, c-format
 msgid "invalid keycode %1$u of %2$s codeset"
-msgstr ""
+msgstr "código de chave inválido %1$u de conjunto de código %2$s"
 
 #, c-format
 msgid "invalid keycode: '%1$s'"
-msgstr ""
+msgstr "código de chave inválido: '%1$s'"
 
 msgid "invalid length for new profile"
 msgstr "comprimento inválido para novo perfil"
 
 #, c-format
 msgid "invalid lifecycle action '%1$u'"
-msgstr ""
+msgstr "ação de ciclo de vida inválida '%1$u'"
 
 #, c-format
 msgid "invalid lifecycle type '%1$u'"
-msgstr ""
+msgstr "tipo de ciclo de vida inválido '%1$u'"
 
 #, c-format
 msgid "invalid link state '%1$s'"
@@ -30633,22 +30732,28 @@ msgid ""
 "invalid loadparm value '%1$s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
 msgstr ""
+"valor loadparm inválido '%1$s', esperado caracteres no conjunto de "
+"[a-zA-Z0-9.] e espaços em branco"
 
 #, c-format
 msgid ""
 "invalid mac address '%1$s' in 'multicast-table' array in query-rx-filter "
 "response"
 msgstr ""
+"endereço mac inválido '%1$s' na matriz 'multicast-table' na resposta de "
+"query-rx-filter"
 
 #, c-format
 msgid ""
 "invalid mac address '%1$s' in 'unicast-table' array in query-rx-filter "
 "response"
 msgstr ""
+"endereço mac inválido '%1$s' na matriz 'unicast-table' na resposta de query-"
+"rx-filter"
 
 #, c-format
 msgid "invalid master key read, size=%1$zd"
-msgstr ""
+msgstr "leitura de chave mestre inválida, tamanho=%1$zd"
 
 msgid "invalid microcode version"
 msgstr "versão de microcódigo inválida"
@@ -30926,13 +31031,13 @@ msgstr "índice vcpu inválido '%1$u'"
 
 #, c-format
 msgid "invalid vncdisplay value '%1$s'"
-msgstr ""
+msgstr "valor vncdisplay inválido '%1$s'"
 
 msgid "invalid watchdog action"
 msgstr "acção de watchdog inválida"
 
 msgid "io is not supported with vhostuser disk"
-msgstr ""
+msgstr "io não é suportado com disco vhostuser"
 
 msgid "io policy of disk device"
 msgstr "política io do dispositivo de disco"
@@ -30942,24 +31047,26 @@ msgstr "io uring não é suportado com este binário QEMU"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
 msgstr ""
+"io='native' precisa de ou nenhum cache de disco ou modo de cache de "
+"sincronismo direto"
 
 msgid "ioeventfd is not supported with vhostuser disk"
-msgstr ""
+msgstr "ioeventfd não é suportado com disco vhostuser"
 
 msgid "iommu driver option is only supported for virtio devices"
-msgstr ""
+msgstr "opção de controlador iommu é apenas suportada para dispositivos virtio"
 
 #, c-format
 msgid "iommu model '%1$s' can't have address"
-msgstr ""
+msgstr "modelo de iommu '%1$s' não pode ter endereço"
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support additional attributes"
-msgstr ""
+msgstr "modelo de iommu '%1$s' não suporta atributos adicionais"
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support some additional attributes"
-msgstr ""
+msgstr "modelo de iommu '%1$s' não suporta alguns atributos adicionais"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: aw_bits não é suportado com este binário QEMU"
@@ -30986,121 +31093,124 @@ msgstr "iothread %1$d não encontrado"
 
 #, c-format
 msgid "iothread '%1$u' not defined in iothreadid"
-msgstr ""
+msgstr "iothread '%1$u' não definido em iothreadid"
 
 msgid "iothread for the new IOThread"
-msgstr ""
+msgstr "iothread para o novo IOThread"
 
 msgid "iothread id of existing IOThread"
-msgstr ""
+msgstr "id de iothread de IOThread existente"
 
 msgid "iothread is not supported with vhostuser disk"
-msgstr ""
+msgstr "iothread não é suportado com disco vhostuser"
 
 #, c-format
 msgid "iothread queue '%1$u' is already assigned"
-msgstr ""
+msgstr "fila de iothread '%1$u' já está atribuída"
 
 #, c-format
 msgid "iothread queue '%1$u' mapping out of range"
-msgstr ""
+msgstr "mapeamento de fila de iothread '%1$u' fora de alcance"
 
 msgid ""
 "iothread to queue mapping must be provided for all iothreads or for none"
 msgstr ""
+"iothread para mapeamento de fila tem de ser fornecido para todos os "
+"iothreads ou para nenhum"
 
 msgid "iothread_id for the IOThread to delete"
-msgstr ""
+msgstr "id de iothread para o IOThread a apagar"
 
 #, c-format
 msgid "iothreadid %1$d not found"
 msgstr "iothreadid %1$d não encontrado"
 
 msgid "iothreads are supported only by 'virtio-scsi' controllers"
-msgstr ""
+msgstr "iothreads são suportados apenas por controladores 'virtio-scsi'"
 
 msgid "iotune is not supported with vhostuser disk"
-msgstr ""
+msgstr "iotune não é suportado com disco vhostuser"
 
 msgid "iowait:"
-msgstr ""
+msgstr "iowait:"
 
 msgid "ipset name contains invalid characters"
-msgstr ""
+msgstr "nome de ipset contém caracteres inválidos"
 
 msgid "ipset name is too long"
-msgstr ""
+msgstr "nome de ipset é demasiado longo"
 
 msgid "isa-debug serial type only valid on x86 architecture"
-msgstr ""
+msgstr "tipo de série isa-debug apenas válido em arquitectura x86"
 
 msgid "iscsi pool only supports 'chap' auth type"
-msgstr ""
+msgstr "pool iscsi apenas suporta tipo de autenticação 'chap'"
 
 msgid "iscsi-direct pool only supports 'chap' auth type"
-msgstr ""
+msgstr "pool iscsi-direct apenas suporta tipo de autenticação 'chap'"
 
 msgid "ivgen element found, but cipher is missing"
-msgstr ""
+msgstr "elemento ivgen encontrado, mas a cifra está em falta"
 
 msgid "ivshmem device is no longer supported"
-msgstr ""
+msgstr "dispositivo ivshmem não é mais suportado"
 
 #, c-format
 msgid "job '%1$s' canceled by client"
-msgstr ""
+msgstr "trabalho '%1$s' cancelado pelo cliente"
 
 #, c-format
 msgid "job '%1$s' failed due to I/O error"
-msgstr ""
+msgstr "trabalho '%1$s' falhou devido a erro de I/O"
 
 #, c-format
 msgid "job '%1$s' failed in post-copy phase"
-msgstr ""
+msgstr "trabalho '%1$s' falhou em fase pós-cópia"
 
 #, c-format
 msgid "job '%1$s' failed: %2$s"
-msgstr ""
+msgstr "trabalho '%1$s' falhou: %2$s"
 
 #, c-format
 msgid "job '%1$s' is not active"
-msgstr ""
+msgstr "trabalho '%1$s' não está activo"
 
 #, c-format
 msgid "job '%1$s' unexpectedly failed"
-msgstr ""
+msgstr "trabalho '%1$s' falhou inesperadamente"
 
 #, c-format
 msgid "job type '%1$s' does not support pivot"
 msgstr "tipo de tarefa '%1$s' não suporta pivô"
 
 msgid "kdump-compressed format is not supported here"
-msgstr ""
+msgstr "o formato comprimido kdump não é suportado aqui"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr ""
+"o formato comprimido kdump apenas é suportado com despejo apenas-memória"
 
 msgid "keep TPM state"
-msgstr ""
+msgstr "manter estado TPM"
 
 msgid "keep nvram file"
-msgstr ""
+msgstr "manter ficheiro nvram"
 
 msgid "keep the backing chain relatively referenced"
-msgstr ""
+msgstr "manter a cadeia de apoio referenciada relativamente"
 
 #, c-format
 msgid "keepalive interval %1$d too large"
-msgstr ""
+msgstr "intervalo de manter vivo %1$d demasiado grande"
 
 msgid "keepalive interval already set"
-msgstr ""
+msgstr "intervalo de manter vivo já definido"
 
 msgid "kernel cpu time field is too long for the destination"
-msgstr ""
+msgstr "campo de hora de cpu do kernel é muito longo para o destino"
 
 msgid "key to be used as a namespace identifier"
-msgstr ""
+msgstr "chave a ser usada com um identificador de espaço de nome"
 
 #, c-format
 msgid "keyboard interactive authentication failed: %1$s"
@@ -31108,43 +31218,47 @@ msgstr "autenticação interativa de teclado falhou: %1$s"
 
 #, c-format
 msgid "keycode %1$zu is invalid: 0x%2$X"
-msgstr ""
+msgstr "código de chave %1$zu é inválido: 0x%2$X"
 
 #, c-format
 msgid "known hosts file '%1$s' does not exist"
-msgstr ""
+msgstr "ficheiro de máquinas conhecidas '%1$s' não existe"
 
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr ""
+"sobreposições de etiqueta requer que a etiquetagem esteja activa ao nível de "
+"domínio"
 
 msgid "label size is required for NVDIMM device"
-msgstr ""
+msgstr "tamanho de etiqueta é requerido para dispositivo NVDIMM"
 
 msgid "label size must be smaller than NVDIMM size"
-msgstr ""
+msgstr "tamanho de etiqueta tem de ser menor que o tamanho de NVDIMM"
 
 #, c-format
 msgid "lazy_refcounts not supported with compat level %1$s"
-msgstr ""
+msgstr "lazy_refcounts não suportado com nível de compatibilidade %1$s"
 
 msgid "lease file write failed"
 msgstr "falhou a escrita de ficheiro de aluguer"
 
 msgid "leave the guest paused after creation"
-msgstr ""
+msgstr "deixa o convidado em pausa após a criação"
 
 msgid "length of metadata out of range"
-msgstr ""
+msgstr "comprimento dos metadados fora de alcance"
 
 #, c-format
 msgid "level %1$u cache size %2$llu does not match expected size %3$llu"
 msgstr ""
+"nível %1$u de tamanho de cache %2$llu não corresponde ao tamanho esperado "
+"%3$llu"
 
 msgid "libnl was not available at build time"
-msgstr ""
+msgstr "libnl não estava disponível durante a compilação"
 
 msgid "library call failed"
-msgstr ""
+msgstr "chamada a biblioteca falhou"
 
 #, c-format
 msgid "library call failed: %1$s"
@@ -31154,54 +31268,57 @@ msgid "librbd encryption is not supported by this QEMU binary"
 msgstr "encriptação de librbd não é suportada com este binário QEMU"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr ""
+msgstr "encriptação librbd é apenas suportada com discos de apoio RBD"
 
 msgid "librbd encryption layering is not supported by this QEMU binary"
 msgstr "acamar de encriptação de librbd não é suportado com este binário QEMU"
 
 msgid "libssh transport error"
-msgstr ""
+msgstr "erro de transporte libssh"
 
 #, c-format
 msgid "libssh transport error: %1$s"
-msgstr ""
+msgstr "erro de transporte libssh: %1$s"
 
 msgid "libssh transport support was not enabled"
-msgstr ""
+msgstr "suporte a transporte libssh não foi activado"
 
 msgid "libssh2 transport support was not enabled"
-msgstr ""
+msgstr "suporte a transporte libssh2 não foi activado"
 
 msgid "libvirt management daemon:"
-msgstr ""
+msgstr "daemon de gestão do libvirt:"
 
 #, c-format
 msgid "libvirt was built without the '%1$s' driver"
-msgstr ""
+msgstr "libvirt foi compilado sem o controlador '%1$s'"
 
 #, c-format
 msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
-msgstr ""
+msgstr "libvirt não foi compilado com libpcap e \"%1$s\" requer isso"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
-msgstr ""
+msgstr "libvirt irá automaticamente desanexar/anexar o dispositivo de/a maquina"
 
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr ""
+"libvirt-guests está configurado para não arrancar nenhuns convidados no "
+"arranque"
 
 msgid "libvirt.so is not safe to use from setuid/setgid programs"
-msgstr ""
+msgstr "libvirt.so não é seguro usar a partir de programas setuid/setgid"
 
 msgid "libvirtd quit during handshake"
-msgstr ""
+msgstr "libvirtd terminou durante aperto de mão"
 
 #, c-format
 msgid "libxenlight does not support disk driver %1$s"
-msgstr ""
+msgstr "libxenlight não suporta controlador de disco %1$s"
 
 #, c-format
 msgid "libxenlight does not support disk format %1$s with disk driver %2$s"
 msgstr ""
+"libxenlight não suporta formato de disco %1$s com controlador de disco %2$s"
 
 msgid "libxenlight does not support transient disks"
 msgstr "libxenlight não suporta discos transientes"
@@ -31269,76 +31386,76 @@ msgid "libxenlight failed to store userdata"
 msgstr "libxenlight falhou ao armazenar dados de utilizador"
 
 msgid "libxenlight state driver is not active"
-msgstr ""
+msgstr "controlador de estado libxenlight não está activo"
 
 #, c-format
 msgid "libxl_domain_info failed for domain '%1$d'"
-msgstr ""
+msgstr "libxl_domain_info falghou para domínio '%1$d'"
 
 msgid "libxl_get_cpu_topology failed"
-msgstr ""
+msgstr "libxl_get_cpu_topology falhou"
 
 msgid "libxl_get_numainfo failed"
-msgstr ""
+msgstr "libxl_get_numainfo falhou"
 
 msgid "libxl_get_physinfo_info failed"
-msgstr ""
+msgstr "libxl_get_physinfo_info falhou"
 
 #, c-format
 msgid "libxml2 doesn't handle %1$s encoding"
-msgstr ""
+msgstr "libxml2 não lida com codificação %1$s"
 
 msgid "lifecycle action to set"
-msgstr ""
+msgstr "ação de ciclo de vida a definir"
 
 msgid "lifecycle type to modify"
-msgstr ""
+msgstr "tipo de ciclo de vida a modificar"
 
 msgid "limit list to children of current snapshot"
-msgstr ""
+msgstr "limita lista a filhos do instantâneo atual"
 
 msgid "limit list to children of given checkpoint"
-msgstr ""
+msgstr "limita lista a filhos do ponto de verificação fornecido"
 
 msgid "limit list to children of given snapshot"
-msgstr ""
+msgstr "limita lista a filhos do instantâneo fornecido"
 
 #, c-format
 msgid "line %1$d corrupt ipaddr \"%2$s\""
-msgstr ""
+msgstr "linha %1$d corrompe ipaddr \"%2$s\""
 
 msgid "list UUID of active pools only"
-msgstr ""
+msgstr "lista UUID de apenas pools activos"
 
 msgid "list all domain blocks"
 msgstr "lista todos os blocos de domínio"
 
 msgid "list all domain throttlegroups."
-msgstr ""
+msgstr "lista todos os grupos acelerador de domínio."
 
 msgid "list all domain virtual interfaces"
-msgstr ""
+msgstr "lista todas as interfaces virtuais de domínio"
 
 msgid "list authorized SSH keys for given user (via agent)"
-msgstr ""
+msgstr "lista chaves SSH autorizadas para dado utilizador (via agente)"
 
 msgid "list available servers on a daemon"
-msgstr ""
+msgstr "lista servidores disponíveis num daemon"
 
 msgid "list checkpoint names only"
-msgstr ""
+msgstr "lista apenas nomes de pontos de verificação"
 
 msgid "list checkpoints in a tree"
-msgstr ""
+msgstr "lista pontos de verificação numa árvore"
 
 msgid "list clients connected to <server>"
-msgstr ""
+msgstr "lista clientes ligados a <servidor>"
 
 msgid "list devices in a tree"
 msgstr "lista dispositivos numa árvore"
 
 msgid "list domain IDs only"
-msgstr ""
+msgstr "lista apenas IDs de domínio"
 
 msgid "list domain names only"
 msgstr "lista apenas nomes de domínios"
@@ -31386,7 +31503,7 @@ msgid "list ephemeral secrets"
 msgstr "lista segredos efémeros"
 
 msgid "list inactive & active devices"
-msgstr ""
+msgstr "lista dispositivos activos e inactivos"
 
 msgid "list inactive & active domains"
 msgstr "lista domínios activos e inactivos"
@@ -31449,7 +31566,7 @@ msgid "list non-private secrets"
 msgstr "lista segredos não-privados"
 
 msgid "list of cpus to enable or disable"
-msgstr ""
+msgstr "lista de cpus para activar e desactivar"
 
 msgid "list of domains to get stats for"
 msgstr "lista domínios a obter estatísticas para"
@@ -31458,13 +31575,13 @@ msgid "list only active domains"
 msgstr "lista apenas domínios activos"
 
 msgid "list only checkpoints that are not leaves (with children)"
-msgstr ""
+msgstr "lista apenas pontos de verificação que não são folhas (com filhos)"
 
 msgid "list only checkpoints without children"
-msgstr ""
+msgstr "lista apenas pontos de verificação sem filhos"
 
 msgid "list only checkpoints without parents"
-msgstr ""
+msgstr "lista apenas pontos de verificação sem pais"
 
 msgid "list only domains in other states"
 msgstr "lista apenas domínios em outros estados"
@@ -31485,19 +31602,21 @@ msgid "list only shutoff domains"
 msgstr "lista apenas domínios encerrados"
 
 msgid "list only snapshots that are not leaves (with children)"
-msgstr ""
+msgstr "lista apenas instantâneos que não são folhas (com filhos)"
 
 msgid "list only snapshots that have metadata that would prevent undefine"
 msgstr ""
+"lista apenas instantâneos que têm metadados que iriam prevenir remover de "
+"definição"
 
 msgid "list only snapshots that have no metadata managed by libvirt"
-msgstr ""
+msgstr "lista apenas instantâneos que não têm metadados geridos pelo libvirt"
 
 msgid "list only snapshots without children"
-msgstr ""
+msgstr "lista apenas instantâneos sem filhos"
 
 msgid "list only snapshots without parents"
-msgstr ""
+msgstr "lista apenas instantâneos sem pais"
 
 msgid "list only transient domains"
 msgstr "lista apenas domínios transientes"
@@ -31566,354 +31685,368 @@ msgid "list vols"
 msgstr "lista volumes"
 
 msgid "listen address is not supported by tunnelled migration"
-msgstr ""
+msgstr "endereços de escuta não suportados por migração em túnel"
 
 msgid "listen address that destination should bind to for incoming migration"
-msgstr ""
+msgstr "endereços de escuta que o destino se deve fundir para migração a chegar"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%1$s'"
-msgstr ""
+msgstr "tipo de escuta 'none' não está disponível para tipo de gráficos '%1$s'"
 
 #, c-format
 msgid "listen type 'socket' is not available for graphics type '%1$s'"
 msgstr ""
+"tipo de escuta 'socket' não está disponível para tipo de gráficos '%1$s'"
 
 msgid "lists not allowed in VMX format"
-msgstr ""
+msgstr "listas não permitidas em formato VMX"
 
 msgid "live"
 msgstr "em tempo real"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
-msgstr ""
+msgstr "anexar ao vivo de dispositivo '%1$s' não é suportado"
 
 #, c-format
 msgid "live detach of device '%1$s' is not supported"
-msgstr ""
+msgstr "desanexar ao vivo de dispositivo '%1$s' não é suportado"
 
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
-msgstr ""
+msgstr "desanexar ao vivo de tipo de interface %1$s ainda não está implementado"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
-msgstr ""
+msgstr "desanexar ao vivo de modelo shmem '%1$s' não é suportado"
 
 msgid "live migration"
 msgstr "migração em tempo-real"
 
 msgid "live snapshot creation is supported only during full system snapshots"
 msgstr ""
+"criação de instantâneo ao vivo é apenas suportado durante instantâneos de "
+"sistema total"
 
 #, c-format
 msgid "live update of device '%1$s' is not supported"
-msgstr ""
+msgstr "atualização ao vivo de dispositivo '%1$s' não é suportado"
 
 #, c-format
 msgid "load of internal snapshot '%1$s' job failed: %2$s"
-msgstr ""
+msgstr "trabalho de carregar instantâneo interno '%1$s' falhou: %2$s"
 
 #, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
-msgstr ""
+msgstr "valor de loadparm '%1$s' tem de ter entre 1 a 8 caracteres"
 
 msgid "lock manager connection has been restricted"
-msgstr ""
+msgstr "ligação de gestor de tranca tem sido restrita"
 
 msgid "lock owner details have not been registered"
-msgstr ""
+msgstr "detalhes do dono de tranca não foram registrados"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr ""
+msgstr "opções de tranca não são suportadas por este"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
-msgstr ""
+msgstr "volume lógico '%1$s' é escasso, limpeza de volume não suportada"
 
 msgid "loop until timeout or interrupt, rather than one-shot"
-msgstr ""
+msgstr "ciclo até tempo limite ou interrupção, em vez de um-tiro"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "limite inferior para pool de linha de execução trabalhadora"
 
 msgid "luks-any encryption is not supported by this QEMU binary"
 msgstr "encriptação luks-any não é suportada com este binário QEMU"
 
 msgid "lxc state driver is not active"
-msgstr ""
+msgstr "controlador de estado lxc não está activo"
 
 msgid "lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"
 msgstr ""
+"lxc.mount.fstab ou lxc.mount found, use linhas lxc.mount.entry em vez disto"
 
 msgid "lxcChild() passed invalid vm definition"
-msgstr ""
+msgstr "lxcChild() passou definição vm inválida"
 
 msgid "machine already powered down"
-msgstr ""
+msgstr "máquina já com energia desligada"
 
 msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
 msgstr ""
+"máquina não está em estado desligado|salvado|abortado, assim não pude "
+"arranca-la"
 
 msgid "machine is null"
 msgstr "máquina é nula"
 
 msgid "machine not in running state to suspend it"
-msgstr ""
+msgstr "máquina não está em estado de execução para a suspender"
 
 msgid "machine not paused, so can't resume it"
-msgstr ""
+msgstr "máquina não está em pausa, assim não pode ser retomada"
 
 msgid "machine not running, so can't reboot it"
-msgstr ""
+msgstr "máquina não está em execução, assim não posso reincia-la"
 
 msgid "machine paused, so can't power it down"
-msgstr ""
+msgstr "máquina em pausa, assim não posso desligar-lhe a energia"
 
 #, c-format
 msgid "machine type '%1$s'"
-msgstr ""
+msgstr "tipo de máquina '%1$s'"
 
 #, c-format
 msgid "machine type '%1$s' does not support ACPI"
-msgstr ""
+msgstr "tipo de máquina '%1$s' não suporta ACPI"
 
 msgid "machine type (/domain/os/type/@machine)"
-msgstr ""
+msgstr "tipo de máquina (/domínio/so/tipo/@máquina)"
 
 msgid "make added vcpus hot(un)pluggable"
-msgstr ""
+msgstr "torna as vcpus adicionadas (des)ligáveis a quente"
 
 msgid "make live change persistent"
-msgstr ""
+msgstr "torna alteração ao vivo persistente"
 
 msgid "make the copy share a backing chain"
-msgstr ""
+msgstr "torna a partilha de cópia uma cadeia de apoio"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr ""
+msgstr "propriedade 'offset' mal formada do controlador 'raw'"
 
 msgid "malformed 'prefix' field"
-msgstr ""
+msgstr "campo 'prefix' mal formado"
 
 #, c-format
 msgid "malformed 'readahead' field in backing store definition '%1$s'"
 msgstr ""
+"campo 'readahead' mal formado em definição de armazenamento de apoio '%1$s'"
 
 msgid "malformed 'size' property of 'raw' driver"
-msgstr ""
+msgstr "propriedade 'size' mal formada do controlador 'raw'"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%1$s'"
 msgstr ""
+"campo 'sslverify' mal formado em definição de armazenamento de apoio '%1$s'"
 
 #, c-format
 msgid "malformed 'timeout' field in backing store definition '%1$s'"
 msgstr ""
+"campo 'timeout' mal formado em definição de armazenamento de apoio '%1$s'"
 
 msgid "malformed 'wwpn' value"
-msgstr ""
+msgstr "valor 'wwpn' mal formado"
 
 msgid "malformed <blockDirtyBitmaps> in migration cookie"
-msgstr ""
+msgstr "<blockDirtyBitmaps> mal formado em cookie de migração"
 
 msgid "malformed <sysinfo> uuid element"
-msgstr ""
+msgstr "elemento uuid <sysinfo> mal formado"
 
 msgid "malformed <tempBlockDirtyBitmaps> in status XML"
-msgstr ""
+msgstr "<tempBlockDirtyBitmaps> mal formado em XML de estatuto"
 
 msgid "malformed GIC version in QEMU capabilities cache"
 msgstr "mal formada versão GIC na cache de capacidades do QEMU"
 
 #, c-format
 msgid "malformed QAPI schema when querying '%1$s' of '%2$s'"
-msgstr ""
+msgstr "esquema QAPI mal formado ao consultar '%1$s' de '%2$s'"
 
 msgid "malformed QMP schema"
-msgstr ""
+msgstr "esquema QMP mal formado"
 
 msgid "malformed TDX panic data"
-msgstr ""
+msgstr "dados de pânico TDX mal formados"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
-msgstr ""
+msgstr "uuid secreto TLS mal formado '%1$s' fornecido"
 
 #, c-format
 msgid "malformed backing store path for protocol %1$s"
-msgstr ""
+msgstr "caminho de armazenamento de apoio mal formado para protocolo %1$s"
 
 msgid "malformed capacity element"
-msgstr ""
+msgstr "elemento de capacidade mal formado"
 
 msgid "malformed char device string"
-msgstr ""
+msgstr "string de dispositivo de caractere mal formada"
 
 #, c-format
 msgid "malformed disk path: %1$s"
-msgstr ""
+msgstr "caminho de disco mal formato: %1$s"
 
 msgid "malformed emulated GIC information in QEMU capabilities cache"
 msgstr "mal formada informação GIC emulada na cache de capacidades do QEMU"
 
 msgid "malformed genid element"
-msgstr ""
+msgstr "elemento genid mal formado"
 
 msgid "malformed group element"
-msgstr ""
+msgstr "elemento de grupo mal formado"
 
 msgid "malformed hostuuid element in migration data"
-msgstr ""
+msgstr "elemento hostuuid mal formado em dados de migração"
 
 #, c-format
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
+"cookie http mal formado '%1$s' em definição de armazenamento de apoio '%2$s'"
 
 msgid "malformed hwuuid element"
-msgstr ""
+msgstr "elemento hwuuid mal formado"
 
 msgid "malformed hyperv panic data"
-msgstr ""
+msgstr "dados de pânico hyperv mal formados"
 
 msgid "malformed in-kernel GIC information in QEMU capabilities cache"
 msgstr "mal formada informação GIC in-kernel na cache de capacidades do QEMU"
 
 msgid "malformed ipset flags"
-msgstr ""
+msgstr "bandeiras ipset mal formadas"
 
 #, c-format
 msgid "malformed mac address '%1$s'"
-msgstr ""
+msgstr "endereço mac mal formado '%1$s'"
 
 msgid "malformed mtu size"
-msgstr ""
+msgstr "tamanho mtu mal formado"
 
 #, c-format
 msgid "malformed namespace name: %1$s"
-msgstr ""
+msgstr "nome de espaço de nome mal formado: %1$s"
 
 #, c-format
 msgid "malformed nbd string '%1$s'"
-msgstr ""
+msgstr "string nbd mal formada '%1$s'"
 
 msgid "malformed netlink response message"
-msgstr ""
+msgstr "mensagem de resposta netlink mal formada"
 
 msgid "malformed octal mode"
-msgstr ""
+msgstr "modo octal mal formado"
 
 #, c-format
 msgid "malformed output of 'iscsiadm': %1$s"
-msgstr ""
+msgstr "saúda de 'iscsiadm' mal formada: %1$s"
 
 msgid "malformed owner element"
-msgstr ""
+msgstr "elemento proprietário mal formado"
 
 msgid "malformed prManager reply"
-msgstr ""
+msgstr "resposta de prManager mal formada"
 
 msgid "malformed qemu-current-machine reply"
-msgstr ""
+msgstr "resposta qemu-current-machine mal formada"
 
 msgid "malformed query string"
-msgstr ""
+msgstr "string de consulta mal formada"
 
 #, c-format
 msgid "malformed refcount %1$s on %2$s"
-msgstr ""
+msgstr "contagem de referencias mal formada %1$s em %2$s"
 
 msgid "malformed refreservation reported"
-msgstr ""
+msgstr "reportada nova reserva mal formada"
 
 msgid "malformed return value"
-msgstr ""
+msgstr "valor de retorno mal formado"
 
 msgid "malformed s390 panic data"
-msgstr ""
+msgstr "dados de pânico s390 mal formados"
 
 #, c-format
 msgid "malformed signal name: %1$s"
-msgstr ""
+msgstr "nome de sinal mal formado: %1$s"
 
 msgid "malformed uuid element"
-msgstr ""
+msgstr "elemento uuid mal formado"
 
 #, c-format
 msgid "malformed uuid element for '%1$s'"
-msgstr ""
+msgstr "elemento uuid mal formado para '%1$s'"
 
 #, c-format
 msgid "malformed value '%1$s' of 'offset' attribute of slice"
-msgstr ""
+msgstr "valor malformado '%1$s' do atributo 'offset' de fatia"
 
 #, c-format
 msgid "malformed value '%1$s' of 'size' attribute of slice"
-msgstr ""
+msgstr "valor malformado '%1$s' do atributo 'size' de fatia"
 
 msgid "malformed volsize reported"
-msgstr ""
+msgstr "reportado tamanho de volume mal formado"
 
 msgid "malformed volume allocation value"
-msgstr ""
+msgstr "valor de alocação de volume mal formado"
 
 msgid "malformed volume extent devices value"
-msgstr ""
+msgstr "valor de dispositivos extensivos de volume mal formado"
 
 msgid "malformed volume extent length value"
-msgstr ""
+msgstr "valor de comprimento extensivo de volume mal formado"
 
 msgid "malformed volume extent offset value"
-msgstr ""
+msgstr "valor de desvio extensivo de volume mal formado"
 
 msgid "malformed volume extent size value"
-msgstr ""
+msgstr "valor de tamanho extensivo de volume mal formado"
 
 msgid "malformed volume extent stripes value"
-msgstr ""
+msgstr "valor de listras extensivas de volume mal formado"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr ""
+msgstr "endereço mal formado/em falta em informação de memória dimm"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
-msgstr ""
+msgstr "ligação a quente mal formada/em falta em informação de memória dimm"
 
 msgid "malformed/missing hotplugged in dimm memory info"
-msgstr ""
+msgstr "ligado a quente mal formada/em falta em informação de memória dimm"
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
 msgstr ""
+"endereço de memória mal formado/em falta em informação de memória sgx-epc"
 
 msgid "malformed/missing memaddr in virtio memory info"
 msgstr ""
+"endereço de memória mal formado/em falta em informação de memória virtio"
 
 msgid "malformed/missing size in sgx-epc memory info"
-msgstr ""
+msgstr "tamanho mal formado/em falta em informação de memória sgx-epc"
 
 msgid "malformed/missing size in virtio memory info"
-msgstr ""
+msgstr "tamanho mal formado/em falta em informação de memória virtio"
 
 msgid "malformed/missing slot in dimm memory info"
-msgstr ""
+msgstr "slot mal formado/em falta em informação de memória dimm"
 
 msgid "managed save cannot be requested for transient domains"
-msgstr ""
+msgstr "salva gerida não pode ser pedida para domínios transientes"
 
 msgid "managed save of a domain state"
 msgstr "salva gerida de um estado de domínio"
 
 msgid "managing externally launched configuration"
-msgstr ""
+msgstr "a gerir configuração lançada externamente"
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
+"manipular ficheiro de chaves SSH autorizadas para o utilizador dado (via "
+"agente)"
 
 msgid "maplen must be non-negative"
-msgstr ""
+msgstr "maplen tem de ser não-negativo"
 
 msgid "mark inactive domains with managed save state"
-msgstr ""
+msgstr "marca domínios inactivos com estado de salva gerida"
 
 msgid "masterbus not found"
 msgstr "barramento mestre não encontrado"
@@ -31941,126 +32074,133 @@ msgid "matching vsock device not found"
 msgstr "dispositivo vsock correspondente não encontrado"
 
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
-msgstr ""
+msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
 msgid "maxWorkers must not be switched from zero to non-zero and vice versa"
-msgstr ""
+msgstr "maxWorkers não pode ser comutado de zero para não-zero e vice versa"
 
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
-msgstr ""
+msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
 msgid "maxcells must be non-negative"
-msgstr ""
+msgstr "maxcells tem de ser não-negativo"
 
 msgid "maxerrors too large"
-msgstr ""
+msgstr "maxerrors demasiado grande"
 
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
-msgstr ""
+msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maxids must be non-negative"
-msgstr ""
+msgstr "maxids tem de ser não-negativo"
 
 msgid "maximum"
-msgstr ""
+msgstr "máximo"
 
 msgid "maximum CPU is not supported by QEMU binary"
-msgstr ""
+msgstr "CPU máximo não é suportado pelo binário QEMU"
 
 msgid "maximum amount of in-flight data during the copy"
-msgstr ""
+msgstr "quantidade máxima de dados em-voo durante a cópia"
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr ""
+"tamanho de memória máximo tem de ser igual ou maior que o tamanho de memória "
+"atual"
 
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
+"tamanho de memória máximo tem de ser especificado quando se especifica "
+"número de slots de memória"
 
 msgid "maximum memory size overflowed after alignment"
-msgstr ""
+msgstr "tamanho de memória máximo transbordou após alinhamento"
 
 msgid "maximum tolerable downtime (in milliseconds) for migration"
-msgstr ""
+msgstr "tempo inactivo tolerável máximo (em milissegundos) para migração"
 
 msgid "maximum vCPU count must not be less than current vCPU count"
-msgstr ""
+msgstr "contagem de vCPU máxima não pode ser menor que a contagem de vCPU atual"
 
 msgid "maximum vcpu count of a live domain can't be modified"
-msgstr ""
+msgstr "contagem de vcpu máxima de um domínio ao vivo não pode ser modificada"
 
 msgid "maximum vcpus count must be an integer"
-msgstr ""
+msgstr "contagem de vcpus máxima em de ser um inteiro"
 
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
-msgstr ""
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
-msgstr ""
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 msgid "maxinfo must be non-negative"
-msgstr ""
+msgstr "maxinfo tem de ser não-negativo"
 
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
 
 msgid "maxnames > REMOTE_INTERFACE_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_INTERFACE_LIST_MAX"
 
 msgid "maxnames > REMOTE_NETWORK_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NETWORK_LIST_MAX"
 
 msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 
 msgid "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
 
 msgid "maxnames > REMOTE_NWFILTER_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NWFILTER_LIST_MAX"
 
 msgid "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
 
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
 msgid "maxnames must be non-negative"
-msgstr ""
+msgstr "maxnames tem de ser não-negativo"
 
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
-msgstr ""
+msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
 msgid "maxuuids must be non-negative"
-msgstr ""
+msgstr "maxuuids tem de ser não-negativo"
 
 msgid "mdev attribute missing name or value"
-msgstr ""
+msgstr "atributo mdev com falta de nome ou valor"
 
 msgid "mdevctl JSON response contains no devices"
-msgstr ""
+msgstr "resposta JSON mdevctl contém nenhuns dispositivos"
 
 #, c-format
 msgid "mediated device %1$s is in use by driver %2$s, domain %3$s"
 msgstr ""
+"dispositivo mediado %1$s está a ser usado pelo controlador %2$s, domínio %3$s"
 
 #, c-format
 msgid "mediated device '%1$s' not found"
-msgstr ""
+msgstr "dispositivo mediado '%1$s' não encontrado"
 
 msgid "mediated devices are not supported on non-linux platforms"
-msgstr ""
+msgstr "dispositivos mediados não são suportados em plataformas não-linux"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr ""
+"mem(Suspender-para-RAM), disk(Suspender-para-Disco), hybrid(Suspensão-"
+"Híbrida)"
 
 #, c-format
 msgid "memory '%1$s' not found"
-msgstr ""
+msgstr "memória '%1$s' não encontrada"
 
 #, c-format
 msgid "memory access mode '%1$s' not supported without guest numa node"
