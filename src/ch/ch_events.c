@@ -25,6 +25,7 @@
 #include "ch_domain.h"
 #include "ch_events.h"
 #include "ch_process.h"
+#include "domain_event.h"
 #include "virfile.h"
 #include "virlog.h"
 
@@ -65,6 +66,58 @@ virCHEventStopProcess(virDomainObj *vm,
     return 0;
 }
 
+
+static void
+virCHProcessEmitEvent(virDomainObj *vm,
+                      virCHEvent ev)
+{
+    virCHDriver *driver = CH_DOMAIN_PRIVATE(vm)->driver;
+    virObjectEvent *event = NULL;
+
+    switch (ev) {
+    case VIR_CH_EVENT_VM_BOOTED:
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_STARTED,
+                                                  VIR_DOMAIN_EVENT_STARTED_BOOTED);
+        break;
+    case VIR_CH_EVENT_VM_PAUSED:
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+        break;
+    case VIR_CH_EVENT_VM_RESUMED:
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_RESUMED,
+                                                  VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
+        break;
+    case VIR_CH_EVENT_VM_REBOOTED:
+        event = virDomainEventRebootNewFromObj(vm);
+        break;
+    case VIR_CH_EVENT_VMM_SHUTDOWN:
+    case VIR_CH_EVENT_VM_SHUTDOWN:
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SHUTDOWN,
+                                                  VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED);
+        break;
+    case VIR_CH_EVENT_VMM_STARTING:
+    case VIR_CH_EVENT_VM_BOOTING:
+    case VIR_CH_EVENT_VM_REBOOTING:
+    case VIR_CH_EVENT_VM_DELETED:
+    case VIR_CH_EVENT_VM_PAUSING:
+    case VIR_CH_EVENT_VM_RESUMING:
+    case VIR_CH_EVENT_VM_SNAPSHOTTING:
+    case VIR_CH_EVENT_VM_SNAPSHOTTED:
+    case VIR_CH_EVENT_VM_RESTORING:
+    case VIR_CH_EVENT_VM_RESTORED:
+    case VIR_CH_EVENT_LAST:
+    default:
+        break;
+    }
+
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
+
+
 static int
 virCHProcessEvent(virCHMonitor *mon,
                   virJSONValue *eventJSON)
@@ -90,6 +143,8 @@ virCHProcessEvent(virCHMonitor *mon,
     full_event = g_strdup_printf("%s:%s", source, event);
     ev = virCHEventTypeFromString(full_event);
     VIR_DEBUG("%s: Source: %s, Event: %s, ev: %d", vm->def->name, source, event, ev);
+
+    virCHProcessEmitEvent(vm, ev);
 
     switch (ev) {
     case VIR_CH_EVENT_VMM_STARTING:
