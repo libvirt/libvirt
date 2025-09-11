@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-09-03 20:53+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-09-08 18:13+0000\n"
+"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.13.2\n"
 
 msgid ""
 "\n"
@@ -46,7 +46,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (especifique help <command> para obtener detalles del comando)\n"
+"  (especifique help <comando> para detalles acerca del comando)\n"
 "\n"
 
 msgid ""
@@ -54,8 +54,8 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 "\n"
-"  (especifique help <grupo> para obtener detalles de las órdenes en el "
-"grupo)\n"
+"  (especifique help <grupo> para obtener detalles de los comando en el grupo)"
+"\n"
 
 msgid ""
 "\n"
@@ -623,7 +623,7 @@ msgstr ""
 #, c-format
 msgid "%1$s does not support passing passphrase via file descriptor"
 msgstr ""
-"%1$s no admite pasar una frase de contraseña a través un descriptor de "
+"%1$s no admite pasar una frase de contraseña mediante un descriptor de "
 "archivo"
 
 #, c-format
@@ -668,7 +668,7 @@ msgstr "%1$s en %2$s debería ser mayor que cero"
 
 #, c-format
 msgid "%1$s in %2$s must be zero"
-msgstr "%1$s en %2$s debería ser cero"
+msgstr "%1$s en %2$s debe ser cero"
 
 #, c-format
 msgid "%1$s in %2$s must be zero or greater"
@@ -1323,7 +1323,7 @@ msgstr "'%1$s' no es un nombre de ayudante de QEMU-RDP adecuado"
 
 #, c-format
 msgid "'%1$s' is not supported in this QEMU binary"
-msgstr "'%1$s' no es admitido por este binario de QEMU"
+msgstr "%1$s no es admitido en este binario QEMU"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
@@ -1412,7 +1412,7 @@ msgid "'cache' refers to a non-existent NUMA node cache"
 msgstr "'cache' hace referencia a una caché de nodo NUMA inexistente"
 
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr "'cmd_per_lun' solo es compatible con el controlador virtio-scsi"
+msgstr "'cmd_per_lun' solo es admitido por el controlador virtio-scsi"
 
 msgid "'cow' storage format is not supported"
 msgstr "no se admite el formato de almacenamiento 'cow'"
@@ -1510,13 +1510,13 @@ msgid "'model' attribute in <hostdev> is only supported when type='%1$s'"
 msgstr "el atributo 'model' en <hostdev> solo se admite cuando type= '%1$s'"
 
 msgid "'mountpoint' missing in reply of guest-get-fsinfo"
-msgstr "falta 'mountpoint' en la respuesta de guest-get-fsinfo"
+msgstr "'mountpoint' ausente interno a respuesta de guest-get-fsinfo"
 
 msgid "'name' missing in reply of guest-get-disks"
 msgstr "falta 'name' en la respuesta de guest-get-disks"
 
 msgid "'name' missing in reply of guest-get-fsinfo"
-msgstr "falta 'name' en la respuesta de guest-get-fsinfo"
+msgstr "'name' ausente en respuesta de guest-get-fsinfo"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr "el espacio de nombres origen de 'netns' solo se puede usar con sharenet"
@@ -2298,7 +2298,7 @@ msgid "Attempt to create %1$s without specifying mode"
 msgstr "Intente crear %1$s sin especificar el modo"
 
 msgid "Attempt to migrate guest to the same host"
-msgstr "Intento de migrar el huésped al mismo anfitrión"
+msgstr "Intento de migrar el invitado al mismo host"
 
 #, c-format
 msgid "Attempt to migrate guest to the same host %1$s"
@@ -2453,7 +2453,7 @@ msgid "Block Pull started"
 msgstr "Inició extracción de bloque"
 
 msgid "Block commit"
-msgstr "Realizar bloqueo"
+msgstr "Efectuar bloque"
 
 #, c-format
 msgid "Block device '%1$s' is resized"
@@ -2527,7 +2527,7 @@ msgid "Busy"
 msgstr "Ocupado"
 
 msgid "CA certificate:"
-msgstr "Certificado CA:"
+msgstr "Certificado AC:"
 
 #, c-format
 msgid "CCW addresses are not supported by machine type '%1$s'"
@@ -2686,7 +2686,7 @@ msgid "CPU model:"
 msgstr "Modelo de la CPU:"
 
 msgid "CPU models"
-msgstr "modelos de CPU"
+msgstr "Modelos de CPU"
 
 msgid "CPU socket topology has changed"
 msgstr "Ha cambiado la topología de conexión de CPU"
@@ -3637,7 +3637,7 @@ msgid "Cannot rename interface '%1$s' to '%2$s' on this platform"
 msgstr "No se puede renombrar interfaz '%1$s' para '%2$s' en esta plataforma"
 
 msgid "Cannot resize the max memory on an active domain"
-msgstr "No se puede redimensionar la memoria máxima en un dominio activo"
+msgstr "No se puede cambiar el tamaño de memoria máxima en un dominio activo"
 
 #, c-format
 msgid "Cannot resolve %1$s address: %2$s"
@@ -3746,7 +3746,7 @@ msgstr ""
 msgid "Cannot stat %1$s"
 msgstr "No se puede obtener el estado %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Cannot stat '%1$s'"
 msgstr "No se puede dar estado '%1$s'"
 
@@ -4135,7 +4135,7 @@ msgstr "Clase %1$s debe derivar desde virDomainEvent"
 
 #, c-format
 msgid "Class %1$s must derive from virObjectEvent"
-msgstr "Clase %1$s debe derivar desde el virObjectEvent"
+msgstr "Clase %1$s debe derivar desde virObjectEvent"
 
 #, c-format
 msgid "Class %1$s must derive from virObjectLockable"
@@ -4143,7 +4143,7 @@ msgstr "Clase %1$s debe derivar desde el virObjectLockable"
 
 #, c-format
 msgid "Class %1$s must derive from virObjectRWLockable"
-msgstr "Clase %1$s debe derivar desde el virObjectRWLockable"
+msgstr "Clase %1$s debe derivar desde virObjectRWLockable"
 
 #, c-format
 msgid "Client '%1$llu' disconnected"
@@ -4661,7 +4661,8 @@ msgid "Could not find any 'network' element in status file"
 msgstr "No se pudo encontrar ningún elemento 'network' en archivo de estatus"
 
 msgid "Could not find any 'pool' element in state file"
-msgstr "No se pudo encontrar ningún elemento 'pool' en archivo de estatus"
+msgstr ""
+"No se pudo encontrar cualquier elemento 'pool' interno al archivo de estatus"
 
 msgid "Could not find any mounted v1 controllers"
 msgstr "No se pudo encontrar alguno de los controladores V1 montado"
@@ -4787,7 +4788,7 @@ msgid "Could not format channel target type"
 msgstr "No se pudo formatear el tipo destino de canal"
 
 msgid "Could not format console target type"
-msgstr "No se pudo formatear el tipo de destino de consola"
+msgstr "No se pudo dar formato de consola del tipo destino"
 
 msgid "Could not format serial target type"
 msgstr "No se pudo formatear el tipo de destino serial"
@@ -11169,9 +11170,9 @@ msgstr "Ruta relativa '%1$s' no válida"
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid save_image_format '%1$s'"
-msgstr "Inválido save_image_format '%1$s'"
+msgstr "Formato save_image_format '%1$s' no válido"
 
 msgid "Invalid secret"
 msgstr "Secreto no válido"
@@ -11191,15 +11192,15 @@ msgstr "Etiqueta de seguridad '%1$s' no válida"
 msgid "Invalid setting for HPT resizing"
 msgstr "Parámetro no válido para redimensionado HPT"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid setting for pseries feature '%1$s'"
-msgstr "Configuración no válida para la función pseries '%1$s'"
+msgstr "Configuración no válida para la característica '%1$s' pseries"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid snapshot_image_format '%1$s'"
-msgstr "Formato de imagen de instantánea no válido '%1$s'"
+msgstr "Formato de imagen de instantánea '%1$s' no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid source mode: %1$s"
 msgstr "Modo de origen no válido: %1$s"
 
@@ -11265,9 +11266,9 @@ msgstr ""
 msgid "Invalid unsigned integer value '%1$s' in file '%2$s'"
 msgstr "Valor '%1$s' entero sin signo no válido interno al archivo '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid unsigned long long value '%1$s' in file '%2$s'"
-msgstr "Valor long long sin firmar '%1$s' no válido en el archivo '%2$s'"
+msgstr "Valor ‘long long’ sin signo ‘%1$s’ no válido en el archivo ‘%2$s’"
 
 #, c-format
 msgid "Invalid unsigned scaled integer value '%1$s' in file '%2$s'"
@@ -11292,13 +11293,13 @@ msgstr ""
 "Uso no válido de 'floor' en interfaz con dirección MAC %1$s - red '%2$s' no "
 "tiene definido QoS de entrada"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid uuid '%1$s' for new mdev device"
-msgstr "UUID '%1$s' no válido para dispositivo nuevo mdev"
+msgstr "UUID ‘%1$s’ no válido para dispositivo nuevo mdev"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value '%1$s' for '%2$s'"
-msgstr "Valor '%1$s' no válido parea '%2$s'"
+msgstr "Valor ‘%1$s’ no válido para ‘%2$s’"
 
 #, fuzzy, c-format
 msgid "Invalid value '%1$s' for VMX entry '%2$s'"
@@ -11308,9 +11309,10 @@ msgstr "Valor '%1$s' no válido para apunte VMX '%2$s'"
 msgid "Invalid value '%1$s' for element or attribute '%2$s'"
 msgstr "Valor '%1$s' no válido para elemento o atributo '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
-msgstr "Valor de atributo '%1$s' no válido dentro de elemento '%2$s': '%3$s'."
+msgstr ""
+"Valor para atributo '%1$s' no válido interno al elemento ‘%2$s’: ‘%3$s’."
 
 #, fuzzy, c-format
 msgid ""
@@ -11343,13 +11345,13 @@ msgstr ""
 "Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
 "esperaba un valor entero no negativo"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected non-"
 "negative value"
 msgstr ""
-"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. Se "
-"esperaba un valor no negativo"
+"Valor no válido para el atributo '%1$s' en el elemento '%2$s': '%3$s'. "
+"Esperaba un valor no negativo"
 
 #, fuzzy, c-format
 msgid ""
@@ -11385,15 +11387,13 @@ msgstr "Valor para número de CPU a mostrar es no válido"
 msgid "Invalid value for option %1$s"
 msgstr "Valor no admitido para la opción %1$s"
 
-#, fuzzy
 msgid "Invalid value for start CPU"
 msgstr "Valor para iniciar CPU no es válido"
 
-#, fuzzy
 msgid "Invalid value for timeout"
 msgstr "Valor para vencimiento no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of %1$d for I/O weight"
 msgstr "Valor no válido de %1$d para ponderación de E/S"
 
@@ -11413,25 +11413,23 @@ msgstr "Valor no admitido de 'nodeset': %1$s"
 msgid "Invalid vendor element in CPU model %1$s"
 msgstr "El elemento del proveedor no es válido en el modelo de CPU %1$s"
 
-#, fuzzy
 msgid "Invalid virNetLibsshSession *"
 msgstr "Sin validez de virNetLibsshSession *"
 
-#, fuzzy
 msgid "Invalid virNetSSHSession *"
 msgstr "Sin validez de virNetSSHSession *"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid vlan filter command %1$d"
-msgstr "Comando de filtro de VLAN no válido %1$d"
+msgstr "Comando %1$d del filtro VLAN no válido"
 
 #, c-format
 msgid "Invalid vnuma configuration for vnode %1$zu"
 msgstr "Configuración de vnuma no válida para el vnodo %1$zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid volume name %1$s"
-msgstr "Nombre de volumen no válido %1$s"
+msgstr "Nombre %1$s de volumen no válido"
 
 #, c-format
 msgid "Invalid vport operation (%1$d)"
@@ -11520,14 +11518,12 @@ msgstr ""
 "privada"
 
 msgid "Key of the current session differs from the key at last login"
-msgstr ""
-"La llave de la sesión actual es diferente a la llave del último registro"
+msgstr "La llave de la sesión actual es diferente de la llave del último acceso"
 
-#, fuzzy
 msgid "Known, but different label format present, requires build --overwrite"
 msgstr ""
-"Conocido, pero hay un formato de etiqueta diferente, requiere compilación --"
-"overwrite"
+"Conocido, pero hay un formato de etiqueta diferente, requiere compilación "
+"--overwrite"
 
 msgid "LXC Guest Enter Namespace"
 msgstr "Entrar al Espacio de Nombres del huésped LXC"
@@ -11543,7 +11539,7 @@ msgstr ""
 
 #, c-format
 msgid "Lease %1$s in lockspace %2$s does not exist"
-msgstr "Arriendo %1$s en lockspace %2$s no existe"
+msgstr "Arriendo %1$s en espacio de bloqueo %2$s no existe"
 
 #, c-format
 msgid "Lease path '%1$s' exceeds %2$d characters"
@@ -11579,13 +11575,11 @@ msgstr "El evento del ciclo de vida '%1$s' no admite la acción '%2$s'"
 msgid "Link already defined"
 msgstr "Enlace ya definido"
 
-#, fuzzy
 msgid "List all manageable clients connected to <server>."
-msgstr "Enumere todos los clientes administrables conectados a <servidor>."
+msgstr "Enumere todos los clientes gestionables conectados a <servidor>."
 
-#, fuzzy
 msgid "List all manageable servers on a daemon."
-msgstr "Enumera todos los servidores administrables en un demonio."
+msgstr "Enumera todos los servidores gestionables en un demonio."
 
 msgid "List checkpoints for a domain"
 msgstr "Listado de puntos de control para un dominio"
@@ -11704,13 +11698,11 @@ msgstr ""
 msgid "Listing storage pools requires authorization"
 msgstr "Para listar grupos de almacenamiento se requiere autorización"
 
-#, fuzzy
 msgid "Load kvm_hv for better performance"
 msgstr "Carga kvm_hv para mejor rendimiento"
 
-#, fuzzy
 msgid "Load the 'fuse' module to enable /proc/ overrides"
-msgstr "Cargue el módulo 'tun' para activar redes huéspedes QEMU"
+msgstr "Cargue el módulo 'fuse' para activar /proc/ anula"
 
 msgid "Load the 'tun' module to enable networking for QEMU guests"
 msgstr "Cargue el módulo 'tun' para activar redes huéspedes QEMU"
@@ -14764,9 +14756,8 @@ msgstr ""
 msgid "Primary IDE controller must have PCI address 0:0:1.1"
 msgstr "Los controladores IDE primarios deben tener una dirección PCI 0:0:1.1"
 
-#, fuzzy
 msgid "Primary SATA controller must have PCI address 0:0:1f.2"
-msgstr "Los controladores IDE primarios deben tener una dirección PCI 0:0:1.1"
+msgstr "Los controladores SATA primarios deben tener dirección PCI 0:0:1f.2"
 
 msgid "Print lease info for a given network"
 msgstr "Mostrar información de la concesión para una red determinada"
@@ -14912,7 +14903,7 @@ msgid "QEMU guest agent is not configured"
 msgstr "Agente de huésped QEMU no está configurado"
 
 msgid "QEMU guest agent is not connected"
-msgstr "Agente de huésped QEMU no está conectado"
+msgstr "Agente invitado QEMU no está conectado"
 
 #, c-format
 msgid "QEMU monitor reply exceeds buffer size (%1$d bytes)"
@@ -15123,9 +15114,8 @@ msgstr ""
 msgid "Reading CPUID is not supported on this platform"
 msgstr "Lectura de CPUID no está admitida en esta plataforma"
 
-#, fuzzy
 msgid "Reading MSRs is not supported on this platform"
-msgstr "E/S cruda no tiene soporte en esta plataforma"
+msgstr "Lectura de los MSR no está admitida en esta plataforma"
 
 msgid "Reading domain block devices requires authorization"
 msgstr "Lectura de dispositivos de bloque de dominio requiere autorización"
@@ -15217,9 +15207,8 @@ msgstr ""
 "No permite quitar la definición mientras exista una imagen de almacenamiento "
 "administrada"
 
-#, fuzzy
 msgid "Refusing to undefine while snapshots exist"
-msgstr "No permite quitar definición mientras existan las instantáneas %d"
+msgstr "Rechazando para indefinir mientras existan instantáneas"
 
 #, c-format
 msgid "Regular expression '%1$s' must have exactly 1 match group, not %2$d"
@@ -15254,7 +15243,6 @@ msgstr ""
 msgid "Remove managed save of a domain"
 msgstr "Retira guardado gestionado de un dominio"
 
-#, fuzzy
 msgid "Removed"
 msgstr "Retirado"
 
@@ -15270,8 +15258,8 @@ msgstr "No hay soporte para renombrado de dominios durante migración"
 
 msgid "Replace the domain XML associated with a managed save state file"
 msgstr ""
-"Remplazar el XML de dominio asociado con un archivo de estado de "
-"almacenamiento administrado"
+"Sustituye el XML del dominio asociado con un archivo de estado de guardado "
+"gestionado"
 
 msgid "Replace the domain XML associated with a saved state file"
 msgstr ""
@@ -15507,16 +15495,14 @@ msgstr "Ofrece información acerca de los trabajos en ejecución de un dominio."
 msgid "Returns list of domains."
 msgstr "Devuelve una lista de los dominios."
 
-#, fuzzy
 msgid "Returns list of network filter bindings."
-msgstr "Devuelve una lista con los filtros de red."
+msgstr "Devuelve un listado de vínculos del filtro de la red."
 
 msgid "Returns list of network filters."
 msgstr "Devuelve una lista con los filtros de red."
 
-#, fuzzy
 msgid "Returns list of network ports."
-msgstr "Muestra una lista de redes."
+msgstr "Devuelve un listado de puertos de red."
 
 msgid "Returns list of networks."
 msgstr "Devuelve listado de redes."
@@ -16517,7 +16503,6 @@ msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
 "Inicia para calcular la proporción de memoria sucia del dominio logrado.\n"
 
-#, fuzzy
 msgid "Started"
 msgstr "Iniciado"
 
@@ -16902,9 +16887,8 @@ msgstr "Migración TLS no admitida con este binario QEMU"
 msgid "TLS transport is not supported for disk protocol '%1$s'"
 msgstr "Transporte TLS no admitido para protocolo de disco '%1$s'"
 
-#, fuzzy
 msgid "TLS usage specified, but name is missing"
-msgstr "Uso de Ceph especificado, pero falta el nombre"
+msgstr "Uso de TLS especificado, pero el nombre está ausente"
 
 msgid "TLS:"
 msgstr "TLS:"
@@ -16950,7 +16934,7 @@ msgid "Target CPU arch %1$s does not match source %2$s"
 msgstr "La arquitectura %1$s de la CPU elegida no coincide con origen %2$s"
 
 msgid "Target CPU cache does not match source"
-msgstr "El CPU destino no coincide con origen"
+msgstr "Caché de CPU destino no coincide con origen"
 
 #, c-format
 msgid "Target CPU check %1$s does not match source %2$s"
@@ -17306,7 +17290,7 @@ msgstr "El serial %1$s de disco destino no coincide con origen %2$s"
 
 #, c-format
 msgid "Target disk wwn '%1$s' does not match source '%2$s'"
-msgstr "El disco '%1$s' destino wwn no coincide con origen '%2$s'"
+msgstr "El disco destino ‘%1$s’ no coincide con origen ‘%2$s’"
 
 #, c-format
 msgid ""
@@ -17368,7 +17352,7 @@ msgstr "Tipo de SO %1$s con dominio destino no coincide con origen %2$s"
 #, c-format
 msgid "Target domain RNG device count %1$zu does not match source %2$zu"
 msgstr ""
-"Conteo %1$z de dispositivo RNG de dominio destino no coincide con origen "
+"Contador %1$zu de dispositivo RNG del dominio destino no coincide con origen "
 "%2$zu"
 
 #, c-format
@@ -17515,8 +17499,8 @@ msgstr ""
 msgid ""
 "Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr ""
-"Conteo de dispositivo de host de dominio de destino %1$zu no coincide con "
-"origen %2$zu"
+"Conteo de dispositivo de memoria compartida del dominio %1$zu no coincide "
+"con origen %2$zu"
 
 #, c-format
 msgid "Target domain smartcard count %1$zu does not match source %2$zu"
@@ -17538,8 +17522,7 @@ msgstr "El uuid de dominio elegido %1$s no coincide con origen %2$s"
 
 #, c-format
 msgid "Target domain vCPU max %1$zu does not match source %2$zu"
-msgstr ""
-"Conteo de disco de dominio de destino %1$zu no coincide con origen %2$zu"
+msgstr "Dominio destino de vCPU max %1$zu no coincide con origen %2$zu"
 
 #, c-format
 msgid "Target domain video card count %1$zu does not match source %2$zu"
@@ -17553,19 +17536,18 @@ msgstr ""
 "El tipo de dominio virtualizado elegido %1$s no coincide con origen %2$s"
 
 msgid "Target domain vsock device count does not match source"
-msgstr ""
-"Conteo de dispositivo de host de dominio de destino %zu no coincide con "
-"origen %zu"
+msgstr "Conteo de dispositivo vsock de dominio destino no coincide con origen"
 
 #, c-format
 msgid "Target domain vsock device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "El modo %1$s del dispositivo de anfitrión elegido no coincide con origen %2$s"
 
-#, c-format, fuzzy
+#, c-format
 msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
 msgstr ""
-"Dominio destino vigía conteo %1$z de dispositivo no coincide con origen %2$z"
+"Conteo de dispositivo del vigía del dominio destino %1$zu no coincide con el "
+"origen %2$zu"
 
 msgid "Target filesystem access mode does not match source"
 msgstr "El modo de acceso al sistema de archivos elegido no coincide con origen"
@@ -17576,7 +17558,7 @@ msgstr ""
 "El sistema de archivos elegido del huésped %1$s no coincide con origen %2$s"
 
 msgid "Target filesystem model does not match source"
-msgstr "El modo de acceso al sistema de archivos elegido no coincide con origen"
+msgstr "Modelo de sistema de archivos destino no coincide con origen"
 
 #, c-format
 msgid "Target host device mode %1$s does not match source %2$s"
@@ -17609,7 +17591,7 @@ msgstr ""
 
 #, c-format
 msgid "Target input model %1$s does not match source %2$s"
-msgstr "El modelo %1$s de la CPU elegida no coincide con origen %2$s"
+msgstr "Modelo de entrada %1$s destino no coincide con origen %2$s"
 
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
@@ -17685,7 +17667,7 @@ msgstr "Modelo RNG de destino '%1$s' no coincide con origen '%2$s'"
 
 #, c-format
 msgid "Target network card MTU %1$d does not match source %2$d"
-msgstr "EL MTU de la tarjeta de red de destino %1$d no coincide con origen %2$d"
+msgstr "Tarjeta de red MTU destino %1$d no coincide con origen %2$d"
 
 #, c-format
 msgid "Target network card mac %1$s does not match source %2$s"
@@ -17700,7 +17682,7 @@ msgstr "No se encontró destino"
 
 #, c-format
 msgid "Target panic model '%1$s' does not match source '%2$s'"
-msgstr "Modelo RNG de destino '%1$s' no coincide con origen '%2$s'"
+msgstr "Modelo de pánico destino ‘%1$s’ no coincide con origen ‘%2$s’"
 
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
@@ -17718,7 +17700,8 @@ msgstr "El tamaño pstore '%1$llu' destino no coincide con el origen '%2$llu'"
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
 msgstr ""
-"El BUS de dispositivo de entrada elegido %1$s no coincide con origen %2$s"
+"Bus de dispositivo redireccionado del destino %1$s no coincide con origen "
+"%2$s"
 
 #, c-format
 msgid ""
@@ -17737,7 +17720,7 @@ msgstr "El puerto serial elegido %1$d no coincide con la origen %2$d"
 
 #, c-format
 msgid "Target serial type %1$s does not match source %2$s"
-msgstr "El tipo %1$s de canal elegido no coincide con origen %2$s"
+msgstr "El tipo %1$s de serie destino no coincide con origen %2$s"
 
 msgid "Target shared memory MSI configuration doesn't match source"
 msgstr "La aceleración de la tarjeta de video elegida no coincide con origen"
@@ -17842,12 +17825,13 @@ msgstr ""
 
 #, c-format
 msgid "Target video card ram %1$u does not match source %2$u"
-msgstr "El vram de la tarjeta %1$u no coincide con el origen %2$u"
+msgstr "Ram %1$u de tarjeta de vídeo destino no coincide con origen %2$u"
 
 #, c-format
 msgid "Target video card vgamem %1$u does not match source %2$u"
 msgstr ""
-"El valor vgamem de la tarjeta elegida %1$u no coincide con el origen %2$u"
+"El valor vgamem %1$u de la tarjeta de vídeo destino no coincide con el "
+"origen %2$u"
 
 #, c-format
 msgid "Target video card vram %1$u does not match source %2$u"
@@ -17856,7 +17840,7 @@ msgstr "El valor vram de la tarjeta elegida %1$u no coincide con el origen %2$u"
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr ""
-"El valor vram64 de la tarjeta elegida %1$u no coincide con el origen %2$u"
+"El valor vram64 %1$u de la tarjeta elegida no coincide con el origen %2$u"
 
 #, c-format
 msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
@@ -18182,7 +18166,7 @@ msgstr "El dispositivo de disco '%1$s' no existe"
 
 #, c-format
 msgid "The disk device '%1$s' is not removable"
-msgstr "El dispositivo de disco '%1$s' no es expulsable"
+msgstr "El dispositivo de disco ‘%1$s’ no es expulsable"
 
 msgid "The domain is not running"
 msgstr "El dominio no está ejecutándose"
@@ -18393,79 +18377,77 @@ msgid "This QEMU binary doesn't support zPCI"
 msgstr "Este binario de QEMU no admite zPCI"
 
 msgid "This QEMU doesn't support '-device usb-bot'"
-msgstr "Este QEMU no soporta '-device usb-bot'"
+msgstr "Este QEMU no admite ‘-device usb-bot’"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
-msgstr "Este QEMU no soporta '-device usb-storage'"
+msgstr "Este QEMU no admite ‘-device usb-storage’"
 
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
-msgstr "Este QEMU no soporta OpenGL rendernode con tipo gráfico egl-headless"
+msgstr "Este QEMU no admite rendernode OpenGL con tipo de gráficos egl-headless"
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
-msgstr "Este QEMU no soporta emulación SCSI con dispositivo 'virtio-blk'"
+msgstr "Este QEMU no admite emulación SCSI con dispositivo ‘virtio-blk’"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
-msgstr "Este QEMU no soporta scsi-block para paso de lun"
+msgstr "Este QEMU no admite scsi-block para paso a través de lun"
 
 msgid "This QEMU doesn't support spice OpenGL"
-msgstr "Este QEMU no soporta spice OpenGL"
+msgstr "Este QEMU no admite OpenGL spice"
 
-#, fuzzy
 msgid "This QEMU doesn't support spice OpenGL rendernode"
-msgstr "Este QEMU no soporta destino mayor que 7"
+msgstr "Este QEMU no admite destino nodo de nodo devuelto de OpenGL Spice"
 
 msgid "This QEMU doesn't support target greater than 7"
-msgstr "Este QEMU no soporta destino mayor que 7"
+msgstr "Este QEMU no admite destino mayor que 7"
 
 msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
-msgstr "Este QEMU no soporta el controlador AM53C974 (ESP)"
+msgstr "Este QEMU no admite el controlador AM53C974 (ESP)"
 
 msgid "This QEMU doesn't support the DC390 (ESP) controller"
-msgstr "Este QEMU no soporta el controlador DC390 (ESP)"
+msgstr "Este QEMU no admite el controlador DC390 (ESP)"
 
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
-msgstr "Este QEMU no soporta el controlador LSI 53C895A SCSI"
+msgstr "Este QEMU no admite el controlador LSI 53C895A SCSI"
 
 msgid "This QEMU doesn't support the LSI SAS1068 (MPT Fusion) controller"
-msgstr "Este QEMU no soporta el controlador LSI SAS1068 (MPT Fusion)"
+msgstr "Este QEMU no admite el controlador LSI SAS1068 (MPT Fusion)"
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
-msgstr "Este QEMU no soporta el controlador LSI SAS1078 (MegaRAID)"
+msgstr "Este QEMU no admite el controlador LSI SAS1078 (MegaRAID)"
 
 msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
-msgstr "Este QEMU no soporta el controlador NCR53C90 (ESP)"
+msgstr "Este QEMU no admite el controlador NCR53C90 (ESP)"
 
 msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
-msgstr "Este QEMU no soporta el controlador pvscsi (SCSI paravirtual VMware)"
+msgstr "Este QEMU no admite el controlador pvscsi (SCSI paravirtual VMware)"
 
-#, fuzzy
 msgid "This QEMU doesn't support vhost-scsi devices"
-msgstr "Este QEMU no soporta controlador virtio scsi"
+msgstr "Este QEMU no admite dispositivos vhost-scsi"
 
 msgid "This QEMU doesn't support virtio scsi controller"
-msgstr "Este QEMU no soporta controlador virtio scsi"
+msgstr "Este QEMU no admite controlador virtio scsi"
 
 msgid "This QEMU only supports both bus and unit equal to 0"
-msgstr "Este QEMU solo soporta bus y unit a la vez iguales a 0"
+msgstr "Este QEMU solo admite ambos bus y unit iguales a 0"
 
 msgid ""
 "This command is intended to be used by libvirtd and not used directly.\n"
 msgstr ""
-"Este comando se destina para ser utilizado por libvirtd y no se utiliza "
+"Este comando se destina para ser utilizado por libvirtd y no utilizándose "
 "directamente.\n"
 
 msgid "This function is not supported on WIN32 platform"
-msgstr "Esta función no tiene soporte en plataforma WIN32"
+msgstr "Esta función no es admitida en plataforma WIN32"
 
 #, c-format
 msgid ""
 "This host is managed by a vCenter with IP address %1$s, but a mismatching "
 "vCenter '%2$s' (%3$s) has been specified"
 msgstr ""
-"Este host es gestionado por un vCenter con dirección IP %1$s, pero un "
-"vCenter '%2$s' no coincidente (%3$s) ha sido especificado"
+"Este host es gestionado por un vCenter con dirección IP %1$s, pero ha sido "
+"especificado un vCenter '%2$s' (%3$s) no coincidente"
 
 msgid "This host is not managed by a vCenter"
 msgstr "Este equipo no está siendo gestionado por un vCenter"
@@ -18480,10 +18462,10 @@ msgid "Thread(s) per core:"
 msgstr "Hilo(s) por núcleo:"
 
 msgid "Throttle group deleted successfully\n"
-msgstr ""
+msgstr "Grupo del acelerador borrado correctamente\n"
 
 msgid "Throttle group set successfully\n"
-msgstr ""
+msgstr "Grupo acelerador establecido correctamente\n"
 
 #, fuzzy, c-format
 msgid "Time '%1$lld' is too big for guest agent"
@@ -18563,9 +18545,9 @@ msgstr "Demasiados bytes para leer desde la secuencia"
 msgid "Too many bytes to write to stream"
 msgstr "Demasiados bytes para escribir a la secuencia"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many clients '%1$d' for limit '%2$d'"
-msgstr "Muchos dominios, '%1$d' para límite '%2$d'"
+msgstr "Muchos clientes ‘%1$d’ para límite ‘%2$d’"
 
 #, c-format
 msgid "Too many disks in fsinfo: %1$zd for limit %2$d"
@@ -18629,7 +18611,7 @@ msgstr "Muchos puntos de montaje en fsinfo: %1$d para límite %2$d"
 
 #, c-format
 msgid "Too many network_ports '%1$d' for limit '%2$d'"
-msgstr "Muchos puertos de red '%1$d' para límite '%2$d'"
+msgstr "Demasiados puertos de red '%1$d' para límite '%2$d'"
 
 #, c-format
 msgid "Too many networks '%1$d' for limit '%2$d'"
@@ -18667,16 +18649,15 @@ msgstr "Demasiadas capturas que dicen ser actuales para dominio %1$s"
 msgid "Too many storage_pools '%1$d' for limit '%2$d'"
 msgstr "Muchas interfaces, '%1$d' para límite '%2$d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many storage_vols '%1$d' for limit '%2$d'"
-msgstr "Muchas interfaces, '%1$d' para límite '%2$d'"
+msgstr "Muchos de ‘%1$d’ volúmenes de almacenaje para límite ‘%2$d’"
 
 msgid "Total"
 msgstr "Total"
 
-#, fuzzy
 msgid "Total downtime:"
-msgstr "Tiempo de inactividad esperado:"
+msgstr "Tiempo de inactividad total:"
 
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
@@ -18702,13 +18683,13 @@ msgid "Tried to write socket in error state"
 msgstr "Intentó escribir conexión en estado de error"
 
 msgid "Trim domain filesystems"
-msgstr ""
+msgstr "Recortar sistemas de archivos de dominio"
 
 msgid "Trimming domain filesystems requires authorization"
-msgstr ""
+msgstr "Recorte de sistema de archivo del dominio requiere autorización"
 
 msgid "Try again?"
-msgstr ""
+msgstr "¿Intentar de nuevo?"
 
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "Intentando liberar objeto MultiCURL que aún está en uso"
@@ -18728,11 +18709,15 @@ msgid ""
 "Tune server's client-related configuration limits. See OPTIONS for currently "
 "supported attributes."
 msgstr ""
+"Ajusta los límites de configuración relativos al cliente del servidor. "
+"Consulte OPTIONS para atributos admitidos actualmente."
 
 msgid ""
 "Tune threadpool attributes on a server. See OPTIONS for currently supported "
 "attributes."
 msgstr ""
+"Ajusta atributos de grupo de subprocesos en un servidor. Consulte OPTIONS "
+"para atributos admitidos actualmente."
 
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
@@ -18743,29 +18728,29 @@ msgid "Tunnelling sockets not supported on this platform"
 msgstr "Sockets para túnel no tienen soporte en esta plataforma"
 
 msgid "Turn auto convergence on to tune it"
-msgstr ""
+msgstr "Auto encendido de convergencia para ajustarlo"
 
 msgid "Turn multithread compression on to tune it"
-msgstr ""
+msgstr "Encender compresión multi-hilo para ajustarlo"
 
 msgid "Turn parallel migration on to tune it"
-msgstr ""
+msgstr "Enciende migración paralela para ajustarlo"
 
 msgid "Turn xbzrle compression on to tune it"
-msgstr ""
+msgstr "Enciende compresión xbzrle para ajustarlo"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "Enciende compresión zlib para ajustarlo"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "Enciende compresión zstd para ajustarlo"
 
 msgid "Type"
 msgstr "Tipo"
 
 #, c-format
 msgid "Type mismatch for '%1$s' migration parameter"
-msgstr ""
+msgstr "Tipo desajustado para parámetro ‘%1$s’ de migración"
 
 msgid "Type:"
 msgstr "Tipo:"
@@ -18784,10 +18769,10 @@ msgid "Type='%1$s' unsupported for <interface type='vhostuser'>"
 msgstr "elemento <virtualport> no tiene soporte para <interface type='%1$s'>"
 
 msgid "UEFI requires ACPI on this architecture"
-msgstr "ACPI requiere UEFI en esta arquitectura"
+msgstr "UEFI requiere ACPI en esta arquitectura"
 
 msgid "UNIX disks URI does not include path"
-msgstr ""
+msgstr "URI de discos UNIX no incluye ruta"
 
 msgid "UNIX socket address is required"
 msgstr "Se requiere la dirección de socket de UNIX"
@@ -18800,7 +18785,7 @@ msgid "UNIX sockets are not supported on this platform"
 msgstr "Sockets de UNIX no tienen soporte en esta plataforma"
 
 msgid "UNIX sockets not supported on this platform"
-msgstr "Sockets de UNIX no tienen soporte en esta plataforma"
+msgstr "Sockets de UNIX no mantenidos en esta plataforma"
 
 #, c-format
 msgid "URI '%1$s' does not include a driver name"
@@ -18810,36 +18795,40 @@ msgid "URI is missing the server part"
 msgstr "A URI le falta la parte del servidor"
 
 msgid "URI must be qemu:///embed"
-msgstr ""
+msgstr "URI debe ser qemu:///embed"
 
 msgid "URI must be secret:///embed"
-msgstr ""
+msgstr "URI debe ser secret:///embed"
 
 msgid "URI of the namespace"
-msgstr ""
+msgstr "URI del espacio de nombre"
 
 #, c-format
 msgid "URI scheme '%1$s' for embedded driver is not valid"
-msgstr ""
+msgstr "URI de esquema ‘%1$s’ para controlador empotrado no es válido"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
-msgstr ""
+msgstr "URI a utilizar para migración de discos (superpone --disk-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %1$s"
-msgstr ""
+msgstr "URI con esquema tcp no proporcionó una parte de servidor: %1$s"
 
 #, c-format
 msgid "USB bus %1$u requested but no controller with that index is present"
 msgstr ""
+"Bus %1$u de USB requerido pero ningún controlador con ese índice está "
+"presente"
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr ""
+"Modelo de controlador USB ‘%1$s’ no admitido dentro de este QEMU binario"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
 msgstr ""
+"Tipo ‘qusb1’ o ‘qusb2’ de modelo controlador USB no está admitido en %1$s"
 
 #, c-format
 msgid "USB device %1$s is already in use"
@@ -18855,9 +18844,11 @@ msgid ""
 "USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
 "'usb-bot'."
 msgstr ""
+"Modelo de disco USB no seleccionado. Este QENU no admite 'usb-storage' o "
+"'usb-bot'."
 
 msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
-msgstr ""
+msgstr "Disco USB admite solo los modelos siguientes: 'usb-storage', 'usb-bot'"
 
 msgid "USB host device is missing bus/device information"
 msgstr "El dispositivo de equipo USB no posee información bus/dispositivo"
@@ -18871,6 +18862,8 @@ msgid ""
 "USB is disabled for this domain, but USB devices are present in the domain "
 "XML"
 msgstr ""
+"USB está deshabilitado para este dominio, pero dispositivos USB están "
+"presentes dentro del XML del dominio"
 
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr "Esta versión de QEMU no admite filtros de redirección USB"
@@ -18883,7 +18876,7 @@ msgid "USB source %1$s was not a character device"
 msgstr "Origen de USB %1$s no era un dispositivo de carácter"
 
 msgid "UTS namespace support is required"
-msgstr ""
+msgstr "Espacio de nombre UTS se admite si es requerido"
 
 msgid "UUID"
 msgstr "UUID"
@@ -18892,10 +18885,10 @@ msgid "UUID in config file malformed"
 msgstr "El UUID en el archivo de configuración es erróneo"
 
 msgid "UUID is not supported for NVDIMM device"
-msgstr ""
+msgstr "UUID no es admitido para dispositivo NVDIMM"
 
 msgid "UUID mismatch between <hwuuid> and <sysinfo>"
-msgstr ""
+msgstr "UUID no coincide entre <hwuuid> y <sysinfo>"
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "UUID no coincidentes entre <uuid> y <sysinfo>"
@@ -19410,7 +19403,7 @@ msgstr "No es capaz de determinar el modelo para controlador SCSI idx=%1$d"
 
 #, c-format
 msgid "Unable to determine model for USB controller idx=%1$d"
-msgstr ""
+msgstr "No es capaz de determinar modelo para controlador USB idx=%1$d"
 
 msgid "Unable to determine mount table on this platform"
 msgstr "No es capaz de determinar la tabla de montaje en esta plataforma"
@@ -19676,7 +19669,7 @@ msgstr "No es capaz de obtener puente %1$s %2$s"
 
 #, c-format
 msgid "Unable to get bridge %1$s port %2$s %3$s"
-msgstr "No es capaz de obtener puente %1$s puerto %2$s %3$s"
+msgstr "No es capaz de obtener puente %1$s con puerto %2$s %3$s"
 
 msgid "Unable to get bridge port isolated on this platform"
 msgstr "No es capaz de aislar puerto del puente sobre esta plataforma"
@@ -19716,7 +19709,7 @@ msgid "Unable to get daemon logging outputs information"
 msgstr "No es capaz de obtener información de salida de bitácora del demonio"
 
 msgid "Unable to get default interface name"
-msgstr ""
+msgstr "No es capaz de obtener nombre de interfaz predeterminado"
 
 msgid "Unable to get device master from netlink on this platform"
 msgstr ""
@@ -19780,7 +19773,7 @@ msgstr "No es capaz de obtener índice de interfaz para %1$s"
 
 #, c-format
 msgid "Unable to get interface index for '%1$s'"
-msgstr "No es capaz de obtener índice de interfaz para '%1$s'"
+msgstr "No es capaz de obtener índice de interfaz para ‘%1$s’"
 
 msgid "Unable to get interface index on this platform"
 msgstr "No es capaz de obtener índice de interfaz sobre esta plataforma"
@@ -19903,7 +19896,7 @@ msgstr "No es capaz de obtener funciones virtuales en esta plataforma"
 
 #, c-format
 msgid "Unable to import certificate list %1$s"
-msgstr ""
+msgstr "No es capaz de importar listado %1$s de certificado"
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -20316,7 +20309,7 @@ msgid "Unable to query process ID start time"
 msgstr "No es capaz de consultar hora de inicio de ID de proceso"
 
 msgid "Unable to query process stats"
-msgstr ""
+msgstr "No es capaz de solicitar estadísticas de proceso"
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -20367,7 +20360,7 @@ msgstr "No es capaz de leer desde archivo %1$s"
 
 #, c-format
 msgid "Unable to read from file '%1$s'"
-msgstr "No es capaz de leer desde archivo '%1$s'"
+msgstr "No es capaz de leer desde archivo ‘%1$s’"
 
 msgid "Unable to read from log file"
 msgstr "No es capaz de leer desde archivo bitácora"
@@ -20406,645 +20399,646 @@ msgid "Unable to read virtiofsd pidfile '%1$s'"
 msgstr "No es capaz de leer virtiodsd pidfile '%1$s'"
 
 msgid "Unable to register Machine"
-msgstr ""
+msgstr "No es capaz de registrar Máquina"
 
 msgid "Unable to register async IO callback"
-msgstr "No se puede registrar callback de ES async"
+msgstr "No es capaz de registrar invocación devuelta de E/S asíncrona"
 
 msgid "Unable to register disconnect callback"
-msgstr "No se puede registrar callback disconnect"
+msgstr "No es capaz de registrar invocación devuelta desconectada"
 
-#, fuzzy
 msgid "Unable to register process kevent"
-msgstr "no es posible registrar eventos de monitor"
+msgstr "No es capaz de registrar k-eventos del proceso"
 
 #, c-format
 msgid "Unable to remove %1$s"
-msgstr "No se pudo eliminar %1$s"
+msgstr "No es capaz de retirar %1$s"
 
 #, c-format
 msgid "Unable to remove %1$s (%2$d)"
-msgstr "No es posible eliminar %1$s (%2$d)"
+msgstr "No es capaz de retirar %1$s (%2$d)"
 
 msgid "Unable to remove Fake Disks"
-msgstr "No se pueden eliminar discos falsos (Fake Disks)"
+msgstr "No es capaz de retirar Discos Imitados (Fake Disks)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove XATTR %1$s on %2$s"
-msgstr "No se puede retirar puente %1$s puerto %2$s"
+msgstr "No es capaz de retirar %1$s XATTR en %2$s"
 
 #, c-format
 msgid "Unable to remove bridge %1$s"
-msgstr "No se puede retirar el puente %1$s"
+msgstr "No es capaz de retirar el puente %1$s"
 
 #, c-format
 msgid "Unable to remove bridge %1$s port %2$s"
-msgstr "No se puede retirar puente %1$s puerto %2$s"
+msgstr "No es capaz de retirar el puente %1$s, puerto %2$s"
 
 #, c-format
 msgid "Unable to remove device %1$s"
-msgstr "No se puede retirar dispositivo %1$s"
+msgstr "No es capaz de retirar dispositivo %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove disk from media registry. uuid = %1$s"
-msgstr "No se puede retirar dispositivo %1$s"
+msgstr "No es capaz de retirar disco desde el medio registro.uuid = %1$s"
 
 msgid "Unable to remove epoll fd"
-msgstr "No es posible retirar FD epoll"
+msgstr "No es capaz de retirar fd epoll"
 
 #, c-format
 msgid "Unable to remove hard disk %1$s from media registry"
-msgstr "No se pudo eliminar el disco duro %1$s del registro de medios"
+msgstr "No es capaz de extraer disco duro %1$s desde el registro del medio"
 
 #, c-format
 msgid "Unable to remove metadata of %1$d snapshots"
-msgstr "No es posible quitar metadatos de instantáneas %1$d"
+msgstr "No es capaz de retirar metadatos de instantáneas %1$d"
 
 #, c-format
 msgid "Unable to remove snapshot %1$s"
-msgstr "No se pudo eliminar la instantánea %1$s"
+msgstr "No es capaz de retirar instantánea %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove stale socket path: %1$s"
-msgstr "No se puede retirar dispositivo TAP %1$s"
+msgstr "No es capaz de retirar ruta de zócalo obsoleto: %1$s"
 
 #, c-format
 msgid "Unable to remove status '%1$s' for nwfilter binding %2$s'"
-msgstr "No se pudo eliminar el estado '%1$s' para el enlace nwfilter %2$s'"
+msgstr ""
+"No es capaz de quitar el estado '%1$s' para vínculo de filtro nuevo %2$s'"
 
 #, c-format
 msgid "Unable to remove symlink %1$s"
-msgstr "No se pudo quitar el enlace simbólico %1$s"
+msgstr "No es capaz de retirar enlace simbólico %1$s"
 
 #, c-format
 msgid "Unable to remove tap device %1$s"
-msgstr "No se puede retirar dispositivo TAP %1$s"
+msgstr "No es capaz de retirar tapa del dispositivo %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to rename %1$s to %2$s"
-msgstr "No se puede renombrar '%1$s' a '%2$s'"
+msgstr "No es capaz de renombrar %1$s a %2$s"
 
 #, c-format
 msgid "Unable to rename '%1$s' to '%2$s'"
-msgstr "No se puede renombrar '%1$s' a '%2$s'"
+msgstr "No es capaz de renombrar '%1$s' a '%2$s'"
 
 #, c-format
 msgid "Unable to request personality for %1$s on %2$s"
-msgstr "No se pudo solicitar personalidad para %1$s en %2$s"
+msgstr "No es capaz de solicitar personalidad para %1$s en %2$s"
 
 #, c-format
 msgid "Unable to reset PCI device %1$s: %2$s"
-msgstr "No es posible reiniciar el dispositivo PCI %1$s: %2$s"
+msgstr "No es capaz de restablecer dispositivo PCI %1$s: %2$s"
 
 #, c-format
 msgid "Unable to reset ingress on port %1$s: %2$s"
-msgstr ""
+msgstr "No es capaz de restablecer ingreso en el puerto %1$s: %2$s"
 
 #, c-format
 msgid "Unable to resolve address '%1$s' service '%2$s': %3$s"
-msgstr "No se pudo resolver la dirección '%1$s' servicio '%2$s': %3$s"
+msgstr "No es capaz de resolver dirección ‘%1$s’ servicio ‘%2$s’: %3$s"
 
 #, c-format
 msgid "Unable to resolve device %1$s driver symlink %2$s"
-msgstr "No se puede resolver dispositivo %1$s para symlink de controlador %2$s"
+msgstr ""
+"No es capaz de resolver dispositivo %1$s para enlace simbólico de "
+"controlador %2$s"
 
 #, c-format
 msgid "Unable to resolve device %1$s iommu_group symlink %2$s"
-msgstr "No se puede resolver dispositivo %1$s iommu_group symlink %2$s"
+msgstr ""
+"No es capaz de resolver dispositivo %1$s iommu_group enlace simbólico %2$s"
 
 #, c-format
 msgid "Unable to resolve device subsystem symlink %1$s"
 msgstr ""
-"No se pudo resolver el enlace simbólico %1$s del subsistema de dispositivo"
+"No es capaz de resolver el enlace simbólico %1$s del subsistema de "
+"dispositivo"
 
 #, c-format
 msgid "Unable to resolve link: %1$s"
-msgstr "No se pudo resolver el enlace: %1$s"
+msgstr "No es capaz de resolver enlace: %1$s"
 
 msgid "Unable to restart self"
-msgstr "No se puede reiniciar self"
+msgstr "No es capaz de reiniciarse"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to restore file labels under %1$s"
-msgstr "No se pudo guardar arriendo %1$s"
+msgstr "No es capaz de restaurar etiquetas de archivo bajo %1$s"
 
 msgid "Unable to retrieve client limits from server's configuration"
 msgstr ""
+"No es capaz de obtener límites de cliente desde configuración del servidor"
 
 msgid "Unable to retrieve threadpool parameters"
-msgstr "No se pudieron recuperar los parámetros de threadpool"
+msgstr "No es capaz de recuperar parámetros de threadpool"
 
 #, c-format
 msgid "Unable to run among %1$llu"
-msgstr ""
+msgstr "No es capaz de ejecutar entre %1$llu"
 
 #, c-format
 msgid "Unable to run command to get OVS master for interface %1$s: %2$s"
 msgstr ""
+"No es capaz de ejecutar comando para obtener OVS maestro para interfaz %1$s: "
+"%2$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr ""
-"No se puede ejecutar el comando para obtener datos del puerto OVS para "
+"No es capaz de ejecutar el comando para obtener datos del puerto OVS para "
 "interfaz %1$s"
 
 #, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
 msgstr ""
-"No se puede ejecutar el comando para obtener datos del puerto OVS para "
-"interfaz %1$s"
+"No es capaz de ejecutar comando para obtener datos del puerto OVS para "
+"interfaz %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr ""
-"No se puede ejecutar comando para establecer datos del puerto OVS para "
+"No es capaz de ejecutar comando para establecer datos del puerto OVS para "
 "interfaz %1$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
 msgstr ""
+"No es capaz de ejecutar comando para establecer datos del puerto OVS para "
+"interfaz %1$s: %2$s"
 
 msgid "Unable to run one time GDBus initializer"
-msgstr ""
+msgstr "No es capaz de ejecutar una vez el inicializador GDBus"
 
 #, c-format
 msgid "Unable to save '%1$s'"
-msgstr "No es posible guardar '%1$s'"
+msgstr "No es capaz de guardar '%1$s'"
 
 #, c-format
 msgid "Unable to save lease %1$s"
-msgstr "No se pudo guardar arriendo %1$s"
+msgstr "No es capaz de guardar alquiler %1$s"
 
 #, c-format
 msgid "Unable to save lockspace %1$s"
-msgstr "No se puede guardar lockspace %1$s"
+msgstr "No es capaz de guardar bloqueo de espacio %1$s"
 
-#, fuzzy
 msgid "Unable to save net device config on this platform"
-msgstr "No se puede comprobar configuración de interfaz en esta plataforma"
+msgstr ""
+"No es capaz de guardar la configuración del dispositivo en esta plataforma"
 
-#, fuzzy
 msgid "Unable to save new snapshot xml file"
-msgstr "No se puede guardar archivo de estado %s"
+msgstr "No es capaz de guardar archivo xml de instantánea"
 
 msgid "Unable to save socket state when SASL session is active"
 msgstr ""
-"No se puede guardar estado de conexión cuando la sesión SASL esté activa"
+"No es capaz de guardar estado del zócalo cuando la sesión SASL esté activa"
 
 msgid "Unable to save socket state when TLS session is active"
 msgstr ""
-"No se puede guardar estado de conexión cuando la sesión TSL esté activa"
+"No es capaz de guardar el estado de zócalo cuando la sesión TLS está activa"
 
 #, c-format
 msgid "Unable to save state file %1$s"
-msgstr "No se puede guardar archivo de estado %1$s"
+msgstr "No es capaz de guardar el archivo de estado %1$s"
 
-#, fuzzy
 msgid "Unable to save the xml"
-msgstr "No se puede guardar archivo de estado %s"
+msgstr "No es capaz de guardar el xml"
 
 #, c-format
 msgid "Unable to seek %1$s to %2$llu"
-msgstr "No se pudo buscar %1$s para %2$llu"
+msgstr "No es capaz de intentar buscar %1$s en %2$llu"
 
 #, c-format
 msgid "Unable to seek log file %1$s to %2$llu"
-msgstr "No se puede buscar archivo de registro paralog %1$s para %2$llu"
+msgstr "No es capaz de buscar bitácora %1$s para %2$llu"
 
-#, fuzzy
 msgid "Unable to seek to EOF"
-msgstr "No se pudo buscar %s para %llu"
+msgstr "No es capaz de intentar buscar hasta el FDA"
 
-#, fuzzy
 msgid "Unable to seek to data"
-msgstr "No se pudo buscar %s para %llu"
+msgstr "No es capaz de buscar datos"
 
-#, fuzzy
 msgid "Unable to seek to end of domain logfile"
-msgstr "error al buscar en el final de %s"
+msgstr "No es capaz de intentar buscar al final del dominio de la bitácora"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to seek to inode %1$llu offset %2$llu"
-msgstr "No se pudo buscar hasta el inodo %1$llu con desplazamiento %2$llu"
+msgstr "No es capaz de buscar un nodo-i %1$llu, con desplazamiento %2$llu"
 
 #, c-format
 msgid "Unable to send %1$d signal to process %2$d"
-msgstr "No se puede enviar señal %1$d al proceso %2$d"
+msgstr "No es capaz de enviar señal %1$d al proceso %2$d"
 
 #, c-format
 msgid "Unable to send SIGTERM to init pid %1$llu"
-msgstr "No se puede enviar SIGTERM a init pid %1$llu"
+msgstr "No es capaz de enviar SIGTERM para pid %1$llu de init"
 
 msgid "Unable to send a VF SETLINK request on this platform"
-msgstr ""
+msgstr "No es capaz de enviar una solicitud SETLINK VF en esta plataforma"
 
 msgid "Unable to send container continue message"
-msgstr "No es posible enviar mensaje continuo del contenedor"
+msgstr "No es capaz de enviar mensaje continuo del contenedor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to send keyboard scan codes to domain %1$s"
-msgstr "Error al obtener las estadísticas de memoria para el dominio %1$s"
+msgstr ""
+"No es capaz de enviar códigos de análisis de teclado para el dominio %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to send keyboard scancodes for domain %1$s"
-msgstr "Error al obtener las estadísticas de memoria para el dominio %1$s"
+msgstr ""
+"No es capaz de enviar códigos de análisis del teclado para el dominio %1$s"
 
 msgid "Unable to serialize the machine description"
-msgstr "No se pudo serializar la descripción de la máquina"
+msgstr "No es capaz de serializar la descripción de la máquina"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set ACLs on %1$s"
-msgstr "No se puede definir demora STP en %1$s"
+msgstr "No es capaz de establecer los ACL en %1$s"
 
 #, c-format
 msgid "Unable to set FD %1$d blocking"
-msgstr "No se puede establecer bloqueo de FD %1$d"
+msgstr "No es capaz de establecer bloqueo de FD %1$d"
 
 msgid "Unable to set IPV6_V6ONLY flag"
-msgstr "No se puede establecer el indicador IPV6_V6ONLY"
+msgstr "No es capaz de establecer indicador IPV6_V6ONLY"
 
 msgid "Unable to set SCHED_CORE"
-msgstr ""
+msgstr "No es capaz de establecer SCHED_CORE"
 
 #, c-format
 msgid "Unable to set SELinux context MCS '%1$s'"
-msgstr "No se puede establecer contexto de SELinux MCS '%1$s'"
+msgstr "No es capaz de establecer contexto SELinux con MCS ‘%1$s’"
 
 #, c-format
 msgid "Unable to set SELinux context role '%1$s'"
-msgstr "No se puede establecer rol de contexto SELinux '%1$s'"
+msgstr "No es capaz de establecer rol de contexto SELinux '%1$s'"
 
 #, c-format
 msgid "Unable to set SELinux context user '%1$s'"
-msgstr "No se puede establecer usuario de contexto SELinux '%1$s'"
+msgstr "No es capaz de establecer contexto SELinux de usuario '%1$s'"
 
 #, c-format
 msgid "Unable to set SELinux label on %1$s"
-msgstr "No se pudo establecer la etiqueta Selinux en '%1$s'"
+msgstr "No es capaz de establecer etiqueta SELinux en %1$s"
 
 #, c-format
 msgid "Unable to set STP delay on %1$s"
-msgstr "No se puede definir demora STP en %1$s"
+msgstr "No es capaz de establecer demora STP en %1$s"
 
 #, c-format
 msgid "Unable to set STP delay on %1$s on this platform"
-msgstr "No se puede establecer demora STP en %1$s en esta plataforma"
+msgstr "No es capaz de establecer demora STP en %1$s en esta plataforma"
 
 #, c-format
 msgid "Unable to set STP on %1$s on this platform"
-msgstr "No se puede establecer STP en %1$s en esta plataforma"
+msgstr "No es capaz de establecer STP en %1$s en esta plataforma"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set XATTR %1$s on %2$s"
-msgstr "No se pudo configurar XATTR %1$s como %2$s"
+msgstr "No es capaz de configurar %1$s XATTR como %2$s"
 
 msgid "Unable to set a VF MAC on this platform"
-msgstr ""
+msgstr "No es capaz de establecer un MAC VF en esta plataforma"
 
 msgid "Unable to set a VF VLAN on this platform"
-msgstr ""
+msgstr "No es capaz de establecer un VLAN VF en esta plataforma"
 
 msgid "Unable to set a VF config on this platform"
-msgstr ""
+msgstr "No es capaz de establecer una config de VF en esta plataforma"
 
-#, fuzzy
 msgid "Unable to set agent close-on-exec flag"
-msgstr "No se puede establecer indicador close-on-exec"
+msgstr "No es capaz de establecer indicador close-on-exec del agente"
 
 #, c-format
 msgid "Unable to set autostart on '%1$s': %2$s"
-msgstr ""
+msgstr "No es capaz de establecer auto-inicio en ‘%1$s’: %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set backing file %1$s"
-msgstr "No se puede guardar archivo de estado %1$s"
+msgstr "No es capaz de establecer archivo de respaldo %1$s"
 
-#, fuzzy
 msgid "Unable to set bandwidth for interface because device name is unknown"
-msgstr "No se puede establecer red para ancho de banda en interfaces directas"
+msgstr ""
+"No es capaz de establecer ancho de banda para interfaz porque no se conoce "
+"el nombre del dispositivo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set bridge %1$s %2$s via ioctl"
-msgstr "No se puede obtener puente %1$s %2$s"
+msgstr "No es capaz de establecer puente %1$s %2$s por medio de vía ioctl"
 
 #, c-format
 msgid "Unable to set bridge %1$s port %2$s %3$s to %4$s"
-msgstr "No se pudo establecer el puente %1$s puerto %2$s %3$s a %4$s"
+msgstr "No es capaz de establecer el puente %1$s, puerto %2$s %3$s a %4$s"
 
 msgid "Unable to set bridge port isolated on this platform"
-msgstr ""
-"No es posible establecer el aislamiento de puerto de puente en esta "
-"plataforma"
+msgstr "No es capaz de establecer puerto aislado del puente en esta plataforma"
 
-#, fuzzy
 msgid "Unable to set bridge port learning on this platform"
-msgstr "No se pueden obtener funciones virtuales en esta plataforma"
+msgstr ""
+"No es capaz de establecer puerto de escucha del puente en esta plataforma"
 
-#, fuzzy
 msgid "Unable to set bridge port unicast_flood on this platform"
-msgstr "No se pueden obtener funciones virtuales en esta plataforma"
+msgstr ""
+"No es capaz de establecer unicast_flood del puerto del puente en esta "
+"platadorma"
 
-#, fuzzy
 msgid "Unable to set bridge vlan_filtering on this platform"
-msgstr "No se puede obtener índice en esta plataforma"
+msgstr "No es capaz de establecer puente vlan_filtering en esta plataforma"
 
 msgid "Unable to set cloexec flag"
-msgstr "No se pudo establecer indicador cloexec"
+msgstr "No es capaz de establecer indicador ‘cloexec’"
 
 msgid "Unable to set close-on-exec flag"
-msgstr "No se puede establecer indicador close-on-exec"
+msgstr "No es capaz de establecer indicador close-on-exec"
 
 msgid "Unable to set console file descriptor non-blocking"
-msgstr "No se puede establecer descriptor de archivo non-blocking"
+msgstr ""
+"No es capaz de establecer descriptor ‘non-blocking’ del archivo de consola"
 
 #, c-format
 msgid "Unable to set copy-on-write state on '%1$s' to '%2$s'"
 msgstr ""
+"No es capaz de establecer estado copia-en-escritura en ‘%1$s’ para ‘%2$s’"
 
 msgid "Unable to set interface parameters"
-msgstr "No es posible establecer parámetros de interfaz"
+msgstr "No es capaz de establecer parámetros de interfaz"
 
 msgid "Unable to set launch security state"
-msgstr ""
+msgstr "No es capaz de establecer estado de seguridad de lanzamiento"
 
 msgid "Unable to set monitor close-on-exec flag"
-msgstr "No es posible definir la marca de monitor close-on-exec"
+msgstr "No es capaz de establecer indicador ‘close-on-exec’ del monitor"
 
-#, fuzzy
 msgid "Unable to set net device config on this platform"
-msgstr "No se puede comprobar configuración de interfaz en esta plataforma"
+msgstr ""
+"No es capaz de establecer la configuración de dispositivo de red en esta "
+"plataforma"
 
 msgid "Unable to set network bandwidth on direct interfaces"
-msgstr "No se puede establecer red para ancho de banda en interfaces directas"
+msgstr "No es capaz de establecer ancho de banda de red en interfaces directas"
 
-#, fuzzy
 msgid "Unable to set non-blocking mode"
-msgstr "No se puede activar indicador de no bloqueo"
+msgstr "No es capaz de establecer modo sin bloqueo"
 
-#, fuzzy
 msgid "Unable to set pipes to non-blocking"
-msgstr "No se puede establecer bloqueo de FD %d"
+msgstr "No es capaz de establecer conductos para no-bloqueo"
 
 msgid "Unable to set port profile on direct interfaces"
-msgstr "No se puede establecer perfil en interfaces directas"
+msgstr "No es capaz de establecer perfil de puerto en interfaces directos"
 
 #, c-format
 msgid "Unable to set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "No es capaz de establecer configuración qos en el puerto %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set queue configuration on port %1$s: %2$s"
 msgstr ""
+"No es capaz de establecer la configuración de cola en el puerto %1$s: %2$s"
 
 msgid "Unable to set socket reuse addr flag"
-msgstr "No se puede establecer conexión de indicador reuse addr"
+msgstr ""
+"No es capaz de establecer indicador de direccionamiento reutilizado del "
+"zócalo"
 
 #, c-format
 msgid "Unable to set tap device %1$s to persistent"
-msgstr "No se puede establecer dispositivo Tap %1$s a persistente"
+msgstr "No es capaz de establecer tapa del dispositivo %1$s a persistente"
 
 msgid "Unable to set thread local identity"
-msgstr "No se puede establecer identidad de hilo local"
+msgstr "No es capaz de establecer identidad de hilo local"
 
-#, fuzzy
 msgid "Unable to set thread local variable"
-msgstr "No se puede establecer identidad de hilo local"
+msgstr "No es capaz de establecer variable de hilo local"
 
 msgid "Unable to set throttle group"
-msgstr ""
+msgstr "No es capaz de establecer grupo de aceleración"
 
 #, c-format
 msgid "Unable to set vlan configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "No es capaz de establecer configuración vlan en puerto %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 CA certificate: %1$s: %2$s"
-msgstr "No se puede establecer certificado x509 CA: %1$s: %2$s"
+msgstr "No es capaz de establecer certificado x509 AC: %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 certificate revocation list: %1$s: %2$s"
 msgstr ""
-"No se puede establecer lista de revocación de certificado x509: %1$s: %2$s"
+"No es capaz de establecer lista de revocación de certificado x509: %1$s: %2$s"
 
 #, c-format
 msgid "Unable to set x509 key and certificate: %1$s, %2$s: %3$s"
-msgstr "No se puede establecer llave x509 y certificado: %1$s, %2$s: %3$s"
+msgstr "No es capaz de establecer llave y certificado x509: %1$s, %2$s: %3$s"
 
 #, c-format
 msgid "Unable to split FD list '%1$s'"
-msgstr "No se puede dividir lista FD '%1$s'"
+msgstr "No es capaz de desglosar listado FD ‘%1$s’"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to start event thread: %1$s"
-msgstr "No se puede 'stat bind' target %1$s"
+msgstr "No es capaz de iniciar hilo de evento: %1$s"
 
 #, c-format
 msgid "Unable to start mediated device: %1$s"
-msgstr ""
+msgstr "No es capaz de iniciar dispositivo mediado: %1$s"
 
 #, c-format
 msgid "Unable to stat %1$p"
-msgstr ""
+msgstr "No es capaz de iniciar %1$p"
 
 #, c-format
 msgid "Unable to stat %1$s"
-msgstr "No se puede 'stat' %1$s"
+msgstr "No es capaz de declarar %1$s"
 
 #, c-format
 msgid "Unable to stat bind source %1$s"
-msgstr "No se puede 'stat bind' source %1$s"
+msgstr "No es capaz de declarar origen vinculado %1$s"
 
 #, c-format
 msgid "Unable to stat bind target %1$s"
-msgstr "No se puede 'stat bind' target %1$s"
+msgstr "No es capaz de declarar destino 'stat bind' %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to stat: %1$s"
-msgstr "No se puede 'stat' %1$s"
+msgstr "No es capaz de declarar: %1$s"
 
 #, c-format
 msgid "Unable to symlink directory %1$s to %2$s"
-msgstr "No se puede 'symlink' el directorio %1$s a %2$s"
+msgstr "No es capaz de realizar enlace simbólico al directorio %1$s al %2$s"
 
-#, fuzzy
 msgid "Unable to thaw all processes"
-msgstr "No se puede notificar proceso de hijo"
+msgstr "No es capaz de verter todos los procesos"
 
-#, fuzzy
 msgid "Unable to thaw filesystems"
-msgstr "No es posible abrir sistema de archivos %s"
+msgstr "No es capaz de verter el sistema de archivos"
 
 #, c-format
 msgid "Unable to truncate %1$s"
-msgstr "No es posible truncar %1$s"
+msgstr "No es capaz de truncar %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to umount %1$s"
-msgstr "No es posible abrir %1$s"
+msgstr "No es capaz de desmontar %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unbind the virtual port %1$s from Midonet"
-msgstr "No se puede borrar puerto %1$s de OVS"
+msgstr "No es capaz de de desvincular el puerto %1$s virtual desde Midonet"
 
 #, c-format
 msgid "Unable to undefine mediated device: %1$s"
-msgstr ""
+msgstr "No es capaz de indefinir dispositivo mediado: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink %1$s"
-msgstr "No es posible abrir %1$s"
+msgstr "No es capaz de desenlazar %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink path '%1$s'"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de desenlazar ruta ‘%1$s’"
 
 msgid "Unable to unregister machine"
-msgstr ""
+msgstr "No es capaz de desregistrar máquina"
 
 msgid "Unable to update server's tls related files."
 msgstr ""
-"No se pudieron actualizar los archivos relacionados con tls del servidor."
+"No es capaz de actualizar los archivos relacionados del tls del servidor."
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unable to validate doc against %1$s\n"
 "%2$s"
 msgstr ""
-"No es posible validar doc con %1$s\n"
+"No es capaz de validar doc frente a %1$s\n"
 "%2$s"
 
 #, c-format
 msgid "Unable to verify TLS peer: %1$s"
-msgstr "No se puede verificar par TLS: %1$s"
+msgstr "No es capaz de verificar pareja TLS: %1$s"
 
 #, c-format
 msgid "Unable to verify client certificate %1$s against CA certificate %2$s"
 msgstr ""
-"No se puede verificar certificado de cliente %1$s con certificado CA %2$s"
+"No es capaz de verificar certificado %1$s de cliente frente al certificado "
+"AC %2$s"
 
 #, c-format
 msgid "Unable to verify server certificate %1$s against CA certificate %2$s"
 msgstr ""
-"No se puede verificar certificado de servidor %1$s con certificado CA %2$s"
+"No es capaz de verificar certificado %1$s de servidor con certificado AC %2$s"
 
 msgid "Unable to wait for child process"
-msgstr "No se puede esperar proceso de hijo"
+msgstr "No es capaz de esperar subproceso heredado"
 
-#, fuzzy
 msgid "Unable to wait on agent socket condition"
-msgstr "No se pudo esperar en condición de monitor"
+msgstr "No es capaz de esperar sobre condición de zócalo agente"
 
 msgid "Unable to wait on epoll"
-msgstr "No se puede esperar a epoll"
+msgstr "No es capaz de esperar a epoll"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%1$s')"
-msgstr ""
+msgstr "No es capaz de esperar en condición de monitor (vm=‘%1$s’)"
 
 msgid "Unable to wait on parent process"
-msgstr "No se puede esperar en el proceso de padre"
+msgstr "No es capaz de esperar en proceso antecesor"
 
 msgid "Unable to watch epoll FD"
-msgstr "No es posible observar FD epoll"
+msgstr "No es capaz de vigilar FD epoll"
 
 msgid "Unable to watch host console PTY"
-msgstr "No se puede vigilar a la consola PTY"
+msgstr "No es capaz de vigilar a consola PTY huésped"
 
 #, c-format
 msgid "Unable to write %1$s"
-msgstr "No se puede escribir %1$s"
+msgstr "No es capaz de escribir %1$s"
 
 #, c-format
 msgid "Unable to write '%1$s' to '%2$s'"
-msgstr ""
+msgstr "No es capaz de escribir ‘%1$s’ a ‘%2$s’"
 
 #, c-format
 msgid "Unable to write pid file '%1$s/%2$s.pid'"
-msgstr "No es posible escribir archivo pid '%1$s/%2$s.pid'"
+msgstr "No es capaz de escribir archivo pid ‘%1$s/%2$s.pid’"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to %1$s"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de escribir a %1$s"
 
 #, c-format
 msgid "Unable to write to '%1$s'"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de escribir a ‘%1$s’"
 
-#, fuzzy
 msgid "Unable to write to agent"
-msgstr "No se pudo escribir al monitor"
+msgstr "No es capaz de escribir al agente"
 
 msgid "Unable to write to container pty"
-msgstr "No se puede escribir al contenedor PTY"
+msgstr "No es capaz de escribir al contenedor pty"
 
-#, fuzzy
 msgid "Unable to write to domain logfile"
-msgstr "No se pudo escribir al monitor"
+msgstr "No es capaz de escribir a la bitácora del dominio"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file %1$s"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de escribir al archivo %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to file '%1$s'"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de escribir al archivo ‘%1$s’"
 
 msgid "Unable to write to monitor"
-msgstr "No se pudo escribir al monitor"
+msgstr "No es capaz de escribir al monitor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write to: %1$s"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "No es capaz de escribir al: %1$s"
 
 msgid "Unbounded"
-msgstr "Ilimitado"
+msgstr "Desvinculado"
 
 msgid "Unconfined guests are not allowed on this host"
-msgstr "No se permiten los huéspedes no confinados en este host"
+msgstr "No se permiten huéspedes no confinados en este host"
 
 msgid "Undefine a given network filter."
-msgstr "Quitar la definición de un filtro de red determinado."
+msgstr "Retira definición de un filtro de red proporcionado."
 
 msgid "Undefine a secret."
-msgstr "Quitar la definición de un secreto."
+msgstr "Retira definición de un secreto."
 
 msgid "Undefine an inactive domain, or convert persistent to transient."
 msgstr ""
-"Quitar definición de un dominio inactivo o convertir persistente en "
+"Retira definición de un dominio inactivo, o convierte persistente en "
 "transitorio."
 
 msgid "Undefine an inactive node device"
-msgstr ""
+msgstr "Retira definición de un dispositivo de nodo no activo"
 
-#, fuzzy
 msgid "Undefine the configuration for a persistent network."
-msgstr "Quitar la definición de la configuración de un grupo inactivo."
+msgstr "Retira definición de la configuración de una red persistente."
 
 msgid "Undefine the configuration for an inactive pool."
-msgstr "Quitar la definición de la configuración de un grupo inactivo."
+msgstr "Retira la definición de la configuración para un consorcio inactivo."
 
-#, fuzzy
 msgid "Undefined"
-msgstr "Quitar definición de un dominio"
+msgstr "Indefinido"
 
 #, c-format
 msgid "Undefined node device '%1$s'\n"
-msgstr ""
+msgstr "Dispositivo de nodo ‘%1$s’ indefinido\n"
 
 msgid "Undefines the configuration for an inactive node device"
-msgstr ""
+msgstr "Indefine la configuración para un dispositivo de nodo inactivo"
 
 #, c-format
 msgid "Unexpected CPU fallback value: %1$d"
-msgstr "Valor de recuperación de CPU: %1$d"
+msgstr "Valor inesperado de recuperación de CPU: %1$d"
 
 #, c-format
 msgid "Unexpected CPU feature policy %1$d"
-msgstr "Política %1$d de funcionalidad de CPU no esperada"
+msgstr "Normativa %1$d de funcionalidad de CPU no esperada"
 
 #, c-format
 msgid "Unexpected CPU match policy %1$d"
-msgstr "Política %1$d de concordancia de CPU inesperada"
+msgstr "Normativa %1$d de cotejo de CPU inesperada"
 
 #, c-format
 msgid "Unexpected CPU mode %1$d"
@@ -21052,93 +21046,90 @@ msgstr "Modo de CPU %1$d inesperado"
 
 #, c-format
 msgid "Unexpected HTTP response code %1$lu"
-msgstr "Código de respuesta HTTP inesperado: %1$lu"
+msgstr "Código de respuesta HTTP %1$lu inesperado"
 
 #, c-format
 msgid "Unexpected HTTP response during %1$s: %2$d"
-msgstr "Respuesta inesperada HTTP durante %1$s: %2$d"
+msgstr "Respuesta HTTP no esperada durante %1$s: %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected IDE controller model %1$d"
-msgstr "tipo de controlador %1$d no esperado"
+msgstr "Modelo de controlador IDE %1$d no esperado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected JSON format: %1$s"
-msgstr "Respuesta inesperada de JSON '%1$s'"
+msgstr "Formato JSON no esperado: %1$s"
 
 #, c-format
 msgid "Unexpected JSON reply '%1$s'"
-msgstr "Respuesta inesperada de JSON '%1$s'"
+msgstr "Réplica JSON ‘%1$s’ inesperada"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected LXC URI path '%1$s', try lxc:///system"
-msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
+msgstr "Ruta '%1$s' URI de LXC inesperado, intente LXC:///system"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected PCI controller model %1$d"
-msgstr "tipo de controlador %1$d no esperado"
+msgstr "Modelo de controlador PCI %1$d no esperado"
 
 msgid "Unexpected QEMU agent still active during domain deletion"
-msgstr "Agente QEMU inesperado está aún activo durante el borrado de dominio"
+msgstr "Agente QEMU inesperado activo aún durante borrado de dominio"
 
 msgid "Unexpected QEMU monitor still active during domain deletion"
-msgstr ""
-"Un monitor QEMU no esperado continúa activo durante la eliminación del "
-"dominio"
+msgstr "Monitor QEMU no esperado aún activo durante borrado de dominio"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected SCSI controller model %1$d"
-msgstr "tipo de controlador %1$d no esperado"
+msgstr "Modelo de controlador SCSI %1$d no esperado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected Virtuozzo URI path '%1$s', try vz:///system"
-msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
+msgstr "Ruta URI '%1$s' Virtuozzo inesperado, intente vz:///system"
 
 #, c-format
 msgid "Unexpected address type for '%1$s'"
-msgstr "Tipo de dirección inesperado para '%1$s'"
+msgstr "Tipo de dirección inesperado para ‘%1$s’"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected bhyve URI path '%1$s', try bhyve:///system"
-msgstr "ruta '%1$s' URI de OpenVZ inesperado, intente openvz:///system"
+msgstr "Ruta URI ‘%1$s’ bhyve inesperado, intente bhyve:///system"
 
 #, c-format
 msgid "Unexpected boot device type %1$i"
-msgstr "Tipo de dispositivo de booteo inesperado %1$i"
+msgstr "Tipo de dispositivo de arranque %1$i inesperado"
 
 #, c-format
 msgid "Unexpected confirm code '%1$c' from parent"
-msgstr "Código de confirmación inesperado '%1$c' del padre"
+msgstr "Código de confirmación ‘%1$c’ inesperado desde antecesor"
 
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
 msgstr "Parámetro dconnuri inesperado con migración non-peer2peer"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected device type %1$d"
-msgstr "tipo de dispositivo de arranque %1$d no esperado"
+msgstr "Tipo de dispositivo %1$d no esperado"
 
 #, c-format
 msgid "Unexpected disk sgio mode '%1$d'"
-msgstr "No se esperaba modo sgio de disco '%1$d'"
+msgstr "Modo de disco sgio ‘%1$d’ no esperado"
 
 #, c-format
 msgid "Unexpected driver type '%1$s' opened"
-msgstr "Tipo de controlador inesperado '%1$s' abierto"
+msgstr "Tipo de controlador ‘%1$s’ inesperado abierto"
 
 #, c-format
 msgid "Unexpected element '%1$s' in CPU map '%2$s'"
-msgstr "Elemento inesperado '%1$s' en el mapa de CPU '%2$s'"
+msgstr "Elemento ‘%1$s’ inesperado en mapa de CPU ‘%2$s’"
 
-#, fuzzy
 msgid "Unexpected event thread still active during domain deletion"
-msgstr "Agente QEMU inesperado está aún activo durante el borrado de dominio"
+msgstr "Hilo de evento inesperado aún activo durante el borrado de dominio"
 
 #, c-format
 msgid "Unexpected filesystem type %1$s"
-msgstr "Tipo de sistema de archivos inesperado %1$s"
+msgstr "Tipo de sistema de archivos %1$s inesperado"
 
 msgid "Unexpected format for mdevctl response"
-msgstr ""
+msgstr "Formato inesperado para respuesta mdevctrl"
 
 #, c-format
 msgid "Unexpected hostdev mode %1$d"
@@ -21146,7 +21137,7 @@ msgstr "Modo de hostdev %1$d inesperado"
 
 #, c-format
 msgid "Unexpected length of '%1$s', expected %2$u got %3$zu"
-msgstr ""
+msgstr "Longitud de ‘%1$s’ inesperado, esperaba %2$u, obtuvo %3$zu"
 
 msgid "Unexpected lock parameters for disk resource"
 msgstr "Parámetros de cerrojo inesperados para recurso de disco"
@@ -21165,7 +21156,7 @@ msgstr "Estatus de mensaje %1$d inesperado"
 
 #, c-format
 msgid "Unexpected message status %1$u"
-msgstr "Estatus de mensaje inesperado %1$u"
+msgstr "Estatus de mensaje %1$u inesperado"
 
 #, c-format
 msgid "Unexpected message type %1$d"
@@ -21173,80 +21164,78 @@ msgstr "Tipo de mensaje %1$d inesperado"
 
 #, c-format
 msgid "Unexpected message type %1$u"
-msgstr "Tipo de mensaje inesperado %1$u"
+msgstr "Tipo de mensaje %1$u inesperado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected message type: %1$d"
-msgstr "Tipo de mensaje %1$d inesperado"
+msgstr "Tipo de mensaje inesperado: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected network port type %1$s"
-msgstr "Tipo de red %1$s no tiene soporte"
+msgstr "Tipo de puerto de red %1$s no esperado"
 
 msgid "Unexpected output of cloud-hypervisor binary"
-msgstr ""
+msgstr "Salida inesperada de hipervisor de nube binaria"
 
 #, c-format
 msgid "Unexpected parameter %1$s for lease resource"
-msgstr "Parámetro inesperado %1$s para recurso de arriendo"
+msgstr "Parámetro %1$s inesperado para recurso de alquiler"
 
 #, c-format
 msgid "Unexpected parameter %1$s for object"
-msgstr "Parámetro inesperado %1$s para objeto"
+msgstr "Parámetro %1$s inesperado para objeto"
 
 msgid "Unexpected parameters for disk resource"
 msgstr "Parámetros inesperados para recursos de disco"
 
-#, fuzzy
 msgid "Unexpected product line"
-msgstr "tipo de grupo no esperado"
+msgstr "Línea de producto no esperada"
 
 #, c-format
 msgid "Unexpected protocol %1$d"
-msgstr "Protocolo inesperado %1$d"
+msgstr "Protocolo %1$d no esperado"
 
 #, c-format
 msgid "Unexpected response from CH: %1$s"
-msgstr ""
+msgstr "Respuesta desde CH no esperada: %1$s"
 
 msgid "Unexpected root filesystem without loop device"
-msgstr "El sistema de archivos de root sin dispositivo de bucle es inesperado"
+msgstr "Sistema de archivos raíz sin dispositivo de bucle no esperado"
 
 #, c-format
 msgid "Unexpected rule protocol %1$d"
-msgstr "Protocolo de regla inesperado %1$d"
+msgstr "Protocolo %1$d de regla inesperada"
 
 #, c-format
 msgid "Unexpected server name '%1$s' during restart"
-msgstr "Nombre de servidor inesperado '%1$s' durante el reinicio"
+msgstr "Nombre de servidor '%1$s' inesperado durante reinicio"
 
 #, c-format
 msgid "Unexpected signal received: %1$d"
 msgstr "Señal recibida inesperada: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unexpected state of feature '%1$s'"
-msgstr "Firma '%1$s' inesperada"
+msgstr "Estado de característica ‘%1$s’ no esperado"
 
-#, fuzzy
 msgid "Unexpected stream hole"
-msgstr "Modo de hostdev %d inesperado"
+msgstr "Hueco de flujo no esperado"
 
 #, c-format
 msgid "Unexpected volume path format: %1$s"
-msgstr "Formato de ruta de volumen inesperado: %1$s"
+msgstr "Formato de ruta de volumen no esperado: %1$s"
 
 msgid "Unexpectedly got a network port without a network bridge"
-msgstr ""
+msgstr "Inesperadamente obtuvo un puerto de red sin un puente de red"
 
 msgid "Unexpectedly got a network port without a plug"
-msgstr ""
+msgstr "Inesperadamente obtuvo un puerto de red sin un enchufe"
 
 msgid "Unix Socket backend is not supported by this version of ch."
-msgstr ""
+msgstr "Zócalo Unix interno no está mantenido por esta versión de ch."
 
 msgid "Unix file descriptors not supported on this platform"
-msgstr ""
+msgstr "Descriptores de archivo Unix no mantenido en esta plataforma"
 
 msgid "Unknown"
 msgstr "Desconocido"
@@ -21257,61 +21246,61 @@ msgstr "Característica de CPU %1$s desconocida"
 
 #, c-format
 msgid "Unknown CPU mode: %1$X"
-msgstr "Modo de CPU desconocido: %1$X"
+msgstr "Modelo de CPU desconocido: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown CPU mode: %1$s"
-msgstr "Modelo de CPU %1$s desconocido"
+msgstr "Modelo de CPU desconocido: %1$s"
 
 #, c-format
 msgid "Unknown CPU model %1$s"
-msgstr "Modelo de CPU %1$s desconocido"
+msgstr "Modelo %1$s de CPU desconocido"
 
 #, c-format
 msgid "Unknown CPU vendor %1$s"
-msgstr "Vendedor %1$s de CPU desconocido"
+msgstr "Proveedor %1$s de CPU desconocido"
 
 #, c-format
 msgid "Unknown Command '%1$i'"
-msgstr ""
+msgstr "Comando ‘%1$i’ Desconocido"
 
 msgid "Unknown Error"
-msgstr ""
+msgstr "Error Desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown IP address data source %1$d"
-msgstr "Origen de datos de dirección IP desconocida %1$d"
+msgstr "Origen de datos %1$d de dirección IP desconocida"
 
 #, c-format
 msgid "Unknown JSON reply '%1$s'"
-msgstr "Respuesta desconocida de JSON '%1$s'"
+msgstr "Respuesta JSON '%1$s' desconocida"
 
 #, c-format
 msgid "Unknown LXC namespace source '%1$s'"
-msgstr "Tipo de origen pci '%1$s' desconocido"
+msgstr "Espacio de nombre origen LXC ‘%1$s’ desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown PCI header type '%1$d' for device '%2$s'"
-msgstr "tipo de capacidad '%1$d' desconocida para '%2$s'"
+msgstr "Tipo de cabecera ‘%1$d’ desconocida para dispositivo ‘%2$s’"
 
 msgid "Unknown Partition Type, requires build --overwrite"
-msgstr ""
+msgstr "Tipo de Partición desconocida, requiere compilar --overwrite"
 
 #, c-format
 msgid "Unknown QEMU arch %1$s"
-msgstr "Se desconoce arquitectura QEMU '%1$s'"
+msgstr "Arquitectura QEMU %1$s desconocida"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown QEMU device for '%1$s' controller"
-msgstr "Tipo de controlador '%1$s' de cgroup desconocido"
+msgstr "Dispositivo QEMU desconocida para controlador '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown SCSI controller model %1$s"
-msgstr "Tipo de controlador '%1$s' desconocido"
+msgstr "Modelo de controlador SCSI %1$s desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown URI parameter '%1$s'"
-msgstr "Tipo de modelo '%1$s' desconocido"
+msgstr "Parámetro URI '%1$s' desconocido"
 
 #, c-format
 msgid "Unknown adapter type: %1$X"
@@ -21319,71 +21308,71 @@ msgstr "Tipo de adaptador desconocido: %1$X"
 
 #, c-format
 msgid "Unknown architecture %1$s"
-msgstr "Se desconoce arquitectura %1$s"
+msgstr "Arquitectura %1$s desconocida"
 
 #, c-format
 msgid "Unknown async job type %1$s"
-msgstr "Tipo de trabajo async %1$s desconocido"
+msgstr "Tipo %1$s de tarea async desconocida"
 
 #, c-format
 msgid "Unknown autostart mode: %1$X"
-msgstr "Modo de inicio automático desconocido: %1$X"
+msgstr "Modo de auto-inicio desconocido: %1$X"
 
 #, c-format
 msgid "Unknown blkio parameter %1$s"
-msgstr "Parámetro blkio desconocido %1$s"
+msgstr "Parámetro blkio %1$s desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown cache type '%1$s'"
-msgstr "tipo de autorización '%1$s' desconocido"
+msgstr "Tipo de caché ‘%1$s’ desconocido"
 
 #, c-format
 msgid "Unknown calculation mode '%1$s'"
-msgstr ""
+msgstr "Modo de cálculo ‘%1$s’ desconocido"
 
 #, c-format
 msgid "Unknown cgroup controller '%1$s'"
-msgstr "Tipo de controlador '%1$s' de cgroup desconocido"
+msgstr "Controlador ‘%1$s’ de cgroup desconocido"
 
 #, c-format
 msgid "Unknown char device type: %1$d"
-msgstr "Tipo de dispositivo de caracteres desconocido: %1$d"
+msgstr "Tipo char de dispositivo desconocido: %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown compatibility mode %1$s"
-msgstr "tipo de capacidad '%1$s' desconocido"
+msgstr "Modo de compatibilidad %1$s desconocido"
 
 #, c-format
 msgid "Unknown connection URI: '%1$s'"
-msgstr ""
+msgstr "URI de conexión desconocido: ‘%1$s’"
 
 #, c-format
 msgid "Unknown controller type %1$d"
-msgstr "Tipo de controlador desconocido %1$d"
+msgstr "Tipo de controlador %1$d desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown core size '%1$s'"
-msgstr "Conjunto de códigos desconocido: '%1$s'"
+msgstr "Tamaño nuclear ‘%1$s’ desconocido"
 
 #, c-format
 msgid "Unknown crypto hash %1$d"
-msgstr "Hash criptográfico %1$d desconocido"
+msgstr "Hash de cifrado %1$d desconocido"
 
 #, c-format
 msgid "Unknown data source '%1$s'"
-msgstr "Modo de origen '%1$s' desconocido"
+msgstr "Origen de datos ‘%1$s’ desconocido"
 
 #, c-format
 msgid "Unknown default_cpu_deprecated_features value %1$s"
-msgstr ""
+msgstr "Valor %1$s de default_cpu_deprecated_features desconocido"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
-msgstr ""
+msgstr "Modo de cálculo de proporción de página sucia desconocida: %1$s"
 
 #, c-format
 msgid "Unknown dirty rate status: %1$s"
-msgstr ""
+msgstr "Estado de proporción sucia desconocida: %1$s"
 
 #, c-format
 msgid "Unknown disk bus: %1$X"
@@ -21391,8 +21380,7 @@ msgstr "Bus de disco desconocido: %1$X"
 
 #, c-format
 msgid "Unknown disk name '%1$s' and no address specified"
-msgstr ""
-"Se desconoce nombre de disco '%1$s' y no se especificó ninguna dirección"
+msgstr "Nombre de disco ‘%1$s’ desconocido y ninguna dirección especificada"
 
 #, c-format
 msgid "Unknown domain type: %1$X"
@@ -21404,11 +21392,11 @@ msgstr "Nombre de controlador '%1$s' desconocido"
 
 #, c-format
 msgid "Unknown driver type %1$s"
-msgstr "Se desconoce tipo de controlador %1$s"
+msgstr "Tipo de controlador %1$s desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown enable type %1$d in network"
-msgstr "Tipo de habilitación desconocido %1$d en la red"
+msgstr "Tipo de habilitación %1$d desconocido en la red"
 
 msgid "Unknown error"
 msgstr "Error desconocido"
@@ -21418,86 +21406,89 @@ msgstr "Valor de error desconocido"
 
 #, c-format
 msgid "Unknown family %1$d"
-msgstr "Familia desconocida %1$d"
+msgstr "Familia %1$d desconocida"
 
 #, c-format
 msgid "Unknown firewall layer %1$d"
-msgstr "Capa de firewall desconocida %1$d"
+msgstr "Capa de cortafuegos %1$d desconocida"
 
 #, c-format
 msgid "Unknown forward type %1$d in network '%2$s'"
-msgstr "Tipo de reenvío %1$d desconocido en la red '%2$s'"
+msgstr "Tipo de reenvío %1$d desconocido en la red ‘%2$s’"
 
 #, c-format
 msgid "Unknown forwardPlainNames type %1$d in network"
-msgstr "Tipo desconocido de ForwardPlainNames %1$d en la red"
+msgstr "Tipo ForwardPlainNames %1$d desconocido en la red"
 
-#, fuzzy
 msgid "Unknown input device type"
-msgstr "Tipo de dispositivo de entrada '%s' desconocido"
+msgstr "Tipo de dispositivo de entrada desconocido"
 
-#, fuzzy
 msgid "Unknown invocation state"
-msgstr "tipo de partición desconocido"
+msgstr "Estado invocante desconocido"
 
 msgid "Unknown job"
 msgstr "Tarea desconocida"
 
 #, c-format
 msgid "Unknown job phase %1$s"
-msgstr "Fase de trabajo %1$s desconocida"
+msgstr "Fase de tarea %1$s desconocida"
 
 #, c-format
 msgid "Unknown job type %1$s"
-msgstr "Tipo de trabajo %1$s desconocido"
+msgstr "Tipo de tarea %1$s desconocido"
 
 #, c-format
 msgid "Unknown localOnly type %1$d in network"
-msgstr "Tipo desconocido de localOnly %1$d en la red"
+msgstr "Tipo localOnly %1$d desconocido en la red"
 
 #, c-format
 msgid "Unknown lock manager object type %1$d"
-msgstr "Se desconoce tipo de objeto de gestor de cerrojo %1$d"
+msgstr "Tipo %1$d de objeto del gestor de cerrojo desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown lock manager object type %1$d for domain lock object"
-msgstr "Se desconoce tipo de objeto de gestor de cerrojo %1$d"
+msgstr ""
+"Tipo %1$d de objeto de gestor de cerrojo desconocido para objeto de cerrojo "
+"del dominio"
 
 #, c-format
 msgid "Unknown migration cookie feature %1$s"
-msgstr "No se conoce funcionalidad de migración de cookies %1$s"
+msgstr "No se conoce característica %1$s de migración de galletas"
 
 #, c-format
 msgid ""
 "Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal' or "
 "'paravirt'"
 msgstr ""
+"Valor %1$s de modo desconocido, esperaba 'acpi', 'agent', 'initctl', "
+"'signal' o 'paravirt'"
 
 #, c-format
 msgid ""
 "Unknown mode %1$s value, expecting 'acpi', 'agent', 'initctl', 'signal', or "
 "'paravirt'"
 msgstr ""
+"Valor %1$s de modo desconocido, esperaba 'acpi', 'agent', 'initctl', "
+"'signal', o 'paravirt'"
 
 #, c-format
 msgid "Unknown model type '%1$s'"
-msgstr "Tipo de modelo '%1$s' desconocido"
+msgstr "Tipo de modelo ‘%1$s’ desconocido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown namespace: %1$s"
-msgstr "Versión desconocida: %1$s"
+msgstr "Espacio de nombre desconocida: %1$s"
 
 #, c-format
 msgid "Unknown parameter %1$s"
-msgstr "Parámetro desconocido %1$s"
+msgstr "Parámetro %1$s desconocido"
 
-#, fuzzy
 msgid "Unknown parameter type"
-msgstr "tipo de parámetro desconocido: %d"
+msgstr "Tipo de parámetro desconocido"
 
 #, c-format
 msgid "Unknown qemu capabilities flag %1$s"
-msgstr "Indicador desconocido de capacidades Qemu %1$s"
+msgstr "Indicador %1$s desconocido de capacidades qemu"
 
 #, c-format
 msgid "Unknown release: %1$s"
@@ -21505,86 +21496,87 @@ msgstr "Versión desconocida: %1$s"
 
 #, c-format
 msgid "Unknown remote mode '%1$s'"
-msgstr ""
+msgstr "Modo ‘%1$s’ remoto desconocido"
 
 msgid "Unknown return code"
 msgstr "Código de retorno desconocido"
 
 #, c-format
 msgid "Unknown sched_core value %1$s"
-msgstr ""
+msgstr "Valor %1$s de shed_core desconocido"
 
 #, c-format
 msgid "Unknown serial type: %1$X"
 msgstr "Tipo de serie desconocido: %1$X"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown slirp feature %1$s"
-msgstr "Característica de CPU %1$s desconocida"
+msgstr "Capacidad slrip %1$s desconocida"
 
 #, c-format
 msgid "Unknown source type: '%1$s'"
-msgstr "Tipo de origen desconocido: '%1$s'"
+msgstr "Tipo de origen desconocido: ‘%1$s’"
 
 msgid "Unknown state of the remote server SSH key"
-msgstr ""
+msgstr "Estado desconocido de la clave SSH servidor remoto"
 
 #, c-format
 msgid "Unknown stdio handler %1$s"
-msgstr "Gestionador stdio %1$s desconocido"
+msgstr "Manipulador stdio %1$s desconocido"
 
 #, c-format
 msgid "Unknown storage type: '%1$s'"
-msgstr "Tipo de origen desconocido: '%1$s'"
+msgstr "Tipo de almacenaje desconocido: ‘%1$s’"
 
 #, c-format
 msgid "Unknown stub driver configured for PCI device %1$s"
-msgstr ""
+msgstr "Controlador resguardo desconocido configurado por dispositivo PCI %1$s"
 
 #, c-format
 msgid "Unknown suspend target: %1$u"
-msgstr "Se desconoce el desitno suspend: %1$u"
+msgstr "Destino suspendido desconocido: %1$u"
 
 #, c-format
 msgid "Unknown taint flag %1$s"
-msgstr "Marca taint '%1$s' desconocida"
+msgstr "Indicador %1$s contaminado desconocido"
 
 #, c-format
 msgid "Unknown uri scheme: '%1$s'"
-msgstr "Desconoce esquema uri: '%1$s'"
+msgstr "Esquema uri desconocido: ‘%1$s’"
 
 #, c-format
 msgid "Unknown value '%1$s' for %2$s"
-msgstr "Valor '%1$s' desconocido para %2$s"
+msgstr "Valor ‘%1$s’ desconocido para %2$s"
 
 #, c-format
 msgid "Unknown value '%1$s' for %2$s 'type' property"
-msgstr "Valor '%1$s' desconocido para la propiedad 'type' de '%2$s'"
+msgstr "Valor ‘%1$s’ desconocido para propiedad 'type' de ‘%2$s’"
 
 #, c-format
 msgid "Unknown value '%1$s' for AnyType 'type' property"
-msgstr "Valor '%1$s' desconocido para la propiedad 'type' de AnyType"
+msgstr "Valor ‘%1$s’ desconocido para propiedad 'type' de AnyType"
 
 #, c-format
 msgid "Unknown value '%1$s' for xsd:boolean"
-msgstr "Valor '%1$s' desconocido para xsd:boolean"
+msgstr "Valor ‘%1$s’ desconocido para xsd:boolean"
 
 #, c-format
 msgid "Unknown vendor %1$s referenced by CPU model %2$s"
-msgstr ""
-"Un vendedor %1$s desconocido ha sido referenciado por el modelo de CPU %2$s"
+msgstr "Proveedor %1$s desconocido referenciado por modelo %2$s de CPU"
 
 #, c-format
 msgid "Unknown virDomainControllerPCIModelName value: %1$d"
-msgstr ""
+msgstr "Valor virDomainControllerPCIModelName desconocido: %1$d"
 
 #, c-format
 msgid "Unmanaged PCI device %1$s must be manually detached from the host"
 msgstr ""
+"Dispositivo PCI %1$s no manipulado debe ser desenganchado manualmente desde "
+"el host"
 
 #, c-format
 msgid "Unnkown proxy type '%1$s'"
-msgstr ""
+msgstr "Tipo ‘%1$s’ de proxy desconocido"
 
 #, fuzzy
 msgid "Unpaused"
@@ -21592,18 +21584,18 @@ msgstr "Sin pausa"
 
 #, c-format
 msgid "Unrecognized controller type %1$d"
-msgstr ""
+msgstr "Tipo de controlador %1$d no reconocido"
 
 msgid "Unrecognized disk label found, requires build"
-msgstr ""
+msgstr "Encontrada etiqueta de disco no reconocida, requiere compilación"
 
 #, c-format
 msgid "Unrecognized family '%1$s' in network '%2$s'"
 msgstr "Familia '%1$s' desconocida en red '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unrecognized firewalld backend type: %1$s"
-msgstr "Tipo de segundo plano TPM '%1$s' es desconocido"
+msgstr "Tipo de backend de firewalld no reconocido: %1$s"
 
 #, c-format
 msgid "Unrecognized value in %1$s: %2$s"
@@ -21621,24 +21613,24 @@ msgid ""
 "Unsupported <bandwidth> element in network '%1$s' in portgroup '%2$s' with "
 "forward mode='%3$s'"
 msgstr ""
-"Elemento <bandwidth> no compatible en la red '%1$s' en el grupo de puertos "
-"'%2$s' con modo de redireccionamiento='%3$s'"
+"Elemento <bandwidth> no admitido en la red ‘%1$s’ en el grupo de puerto "
+"‘%2$s’ con modo de redireccionamiento='%3$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unsupported <dns> element in network %1$s with forward mode='%2$s'"
-msgstr "Elemento <dns> no tiene soporte en red %1$s con forward mode='%2$s'"
+msgstr "Elemento <dns> no tiene soporte en red %1$s con modo de reenvío '%2$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unsupported <domain> element in network %1$s with forward mode='%2$s'"
-msgstr "Elemento <domain> no tiene soporte en red %1$s con forward mode='%2$s'"
+msgstr "Elemento <domain> no tiene soporte en red %1$s con modo reenvío ‘%2$s’"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unsupported <ip> element in network %1$s with forward mode='%2$s'"
 msgstr "Elemento <ip> no tiene soporte en red %1$s con forward mode='%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported <mac> element in network %1$s with forward mode='%2$s'"
-msgstr "Elemento <domain> no tiene soporte en red %1$s con forward mode='%2$s'"
+msgstr "Elemento <mac> no esperado en la red %1$s con forward mode='%2$s'"
 
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%1$s'"
@@ -21646,11 +21638,11 @@ msgstr "Elemento <tftp> no tiene soporte en un elemento IPv6 de red '%1$s'"
 
 #, c-format
 msgid "Unsupported IP address data source %1$d"
-msgstr "No se admite origen de datos por dirección IP %1$d"
+msgstr "No se admite origen de datos con dirección IP %1$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported NUMA memory placement mode '%1$s'"
-msgstr "Modo '%1$s' de ubicación de CPU sin soporte"
+msgstr "Modo '%1$s' de lugar de memoria NUMA sin soporte"
 
 #, c-format
 msgid "Unsupported NUMA memory tuning mode '%1$s'"
@@ -21658,75 +21650,74 @@ msgstr "Modo '%1$s' de sintonización de memoria NUMA no admitido"
 
 #, c-format
 msgid "Unsupported Network type %1$d"
-msgstr ""
+msgstr "Tipo de red %1$d no admitido"
 
 #, c-format
 msgid "Unsupported OS type: %1$s"
-msgstr "Tipo de sistema operativo sin soporte: %1$s"
+msgstr "Tipo de SO no soportado: %1$s"
 
-#, fuzzy
 msgid "Unsupported PCI Express root controller"
-msgstr "Modelo de controlador no tiene soporte: %s"
+msgstr "Controlador raíz de PCI Express sin mantenimiento"
 
 #, c-format
 msgid "Unsupported PCR banks '%1$s'"
-msgstr ""
+msgstr "Bancos PCR ‘%1$s’ no mantenidos"
 
 #, c-format
 msgid "Unsupported SCSI controller address type '%1$d'"
-msgstr ""
+msgstr "Tipo de dirección ‘%1$d’ de controlador SCSI no mantenido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported SCSI controller model %1$s"
-msgstr "Modelo de controlador no tiene soporte: %1$s"
+msgstr "Modelo de controlador SCSI %1$s no mantenido"
 
 #, c-format
 msgid "Unsupported SCSI controller model '%1$d'"
-msgstr ""
+msgstr "Modelo ‘%1$d’ de controlador SCSI no mantenido"
 
 #, c-format
 msgid "Unsupported SMBIOS mode '%1$s'"
-msgstr "Modo '%1$s' SMBIOS sin soporte"
+msgstr "Modo '%1$s' SMBIOS no mantenido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported URI scheme '%1$s'"
-msgstr "Modo '%1$s' SMBIOS sin soporte"
+msgstr "Esquema URI ‘%1$s’ no mantenido"
 
 #, c-format
 msgid "Unsupported VPD field access type '%1$s'"
-msgstr ""
+msgstr "Tipo de acceso ‘%1$s’ del campo VPD no mantendo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported action: %1$s\n"
-msgstr "Acción de falla no tiene soporte: '%1$s\n"
+msgstr "Acción no mantenida: %1$s\n"
 
 #, c-format
 msgid "Unsupported address family %1$d Only IPv4 or IPv6 default gateway"
 msgstr ""
+"Familia %1$d de dirección no mantenida. Solo puerta de enlace IPv4 o IPv6"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported address type '%1$s' with mediated device model '%2$s'"
-msgstr "tipo de dirección '%1$s' no tiene soporte en red %2$s"
+msgstr ""
+"Tipo de dirección ‘%1$s’ no admitido con modelo de dispositivo ‘%2$s’ mediado"
 
-#, fuzzy
 msgid "Unsupported address type for character device"
-msgstr "Tipo de dispositivo de caracteres '%s' no admitido"
+msgstr "Tipo de dirección no admitido para dispositivo de carácter"
 
 #, c-format
 msgid "Unsupported algorithm '%1$s'"
-msgstr "Algoritmo no admitido «%1$s»"
+msgstr "Algoritmo «%1$s» no admitido"
 
 #, c-format
 msgid "Unsupported await condition name '%1$s'"
-msgstr ""
+msgstr "Nombre ‘%1$s’ de condición de espera no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported boot device type: '%1$s'"
-msgstr "Tipo de dispositivo '%1$s' no admitido"
+msgstr "Tipo de dispositivo de arranque no admitido: '%1$s'"
 
-#, fuzzy
 msgid "Unsupported boot order configuration"
-msgstr "configuración no admitida"
+msgstr "Configuración de ordenación de arranque no admitida"
 
 #, c-format
 msgid "Unsupported bus type '%1$s'"
@@ -21741,282 +21732,283 @@ msgid "Unsupported bus type '%1$s' for device type '%2$s'"
 msgstr "Tipo de bus '%1$s' no admitido para el tipo de dispositivo '%2$s'"
 
 msgid "Unsupported capacity-to-allocation relation"
-msgstr "No existe soporte para la relación capacidad-alojamiento"
+msgstr "Relación capacidad-para-asignación no admitido"
 
 #, c-format
 msgid "Unsupported character device type '%1$s'"
-msgstr "Tipo de dispositivo de caracteres '%1$s' no admitido"
+msgstr "Tipo ‘%1$s’ de dispositivo de caracteres no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported codeset '%1$d'"
-msgstr "Codificación de caracteres no compatible '%1$d'"
+msgstr "Conjunto de caracteres ‘%1$d’ no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported compression method '%1$s'"
-msgstr "Algoritmo no admitido «%1$s»"
+msgstr "Método de compresión ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported config format '%1$s'"
-msgstr "Formato '%1$s' de configuración no admitido"
+msgstr "Formato de configuración ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported config type %1$s"
-msgstr "Tipo de configuración no admitido %1$s"
+msgstr "Tipo de configuración %1$s no admitido"
 
-#, fuzzy
 msgid "Unsupported configuration"
-msgstr "configuración no admitida"
+msgstr "Configuración no admitida"
 
 #, c-format
 msgid "Unsupported controller model: %1$s"
-msgstr "Modelo de controlador no tiene soporte: %1$s"
+msgstr "Modelo de controlador no admitido: %1$s"
 
 msgid "Unsupported controller type"
-msgstr ""
+msgstr "Tipo de controlador no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported controller type %1$s"
-msgstr "Modelo de controlador no tiene soporte: %1$s"
+msgstr "Tipo de controlador %1$s no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported controller type: %1$s"
-msgstr "Modelo de controlador no tiene soporte: %1$s"
+msgstr "Tipo de controlador no admitido: %1$s"
 
 msgid "Unsupported device type"
-msgstr ""
+msgstr "Tipo de dispositivo no admitido"
 
 #, c-format
 msgid "Unsupported device type %1$d"
-msgstr "Tipo de dispositivo no compatible %1$d"
+msgstr "Tipo de dispositivo %1$d no admitido"
 
 #, c-format
 msgid "Unsupported device type '%1$s'"
-msgstr "Tipo de dispositivo '%1$s' no admitido"
+msgstr "Tipo de dispositivo ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported device-mapper version. Expected %1$d got %2$d"
-msgstr ""
+msgstr "Versión de device-mapper no admitido. Esperaba %1$d; obtuvo %2$d"
 
 msgid "Unsupported disk address type"
-msgstr ""
+msgstr "Tipo de dirección de disco no admitido"
 
 #, c-format
 msgid "Unsupported disk address type '%1$s'"
-msgstr "Tipo de dirección de disco '%1$s' no admitido"
+msgstr "Tipo de dirección de disco ‘%1$s’ no admitido"
 
 msgid "Unsupported disk bus"
-msgstr ""
+msgstr "Bus de disco no admitido"
 
 #, c-format
 msgid "Unsupported disk bus type %1$s"
-msgstr "Tipo de bus de disco %1$s no admitido"
+msgstr "Tipo %1$s de bus de disco no admitido"
 
 #, c-format
 msgid "Unsupported disk device type '%1$s'"
-msgstr "Tipo de dispositivo de disco '%1$s' no admitido"
+msgstr "Tipo '%1$s' de dispositivo de disco no admitido"
 
 msgid "Unsupported disk type"
-msgstr ""
+msgstr "Tipo de disco no admitido"
 
 #, c-format
 msgid "Unsupported disk type %1$d"
-msgstr "Tipo de disco no compatible %1$d"
+msgstr "Tipo de disco %1$d no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported format of disk %1$s"
-msgstr "Modo adelantar no tiene soporte '%1$s'"
+msgstr "Formato de disco %1$s no admitido"
 
 #, c-format
 msgid "Unsupported forward mode '%1$s'"
-msgstr "Modo adelantar no tiene soporte '%1$s'"
+msgstr "Modo re-envío ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported graphics type '%1$s'"
-msgstr "Tipo de gráficos '%1$s' no admitido"
+msgstr "Tipo de gráficos ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported host device mode %1$s"
-msgstr "Modo de hostdev %1$s no tiene soporte"
+msgstr "Modo de dispositivo host %1$s no admitido"
 
 #, c-format
 msgid "Unsupported host device type %1$s"
-msgstr "Tipo de dispositivo host %1$s no tiene soporte"
+msgstr "Tipo de dispositivo host %1$s no admitido"
 
 #, c-format
 msgid "Unsupported hostdev mode %1$s"
-msgstr "Modo de hostdev %1$s no tiene soporte"
+msgstr "Modo de hostdev %1$s no admitido"
 
 #, c-format
 msgid "Unsupported hostdev type %1$s"
-msgstr "Tipo de hostdev %1$s no tiene soporte"
+msgstr "Tipo de hostdev %1$s no admitido"
 
-#, fuzzy
 msgid "Unsupported listen type"
-msgstr "Tipo virt no tiene soporte"
+msgstr "Tipo de escucha no admitido"
 
 #, c-format
 msgid "Unsupported loader format '%1$s'"
-msgstr ""
+msgstr "Formato de cargador ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported migration cookie feature %1$s"
-msgstr "Funcionalidad de migración de cookies no tiene soporte %1$s"
+msgstr "Funcionalidad de migración de cookies %1$s no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported net type %1$s"
-msgstr "Tipo de red '%1$s' no admitido"
+msgstr "Tipo de red %1$s no admitido"
 
 #, c-format
 msgid "Unsupported net type '%1$s'"
 msgstr "Tipo de red '%1$s' no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported network block protocol '%1$s'"
-msgstr "Tipo de red %1$s no tiene soporte"
+msgstr "Protocolo de bloque de red ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported network type %1$s"
-msgstr "Tipo de red %1$s no tiene soporte"
+msgstr "Tipo de red %1$s no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Unsupported network-wide <bandwidth> element in network %1$s with forward "
 "mode='%2$s'"
-msgstr "Elemento <ip> no tiene soporte en red %1$s con forward mode='%2$s'"
+msgstr ""
+"Elemento <bandwidth> de ancho de red no admitido en red %1$s con forward "
+"mode='%2$s'"
 
-#, fuzzy
 msgid "Unsupported null storage bus"
-msgstr "Bus de entrada '%s' no admitido"
+msgstr "Bus de almacenaje nulo no admitido"
 
 #, c-format
 msgid "Unsupported numatune mode '%1$d'"
-msgstr "Modo numatune no compatible '%1$d'"
+msgstr "Modo numatune '%1$d' no admitido"
 
 #, c-format
 msgid "Unsupported numatune placement '%1$d'"
-msgstr "Ubicación de numatune no compatible '%1$d'"
+msgstr "Lugar numatune '%1$d' no admitido"
 
 #, c-format
 msgid "Unsupported nvram format '%1$s'"
-msgstr ""
+msgstr "Formato nvram ‘%1$s’ no admitido"
 
 #, c-format
 msgid "Unsupported nvram template format '%1$s'"
-msgstr ""
+msgstr "Formato de plantilla ‘%1$s’ de vram no admitido"
 
 #, c-format
 msgid "Unsupported object type %1$d"
-msgstr "Tipo de objeto %1$d sin soporte"
+msgstr "Tipo de objeto %1$d no admitido"
 
 msgid "Unsupported qemu-rdp listen type"
-msgstr ""
+msgstr "Tipo de escucha qemu-rdp no admitido"
 
-#, fuzzy
 msgid "Unsupported resctrl monitor type"
-msgstr "tipo de monitor '%s' no admitido"
+msgstr "Tipo de monitor resctrl no admitido"
 
 #, c-format
 msgid "Unsupported root filesystem type %1$s"
-msgstr "Tipo de sistema de archivos de root no tiene soporte %1$s"
+msgstr "Tipo %1$s de sistema de archivos raíz no admitido"
 
 #, c-format
 msgid "Unsupported scheme in disks URI: %1$s"
-msgstr ""
+msgstr "Esquema no admitido en URI de discos: %1$s"
 
 #, c-format
 msgid "Unsupported spicevmc target name '%1$s'"
-msgstr "Nombre de destino de spicevmc sin soporte '%1$s'"
+msgstr "Nombre '%1$s' de destino spicevmc no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported storage type %1$s, the only supported type is %2$s"
-msgstr "Tipo de bus '%1$s' no admitido para el tipo de dispositivo '%2$s'"
+msgstr "Tipo de almacenaje %1$s no admitido, el tipo solo admitido es %2$s"
 
 #, c-format
 msgid "Unsupported vbox device type: %1$d"
-msgstr "Tipo de dispositivo vbox no compatible: %1$d"
+msgstr "Tipo de dispositivo vbox no admitido: %1$d"
 
 #, c-format
 msgid "Unsupported video device type '%1$s'"
-msgstr "Tipo de dispositivo de vídeo '%1$s' no tiene soporte"
+msgstr "Tipo de dispositivo de vídeo ‘%1$s’ no admitido"
 
 msgid "Unsupported virt type"
-msgstr "Tipo virt no tiene soporte"
+msgstr "Tipo virt no admitido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported volume format '%1$s'"
-msgstr "Formato '%1$s' de configuración no admitido"
+msgstr "Formato ‘%1$s’ de volumen no admitido"
 
 msgid "Unused"
 msgstr "Sin utilizar"
 
 #, c-format
 msgid "Unusual value in %1$s/devices/%2$s/class: %3$s"
-msgstr ""
+msgstr "Valor inusual en %1$s/devices/%2$s/class: %3$s"
 
 msgid "Update a active and/or inactive node device"
-msgstr ""
+msgstr "Actualizar un dispositivo de nodo activo y/o inactivo"
 
 msgid "Update device from an XML <file>."
 msgstr "Actualiza un dispositivo desde un <file> XML."
 
 msgid "Update the media"
-msgstr "Actualizar los medios"
+msgstr "Actualiza los medios"
 
 msgid "Update values of a memory device of a domain"
-msgstr ""
+msgstr "Actualizar valores de un dispositivo de memoria de un dominio"
 
-#, fuzzy
 msgid "Updated"
-msgstr "Actualizar los medios"
+msgstr "Actualizado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Updated network %1$s live state"
-msgstr "la red %1$s no se encuentra activa"
+msgstr "Estado vivo de red %1$s actualizado"
 
 #, c-format
 msgid "Updated network %1$s persistent config"
-msgstr "Se actualizó la configuración persistente de la red %1$s"
+msgstr "Configuración persistente de red %1$s actualizada"
 
 #, c-format
 msgid "Updated network %1$s persistent config and live state"
-msgstr ""
-"Se actualizaron la configuración persistente y el estado activo de la red "
-"%1$s"
+msgstr "Configuración persistente de red %1$s actualizada y estado de vida"
 
 #, c-format
 msgid "Updated node device %1$s live state"
-msgstr ""
+msgstr "Estado vivo de dispositivo %1$s de nodo actualizado"
 
 #, c-format
 msgid "Updated node device %1$s persistent config"
-msgstr ""
+msgstr "Configuración persistente del nodo de dispositivo %1$s actualizado"
 
 #, c-format
 msgid "Updated node device %1$s persistent config and live state"
 msgstr ""
+"Configuración persistente de dispositivo de nodo %1$s actualizado y estado "
+"vivo"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
 msgstr ""
+"Actualiza en un dominio en ejecución necesita indicador "
+"VIR_DOMAIN_AFFECT_LIVE"
 
 msgid "Updates the configuration of a node device"
-msgstr ""
+msgstr "Actualiza la configuración de un dispositivo de nodo"
 
 msgid "Upgrade to a kernel supporting namespaces"
-msgstr "Actualizar a un kernel que soporte espacios de nombres"
+msgstr "Modernice a un kernel que soporte espacios de nombres"
 
 msgid "Upload file contents to a volume"
-msgstr "Cargar contenido de archivo a un volumen"
+msgstr "Suba contenido de archivo a un volumen"
 
 msgid "Usage"
-msgstr "Utilización"
+msgstr "Modo de empleo"
 
 msgid ""
 "Usage of listen-address is forbidden when migration URI uses UNIX transport "
 "method"
 msgstr ""
+"Empleo de direcciones de escucha está prohibida cuando URI de migración "
+"utiliza método de transporte UNIX"
 
 msgid "Usage:"
-msgstr "Uso:"
+msgstr "Modo de empleo:"
 
 #, c-format
 msgid ""
@@ -22034,6 +22026,19 @@ msgid ""
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
 msgstr ""
+"Modo de empleo:\n"
+"  %1$s ARCHIVO\n"
+"  %2$s { -v | -h }\n"
+"\n"
+"Extracto de Nombre Distinguido desde un certificado PEM.\n"
+"La salida significa ser utilizado en la opción de configuración\n"
+"de tls_allowed_dn_list en el archivo libvirtd.conf.\n"
+"\n"
+"  ARCHIVO            certifica archivo para extraer el origen de DN\n"
+"\n"
+"opciones:\n"
+"  -h | --help     exhibe esta ayuda y sale\n"
+"  -v | --version  extrae información de la versión y sale\n"
 
 #, c-format
 msgid ""
@@ -22049,18 +22054,29 @@ msgid ""
 "  -h     | --help     display this help and exit\n"
 "  -v     | --version  output version information and exit\n"
 msgstr ""
+"Modo de empleo:\n"
+"  %1$s { -v | -h } [TRUST|SERVER|CLIENT]\n"
+"\n"
+"Valida la configuración del certificado TLS\n"
+"\n"
+"opciones:\n"
+"  -s     | --system   valida certificados del sistema (predet.)\n"
+"  -u     | --user     validate certificados del usuario\n"
+"  -p DIR | --path DIR   valida ruta de certificado personal\n"
+"  -h     | --help     exhibe esta ayuda y sale\n"
+"  -v     | --version  sale información de la versión y termina\n"
 
 #, sh-format
 msgid ""
 "Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
 "reload|force-reload|gueststatus|shutdown}"
 msgstr ""
-"Uso: $program_name {start|stop|status|restart|condrestart|try-restart|reload|"
-"force-reload|gueststatus|shutdown}"
+"Modo de empleo: $program_name {start|stop|status|restart|condrestart|try-"
+"restart|reload|force-reload|gueststatus|shutdown}"
 
 #, c-format
 msgid "Usage: %1$s FILENAME FD"
-msgstr ""
+msgstr "Modo de empleo: %1$s FD NOMBRE-ARCHIVO"
 
 #, c-format
 msgid ""
@@ -22068,73 +22084,86 @@ msgid ""
 "Designed for use with 'dnsmasq --dhcp-script'\n"
 "Refer to man page of dnsmasq for more details'\n"
 msgstr ""
+"Modo de empleo: %1$s add|old|del|init mac|clientid ip [hostname]\n"
+"Designado para utilizar con 'dnsmasq --dhcp-script'\n"
+"Refiérase a página de man de dnsmasq para más detalles'\n"
 
 msgid ""
 "Use XML to start a full or incremental disk backup of a live domain, "
 "optionally creating a checkpoint"
 msgstr ""
+"Utilice XML para iniciar un respaldo de disco completo o incremental de un "
+"dominio vivo, opcionalmente creando un punto de restauración"
 
 msgid "Use domain power management"
-msgstr ""
+msgstr "Utilice el gestor de energía del dominio"
 
 msgid "Use host power management"
-msgstr ""
+msgstr "Utilice el gestor energético del host"
 
 msgid "Use of 'parentaddr' element requires use of the adapter 'type'"
-msgstr ""
+msgstr "Empleo de elemento 'parentaddr' requiere el uso del adaptador 'type'"
 
 msgid ""
 "Use of 'wwnn', 'wwpn', and 'parent' attributes requires use of the adapter "
 "'type'"
 msgstr ""
+"Empleo de atributos 'wwnn', 'wwpn', y 'parent' requiere el empleo del "
+"adaptador 'type'"
 
 msgid "Use the guest agent to query authorized SSH keys for given user"
 msgstr ""
+"Emplea el agente invitado para solicitar llaves SSH autorizadas para un "
+"usuario dado"
 
 msgid ""
 "Use the guest agent to query or set cpu state from guest's point of view"
 msgstr ""
+"Emplea el agente invitado para solicitar o establecer estado de cpu para "
+"punto de vista del invitado"
 
 msgid ""
 "Use the guest agent to query various information from guest's point of view"
 msgstr ""
+"Emplea el agente invitado para solicitar varias informaciones desde el punto "
+"de vista del invitado"
 
 msgid "Used memory:"
 msgstr "Memoria utilizada:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "User %1$s doesn't exist"
-msgstr "puente %1$s no existe"
+msgstr "El usuario %1$s no existe"
 
 msgid "User namespace support is recommended"
-msgstr ""
+msgstr "Es recomendado mantener espacio de nombre del usuario"
 
 msgid "Username request failed"
-msgstr "Error en la petición de nombre de usuario"
+msgstr "Solicitud de nombre de usuario incorrecta"
 
 #, c-format
 msgid "Using API: %1$s %2$d.%3$d.%4$d\n"
 msgstr "Utilizando API: %1$s %2$d.%3$d.%4$d\n"
 
 msgid "Using domain power management requires authorization"
-msgstr ""
+msgstr "Empleo de gestor energético del dominio requiere autorización"
 
 msgid "Using host power management requires authorization"
-msgstr ""
+msgstr "El empleo de gestión de energía del host requiere autorización"
 
 msgid "Using interface transactions requires authorization"
-msgstr ""
+msgstr "El empleo de transacciones de interfaz requiere autorización"
 
 #, c-format
 msgid "Using library: libvirt %1$d.%2$d.%3$d\n"
 msgstr "Uso de biblioteca: libvirt %1$d.%2$d.%3$d\n"
 
 msgid "Uuid is null"
-msgstr ""
+msgstr "UUID es nula"
 
 #, c-format
 msgid "V1 controller '%1$s' is not wanted, but '%2$s' is co-mounted"
-msgstr ""
+msgstr "El controlador V1 ‘%1$s’ no es deseado, pero ‘%2$s’ está co-montado"
 
 msgid "VCPU"
 msgstr "VCPU"
@@ -22142,96 +22171,101 @@ msgstr "VCPU"
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "VF %1$d of PF '%2$s' is not bound to a net driver, so its MAC address cannot "
 "be set to %3$s"
 msgstr ""
+"VF %1$d de PF ‘%2$d’ no está vinculado a una unidad de red, por tanto su "
+"dirección MAC no puede estar fijada a %3$s"
 
 #, c-format
 msgid "VFB %1$s too big for destination"
 msgstr "El VFB %1$s es demasiado extenso para el destino"
 
-#, fuzzy
 msgid "VFIO AP device assignment is not supported by this version of QEMU"
-msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
+msgstr ""
+"La asignación del dispositivo AP VFIO no está admitida por esta versión de "
+"QEMU"
 
-#, fuzzy
 msgid "VFIO CCW device assignment is not supported by this version of QEMU"
-msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
+msgstr ""
+"La asignación del dispositivo CCW VFIO no está admitido por esta versión de "
+"QEMU"
 
 msgid "VFIO PCI device assignment is not supported by the host"
-msgstr ""
+msgstr "La asignación del dispositivo PCI VFIO no está admitida por el host"
 
 msgid "VFIO PCI device assignment is not supported by this QEMU binary"
 msgstr ""
+"Asignación de dispositivo PCI VFIO no está admitida por este binario QEMU"
 
-#, fuzzy
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
-msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
+msgstr ""
+"Asignación de dispositivo PCI VFIO no está admitida por esta versión de QEMU"
 
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
-msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
+msgstr ""
+"Asignación de dispositivo PCI VFIO no está admitida por esta versión de qemu"
 
-#, fuzzy
 msgid "VFIO device assignment is currently not supported on this system"
-msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
+msgstr ""
+"Asignación de dispositivo VFIO actualmente no está admitida en este sistema"
 
 msgid "VFIO device assignment is not available on this platform"
-msgstr ""
+msgstr "Asignación de dispositivo VFIO no está disponible en esta plataforma"
 
 msgid "VM disk source and snapshot disk source are not the same"
-msgstr ""
+msgstr "Origen de disco de MV y origen de disco de snapshot no son lo mismo"
 
 #, c-format
 msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
-msgstr ""
+msgstr "MV no tiene disco ‘%1$s’ referenciado por snapshot ‘%2$s’"
 
 msgid "VM is already active"
 msgstr "la MV ya se encuentra activa"
 
 msgid "VM is not defined"
-msgstr ""
+msgstr "la MV no está definida"
 
 #, c-format
 msgid "VMX entry '%1$s' contains unsupported scheme '%2$s'"
-msgstr "La entrada VMX '%1$s' contiene un esquema sin soporte '%2$s'"
+msgstr "El apunte VMX ‘%1$s’ contiene el esquema sin soporte ‘%2$s’"
 
 msgid "VMX entry 'annotation' contains invalid escape sequence"
-msgstr ""
-"La entrada 'annotation' de VMX contiene una secuencia de escape no válida"
+msgstr "El apunte 'annotation' de VMX contiene secuencia de escape no válida"
 
 msgid "VMX entry 'cpuid.coresPerSocket' smaller than 'numvcpus'"
-msgstr ""
+msgstr "El apunte VMX de 'cpuid.coresPerSocket’ es más pequeño que ‘numvcpus’"
 
 #, c-format
 msgid "VMX entry 'firmware' has unknown value '%1$s'"
-msgstr ""
+msgstr "El apunte VMX ‘firmware’ tiene valor ‘%1$s’ desconocido"
 
 msgid "VMX entry 'name' contains invalid escape sequence"
-msgstr "La entrada VMX 'name' contiene una secuencia de escape no válida"
+msgstr "El apunte VMX 'name' contiene secuencia de escape no válida"
 
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %1$d, this value is too large"
 msgstr ""
-"La entrada VMX 'sched.cpu.affinity' contiene un %1$d, y este valor es "
-"demasiado extenso"
+"El apunte VMX 'sched.cpu.affinity' contiene un %1$d, y este valor es "
+"demasiado grande"
 
 msgid "VNC"
-msgstr ""
+msgstr "VNC"
 
 msgid "VNC Password authentication not supported by bhyve"
-msgstr ""
+msgstr "Autenticación de contraseña VNC no admitida por bhyve"
 
 #, c-format
 msgid "VNC password is %1$zu characters long, only 8 permitted"
-msgstr ""
+msgstr "La contraseña de VNC es %1$zu caracteres largos, solo se permiten 8"
 
 msgid "VNC power control is not available"
-msgstr ""
+msgstr "El control energético de VNC no está disponible"
 
 msgid "VNC supports connected='keep' only"
-msgstr "VNC solo tiene soporta para connected='keep'"
+msgstr "VNC admite solo la opción connected='keep'"
 
 #, c-format
 msgid "Value '%1$s' is not representable as %2$s"
@@ -22244,72 +22278,72 @@ msgstr "El valor '%1$s' se encuentra fuera del intervalo %2$s"
 #, c-format
 msgid "Value of cputune '%1$s' must be in range [%2$llu, %3$llu]"
 msgstr ""
+"El valor de cputune ‘%1$s’ debe estar dentro del intervalo [%2$llu, %3$llu]"
 
 msgid "Variable value contains invalid character"
 msgstr "Valor de variable contiene carácter no válido"
 
-#, fuzzy
 msgid "Verbose messages"
-msgstr "Mensaje"
+msgstr "Mensajes verbosos"
 
 msgid "Video adapters are not supported in containers."
-msgstr ""
+msgstr "Adaptadores de vídeo no admitidos internos a contenedores."
 
 #, c-format
 msgid "Virsh command line tool of libvirt %1$s\n"
 msgstr "Herramienta de línea de comandos virsh de libvirt %1$s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Virt-admin command line tool of libvirt %1$s\n"
-msgstr "Herramienta de línea de comandos virsh de libvirt %1$s\n"
+msgstr "Herramienta de línea de comandos virt-admin de libvirt %1$s\n"
 
 msgid "Virtual network portgroups are not supported by vz driver."
-msgstr ""
+msgstr "Grupos de puerto de red virtual no son admitidos por el controlador vz."
 
 msgid "Virtual networks are active"
-msgstr ""
+msgstr "Las redes virtuales están activas"
 
 msgid "Virtual port profile association not supported on this platform"
-msgstr ""
-"Asociación de perfil de puerto virtual no tiene soporte en esta plataforma"
+msgstr "Asociación de perfil de puerto virtual no admitido en esta plataforma"
 
 #, c-format
 msgid "Vol %1$s cloned from %2$s\n"
-msgstr "Se ha colando el volumen %1$s a partir de %2$s\n"
+msgstr "Vol %1$s clonado desde %2$s\n"
 
 #, c-format
 msgid "Vol %1$s created\n"
-msgstr "Se ha creado el volumen %1$s\n"
+msgstr "Vol %1$s creado\n"
 
 #, c-format
 msgid "Vol %1$s created from %2$s\n"
-msgstr "Se ha creado el volumen %1$s desde %2$s\n"
+msgstr "Vol %1$s creado desde %2$s\n"
 
 #, c-format
 msgid "Vol %1$s created from input vol %2$s\n"
-msgstr "Se ha creado el volumen %1$s desde el volumen de entrada %2$s\n"
+msgstr "Vol %1$s creado desde vol entrada %2$s\n"
 
 #, c-format
 msgid "Vol %1$s deleted\n"
-msgstr "Se ha eliminando el volumen %1$s\n"
+msgstr "Vol %1$s eliminado\n"
 
 #, c-format
 msgid "Vol %1$s wiped\n"
-msgstr "Se ha eliminado el volumen %1$s\n"
+msgstr "Vol %1$s purgado\n"
 
 #, c-format
 msgid "Volume '%1$s' was not found in domain's definition."
 msgstr ""
+"El volumen ‘%1$s’ no fue encontrado dentro de la definición del dominio."
 
 #, c-format
 msgid "Volume '%1$s'(%2$s) removed.\n"
-msgstr "Volumen '%1$s'(%2$s) ha sido retirado.\n"
+msgstr "El volumen '%1$s'(%2$s) ha sido retirado.\n"
 
 #, c-format
 msgid "Volume name '%1$s' doesn't have expected format '<directory>/<file>'"
 msgstr ""
-"El nombre del volumen '%1$s' no posee el formato esperado '<directory>/"
-"<file>'"
+"El nombre del volumen '%1$s' no ha esperado el formato "
+"'<directorio>/<archivo>'"
 
 #, c-format
 msgid "Volume name '%1$s' has unsupported suffix, expecting '.vmdk'"
@@ -22358,16 +22392,16 @@ msgstr ""
 "Despertar un dominio que ya había sido suspendido por Administración de "
 "energía."
 
-#, fuzzy
 msgid "Watchdog"
 msgstr "Vigilante"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Welcome to %1$s, the administrating virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Bienvenido a %1$s, la terminal de virtualización interactiva.\n"
+"Bienvenido a %1$s, la administración del terminal interactivo de "
+"virtualización.\n"
 "\n"
 
 #, c-format
@@ -22383,32 +22417,34 @@ msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "Limpiando el volumen '%1$s'(%2$s) ... "
 
 msgid "Write domain"
-msgstr ""
+msgstr "Escribe dominio"
 
 msgid "Write domain block"
-msgstr ""
+msgstr "Escribe bloque de dominio"
 
 msgid "Write domain time"
-msgstr ""
+msgstr "Escribe hora y día del dominio"
 
 msgid ""
 "Write filtering of PCI device configuration space is not supported by qemu"
 msgstr ""
+"Escribe filtrado de espacio de configuración del dispositivo PCI no está "
+"admitido por qemu"
 
 msgid "Write host"
-msgstr ""
+msgstr "Escribe host"
 
 msgid "Write interface"
-msgstr ""
+msgstr "Escribe interfaz"
 
 msgid "Write network"
-msgstr ""
+msgstr "Escribe red"
 
 msgid "Write network filter"
-msgstr ""
+msgstr "Escribe filtro de red"
 
 msgid "Write node device"
-msgstr ""
+msgstr "Escribe dispositivo de nodo"
 
 #, c-format
 msgid "Write of '%1$s' to '%2$s' during vport create/delete failed"
@@ -22417,17 +22453,17 @@ msgstr ""
 "vport"
 
 msgid "Write secret"
-msgstr ""
+msgstr "Escriba secreto"
 
 msgid "Write storage pool"
-msgstr ""
+msgstr "Escriba compartición de almacenaje"
 
 msgid "Write storage volume data"
-msgstr ""
+msgstr "Escriba datos del volumen de almacenaje"
 
 #, c-format
 msgid "Write to '%1$s' to trigger host scan failed"
-msgstr "Error en la escritura en '%1$s' para desencadenar el análisis del host"
+msgstr "Escriba en ‘%1$s’ para disparador de análisis del host incorrecto"
 
 msgid "Writing domain block devices requires authorization"
 msgstr ""
@@ -22554,7 +22590,7 @@ msgstr "[--%1$s] <string>"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr ""
+msgstr "[--%1$s] <string>..."
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -22678,9 +22714,8 @@ msgstr "Añade una columna que muestra una instantánea padre"
 msgid "add a column showing parent snapshot"
 msgstr "Añade una columna que muestra una instantánea padre"
 
-#, fuzzy
 msgid "add an IOThread to the guest domain"
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "añada un IOThread al dominio invitado"
 
 msgid "add backing chain information to block stats"
 msgstr ""
@@ -22712,9 +22747,10 @@ msgstr ""
 msgid "address type='%1$s' not supported in hostdev interfaces"
 msgstr "tipo de dirección='%1$s' sin soporte en interfaces de hostdev"
 
-#, fuzzy, c-format
+#, c-format
 msgid "admin MAC can only be set for SR-IOV VFs, but %1$s is not a VF"
-msgstr "vlan solo puede establecerse para SR-IOV VFs, pero %1$s no es VF"
+msgstr ""
+"admin MAC solo puede ser establecido para SR-IOV VFs, pero %1$s no es un VF"
 
 msgid "affect current domain"
 msgstr "Afectar dominio actual"
@@ -22840,9 +22876,8 @@ msgstr "El dominio ya se encuentra en ejecución"
 msgid "another migration job is already running for domain '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "any configuration"
-msgstr "configuración no admitida"
+msgstr "cualquier configuración"
 
 #, c-format
 msgid "ap-domain value '%1$s' is out of range for '%2$s'"
@@ -22857,9 +22892,8 @@ msgstr "apparmor_parser salió con error"
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr "Fallo en applyDHCPOnlyRules - ¡suplantación no protegido!"
 
-#, fuzzy
 msgid "architecture"
-msgstr "Se desconoce arquitectura %s"
+msgstr "arquitectura"
 
 #, fuzzy, c-format
 msgid ""
@@ -23161,7 +23195,7 @@ msgid ""
 msgstr ""
 
 msgid "backup"
-msgstr ""
+msgstr "respaldo"
 
 msgid "backup TLS directory not configured"
 msgstr ""
@@ -23218,9 +23252,9 @@ msgstr "Límite de ancho de banda en MIB/s"
 msgid "bandwidth must be less than %1$llu"
 msgstr "Banda de ancho debe ser menor que %1$llu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "bandwidth must be less than %1$llu bytes"
-msgstr "Banda de ancho debe ser menor que %1$llu"
+msgstr "el ancho de banda debe ser menor que %1$llu bytes"
 
 #, c-format
 msgid "bandwidth must be less than '%1$llu' bytes/s (%2$llu MiB/s)"
@@ -23234,9 +23268,8 @@ msgstr ""
 msgid "base64-encoded secret value"
 msgstr "valor secreto codificado con base64"
 
-#, fuzzy
 msgid "bhyve state driver is not active"
-msgstr "el estado del controlador qemu es no activo"
+msgstr "el estado de la unidad bhyve no está activo"
 
 #, c-format
 msgid "binary '%1$s' does not exist in $PATH"
@@ -23399,9 +23432,8 @@ msgstr ""
 msgid "blockdev-create job was cancelled"
 msgstr ""
 
-#, fuzzy
 msgid "blocked"
-msgstr "bloque"
+msgstr "bloqueado"
 
 msgid "blockio is not supported with vhostuser disk"
 msgstr ""
@@ -23522,9 +23554,9 @@ msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
 msgid "bridge port creation is not supported on this platform"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
-msgstr "Nombre de puente no tiene permiso en modo %1$s (red '%2$s')"
+msgstr "zona de puente no logrado en modo %1$s (red ‘%2$s’)"
 
 msgid "buffer for root interface name is too small"
 msgstr "el búfer del nombre de la interfaz raíz es demasiado pequeño"
@@ -23552,7 +23584,7 @@ msgid "bypass cache unsupported by this system"
 msgstr "Cache de derivación no está admitido por este sistema"
 
 msgid "bytes"
-msgstr ""
+msgstr "bytes"
 
 msgid "cache is not supported with vhostuser disk"
 msgstr ""
@@ -23655,13 +23687,11 @@ msgstr "No se puede leer valor de periodo de cputune"
 msgid "can't parse cputune emulator quota value"
 msgstr "No se puede leer valor de cuota de emulador de cputune"
 
-#, fuzzy
 msgid "can't parse cputune global period value"
-msgstr "No se puede leer valor de periodo de cputune"
+msgstr "no puede interpretar el valor del periodo global del ajuste de cpu"
 
-#, fuzzy
 msgid "can't parse cputune global quota value"
-msgstr "No se puede leer valor de cuota"
+msgstr "no puede interpretar el valor de cuota global de cputune"
 
 #, fuzzy
 msgid "can't parse cputune iothread period value"
@@ -23713,9 +23743,8 @@ msgstr ""
 msgid "can't use data file definition '%1$s'"
 msgstr ""
 
-#, fuzzy
 msgid "canceled"
-msgstr "Guardado cancelado"
+msgstr "cancelado"
 
 msgid "canceled by client"
 msgstr "Cancelado por cliente"
@@ -23821,7 +23850,7 @@ msgstr "No se pueden aplicar las capacidades del proceso %1$d"
 
 #, c-format
 msgid "cannot apply process capabilities: %1$d"
-msgstr ""
+msgstr "no se puede aplicar capacidades del proceso: %1$d"
 
 msgid "cannot become session leader"
 msgstr "no es posible convertirse en líder de sesión"
@@ -24072,9 +24101,9 @@ msgstr "no se puede crear un directorio de pantallazo '%1$s'"
 msgid "cannot create snapshot while checkpoint exists"
 msgstr "no es posible crear instantánea mientras exista punto de control"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create state directory '%1$s'"
-msgstr "No es posible crear un directorio autostart '%1$s'"
+msgstr "no se puede crear directorio de estado ‘%1$s’"
 
 #, c-format
 msgid "cannot decode CPU data for %1$s architecture"
@@ -24307,9 +24336,8 @@ msgstr "no es posible obtener la hora actual"
 msgid "cannot get current time"
 msgstr "no es posible obtener la hora actual"
 
-#, fuzzy
 msgid "cannot get disk location"
-msgstr "no es posible analizar ubicación de inicio del dispositivo"
+msgstr "no se puede obtener el lugar del disco"
 
 msgid "cannot get feature flags on macvtap tap"
 msgstr "no se pudieron obtener indicadores de funciones en macvtap tap"
@@ -24336,13 +24364,11 @@ msgstr "No se puede obtener RSS para dominio"
 msgid "cannot get machine name"
 msgstr "no es posible obtener la hora actual"
 
-#, fuzzy
 msgid "cannot get medium"
-msgstr "no es posible obtener la hora actual"
+msgstr "no se puede obtener medio"
 
-#, fuzzy
 msgid "cannot get medium attachment type"
-msgstr "no es posible obtener la hora actual"
+msgstr "no se puede obtener tipo del medio adjunto"
 
 #, fuzzy
 msgid "cannot get medium attachments"
@@ -24405,9 +24431,8 @@ msgstr ""
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
 
-#, fuzzy
 msgid "cannot initialize agent condition"
-msgstr "no es posible inicializar condición de monitor"
+msgstr "no se puede inicializar condición de agente"
 
 #, c-format
 msgid "cannot initialize cert object: %1$s"
@@ -24416,9 +24441,8 @@ msgstr "No se puede inicializar objeto de certificado:%1$s"
 msgid "cannot initialize condition variable"
 msgstr "No es posible inicializar la variable de condición"
 
-#, fuzzy
 msgid "cannot initialize console condition"
-msgstr "no es posible inicializar condición de monitor"
+msgstr "no se puede inicializar condición de consola"
 
 msgid ""
 "cannot initialize libxenlight context, probably not running in a Xen Dom0, "
@@ -24448,9 +24472,8 @@ msgstr ""
 msgid "cannot limit number of subprocesses of process %1$lld to %2$u"
 msgstr "No se puede limitar número de subprocesos de proceso %1$lld a %2$u"
 
-#, fuzzy
 msgid "cannot list IOThreads for an inactive domain"
-msgstr "No es posible mostrar vcpus en un dominio inactivo"
+msgstr "no es posible alistar IOThread para un dominio inactivo"
 
 #, c-format
 msgid "cannot list SASL mechanisms %1$d (%2$s)"
@@ -24565,7 +24588,7 @@ msgid "cannot modify network device address type"
 msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
 
 msgid "cannot modify network device backend settings"
-msgstr ""
+msgstr "no se puede modificar parámetro de segundo plano del dispositivo de red"
 
 msgid "cannot modify network device boot index setting"
 msgstr ""
@@ -24584,9 +24607,9 @@ msgstr ""
 msgid "cannot modify network device rom bar setting"
 msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
 
-#, fuzzy
 msgid "cannot modify network device rom enabled setting"
-msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
+msgstr ""
+"no se puede modificar parámetro habilitado de rom del dispositivo de red"
 
 msgid "cannot modify network device script attribute"
 msgstr "No se puede modificar atributo de script de dispositivo de red"
@@ -24604,7 +24627,7 @@ msgid "cannot modify virtio network device driver attributes"
 msgstr "No se pueden modificar atributos de controlador de dispositivo de red"
 
 msgid "cannot modify virtio network device driver options"
-msgstr ""
+msgstr "no se puede modificar opciones de unidad de dispositivo de red virtio"
 
 msgid "cannot obtain CPU freq"
 msgstr "No se puede obtener frecuencia de CPU"
@@ -24667,17 +24690,17 @@ msgstr "No se pueden recuperar datos"
 msgid "cannot parse MAC address '%1$s' from file '%2$s'"
 msgstr "no se pudo procesar la dirección MAC '%1$s' desde el archivo '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse cpu sys stat '%1$s'"
-msgstr "No se puede analizar el estado del sistema '%1$s'"
+msgstr "no se puede interpretar estadística de sys cpu ‘%1$s’"
 
 #, fuzzy, c-format
 msgid "cannot parse cpu usage stat '%1$s'"
 msgstr "No se puede analizar el estatus del usuario '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse cpu user stat '%1$s'"
-msgstr "No se puede analizar el estatus del usuario '%1$s'"
+msgstr "no se puede interpretar estado de usuario '%1$s'"
 
 msgid "cannot parse device end location"
 msgstr "no es posible analizar ubicación final del dispositivo"
@@ -24813,9 +24836,8 @@ msgstr "no es posible leer imagen de dominio '%1$s'"
 msgid "cannot read file '%1$s'"
 msgstr "No se puede leer el archivo '%1$s'"
 
-#, fuzzy
 msgid "cannot read from stdin"
-msgstr "No se puede leer desde la secuencia"
+msgstr "no se puede leer desde entrada estándar"
 
 msgid "cannot read from stream"
 msgstr "No se puede leer desde la secuencia"
@@ -24830,7 +24852,7 @@ msgstr "no es posible leer la lista de montaje '%1$s'"
 
 #, c-format
 msgid "cannot read node header '%1$s'"
-msgstr ""
+msgstr "no se puede leer cabecera de nodo ‘%1$s’"
 
 #, c-format
 msgid "cannot receive data from volume %1$s"
@@ -24948,9 +24970,9 @@ msgstr ""
 msgid "cannot seek in '%1$s'"
 msgstr "No es posible buscar en '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot seek into '%1$s'"
-msgstr "No es posible buscar en '%1$s'"
+msgstr "no se puede buscar '%1$s'"
 
 #, c-format
 msgid "cannot seek to beginning of file '%1$s'"
@@ -24972,7 +24994,7 @@ msgid "cannot set CPU affinity on process %1$d"
 msgstr "No es posible definir afinidad de CPU en el proceso %1$d"
 
 msgid "cannot set autostart for transient device"
-msgstr ""
+msgstr "no se puede establecer autoinicio para dispositivo transiente"
 
 msgid "cannot set autostart for transient domain"
 msgstr "No es posible realizar inicio automático para dominios transitorios"
@@ -25071,9 +25093,9 @@ msgstr "no es posible obtener el estado del archivo '%1$s'"
 msgid "cannot stat path '%1$s'"
 msgstr "No se puede ejecutar ruta de stat '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot stat tap fd %1$d"
-msgstr "No se pudo stat fd %1$d"
+msgstr "no se puede iniciar cobertura fd %1$d"
 
 #, c-format
 msgid "cannot statvfs path '%1$s'"
@@ -25120,9 +25142,9 @@ msgstr "no es posible quitar la definición del dominio con nvram"
 msgid "cannot undefine transient domain"
 msgstr "no es posible quitar la definición del dominio transitorio"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot unlink '%1$s'"
-msgstr "no es posible desenlazar el archivo '%1$s'"
+msgstr "no se puede desenlazar ‘%1$s’"
 
 #, c-format
 msgid "cannot unlink file '%1$s'"
@@ -25276,7 +25298,7 @@ msgid "change number of virtual CPUs"
 msgstr "modifica la cantidad de Cpus virtuales"
 
 msgid "change of nodeset for running domain requires restrictive numa mode"
-msgstr ""
+msgstr "cambio de nodeset para ejecutar dominio requiere modo numa restrictivo"
 
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
@@ -25287,7 +25309,7 @@ msgid "change the current directory"
 msgstr "modificar el directorio actual"
 
 msgid "changed"
-msgstr ""
+msgstr "cambiado"
 
 msgid "changes the password of the specified user inside the domain"
 msgstr ""
@@ -25363,10 +25385,8 @@ msgid "character device information was missing filename"
 msgstr ""
 "la información del dispositivo de caracteres no contenía un nombre de archivo"
 
-#, fuzzy
 msgid "character device information was missing label"
-msgstr ""
-"la información del dispositivo de caracteres no contenía un nombre de archivo"
+msgstr "la información del dispositivo de carácter era etiqueta ausente"
 
 msgid "character device name"
 msgstr "Nombre de dispositivo de carácter"
@@ -25625,9 +25645,8 @@ msgstr ""
 msgid "compatibility option only available with qcow2"
 msgstr "Opción de compatibilidad solo está disponible con qcow2"
 
-#, fuzzy
 msgid "completed"
-msgstr "Extracción completa"
+msgstr "completado"
 
 #, c-format
 msgid ""
@@ -25693,7 +25712,7 @@ msgid "conn must match stream connection"
 msgstr ""
 
 msgid "connect"
-msgstr ""
+msgstr "conectar"
 
 msgid "connect to daemon's admin server"
 msgstr "conectarse al servidor de administración del demonio"
@@ -25702,7 +25721,7 @@ msgid "connect to the guest console"
 msgstr "conectarse con la consola huésped"
 
 msgid "connected"
-msgstr ""
+msgstr "conectado"
 
 msgid ""
 "connection URI of the destination host as seen from the client(normal "
@@ -26245,7 +26264,7 @@ msgid "cpu count too large"
 msgstr "ncpus demasiado grandes"
 
 msgid "cpu hotplug is not supported"
-msgstr ""
+msgstr "enchufado caliente de cpu no admitida"
 
 msgid "cpu parameter is missing a model name"
 msgstr ""
@@ -26292,9 +26311,8 @@ msgstr "Crear una red desde un archivo XML"
 msgid "create a network from an XML file"
 msgstr "Crear una red desde un archivo XML"
 
-#, fuzzy
 msgid "create a network port from an XML file"
-msgstr "Crear una red desde un archivo XML"
+msgstr "crea un puerto de red desde un archivo XML"
 
 msgid "create a pool from a set of args"
 msgstr "crea un grupo desde un conjunto de argumentos"
@@ -26378,6 +26396,7 @@ msgstr ""
 msgid ""
 "curl_easy_getinfo(CURLINFO_RESPONSE_CODE) returned an error: %1$s (%2$d)"
 msgstr ""
+"curl_easy_getinfo(CURLINFO_RESPONSE_CODE) devolvió un error: %1$s (%2$d)"
 
 #, c-format
 msgid ""
@@ -26389,7 +26408,7 @@ msgstr ""
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d)"
-msgstr ""
+msgstr "curl_easy_perform() devolvió un error: %1$s (%2$d)"
 
 #, c-format
 msgid "curl_easy_perform() returned an error: %1$s (%2$d) : %3$s"
@@ -26433,7 +26452,7 @@ msgid "custom monitor control commands issued"
 msgstr ""
 
 msgid "daemon"
-msgstr ""
+msgstr "demonio"
 
 #, fuzzy
 msgid "daemon's admin server connection URI"
@@ -26528,9 +26547,8 @@ msgstr "elimina un grupo"
 msgid "delete a vol"
 msgstr "elimina un volumen"
 
-#, fuzzy
 msgid "delete an IOThread from the guest domain"
-msgstr "Inyectar NMI al dominio de huésped"
+msgstr "borra un hilo IOThread desde el dominio invitado"
 
 #, fuzzy
 msgid "delete checkpoint and all children"
@@ -26549,10 +26567,9 @@ msgstr "borrar captura actual"
 msgid "delete files that were successfully committed"
 msgstr "Borrar archivos que ya se han enviado con éxito"
 
-#, fuzzy
 msgid "delete only libvirt metadata, leaving checkpoint contents behind"
 msgstr ""
-"Borre solamente los metadatos de libvirt, deje el contenido de la instantánea"
+"borre solamente metadatos de libvirt, dejando la casilla del contenido detrás"
 
 msgid "delete only libvirt metadata, leaving snapshot contents behind"
 msgstr ""
@@ -26571,7 +26588,7 @@ msgid ""
 msgstr ""
 
 msgid "delete the specified network port"
-msgstr ""
+msgstr "borra el puerto de red especificado"
 
 msgid ""
 "deleting external snapshot that has internal snapshot as parent not supported"
@@ -26609,9 +26626,8 @@ msgstr ""
 msgid "deprecated configuration: %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "description"
-msgstr "Descripción de instantánea"
+msgstr "descripción"
 
 #, fuzzy
 msgid "description of checkpoint"
@@ -26737,7 +26753,7 @@ msgid "device modalias file %1$s content has improper format"
 msgstr ""
 
 msgid "device name"
-msgstr ""
+msgstr "nombre de dispositivo"
 
 msgid "device name or wwn pair in 'wwnn,wwpn' format"
 msgstr "nombre de dispositivo o par wwn en formato 'wwnn,wwpn'"
@@ -26745,9 +26761,9 @@ msgstr "nombre de dispositivo o par wwn en formato 'wwnn,wwpn'"
 msgid "device not found"
 msgstr "no se encontró el dispositivo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "device not found: %1$s"
-msgstr "Dispositivo de nodo no encontrado: %1$s"
+msgstr "dispositivo no encontrado: %1$s"
 
 msgid "device not present in domain configuration"
 msgstr "Dispositivo no está presente en configuración de dominio"
@@ -26802,9 +26818,8 @@ msgstr "dir"
 msgid "direct migration"
 msgstr "migración directa"
 
-#, fuzzy
 msgid "direct migration is not supported by the source host"
-msgstr "El host de origen no soporta migración desconectada"
+msgstr "migración directa no está admitida por el huésped origen"
 
 #, c-format
 msgid ""
@@ -26846,9 +26861,8 @@ msgstr ""
 msgid "disable cpus specified by cpumap"
 msgstr ""
 
-#, fuzzy
 msgid "disabled"
-msgstr "desactivar"
+msgstr "deshabilitado"
 
 #, c-format
 msgid "discard is not supported for model '%1$s'"
@@ -26866,10 +26880,10 @@ msgid "discarding %1$llu bytes failed on RBD image %2$s at offset %3$llu"
 msgstr ""
 
 msgid "disconnect"
-msgstr ""
+msgstr "desconectar"
 
 msgid "disconnected"
-msgstr ""
+msgstr "desconectado"
 
 msgid "discover potential storage pool sources"
 msgstr "descubre posibles orígenes de grupo de almacenamiento"
@@ -26910,9 +26924,9 @@ msgstr ""
 msgid "disk '%1$s' must use snapshot mode '%2$s'"
 msgstr "Disco '%1$s' debe usar modo de instantánea '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "disk '%1$s' not found"
-msgstr "no se encuentra el disco %1$s"
+msgstr "disco ‘%1$s’ no encontrado"
 
 #, fuzzy, c-format
 msgid "disk '%1$s' not found in domain"
@@ -27126,9 +27140,8 @@ msgstr "información del tamaño de los dispositivos de bloque del dominio"
 msgid "display available free memory for the NUMA cell."
 msgstr "muestra la memoria libre disponible para la celda NUMA."
 
-#, fuzzy
 msgid "display available free pages for the NUMA cell."
-msgstr "muestra la memoria libre disponible para la celda NUMA."
+msgstr "exhibe páginas libres disponibles para la celda NUMA."
 
 msgid "display extended details for pools"
 msgstr "muestra detalles extendidos para los grupos"
@@ -27231,7 +27244,7 @@ msgstr "Dominio '%1$s' no se está migrando"
 msgid "domain '%1$s' is not processing incoming migration"
 msgstr "el dominio '%1$s' no está procesando migraciones entrantes"
 
-#, fuzzy, c-format
+#, c-format
 msgid "domain '%1$s' is not running"
 msgstr "el dominio '%1$s' no está ejecutándose"
 
@@ -27649,7 +27662,7 @@ msgid "either secret uuid or usage expected"
 msgstr ""
 
 msgid "element"
-msgstr ""
+msgstr "elemento"
 
 #, c-format
 msgid "element '%1$s' requires either 'keyfile' or 'agentsock' attribute"
@@ -27701,9 +27714,8 @@ msgstr "activar migración en paralelo"
 msgid "enable post-copy migration; switch to it using migrate-postcopy command"
 msgstr ""
 
-#, fuzzy
 msgid "enabled"
-msgstr "activar"
+msgstr "habilitado"
 
 #, c-format
 msgid "encountered an error on interface %1$s index %2$d"
@@ -27845,7 +27857,7 @@ msgid "error parsing IFLA_VF_PORT part"
 msgstr "Error al analizar la parte IFLA_VF_PORT"
 
 msgid "error parsing IFLA_VF_STATS"
-msgstr ""
+msgstr "error interpretando IFLA_VF_STATS"
 
 msgid "error parsing pid of lldpad"
 msgstr "error al analizar el pid de lldpad"
@@ -28166,11 +28178,11 @@ msgstr "Estatus de salida %1$d"
 
 #, fuzzy
 msgid "expected exactly 1 device for the storage pool"
-msgstr "Se esperaba exactamente 1 host para el grupo de almacenamiento"
+msgstr "esperaba exactamente 1 dispositivo para el conclave almacenado"
 
 #, fuzzy
 msgid "expected exactly 1 host for the storage pool"
-msgstr "Se esperaba exactamente 1 host para el grupo de almacenamiento"
+msgstr "esperaba exactamente 1 host para el conjunto de almacenamiento"
 
 #, c-format
 msgid "expected protocol '%1$s' but got '%2$s' in URI JSON volume definition"
@@ -28259,8 +28271,7 @@ msgstr "externo"
 
 #, c-format
 msgid "external active snapshots are not supported on '%1$s' disks"
-msgstr ""
-"las instantáneas activas externas no son compatibles con los discos '%1$s'"
+msgstr "las instantáneas activas externas no son admitidas en discos ‘%1$s’"
 
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr ""
@@ -28276,7 +28287,7 @@ msgstr ""
 #, c-format
 msgid "external inactive snapshots are not supported on '%1$s' disks"
 msgstr ""
-"las instantáneas externas inactivas no son compatibles con los discos '%1$s'"
+"las instantáneas externas inactivas no son compatibles con los discos ‘%1$s’"
 
 #, c-format
 msgid ""
@@ -28312,9 +28323,8 @@ msgstr "f - forzar, intentar redefinirlos"
 msgid "failed"
 msgstr "Error"
 
-#, fuzzy
 msgid "failed Xen syscall"
-msgstr "Error en syscall Xen %s"
+msgstr "ha fallado Xen syscall"
 
 #, c-format
 msgid "failed Xen syscall %1$s"
@@ -28336,9 +28346,9 @@ msgstr "Error al leer desde el archivo '%1$s'"
 msgid "failed to abort job for disk '%1$s'"
 msgstr "Error al restablecer dispositivo de bloque '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to access '%1$s'"
-msgstr "No se puede acceder %1$s"
+msgstr "ha fallado al acceder ‘%1$s’"
 
 #, fuzzy
 msgid "failed to acquire guest cid"
@@ -28381,9 +28391,9 @@ msgstr "Error al asociar la interfaz"
 msgid "failed to authenticate using SSH agent: %1$s"
 msgstr "Error en la autenticación mediante el agent SSH: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to authenticate using agent: %1$s"
-msgstr "Error en la autenticación mediante el agent SSH: %1$s"
+msgstr "ha fallado al autenticar utilizando agente: %1$s"
 
 #, c-format
 msgid "failed to authenticate: %1$s"
@@ -28435,9 +28445,9 @@ msgstr "Error al confirmar transacción: %1$s%2$s%3$s"
 msgid "failed to compile regex '%1$s': %2$s"
 msgstr "error al compilar el regex ' %1$s': %2$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to connect to %1$s"
-msgstr "No se pudo conectar socket a '%1$s'"
+msgstr "ha fallado al conectar a %1$s"
 
 #, fuzzy
 msgid "failed to connect to agent socket"
@@ -28512,7 +28522,7 @@ msgstr "error al crear el directorio '%1$s'"
 
 #, c-format
 msgid "failed to create dump dir '%1$s'"
-msgstr ""
+msgstr "ha fallado al crear dir de volcado ‘%1$s’"
 
 #, c-format
 msgid "failed to create glfs object for '%1$s'"
@@ -28528,13 +28538,12 @@ msgstr "error al crear el archivo de imagen '%1$s'"
 msgid "failed to create include file"
 msgstr "No pudo crear archivo de inclusión"
 
-#, fuzzy
 msgid "failed to create json"
-msgstr "Error al crear %s"
+msgstr "ha fallado al crear json"
 
 #, c-format
 msgid "failed to create lib dir '%1$s'"
-msgstr ""
+msgstr "ha fallado al crear lib dir ‘%1$s’"
 
 #, fuzzy, c-format
 msgid "failed to create libssh channel: %1$s"
@@ -28542,7 +28551,7 @@ msgstr "No se pudo abrir el canal ssh channel: %1$s"
 
 #, c-format
 msgid "failed to create log dir '%1$s'"
-msgstr ""
+msgstr "ha fallado al crear dir bitácora ‘%1$s’"
 
 #, c-format
 msgid "failed to create logfile %1$s"
@@ -28553,7 +28562,7 @@ msgstr "Error en la creación de perfil"
 
 #, c-format
 msgid "failed to create save dir '%1$s'"
-msgstr ""
+msgstr "ha fallado al crear dir guardado ‘%1$s’"
 
 msgid "failed to create socket"
 msgstr "no fue posible crear socket"
@@ -28562,9 +28571,8 @@ msgstr "no fue posible crear socket"
 msgid "failed to create socket needed for '%1$s'"
 msgstr "Error en la creación de socket necesaria para '%1$s'"
 
-#, fuzzy
 msgid "failed to create socketpair"
-msgstr "no fue posible crear socket"
+msgstr "ha fallado al crear pareja de zócalo socketpair"
 
 #, c-format
 msgid "failed to create state dir '%1$s'"
