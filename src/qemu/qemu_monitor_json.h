@@ -91,9 +91,6 @@ int
 qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
                             GHashTable *table);
 
-virJSONValue *
-qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
-                               bool queryNodes);
 int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
                                     GHashTable *hash);

@@ -677,8 +677,6 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitor *mon,
 int qemuMonitorBlockIOStatusToError(const char *status);
 GHashTable *qemuMonitorGetBlockInfo(qemuMonitor *mon);
 
-virJSONValue *qemuMonitorQueryBlockstats(qemuMonitor *mon);
-
 typedef struct _qemuBlockStats qemuBlockStats;
 struct _qemuBlockStats {
     unsigned long long rd_req;

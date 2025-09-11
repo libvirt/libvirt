@@ -2463,7 +2463,7 @@ qemuMonitorJSONGetOneBlockStatsNodeInfo(virJSONValue *dev,
 }
 
 
-virJSONValue *
+static virJSONValue *
 qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
                                bool queryNodes)
 {
