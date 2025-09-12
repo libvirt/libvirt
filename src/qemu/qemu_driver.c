@@ -17592,6 +17592,7 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                       virTypedParamList *par)
 {
     qemuBlockStats *en;
+    size_t i;
 
     /* In case where qemu didn't provide the stats we stop here rather than
      * trying to refresh the stats from the disk. Inability to provide stats is
@@ -17615,6 +17616,99 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_REQS, idx);
     virTypedParamListAddULLong(par, en->flush_total_times,
                                VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_FL_TIMES, idx);
+
+    if (en->n_timed_stats > 0) {
+        virTypedParamListAddULLong(par, en->n_timed_stats,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_COUNT, idx);
+
+        for (i = 0; i < en->n_timed_stats; i++) {
+            virTypedParamListAddULLong(par, en->timed_stats[i].interval_length,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_INTERVAL,
+                                       idx, i);
+
+            virTypedParamListAddULLong(par, en->timed_stats[i].rd_latency_min,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MIN,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].rd_latency_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MAX,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].rd_latency_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_AVG,
+                                       idx, i);
+
+            virTypedParamListAddULLong(par, en->timed_stats[i].wr_latency_min,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MIN,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].wr_latency_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MAX,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].wr_latency_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_AVG,
+                                       idx, i);
+
+            virTypedParamListAddULLong(par, en->timed_stats[i].zone_append_latency_min,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MIN,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].zone_append_latency_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MAX,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].zone_append_latency_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_AVG,
+                                       idx, i);
+
+            virTypedParamListAddULLong(par, en->timed_stats[i].flush_latency_min,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MIN,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].flush_latency_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MAX,
+                                       idx, i);
+            virTypedParamListAddULLong(par, en->timed_stats[i].flush_latency_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_AVG,
+                                       idx, i);
+
+            virTypedParamListAddDouble(par, en->timed_stats[i].rd_queue_depth_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_QUEUE_DEPTH_AVG,
+                                       idx, i);
+            virTypedParamListAddDouble(par, en->timed_stats[i].wr_queue_depth_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_QUEUE_DEPTH_AVG,
+                                       idx, i);
+            virTypedParamListAddDouble(par, en->timed_stats[i].zone_append_queue_depth_avg,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX "%zu"
+                                       VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_QUEUE_DEPTH_AVG,
+                                       idx, i);
+        }
+    }
 }
 
 

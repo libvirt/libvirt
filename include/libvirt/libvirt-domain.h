@@ -3638,6 +3638,184 @@ struct _virDomainStatsRecord {
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_OPTIMAL ".limits.memory_alignment_optimal"
 
 /**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_COUNT:
+ *
+ * Number of groups of statistics accounted in a configured time intervals as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_COUNT ".timed_group.count"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX:
+ *
+ * The parameter name prefix to access each group of timed stats. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * timed group suffix parameters to form a complete paramter name.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX ".timed_group."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_INTERVAL:
+ *
+ * The time interval in seconds as unsigned long long for which the statistics
+ * in this group were collected.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_INTERVAL ".interval"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MIN:
+ *
+ * Minimum latency of read operations in the defined interval, in nanoseconds as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MIN ".rd_latency_min"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MAX:
+ *
+ * Maximum latency of read operations in the defined interval, in nanoseconds as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MAX ".rd_latency_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_AVG:
+ *
+ * Average latency of read operations in the defined interval, in nanoseconds as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_AVG ".rd_latency_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MIN:
+ *
+ * Minimum latency of write operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MIN ".wr_latency_min"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MAX:
+ *
+ * Maximum latency of write operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MAX ".wr_latency_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_AVG:
+ *
+ * Average latency of write operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_AVG ".wr_latency_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MIN:
+ * Minimum latency of zone append operations in the defined interval, in
+ * nanoseconds as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MIN ".zone_append_latency_min"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MAX:
+ *
+ * Maximum latency of zone append operations in the defined interval, in
+ * nanoseconds as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MAX ".zone_append_latency_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_AVG:
+ *
+ * Average latency of zone append operations in the defined interval, in
+ * nanoseconds as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_AVG ".zone_append_latency_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MIN:
+ *
+ * Minimum latency of flush operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MIN ".flush_latency_min"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MAX:
+ *
+ * Maximum latency of flush operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MAX ".flush_latency_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_AVG:
+ *
+ * Average latency of flush operations in the defined interval, in nanoseconds
+ * as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_AVG ".flush_latency_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_QUEUE_DEPTH_AVG:
+ *
+ * Average number of pending read operations in the defined interval as double.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_QUEUE_DEPTH_AVG ".rd_queue_depth_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_QUEUE_DEPTH_AVG:
+ *
+ * Average number of pending write operations in the defined interval as double.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_QUEUE_DEPTH_AVG ".wr_queue_depth_avg"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_QUEUE_DEPTH_AVG:
+ *
+ * Average number of pending zone append operations in the defined interval as
+ * double.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_QUEUE_DEPTH_AVG ".zone_append_queue_depth_avg"
+
+/**
  * VIR_DOMAIN_STATS_PERF_CMT:
  *
  * The usage of l3 cache (bytes) by applications running on the platform as

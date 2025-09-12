@@ -2772,6 +2772,39 @@ Information listed includes:
   that no bounce buffer is needed
 * ``block.<num>.limits.memory_alignment_optimal`` - memory alignment in bytes
   that is used for bounce buffers
+* ``block.<num>.timed_group.count`` - number of blocks of timed group statistics
+* ``block.<num>.timed_group.<num>.interval_length`` - The time interval in
+  seconds for which the statistics in this group were collected.
+* ``block.<num>.timed_group.<num>.rd_latency_min`` - minimum latency of read
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.rd_latency_max`` - maximum latency of read
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.rd_latency_avg`` - average latency of read
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.wr_latency_min`` - minimum latency of write
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.wr_latency_max`` - maximum latency of write
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.wr_latency_avg`` - average latency of write
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.zone_append_latency_min`` - minimum latency
+  of zone append operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.zone_append_latency_max`` - maximum latency
+  of zone append operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.zone_append_latency_avg`` - average latency
+  of zone append operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.flush_latency_min`` - minimum latency
+  of flush operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.flush_latency_max`` - maximum latency of flush
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.flush_latency_avg`` - average latency of flush
+  operations in the defined interval in nanoseconds
+* ``block.<num>.timed_group.<num>.rd_queue_depth_avg`` - average number of
+  pending read operations in the defined interval
+* ``block.<num>.timed_group.<num>.wr_queue_depth_avg`` - average number of
+  pending write operations in the defined interval
+* ``block.<num>.timed_group.<num>.zone_append_queue_depth_avg`` - average number
+  of pending zone append operations in the defined interval
 
 
 *--iothread* returns information about IOThreads on the running guest
