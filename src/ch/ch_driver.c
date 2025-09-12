@@ -2434,6 +2434,27 @@ static int chDomainDetachDevice(virDomainPtr dom, const char *xml)
                                      VIR_DOMAIN_AFFECT_LIVE);
 }
 
+
+static int
+chConnectDomainEventRegister(virConnectPtr conn,
+                             virConnectDomainEventCallback callback,
+                             void *opaque,
+                             virFreeCallback freecb)
+{
+    virCHDriver *driver = conn->privateData;
+
+    if (virConnectDomainEventRegisterEnsureACL(conn) < 0)
+        return -1;
+
+    if (virDomainEventStateRegister(conn,
+                                    driver->domainEventState,
+                                    callback, opaque, freecb) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* Function Tables */
 static virHypervisorDriver chHypervisorDriver = {
     .name = "CH",
@@ -2499,6 +2520,7 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainAttachDeviceFlags = chDomainAttachDeviceFlags, /* 11.8.0 */
     .domainDetachDevice = chDomainDetachDevice, /* 11.8.0 */
     .domainDetachDeviceFlags = chDomainDetachDeviceFlags, /* 11.8.0 */
+    .connectDomainEventRegister = chConnectDomainEventRegister, /* 11.8.0 */
 };
 
 static virConnectDriver chConnectDriver = {
