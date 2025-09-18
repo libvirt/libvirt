@@ -184,6 +184,9 @@ qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
             return;
         }
     } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+            return;
+
         /* first USB device is "usb", others are normal "usb%d" */
         if (controller->idx == 0) {
             controller->info.alias = g_strdup("usb");

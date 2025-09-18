@@ -19,9 +19,7 @@
   <on_crash>restart</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
-    <controller type='usb' index='0' model='none'>
-      <alias name='usb'/>
-    </controller>
+    <controller type='usb' index='0' model='none'/>
     <controller type='scsi' index='0' model='virtio-scsi'>
       <alias name='scsi0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'>
