@@ -2055,6 +2055,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("channel-virtio-autoadd");
     DO_TEST_CAPS_LATEST("console-virtio");
     DO_TEST_CAPS_LATEST("console-virtio-many");
+    DO_TEST_CAPS_LATEST("console-virtio-serial-autoassign-address");
     DO_TEST_CAPS_ARCH_LATEST("console-virtio-ccw", "s390x");
     DO_TEST_CAPS_LATEST("console-virtio-unix");
     DO_TEST_CAPS_ARCH_LATEST("console-sclp", "s390x");
