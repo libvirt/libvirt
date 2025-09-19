@@ -38,11 +38,11 @@
     </console>
     <console type='pty'>
       <target type='virtio' port='2'/>
-      <address type='virtio-serial' controller='0' bus='0' port='0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
     </console>
     <console type='pty'>
       <target type='virtio' port='3'/>
-      <address type='virtio-serial' controller='0' bus='0' port='0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
     </console>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

@@ -33,9 +33,9 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -chardev pty,id=charconsole1 \
 -device '{"driver":"virtconsole","bus":"virtio-serial0.0","nr":0,"chardev":"charconsole1","id":"console1"}' \
 -chardev pty,id=charconsole2 \
--device '{"driver":"virtconsole","bus":"virtio-serial0.0","nr":0,"chardev":"charconsole2","id":"console2"}' \
+-device '{"driver":"virtconsole","bus":"virtio-serial0.0","nr":1,"chardev":"charconsole2","id":"console2"}' \
 -chardev pty,id=charconsole3 \
--device '{"driver":"virtconsole","bus":"virtio-serial0.0","nr":0,"chardev":"charconsole3","id":"console3"}' \
+-device '{"driver":"virtconsole","bus":"virtio-serial0.0","nr":2,"chardev":"charconsole3","id":"console3"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

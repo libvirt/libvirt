@@ -1717,11 +1717,16 @@ virDomainVirtioSerialAddrNext(virDomainDef *def,
 
 static int
 virDomainVirtioSerialAddrNextFromController(virDomainVirtioSerialAddrSet *addrs,
-                                            virDomainDeviceVirtioSerialAddress *addr)
+                                            virDomainDeviceVirtioSerialAddress *addr,
+                                            bool allowZero)
 {
+    ssize_t startPort = 0;
     ssize_t port;
     ssize_t i;
     virBitmap *map;
+
+    if (allowZero)
+        startPort = -1;
 
     i = virDomainVirtioSerialAddrFindController(addrs, addr->controller);
     if (i < 0) {
@@ -1732,7 +1737,7 @@ virDomainVirtioSerialAddrNextFromController(virDomainVirtioSerialAddrSet *addrs,
     }
 
     map = addrs->controllers[i]->ports;
-    if ((port = virBitmapNextClearBit(map, 0)) <= 0) {
+    if ((port = virBitmapNextClearBit(map, startPort)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unable to find a free port on virtio-serial controller %1$u"),
                        addr->controller);
@@ -1755,13 +1760,33 @@ virDomainVirtioSerialAddrAssign(virDomainDef *def,
 {
     virDomainDeviceInfo nfo = { 0 };
     virDomainDeviceInfo *ptr = allowZero ? &nfo : info;
+    virBitmap *map;
+    ssize_t i;
 
     ptr->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
+    ptr->addr.vioserial.controller = info->addr.vioserial.controller;
 
     if (portOnly) {
         if (virDomainVirtioSerialAddrNextFromController(addrs,
-                                                        &ptr->addr.vioserial) < 0)
+                                                        &ptr->addr.vioserial,
+                                                        allowZero) < 0)
             return -1;
+
+        if (ptr == &nfo) {
+            /* pass the vioserial data back into info as info is used
+             * later for port assignment */
+            info->addr.vioserial = ptr->addr.vioserial;
+
+            /* if the next available port from the controller is zero,
+             * let's reserve it in the map and return */
+            if (ptr->addr.vioserial.port == 0) {
+                i = virDomainVirtioSerialAddrFindController(addrs, ptr->addr.vioserial.controller);
+                map = addrs->controllers[i]->ports;
+                ignore_value(virBitmapSetBit(map, 0));
+                return 0;
+            }
+        }
+
     } else {
         if (virDomainVirtioSerialAddrNext(def, addrs, &ptr->addr.vioserial,
                                           allowZero) < 0)
