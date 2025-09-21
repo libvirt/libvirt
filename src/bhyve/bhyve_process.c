@@ -413,18 +413,24 @@ virBhyveProcessStart(bhyveConn *driver,
 {
     /* Run an early hook to setup missing devices. */
     if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
-        return -1;
+        goto cleanup;
 
     if (flags & VIR_BHYVE_PROCESS_START_AUTODESTROY)
         virCloseCallbacksDomainAdd(vm, conn, bhyveProcessAutoDestroy);
 
     if (bhyveProcessPrepareDomain(driver, vm, flags) < 0)
-        return -1;
+        goto cleanup;
 
     if (bhyveProcessPrepareHost(driver, vm->def, flags) < 0)
-        return -1;
+        goto cleanup;
 
     return virBhyveProcessStartImpl(driver, vm, reason);
+
+ cleanup:
+    bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_STOPPED);
+    bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
+
+    return -1;
 }
 
 static void
