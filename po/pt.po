@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-09-18 00:51+0000\n"
+"PO-Revision-Date: 2025-09-21 09:59+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -33816,11 +33816,13 @@ msgstr "rede '%1$s' não tem dev='%2$s' em uso pelo domínio"
 
 #, c-format
 msgid "network '%1$s' doesn't have dev='%2$s' in use by network port '%3$s'"
-msgstr ""
+msgstr "rede '%1$s' não tem dev='%2$s' em uso pelo porto de rede '%3$s'"
 
 #, c-format
 msgid "network '%1$s' has an invalid netmask or IP address in route definition"
 msgstr ""
+"rede '%1$s' tem uma máscara de rede ou endereço IP inválido na definição de "
+"rota"
 
 #, c-format
 msgid ""
@@ -33828,12 +33830,17 @@ msgid ""
 "the device pool. This is only supported for networks with forward mode "
 "'hostdev'"
 msgstr ""
+"rede '%1$s' tem modo de encaminhamento '%2$s' mas lista um dispositivo por "
+"endereço PCI na pool de dispositivos. Isto é apenas suportado para redes com "
+"modo de encaminhamento 'hostdev'"
 
 #, c-format
 msgid ""
 "network '%1$s' has multiple default <portgroup> elements (%2$s and %3$s), "
 "but only one default is allowed"
 msgstr ""
+"rede '%1$s' tem múltiplos elementos predefinidos <portgroup> (%2$s e %3$s), "
+"mas apenas um predefinido é permitido"
 
 #, c-format
 msgid "network '%1$s' has no associated interface or bridge"
@@ -33860,18 +33867,23 @@ msgid ""
 "network '%1$s' requires exclusive access to interfaces, but none are "
 "available"
 msgstr ""
+"rede '%1$s' requer acesso exclusivo a interfaces, mas nenhum está disponível"
 
 #, c-format
 msgid ""
 "network '%1$s' uses a direct mode, but has no forward dev and no interface "
 "pool"
 msgstr ""
+"rede '%1$s' usa um modo direto, mas não tem dispositivo de encaminhamento e "
+"nenhum pool de interface"
 
 #, c-format
 msgid ""
 "network '%1$s' uses a hostdev mode, but has no forward dev and no interface "
 "pool"
 msgstr ""
+"rede '%1$s' usa um modo hostdev, mas não tem dispositivo de encaminhamento e "
+"nenhum pool de interface"
 
 msgid "network configuration using opaque shell scripts"
 msgstr "configuração de rede usando scripts de shell opaque"
@@ -33894,17 +33906,19 @@ msgstr "dispositivo de rede com mac %1$s já existe"
 
 #, c-format
 msgid "network event callback %1$d not registered"
-msgstr ""
+msgstr "chamada de retorno de evento de rede %1$d não registrado"
 
 msgid "network filter binding port dev"
-msgstr ""
+msgstr "filtro de rede a vincular dispositivo de porto"
 
 msgid "network filter binding portdev"
-msgstr ""
+msgstr "filtro de rede a vincular dispositivo de porto"
 
 #, c-format
 msgid "network filter config filename '%1$s' does not match name '%2$s'"
 msgstr ""
+"nome de ficheiro '%1$s' de configuração de filtro de rede não corresponde a "
+"nome '%2$s'"
 
 msgid "network filter information in XML"
 msgstr "informação de filtro de rede em XML"
@@ -33945,10 +33959,10 @@ msgid "network port %1$s exists already"
 msgstr "o porto de rede %1$s já existe"
 
 msgid "network port has no mac"
-msgstr ""
+msgstr "porta de rede não tem mac"
 
 msgid "network port has no owner UUID"
-msgstr ""
+msgstr "porta de rede não tem UUID de dono"
 
 msgid "network port has no owner name"
 msgstr "porto de rede não tem nome de dono"
@@ -33967,13 +33981,15 @@ msgid "network port not found: %1$s"
 msgstr "porto de rede não encontrado: %1$s"
 
 msgid "network state driver is not active"
-msgstr ""
+msgstr "controlador de estado de rede não está activo"
 
 msgid "network uuid"
 msgstr "uuid da rede"
 
 msgid "network-based listen isn't possible, network driver isn't present"
 msgstr ""
+"escuta baseada em rede não é possível, o controlador de rede não está "
+"presente"
 
 msgid "network_update_xml"
 msgstr "network_update_xml"
@@ -33983,15 +33999,17 @@ msgstr "novo nome de dispositivo ponte"
 
 msgid "new capacity for the vol, as scaled integer (default bytes)"
 msgstr ""
+"nova capacidade para o volume, como inteiro escalado (predefinição bytes)"
 
 msgid "new domain name"
 msgstr "novo nome de domínio"
 
 msgid "new maximum memory size, as scaled integer (default KiB)"
 msgstr ""
+"novo tamanho de memória máximo, como inteiro escalado (predefinição KiB)"
 
 msgid "new memory size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "novo tamanho de memória, como inteiro escalado (predefinição KiB)"
 
 msgid "new metadata to set"
 msgstr "novos metadados a definir"
@@ -34001,137 +34019,138 @@ msgstr "novo estado do dispositivo"
 
 msgid "new value of <requested/> size, as scaled integer (default KiB)"
 msgstr ""
+"novo valor de tamanho <requested/>, como inteiro escalado (predefinição KiB)"
 
 msgid "new xml too large to fit in file"
 msgstr "novo xml demasiado grande para caber em ficheiro"
 
 msgid "nfsvers value for NFS pool mount option"
-msgstr ""
+msgstr "valor nfsvers para opção de montagem de pool NFS"
 
 #, c-format
 msgid "nkeycodes must be <= %1$d"
-msgstr ""
+msgstr "nkeycodes tem de ser <= %1$d"
 
 msgid "nl_recv failed"
-msgstr ""
+msgstr "nl_recv falhou"
 
 msgid "nl_recv failed - returned 0 bytes"
-msgstr ""
+msgstr "l_recv falhou - retornados 0 bytes"
 
 msgid "nl_recv returned with error"
-msgstr ""
+msgstr "nl_recv retornou com erro"
 
 msgid "no"
 msgstr "não"
 
 msgid "no CPU model specified"
-msgstr ""
+msgstr "nenhum modelo de CPU especificado"
 
 #, c-format
 msgid "no CPU model specified at index %1$zu"
-msgstr ""
+msgstr "nenhum modelo de CPU especificado no índice %1$zu"
 
 msgid "no CPUs found"
-msgstr ""
+msgstr "nenhumas CPUs encontradas"
 
 msgid "no CPUs given"
-msgstr ""
+msgstr "nenhumas CPUs fornecidas"
 
 msgid "no D-Bus address"
-msgstr ""
+msgstr "nenhum endereço D-Bus"
 
 msgid "no FLR, PM reset or bus reset available"
-msgstr ""
+msgstr "nenhum FLR, reiniciar de PM ou reiniciar de barramento disponível"
 
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
-msgstr ""
+msgstr "nenhum IFLA_PORT_RESPONSE encontrado em mensagem netlink"
 
 #, c-format
 msgid "no IP address found for interface '%1$s'"
-msgstr ""
+msgstr "nenhum endereço IP encontrado para interface '%1$s'"
 
 #, c-format
 msgid "no PCI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de barramento PCI fornecido para '%1$s'"
 
 #, c-format
 msgid "no PCI domain ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de domínio PCI fornecido para '%1$s'"
 
 #, c-format
 msgid "no PCI function ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de função PCI fornecido para '%1$s'"
 
 #, c-format
 msgid "no PCI product ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de produto PCI fornecido para '%1$s'"
 
 #, c-format
 msgid "no PCI slot ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de slot PCI fornecido para '%1$s'"
 
 #, c-format
 msgid "no PCI vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de fornecedor PCI fornecido para '%1$s'"
 
 msgid "no SASL mechanisms are available"
-msgstr ""
+msgstr "nenhuns mecanismos SASL disponíveis"
 
 #, c-format
 msgid "no SCSI LUN ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID LUN SCSI fornecido para '%1$s'"
 
 #, c-format
 msgid "no SCSI bus ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de barramento SCSI fornecido para '%1$s'"
 
 #, c-format
 msgid "no SCSI host ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de máquina SCSI fornecido para '%1$s'"
 
 #, c-format
 msgid "no SCSI target ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de alvo SCSI fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB bus number supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum número de barramento USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB device number supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum número de dispositivo USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB interface class supplied for '%1$s'"
-msgstr ""
+msgstr "nenhuma classe de interface USB fornecida para '%1$s'"
 
 #, c-format
 msgid "no USB interface number supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum número de interface USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB interface protocol supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum protocolo de interface USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB interface subclass supplied for '%1$s'"
-msgstr ""
+msgstr "nenhuma sub-classe de interface USB fornecida para '%1$s'"
 
 #, c-format
 msgid "no USB product ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de produto USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no USB vendor ID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum ID de fornecedor USB fornecido para '%1$s'"
 
 #, c-format
 msgid "no WWNN supplied for '%1$s', and auto-generation failed"
-msgstr ""
+msgstr "nenhum WWNN fornecido para '%1$s', e a auto-geração falhou"
 
 #, c-format
 msgid "no WWPN supplied for '%1$s', and auto-generation failed"
-msgstr ""
+msgstr "nenhum WWPN fornecido para '%1$s', e a auto-geração falhou"
 
 #, c-format
 msgid "no assigned pty for device %1$s"
@@ -34139,31 +34158,33 @@ msgstr "nenhum pty atribuído para dispositivo %1$s"
 
 #, c-format
 msgid "no audio device with ID %1$u"
-msgstr ""
+msgstr "nenhum dispositivo de áudio com ID %1$u"
 
 msgid "no autostart"
 msgstr "sem arranque automático"
 
 msgid "no available memory line found"
-msgstr ""
+msgstr "nenhuma linha de memória disponível encontrada"
 
 #, c-format
 msgid "no block device path supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum caminho de dispositivo de bloco fornecido para '%1$s'"
 
 #, c-format
 msgid "no call waiting for reply with prog %1$d vers %2$d serial %3$d"
 msgstr ""
+"nenhuma espera de chamada para resposta com programa %1$d versão %2$d série "
+"%3$d"
 
 msgid "no cgroup backend available"
-msgstr ""
+msgstr "nenhum backend cgroup disponível"
 
 msgid "no client username was found"
-msgstr ""
+msgstr "nenhum nome de utilizador de cliente foi encontrado"
 
 #, c-format
 msgid "no client with matching id '%1$llu' found"
-msgstr ""
+msgstr "nenhum cliente com id correspondente '%1$llu' encontrado"
 
 #, c-format
 msgid "no config file for %1$s"
@@ -34177,53 +34198,55 @@ msgid "no connection driver available for %1$s"
 msgstr "nenhum controlador de ligação disponível para %1$s"
 
 msgid "no console devices available"
-msgstr ""
+msgstr "nenhuns dispositivos de consola encontrados"
 
 #, c-format
 msgid "no device capabilities for '%1$s'"
-msgstr ""
+msgstr "nenhumas capacidades de dispositivo para '%1$s'"
 
 #, c-format
 msgid ""
 "no device found at address '%1$s' matching MAC address '%2$s' and alias "
 "'%3$s'"
 msgstr ""
+"nenhum dispositivo encontrado no endereço '%1$s' a corresponder ao endereço "
+"MAC '%2$s' e alias '%3$s'"
 
 #, c-format
 msgid "no device found with alias %1$s"
-msgstr ""
+msgstr "nenhum dispositivo encontrado com alias %1$s"
 
 #, c-format
 msgid "no disk format for %1$s was specified"
-msgstr ""
+msgstr "nenhum formato de disco para %1$s foi especificado"
 
 #, c-format
 msgid "no disk found with alias '%1$s' or id '%2$s'"
-msgstr ""
+msgstr "nenhum disco encontrado com alias '%1$s' ou id '%2$s'"
 
 #, c-format
 msgid "no disk named '%1$s'"
-msgstr ""
+msgstr "nenhum disco chamado '%1$s'"
 
 msgid "no disks selected for backup"
-msgstr ""
+msgstr "nenhuns discos selecionados para salvaguarda"
 
 msgid "no domain XML passed"
-msgstr ""
+msgstr "nenhum XML de domínio passado"
 
 msgid "no domain backup job present"
-msgstr ""
+msgstr "nenhum trabalho de salvaguarda de domínio presente"
 
 #, c-format
 msgid "no domain checkpoint with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum ponto de verificação de domínio com nome correspondente '%1$s'"
 
 msgid "no domain config"
 msgstr "nenhuma configuração de domínio"
 
 #, c-format
 msgid "no domain snapshot with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum instantâneo de domínio com nome correspondente '%1$s'"
 
 #, c-format
 msgid "no domain with matching id %1$d"
@@ -34246,32 +34269,33 @@ msgstr "nenhum domínio com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "no domain with matching uuid '%1$s' (%2$s)"
-msgstr ""
+msgstr "nenhum domínio com uuid correspondente '%1$s' (%2$s)"
 
 msgid "no error"
 msgstr "nenhum erro"
 
 msgid "no extended partition found and no primary partition available"
 msgstr ""
+"nenhuma partição extensiva encontrada e nenhuma partição primária disponível"
 
 msgid "no file descriptor received"
-msgstr ""
+msgstr "nenhum descritor de ficheiro recebido"
 
 #, c-format
 msgid "no firmwares found in %1$s"
 msgstr "nenhuns firmwares encontrados em %1$s"
 
 msgid "no free memory device slot available"
-msgstr ""
+msgstr "nenhuma slot de dispositivo de memória livre disponível"
 
 msgid "no fs mount option name specified"
-msgstr ""
+msgstr "nenhum nome de opção de montagem de sistema de ficheiros especificado"
 
 msgid "no guest CPU model specified"
-msgstr ""
+msgstr "nenhum modelo de CPU convidada especificado"
 
 msgid "no host device manager defined"
-msgstr ""
+msgstr "nenhum gestor de dispositivo de máquina definido"
 
 msgid "no hostname found"
 msgstr "nenhum nome de máquina encontrado"
@@ -34286,15 +34310,15 @@ msgstr "nenhum nome de máquina encontrado: %1$s"
 
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
-msgstr ""
+msgstr "nenhuma interface iSCSI definida para IQN %1$s"
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
-msgstr ""
+msgstr "nenhuma interface com mac correspondente '%1$s'"
 
 #, c-format
 msgid "no interface with matching name '%1$s'"
-msgstr ""
+msgstr "nenhuma interface com nome correspondente '%1$s'"
 
 msgid "no job is active on the domain"
 msgstr "nenhuma tarefa está activa no domínio"
@@ -34307,30 +34331,33 @@ msgstr "sem limite"
 
 msgid "no loader path specified and firmware auto selection disabled"
 msgstr ""
+"nenhum caminho de carregador especificado e seleção automática de firmware "
+"desactivada"
 
 msgid "no map for cgroup BPF prog"
-msgstr ""
+msgstr "nenhum mapa para programa BPF"
 
 msgid "no matching RNG device was found"
-msgstr ""
+msgstr "nenhum dispositivo RNG correspondente foi encontrado"
 
 msgid "no matching filesystem device was found"
 msgstr ""
+"nenhum dispositivo de sistema de ficheiros correspondente foi encontrado"
 
 msgid "no matching redirdev was not found"
 msgstr "nenhum redirdev correspondente foi encontrado"
 
 msgid "no matching watchdog was found"
-msgstr ""
+msgstr "nenhum cão de guarda correspondente foi encontrado"
 
 msgid "no medium attachments"
-msgstr ""
+msgstr "nenhuns anexos de meio"
 
 msgid "no memory device found"
-msgstr ""
+msgstr "nenhum dispositivo de memória encontrado"
 
 msgid "no monitor path"
-msgstr ""
+msgstr "nenhum caminho de monitor"
 
 #, c-format
 msgid "no network interface supplied for '%1$s'"
@@ -34338,38 +34365,40 @@ msgstr "nenhuma interface de rede fornecida para '%1$s'"
 
 #, c-format
 msgid "no network with matching name '%1$s'"
-msgstr ""
+msgstr "nenhuma rede com nome correspondente '%1$s'"
 
 #, c-format
 msgid "no network with matching uuid '%1$s'"
-msgstr ""
+msgstr "nenhuma rede com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "no network with matching uuid '%1$s' (%2$s)"
-msgstr ""
+msgstr "nenhuma rede com uuid correspondente '%1$s' (%2$s)"
 
 #, c-format
 msgid "no node device for '%1$s' with matching wwnn '%2$s' and wwpn '%3$s'"
 msgstr ""
+"nenhum dispositivo de nó para '%1$s' com wwnn '%2$s' e wwpn '%3$s' "
+"correspondentes"
 
 #, c-format
 msgid "no node device with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum dispositivo de nó com nome '%1$s' correspondente"
 
 msgid "no node device with matching name 'scsi_host12'"
-msgstr ""
+msgstr "nenhum dispositivo de nó com nome 'scsi_host12' correspondente"
 
 #, c-format
 msgid "no nwfilter binding for port dev '%1$s'"
-msgstr ""
+msgstr "nenhum vínculo de nwfilter para dispositivo de porto '%1$s'"
 
 #, c-format
 msgid "no nwfilter with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum nwfilter com nome correspondente '%1$s'"
 
 #, c-format
 msgid "no nwfilter with matching uuid '%1$s'"
-msgstr ""
+msgstr "nenhum nwfilter com uuid correspondente '%1$s'"
 
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
@@ -34379,45 +34408,45 @@ msgid "no parent for this device"
 msgstr "nenhum pai para este dispositivo"
 
 msgid "no polkit agent available to authenticate"
-msgstr ""
+msgstr "nenhum agente polkit disponível para autenticar"
 
 #, c-format
 msgid "no polkit agent available to authenticate action '%1$s'"
-msgstr ""
+msgstr "nenhum agente polkit disponível para acção de autenticação '%1$s'"
 
 msgid "no prefix found"
-msgstr ""
+msgstr "nenhum prefixo encontrado"
 
 msgid "no rbd option name specified"
-msgstr ""
+msgstr "nenhum nome de opção rbd especificado"
 
 #, c-format
 msgid "no rbd option value specified for name '%1$s'"
-msgstr ""
+msgstr "nenhum valor de opção rbd especificado para nome '%1$s'"
 
 #, c-format
 msgid "no removable media size supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum tamanho de meio amovível fornecido para '%1$s'"
 
 msgid "no replacement string in template"
-msgstr ""
+msgstr "nenhuma string de substituição em modelo"
 
 msgid "no running guests."
-msgstr ""
+msgstr "nenhuns convidados em execução."
 
 msgid "no screens to take screenshot from"
-msgstr ""
+msgstr "nenhuns ecrãs para tirar captura de ecrã de"
 
 msgid "no secret provided for luks encryption"
-msgstr ""
+msgstr "nenhum segredo fornecido para encriptação luks"
 
 #, c-format
 msgid "no secret with matching usage '%1$s'"
-msgstr ""
+msgstr "nenhum segredo com utilização correspondente '%1$s'"
 
 #, c-format
 msgid "no secret with matching uuid '%1$s'"
-msgstr ""
+msgstr "nenhum segredo com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "no server with matching name '%1$s' found"
