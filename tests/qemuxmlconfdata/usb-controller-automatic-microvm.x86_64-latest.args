@@ -1,23 +1,23 @@
 LC_ALL=C \
 PATH=/bin \
-HOME=/var/lib/libvirt/qemu/domain--1-test \
+HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1 \
 USER=test \
 LOGNAME=test \
-XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-test/.local/share \
-XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-test/.cache \
-XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
+XDG_DATA_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.local/share \
+XDG_CACHE_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.cache \
+XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 /usr/bin/qemu-system-x86_64 \
--name guest=test,debug-threads=on \
+-name guest=QEMUGuest1,debug-threads=on \
 -S \
--object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-test/master-key.aes"}' \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine microvm,usb=off,dump-guest-core=off,memory-backend=microvm.ram,acpi=off \
 -accel tcg \
 -cpu qemu64 \
--m size=2097152k \
--object '{"qom-type":"memory-backend-ram","id":"microvm.ram","size":2147483648}' \
+-m size=219136k \
+-object '{"qom-type":"memory-backend-ram","id":"microvm.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
--uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
 -no-user-config \
 -nodefaults \

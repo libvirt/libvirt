@@ -1252,7 +1252,8 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     switch (def->os.arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
-        if (STREQ(def->os.machine, "isapc")) {
+        if (STREQ(def->os.machine, "isapc") ||
+            STREQ(def->os.machine, "microvm")) {
             break;
         }
 

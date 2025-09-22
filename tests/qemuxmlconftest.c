@@ -2078,7 +2078,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("chardev-reconnect-generated-path");
 
     DO_TEST_CAPS_LATEST("usb-controller-automatic-isapc");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("usb-controller-automatic-microvm");
+    DO_TEST_CAPS_LATEST("usb-controller-automatic-microvm");
     DO_TEST_CAPS_LATEST("usb-controller-automatic-i440fx");
     DO_TEST_CAPS_LATEST("usb-controller-automatic-q35");
     DO_TEST_CAPS_ARCH_LATEST("usb-controller-automatic-pseries", "ppc64");

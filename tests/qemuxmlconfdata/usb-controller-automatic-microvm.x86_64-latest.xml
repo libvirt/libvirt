@@ -1,8 +1,8 @@
 <domain type='qemu'>
-  <name>test</name>
-  <uuid>11dbdcdd-4c3b-482b-8903-9bdb8c0a2774</uuid>
-  <memory unit='KiB'>2097152</memory>
-  <currentMemory unit='KiB'>2097152</currentMemory>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='microvm'>hvm</type>
@@ -17,7 +17,7 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <controller type='pci' index='0' model='pci-root'/>
     <audio id='1' type='none'/>
+    <memballoon model='none'/>
   </devices>
 </domain>
