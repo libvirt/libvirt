@@ -2588,29 +2588,29 @@ qemuControllerModelUSBToCaps(int model)
 
 
 static int
-qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *def,
+qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *controller,
                                          virQEMUCaps *qemuCaps)
 {
-    if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
+    if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to determine model for USB controller idx=%1$d"),
-                       def->idx);
+                       controller->idx);
         return -1;
     }
 
-    if (!virQEMUCapsGet(qemuCaps, qemuControllerModelUSBToCaps(def->model))) {
+    if (!virQEMUCapsGet(qemuCaps, qemuControllerModelUSBToCaps(controller->model))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("USB controller model '%1$s' not supported in this QEMU binary"),
-                       virDomainControllerModelUSBTypeToString(def->model));
+                       virDomainControllerModelUSBTypeToString(controller->model));
         return -1;
     }
 
-    if (def->opts.usbopts.ports != -1) {
-        if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
-            def->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
+    if (controller->opts.usbopts.ports != -1) {
+        if (controller->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
+            controller->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"),
-                           virDomainControllerModelUSBTypeToString(def->model));
+                           virDomainControllerModelUSBTypeToString(controller->model));
             return -1;
         }
     }
