@@ -2558,6 +2558,38 @@ qemuBuildFilesystemCommandLine(virCommand *cmd,
 }
 
 
+static bool
+qemuDomainControllerUSBIsPCI(const virDomainControllerDef *controller)
+{
+    switch ((virDomainControllerModelUSB)controller->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX4_UHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_VT82C686B_UHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
+        /* The models above are PCI devices */
+        return true;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2:
+        /* The models above are not relevant to the QEMU driver */
+        return false;
+
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST:
+    default:
+        return false;
+    }
+}
+
+
 static int
 qemuControllerModelUSBToCaps(int model)
 {
@@ -2589,12 +2621,22 @@ qemuControllerModelUSBToCaps(int model)
 
 static int
 qemuValidateDomainDeviceDefControllerUSB(const virDomainControllerDef *controller,
+                                         const virDomainDef *def,
                                          virQEMUCaps *qemuCaps)
 {
     if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to determine model for USB controller idx=%1$d"),
                        controller->idx);
+        return -1;
+    }
+
+    if (qemuDomainControllerUSBIsPCI(controller) &&
+        !qemuDomainSupportsPCI(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("USB controller model '%1$s' requires PCI but machine type '%2$s' does not support PCI"),
+                       virDomainControllerModelUSBTypeToString(controller->model),
+                       def->os.machine);
         return -1;
     }
 
@@ -2651,7 +2693,7 @@ qemuBuildUSBControllerDevProps(const virDomainDef *domainDef,
 {
     g_autoptr(virJSONValue) props = NULL;
 
-    if (qemuValidateDomainDeviceDefControllerUSB(def, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefControllerUSB(def, domainDef, qemuCaps) < 0)
         return NULL;
 
     if (virJSONValueObjectAdd(&props,
