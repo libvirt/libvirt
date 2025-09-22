@@ -332,16 +332,6 @@ Backup
    Create online, thin provisioned full and incremental or differential backups
    of your kvm/qemu virtual machines.
 
-Other
------
-
-`Cuckoo Sandbox <https://cuckoosandbox.org/>`__
-   Cuckoo Sandbox is a malware analysis system. You can throw any
-   suspicious file at it and in a matter of seconds Cuckoo will provide
-   you back some detailed results outlining what such file did when
-   executed inside an isolated environment. And libvirt is one of the
-   backends that can be used for the isolated environment.
-
 .. |libvirt powered 96| image:: logos/logo-square-powered-96.png
 .. |libvirt powered 128| image:: logos/logo-square-powered-128.png
 .. |libvirt powered 192| image:: logos/logo-square-powered-192.png
