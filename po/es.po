@@ -29,7 +29,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-09-11 17:33+0000\n"
+"PO-Revision-Date: 2025-09-24 17:06+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.2\n"
+"X-Generator: Weblate 5.13.3\n"
 
 msgid ""
 "\n"
@@ -6796,7 +6796,7 @@ msgid "Event thread is already running"
 msgstr "Hilo de suceso ya está en ejecución"
 
 msgid "Event wakeup"
-msgstr "Suceso despertar"
+msgstr "Evento de reactivación"
 
 msgid ""
 "Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous "
@@ -7280,7 +7280,7 @@ msgid "Failed to build net json"
 msgstr "Incorrecto al crear red json"
 
 msgid "Failed to build pidfile path"
-msgstr "Incorrecto al construir ruta pidfile"
+msgstr "Incorrecto al construir la ruta pidfile"
 
 msgid "Failed to build pidfile path."
 msgstr "Incorrecto al crear ruta al archivo pid."
@@ -8597,7 +8597,7 @@ msgstr "No se pudo interpretar usuario '%1$s'"
 
 #, c-format
 msgid "Failed to parse users from '%1$s'"
-msgstr "No se pudieron interpretar usuarios desde '%1$s'"
+msgstr "Falló la lectura de usuario '%1$s'"
 
 #, c-format
 msgid "Failed to parse value '%1$s' as number."
@@ -8699,7 +8699,7 @@ msgstr "No se pudo leer el archivo pid '%1$s'"
 
 #, c-format
 msgid "Failed to read pidfile %1$s"
-msgstr "No se pudo leer el archivo pidfile '%1$s'"
+msgstr "Falló al leer el archivo '%1$s'"
 
 #, c-format
 msgid "Failed to read product/vendor ID for %1$s"
@@ -8751,9 +8751,9 @@ msgstr "No se pudo recargar sondeo %1$s"
 msgid "Failed to register lock failure action"
 msgstr "No se pudo registrar acción de fallo de bloqueo"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Failed to register lock failure action: %1$s"
-msgstr "No se pudo registrar acción de falla del bloqueo: %1$s"
+msgstr "Falló registrar acción de falla de cerrojo"
 
 msgid "Failed to register shutdown timeout"
 msgstr "No se pudo intentar registrar tiempo de espera para desconexión"
@@ -8806,7 +8806,7 @@ msgstr "No se pudo solicitar id de nodo NUMA máximo"
 
 #, c-format
 msgid "Failed to reserve port %1$d"
-msgstr "No se pudo reservar puerto %1$d"
+msgstr "Falló al reservar puerto %1$d"
 
 #, c-format
 msgid "Failed to reserve port %1$zu"
@@ -8822,7 +8822,7 @@ msgstr "No se pudo restablecer dispositivo %1$s"
 
 #, c-format
 msgid "Failed to reset domain '%1$s'"
-msgstr "No se pudo restablecer dominio '%1$s'"
+msgstr "Falló al obtener el dominio '%1$s'"
 
 #, c-format
 msgid "Failed to resize block device '%1$s'"
@@ -9026,7 +9026,7 @@ msgid "Failed to set credential: %1$s"
 msgstr "No se pudo establecer credencial: %1$s"
 
 msgid "Failed to set hostname"
-msgstr "No se pudo establecer nombre de host"
+msgstr "Falló al obtener nombre de host"
 
 #, c-format
 msgid "Failed to set interface name to '%1$s' in xml document"
@@ -9456,7 +9456,7 @@ msgstr ""
 
 #, c-format
 msgid "File '%1$s' does not exist"
-msgstr "El archivo '%1$s' no existe"
+msgstr "No existe el archivo '%1$s'"
 
 #, c-format
 msgid "File '%1$s' has unknown type"
@@ -9798,7 +9798,7 @@ msgid "Get the name of the parent of a snapshot"
 msgstr "Obtiene el nombre del padre de una instantánea"
 
 msgid "Get the summary of block devices for a domain."
-msgstr "Obtener el resumen de dispositivos de bloque para un dominio."
+msgstr "Obtiene el resumen de dispositivos de bloque para un dominio."
 
 msgid "Get the summary of throttle groups for a domain."
 msgstr "Obtiene el resumen de grupos de regulador para un dominio."
@@ -11313,7 +11313,7 @@ msgid "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."
 msgstr ""
 "Valor para atributo «%1$s» no válido interno al elemento «%2$s»: «%3$s»."
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
@@ -11952,8 +11952,7 @@ msgstr "El registro del medio es nulo"
 
 #, fuzzy
 msgid "Mediated host device assignment requires VFIO support"
-msgstr ""
-"La asignación de dispositivo host mediado requiere compatibilidad con VFIO"
+msgstr "La asignación de dispositivo host mediado requiere apoyo VFIO"
 
 msgid "Memory"
 msgstr "Memoria"
@@ -11988,7 +11987,6 @@ msgstr ""
 "El tipo de dispositivo %1$s de globo de memoria no está admitido por esta "
 "versión de qemu"
 
-#, fuzzy
 msgid "Memory bandwidth:"
 msgstr "Ancho de banda de memoria:"
 
@@ -12007,7 +12005,6 @@ msgstr "Memoria procesada:"
 msgid "Memory remaining:"
 msgstr "Memoria restante:"
 
-#, fuzzy
 msgid ""
 "Memory size must be specified via <memory> or in the <numa> configuration"
 msgstr ""
@@ -12023,9 +12020,8 @@ msgstr "Tamaño de memoria:"
 msgid "Memory total:"
 msgstr "Memoria total:"
 
-#, fuzzy
 msgid "Memory tuning is not available in session mode"
-msgstr "Ajuste de CPU no está disponible en este host"
+msgstr "Ajuste de memoria no está disponible en modo de sesión"
 
 msgid "Messages:"
 msgstr "Mensajes:"
@@ -12045,15 +12041,13 @@ msgstr "Metadatos:"
 msgid "MethodFault is missing 'type' property"
 msgstr "Falta la propiedad 'type' de MethodFault"
 
-#, fuzzy
 msgid ""
 "Migratable attribute for host-passthrough CPU is not supported by this QEMU "
 "binary"
 msgstr ""
-"Este binario QEMU no admite el atributo migrable para la CPU de paso a "
-"través del host"
+"Atributo migrable para CPU host-passthough no está admitido por este binario "
+"de QEMU"
 
-#, fuzzy
 msgid "Migrate domain"
 msgstr "Migrar dominio"
 
@@ -12061,9 +12055,8 @@ msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "Migrar el dominio hacia otro host. Agregue --live para una migración en vivo."
 
-#, fuzzy
 msgid "Migrated"
-msgstr "migrado"
+msgstr "Migrado"
 
 msgid "Migrating domain requires authorization"
 msgstr "La migración de dominio requiere autorización"
@@ -12083,30 +12076,27 @@ msgstr ""
 "La URI de migración tiene que especificar el grupo de recursos y el sistema "
 "del equipo"
 
-#, fuzzy
 msgid "Migration capabilities can only be set by a migration job"
 msgstr ""
-"Las capacidades de migración solo se pueden configurar mediante una tarea de "
+"Las capacidades de migración solo se pueden establecer mediante una tarea de "
 "migración"
 
-#, fuzzy
 msgid "Migration cookie parameters are not provided."
-msgstr "No se proveyeron argumentos de 'cookie' de migración."
+msgstr "No se proveyeron parámetros de 'cookie' de migración."
 
-#, fuzzy
 msgid "Migration cookie was not NULL terminated"
-msgstr "Migración de cookies no fue terminada NULL"
+msgstr "Migración de cookie no fue terminada en NULL"
 
 msgid "Migration failed. Domain is not running on destination host"
 msgstr ""
 "Migración incorrecta. El dominio no se está ejecutando en el host de destino"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Migration failed. No domain on destination host with matching name '%1$s'"
 msgstr ""
-"Migración incorrecta. No hay ningún dominio en el host de destino con el "
-"nombre coincidente '%1$s'"
+"Migración incorrecta. No hay ningún dominio en el host de destino con "
+"coincidencia del nombre «%1$s»"
 
 msgid "Migration graphics data already present"
 msgstr "Datos de migración de gráficas ya están presentes"
@@ -12129,9 +12119,8 @@ msgid "Migration option '%1$s' is not supported by QEMU binary"
 msgstr ""
 "La opción de migración '%1$s' no es compatible con este binario de QEMU"
 
-#, fuzzy
 msgid "Migration persistent data already present"
-msgstr "Datos persistentes de migración ya están presentes"
+msgstr "Los datos persistentes de migración ya están presentes"
 
 msgid "Migration source and destination have to refer to the same vCenter"
 msgstr ""
@@ -12266,11 +12255,10 @@ msgstr "No se encuentra parámetro de ID para objeto de dominio"
 msgid "Missing IP address in network '%1$s' DNS HOST record"
 msgstr "No se encuentra dirección IP en registro de HOST DNS de red '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing IP address in static host definition for network '%1$s'"
 msgstr ""
-"No se encuentra la dirección IP en la definición estática de anfitrión para "
-"la red '%1$s'"
+"Falta la dirección IP en la definición estática de host para la red «%1$s»"
 
 msgid "Missing LISTEN_FDNAMES env from systemd socket activation"
 msgstr ""
@@ -12870,9 +12858,8 @@ msgstr ""
 "Existen dominios múltiples con el nombre '%1$s': repita la solicitud "
 "utilizando un UUID"
 
-#, fuzzy
 msgid "Multiple graphics devices are not supported"
-msgstr "Dispositivos de vídeo multi-cabezales no tienen soporte"
+msgstr "Dispositivos gráficos múltiples no están admitidos"
 
 msgid "Multiple interfaces attached to bridge"
 msgstr "Interfaces múltiples conectadas al puente"
@@ -12947,9 +12934,9 @@ msgstr "número de celda NUMA"
 msgid "NUMA cell(s):"
 msgstr "Celda(s) NUMA:"
 
-#, c-format, fuzzy
+#, c-format
 msgid "NUMA cells %1$u and %2$zu have overlapping vCPU ids"
-msgstr "Celdas NUMA %1$u y %2$zu tienen los id de sobrecarga de vCPU"
+msgstr "Las celdas NUMA %1$u y %2$zu tienen los id de sobrecarga de vCPU"
 
 msgid "NUMA distances defined without siblings"
 msgstr "Distancias NUMA definidas sin hermanos"
@@ -12957,9 +12944,8 @@ msgstr "Distancias NUMA definidas sin hermanos"
 msgid "NUMA free memory"
 msgstr "Memoria NUMA libre"
 
-#, fuzzy
 msgid "NUMA free pages"
-msgstr "Memoria NUMA libre"
+msgstr "Páginas NUMA libres"
 
 msgid "NUMA isn't available on this host"
 msgstr "NUMA no está disponible en este host"
@@ -12968,7 +12954,6 @@ msgid "NUMA memory tuning in 'preferred' mode only supports single node"
 msgstr ""
 "Ajuste de memoria NUMA en modo 'preferred' solo soporta nodo individual"
 
-#, fuzzy
 msgid ""
 "NUMA mode, one of strict, preferred and interleave or a number from the "
 "virDomainNumatuneMemMode enum"
@@ -13288,9 +13273,8 @@ msgstr ""
 "Para obtener más información, consulte https://libvirt.org/kbase/"
 "failed_connection_after_install.html"
 
-#, fuzzy
 msgid "No URI scheme specified"
-msgstr "No se especificó el nombre de puente"
+msgstr "No se especificó esquema de URI"
 
 #, c-format
 msgid "No URI scheme specified: %1$s"
@@ -13371,7 +13355,6 @@ msgstr "No hay descripción para dominio: %1$s"
 msgid "No description for network: %1$s"
 msgstr "Sin descripción para la red: %1$s"
 
-#, fuzzy
 msgid "No device model command-line argument specified"
 msgstr ""
 "No se especificó ningún argumento de línea de comandos del modelo de "
@@ -13485,9 +13468,8 @@ msgstr "No encontrado ningún interfaz cuyo tipo es %1$s"
 msgid "No interface with MAC address %1$s was found"
 msgstr "No se encontró interfaz con dirección MAC %1$s"
 
-#, fuzzy
 msgid "No lxc environment type specified"
-msgstr "No se ha indicado ningún nombre de entorno qemu"
+msgstr "No se ha indicado ningún tipo del entorno lxc"
 
 msgid "No master USB controller specified"
 msgstr "No se especificó el controlador maestro de USB"
@@ -13496,11 +13478,10 @@ msgstr "No se especificó el controlador maestro de USB"
 msgid "No matches for socket service '%1$s': %2$s"
 msgstr "No se puede leer dirección de socket '%1$s': %2$s"
 
-#, fuzzy
 msgid "No memory balloon device configured, can not set the collection period"
 msgstr ""
-"No se ha configurado ningún dispositivo de globo de memoria, no se puede "
-"establecer el período de recolección"
+"No se ha configurado ningún globo de memoria, no se puede establecer el "
+"período de recolección"
 
 msgid "No message in the queue"
 msgstr "No hay ningún mensaje en la cola"
@@ -13519,9 +13500,8 @@ msgstr "Ninguna red con mac '%1$s'"
 msgid "No network found with property '%1$s' = '%2$s'"
 msgstr "Ninguna red encontrada con propiedad '%1$s' = '%2$s'"
 
-#, fuzzy
 msgid "No network socket associated with client"
-msgstr "red '%s' no tiene inferfaz o puente asociados"
+msgstr "No hay ningún zócalo de red asociado con cliente"
 
 #, c-format
 msgid "No open log file %1$s"
@@ -13542,28 +13522,25 @@ msgstr "No se ha especificado un argumento de línea de comando qemu"
 msgid "No qemu environment name specified"
 msgstr "No se ha indicado ningún nombre de entorno qemu"
 
-#, fuzzy
 msgid "No runstatedir specified"
-msgstr "No se especificó el estado de ejecución del directorio"
+msgstr "No hay especificado ningún directorio de ejecución de estado"
 
 msgid "No server certificate path set to match server key"
 msgstr ""
 "No hay ruta de certificado del servidor configurada para que coincida con la "
 "clave del servidor"
 
-#, fuzzy
 msgid "No server key path set to match server cert"
 msgstr ""
-"No hay ninguna ruta de clave de servidor configurada para coincidir con el "
+"No hay ninguna ruta de clave fijada del servidor para coincidir con el "
 "certificado del servidor"
 
 #, c-format
 msgid "No server named '%1$s'"
 msgstr "No hay ningún servidor llamado «%1$s»"
 
-#, fuzzy
 msgid "No socket address provided"
-msgstr "No se encontraron direcciones de socket para '%s'"
+msgstr "No se proporcionó la dirección del socket"
 
 #, c-format
 msgid "No socket addresses found for '%1$s'"
@@ -13691,9 +13668,8 @@ msgstr "Dispositivo de nodo no encontrado"
 msgid "Node device not found: %1$s"
 msgstr "Dispositivo de nodo no encontrado: %1$s"
 
-#, fuzzy
 msgid "Non-blocking streams are not supported yet"
-msgstr "Discos transitorios aún no tienen soporte"
+msgstr "Flujos no bloqueados transitorios aún no son mantenidos"
 
 msgid "Non-cancelable task is blocked by an unanswered question"
 msgstr ""
@@ -13728,7 +13704,6 @@ msgstr "No es un flujo de descarga"
 msgid "Not all servers restored, cannot run server"
 msgstr "No todos los servidores restaurados, no puede ejecutar servidor"
 
-#, fuzzy
 msgid "Not an upload stream"
 msgstr "No un flujo subido"
 
@@ -13744,18 +13719,16 @@ msgid "Not enough free space in pool for volume '%1$s'"
 msgstr ""
 "No hay suficiente espacio libre disponible en el grupo para el volumen '%1$s'"
 
-#, c-format, fuzzy
+#, c-format
 msgid ""
 "Not enough room for allocation of %1$llu bytes for level %2$u cache %3$u "
 "scope type '%4$s'"
 msgstr ""
 "No hay espacio suficiente para asignación de %1$llu bytes para nivel %2$u de "
-"caché %3$u de tipo de ámbito '%4$s'"
+"caché %3$u de tipo de ámbito «%4$s»"
 
-#, fuzzy
 msgid "Not enough space left in storage pool"
-msgstr ""
-"No hay suficiente espacio libre disponible en el grupo para el volumen '%s'"
+msgstr "No hay suficiente espacio dejado en el grupo del almacén"
 
 #, c-format
 msgid "Not reattaching active device %1$s"
@@ -13782,9 +13755,8 @@ msgstr "No hay huéspedes transitorios suspendidos en URI: $uri: "
 msgid "Now in mirroring phase"
 msgstr "Ahora en fase de espejo"
 
-#, fuzzy
 msgid "Now in synchronized phase"
-msgstr "Ahora en fase de espejo"
+msgstr "Ahora en fase de sincronización"
 
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "El número de las CPU en <numa> supera el conteo <vcpu>"
@@ -13888,27 +13860,23 @@ msgstr "Solamente se admite el modelo de dispositivo RNs 'virio'"
 msgid "Only /dev/random source is supported"
 msgstr "Solamente se admite origen /dev/random"
 
-#, fuzzy
 msgid "Only 1 IDE controller is supported"
-msgstr "Only PTY console types are supported"
+msgstr "Solo está mantenido 1 controlador IDE"
 
 msgid "Only 1 cluster per die is supported"
 msgstr "Solo se admite 1 racimo por extinción"
 
-#, fuzzy
 msgid "Only 1 die per socket is supported"
-msgstr "Solamente se admite un elemento de recursos"
+msgstr "Solamente se admite un elemento por zócalo"
 
 msgid "Only 1 fdc bus is supported"
 msgstr "Solo se admite un bus fdc"
 
-#, fuzzy
 msgid "Only 1 fdc controller is supported"
-msgstr "Only PTY console types are supported"
+msgstr "Solo se admite un controlador fdc"
 
-#, fuzzy
 msgid "Only 1 thread per core is supported"
-msgstr "Solamente se admite un dispositivo de vídeo primario"
+msgstr "Solo se admite un hilo por core"
 
 msgid "Only EFI firmware permits NVRAM"
 msgstr "Solo el firmware EFI permite NVRAM"
@@ -13928,18 +13896,14 @@ msgstr "Sólo tipos de consola PTY son admitidas"
 msgid "Only RANDOM backend is supported for RNG devices"
 msgstr "Solo se admite el backend RANDOM para dispositivos RNG"
 
-#, fuzzy
 msgid "Only VNC supported"
-msgstr "Sin soporte"
+msgstr "Solo se admite VNC"
 
 msgid "Only a single ACPI table is supported"
 msgstr "Solo se admite un único tablero ACPI"
 
-#, fuzzy
 msgid "Only a single IDE controller is supported for this machine type"
-msgstr ""
-"No se puede añadir otro controlador USB: USB está inhabilitado para este "
-"dominio"
+msgstr "No se admite un único controlador IDE para este tipo de máquina"
 
 msgid "Only a single RNG device can be configured for this domain"
 msgstr "Solo puede estar configurado un único dispositivo RNG para este dominio"
@@ -13968,9 +13932,8 @@ msgstr ""
 "El controlador vz solo admite los tipos de almacenamiento en disco y en "
 "bloque."
 
-#, fuzzy
 msgid "Only disk image supported for resize"
-msgstr "Operación no tiene soporte para dispositivo: %s"
+msgstr "Solo de admite una imagen de disco para redimensionar"
 
 msgid ""
 "Only emulated CPUs are available, performance will be significantly limited"
@@ -14005,9 +13968,8 @@ msgstr "Solo los discos ide, sata y scsi admiten 'product'"
 msgid "Only listening TCP sockets are supported"
 msgstr "Solo se admite escucha por zócalos TCP"
 
-#, fuzzy
 msgid "Only luks encryption is supported for raw files"
-msgstr "Operación no tiene soporte para dispositivo: %s"
+msgstr "Solo se admiten luks de cifrado para archivos en bruto"
 
 msgid "Only mac option can be specified for virt-net"
 msgstr "Solo puede ser especificada la opción mac para virt-net"
@@ -14038,31 +14000,26 @@ msgstr ""
 msgid "Only one IPv4 address per interface is allowed"
 msgstr "Solo se permite una dirección IPv4 por interfaz"
 
-#, fuzzy
 msgid "Only one IPv6 address per interface is allowed"
-msgstr "Solo direcciones IPv4 o IPv6 se pueden utilizar con iptables"
+msgstr "Solo se permite una dirección IPv6 por interfaz"
 
-#, fuzzy
 msgid "Only one argument from --table and --uuid may be specified."
-msgstr ""
-"Solamente se puede especificar un argumento de --table, --name y --uuid ."
+msgstr "Solo puede ser especificado un argumento desde --table o --uuid."
 
 msgid "Only one argument from --table, --name and --uuid may be specified."
 msgstr ""
 "Solamente se puede especificar un argumento de --table, --name y --uuid ."
 
-#, fuzzy
 msgid "Only one boot device is supported"
-msgstr "Solamente se admite un dispositivo de vídeo primario"
+msgstr "Solo se admite un dispositivo de arranque"
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "Solo pudo ser especificado un método de compresión con compresión paralela"
 
-#, fuzzy
 msgid "Only one hostdev of model vfio-ap is supported"
-msgstr "Solamente se admite un dispositivo de vídeo primario"
+msgstr "Solo se admite un dispositivo de host de modelo vfio-ap"
 
 msgid "Only one primary video device is supported"
 msgstr "Solamente se admite un dispositivo de vídeo primario"
@@ -14083,9 +14040,8 @@ msgstr "El controlador vz sólo admite el controlador ploop fs."
 msgid "Only read-only pflash is supported."
 msgstr "Solamente se admite pflash de solo lectura."
 
-#, fuzzy
 msgid "Only scsi disk supports 'vendor'"
-msgstr "Solamente admite 'vendor' del disco scsi"
+msgstr "Solo se admite 'vendor' del disco scsi"
 
 #, c-format
 msgid ""
@@ -14097,11 +14053,10 @@ msgstr ""
 msgid "Only tap devices supported"
 msgstr "Solo se admiten dispositivos tap"
 
-#, fuzzy
 msgid ""
 "Only the PCI controller with index 0 can have target index 0, and vice versa"
 msgstr ""
-"Solamente el controlador PCI con índice 0 puede tener índice destino 0, y "
+"Solo el controlador PCI con índice 0 puede tener índice destino 0, y "
 "viceversa"
 
 msgid "Only the first console can be a serial port"
@@ -14110,13 +14065,12 @@ msgstr "Sólo la primera consola puede ser un puerto serial"
 msgid "Only the init process may be killed"
 msgstr "Solamente el proceso init puede ser eliminado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Only virtio bus types are supported for '%1$s'"
-msgstr "Solamente los tipos de bus virtio están mantenidas para '%1$s'"
+msgstr "Solo los tipos de bus virtio están mantenidos para «%1$s»"
 
-#, fuzzy
 msgid "Only virtio model is supported for RNG devices"
-msgstr "Solamente el modelo virtio está mantenido para dispositivos RNG"
+msgstr "Solo el modelo virtio está mantenido para dispositivos RNG"
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Solo existe soporte para las URI de migraciones vpxmigr://"
@@ -14124,15 +14078,12 @@ msgstr "Solo existe soporte para las URI de migraciones vpxmigr://"
 msgid "Only x509 certificates are supported"
 msgstr "Solo los certificados x509 están admitidos"
 
-#, fuzzy
 msgid "Open domain device"
-msgstr "Abrir dispositivo de dominio"
+msgstr "Abre dispositivo de dominio"
 
-#, fuzzy
 msgid "Open domain graphics"
 msgstr "Abre gráficos de dominio"
 
-#, fuzzy
 msgid "Open domain namespace"
 msgstr "Abre espacio de nombre de dominio"
 
@@ -14146,21 +14097,17 @@ msgstr "No existe un archivo /proc/vz de control de OpenVZ"
 msgid "OpenVZ control file /proc/vz is not accessible"
 msgstr "El archivo de control /proc/vz de OpenVZ es inaccesible"
 
-#, fuzzy
 msgid "Opening domain devices requires authorization"
-msgstr "Abrir dispositivos de dominio requiere autorización"
+msgstr "Apertura de dispositivos de dominio requiere autorización"
 
-#, fuzzy
 msgid "Opening domain graphics console requires authorization"
-msgstr "Abrir consola gráfica de dominio requiere autorización"
+msgstr "Apertura de consola gráfica de dominio requiere autorización"
 
-#, fuzzy
 msgid "Opening domain namespaces requires authorization"
-msgstr "Abrir espacio de nombre de dominio requiere autorización"
+msgstr "Apertura de espacios de nombre de dominio requiere autorización"
 
-#, fuzzy
 msgid "Operation cancelled by client"
-msgstr "Cancelado por cliente"
+msgstr "Operación cancelada por cliente"
 
 msgid "Operation not supported"
 msgstr "Operación no tiene soporte"
@@ -14172,13 +14119,13 @@ msgstr "Operación no tiene soporte: %1$s"
 msgid "Operation:"
 msgstr "Operación:"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Option '%1$s' has invalid value for PCI controller with index '%2$d', model "
 "'%3$s' and modelName '%4$s'"
 msgstr ""
-"La opción '%1$s' tiene valor no válido para controlador PCI con índice "
-"'%2$d', modelo '%3$s' y modelName '%4$s'"
+"La opción «%1$s» tiene valor no válido para controlador PCI con índice «%2$d»"
+", modelo «%3$s» y modelName «%4$s»"
 
 #, c-format
 msgid "Option '%1$s' is not supported by '%2$s' device with this QEMU binary"
@@ -14186,15 +14133,15 @@ msgstr ""
 "La opción '%1$s' no es admitida por el dispositivo '%2$s' con este binario "
 "de QEMU"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Option '%1$s' is not valid for PCI controller with index '%2$d', model "
 "'%3$s' and modelName '%4$s'"
 msgstr ""
-"La opción '%1$s' no es válida para controlador PCI con índice '%2$d', modelo "
-"'%3$s' y modelName '%4$s'"
+"La opción «%1$s» no es válida para controlador PCI con índice «%2$d», modelo "
+"«%3$s» y modelName «%4$s»"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Option --%1$s is required by option --%2$s"
 msgstr "La opción --%1$s se requiere por la opción --%2$s"
 
@@ -14241,7 +14188,6 @@ msgstr "Memoria agotada"
 msgid "Out of space while reading log output: %1$s"
 msgstr "Sin espacio en la lectura de salida de registro: %1$s"
 
-#, fuzzy
 msgid "Outgoing migration"
 msgstr "Migración desconectada"
 
@@ -14263,10 +14209,10 @@ msgstr "Salida de dirección IP y número de puerto para pantalla gráfica."
 msgid "Output the device for the TTY console."
 msgstr "Muestra el dispositivo para la consola TTY."
 
-#, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr ""
-"Ofrece de la información del dominio como una descarga XML para stdout."
+"Extrae la información del dominio como una volcado de XML por salida "
+"estándar."
 
 msgid "Output the network filter information as an XML dump to stdout."
 msgstr ""
@@ -14275,9 +14221,10 @@ msgstr ""
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Muestra la información de la red como una descarga XML a stdout."
 
-#, fuzzy
 msgid "Output the network port information as an XML dump to stdout."
-msgstr "Muestra la información de la red como una descarga XML a stdout."
+msgstr ""
+"Extrae la información del puerto de red como un volcado en XML por salida "
+"estándar."
 
 msgid "Output the node device details as an XML dump to stdout."
 msgstr ""
@@ -14295,34 +14242,33 @@ msgstr "Muestra la información del grupo como una descarga XML en stdout."
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Muestra la información del volumen como una descarga XML en stdout."
 
-#, fuzzy
 msgid "Overlapping vcpus in resctrls"
 msgstr "Cubre vcpus en resctrls"
 
 msgid "PASS"
 msgstr "APROBADO"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "PCI controller at index %1$d (0x%2$02x) has bus='0x%3$02x', but index must "
 "be larger than bus"
 msgstr ""
-"Controlador PCI en índice %1$d (0x%2$02x) tiene bus=¡%3$02x', pero índice "
+"Controlador PCI en índice %1$d (0x%2$02x) tiene bus='%3$02x', pero el índice "
 "debe ser mayor que bus"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI controller busNr '%1$d' out of range - must be 1-254"
 msgstr ""
 "El controlador PCI con bus nº '%1$d' está fuera del intervalo; debe estar "
 "entre 1-254"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI controller chassis '%1$d' out of range - must be 0-255"
 msgstr ""
 "El chasis del controlador PCI '%1$d' está fuera del intervalo; debe estar "
 "entre 0-255"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI controller chassisNr '%1$d' out of range - must be 1-255"
 msgstr ""
 "En nº de chasis '%1$d' del controlador PCI está fuera del intervalo; debe "
@@ -14336,7 +14282,7 @@ msgstr ""
 msgid "PCI controller model was not set correctly"
 msgstr "El modelos de controlador elegido %d no coincide con el origen %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI controller port '%1$d' out of range - must be 0-255"
 msgstr ""
 "El puerto '%1$d' del controlador PCI está fuera del intervalo; debe ser 0-255"
@@ -14359,9 +14305,10 @@ msgstr ""
 msgid "PCI device %1$s is in use"
 msgstr "Dispositivo PCI %1$s está en uso"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI device %1$s is in use by driver %2$s, domain %3$s"
-msgstr "Dispositivo %1$s PCI está en uso por controlador %2$s, dominio %3$s"
+msgstr ""
+"El dispositivo %1$s PCI está en uso por el controlador %2$s, dominio %3$s"
 
 #, c-format
 msgid "PCI device %1$s is not assignable"
@@ -14375,20 +14322,18 @@ msgstr ""
 "El dispositivo PCI '%1$04x:%2$02x:%3$02x.%4$x' solo puede aparecer una vez "
 "en la red %5$s"
 
-#, fuzzy
 msgid "PCI host devices must use 'pci' or 'unassigned' address type"
-msgstr "Los controladores deben utilizar el tipo de dirección 'ccid'"
+msgstr ""
+"Los dispositivos de host PCI utilizan tipo de dirección 'pci' o 'unassigned'"
 
-#, fuzzy
 msgid "PID file (unless overridden by -p):"
-msgstr "Archivo de PID (a no ser que sobrescriba por -p):"
+msgstr "Archivo de PID (a no ser que sobrescrito por -p):"
 
 msgid "PID namespace support is required"
 msgstr "Se requiere el mantenimiento de PID de espacio de nombre"
 
-#, fuzzy
 msgid "PIIX3 USB controller at index 0 must have PCI address 0:0:1.2"
-msgstr "Los controladores IDE primarios deben tener una dirección PCI 0:0:1.1"
+msgstr "El controlador USB PIIX3 con índice 0 debe tener dirección PCI 0:0:1.2"
 
 #, c-format
 msgid "PMSuspend type %1$d not supported by libxenlight driver"
@@ -14415,17 +14360,14 @@ msgstr ""
 "El dominio PTR para red %1$s con prefijo %2$u no puede ser creado "
 "automáticamente"
 
-#, fuzzy
 msgid "PTY device is not yet assigned"
-msgstr "PCI device %s is not assignable"
+msgstr "El dispositivo PTY aún no está asignado"
 
-#, fuzzy
 msgid "PVH guest os type not supported"
-msgstr "Tipo de concentrador %s no tiene soporte"
+msgstr "Tipo no admito de SO invitado PVH"
 
-#, fuzzy
 msgid "Page size:"
-msgstr "Tamaño de memoria:"
+msgstr "Tamaño de página:"
 
 msgid "Panicked"
 msgstr "En pánico"
@@ -14531,9 +14473,8 @@ msgstr "La ruta '%1$s' debe ser un dispositivo de bloque"
 msgid "Path has to specify the datacenter and compute resource"
 msgstr "La ruta debe especificar el centro de datos y el recurso compute"
 
-#, fuzzy
 msgid "Paused"
-msgstr "en pausa"
+msgstr "Pausado"
 
 #, c-format
 msgid ""
@@ -14729,9 +14670,8 @@ msgstr "Imprimir estadísticas de memoria del nodo."
 msgid "Priority '%1$d' is outside valid range of [%2$d,%3$d]"
 msgstr "La prioridad '%1$d' está por fuera del intervalo válido de [%2$d,%3$d]"
 
-#, fuzzy
 msgid "Probing TSC is not supported on this platform"
-msgstr "Pruebas TSC no tiene soporte en esta plataforma"
+msgstr "Las pruebas TSC no están admitidas en esta plataforma"
 
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "El proceso de afinidad del CPU no está admitido en esta plataforma"
@@ -14779,9 +14719,8 @@ msgstr "Extracción abortada"
 msgid "Pull complete"
 msgstr "Extracción completada"
 
-#, fuzzy
 msgid "Pull failed"
-msgstr "Purga incorrecta"
+msgstr "Arrastre incorrecto"
 
 #, c-format
 msgid "QEMU '%1$s' does not support any CPU models for virttype '%2$s'"
@@ -14798,7 +14737,6 @@ msgstr "Anexo QEMU"
 msgid "QEMU Guest Agent Command"
 msgstr "Comando de Agente de Huésped QEMU"
 
-#, fuzzy
 msgid "QEMU Monitor Command"
 msgstr "Comando de Monitorización QEMU"
 
@@ -14944,9 +14882,10 @@ msgstr ""
 "QueryVirtualDiskUuid no está disponible, no se puede buscar el volumen de "
 "almacenamiento por UUID"
 
-#, fuzzy
 msgid "Querying migration downtime is not supported by QEMU binary"
-msgstr "Binario QEMU no admite migración comprimida"
+msgstr ""
+"La solicitud de tiempo de inactividad para migración no está admitida por el "
+"binario de QEMU"
 
 #, c-format
 msgid ""
@@ -14964,24 +14903,20 @@ msgstr "RDP no admite 'replaceUser'"
 msgid "RDP password expiration isn't supported"
 msgstr "Contraseña RDP caducada no está admitida"
 
-#, fuzzy
 msgid "RDT Memory Bandwidth allocation unsupported"
-msgstr "Modificación de XML no tiene soporte"
+msgstr "No se admite la asignación de ancho de banda de memoria RDT"
 
 msgid "RNG backend is not supported"
 msgstr "No es admitido el backend RNG"
 
-#, fuzzy
 msgid "RNG device is missing alias"
-msgstr "Ruta TPM device path %s is invalid"
+msgstr "Falta alias del dispositivo RNG"
 
-#, fuzzy
 msgid "ROM tuning is not supported when ROM is disabled"
-msgstr "No se admite ROM tuning cuando ROM está desactivado"
+msgstr "Ajuste de ROM no está admitido cuando ROM está desactivado"
 
-#, fuzzy
 msgid "ROM tuning is only supported for PCI devices"
-msgstr "Operación no tiene soporte para dispositivo: %s"
+msgstr "Ajuste de ROM solo está admitido para dispositivos PCI"
 
 msgid "RPC error"
 msgstr "error RPC"
@@ -15155,9 +15090,8 @@ msgstr ""
 "Expresión '%1$s' regular debe tener exactamente 1 coincidencia de grupo, no "
 "%2$d"
 
-#, fuzzy
 msgid "Relative backing during copy not supported yet"
-msgstr "Respaldo transitorios durante copiado aún no tienen soporte"
+msgstr "Respaldo relativo durante copia aún no tiene soporte"
 
 msgid "Reload domain's graphics display certificates"
 msgstr "Recargar certificados de pantalla gráfica de dominio"
@@ -15178,16 +15112,15 @@ msgid "Remove an existing managed save state file from a domain"
 msgstr ""
 "Retira un archivo de estado de almacenamiento administrado desde un dominio"
 
-#, fuzzy
 msgid "Remove managed save of a domain"
 msgstr "Retira guardado gestionado de un dominio"
 
 msgid "Removed"
 msgstr "Retirado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Removed managedsave image for domain '%1$s'"
-msgstr "Imagen retirada de gesto de guardado para dominio '%1$s'"
+msgstr "Imagen retirada de gestor de guardado para dominio '%1$s'"
 
 msgid "Renamed"
 msgstr "Renombrado"
@@ -15214,9 +15147,9 @@ msgstr ""
 "tolerancia ([%2$llu, %3$llu] Hz) redondea frecuencia %4$llu Hz huésped y "
 "escalado TSC no está admitido por la CPU huésped"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Requested data len %1$llu is larger than maximum %2$d"
-msgstr "El valor %1$llu solicitado para data len es superior al máximo: %2$d"
+msgstr "El valor %1$llu solicitado para datos len es superior al máximo de %2$d"
 
 #, c-format
 msgid ""
@@ -15295,7 +15228,6 @@ msgstr "Restablecimiento del dominio requiere autorización"
 msgid "Resize block device of domain."
 msgstr "Redimensiona bloque del dispositivo de dominio."
 
-#, fuzzy
 msgid "Resize storage volume"
 msgstr "Redimensiona volumen de almacenaje"
 
@@ -15311,13 +15243,11 @@ msgstr ""
 msgid "Resizing storage volume requires authorization"
 msgstr "Redimensión de volumen de almacenaje requiere autorización"
 
-#, fuzzy
 msgid "Resolved device mapper name too long"
-msgstr "Resuelto nombre muy largo del asignante del dispositivo"
+msgstr "Resuelto nombre muy largo del planificador del dispositivo"
 
-#, fuzzy
 msgid "Resource control is not supported on this host"
-msgstr "El dispositivo de red no tiene soporte en este host"
+msgstr "El control de recurso no está admitido en este host"
 
 #, c-format
 msgid "Resource lockspace '%1$s' exceeds %2$d characters"
@@ -15394,7 +15324,6 @@ msgstr "Devuelve información básica sobre una instantánea."
 msgid "Returns basic information about the domain IOThreads."
 msgstr "Devuelve información básica sobre hilos de E/S IOThreads del dominio."
 
-#, fuzzy
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Devuelve información básica acerca de las CPU virtuales del dominio."
 
@@ -15480,10 +15409,10 @@ msgstr "Dirección de ruta '%1$s' en conflicto con dirección IP para '%2$s'"
 msgid "Run a reboot command in the target domain."
 msgstr "Ejecutar un comando de reinicialización en el dominio elegido."
 
-#, fuzzy
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
 msgstr ""
-"Ejecute un comando arbitrario de agente 'qemu guest'; use a riesgo propio"
+"Ejecute un comando arbitrario dentro de un espacio de nombre invitado lxc; "
+"utilícelo su propio riesgo"
 
 msgid "Run an arbitrary qemu guest agent command; use at your own risk"
 msgstr ""
@@ -15598,10 +15527,9 @@ msgstr ""
 msgid "SCSI host device doesn't support managed mode"
 msgstr "Dispositivo de host SCSI no soporta modo administrado"
 
-#, fuzzy
 msgid "SCSI host device must use 'drive' address type"
 msgstr ""
-"No se conoce el tipo de dirección de origen del dispositivo de host '%s'"
+"El dispositivo host SCSI debe utilizar tipo de dirección de unidad 'drive'"
 
 #, c-format
 msgid "SCSI unit index %1$d out of [0..6,8..%2$u] range"
@@ -15612,9 +15540,10 @@ msgid "SCSI unit index %1$d out of [0..6,8..15] range"
 msgstr ""
 "El índice %1$d de la unidad SCSI se encuentra fuera de intervalo [0..6,8..15]"
 
-#, fuzzy
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
-msgstr "Los controladores deben utilizar el tipo de dirección 'ccid'"
+msgstr ""
+"El dispositivo host de SCSI_host debe utilizar tipo de dirección 'pci' o "
+"'ccw'"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
@@ -15923,9 +15852,8 @@ msgid "Server count %1$zd greater than default name count %2$zu"
 msgstr ""
 "Contador servidor %1$zd mayor que contador de nombre predeterminado %2$zu"
 
-#, fuzzy
 msgid "Server not found"
-msgstr "Secreto no encontrado"
+msgstr "Servidor no encontrado"
 
 #, c-format
 msgid "Server not found: %1$s"
@@ -15934,32 +15862,25 @@ msgstr "Servidor no encontrado: %1$s"
 msgid "Server private key:"
 msgstr "Clave privada del servidor:"
 
-#, fuzzy
 msgid "Server to alter the client-related configuration limits on."
 msgstr ""
-"Servidor para alterar la configuración relacionada con cliente con «limits "
-"on»."
+"Servidor para alterar la configuración «limits on» relacionada con cliente."
 
-#, fuzzy
 msgid "Server to alter threadpool attributes on."
 msgstr "Servidor para alterar atributos threadpool on."
 
-#, fuzzy
 msgid "Server to retrieve the client limits from."
 msgstr "Servidor para recuperar los límites cliente origen."
 
-#, fuzzy
 msgid "Server to retrieve threadpool attributes from."
 msgstr "Servidor para recuperar atributos threadpool origen."
 
-#, fuzzy
 msgid "Set a secret in the guest domain's memory"
 msgstr "Establece un secreto interno a la memoria del dominio del invitado"
 
 msgid "Set a secret value."
 msgstr "Definir un valor secreto."
 
-#, fuzzy
 msgid "Set domain launch security state"
 msgstr "Establece estado de seguridad del lanzamiento del dominio"
 
@@ -15987,7 +15908,6 @@ msgstr ""
 "Establecer o solicitar parámetros de E/S de disco tales como "
 "estrangulamiento de bloques."
 
-#, fuzzy
 msgid "Set password of the domain's account"
 msgstr "Establece contraseña de la cuenta del dominio"
 
@@ -16004,7 +15924,6 @@ msgstr ""
 "Establezca el ancho de banda de migración máxima (en MiB/s) para un dominio "
 "que se está migrando a otro host."
 
-#, fuzzy
 msgid "Set the number of seconds to wait for a response from the guest agent."
 msgstr ""
 "Establece el número de segundos de espera para una respuesta con origen de "
@@ -16024,11 +15943,11 @@ msgstr ""
 "Configurar la información del dispositivo para dispositivos de red no es "
 "admitido por el controlador vz."
 
-#, c-format, fuzzy
+#, c-format
 msgid "Setting different DAC user or group on %1$s which is already in use"
 msgstr "Configura diferente usuario DAC o grupo en %1$s el cual ya está en uso"
 
-#, c-format, fuzzy
+#, c-format
 msgid "Setting different SELinux label on %1$s which is already in use"
 msgstr "Establece etiquetado SELinux diferente en %1$s el cual ya está en uso"
 
@@ -16063,9 +15982,8 @@ msgstr ""
 msgid "Setting disk wwn id is not supported by vz driver."
 msgstr "Configurar el wwn id del disco no es admitido por el controlador vz."
 
-#, fuzzy
 msgid "Setting fs quotas is not supported by vz driver."
-msgstr "Configurar los cupos de fs no es admitido por el controlador vz."
+msgstr "Establecer cuotas fs no es admitido por la unidad vz."
 
 msgid "Setting guest interface name is not supported by vz driver."
 msgstr ""
@@ -16108,26 +16026,23 @@ msgstr ""
 "La configuración de startupPolicy solamente es permitida para los "
 "dispositivos USB"
 
-#, c-format, fuzzy
+#, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr ""
-"Establece el hueco de PCI de 64-bit del tamaño no está admitido para la "
+"Establece el tamaño del hueco de PCI de 64-bit no está admitido para la "
 "máquina '%1$s'"
 
-#, fuzzy
 msgid "Setting the domain accounts' password requires authorization"
 msgstr ""
-"Configura la contraseña de las cuentas del dominio requiere autorización"
+"Configurar la contraseña de las cuentas del dominio requiere autorización"
 
-#, fuzzy
 msgid "Setting the domain time requires authorization"
 msgstr "Configurar la hora y fecha del dominio requiere autorización"
 
-#, fuzzy
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr ""
-"Configurar el parámetro de descarte del disco no es admitido por el "
-"controlador vz."
+"Configurar el parámetro de descarte del disco no es admitido por la unidad "
+"vz."
 
 msgid "Setting up disk io thread # is not supported by vz driver."
 msgstr ""
@@ -16150,18 +16065,16 @@ msgstr ""
 msgid "Setting wwn is not supported for lun device"
 msgstr "Parámetro wwn no tiene soporte para dispositivo lun"
 
-#, fuzzy
 msgid "Setup time:"
-msgstr "Hora de la CPU:"
+msgstr "Configurar fecha y hora:"
 
 msgid "Shared memory:\n"
 msgstr "Memoria compartida:\n"
 
-#, c-format, fuzzy
+#, c-format
 msgid "Shell '%1$s' should have absolute path"
-msgstr "Intérprete '%1$s' tendría ruta absoluta"
+msgstr "El intérprete '%1$s' tendría ruta absoluta"
 
-#, fuzzy
 msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
@@ -16169,7 +16082,6 @@ msgstr ""
 "Enlace para invocar el comando con un modelo único de CPU y sin capacidades "
 "adicionales"
 
-#, fuzzy
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
 "Definiría ambos atributos de rutas maestra y esclava para dispositivo nmdm"
@@ -16180,7 +16092,6 @@ msgstr "Mostrar los errores de dispositivos de bloque"
 msgid "Show errors on block devices"
 msgstr "Mostrar los errores en los dispositivos de bloque"
 
-#, fuzzy
 msgid "Show features that are part of the CPU model type"
 msgstr "Muestra características que son parte del tipo de modelo de CPU"
 
@@ -16290,15 +16201,14 @@ msgid "Snapshot revert"
 msgstr "Reversión de instantánea"
 
 msgid "Snapshots are not yet supported with 'pool' volumes"
-msgstr "Instantáneas no son aún mantenidos con volúmenes 'pool'"
+msgstr "Las instantáneas no son aún mantenidas con volúmenes compartidos"
 
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
 msgstr "Las instantáneas tienen relaciones inconsistentes para dominio %1$s"
 
-#, fuzzy
 msgid "Snapshotting domain requires authorization"
-msgstr "Dominio de captura instantánea requiere autorización"
+msgstr "El dominio de captura instantánea requiere autorización"
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
@@ -16310,10 +16220,11 @@ msgstr "Sockets:"
 msgid "Some activation file descriptors are unclaimed"
 msgstr "Alguna activación de descriptores de archivo no están reclamados"
 
-#, c-format, fuzzy
+#, c-format
 msgid "Some features cannot be reliably used with this QEMU: %1$s"
 msgstr ""
-"Algunas capacidades no pueden ser disponibles utilizaron con este QEMU: %1$s"
+"Algunas capacidades no seguramente no pueden estar disponibles con este QEMU:"
+" %1$s"
 
 msgid "Some parameters are not supported by migration protocol 2"
 msgstr "Algunos parámetros no son admitidos por el protocolo 2 de migración"
@@ -16324,15 +16235,13 @@ msgstr "Algunos parámetros no están admitido por el protocolo 3 de migración"
 msgid "Some processes refused to die"
 msgstr "Algunos procesos se negaron a morir"
 
-#, fuzzy
 msgid "Sound device model is not supported"
 msgstr "No está admitido el modelo de dispositivo de sonido"
 
-#, fuzzy
 msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
-"No está admitida la emulación de dispositivos de sonido por el binario dado "
-"bhyve"
+"No está admitida la emulación de dispositivos de sonido por el binario bhyve "
+"dado"
 
 msgid "Source"
 msgstr "Origen"
@@ -16383,7 +16292,6 @@ msgstr "Especifica si las páginas de diferentes nodos numa pueden fusionarse"
 msgid "Specifying mount point is not supported for now"
 msgstr "La especificación de punto de montaje no tiene soporte por ahora"
 
-#, fuzzy
 msgid "Spice audio is not supported without spice graphics"
 msgstr "Sonido de especie no está admitido sin gráficos de especie"
 
@@ -16421,7 +16329,6 @@ msgstr "Inicia un grupo."
 msgid "Start an inactive node device"
 msgstr "Inicia un dispositivo de nodo inactivo"
 
-#, fuzzy
 msgid "Start domain"
 msgstr "Iniciar dominio"
 
@@ -16434,9 +16341,8 @@ msgstr "Iniciar red"
 msgid "Start node device"
 msgstr "Iniciar dispositivo de nodo"
 
-#, fuzzy
 msgid "Start storage pool"
-msgstr "Iniciar compartición de almacenaje"
+msgstr "Iniciar almacenaje compartido"
 
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
@@ -16445,17 +16351,14 @@ msgstr ""
 msgid "Started"
 msgstr "Iniciado"
 
-#, fuzzy
 msgid "Starting interface requires authorization"
-msgstr "Iniciación de interfaz requiere autorización"
+msgstr "Iniciar interfaz requiere autorización"
 
-#, fuzzy
 msgid "Starting network requires authorization"
 msgstr "Iniciación de red requiere autorización"
 
-#, fuzzy
 msgid "Starting node device requires authorization"
-msgstr "Iniciando de dispositivo de nodo requiere autorización"
+msgstr "Iniciar dispositivo de nodo requiere autorización"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
@@ -16563,7 +16466,8 @@ msgstr "Estadística %1$s es demasiado grande para el destino"
 
 #, fuzzy, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon"
-msgstr "Bits del tipo stat 0x%1$x no son compatibles con este demonio"
+msgstr ""
+"Bits 0x%1$x de tipos de estadísticas no son compatibles con este demonio"
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon or QEMU"
@@ -24213,9 +24117,9 @@ msgstr "no se puede encontrar patrón de versión «%1$s»"
 msgid "cannot fork child process"
 msgstr "no es posible iniciar proceso hijo"
 
-#, c-format
+#, c-format, fuzzy
 msgid "cannot format %1$s CPU data"
-msgstr "no se puede dar formato a datos de %1$s de la CPU"
+msgstr "no se puede dar formato a datos de la CPU %1$s"
 
 msgid "cannot generate a random uuid for instanceid"
 msgstr "No es posible generar de forma azarosa un UUID para instanceid"
@@ -28751,7 +28655,7 @@ msgstr "incorrecto al obtener capacidades de consorcio de almacenaje"
 
 #, fuzzy, c-format
 msgid "failed to get stripe count of RBD image %1$s"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto al obtener contador de recorte de imagen RBD %1$s"
 
 msgid "failed to get sysinfo"
 msgstr "Error al obtener sysinfo"
@@ -28783,11 +28687,11 @@ msgstr "Error al obtener la versión de la biblioteca"
 
 #, fuzzy, c-format
 msgid "failed to get the stripe count of RBD image %1$s"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto al obtener el contador de recorte de imagen RBD '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to get the stripe unit of RBD image %1$s"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto al obtener la unidad recortada de imagen RBD %1$s"
 
 #, c-format
 msgid "failed to get vol '%1$s'"
@@ -28807,11 +28711,11 @@ msgstr "No se pudo iniciar la biblioteca SASL: %1$d (%2$s)"
 
 #, fuzzy, c-format
 msgid "failed to initialize cipher: '%1$s'"
-msgstr "Error al serializar S-Expr: %1$s"
+msgstr "incorrecto al iniciar cifrador: '%1$s'"
 
 #, fuzzy
 msgid "failed to initialize device BPF map"
-msgstr "Error al inicializar libvirt"
+msgstr "incorrecto al inicializar asignación de dispositivo BPF"
 
 msgid ""
 "failed to initialize device BPF map; locked memory limit for libvirtd "
@@ -28820,7 +28724,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to initialize domain condition"
-msgstr "Error al esperar la condición"
+msgstr "incorrecto al inicializar condición de dominio"
 
 #, c-format
 msgid "failed to initialize gluster connection (src=%1$p priv=%2$p)"
@@ -28828,14 +28732,14 @@ msgstr "error al inicializar una conexión gluster (src=%1$p priv=%2$p)"
 
 #, fuzzy
 msgid "failed to initialize libssh"
-msgstr "Error al inicializar libvirt"
+msgstr "incorrecto al inicializar libssh"
 
 msgid "failed to initialize netcf"
 msgstr "error al inicializar netcf"
 
 #, fuzzy, c-format
 msgid "failed to iterate RBD image '%1$s'"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto al iterar imagen RBD «%1$s»"
 
 #, c-format
 msgid "failed to iterate RBD snapshot %1$s@%2$s"
@@ -28851,7 +28755,7 @@ msgstr "No se pudo vincular cgroup '%s' en '%s'"
 
 #, fuzzy
 msgid "failed to lookup device in old map"
-msgstr "Error al montar dispositivo %s a %s"
+msgstr "incorrecto al montar dispositivo dentro de distribución antigua"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%1$s'"
@@ -28891,15 +28795,15 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to open %1$s"
-msgstr "Error al abrir %1$s"
+msgstr "incorrecto al abrir %1$s"
 
 #, fuzzy
 msgid "failed to open configuration file"
-msgstr "Error al analizar archivo de configuración"
+msgstr "incorrecto al abrir archivo de configuración"
 
 #, fuzzy, c-format
 msgid "failed to open configuration file %1$s"
-msgstr "Error al analizar el archivo de configuración %1$s"
+msgstr "incorrecto al abrir archivo de configuración %1$s"
 
 #, fuzzy
 msgid "failed to open domain master key file for read"
@@ -28918,15 +28822,15 @@ msgstr "error al abrir el archivo de registro %1$s"
 
 #, fuzzy, c-format
 msgid "failed to open netns %1$s"
-msgstr "Error al abrir tty %1$s"
+msgstr "incorrecto al abrir red netns %1$s"
 
 #, fuzzy, c-format
 msgid "failed to open ns %1$s"
-msgstr "Error al abrir %1$s"
+msgstr "incorrecto al abrir ns %1$s"
 
 #, fuzzy
 msgid "failed to open secret file for write"
-msgstr "Error al abrir el archivo"
+msgstr "incorrecto al abrir archivo secreto para escritura"
 
 #, c-format
 msgid "failed to open ssh channel: %1$s"
@@ -28962,7 +28866,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse SCSI host '%1$s'"
-msgstr "Error al intentar analizar el modo '%1$s'"
+msgstr "incorrecto al interpretar host SCSI '%1$s'"
 
 #, fuzzy
 msgid "failed to parse agent timeout"
@@ -28970,11 +28874,11 @@ msgstr "No se pudo leer valor de %s"
 
 #, fuzzy, c-format
 msgid "failed to parse backing file location '%1$s'"
-msgstr "error al habilitar filtro mac en '%1$s'"
+msgstr "incorrecto al interpretar lugar del archivo de respaldo '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse block device '%1$s'"
-msgstr "Error al restablecer dispositivo de bloque '%1$s'"
+msgstr "incorrecto al interpretar dispositivo de bloque '%1$s'"
 
 msgid "failed to parse configuration file"
 msgstr "Error al analizar archivo de configuración"
@@ -28993,18 +28897,18 @@ msgstr "error al leer int: %1$s"
 
 #, fuzzy, c-format
 msgid "failed to parse integer: '%1$s'"
-msgstr "Error en la lectura de usuario '%1$s'"
+msgstr "incorrecto al interpretar entero: '%1$s'"
 
 msgid "failed to parse json"
 msgstr "error al leer el json"
 
 #, fuzzy, c-format
 msgid "failed to parse multicast address from '%1$s'"
-msgstr "No se pudo leer UID ni GID desde '%1$s'"
+msgstr "incorrecto al interpretar dirección multicast desde '%1$s'"
 
 #, fuzzy
 msgid "failed to parse node name index"
-msgstr "Error al analizar el nombre del bloque %s"
+msgstr "incorrecto al interpretar índice de nombre del nodo"
 
 msgid "failed to parse original memlock size"
 msgstr ""
@@ -29025,7 +28929,7 @@ msgstr "error al procesar read_bps_device: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse read_iops_device: '%1$s'"
-msgstr "Error al intentar analizar el modo '%1$s'"
+msgstr "incorrecto al interpretar read_iops_device: '%1$s'"
 
 #, fuzzy
 msgid "failed to parse slirp helper list"
@@ -29041,19 +28945,20 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to parse the CCW address from sysfs path: '%1$s'"
-msgstr "Error al procesar el dispositivo SCSI con la ruta sysfs '%1$s'"
+msgstr "incorrecto al interpretar la dirección CCW desde ruta sysfs: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse the PCI address from sysfs path: '%1$s'"
-msgstr "Error al procesar el dispositivo SCSI con la ruta sysfs '%1$s'"
+msgstr "incorrecto al interpretar la dirección PCI desde ruta sysfs: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse the SCSI address from filename: '%1$s'"
-msgstr "Error al analizar captura instantánea XML desde el archivo '%1$s'"
+msgstr ""
+"incorrecto al interpretar la dirección SCSI desde nombre de archivo: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse the index of the VMX key '%1$s'"
-msgstr "No se pudo encontrar VID para el dispositivo VLAN '%1$s'"
+msgstr "incorrecto al interpretar el índice de la clave VMX '%1$s'"
 
 #, c-format
 msgid "failed to parse write_bps_device: '%1$s'"
@@ -29061,11 +28966,11 @@ msgstr "error al procesar write_bps_device: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse write_iops_device: '%1$s'"
-msgstr "Error al intentar analizar el modo '%1$s'"
+msgstr "incorrecto al interpretar write_iops_device: '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to parse xml document '%1$s'"
-msgstr "Error al intentar analizar el modo '%1$s'"
+msgstr "incorrecto al interpretar documento xml '%1$s'"
 
 #, c-format
 msgid "failed to pivot job for disk %1$s"
@@ -29125,7 +29030,7 @@ msgstr "error al leer el directorio '%1$s' en '%2$s'"
 
 #, fuzzy
 msgid "failed to read domain XML"
-msgstr "Error al leer XML"
+msgstr "incorrecto al leer dominio XML"
 
 msgid "failed to read from wakeup fd"
 msgstr "Error al leer desde FD de despertador"
@@ -29149,7 +29054,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to receive device from udev monitor"
-msgstr "Error al crear un dispositivo de nodo para %s"
+msgstr "incorrecto al recibir dispositivo desde monitor udev"
 
 #, fuzzy
 msgid "failed to regenerate genid"
@@ -29166,7 +29071,7 @@ msgstr "error al registrar el controlador de interfaz udev"
 
 #, fuzzy
 msgid "failed to remove device from BPF cgroup map"
-msgstr "Error al crear un dispositivo de nodo para %s"
+msgstr "incorrecto al retirar dispositivo desde distribución cgroup de BPF"
 
 #, c-format
 msgid "failed to remove nvram: %1$s"
@@ -29190,7 +29095,7 @@ msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to resolve '%1$s'"
-msgstr "error al eliminar el grupo '%1$s'"
+msgstr "incorrecto al resolver '%1$s'"
 
 msgid ""
 "failed to resolve relative backing name: base image is not in backing chain"
@@ -29198,7 +29103,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to resolve symlink %1$s: %2$s"
-msgstr "Error al crear enlace simbólico '%1$s' hacia '%2$s'"
+msgstr "incorrecto al resolver enlace simbólico %1$s: %2$s"
 
 msgid "failed to restore domain"
 msgstr ""
@@ -29217,7 +29122,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to retrieve XML"
-msgstr "Error al crear XML"
+msgstr "incorrecto al obtener XML"
 
 #, c-format
 msgid ""
@@ -29292,7 +29197,7 @@ msgstr "error al establecer cpuset.cpus en cgroup para iothread %1$d"
 
 #, fuzzy, c-format
 msgid "failed to set gluster volfile server '%1$s'"
-msgstr "error al intentar obtener el filtro de red '%1$s'"
+msgstr "incorrecto al establecer servidor volfile glister '%1$s'"
 
 msgid "failed to set guest cid"
 msgstr "error al establecer el cid del huésped"
@@ -29328,11 +29233,11 @@ msgstr "Error en 'stat' el grupo de RADOS '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to stat the RBD image %1$s"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto para estadísticas de imagen RBD %1$s"
 
 #, fuzzy, c-format
 msgid "failed to stat the RBD image '%1$s'"
-msgstr "Error en el cambio de tamaño de imagen RBD '%1$s'"
+msgstr "incorrecto al estadísticas de imagen RBD '%1$s'"
 
 #, c-format
 msgid "failed to store %1$lld to %2$s"
@@ -29376,7 +29281,7 @@ msgstr "error al desproteger la instantánea '%1$s/%2$s@%3$s'"
 
 #, fuzzy, c-format
 msgid "failed to update capacity data for block node '%1$s'"
-msgstr "No se pudo preasignar espacio para archivo ' %1$s'"
+msgstr "incorrecto al actualizar capacidad de datos para nodo de bloque '%1$s'"
 
 #, c-format
 msgid "failed to update capacity of '%1$s'"
@@ -29384,7 +29289,7 @@ msgstr ""
 
 #, fuzzy
 msgid "failed to update device in BPF cgroup map"
-msgstr "Error al intentar actualizar el dispositivo desde %s"
+msgstr "incorrecto al actualizar dispositivo en asignación cgroup BPF"
 
 msgid "failed to update domain state"
 msgstr ""
@@ -29406,11 +29311,11 @@ msgstr "error al verificar si la instantánea '%1$s/%2$s@%3$s' está protegida"
 
 #, fuzzy
 msgid "failed to wait for domain condition"
-msgstr "Error al esperar la condición"
+msgstr "incorrecto para espera de condición del dominio"
 
 #, fuzzy, c-format
 msgid "failed to wait for file '%1$s' to appear"
-msgstr "No se pudo escribir archivo vmx '%1$s'"
+msgstr "incorrecto para espera del archivo '%1$s' para aparecer"
 
 msgid "failed to wait on condition"
 msgstr "Error al esperar la condición"
@@ -29435,19 +29340,19 @@ msgstr "Error al escribir el archivo de configuración: %1$s"
 
 #, fuzzy, c-format
 msgid "failed to write cookie to '%1$s'"
-msgstr "No se puede escribir a '%1$s'"
+msgstr "incorrecto al escribir cookie a '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to write data to config '%1$s'"
-msgstr "No se pueden escribir datos a '%1$s'"
+msgstr "incorrecto al escribir datos para configuración '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to write domain xml to '%1$s'"
-msgstr "Error al obtener el dominio '%1$s'"
+msgstr "incorrecto al escribir xml del dominio a '%1$s'"
 
 #, fuzzy, c-format
 msgid "failed to write header data to '%1$s'"
-msgstr "No se pueden escribir datos a '%1$s'"
+msgstr "incorrecto al escribir datos de cabecera a '%1$s'"
 
 #, c-format
 msgid "failed to write header to domain save file '%1$s'"
@@ -29469,7 +29374,7 @@ msgstr "No es posible establecer la memoria para el dominio"
 
 #, fuzzy, c-format
 msgid "failed to write padding to '%1$s'"
-msgstr "Error al escribir en el archivo '%1$s'"
+msgstr "incorrecto al escribir relleno a '%1$s'"
 
 msgid "failed to write secret"
 msgstr ""
@@ -29515,7 +29420,7 @@ msgstr ""
 
 #, fuzzy
 msgid "fd passing is not supported by this connection"
-msgstr "esta función no está admitida por el controlador de conexión"
+msgstr "el paso fd no está admitido por esta conexión"
 
 #, c-format
 msgid "fdset '%1$u' is already in use by qemu"
@@ -29529,7 +29434,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "field '%1$s' is malformed"
-msgstr "el valor de configuración %1$s había sido creado erróneamente"
+msgstr "el campo '%1$s' está malformado"
 
 msgid "file"
 msgstr "archivo"
@@ -29610,7 +29515,8 @@ msgstr "Nombre de archivo contiene XML actualizado para el destino"
 
 #, fuzzy
 msgid "filename containing updated persistent XML for the target"
-msgstr "Nombre de archivo contiene XML actualizado para el destino"
+msgstr ""
+"nombre de archivo conteniendo XML persistente actualizado para el destino"
 
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr ""
@@ -29625,7 +29531,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "filter '%1$s' already exists with uuid %2$s"
-msgstr "ya existe un grupo '%1$s' con uuid %2$s"
+msgstr "ya existe filtro '%1$s' con uuid %2$s"
 
 #, c-format
 msgid "filter '%1$s' learning value '%2$s' invalid."
@@ -29845,7 +29751,7 @@ msgstr ""
 
 #, fuzzy
 msgid "format of the destination file"
-msgstr "Error en la autenticación"
+msgstr "formato del archivo destino"
 
 msgid "format of the save image file"
 msgstr ""
@@ -29856,7 +29762,7 @@ msgstr "El formateador de %1$s %2$s ha reportado un error"
 
 #, fuzzy, c-format
 msgid "forward dev not allowed for network '%1$s' with forward mode='%2$s'"
-msgstr "Elemento <dns> no tiene soporte en red %1$s con forward mode='%2$s'"
+msgstr "dev reenviado no permitido para red '%1$s' con reenvío en modo='%2$s'"
 
 msgid "forward interface entries cannot be modified, only added or deleted"
 msgstr ""
@@ -29949,7 +29855,7 @@ msgstr "Obtener o establecer parámetro blkio"
 
 #, fuzzy
 msgid "get server's client-related configuration limits"
-msgstr "Modificar u obtener estado actual de configuración"
+msgstr "obtiene límites de configuración relativos con cliente del servidor"
 
 #, fuzzy
 msgid "get statistics about one or multiple domains"
@@ -29987,19 +29893,18 @@ msgstr "Obtener/Definir valor utilizado en el siguiente arranque"
 
 #, fuzzy
 msgid "gic-version option is not available with this QEMU binary"
-msgstr ""
-"Inhabilitar memoria compartida no está disponible con el binario de QEMU"
+msgstr "la opción gic-version no está disponible con este binario de QEMU"
 
 msgid "given uuid does not match XML uuid"
 msgstr "UUID dado no coincide"
 
 #, fuzzy, c-format
 msgid "gluster pool name '%1$s' must not contain /"
-msgstr "el grupo de almacenamiento '%1$s' no se encuentra activo"
+msgstr "el nombre de conjunto gluster '%1$s' no debe contener /"
 
 #, fuzzy, c-format
 msgid "gluster pool path '%1$s' must start with /"
-msgstr "Ruta de particiones '%1$s' debe iniciar por '/'"
+msgstr "ruta de consorcio glister '%1$s' debe iniciar con /"
 
 #, c-format
 msgid "got unexpected RPC call prog %1$d vers %2$d proc %3$d type %4$d"
@@ -30012,7 +29917,7 @@ msgstr "error desconocido"
 
 #, fuzzy, c-format
 msgid "got unknown HTTP error code %1$s"
-msgstr "Modelo de temporizador '%1$s' desconocido"
+msgstr "obtuvo el código de error %1$s de HTTP desconocido"
 
 #, c-format
 msgid ""
@@ -30190,14 +30095,14 @@ msgstr "Detenga el dominio después de que la instantánea haya sido creada"
 
 #, fuzzy
 msgid "handler failed to wait on condition"
-msgstr "Error al esperar la condición"
+msgstr "manipulador incorrecto para espera de condición"
 
 msgid "hash lookup resulted in NULL pointer"
 msgstr "búsqueda hash resulto en puntero NULL"
 
 #, fuzzy, c-format
 msgid "host CPU model does not match required CPU model %1$s"
-msgstr "Proveedor de CPU de host no coincide con el proveedor de CPU %1$s"
+msgstr "modelo de CPU del host no coincide con el modelo requerido de CPU %1$s"
 
 #, c-format
 msgid "host CPU vendor does not match required CPU vendor %1$s"
@@ -30213,7 +30118,7 @@ msgstr "Dispositivo USB de host ya existe"
 
 #, fuzzy, c-format
 msgid "host arch %1$s is too big for destination"
-msgstr "El slot %1$s es demasiado extenso para el destino"
+msgstr "arquitectura %1$s de host es demasiado extenso para el destino"
 
 msgid "host cpu counting not implemented on this platform"
 msgstr "Conteo de CPU de host no se implementó en esta plataforma"
@@ -30230,7 +30135,7 @@ msgstr "Dispositivo de host ya existe"
 
 #, fuzzy
 msgid "host doesn't support VFIO PCI passthrough"
-msgstr "Este QEMU no soporta scsi-block para paso de lun"
+msgstr "el host no admite traspaso PCI DE VFIO"
 
 #, c-format
 msgid "host doesn't support hyperv '%1$s' feature"
@@ -30250,7 +30155,7 @@ msgstr "Este disco no soporta actualización"
 
 #, fuzzy
 msgid "host doesn't support legacy PCI passthrough"
-msgstr "Este QEMU no soporta scsi-block para paso de lun"
+msgstr "el host no admite traslado de PCI heredado"
 
 #, fuzzy
 msgid "host doesn't support paravirtual spinlocks"
@@ -30291,7 +30196,7 @@ msgstr "dispositivo SCSI del anfitrión %1$s:%2$u:%3$u.%4$llu no encontrado"
 
 #, fuzzy, c-format
 msgid "host scsi iSCSI path %1$s not found"
-msgstr "No se encontró hostdev %1$s"
+msgstr "el host scsi iSCSI con ruta %1$s no fue encontrado"
 
 msgid "host socket for source of disk device"
 msgstr ""
@@ -30326,7 +30231,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "hostdev invalid secret type '%1$s'"
-msgstr "Tipo de secreto '%1$s'es nulo"
+msgstr "tipo '%1$s' secreto no válido para hostdev"
 
 #, c-format
 msgid "hostdev mode '%1$s' not supported"
@@ -30334,7 +30239,7 @@ msgstr "el modo '%1$s' de dispositivo de host no está admitido"
 
 #, fuzzy, c-format
 msgid "hostdev mode 'capabilities' is not supported in %1$s"
-msgstr "el modo '%1$s' de dispositivo de host no está admitido"
+msgstr "el modo 'capabilities' de dispositivo de host no está admitido en %1$s"
 
 #, c-format
 msgid ""
@@ -30363,7 +30268,7 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "hot unplug is not supported for hostdev mode '%1$s'"
-msgstr "Operación no tiene soporte para dispositivo: %1$s"
+msgstr "desenchufe en caliente no está admitido para modo hostdev '%1$s'"
 
 #, c-format
 msgid "hot unplug of watchdog of model %1$s is not supported"
@@ -30371,7 +30276,7 @@ msgstr "no se admite la desconexión en caliente del watchdog modelo %1$s"
 
 #, fuzzy, c-format
 msgid "hotplug is not supported for hostdev mode '%1$s'"
-msgstr "Modo de hostdev %1$s no tiene soporte"
+msgstr "desenchufe en caliente no está admitido para modo hostdev '%1$s'"
 
 #, c-format
 msgid "hotplug is not supported for hostdev subsys type '%1$s'"
@@ -30555,7 +30460,7 @@ msgstr "vhost-net no tiene soporte con este binario de QEMU"
 
 #, fuzzy, c-format
 msgid "incomplete metadata in '%1$s'"
-msgstr "guardado incompleto del encabezado en '%1$s'"
+msgstr "metadato incompleto en '%1$s'"
 
 msgid "incomplete result, failed to get completed"
 msgstr ""
@@ -30620,11 +30525,12 @@ msgstr ""
 
 #, fuzzy, c-format
 msgid "input device on bus '%1$s' cannot be detached"
-msgstr "No desconectar el dispositivo de disco '%1$s'"
+msgstr "dispositivo de entrada en bus '%1$s' no puede ser desenchufado"
 
 #, fuzzy, c-format
 msgid "input device on bus '%1$s' cannot be hot plugged."
-msgstr "el bus del disco '%1$s' no puede ser conectado en caliente."
+msgstr ""
+"la entrada del dispositivo en bus '%1$s' no puede ser enchufado en caliente."
 
 #, fuzzy
 msgid "input devices without vnc are not supported"
@@ -30674,7 +30580,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid ""
 "interface %1$s - bandwidth settings are not supported for hostdev interfaces"
-msgstr "tipo de dirección='%1$s' sin soporte en interfaces de hostdev"
+msgstr ""
+"interfaz %1$s - opciones del ancho de banda sin soporte en interfaces de "
+"hostdev"
 
 #, c-format
 msgid ""
@@ -30730,75 +30638,75 @@ msgstr "la interfaz '%1$s' está fallando; reabriendo"
 msgid "interface '%1$s' not found"
 msgstr ""
 
+#, fuzzy
 msgid "interface device (MAC Address)"
-msgstr "Dispositivo de interfaz (Dirección MAC)"
+msgstr "dispositivo de interfaz (Dirección MAC)"
 
 #, fuzzy
 msgid "interface device specified by name or MAC Address"
-msgstr "nombre de interfaz o dirección MAC"
+msgstr "dispositivo de interfaz especificado por nombre o Dirección MAC"
 
 msgid "interface has no name"
 msgstr "la interfaz no tiene nombre"
 
 #, c-format
 msgid "interface has unsupported type '%1$s'"
-msgstr "el tipo de interfaz '%1$s' no es admitido"
+msgstr "el interfaz tiene tipo '%1$s' no admitido"
 
-#, fuzzy
 msgid "interface host IP"
-msgstr "la interfaz no tiene nombre"
+msgstr "interfaz de host IP"
 
 msgid "interface information in XML"
 msgstr "información de interfaz en XML"
 
 #, fuzzy
 msgid "interface is already running"
-msgstr "El dominio ya se encuentra en ejecución"
+msgstr "interfaz ya está en ejecución"
 
 #, fuzzy
 msgid "interface is not running"
-msgstr "red no está en ejecución"
+msgstr "interfaz no está en ejecución"
 
 msgid "interface mac"
-msgstr "interfaz mac"
+msgstr "mac de interfaz"
 
 msgid "interface name"
 msgstr "nombre de interfaz"
 
-#, c-format
+#, c-format, fuzzy
 msgid "interface name %1$s does not fit into buffer"
-msgstr ""
+msgstr "nombre de interfaz %1$s no cabe en el tampón"
 
 msgid "interface name or MAC address"
 msgstr "nombre de interfaz o dirección MAC"
 
 #, c-format
 msgid "interface not set\n"
-msgstr "no se estableció la interfaz\n"
+msgstr "interfaz no establecido\n"
 
+#, fuzzy
 msgid "interface state driver is not active"
-msgstr "el controlador de estado de interfaz está inactivo"
+msgstr "el interfaz de la unidad del estado no está activo"
 
 msgid "interface stats not implemented on this platform"
 msgstr "las estadísticas de interfaz no están implementadas en esta plataforma"
 
-#, c-format
+#, c-format, fuzzy
 msgid "interface type='%1$s' requires a 'source' element"
-msgstr ""
+msgstr "interfaz de tipo '%1$s' requiere un elemento 'origen'"
 
 msgid "internal"
 msgstr "interno"
 
-#, fuzzy
 msgid "internal (locking) error"
-msgstr "error interno"
+msgstr "error interno (bloqueado)"
 
-#, fuzzy
 msgid ""
 "internal and full system snapshots require all disks to be selected for "
 "snapshot"
 msgstr ""
-"instantáneas de solo disco requieren al menos un disco para instantánea"
+"instantáneas de solo disco requieren todos los discos para ser seleccionados "
+"para instantánea"
 
 msgid "internal command for autocompletion"
 msgstr "orden interna para la compleción automática"
@@ -30840,31 +30748,31 @@ msgid ""
 "format"
 msgstr ""
 
-#, fuzzy
 msgid "internal use only"
-msgstr "error interno"
+msgstr "solo empleo interno"
 
 msgid "interrupt post-copy migration"
 msgstr ""
 
+#, fuzzy
 msgid "intr:"
-msgstr ""
+msgstr "intr:"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid \"trunk='%1$s'\" in <vlan> - must be yes or no"
-msgstr "Inválido \"trunk='%1$s'\" en <vlan> - debe ser sí o no"
+msgstr "\"trunk='%1$s'\" no válido en <vlan>: debe ser sí o no"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than "
 "one vlan tag"
 msgstr ""
-"no válido \"trunk='%1$s'\" en <vlan> - trunk='yes' se requiere para más de "
+"\"trunk='%1$s'\" no válido en <vlan> - trunk='yes' se requiere para más de "
 "una etiqueta vlan"
 
 #, c-format
 msgid "invalid %1$s value: '%2$s'"
-msgstr "valor %1$s incorrecto: ' %2$s'"
+msgstr "valor %1$s no válido: ' %2$s'"
 
 #, c-format
 msgid "invalid %1$s: '%2$s'"
@@ -30886,15 +30794,18 @@ msgstr "definición de CPU no válida en el índice %1$z"
 
 #, fuzzy
 msgid "invalid CPU definition stub"
-msgstr "Definición de VM no válida"
+msgstr "conducto de definición de CPU no válida"
 
 #, fuzzy, c-format
 msgid "invalid DNS SRV port attribute for service '%1$s' in network '%2$s'"
-msgstr "La dirección'%1$s' es no válida en red '%2$s'"
+msgstr ""
+"atributo no válido del puerto DNS SRV para servicio '%1$s' en red '%2$s'"
 
 #, fuzzy, c-format
 msgid "invalid DNS SRV weight attribute for service '%1$s' in network '%2$s'"
-msgstr "La dirección'%1$s' es no válida en red '%2$s'"
+msgstr ""
+"atributo de ponderación de DNS SRV no válido para servicio '%1$s' en red "
+"'%2$s'"
 
 msgid "invalid MAC address"
 msgstr "dirección MAC no válida"
@@ -30905,19 +30816,19 @@ msgstr "dirección MAC no válida: %1$s"
 
 #, fuzzy, c-format
 msgid "invalid NUMA node ID supplied for '%1$s'"
-msgstr "el ID de proveedor USB indicado para '%1$s' no es válido"
+msgstr "el ID de nodo NUMA indicado para '%1$s' no es válido"
 
 #, fuzzy
 msgid "invalid NUMA node in target"
-msgstr "Destino de detener invalido"
+msgstr "nodo NUMA no válido en destino"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid PCI bus ID supplied for '%1$s'"
-msgstr "el ID de bus PCI indicado para '%1$s' no es válido"
+msgstr "el ID de bus PCI proporcionado para '%1$s' no es válido"
 
 #, fuzzy, c-format
 msgid "invalid PCI class supplied for '%1$s'"
-msgstr "el ID de bus PCI indicado para '%1$s' no es válido"
+msgstr "la clase PCI proporcionada para '%1$s' no es válida"
 
 #, c-format
 msgid "invalid PCI domain ID supplied for '%1$s'"
@@ -30944,10 +30855,11 @@ msgid "invalid PCI vendor ID supplied for '%1$s'"
 msgstr "el ID de proveedor PCI indicado para '%1$s' no es válido"
 
 msgid "invalid RNG rate bytes value"
-msgstr "El valor de bytes de tasa RNG es no válido"
+msgstr "el valor de bytes de tasa RNG no es válido"
 
+#, fuzzy
 msgid "invalid RNG rate period value"
-msgstr "El valor de periodo de tasa RNG es no válido"
+msgstr "el valor de periodo de tasa RNG no es válido"
 
 #, c-format
 msgid "invalid SCSI LUN ID supplied for '%1$s'"
@@ -30967,7 +30879,7 @@ msgstr "el ID de SCSI suministrado para '%1$s' no es válido"
 
 #, c-format
 msgid "invalid URI %1$s (maybe you want %2$s:///%3$s)"
-msgstr ""
+msgstr "URI %1$s no válida (tal vez desea %2$s:///%3$s)"
 
 #, c-format
 msgid "invalid USB bus number supplied for '%1$s'"
@@ -31019,20 +30931,21 @@ msgstr "longitud XML no válida: %1$d"
 msgid "invalid ap-adapter value '%1$s' for '%2$s'"
 msgstr ""
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid ap-domain value '%1$s' for '%2$s'"
-msgstr ""
+msgstr "valor de dominio-ap '%1$s' no válido para '%2$s'"
 
+#, fuzzy
 msgid "invalid argument"
-msgstr "Argumento no válido"
+msgstr "argumento no válido"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid argument: %1$s"
-msgstr "Argumento no válido: %1$s"
+msgstr "argumento no válido: %1$s"
 
 #, fuzzy, c-format
 msgid "invalid backing protocol '%1$s'"
-msgstr "Protocolo '%1$s' desconocido"
+msgstr "respaldo de protocolo '%1$s' no válido"
 
 #, fuzzy, c-format
 msgid "invalid backing protocol string '%1$s'"
@@ -31143,23 +31056,22 @@ msgid "invalid fd %1$d for %2$s"
 msgstr "FD no válido %1$d para %2$s"
 
 msgid "invalid flag"
-msgstr "Indicador no válido"
+msgstr "indicador no válido"
 
 #, c-format
 msgid "invalid flag combination: (0x%1$x)"
-msgstr "Combinación de Indicador no válido: (0x%1$x)"
+msgstr "combinación de Indicador no válido: (0x%1$x)"
 
 #, c-format
 msgid "invalid fmode: '0%1$o'"
-msgstr ""
+msgstr "fmode no válido: '0%1$o'"
 
-#, fuzzy
 msgid "invalid hasmanagedsave"
-msgstr "Modo no válido"
+msgstr "hasmanagedsave no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid header data length: %1$d"
-msgstr "longitud XML no válida: %1$d"
+msgstr "longitud de cabecera de datos no válida: %1$d"
 
 #, c-format
 msgid "invalid host UUID: %1$s"
@@ -31169,9 +31081,8 @@ msgstr "UUID de equipo no es válido: %1$s"
 msgid "invalid hostdev mode"
 msgstr "Modo no válido"
 
-#, fuzzy
 msgid "invalid hostdev subsystem type"
-msgstr "Tipo de secreto no válido %s"
+msgstr "tipo se subsistema hostdev no válido"
 
 #, fuzzy
 msgid "invalid idmap start/target/count settings"
@@ -31192,13 +31103,13 @@ msgstr "indicador de interfaz no válido en %1$s"
 msgid "invalid iommuGroup number attribute for '%1$s'"
 msgstr "El atributo de número iommuGroup no es válido '%1$s'"
 
-#, c-format
+#, c-format, fuzzy
 msgid "invalid iothreads count '%1$s'"
-msgstr "número de iothreads no válido: '%1$s'"
+msgstr "contador '%1$s' de iothreads no válido"
 
 #, fuzzy
 msgid "invalid job statistics type"
-msgstr "Periodo de colección de estadísticas es no válido"
+msgstr "tipo de estadísticas de tarea no válido"
 
 #, c-format
 msgid "invalid job type '%1$d'"
@@ -31261,27 +31172,26 @@ msgstr ""
 msgid "invalid master key read, size=%1$zd"
 msgstr "lectura de clave maestra no válida, size=%1$zd"
 
-#, fuzzy
 msgid "invalid microcode version"
-msgstr "Modo no válido"
+msgstr "versión microcode no válida"
 
 msgid "invalid mode"
-msgstr "Modo no válido"
+msgstr "modo no válido"
 
 #, c-format
 msgid "invalid model for interface of type '%1$s': '%2$s' - must be 'virtio'"
-msgstr ""
+msgstr "modelo no válido para interfaz de tipo '%1$s': %2$s: debe ser 'virtio'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid model for video type '%1$s'"
-msgstr "Tipo de secreto '%1$s'es nulo"
+msgstr "modelo no válido para tipo de vídeo '%1$s'"
 
 msgid "invalid model for virtio-balloon-pci"
-msgstr ""
+msgstr "modelo no válido para virtio-balloon-pci"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid nested value key '%1$s'"
-msgstr "Valor de traducción no válido '%1$s'"
+msgstr "valor de llave anidada '%1$s' no válido"
 
 #, c-format
 msgid "invalid netfs path (ends in /): %1$s"
@@ -31300,10 +31210,10 @@ msgstr "indicador de red no válido en %1$s"
 
 #, c-format
 msgid "invalid network type supplied for '%1$s'"
-msgstr "el tipo de red indicada para '%1$s' no es válido"
+msgstr "tipo no válido de red indicada para '%1$s'"
 
 msgid "invalid node cpu active value"
-msgstr "Nodos de CPU de valor activo no válido"
+msgstr "valor de cpu activa de nodo no válido"
 
 msgid "invalid node cpu cores value"
 msgstr "Nodo de CPU de valor de núcleos no válidos"
@@ -31330,9 +31240,9 @@ msgstr "indicador de dispositivo de nodo no válido en %1$s"
 msgid "invalid node memory value"
 msgstr "Valor de memoria de nodo no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid number '%1$s' in '%2$s'"
-msgstr "La máscara de red es no válida '%1$s' en red '%2$s'"
+msgstr "número '%1$s' no válido en '%2$s'"
 
 #, c-format
 msgid ""
@@ -31388,13 +31298,12 @@ msgstr "Valor para tiempo de espera no válido"
 msgid "invalid removable media size supplied for '%1$s'"
 msgstr "el tamaño del medio removible indicado para '%1$s' no es válido"
 
-#, fuzzy
 msgid "invalid runstate"
-msgstr "Argumento no válido"
+msgstr "estado de ejecución no válido"
 
 #, c-format
 msgid "invalid scale %1$llu"
-msgstr "Escala no válida %1$llu"
+msgstr "escala %1$llu no válida"
 
 #, c-format
 msgid "invalid scheduler option: %1$s"
@@ -31467,30 +31376,29 @@ msgstr ""
 msgid "invalid tlsPort number: %1$s"
 msgstr "El númreo de tlsPort es inváldo: %1$s"
 
-#, fuzzy
 msgid "invalid transient"
-msgstr "Argumento no válido"
+msgstr "transición no válida"
 
 #, c-format
 msgid "invalid type '%1$s' for parameter '%2$s', expected '%3$s'"
-msgstr "Tipo no válido '%1$s' para parámetro '%2$s', esperado '%3$s'"
+msgstr "tipo no válido '%1$s' para parámetro '%2$s', esperado '%3$s'"
 
 #, c-format
 msgid "invalid type 'NONE' of option '%1$s' of command '%2$s'"
-msgstr ""
+msgstr "tipo 'NONE' no válido de opción '%1$s' de comando '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid unique_id supplied for '%1$s'"
-msgstr "el tamaño suministrado para '%1$s' no es válido"
+msgstr "el unique_id suministrado para '%1$s' no es válido"
 
 msgid "invalid use of command API"
-msgstr "uso no válido de la API de órdenes"
+msgstr "uso no válido de comando de la API"
 
 msgid "invalid use of conf API"
-msgstr ""
+msgstr "empleo no válido de conf API"
 
 msgid "invalid use with no flags"
-msgstr "Uso no válido sin indicadores"
+msgstr "empleo no válido sin indicadores"
 
 #, c-format
 msgid "invalid uuid %1$s"
@@ -31502,15 +31410,15 @@ msgstr "Valor no válido %1$d"
 
 #, fuzzy, c-format
 msgid "invalid value '%1$s' for migration parameter '%2$s'"
-msgstr "Valor '%1$s' no válido parea la entrada VMX '%2$s'"
+msgstr "valor '%1$s' no válido parea parámetro de migración '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid value '%1$s' for parameter '%2$s' of device '%3$s'"
-msgstr "Tipo no válido '%1$s' para parámetro '%2$s', esperado '%3$s'"
+msgstr "valor '%1$s' no válido para parámetro '%2$s', de dispositivo '%3$s'"
 
 #, c-format
 msgid "invalid value '%1$s' of 'value' attribute of 'qemu:property'"
-msgstr ""
+msgstr "valor '%1$s' no válido de atributo 'value' de 'qemu:property'"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -31648,10 +31556,10 @@ msgid "iowait:"
 msgstr "iowait:"
 
 msgid "ipset name contains invalid characters"
-msgstr "Nombre IPSET contiene caracteres no válidos"
+msgstr "nombre ipset contiene caracteres no válidos"
 
 msgid "ipset name is too long"
-msgstr "Nombre de ipset es demasiado largo"
+msgstr "nombre de ipset es demasiado largo"
 
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
