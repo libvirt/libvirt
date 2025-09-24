@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-08-25 08:36+0000\n"
-"PO-Revision-Date: 2025-09-21 09:59+0000\n"
+"PO-Revision-Date: 2025-09-24 17:06+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -34450,11 +34450,11 @@ msgstr "nenhum segredo com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "no server with matching name '%1$s' found"
-msgstr ""
+msgstr "nenhum servidor com nome correspondente '%1$s' encontrado"
 
 #, c-format
 msgid "no size supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum tamanho fornecido para '%1$s'"
 
 msgid "no sockets found"
 msgstr "nenhum socket encontrado"
@@ -34467,72 +34467,74 @@ msgstr "sem estado"
 
 #, c-format
 msgid "no storage pool with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum pool de armazenamento com nome correspondente '%1$s'"
 
 #, c-format
 msgid "no storage pool with matching target path '%1$s'"
-msgstr ""
+msgstr "nenhum pool de armazenamento com caminho de alvo correspondente '%1$s'"
 
 #, c-format
 msgid "no storage pool with matching target path '%1$s' (%2$s)"
 msgstr ""
+"nenhum pool de armazenamento com caminho de alvo correspondente '%1$s' (%2$s)"
 
 #, c-format
 msgid "no storage pool with matching uuid '%1$s'"
-msgstr ""
+msgstr "nenhum pool de armazenamento com uuid correspondente '%1$s'"
 
 #, c-format
 msgid "no storage pool with matching uuid '%1$s' (%2$s)"
-msgstr ""
+msgstr "nenhum pool de armazenamento com uuid correspondente '%1$s' (%2$s)"
 
 #, c-format
 msgid "no storage pools were found on host '%1$s'"
-msgstr ""
+msgstr "nenhuns pools de armazenamento foram encontrados na máquina '%1$s'"
 
 #, c-format
 msgid "no storage vol with matching key %1$s"
-msgstr ""
+msgstr "nenhum volume de armazenamento com chave correspondente %1$s"
 
 #, c-format
 msgid "no storage vol with matching key '%1$s'"
-msgstr ""
+msgstr "nenhum volume de armazenamento com chave correspondente '%1$s'"
 
 #, c-format
 msgid "no storage vol with matching name '%1$s'"
-msgstr ""
+msgstr "nenhum volume de armazenamento com nome correspondente '%1$s'"
 
 #, c-format
 msgid "no storage vol with matching path '%1$s'"
-msgstr ""
+msgstr "nenhum volume de armazenamento com caminho correspondente '%1$s'"
 
 #, c-format
 msgid "no storage vol with matching path '%1$s' (%2$s)"
-msgstr ""
+msgstr "nenhum volume de armazenamento com caminho correspondente '%1$s' (%2$s)"
 
 msgid "no stream callback registered"
-msgstr ""
+msgstr "nenhum fluxo de chamada de retorno registrado"
 
 msgid "no such screen ID"
-msgstr ""
+msgstr "nenhum tal ID de ecrã"
 
 msgid "no suitable callback authentication callback was found"
 msgstr ""
 
 msgid "no suitable callback for host key verification"
 msgstr ""
+"nenhuma chamada de retorno apropriada para verificação de chave de máquina"
 
 msgid "no suitable info found"
-msgstr ""
+msgstr "nenhuma informação apropriada encontrada"
 
 msgid "no suitable method to retrieve authentication credentials"
-msgstr ""
+msgstr "nenhum método apropriado para recuperar credenciais de autenticação"
 
 msgid "no suitable method to retrieve key passphrase"
-msgstr ""
+msgstr "nenhum método apropriado para recuperar frase passe de chave"
 
 #, c-format
 msgid "no system UUID supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum UUID de sistema fornecido para '%1$s'"
 
 #, c-format
 msgid "no target device %1$s"
@@ -34540,13 +34542,13 @@ msgstr "nenhum dispositivo alvo %1$s"
 
 #, c-format
 msgid "no target name supplied for '%1$s'"
-msgstr ""
+msgstr "nenhum nome de alvo fornecido para '%1$s'"
 
 msgid "no threads found"
-msgstr ""
+msgstr "nenhumas linhas de execução encontradas"
 
 msgid "no tls service found, unable to update tls files"
-msgstr ""
+msgstr "nenhum serviço tls encontrado, incapaz de atualizar ficheiros tls"
 
 msgid "no transaction running, nothing to be committed."
 msgstr ""
