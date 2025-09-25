@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-08-28 07:01+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1466,6 +1466,9 @@ msgstr ""
 "je třeba, aby pro zdroj typu 'pool' (fond) bylo zadáno jak 'pool', tak "
 "'volume' (svazek)"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1892,6 +1895,9 @@ msgstr "ACPI rejstřík není v tomto QEMU podporován"
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI rejstřík je podporován pouze pro PCI zařízení"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI na této architektuře potřebuje UEFI"
 
@@ -2028,6 +2034,9 @@ msgstr ""
 msgid "Added"
 msgstr "Přidáno"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "Adresa"
 
@@ -2116,6 +2125,9 @@ msgid ""
 "cell"
 msgstr ""
 "Argumenty pod prvkem memnode neodpovídají existujícím NUMA buňkám hosta"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Je třeba, aby alespoň jeden NUMA uzel měl procesory"
@@ -2947,10 +2959,9 @@ msgstr "Není možné připojit zařízení hostitele dokud není známo PID ini
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"Není možné automaticky přidat novou PCI sběrnici pro zařízení s příznaky "
-"připojení %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4290,6 +4301,9 @@ msgstr "Vypsat paměť domény."
 msgid "Core(s) per socket:"
 msgstr "Jader na patici:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Nedaří se nalézt svazek nazvaný: %1$s"
@@ -4340,6 +4354,9 @@ msgstr "Nepodařilo se připojit soubor jako pevný disk / dvd / disketu: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "Nepodařilo se sestavit seznam CURL záhlaví"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4727,6 +4744,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "Nepodařilo se získat volnou paměť pro hostitele %1$s"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Nedaří se získat identifikátor instance pro vyvolání %1$s"
 
@@ -5047,6 +5068,9 @@ msgstr "Nedaří se zpracovat bariéru „%1$s“ z nastavení pro kontejner %2$
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Nedaří se zpracovat prioritu řetězce „%1$s“"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6996,6 +7020,9 @@ msgstr "Nepodařilo se přidat PCI zařízení %1$s do seznamu neaktivních"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Nepodařilo se přidat schopnost %1$s: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7085,6 +7112,12 @@ msgstr "Nepodařilo se bind mount složku %1$s do %2$s"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Nepodařilo se navázat soket na „%1$s“"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -10247,6 +10280,10 @@ msgstr ""
 "Neplatný DNS SRV atribut priority (priorita) pro službu „%1$s“ v síti „%2$s“"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Neplatná hodnota identifikátoru vlákna vstupu/výstupu: „%1$d“"
 
@@ -10912,6 +10949,9 @@ msgstr "Neplatný relativní popis umístění „%1$s“"
 
 msgid "Invalid resctrl monitor"
 msgstr "Neplatný resctrl monitor"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12084,6 +12124,9 @@ msgstr "Chybí defaultLockspace data z JSON souboru"
 
 msgid "Missing device name for container-side veth"
 msgstr "Chybí název zařízení pro veth na straně kontejneru"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "V doméně chybí popis umístění souboru s diskovým obrazem"
@@ -14121,6 +14164,9 @@ msgstr "Vyhodnocování výkonnosti není na této platformě podporována"
 msgid "Persistent"
 msgstr "Trvalé"
 
+msgid "Persistent domain state changes are not supported"
+msgstr ""
+
 msgid "Persistent:"
 msgstr "Trvalý:"
 
@@ -16099,7 +16145,8 @@ msgstr "Zdroj úložiště koliduje s fondem: „%1$s“"
 #, c-format
 msgid ""
 "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
-msgstr "Svazek úložiště '%1$s'(%2$s) není spravován libvirt. Odeberte ho ručně."
+msgstr ""
+"Svazek úložiště '%1$s'(%2$s) není spravován libvirt. Odeberte ho ručně."
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr "Smazání svazku úložiště je podporované pouze na zastavených doménách"
@@ -17191,6 +17238,11 @@ msgid ""
 msgstr ""
 "Atribut 'eoi' funkce „%1$s“ není pro architekturu „%2$s“ nebo typ stroje "
 "„%3$s“ podporován"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -21731,11 +21783,15 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"Pro připojení PCI řadiče s model='%1$s' je zapotřebí PCI slot, ale žádný "
-"není k dispozici a nemůže být přidán automaticky"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "zařízení s touto adresou už existuje "
@@ -29332,6 +29388,9 @@ msgstr "v odpovědi guest-get-users chyběla návratová data"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "odpověď guest-get-vcpus postrádala návratová data"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset není touto verzí QEMU podporováno"
 
@@ -29706,9 +29765,6 @@ msgstr "zahrnout v XML výpisu informace citlivé ohledně zabezpečení"
 
 msgid "includes the password into the connection URI if available"
 msgstr "pokud je k dispozici, zahrne do URI připojení heslo"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "příchozí RDMA migrace není touto binárkou QEMU podporována"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32471,9 +32527,6 @@ msgstr "chybí název cookie"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí název procesoru"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "v datech o procesoru chybí cpuid-register"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "chybí cpuset pro emulatorpin"
 
@@ -32766,12 +32819,6 @@ msgstr "v mezipaměti schopností QEMU chybí nebo není platná sgx1 SGX platfo
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr "v mezipaměti schopností QEMU chybí nebo není platná sgx2 SGX platformy"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "V datech o procesoru chybí cpuid-input-eax nebo není platné"
-
-msgid "missing or invalid features in CPU data"
-msgstr "chybí nebo neplatné funkce v datech o procesoru"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "chybí (či má nesprávný formát) kolonka 'device' úložiště 'nvme'"
@@ -34847,9 +34894,6 @@ msgstr "spodní hranice výstupu zatím není podporována"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "odchozí rychlost vyšší než maximum %1$u"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "odchozí RDMA migrace není touto binárkou QEMU podporována"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "vypsat XML řetězec se systémovými informacemi o hypervizoru, pokud jsou k "
@@ -35534,6 +35578,10 @@ msgstr "neshoda programu v události (skutečný 0x%1$x, očekáváno 0x%2$x)"
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "nepovolený znak v názvu DNS záznamu TXT „%1$s“ sítě %2$s"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "vlastnost s názevm 'id' nemůže být přebita"
 
@@ -36150,6 +36198,9 @@ msgstr "v datech odpovědi chyběl „název“"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "data odpovědi postrádají název 'option' nebo parametry"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "v odpovědi chyběla návratová data"
@@ -39546,10 +39597,6 @@ msgstr "neznámá funkce procesoru: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "neznámý model procesoru %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "Neznámý registr procesoru „%1$s“"
-
 msgid "unknown OS type"
 msgstr "neznámý druh operačního systému"
 
@@ -41533,6 +41580,41 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "Není možné automaticky přidat novou PCI sběrnici pro zařízení s příznaky "
+#~ "připojení %1$.2x"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "Pro připojení PCI řadiče s model='%1$s' je zapotřebí PCI slot, ale žádný "
+#~ "není k dispozici a nemůže být přidán automaticky"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "příchozí RDMA migrace není touto binárkou QEMU podporována"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "v datech o procesoru chybí cpuid-register"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "V datech o procesoru chybí cpuid-input-eax nebo není platné"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "chybí nebo neplatné funkce v datech o procesoru"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "odchozí RDMA migrace není touto binárkou QEMU podporována"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "Neznámý registr procesoru „%1$s“"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

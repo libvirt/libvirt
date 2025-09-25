@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-09-24 17:06+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
@@ -1506,6 +1506,9 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 "'pool' e 'volume' têm de ser especificados juntamente para fonte tipo 'pool'"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 "contagem 'queue' tem de ser configurada para iothread explícito para "
@@ -1940,6 +1943,9 @@ msgstr "Índice ACPI não é suportado com este QEMU"
 msgid "ACPI index is only supported for PCI devices"
 msgstr "Índice ACPI é apenas suportado para dispositivos PCI"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI requer UEFI nesta arquitectura"
 
@@ -2078,6 +2084,9 @@ msgstr "Adiciona ou atualiza um grupo de estrangulamento."
 msgid "Added"
 msgstr "Adicionado"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "Endereço"
 
@@ -2166,6 +2175,9 @@ msgid ""
 msgstr ""
 "Argumentos sob elemento memnode não correspondem a célula NUMA de convidado "
 "existente"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Pelo menos um nó NUMA tem de ter CPUs"
@@ -2998,10 +3010,9 @@ msgstr "Não pode anexar hostdev até que o PID de iniciação seja conhecido"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"Não pode adicionar automaticamente um novo barramento PCI para um "
-"dispositivo com bandeiras de ligação %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4338,6 +4349,9 @@ msgstr "Despejar o núcleo de um domínio."
 msgid "Core(s) per socket:"
 msgstr "Núcleos por 'socket':"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Não pude encontrar volume com nome: %1$s"
@@ -4388,6 +4402,9 @@ msgstr "Não pude anexar o ficheiro como disco-rijo/dvd/disquete: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "Não pude compilar lista de cabeçalho CURL"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4770,6 +4787,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "Não pude obter memória livre para máquina %1$s"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Não pode obter ID de instância para invocação %1$s"
 
@@ -5092,6 +5113,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Não pude analisar prioridade de string '%1$s'"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -7052,6 +7076,9 @@ msgstr "Falhou ao adicionar dispositivo PCI %1$s à lista de inactivos"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Falhou ao adicionar capacidade %1$s: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7142,6 +7169,12 @@ msgstr "Falhou ao vincular directório de montagem %1$s a %2$s"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Falhou ao vincular socket a '%1$s'"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr "Falhou ao compilar net json"
@@ -10310,6 +10343,10 @@ msgstr ""
 "Atributo de prioridade DNS SRV inválido para serviço '%1$s' na rede '%2$s'"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Valor id de IOThread inválido: '%1$d'"
 
@@ -10974,6 +11011,9 @@ msgstr "Caminho relativo inválido '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl inválido"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12146,6 +12186,9 @@ msgstr "Dados defaultLockspace em falta de ficheiro JSON"
 
 msgid "Missing device name for container-side veth"
 msgstr "Nome de dispositivo a faltar para veth do lado-do-contentor"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "Caminho de ficheiro de disco em falta em domínio"
@@ -14219,6 +14262,9 @@ msgstr "Perf não suportado nesta plataforma"
 
 msgid "Persistent"
 msgstr "Persistente"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Persistente:"
@@ -17383,6 +17429,11 @@ msgid ""
 msgstr ""
 "O atributo 'eoi' da funcionalidade '%1$s' não é suportado para arquitectura "
 "'%2$s' ou tipo de máquina '%3$s'"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -22021,11 +22072,15 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"é necessária uma slot PCI para ligar um controlador PCI modelo='%1$s', mas "
-"nenhum está disponível, e não pode ser adicionado automaticamente"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "já existe um dispositivo com o mesmo endereço "
@@ -26160,7 +26215,8 @@ msgstr "lista de dispositivos não é um objeto"
 
 #, c-format
 msgid "device modalias file %1$s content has improper format"
-msgstr "conteúdo do ficheiro %1$s modalias de dispositivo tem formato impróprio"
+msgstr ""
+"conteúdo do ficheiro %1$s modalias de dispositivo tem formato impróprio"
 
 msgid "device name"
 msgstr "nome de dispositivo"
@@ -26374,8 +26430,8 @@ msgstr "atributos de disco: disk[,checkpoint=type][,bitmap=name]"
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
 msgstr ""
-"atributos de disco: disk[,snapshot=type][,driver=type][,stype=type]"
-"[,file=name]"
+"atributos de disco: disk[,snapshot=type][,driver=type][,stype=type][,"
+"file=name]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
@@ -27378,8 +27434,8 @@ msgid ""
 "event 'graphics' for domain '%1$s': %2$s local[%3$s %4$s %5$s] remote[%6$s "
 "%7$s %8$s] %9$s\n"
 msgstr ""
-"evento 'graphics' para domínio '%1$s': %2$s local[%3$s %4$s %5$s] remoto"
-"[%6$s %7$s %8$s] %9$s\n"
+"evento 'graphics' para domínio '%1$s': %2$s local[%3$s %4$s %5$s] "
+"remoto[%6$s %7$s %8$s] %9$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) none\n"
@@ -27415,8 +27471,8 @@ msgstr "evento 'io-error' para domínio '%1$s': %2$s (%3$s) desconhecido\n"
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown due to %4$s\n"
 msgstr ""
-"evento 'io-error' para domínio '%1$s': %2$s (%3$s) desconhecido devido a %4$"
-"s\n"
+"evento 'io-error' para domínio '%1$s': %2$s (%3$s) desconhecido devido a "
+"%4$s\n"
 
 #, c-format
 msgid "event 'job-completed' for domain '%1$s':\n"
@@ -29551,7 +29607,8 @@ msgstr ""
 "gráficos: 'vnc', 'spice'"
 
 msgid "group name to share I/O quota between multiple drives"
-msgstr "nome de grupo para partilhar conta de I/O entre múltiplos controladores"
+msgstr ""
+"nome de grupo para partilhar conta de I/O entre múltiplos controladores"
 
 msgid "group_name can be configured only together with settings"
 msgstr "group_name só pode ser configurado juntamente com definições"
@@ -29664,6 +29721,9 @@ msgstr "resposta de guest-get-users tinha em falta dados de retorno"
 
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "resposta de guest-get-vcpus tinha em falta dados de retorno"
+
+msgid "guest:"
+msgstr ""
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset não é suportado com esta versão de QEMU"
@@ -30039,9 +30099,6 @@ msgstr "inclui informação sensitiva de segurança no despejo XML"
 msgid "includes the password into the connection URI if available"
 msgstr "inclui a palavra passe no URI de ligação se disponível"
 
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "migração RDMA chegada não é suportada com este binário QEMU"
-
 #, c-format
 msgid "incomplete metadata in '%1$s'"
 msgstr "metadados incompletos em '%1$s'"
@@ -30082,7 +30139,8 @@ msgid "initial CPU throttling rate for auto-convergence"
 msgstr "taxa de aceleração de CPU inicial para auto-convergência"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
-msgstr "tamanho de alocação inicial, como inteiro escalado (predefinição bytes)"
+msgstr ""
+"tamanho de alocação inicial, como inteiro escalado (predefinição bytes)"
 
 msgid ""
 "initial memory size of a domain with NUMA nodes cannot be modified with this "
@@ -30732,8 +30790,8 @@ msgid ""
 "invalid loadparm value '%1$s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
 msgstr ""
-"valor loadparm inválido '%1$s', esperado caracteres no conjunto de "
-"[a-zA-Z0-9.] e espaços em branco"
+"valor loadparm inválido '%1$s', esperado caracteres no conjunto de [a-zA-"
+"Z0-9.] e espaços em branco"
 
 #, c-format
 msgid ""
@@ -31298,7 +31356,8 @@ msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
 msgstr "libvirt não foi compilado com libpcap e \"%1$s\" requer isso"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
-msgstr "libvirt irá automaticamente desanexar/anexar o dispositivo de/a maquina"
+msgstr ""
+"libvirt irá automaticamente desanexar/anexar o dispositivo de/a maquina"
 
 msgid "libvirt-guests is configured not to start any guests on boot"
 msgstr ""
@@ -31688,7 +31747,8 @@ msgid "listen address is not supported by tunnelled migration"
 msgstr "endereços de escuta não suportados por migração em túnel"
 
 msgid "listen address that destination should bind to for incoming migration"
-msgstr "endereços de escuta que o destino se deve fundir para migração a chegar"
+msgstr ""
+"endereços de escuta que o destino se deve fundir para migração a chegar"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%1$s'"
@@ -31715,7 +31775,8 @@ msgstr "desanexar ao vivo de dispositivo '%1$s' não é suportado"
 
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
-msgstr "desanexar ao vivo de tipo de interface %1$s ainda não está implementado"
+msgstr ""
+"desanexar ao vivo de tipo de interface %1$s ainda não está implementado"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -32122,7 +32183,8 @@ msgid "maximum tolerable downtime (in milliseconds) for migration"
 msgstr "tempo inactivo tolerável máximo (em milissegundos) para migração"
 
 msgid "maximum vCPU count must not be less than current vCPU count"
-msgstr "contagem de vCPU máxima não pode ser menor que a contagem de vCPU atual"
+msgstr ""
+"contagem de vCPU máxima não pode ser menor que a contagem de vCPU atual"
 
 msgid "maximum vcpu count of a live domain can't be modified"
 msgstr "contagem de vcpu máxima de um domínio ao vivo não pode ser modificada"
@@ -32297,7 +32359,8 @@ msgstr "tamanho de memória de nó NUMA '%1$zu' transbordou após alinhamento"
 
 #, c-format
 msgid "memory snapshot file path (%1$s) must be absolute"
-msgstr "caminho de ficheiro de instantâneo de memória (%1$s) tem de se absoluto"
+msgstr ""
+"caminho de ficheiro de instantâneo de memória (%1$s) tem de se absoluto"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
 msgstr ""
@@ -32448,7 +32511,8 @@ msgid "migration successfully aborted: %1$s"
 msgstr "migração abortada com sucesso: %1$s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
-msgstr "migração estava activa, mas os dados 'restante' de RAM estavam em falta"
+msgstr ""
+"migração estava activa, mas os dados 'restante' de RAM estavam em falta"
 
 msgid "migration was active, but RAM 'total' data was missing"
 msgstr "migração estava activa, mas os dados 'total' de RAM estavam em falta"
@@ -32796,9 +32860,6 @@ msgstr "a faltar nome de cookie"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "a faltar nome de cpu na cache de capacidades do QEMU"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "a faltar cpuid-register nos dados da CPU"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "a faltar cpuset para emulatorpin"
 
@@ -33095,12 +33156,6 @@ msgstr ""
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 "a faltar ou sgx2 de plataforma SGX inválido na cache de capacidades do QEMU"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "cpuid-input-eax em falta ou inválido em dados de CPU"
-
-msgid "missing or invalid features in CPU data"
-msgstr "funcionalidades em falta ou inválidas em dados de CPU"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "campo 'device' em falta ou mal formado de armazenamento 'nvme'"
@@ -34508,7 +34563,8 @@ msgstr "nenhum volume de armazenamento com caminho correspondente '%1$s'"
 
 #, c-format
 msgid "no storage vol with matching path '%1$s' (%2$s)"
-msgstr "nenhum volume de armazenamento com caminho correspondente '%1$s' (%2$s)"
+msgstr ""
+"nenhum volume de armazenamento com caminho correspondente '%1$s' (%2$s)"
 
 msgid "no stream callback registered"
 msgstr "nenhum fluxo de chamada de retorno registrado"
@@ -35166,9 +35222,6 @@ msgstr ""
 msgid "outbound rate larger than maximum %1$u"
 msgstr ""
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "migração RDMA de saída não é suportada com este binário QEMU"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 
@@ -35820,6 +35873,10 @@ msgstr ""
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr ""
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -36392,6 +36449,9 @@ msgid "reply data was missing 'name'"
 msgstr ""
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 msgid "reply was missing return data"
@@ -39607,10 +39667,6 @@ msgstr "funcionalidade de CPU desconhecida: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "modelo de CPU desconhecido %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "registrador de CPU desconhecido '%1$s'"
-
 msgid "unknown OS type"
 msgstr "tipo de SO desconhecido"
 
@@ -41524,6 +41580,41 @@ msgstr "zona %1$s pedida para rede %2$s mas o firewalld não está activo"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "Não pode adicionar automaticamente um novo barramento PCI para um "
+#~ "dispositivo com bandeiras de ligação %1$.2x"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "é necessária uma slot PCI para ligar um controlador PCI modelo='%1$s', "
+#~ "mas nenhum está disponível, e não pode ser adicionado automaticamente"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "migração RDMA chegada não é suportada com este binário QEMU"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "a faltar cpuid-register nos dados da CPU"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "cpuid-input-eax em falta ou inválido em dados de CPU"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "funcionalidades em falta ou inválidas em dados de CPU"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "migração RDMA de saída não é suportada com este binário QEMU"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "registrador de CPU desconhecido '%1$s'"
 
 #~ msgid "Recreation"
 #~ msgstr "Recriação"

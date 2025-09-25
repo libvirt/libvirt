@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-06-25 11:32+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1546,6 +1546,9 @@ msgstr "Використання «peak» і «burst» вимагає викор
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "для джерела типу «pool» разом з «pool» має бути вказано «volume»"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 "для використання явного значення iothread для прив'язки черги слід "
@@ -1993,6 +1996,9 @@ msgstr "підтримки індексу ACPI у цьому QEMU не пере�
 msgid "ACPI index is only supported for PCI devices"
 msgstr "Підтримку індексу ACPI передбачено лише для пристроїв PCI"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "На цій архітектурі ACPI потребує UEFI"
 
@@ -2132,6 +2138,9 @@ msgstr "Додати або оновити групу регулювання."
 msgid "Added"
 msgstr "Додано"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "Адреса"
 
@@ -2224,6 +2233,9 @@ msgid ""
 msgstr ""
 "Аргументи у елементі memnode не відповідають наявній комірці NUMA гостьової "
 "системи"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Принаймні один з вузлів NUMA повинен мати процесори"
@@ -3085,10 +3097,9 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"Автоматичне додавання нового каналу PCI для пристрою із прапорцями "
-"під'єднання %1$.2x неможливе"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4469,6 +4480,9 @@ msgstr "Дамп ядра домену."
 msgid "Core(s) per socket:"
 msgstr "Ядер на сокет:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Не вдалося знайти том з назвою %1$s"
@@ -4519,6 +4533,9 @@ msgstr "Не вдалося долучити файл як жорсткий ди
 
 msgid "Could not build CURL header list"
 msgstr "Не вдалося побудувати список заголовків CURL"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4902,6 +4919,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "Не вдалося отримати дані щодо вільної пам'яті для вузла %1$s"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Не вдалося отримати ідентифікатор екземпляра для виклику %1$s"
 
@@ -5230,6 +5251,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Не вдалося обробити пріоритет ланцюжків «%1$s»"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -7206,6 +7230,9 @@ msgstr "Не вдалося додати пристрій PCI %1$s до неак
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Не вдалося додати можливість %1$s: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7297,6 +7324,12 @@ msgstr "Не вдалося прив'язати каталог монтуван�
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Не вдається прив'язати сокет до «%1$s»"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr "Не вдалося побудувати json net"
@@ -10541,6 +10574,10 @@ msgstr ""
 "Некоректний атрибут пріоритетності SRV DNS для служби «%1$s» у мережі «%2$s»"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Некоректне значення ідентифікатора потоку введення-виведення: «%1$d»"
 
@@ -11209,6 +11246,9 @@ msgstr "Некоректний відносний шлях «%1$s»"
 
 msgid "Invalid resctrl monitor"
 msgstr "Некоректний засіб спостереження resctrl"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12408,6 +12448,9 @@ msgstr ""
 
 msgid "Missing device name for container-side veth"
 msgstr "Пропущено назву пристрою для veth на боці контейнера"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "У домені не вказано шлях до файла диска"
@@ -14538,6 +14581,9 @@ msgstr "Підтримки perf на цій платформі не передб
 
 msgid "Persistent"
 msgstr "Постійний"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Постійність:"
@@ -17884,6 +17930,11 @@ msgid ""
 msgstr ""
 "Підтримки атрибута «eoi» можливості «%1$s» не передбачено для архітектури "
 "«%2$s» або типу машини «%3$s»"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -22582,11 +22633,15 @@ msgstr "тип відео «none» має бути єдиним визначен
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"для під'єднання контролера PCI із значенням model='%1$s' потрібен слот PCI, "
-"але такі слоти недоступні і не можуть бути додані автоматично"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "пристрій із тією самою адресою вже існує "
@@ -30394,6 +30449,9 @@ msgstr "у повернутих даних немає відповіді guest-g
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "у повернутих даних немає відповіді guest-get-vcpus"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "підтримки guestReset із цією версією QEMU не передбачено"
 
@@ -30805,11 +30863,6 @@ msgstr "включити можливо конфіденційні дані у �
 
 msgid "includes the password into the connection URI if available"
 msgstr "включає пароль до адреси з'єднання, якщо такий є доступним"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr ""
-"у цьому виконуваному файлі QEMU не передбачено підтримки вхідного "
-"перенесення RDMA"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -33657,10 +33710,6 @@ msgstr "не вказано назви куки"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "у записі кешу можливостей QEMU не вистачає назви процесора"
 
-msgid "missing cpuid-register in CPU data"
-msgstr ""
-"у даних щодо процесора пропущено регістр ідентифікатор процесора (cpuid)"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "пропущено cpuset для emulatorpin"
 
@@ -33955,15 +34004,6 @@ msgstr ""
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 "пропущено sgx2 платформи SGX або некоректні дані у кеші можливостей QEMU"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr ""
-"у даних щодо процесора пропущено cpuid-input-eax або вказано некоректне "
-"значення"
-
-msgid "missing or invalid features in CPU data"
-msgstr ""
-"у даних щодо процесора пропущено можливості або вказано некоректні дані"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -36106,10 +36146,6 @@ msgstr "підтримки нижнього значення ширини вих
 msgid "outbound rate larger than maximum %1$u"
 msgstr "вихідна швидкість перевищує максимальну, %1$u"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr ""
-"у цьому виконуваному файлі QEMU не передбачено вихідного перенесення RDMA"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "вивести рядок XML щодо системної інформації гіпервізора, якщо він доступний"
@@ -36823,6 +36859,10 @@ msgstr "невідповідність програм у події (маємо 
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "заборонений символ у назві запису TXT DNS «%1$s» мережі %2$s"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "властивість із назвою «id» не можна перевизначати"
 
@@ -37470,6 +37510,9 @@ msgstr "у даних відповіді не міститься «name»"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "у даних відповіді не вистачає назви «option» або параметри"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "у відповіді не міститься даних"
@@ -40950,10 +40993,6 @@ msgstr "невідома можливість процесора: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "невідома модель процесора %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "невідомий регістр процесора, «%1$s»"
-
 msgid "unknown OS type"
 msgstr "невідомий тип ОС"
 
@@ -43012,6 +43051,48 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "Автоматичне додавання нового каналу PCI для пристрою із прапорцями "
+#~ "під'єднання %1$.2x неможливе"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "для під'єднання контролера PCI із значенням model='%1$s' потрібен слот "
+#~ "PCI, але такі слоти недоступні і не можуть бути додані автоматично"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "у цьому виконуваному файлі QEMU не передбачено підтримки вхідного "
+#~ "перенесення RDMA"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr ""
+#~ "у даних щодо процесора пропущено регістр ідентифікатор процесора (cpuid)"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr ""
+#~ "у даних щодо процесора пропущено cpuid-input-eax або вказано некоректне "
+#~ "значення"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr ""
+#~ "у даних щодо процесора пропущено можливості або вказано некоректні дані"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr ""
+#~ "у цьому виконуваному файлі QEMU не передбачено вихідного перенесення RDMA"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "невідомий регістр процесора, «%1$s»"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

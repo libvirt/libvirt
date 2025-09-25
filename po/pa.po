@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2015-03-01 05:31+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Panjabi (Punjabi) (http://www.transifex.com/projects/p/"
@@ -1322,6 +1322,9 @@ msgstr "'ਸਿਖ਼ਰ ਅਤੇ 'ਬਰਸਟ' ਨੂੰ 'ਔਸਤ' ਐਟ�
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'ਪੂਲ' ਕਿਸਮ ਸਰੋਤ ਲਈ 'ਪੂਲ' ਅਤੇ 'ਆਇਤਨ' ਇਕੱਠੇ ਦਰਸਾਏ ਜਾਣੇ ਜਰੂਰੀ ਹਨ"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1751,6 +1754,9 @@ msgstr ""
 msgid "ACPI index is only supported for PCI devices"
 msgstr ""
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
 
@@ -1890,6 +1896,9 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 #, fuzzy
 msgid "Address"
 msgstr "MAC ਐਡਰੈੱਸ"
@@ -1973,6 +1982,9 @@ msgstr "ਅਾਰਗੂਮੈਂਟ non null ਹੋਣੇ ਜਰੂਰੀ ਹਨ
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "Assigning disk alias failed"
 msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
@@ -2763,7 +2775,8 @@ msgstr "ਜਦ ਤੱਕ init PID ਮਲੂਮ ਨਹੀਂ ਹੁੰਦੀ host
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4083,6 +4096,9 @@ msgstr "ਕੋਰ ਡੰਪ ਇੱਕ ਡੋਮੇਨ ਹੈ।"
 msgid "Core(s) per socket:"
 msgstr "ਕੋਰ ਪ੍ਰਤੀ ਸਾਕਟ:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "ਇਸ ਨਾਂ ਵਾਲਾ ਆਇਤਨ ਲੱਭ ਸਕਿਆ: %1$s"
@@ -4136,6 +4152,9 @@ msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL header ਸੂਚੀ ਨਹੀਂ ਬਣਾਈ ਜਾ ਸਕੀ"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4525,6 +4544,10 @@ msgstr ""
 msgid "Could not get free memory for host %1$s"
 msgstr ""
 
+#, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "%s ਨੂੰ %s ਲਈ ਹੀਂ ਵੇਖ ਸਕਦਾ"
@@ -4848,6 +4871,9 @@ msgstr "'%1$s' ਨੂੰ ਸੰਰਚਨਾ ਵਿੱਚੋਂ ਕੰਨਟੇ�
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "'%1$s' ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕਰ ਸਕਦਾ"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6772,6 +6798,9 @@ msgstr "PCI ਜੰਤਰ '%s' ਨੂੰ  %s ਤੋਂ ਅਨਬਾਈਂਡ ਕ�
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "ਸਮਰੱਥਾ ਲਾਗੂ ਕਰਨ ਵਿੱਚ ਫੇਲ: %d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -6860,6 +6889,12 @@ msgstr "ਮਾਨੀਟਰ ਡਾਇਰੈਕਟਰੀ %1$s ਬਣਾਉਣ ਤ�
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "ਸਾਕਟ ਨੂੰ '%1$s' ਨਾਲ ਬਾਈਂਡ ਕਰਨ ਵਿੱਚ ਫੇਲ"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -9992,6 +10027,10 @@ msgstr "ਗਲਤ USB ਵਿਕਰੇਤਾ ID '%1$s' ਲਈ ਦਿੱਤਾ ਹ
 msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr "ਅਢੁਕਵਾਂ ਪਤਾ '%1$s' ਨੈੱਟਵਰਕ '%2$s' ਵਿੱਚ"
 
+#, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "ਅਢੁਕਵਾਂ ਸੰਗ੍ਰਿਹ ਅੰਤਰਾਲ ਮੁੱਲ '%1$d'"
@@ -10627,6 +10666,9 @@ msgstr "ਗਲਤ ਸੰਬੰਧਿਤ ਮਾਰਗ '%1$s'"
 #, fuzzy
 msgid "Invalid resctrl monitor"
 msgstr "ਗਲਤ ਨੈਟਵਰਕ ਫਿਲਟਰ ਹੈ"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11801,6 +11843,9 @@ msgstr "JSON ਫਾਈਲ ਵਿੱਚੋਂ defaultLockspace ਡਾਟਾ ਗ�
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "char ਯੰਤਰ ਲਈ ਗੁੰਮ ਸਰੋਤ ਸੇਵਾ ਐਟਰੀਬਿਊਟ"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr ""
@@ -13852,6 +13897,9 @@ msgstr "ਇਸ ਪਲੇਟਫਾਰਮ ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ �
 
 msgid "Persistent"
 msgstr "ਪੱਕਾ"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "ਸਥਿਰ:"
@@ -16859,6 +16907,11 @@ msgstr ""
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
+msgstr ""
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
 msgstr ""
 
 msgid ""
@@ -21423,8 +21476,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
 msgstr ""
 
 #, fuzzy
@@ -28988,6 +29047,9 @@ msgstr "guest-get-vcpus ਜਵਾਬ ਵਿੱਚ ਵਾਪਸੀ ਡਾਟਾ �
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus ਜਵਾਬ ਵਿੱਚ ਵਾਪਸੀ ਡਾਟਾ ਗੁੰਮ ਸੀ"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
@@ -29355,10 +29417,6 @@ msgstr "XML ਡੰਪ ਵਿੱਚ ਸੁਰੱਖਿਆ ਅਨੁਕੂਲ ਜ�
 
 msgid "includes the password into the connection URI if available"
 msgstr "ਜੇ ਉਪਲੱਬਧ ਹੈ ਤਾਂ ਸੰਪਰਕ URI ਵਿੱਚ ਗੁਪਤ-ਸ਼ਬਦ ਸ਼ਾਮਿਲ ਕਰਦਾ ਹੈ"
-
-#, fuzzy
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 
 #, fuzzy, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32113,10 +32171,6 @@ msgid "missing cpu name in QEMU capabilities cache"
 msgstr "ਗੁੰਮ ਪ੍ਰਵਾਸ ਯੋਗਤਾ ਨਾਂ"
 
 #, fuzzy
-msgid "missing cpuid-register in CPU data"
-msgstr "ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
-
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
 msgstr "cpuset ਗੈਰਮੌਜੂਦ ਹੈ vcpupin ਲਈ"
 
@@ -32422,14 +32476,6 @@ msgstr ""
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU ਮਾਡਲ %s ਵਿੱਚ PVR ਮੁੱਲ ਗੁੰਮ ਜਾਂ ਅਢੁਕਵਾਂ"
-
-#, fuzzy
-msgid "missing or invalid features in CPU data"
-msgstr "CPU ਮਾਡਲ %s ਵਿੱਚ PVR ਮੁੱਲ ਗੁੰਮ ਜਾਂ ਅਢੁਕਵਾਂ"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -34523,10 +34569,6 @@ msgstr "cpu affinity ਨੂੰ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "start_cpu %d  %d ਦੇ ਵੱਧੋ-ਵੱਧ ਤੋਂ ਜਿਆਦਾ ਹੈ"
 
-#, fuzzy
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "hypervisor sysinfo ਲਈ XML ਸਤਰ੍ਹ ਦਿਓ, ਜੇ ਉਪਲੱਬਧ ਹੈ"
 
@@ -35209,6 +35251,10 @@ msgstr "ਪਰੋਗਰਾਮ ਗਲਤ-ਮੇਲ (ਅਸਲ %1$x, ਲੋੜੀ�
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "ਨੈੱਟਵਰਕ %1$s ਦੇ '%2$s' ਨਾਂ ਵਾਲੇ DNS TXT ਰਿਕਾਰਡ ਵਿੱਚ ਲੋੜੀਂਦਾ ਮੁੱਲ ਐਟਰੀਬਿਊਟ ਗੁੰਮ"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -35811,6 +35857,9 @@ msgid "reply data was missing 'name'"
 msgstr "qom-list ਜਵਾਬ ਵਿੱਚ 'ਨਾਂ' ਗੁੰਮ ਸੀ"
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 msgid "reply was missing return data"
@@ -39164,10 +39213,6 @@ msgstr "ਅਣਜਾਣ CPU ਵਿਸ਼ੇਸ਼ਤਾ %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "ਅਣਜਾਣ CPU ਮਾਡਲ %1$s"
 
-#, fuzzy, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "ਅਣਜਾਣ CPU ਵਿਸ਼ੇਸ਼ਤਾ %1$s"
-
 msgid "unknown OS type"
 msgstr "ਅਚਾਨਕ OS ਕਿਸਮ"
 
@@ -41127,6 +41172,30 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+
+#, fuzzy
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
+
+#, fuzzy
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "CPU ਮਾਡਲ %s ਵਿੱਚ PVR ਮੁੱਲ ਗੁੰਮ ਜਾਂ ਅਢੁਕਵਾਂ"
+
+#, fuzzy
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "CPU ਮਾਡਲ %s ਵਿੱਚ PVR ਮੁੱਲ ਗੁੰਮ ਜਾਂ ਅਢੁਕਵਾਂ"
+
+#, fuzzy
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net ਨੂੰ ਇਸ QEMU ਬਾਇਨਰੀ ਨਾਲ ਸਹਿਯੋਗ ਨਹੀਂ ਹੈ"
+
+#, fuzzy, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "ਅਣਜਾਣ CPU ਵਿਸ਼ੇਸ਼ਤਾ %1$s"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

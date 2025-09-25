@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-09-16 09:31+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1442,6 +1442,9 @@ msgstr "'peak' 和 'burst' 需要 'average' 属性"
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "必须为 'pool' 类型源同时指定 'pool' 和 'volume'"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 计数必须为显式 iothread 到队列映射进行配置"
 
@@ -1850,6 +1853,9 @@ msgstr "这个 QEMU 不支持 ACPI 索引"
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI 索引只支持 PCI 设备"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "在此构架上 ACPI 需要 UEFI"
 
@@ -1984,6 +1990,9 @@ msgstr "添加或更新限流组。"
 msgid "Added"
 msgstr "已添加的"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "地址"
 
@@ -2065,6 +2074,9 @@ msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr "memnode 元素下的参数不与现有客户机的 NUMA 单元对应"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "至少有一个 NUMA 节点必须有 CPU"
@@ -2831,8 +2843,9 @@ msgstr "除非知道 init PID，否则无法附加 hostdev。"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
-msgstr "无法为带有连接标志 %1$.2x 的设备添加新的 PCI 总线"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
+msgstr ""
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4050,7 +4063,8 @@ msgstr "这个 QEMU 二进制文件不支持配置 '%1$s' 计时器"
 msgid ""
 "Conflicting NVME disk serial number, all disks on a controller must have the "
 "same serial number as the controller itself"
-msgstr "冲突的NVME磁盘序列号，控制器上的所有磁盘必须与控制器本身具有相同的序列号"
+msgstr ""
+"冲突的NVME磁盘序列号，控制器上的所有磁盘必须与控制器本身具有相同的序列号"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "连接客户真实串行控制台"
@@ -4127,6 +4141,9 @@ msgstr "内核 dump 一个域。"
 msgid "Core(s) per socket:"
 msgstr "每个 socket 的内核数："
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "无法找到名为 %1$s 的卷"
@@ -4177,6 +4194,9 @@ msgstr "无法将文件作为 harddisk/dvd/floppy 附加： %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "无法构建 CURL 表头列表"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4551,6 +4571,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "无法为主机 %1$s 获取空闲的内存"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "无法获取 %1$s 调用的实例 ID"
 
@@ -4860,6 +4884,9 @@ msgstr "'%1$s' 屏障无法从 config 中为容器 %2$d 解析"
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "无法解析链优先权 '%1$s'"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6715,6 +6742,9 @@ msgstr "将 PCI 设备 %1$s 添加到不活跃的列表中失败"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "添加功能 %1$s 失败：%2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -6803,6 +6833,12 @@ msgstr "将挂载目录 %1$s 捆绑到 %2$s 失败"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "将插槽捆绑到 '%1$s' 失败"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to build net json"
@@ -9886,6 +9922,10 @@ msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr "网络 '%1$s' 中服务 '%2$s' 的无效 DNS SRV priority 属性"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "无效的 IOThread id 值：'%1$d'"
 
@@ -10512,6 +10552,9 @@ msgstr "无效间接路径 '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "无效的 resctrl 监控"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11626,6 +11669,9 @@ msgstr "缺少 JSON 文件中的 defaultLockspace 数据"
 
 msgid "Missing device name for container-side veth"
 msgstr "缺少容器端 veth 的设备名称"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "在域中缺少磁盘文件路径"
@@ -13598,6 +13644,9 @@ msgstr "此平台上不支持 perf"
 
 msgid "Persistent"
 msgstr "持久"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "持久："
@@ -16506,6 +16555,11 @@ msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
 msgstr "'%1$s' 功能的 'eoi'属性不支持架构 '%2$s' 或机器类型 '%3$s'"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -20991,10 +21045,15 @@ msgstr "'none' 视频类型必须是为域定义的唯一视频设备"
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"需要 PCI 插槽来连接 PCI 控制器 model='%1$s'，但没有可用的，且无法自动添加"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "具有相同地址的设备已经存在 "
@@ -28280,6 +28339,9 @@ msgstr "guest-get-users 回复缺少返回数据"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 回复缺少返回数据"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "这个版本的 QEMU 不支持 guestReset"
 
@@ -28636,9 +28698,6 @@ msgstr "包括 XML 转储中与安全性相关的信息"
 
 msgid "includes the password into the connection URI if available"
 msgstr "如可用，则包括连接 URI 的密码。"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持传入的 RDMA 迁移"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -31252,9 +31311,6 @@ msgstr "缺少 Cookie 名称"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "QEMU 功能 XML 中缺少 cpu 名称"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "CPU 数据中缺少 cpuid-register"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "emulatorpin 缺少 cpuset"
 
@@ -31534,12 +31590,6 @@ msgstr "QEMU 功能缓存中缺少或有无效的 SGX 平台 sgx1"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr "QEMU 功能缓存中缺少或有无效的 SGX 平台 sgx2"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU 数据中缺少或无效的 cpuid-input-eax"
-
-msgid "missing or invalid features in CPU data"
-msgstr "CPU 数据中缺少或无效的功能"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "缺失或格式错误的 'nvme' 存储的 'device' 字段"
@@ -33533,9 +33583,6 @@ msgstr "尚不支持出站 floor"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "出站率大于最大值 %1$u"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "这个 QEMU 二进制文件不支持出去的 RDMA 迁移"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "在可能的情况下为 hypervisor sysinfo 输出 XML 字符串"
 
@@ -34187,6 +34234,10 @@ msgstr "程序在事件中不匹配（实际 0x%1$x，期望 0x%2$x）"
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "网络 %1$s 的 DNS TXT 记录名称 '%2$s' 中禁用的字符"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "名为 'id' 的属性不能被覆盖"
 
@@ -34767,6 +34818,9 @@ msgstr "回复数据缺少 'name'"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "答复数据缺少 'option' 名称或参数"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "条目缺少返回值"
@@ -38023,10 +38077,6 @@ msgstr "未知的 CPU 特性: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "未知的 CPU 型号 %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "未知的 CPU 注册 '%1$s'"
-
 msgid "unknown OS type"
 msgstr "未知的操作系统类型"
 
@@ -39952,6 +40002,38 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr "无法为带有连接标志 %1$.2x 的设备添加新的 PCI 总线"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "需要 PCI 插槽来连接 PCI 控制器 model='%1$s'，但没有可用的，且无法自动添加"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持传入的 RDMA 迁移"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "CPU 数据中缺少 cpuid-register"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "CPU 数据中缺少或无效的 cpuid-input-eax"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "CPU 数据中缺少或无效的功能"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "这个 QEMU 二进制文件不支持出去的 RDMA 迁移"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "未知的 CPU 注册 '%1$s'"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

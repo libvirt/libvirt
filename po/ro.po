@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-05-01 09:25+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
@@ -1511,6 +1511,9 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 "„pool” și „volume” trebuie specificate împreună pentru sursa de tip „pool”"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 "numărul de „queue” trebuie să fie configurat pentru corespondența explicită "
@@ -1957,6 +1960,9 @@ msgstr "Indexul ACPI nu este acceptat cu acest binar QEMU"
 msgid "ACPI index is only supported for PCI devices"
 msgstr "Indexul ACPI este acceptat numai pentru dispozitivele PCI"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI necesită UEFI pe această arhitectură"
 
@@ -2097,6 +2103,9 @@ msgstr "Adaugă sau actualizează un grup de limitare."
 msgid "Added"
 msgstr "Adăugat"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "Adresă"
 
@@ -2190,6 +2199,9 @@ msgid ""
 msgstr ""
 "Argumentele din elementul memnode nu corespund cu celula NUMA a invitatului "
 "existent"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Cel puțin un nod NUMA trebuie să aibă CPU-uri"
@@ -3043,10 +3055,9 @@ msgstr "Nu se poate atașa hostdev până când PID-ul init nu este cunoscut"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"Nu se poate adăuga automat o nouă magistrală PCI pentru un dispozitiv cu "
-"fanioane de conectare %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4408,6 +4419,9 @@ msgstr "Creează un fișier cu imaginea din memorie a domeniului."
 msgid "Core(s) per socket:"
 msgstr "Nuclee pe soclu:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Nu s-a putut găsi volumul cu numele: %1$s"
@@ -4458,6 +4472,9 @@ msgstr "Nu s-a putut atașa fișierul ca disc dur/dvd/dischetă: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "Nu s-a putut construi lista de antete CURL"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4840,6 +4857,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "Nu s-a putut obține memorie liberă pentru gazda %1$s"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Nu s-a putut obține ID-ul instanței pentru invocarea %1$s"
 
@@ -5167,6 +5188,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Nu s-a putut analiza prioritatea lanțului „%1$s”"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -7162,6 +7186,9 @@ msgstr ""
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Adăugarea capabilității %1$s a eșuat: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7253,6 +7280,12 @@ msgstr "Asocierea directorului de montare %1$s cu %2$s a eșuat"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Asocierea soclului la „%1$s” a eșuat"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr "Construirea net json a eșuat"
@@ -10482,6 +10515,10 @@ msgstr ""
 "„%2$s”"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Valoare nevalidă a id-ului IOThread: „%1$d”"
 
@@ -11149,6 +11186,9 @@ msgstr "Rută relativă nevalidă „%1$s”."
 
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl nevalid"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12357,6 +12397,9 @@ msgstr "Lipsesc datele defaultLockspace din fișierul JSON"
 
 msgid "Missing device name for container-side veth"
 msgstr "Lipsește numele dispozitivului veth din partea containerului"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "Lipsește ruta fișierului de disc din domeniu"
@@ -14474,6 +14517,9 @@ msgstr "Perf nu este acceptat pe această platformă"
 
 msgid "Persistent"
 msgstr "Persistentă"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Persistentă:"
@@ -17386,6 +17432,11 @@ msgstr ""
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
+msgstr ""
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
 msgstr ""
 
 msgid ""
@@ -21772,8 +21823,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
 msgstr ""
 
 msgid "a device with the same address already exists "
@@ -29011,6 +29068,9 @@ msgstr ""
 msgid "guest-get-vcpus reply was missing return data"
 msgstr ""
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
@@ -29364,9 +29424,6 @@ msgid "include security sensitive information in XML dump"
 msgstr ""
 
 msgid "includes the password into the connection URI if available"
-msgstr ""
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -31975,9 +32032,6 @@ msgstr ""
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr ""
 
-msgid "missing cpuid-register in CPU data"
-msgstr ""
-
 msgid "missing cpuset for emulatorpin"
 msgstr ""
 
@@ -32256,12 +32310,6 @@ msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
-msgstr ""
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr ""
-
-msgid "missing or invalid features in CPU data"
 msgstr ""
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
@@ -34240,9 +34288,6 @@ msgstr ""
 msgid "outbound rate larger than maximum %1$u"
 msgstr ""
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr ""
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 
@@ -34894,6 +34939,10 @@ msgstr ""
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr ""
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -35466,6 +35515,9 @@ msgid "reply data was missing 'name'"
 msgstr ""
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 msgid "reply was missing return data"
@@ -38666,10 +38718,6 @@ msgstr ""
 msgid "unknown CPU model %1$s"
 msgstr ""
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr ""
-
 msgid "unknown OS type"
 msgstr "tip de SO necunoscut"
 
@@ -40579,6 +40627,14 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "Nu se poate adăuga automat o nouă magistrală PCI pentru un dispozitiv cu "
+#~ "fanioane de conectare %1$.2x"
 
 #~ msgid "Cannot parse uuid attribute of element <address>"
 #~ msgstr "Nu se poate analiza atributul uuid al elementului <address>"

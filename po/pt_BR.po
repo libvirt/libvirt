@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2024-07-15 13:19+0000\n"
 "Last-Translator: Gildasio Junior <gildasiojunior@riseup.net>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
@@ -1353,6 +1353,9 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 "'pool' e 'volume' deve ser especificado juntos para a fonte de tipo 'pool'"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1788,6 +1791,9 @@ msgstr ""
 msgid "ACPI index is only supported for PCI devices"
 msgstr ""
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
 
@@ -1928,6 +1934,9 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 #, fuzzy
 msgid "Address"
 msgstr "Endereço MAC"
@@ -2013,6 +2022,9 @@ msgstr "Argumento deve ser não null"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "Assigning disk alias failed"
 msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
@@ -2827,7 +2839,8 @@ msgstr "Não foi possível anexar hostdev até que o init PID seja conhecido"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4178,6 +4191,9 @@ msgstr "Descarga do núcleo de um domínio"
 msgid "Core(s) per socket:"
 msgstr "Núcleo(s) por socket:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Não foi possível encontrar o volume com o nome: %1$s"
@@ -4231,6 +4247,9 @@ msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Não foi possível construir a lista de cabeçalho CURL"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4625,6 +4644,10 @@ msgstr ""
 msgid "Could not get free memory for host %1$s"
 msgstr ""
 
+#, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Não foi possível buscar %s para invocação %s"
@@ -4958,6 +4981,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Não foi possível analisar a prioridade de corrente '%1$s'"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6942,6 +6968,9 @@ msgstr "Falha ao desvincular dispositivo PCI '%s' a partir do %s"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "nome de timer %d inesperado"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7030,6 +7059,12 @@ msgstr "Falha ao vincular o diretório de montagem %1$s à %2$s"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "falha ao associar o socket \"%1$s\" "
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -10205,6 +10240,10 @@ msgstr "Faixa de fabricante de CPU inválida '%1$s'"
 msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr "Endereço inválido '%1$s' em rede '%2$s'"
 
+#, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "valor de período de coleção  inválido '%1$d'"
@@ -10851,6 +10890,9 @@ msgstr "caminho relativo inválido '%1$s' "
 #, fuzzy
 msgid "Invalid resctrl monitor"
 msgstr "filtro de rede de trabalho inválido"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12038,6 +12080,9 @@ msgstr "Falta dados defaultLockspace  a partir do arquivo JSON"
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "Falta o atributo da fonte do dispositivo de caractere"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr ""
@@ -14144,6 +14189,9 @@ msgstr "Não é suportada nesta plataforma"
 
 msgid "Persistent"
 msgstr "Persistente"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Persistente:"
@@ -17264,6 +17312,11 @@ msgstr ""
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
+msgstr ""
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
 msgstr ""
 
 msgid ""
@@ -21874,8 +21927,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
 msgstr ""
 
 #, fuzzy
@@ -29586,6 +29645,9 @@ msgstr "resposta de guest-get-vcpus estava faltando dados de retorno"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "resposta de guest-get-vcpus estava faltando dados de retorno"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
@@ -29961,10 +30023,6 @@ msgstr "incluir informação de segurança sensível na descarga XML"
 
 msgid "includes the password into the connection URI if available"
 msgstr "Inclui a senha no URI da conexão se disponível"
-
-#, fuzzy
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net não é suportada neste binário do QEMU"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32736,10 +32794,6 @@ msgid "missing cpu name in QEMU capabilities cache"
 msgstr "falta nome de capacidade de migração"
 
 #, fuzzy
-msgid "missing cpuid-register in CPU data"
-msgstr "falta elemento de uuid nos dados de migração"
-
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
 msgstr "falta cpuset para o cvpupin"
 
@@ -33045,14 +33099,6 @@ msgstr ""
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "Falta valor PVR inválido no modelo de CPU %s"
-
-#, fuzzy
-msgid "missing or invalid features in CPU data"
-msgstr "Falta valor PVR inválido no modelo de CPU %s"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -35180,10 +35226,6 @@ msgstr "discos transientes não são suportados ainda"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "start_cpu %d maior do que o máximo de %d"
 
-#, fuzzy
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net não é suportada neste binário do QEMU"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "fornece o resultado de uma faixa de XML para o sysinfo do hypervisor, se "
@@ -35879,6 +35921,10 @@ msgstr ""
 "falta de atributo de valor requerido em histórico DNS TXT nomeado '%1$s' de "
 "rede %2$s"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -36483,6 +36529,9 @@ msgid "reply data was missing 'name'"
 msgstr "resposta de qom-list estava faltando 'name'"
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 msgid "reply was missing return data"
@@ -39878,10 +39927,6 @@ msgstr "Recurso de CPU desconhecido %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "Modelo de CPU desconhecido %1$s"
 
-#, fuzzy, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "Recurso de CPU desconhecido %1$s"
-
 msgid "unknown OS type"
 msgstr "tipo de SO desconhecido"
 
@@ -41856,6 +41901,30 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net não é suportada neste binário do QEMU"
+
+#, fuzzy
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "falta elemento de uuid nos dados de migração"
+
+#, fuzzy
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "Falta valor PVR inválido no modelo de CPU %s"
+
+#, fuzzy
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "Falta valor PVR inválido no modelo de CPU %s"
+
+#, fuzzy
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net não é suportada neste binário do QEMU"
+
+#, fuzzy, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "Recurso de CPU desconhecido %1$s"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

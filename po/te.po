@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Telugu <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1318,6 +1318,9 @@ msgstr "'peak' మరియు 'burst' కు 'average' యాట్రిబ్
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' మరియు 'volume' అనునవి 'pool' రకం మూలం కొరకు తప్పక తెలుపాలి"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1747,6 +1750,9 @@ msgstr ""
 msgid "ACPI index is only supported for PCI devices"
 msgstr ""
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
 
@@ -1885,6 +1891,9 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 #, fuzzy
 msgid "Address"
 msgstr "MAC చిరునామా"
@@ -1966,6 +1975,9 @@ msgstr "ఆర్గుమెంట్లు null కాకూడదు"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "Assigning disk alias failed"
 msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
@@ -2755,7 +2767,8 @@ msgstr "init పిఐడి తెలిసేంతవరకు hostdev అన
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4076,6 +4089,9 @@ msgstr "క్షేత్రాన్ని సంక్షిప్తీక�
 msgid "Core(s) per socket:"
 msgstr "సాకెటుకి కోర్(లు):"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "ఈ పేరుతో వాల్యూమ్ కనుగొనలేక పోయింది: %1$s"
@@ -4129,6 +4145,9 @@ msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL హెడర్ జాబితా నిర్మించలేక పోయెను"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4518,6 +4537,10 @@ msgstr ""
 msgid "Could not get free memory for host %1$s"
 msgstr ""
 
+#, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "%s ను %s ఇన్వొకేషన్ కొరకు లుకప్ చేయలేక పోయింది"
@@ -4840,6 +4863,9 @@ msgstr "'%1$s' యొక్క బారియర్ ఆకృతీకరణ �
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "చైన్ ప్రాముఖ్యత '%1$s' పార్స్ చేయలేక పోయింది"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6751,6 +6777,9 @@ msgstr "PCI పరికరం '%s' ను %s నుండి అన్‌బై
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "సామర్ధ్యములను ఆపాదించుటలో విఫలమైంది: %d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -6839,6 +6868,12 @@ msgstr "మౌంట్ సంచయం %1$s ను %2$s కు బందనం 
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "సాకెట్ '%1$s' కు బందనం చేయలేదు"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -9967,6 +10002,10 @@ msgstr "చెల్లని CPU అమ్మకందారు స్ట్ర
 msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr "చెల్లని చిరునామా '%1$s' నెట్వర్కు '%2$s' నందు"
 
+#, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "చెల్లని సంపుటి వ్యవధి విలువ '%1$d'"
@@ -10602,6 +10641,9 @@ msgstr "చెల్లని రిలేటివ్ పాత్ '%1$s'"
 #, fuzzy
 msgid "Invalid resctrl monitor"
 msgstr "చెల్లని నెట్వర్కు వడపోత"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11772,6 +11814,9 @@ msgstr "దొరకని defaultLockspace దత్తాంశం JSON ఫై
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "అక్షర పరికరము కొరకు మూలపు సేవ యాట్రిబ్యూట్‌ను తప్పిస్తున్నది"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr ""
@@ -13832,6 +13877,9 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన తోడ్పాటున
 
 msgid "Persistent"
 msgstr "స్థిరమైన"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "స్థిరమైన:"
@@ -16831,6 +16879,11 @@ msgstr ""
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
+msgstr ""
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
 msgstr ""
 
 msgid ""
@@ -21391,8 +21444,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
 msgstr ""
 
 #, fuzzy
@@ -28947,6 +29006,9 @@ msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రి�
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus ప్రత్యుత్తరంనందు రిటర్న్ దత్తాంశం దొరకలేదు"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
@@ -29314,10 +29376,6 @@ msgstr "XML డంప్‌నందు రక్షణ సున్నితమ
 
 msgid "includes the password into the connection URI if available"
 msgstr "అందుబాటులోవుంటే అనుసంధానం URI నకు సంకేతపదం చేర్చును"
-
-#, fuzzy
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
 
 #, fuzzy, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32072,10 +32130,6 @@ msgid "missing cpu name in QEMU capabilities cache"
 msgstr "దొరకని మైగ్రేషన్ సామర్ధ్యం పేరు"
 
 #, fuzzy
-msgid "missing cpuid-register in CPU data"
-msgstr "మైగ్రేషన్ దత్తాంశం నందు uuid మూలకం దొరకలేదు"
-
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
 msgstr "vcpupin కొరకు cpuset లేదు"
 
@@ -32381,14 +32435,6 @@ msgstr ""
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
-
-#, fuzzy
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
-
-#, fuzzy
-msgid "missing or invalid features in CPU data"
-msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -34481,10 +34527,6 @@ msgstr "అస్థిర డిస్కులు యింకా తోడ్
 msgid "outbound rate larger than maximum %1$u"
 msgstr "start_cpu %d అనునది గరిష్ట %d కన్నా పెద్దది"
 
-#, fuzzy
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "హైపర్విజర్ వ్యవస్థసమాచారం అందుబాటులో వుంటే గనుక, XML స్ట్రింగ్ నందు అవుట్‌పుట్ యివ్వు"
 
@@ -35168,6 +35210,10 @@ msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr ""
 "DNS TXT రికార్డ్ పేరు '%1$s' నందు కావలసిన విలువ యాట్రిబ్యూట్ దొరకలేదు యిది నెట్వర్కు %2$s ది"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -35768,6 +35814,9 @@ msgid "reply data was missing 'name'"
 msgstr "qom-list ప్రత్యుత్తర దత్తాంశంకు 'name' దొరకలేదు"
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 msgid "reply was missing return data"
@@ -39116,10 +39165,6 @@ msgstr "తెలియని CPU సౌలభ్యము %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "తెలియని CPU మోడల్ %1$s"
 
-#, fuzzy, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "తెలియని CPU సౌలభ్యము %1$s"
-
 msgid "unknown OS type"
 msgstr "తెలియని OS రకం"
 
@@ -41079,6 +41124,30 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
+
+#, fuzzy
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "మైగ్రేషన్ దత్తాంశం నందు uuid మూలకం దొరకలేదు"
+
+#, fuzzy
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
+
+#, fuzzy
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
+
+#, fuzzy
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "vhost-net అనునది ఈ QEMU బైనరీతో తోడ్పాటునీయదు"
+
+#, fuzzy, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "తెలియని CPU సౌలభ్యము %1$s"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -1250,6 +1250,9 @@ msgstr ""
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1666,6 +1669,9 @@ msgstr ""
 msgid "ACPI index is only supported for PCI devices"
 msgstr ""
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr ""
 
@@ -1806,6 +1812,9 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 #, fuzzy
 msgid "Address"
 msgstr "Địa chỉ MAC"
@@ -1887,6 +1896,9 @@ msgstr "các tham số tới echo"
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
+msgstr ""
+
+msgid "Assigning disk alias failed"
 msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
@@ -2671,7 +2683,8 @@ msgstr ""
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
 
 #, fuzzy, c-format
@@ -4003,6 +4016,9 @@ msgstr "Dump nhân một miền."
 msgid "Core(s) per socket:"
 msgstr "Nhân mỗi socket:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Không thể tìm miền với tên '%1$s'"
@@ -4056,6 +4072,9 @@ msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "Không thể dựng danh sách header CURL"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4453,6 +4472,10 @@ msgstr ""
 msgid "Could not get free memory for host %1$s"
 msgstr ""
 
+#, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Không thể lấy thông tin pool"
@@ -4784,6 +4807,9 @@ msgstr "Không thể đọc 'NET_IF' từ cấu hình cho bộ chứa 
 #, fuzzy, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Không thể phân tích UUID từ chuỗi '%1$s'"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6727,6 +6753,9 @@ msgstr "Thất bại khi liệt kê các pool không hoạt động"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Thất bại khi áp dụng các khả năng: %d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -6818,6 +6847,12 @@ msgstr "Thất bại khi lắp devpts trên %s"
 #, fuzzy, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Thất bại khi dựng pool %1$s"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -10042,6 +10077,10 @@ msgstr "Chuỗi nhà cung cấp CPU không hợp lệ '%1$s'"
 msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr ""
 
+#, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
@@ -10682,6 +10721,9 @@ msgstr "Đường dẫn quan hệ '%1$s' không hợp lệ"
 #, fuzzy
 msgid "Invalid resctrl monitor"
 msgstr "Bộ lọc mạng không hợp lệ"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11844,6 +11886,9 @@ msgstr ""
 #, fuzzy
 msgid "Missing device name for container-side veth"
 msgstr "Thiếu thuộc tính dịch vụ nguồn cho thiết bị ký tự"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr ""
@@ -13875,6 +13920,9 @@ msgstr "Ái lực CPU của tiến trình không được hỗ trợ trên nền
 
 msgid "Persistent"
 msgstr "Cố định"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Cố định:"
@@ -16854,6 +16902,11 @@ msgstr ""
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
+msgstr ""
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
 msgstr ""
 
 msgid ""
@@ -21527,8 +21580,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
+msgstr ""
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
 msgstr ""
 
 msgid "a device with the same address already exists "
@@ -29149,6 +29208,9 @@ msgstr "phản hồi di trú thông tin thiếu trạng thái trả về
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "phản hồi di trú thông tin thiếu trạng thái trả về"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
 
@@ -29521,10 +29583,6 @@ msgstr "bao gồm thông tin cảm giác bảo mật trong dump XML"
 
 msgid "includes the password into the connection URI if available"
 msgstr ""
-
-#, fuzzy
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
 
 #, fuzzy, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32307,9 +32365,6 @@ msgstr "thiếu tên bộ đếm giờ"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr ""
 
-msgid "missing cpuid-register in CPU data"
-msgstr ""
-
 #, fuzzy
 msgid "missing cpuset for emulatorpin"
 msgstr "thiếu thông tin các thiết bị"
@@ -32625,12 +32680,6 @@ msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
 msgstr ""
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
-msgstr ""
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr ""
-
-msgid "missing or invalid features in CPU data"
 msgstr ""
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
@@ -34735,10 +34784,6 @@ msgstr ""
 msgid "outbound rate larger than maximum %1$u"
 msgstr ""
 
-#, fuzzy
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "SATA không được hỗ trợ với binary QEMU này"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 
@@ -35419,6 +35464,10 @@ msgstr "phiên bản không khớp (thực tế %1$x, mong đợi %2$x)"
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr ""
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr ""
 
@@ -36010,6 +36059,9 @@ msgid "reply data was missing 'name'"
 msgstr ""
 
 msgid "reply data was missing 'option' name or parameters"
+msgstr ""
+
+msgid "reply data was missing 'properties' array"
 msgstr ""
 
 #, fuzzy
@@ -39356,10 +39408,6 @@ msgstr "tính năng CPU không rõ %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "Mẫu CPU không rõ %1$s"
 
-#, fuzzy, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "tính năng CPU không rõ %1$s"
-
 msgid "unknown OS type"
 msgstr "kiểu OS không rõ"
 
@@ -41327,6 +41375,18 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "SATA không được hỗ trợ với binary QEMU này"
+
+#, fuzzy, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "tính năng CPU không rõ %1$s"
 
 #, fuzzy, c-format
 #~ msgid "unknown virtualport type %1$s"

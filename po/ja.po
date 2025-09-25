@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1478,6 +1478,9 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 "'pool' と 'volume' は 'pool' タイプのソースと同時に指定する必要があります"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1909,6 +1912,9 @@ msgstr "この QEMU では、ACPI インデックスはサポートされませ�
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI インデックスは、PCI デバイスに対してのみサポートされます"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI には、このアーキテクチャーで UEFI が必要です"
 
@@ -2047,6 +2053,9 @@ msgstr ""
 msgid "Added"
 msgstr "追加済み"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "アドレス"
 
@@ -2132,6 +2141,9 @@ msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr "memnode 要素配下の引数が、既存のゲストの NUMA セルに対応していません"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "少なくとも 1 つの NUMA ノードに CPU がなければなりません"
@@ -2956,10 +2968,9 @@ msgstr "init PID が確認できるまでホストデバイスを接続できま
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"接続フラグ %1$.2x のデバイスに対して新しい PCI バスを自動的に追加することはで"
-"きません"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4261,6 +4272,9 @@ msgstr "ドメインのコアダンプを取得します。"
 msgid "Core(s) per socket:"
 msgstr "ソケットあたりのコア数:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "次の名前を持つボリュームを見つけられませんでした: %1$s"
@@ -4312,6 +4326,9 @@ msgstr ""
 
 msgid "Could not build CURL header list"
 msgstr "CURL ヘッダーリストを構築できませんでした"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4694,6 +4711,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "ホスト %1$s の空きメモリーを取得できませんでした"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "%1$s invocation のためのインスタンス ID を取得できませんでした"
 
@@ -5017,6 +5038,9 @@ msgstr "'%1$s' のバリアーをコンテナー %2$d の設定から解析で�
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "チェインの優先度 '%1$s' を解析できません"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6965,6 +6989,9 @@ msgstr "PCI デバイス %1$s の非アクティブリストへの追加に失�
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "ケイパビリティー %1$s の追加に失敗しました: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7053,6 +7080,12 @@ msgstr "マウントディレクトリー %1$s を %2$s にバインドできま
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "ソケットを '%1$s' にバインドできません"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr ""
@@ -10225,6 +10258,10 @@ msgid "Invalid DNS SRV priority attribute for service '%1$s' in network '%2$s'"
 msgstr "ネットワーク '%1$s' のサービス '%2$s' の無効な DNS SRV 優先度属性"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "無効な IOThread ID 値: '%1$d'"
 
@@ -10887,6 +10924,9 @@ msgstr "無効な相対パス '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "無効な resctrl モニター"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12061,6 +12101,9 @@ msgstr "JSON ファイルに defaultLockspace データがありません"
 
 msgid "Missing device name for container-side veth"
 msgstr "コンテナー側の veth のデバイス名がありません"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "ドメインにディスクファイルパスがありません"
@@ -14100,6 +14143,9 @@ msgstr "このプラットフォームでは Perf はサポートされません
 
 msgid "Persistent"
 msgstr "永続"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "永続:"
@@ -17217,6 +17263,11 @@ msgid ""
 msgstr ""
 "'%1$s' 機能の 'eoi' 属性は、アーキテクチャー '%2$s' またはマシンタイプ "
 "'%3$s' ではサポートされません"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -21773,11 +21824,15 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"PCI コントローラー model='%1$s' を接続するには PCI スロットが必要ですが、利用"
-"できるものがなく、自動的に追加することもできません"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "同じアドレスのデバイスがすでに存在します "
@@ -29326,6 +29381,9 @@ msgstr "guest-get-users の応答に返り値がありませんでした"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus からの応答に返り値がありませんでした"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset は、このバージョンの QEMU ではサポートされていません"
 
@@ -29691,9 +29749,6 @@ msgstr "XML ダンプ内にセキュリティの機密情報を含む"
 
 msgid "includes the password into the connection URI if available"
 msgstr "利用可能ならば、接続 URI の中にパスワードを含めます"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、着信 RDMA 移行はサポートされません"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32426,9 +32481,6 @@ msgstr "cookie 名がありません"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "QEMU ケイパビリティーキャッシュに cpu 名がありません"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "CPU データに cpuid-register がありません"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "emulatorpin の cpuset がありません"
 
@@ -32722,12 +32774,6 @@ msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
 "QEMU ケイパビリティーキャッシュの SGX プラットフォーム sgx2 が存在しないか、"
 "無効になっています"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU データに cpuid-input-eax がありません、または無効です"
-
-msgid "missing or invalid features in CPU data"
-msgstr "CPU データに features がありません、または無効です"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr ""
@@ -34808,9 +34854,6 @@ msgstr "アウトバウンドフロアはまだサポートされていません
 msgid "outbound rate larger than maximum %1$u"
 msgstr "アウトバウンドレートが最大値 %1$u より大きいです"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "この QEMU バイナリーでは、発信 RDMA 移行はサポートされません"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "取得可能ならば、ハイパーバイザーのシステム情報の XML 文字列を出力します"
@@ -35496,6 +35539,10 @@ msgstr "イベントでのプログラムの不一致 (実際の 0x%1$x、予想
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "ネットワーク %1$s の DNS TXT レコード名 '%2$s' の禁止文字"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "名前が 'id' のプロパティーはオーバーライドできません"
 
@@ -36102,6 +36149,9 @@ msgstr "応答データに 'name' がありませんでした"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "応答データに 'option' 名またはパラメーターがありませんでした"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "応答に返り値がありませんでした"
@@ -39497,10 +39547,6 @@ msgstr "不明な CPU 機能: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "不明な CPU モデル %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "不明な CPU レジスター '%1$s'"
-
 msgid "unknown OS type"
 msgstr "不明な OS タイプ"
 
@@ -41499,6 +41545,41 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "接続フラグ %1$.2x のデバイスに対して新しい PCI バスを自動的に追加すること"
+#~ "はできません"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "PCI コントローラー model='%1$s' を接続するには PCI スロットが必要ですが、"
+#~ "利用できるものがなく、自動的に追加することもできません"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、着信 RDMA 移行はサポートされません"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "CPU データに cpuid-register がありません"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "CPU データに cpuid-input-eax がありません、または無効です"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "CPU データに features がありません、または無効です"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "この QEMU バイナリーでは、発信 RDMA 移行はサポートされません"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "不明な CPU レジスター '%1$s'"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

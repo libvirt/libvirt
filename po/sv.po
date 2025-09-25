@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1471,6 +1471,9 @@ msgstr "”peak” och ”burst” kräver attributet ”average”"
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "”pool” och ”volume” måste anges tillsammans för källan av typen ”pool”"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 
@@ -1898,6 +1901,9 @@ msgstr "ACPI-index stödjs inte med denna QEMU"
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI-index stödjs endast för PCI-enheter"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI kräver UEFI på denna arkitektur"
 
@@ -2034,6 +2040,9 @@ msgstr ""
 msgid "Added"
 msgstr "Tillagt"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "Adress"
 
@@ -2125,6 +2134,9 @@ msgid ""
 "cell"
 msgstr ""
 "Argument under memnode-element motsvarar inte en befintlig gästs NUMA-cell"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Åtminstone en NUMA-nod måste ha CPU:er"
@@ -2947,10 +2959,9 @@ msgstr "Det går inte att ansluta hostdev tills init-PID är känd"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
 msgstr ""
-"Det går inte att automatiskt lägga till en ny PCI-buss för en enhet med "
-"anslutningsflaggorna %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4280,6 +4291,9 @@ msgstr "Spara kärnan för en domän."
 msgid "Core(s) per socket:"
 msgstr "Kärnor per uttag:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "Kunde hitta en volym med namnet: %1$s"
@@ -4330,6 +4344,9 @@ msgstr "Kunde inte koppla in filen som hårddisk/dvd/floppy: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "Kunde inte bygga CURL-huvudlista"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4706,6 +4723,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "Kunde inte få tag i fritt minne för värden %1$s"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "Kunde inte få tag i instans-ID för anrop av %1$s"
 
@@ -5033,6 +5054,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "Kunde inte tolka kedjeprioriteten ”%1$s”"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6964,6 +6988,9 @@ msgstr "Misslyckades att lägga till PCI-enheten %1$s till den inaktiva listan"
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "Misslyckades att lägga till förmågan %1$s: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -7055,6 +7082,12 @@ msgstr "Misslyckades att binda monteringskatalogen %1$s till %2$s"
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "Misslyckades att binda uttag till ”%1$s”"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr "Misslyckades att bygga nät-json"
@@ -10226,6 +10259,10 @@ msgstr ""
 "Felaktigt DNS SRV-prioritetsattribut för tjänsten ”%1$s” i nätverket ”%2$s”"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "Felaktigt värde för IOThread-id: ”%1$d”"
 
@@ -10881,6 +10918,9 @@ msgstr "Felaktig relativ sökväg ”%1$s”"
 
 msgid "Invalid resctrl monitor"
 msgstr "Felaktig resctrl-övervakare"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12039,6 +12079,9 @@ msgstr "Saknade defaultLockspace-data från JSON-filen"
 
 msgid "Missing device name for container-side veth"
 msgstr "Saknat enhetsnamn på behållarsidans veth"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "Saknad diskfilsökväg i domänen"
@@ -14067,6 +14110,9 @@ msgstr "Perf stödjs inte på denna plattform"
 
 msgid "Persistent"
 msgstr "Varaktig"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "Varaktig:"
@@ -17092,6 +17138,11 @@ msgid ""
 msgstr ""
 "Attributet ”eoi” hos funktionen ”%1$s” stödjs inte för arkitekturen ”%2$s” "
 "eller maskintypen ”%3$s”"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -21666,11 +21717,15 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"ett PCI-uttag behövs för att ansluta en PCI-styrenhet modell=”%1$s”, men "
-"inget finns tillgängligt, och det kan inte läggas till automatiskt"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "en enhet med samma adress finns redan "
@@ -29222,6 +29277,9 @@ msgstr "svaret från guest-get-users saknade returdata"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "svaret från guest-get-vcpus saknade returdata"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset stödjs inte med denna version av QEMU"
 
@@ -29593,9 +29651,6 @@ msgstr "inkludera säkerhetskänslig information i XML-dumpen"
 
 msgid "includes the password into the connection URI if available"
 msgstr "inkluderar lösenordet i anslutnings-URI:n om tillgängligt"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "inkommande RDMA-migrering stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -32315,9 +32370,6 @@ msgstr "kaknamnet saknas"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "cpu-namnet saknas i QEMU-förmågecachen"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "cpuid-register saknas i CPU-data"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "cpuset saknas till emulatorpin"
 
@@ -32605,12 +32657,6 @@ msgstr "SGX-plattforms-sgx1 saknas eller är felaktigt i QEMU-förmågecachen"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr "SGX-plattforms-sgx2 saknas eller är felaktigt i QEMU-förmågecachen"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "cpuid-input-eax saknas eller är felaktigt i CPU-data"
-
-msgid "missing or invalid features in CPU data"
-msgstr "funktioner saknas eller är felaktiga i CPU-data"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "fältet ”device” i lagringen ”nvme” saknas eller är felformaterat"
@@ -34666,9 +34712,6 @@ msgstr "utgående golv stödjs inte ännu"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "utgående hastighet är större en maximala %1$u"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "utgående RDMA-migreringar stödjs inte med denna QEMU-binär"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "mata ut en XML-sträng till hypervisorns sysinfo, om tillgängligt"
 
@@ -35340,6 +35383,10 @@ msgstr "programmet matchar inte i händelsen (aktuell 0x%1$x, förväntad 0x%2$x
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "förbjudet tecken i DNS TXT-postnamn ”%1$s” för nätverket %2$s"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "egenskapen med namnet ”id” kan inte åsidosättas"
 
@@ -35951,6 +35998,9 @@ msgstr "svarsdata saknade ”name”"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "svarsdata saknade ”option”-namn eller -parametrar"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "svaret saknade returdata"
@@ -39327,10 +39377,6 @@ msgstr "okänd CPU-funktion: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "okänd CPU-modell %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "okänt CPU-register ”%1$s”"
-
 msgid "unknown OS type"
 msgstr "okänd OS-typ"
 
@@ -41305,6 +41351,41 @@ msgstr "zonen %1$s begärd för nätverket %2$s men firewalld är inte aktiv"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr ""
+#~ "Det går inte att automatiskt lägga till en ny PCI-buss för en enhet med "
+#~ "anslutningsflaggorna %1$.2x"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "ett PCI-uttag behövs för att ansluta en PCI-styrenhet modell=”%1$s”, men "
+#~ "inget finns tillgängligt, och det kan inte läggas till automatiskt"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "inkommande RDMA-migrering stödjs inte med denna QEMU-binär"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "cpuid-register saknas i CPU-data"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "cpuid-input-eax saknas eller är felaktigt i CPU-data"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "funktioner saknas eller är felaktiga i CPU-data"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "utgående RDMA-migreringar stödjs inte med denna QEMU-binär"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "okänt CPU-register ”%1$s”"
 
 #, c-format
 #~ msgid "unknown virtualport type %1$s"

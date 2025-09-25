@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-08-25 08:36+0000\n"
+"POT-Creation-Date: 2025-09-25 09:31+0000\n"
 "PO-Revision-Date: 2025-08-29 14:37+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1476,6 +1476,9 @@ msgstr "'peak' 및 'burst'는 'average' 속성이 필요합니다"
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' 유형 소스의 'pool' 및 'volume'을 함께 지정해야 합니다"
 
+msgid "'qom-list-get' returned unexpected number of paths"
+msgstr ""
+
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 상수는 명백한 iothread를 대기열 대응을 위해 구성되어야 합니다"
 
@@ -1919,6 +1922,9 @@ msgstr ""
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI 지수는 오직 PCI 장치에서만 지원됩니다"
 
+msgid "ACPI nodeset is not supported with this QEMU"
+msgstr ""
+
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI는 이 구조(아키텍쳐)에서 UEFI가 필요합니다"
 
@@ -2055,6 +2061,9 @@ msgstr "제한 그룹을 추가하거나 최신화합니다."
 msgid "Added"
 msgstr "추가됨"
 
+msgid "Adding disk to domain failed"
+msgstr ""
+
 msgid "Address"
 msgstr "주소"
 
@@ -2139,6 +2148,9 @@ msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
 msgstr "memnode 요소 하에서 인수는 기존 게스트 NUMA cell과 일치하지 않습니다"
+
+msgid "Assigning disk alias failed"
+msgstr ""
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "적어도 하나 이상의 NUMA 노드는 CPU를 가져야 합니다"
@@ -2954,8 +2966,9 @@ msgstr "초기 PID를 찾을때까지 hostdev를 첨부할 수 없습니다"
 
 #, c-format
 msgid ""
-"Cannot automatically add a new PCI bus for a device with connect flags %1$.2x"
-msgstr "%1$.2x 연결된 장비에 자동으로 새로운 PCI 버스를 추가할 수 없습니다"
+"Cannot automatically add a new PCI bus for a device with unrecognized "
+"connect flags %1$.2x"
+msgstr ""
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4251,6 +4264,9 @@ msgstr "도메인을 코어 덤프함."
 msgid "Core(s) per socket:"
 msgstr "소켓당 코어:"
 
+msgid "Could detach device"
+msgstr ""
+
 #, c-format
 msgid "Could find volume with name: %1$s"
 msgstr "다음 이름으로된 볼륨을 찾을 수 없습니다: %1$s"
@@ -4301,6 +4317,9 @@ msgstr "harddisk/dvd/floppy로 파일을 연결 할 수 없습니다: %1$s"
 
 msgid "Could not build CURL header list"
 msgstr "CURL 헤더 목록을 빌드할 수 없음"
+
+msgid "Could not build disk json"
+msgstr ""
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4678,6 +4697,10 @@ msgid "Could not get free memory for host %1$s"
 msgstr "호스트 %1$s에 대한 사용 가능한 메모리를 가져올 수 없습니다"
 
 #, c-format
+msgid "Could not get index of disk '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Could not get instance ID for %1$s invocation"
 msgstr "%1$s 호출에 대한 예시 ID를 가져 올 수 없습니다"
 
@@ -4996,6 +5019,9 @@ msgstr ""
 #, c-format
 msgid "Could not parse chain priority '%1$s'"
 msgstr "체인 우선 순위 '%1$s'를 구문 분석 할 수 없음"
+
+msgid "Could not parse domain definition"
+msgstr ""
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6909,6 +6935,9 @@ msgstr "PCI 장치 %1$s를 비활성화 목록에 추가하는데 실패했습�
 msgid "Failed to add capability %1$s: %2$d"
 msgstr "기능 추가에 실패 %1$s: %2$d"
 
+msgid "Failed to add device"
+msgstr ""
+
 #, c-format
 msgid ""
 "Failed to add driver '%1$s' to driver_override interface of PCI device '%2$s'"
@@ -6998,6 +7027,12 @@ msgstr "적재 디렉토리 %1$s를 %2$s에 바인딩하는데 실패했습니�
 #, c-format
 msgid "Failed to bind socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 바인딩하지 못했습니다"
+
+msgid "Failed to build QEMU command line for acpi-generic-initiator"
+msgstr ""
+
+msgid "Failed to build acpi-generic-initiator properties"
+msgstr ""
 
 msgid "Failed to build net json"
 msgstr "net json 제작에 실패함"
@@ -10120,6 +10155,10 @@ msgstr ""
 "다"
 
 #, c-format
+msgid "Invalid HTTP response code from CH: %1$d"
+msgstr ""
+
+#, c-format
 msgid "Invalid IOThread id value: '%1$d'"
 msgstr "잘못된 IOThread id 값: '%1$d'"
 
@@ -10771,6 +10810,9 @@ msgstr "잘못된 상대 경로 '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "잘못된 resctrl 모니터"
+
+msgid "Invalid response from CH. Disk removal failed."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11910,6 +11952,9 @@ msgstr "JSON 파일에서 defaultLockspace 자료가 누락"
 
 msgid "Missing device name for container-side veth"
 msgstr "컨테이너 측 veth에 대한 장치 이름 누락"
+
+msgid "Missing disk alias"
+msgstr ""
 
 msgid "Missing disk file path in domain"
 msgstr "도메인에 디스크 파일 경로가 없습니다"
@@ -13923,6 +13968,9 @@ msgstr "이 기술환경에서 지원되지 않는 성능"
 
 msgid "Persistent"
 msgstr "영구적"
+
+msgid "Persistent domain state changes are not supported"
+msgstr ""
 
 msgid "Persistent:"
 msgstr "영구적:"
@@ -16926,6 +16974,11 @@ msgid ""
 msgstr ""
 "'%1$s' 기능의 'eoi' 속성은 아키텍처 '%2$s' 또는 머신 유형 '%3$s'에 대해 지원"
 "되지 않습니다"
+
+msgid ""
+"The 'fqdn' attribute of the <backend> element can only be used with the "
+"<backend> type='passt'"
+msgstr ""
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -21478,11 +21531,15 @@ msgstr ""
 
 #, c-format
 msgid ""
-"a PCI slot is needed to connect a PCI controller model='%1$s', but none is "
+"a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"PCI 컨트롤러 모델='%1$s'를 연결하려면 PCI 슬롯이 필요하지만 사용할 수 없으며 "
-"자동으로 추가할 수 없습니다"
+
+#, c-format
+msgid ""
+"a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
+"but none is available, and it cannot be automatically added"
+msgstr ""
 
 msgid "a device with the same address already exists "
 msgstr "동일한 주소를 가진 장치가 이미 존재합니다 "
@@ -28931,6 +28988,9 @@ msgstr "guest-get-users 응답에 반환 데이터가 누락되었습니다"
 msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 응답에 반환 데이터가 누락되었습니다"
 
+msgid "guest:"
+msgstr ""
+
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset는 이와 같은 QEMU 버전에서 지원되지 않습니다"
 
@@ -29293,9 +29353,6 @@ msgstr "XML 덤프에 보안상 중요한 정보를 포함합니다"
 
 msgid "includes the password into the connection URI if available"
 msgstr "사용 가능한 경우 연결 URI에 비밀번호를 포함합니다"
-
-msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "들어오는 RDMA 이전은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "incomplete metadata in '%1$s'"
@@ -31972,9 +32029,6 @@ msgstr "쿠키 이름 누락"
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에 CPU 이름 누락"
 
-msgid "missing cpuid-register in CPU data"
-msgstr "CPU 데이터에 cpuid 레지스터가 없습니다"
-
 msgid "missing cpuset for emulatorpin"
 msgstr "에뮬레이터핀용 cpuset 누락"
 
@@ -32255,12 +32309,6 @@ msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 sgx1
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SGX 기술환경 sgx2"
-
-msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU 데이터에 cpuid-input-eax가 없거나 잘못되었습니다"
-
-msgid "missing or invalid features in CPU data"
-msgstr "CPU 데이터의 누락되거나 잘못된 기능"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "'nvme' 저장소의 '장치' 필드가 없거나 형식이 잘못되었습니다"
@@ -34295,9 +34343,6 @@ msgstr "발신층은 아직 지원되지 않습니다"
 msgid "outbound rate larger than maximum %1$u"
 msgstr "최대 %1$u보다 큰 아웃바운드 비율"
 
-msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "나가는 RDMA 이전은 이 QEMU 바이너리에서는 지원되지 않습니다"
-
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
 
@@ -34955,6 +35000,10 @@ msgstr "이벤트의 프로그램 불일치(실제 0x%1$x, 예상 0x%2$x)"
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
 msgstr "네트워크 %1$s의 DNS TXT 레코드 이름 '%2$s'에 금지된 문자가 있습니다"
 
+#, c-format
+msgid "property '%1$s' in reply data was missing value"
+msgstr ""
+
 msgid "property with name 'id' can't be overridden"
 msgstr "이름 'id'를 갖는 특성은 재지정 할 수 없습니다"
 
@@ -35548,6 +35597,9 @@ msgstr "회신 데이터에 '이름'이 누락되었습니다"
 
 msgid "reply data was missing 'option' name or parameters"
 msgstr "응답 데이터에 '옵션' 이름 또는 매개변수가 누락되었습니다"
+
+msgid "reply data was missing 'properties' array"
+msgstr ""
 
 msgid "reply was missing return data"
 msgstr "회신에 반환 데이터가 누락되었습니다"
@@ -38882,10 +38934,6 @@ msgstr "알려지지 않은 CPU 특징: %1$s"
 msgid "unknown CPU model %1$s"
 msgstr "알려지지 않은 CPU 모델 %1$s"
 
-#, c-format
-msgid "unknown CPU register '%1$s'"
-msgstr "알 수 없는 CPU 레지스터 '%1$s'"
-
 msgid "unknown OS type"
 msgstr "알려지지 않은 OS 유형"
 
@@ -40850,8 +40898,42 @@ msgstr ""
 #, c-format
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
-msgstr "영역 %1$s 는 네트워크 %2$s 를 위해 요청되었으나 firewqlld는 BSD에서 지원되지 "
+msgstr ""
+"영역 %1$s 는 네트워크 %2$s 를 위해 요청되었으나 firewqlld는 BSD에서 지원되지 "
 "않습니다"
+
+#, c-format
+#~ msgid ""
+#~ "Cannot automatically add a new PCI bus for a device with connect flags "
+#~ "%1$.2x"
+#~ msgstr "%1$.2x 연결된 장비에 자동으로 새로운 PCI 버스를 추가할 수 없습니다"
+
+#, c-format
+#~ msgid ""
+#~ "a PCI slot is needed to connect a PCI controller model='%1$s', but none "
+#~ "is available, and it cannot be automatically added"
+#~ msgstr ""
+#~ "PCI 컨트롤러 모델='%1$s'를 연결하려면 PCI 슬롯이 필요하지만 사용할 수 없으"
+#~ "며 자동으로 추가할 수 없습니다"
+
+#~ msgid "incoming RDMA migration is not supported with this QEMU binary"
+#~ msgstr "들어오는 RDMA 이전은 이 QEMU 바이너리에서 지원되지 않습니다"
+
+#~ msgid "missing cpuid-register in CPU data"
+#~ msgstr "CPU 데이터에 cpuid 레지스터가 없습니다"
+
+#~ msgid "missing or invalid cpuid-input-eax in CPU data"
+#~ msgstr "CPU 데이터에 cpuid-input-eax가 없거나 잘못되었습니다"
+
+#~ msgid "missing or invalid features in CPU data"
+#~ msgstr "CPU 데이터의 누락되거나 잘못된 기능"
+
+#~ msgid "outgoing RDMA migration is not supported with this QEMU binary"
+#~ msgstr "나가는 RDMA 이전은 이 QEMU 바이너리에서는 지원되지 않습니다"
+
+#, c-format
+#~ msgid "unknown CPU register '%1$s'"
+#~ msgstr "알 수 없는 CPU 레지스터 '%1$s'"
 
 #~ msgid "Recreation"
 #~ msgstr "재정의"
