@@ -4434,13 +4434,6 @@ qemuDomainDefaultUSBControllerModelAutoAdded(const virDomainDef *def,
         }
     }
 
-    if (ARCH_IS_ARM(def->os.arch)) {
-        if (STREQ(def->os.machine, "versatilepb") ||
-            STRPREFIX(def->os.machine, "realview-eb"))
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-                return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
-    }
-
     return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
 }
 
