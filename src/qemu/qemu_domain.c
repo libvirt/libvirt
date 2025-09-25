@@ -4421,22 +4421,21 @@ virDomainControllerModelUSB
 qemuDomainDefaultUSBControllerModelAutoAdded(const virDomainDef *def,
                                              virQEMUCaps *qemuCaps)
 {
-    virDomainControllerModelUSB model = VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
-
     if (ARCH_IS_X86(def->os.arch)) {
         if (qemuDomainIsQ35(def)) {
-            /* Prefer adding a USB3 controller if supported, fall back
-             * to USB2 if there is no USB3 available, and if that's
-             * unavailable don't add anything.
-             */
+            /* Prefer qemu-xhci or nec-xhci (USB3) */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QEMU_XHCI))
-                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
-            else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
-                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
-            else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1))
-                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1;
-            else
-                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+                return VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI;
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI))
+                return VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+
+            /* Fall back to ich9-ehci1 (USB2) */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_USB_EHCI1))
+                return VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1;
+
+            /* If neither USB3 nor USB2 are available, do not add
+             * the controller at all */
+            return VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
         }
     }
 
@@ -4444,10 +4443,10 @@ qemuDomainDefaultUSBControllerModelAutoAdded(const virDomainDef *def,
         if (STREQ(def->os.machine, "versatilepb") ||
             STRPREFIX(def->os.machine, "realview-eb"))
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-                model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+                return VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
     }
 
-    return model;
+    return VIR_DOMAIN_CONTROLLER_MODEL_USB_DEFAULT;
 }
 
 
