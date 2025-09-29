@@ -28581,6 +28581,89 @@ virDomainFeatureTCGFormat(virBuffer *buf,
 }
 
 
+static void
+virDomainFeaturesHyperVDefFormat(virBuffer *buf,
+                                 const virDomainDef *def)
+{
+    virBuffer tmpChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t j;
+
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_HYPERV_MODE_NONE)
+        return;
+
+    virBufferAsprintf(buf, "<hyperv mode='%s'>\n",
+                      virDomainHyperVModeTypeToString(def->features[VIR_DOMAIN_FEATURE_HYPERV]));
+
+    for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
+        g_auto(virBuffer) hypervAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) hypervChildBuf = VIR_BUFFER_INIT_CHILD(&tmpChildBuf);
+
+        if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
+            continue;
+
+        virBufferAsprintf(&hypervAttrBuf, " state='%s'",
+                          virTristateSwitchTypeToString(def->hyperv_features[j]));
+
+        switch ((virDomainHyperv) j) {
+        case VIR_DOMAIN_HYPERV_RELAXED:
+        case VIR_DOMAIN_HYPERV_VAPIC:
+        case VIR_DOMAIN_HYPERV_VPINDEX:
+        case VIR_DOMAIN_HYPERV_RUNTIME:
+        case VIR_DOMAIN_HYPERV_SYNIC:
+        case VIR_DOMAIN_HYPERV_RESET:
+        case VIR_DOMAIN_HYPERV_FREQUENCIES:
+        case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+        case VIR_DOMAIN_HYPERV_IPI:
+        case VIR_DOMAIN_HYPERV_EVMCS:
+        case VIR_DOMAIN_HYPERV_AVIC:
+        case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
+        case VIR_DOMAIN_HYPERV_XMM_INPUT:
+            break;
+
+        case VIR_DOMAIN_HYPERV_SPINLOCKS:
+            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
+                virBufferAsprintf(&hypervAttrBuf,
+                                  " retries='%d'", def->hyperv_spinlocks);
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_STIMER:
+            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON &&
+                def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON) {
+                virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
+            }
+
+            break;
+
+        case VIR_DOMAIN_HYPERV_VENDOR_ID:
+            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
+                virBufferEscapeString(&hypervAttrBuf, " value='%s'",
+                                      def->hyperv_vendor_id);
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_TLBFLUSH:
+            if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+                break;
+
+            if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+                virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
+            if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+                virBufferAddLit(&hypervChildBuf, "<extended state='on'/>\n");
+            break;
+
+        case VIR_DOMAIN_HYPERV_LAST:
+            break;
+        }
+
+        virXMLFormatElement(&tmpChildBuf, virDomainHypervTypeToString(j),
+                            &hypervAttrBuf, &hypervChildBuf);
+    }
+
+    virBufferAddBuffer(buf, &tmpChildBuf);
+    virBufferAddLit(buf, "</hyperv>\n");
+}
+
 static int
 virDomainDefFormatFeatures(virBuffer *buf,
                            virDomainDef *def)
@@ -28678,80 +28761,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_FEATURE_HYPERV:
-            if (def->features[i] == VIR_DOMAIN_HYPERV_MODE_NONE)
-                break;
-
-            virBufferAsprintf(&childBuf, "<hyperv mode='%s'>\n",
-                              virDomainHyperVModeTypeToString(def->features[i]));
-
-            for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
-                g_auto(virBuffer) hypervAttrBuf = VIR_BUFFER_INITIALIZER;
-                g_auto(virBuffer) hypervChildBuf = VIR_BUFFER_INIT_CHILD(&tmpChildBuf);
-
-                if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
-                    continue;
-
-                virBufferAsprintf(&hypervAttrBuf, " state='%s'",
-                                  virTristateSwitchTypeToString(def->hyperv_features[j]));
-
-                switch ((virDomainHyperv) j) {
-                case VIR_DOMAIN_HYPERV_RELAXED:
-                case VIR_DOMAIN_HYPERV_VAPIC:
-                case VIR_DOMAIN_HYPERV_VPINDEX:
-                case VIR_DOMAIN_HYPERV_RUNTIME:
-                case VIR_DOMAIN_HYPERV_SYNIC:
-                case VIR_DOMAIN_HYPERV_RESET:
-                case VIR_DOMAIN_HYPERV_FREQUENCIES:
-                case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-                case VIR_DOMAIN_HYPERV_IPI:
-                case VIR_DOMAIN_HYPERV_EVMCS:
-                case VIR_DOMAIN_HYPERV_AVIC:
-                case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
-                case VIR_DOMAIN_HYPERV_XMM_INPUT:
-                    break;
-
-                case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                    if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
-                        virBufferAsprintf(&hypervAttrBuf,
-                                          " retries='%d'", def->hyperv_spinlocks);
-                    }
-                    break;
-
-                case VIR_DOMAIN_HYPERV_STIMER:
-                    if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON &&
-                        def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON) {
-                        virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
-                    }
-
-                    break;
-
-                case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                    if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
-                        virBufferEscapeString(&hypervAttrBuf, " value='%s'",
-                                              def->hyperv_vendor_id);
-                    }
-                    break;
-
-                case VIR_DOMAIN_HYPERV_TLBFLUSH:
-                    if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
-                        break;
-
-                    if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
-                        virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
-                    if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
-                        virBufferAddLit(&hypervChildBuf, "<extended state='on'/>\n");
-                    break;
-
-                case VIR_DOMAIN_HYPERV_LAST:
-                    break;
-                }
-
-                virXMLFormatElement(&tmpChildBuf, virDomainHypervTypeToString(j),
-                                    &hypervAttrBuf, &hypervChildBuf);
-            }
-
-            virBufferAddBuffer(&childBuf, &tmpChildBuf);
-            virBufferAddLit(&childBuf, "</hyperv>\n");
+            virDomainFeaturesHyperVDefFormat(&childBuf, def);
             break;
 
         case VIR_DOMAIN_FEATURE_KVM:
