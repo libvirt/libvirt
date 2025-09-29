@@ -10,8 +10,7 @@
   </os>
   <features>
     <acpi/>
-    <hyperv mode='passthrough'>
-    </hyperv>
+    <hyperv mode='passthrough'/>
   </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>

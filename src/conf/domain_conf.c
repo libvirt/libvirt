@@ -28585,18 +28585,19 @@ static void
 virDomainFeaturesHyperVDefFormat(virBuffer *buf,
                                  const virDomainDef *def)
 {
-    virBuffer tmpChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    virBuffer childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
     size_t j;
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_HYPERV_MODE_NONE)
         return;
 
-    virBufferAsprintf(buf, "<hyperv mode='%s'>\n",
+    virBufferAsprintf(&attrBuf, " mode='%s'",
                       virDomainHyperVModeTypeToString(def->features[VIR_DOMAIN_FEATURE_HYPERV]));
 
     for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
         g_auto(virBuffer) hypervAttrBuf = VIR_BUFFER_INITIALIZER;
-        g_auto(virBuffer) hypervChildBuf = VIR_BUFFER_INIT_CHILD(&tmpChildBuf);
+        g_auto(virBuffer) hypervChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
 
         if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
             continue;
@@ -28656,13 +28657,13 @@ virDomainFeaturesHyperVDefFormat(virBuffer *buf,
             break;
         }
 
-        virXMLFormatElement(&tmpChildBuf, virDomainHypervTypeToString(j),
+        virXMLFormatElement(&childBuf, virDomainHypervTypeToString(j),
                             &hypervAttrBuf, &hypervChildBuf);
     }
 
-    virBufferAddBuffer(buf, &tmpChildBuf);
-    virBufferAddLit(buf, "</hyperv>\n");
+    virXMLFormatElement(buf, "hyperv", &attrBuf, &childBuf);
 }
+
 
 static int
 virDomainDefFormatFeatures(virBuffer *buf,
