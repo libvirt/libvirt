@@ -5065,7 +5065,7 @@ virQEMUCapsFormatHypervCapabilities(virQEMUCaps *qemuCaps,
         size_t i;
 
         for (i = 0; i < sizeof(hvcaps->features.values) * CHAR_BIT; i++) {
-            if (!(hvcaps->features.values & (1U << i)))
+            if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(hvcaps->features, i))
                 continue;
 
             virBufferAsprintf(&childBuf, "<cap name='%s'/>\n",
