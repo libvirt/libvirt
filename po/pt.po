@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-09-24 17:06+0000\n"
+"PO-Revision-Date: 2025-09-29 00:36+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -1507,7 +1507,7 @@ msgstr ""
 "'pool' e 'volume' têm de ser especificados juntamente para fonte tipo 'pool'"
 
 msgid "'qom-list-get' returned unexpected number of paths"
-msgstr ""
+msgstr "'qom-list-get' retornou número inesperado de caminhos"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
@@ -1944,7 +1944,7 @@ msgid "ACPI index is only supported for PCI devices"
 msgstr "Índice ACPI é apenas suportado para dispositivos PCI"
 
 msgid "ACPI nodeset is not supported with this QEMU"
-msgstr ""
+msgstr "conjunto de nós ACPI não é suportado por este QEMU"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI requer UEFI nesta arquitectura"
@@ -2085,7 +2085,7 @@ msgid "Added"
 msgstr "Adicionado"
 
 msgid "Adding disk to domain failed"
-msgstr ""
+msgstr "Falhou ao adicionar disco a domínio"
 
 msgid "Address"
 msgstr "Endereço"
@@ -2177,7 +2177,7 @@ msgstr ""
 "existente"
 
 msgid "Assigning disk alias failed"
-msgstr ""
+msgstr "Falhou a atribuição de nome alternativo a disco"
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Pelo menos um nó NUMA tem de ter CPUs"
@@ -3013,6 +3013,8 @@ msgid ""
 "Cannot automatically add a new PCI bus for a device with unrecognized "
 "connect flags %1$.2x"
 msgstr ""
+"Não pode adicionar automaticamente um novo barramento PCI para um "
+"dispositivo com bandeiras de ligação desconhecidas %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4350,7 +4352,7 @@ msgid "Core(s) per socket:"
 msgstr "Núcleos por 'socket':"
 
 msgid "Could detach device"
-msgstr ""
+msgstr "Não pude desanexar dispositivo"
 
 #, c-format
 msgid "Could find volume with name: %1$s"
@@ -4404,7 +4406,7 @@ msgid "Could not build CURL header list"
 msgstr "Não pude compilar lista de cabeçalho CURL"
 
 msgid "Could not build disk json"
-msgstr ""
+msgstr "Não pude compilar json de disco"
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4788,7 +4790,7 @@ msgstr "Não pude obter memória livre para máquina %1$s"
 
 #, c-format
 msgid "Could not get index of disk '%1$s'"
-msgstr ""
+msgstr "Não pude obter índice de disco '%1$s'"
 
 #, c-format
 msgid "Could not get instance ID for %1$s invocation"
@@ -5115,7 +5117,7 @@ msgid "Could not parse chain priority '%1$s'"
 msgstr "Não pude analisar prioridade de string '%1$s'"
 
 msgid "Could not parse domain definition"
-msgstr ""
+msgstr "Não pude analisar definição de domínio"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -7077,7 +7079,7 @@ msgid "Failed to add capability %1$s: %2$d"
 msgstr "Falhou ao adicionar capacidade %1$s: %2$d"
 
 msgid "Failed to add device"
-msgstr ""
+msgstr "Falhou ao adicionar dispositivo"
 
 #, c-format
 msgid ""
@@ -7171,10 +7173,10 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "Falhou ao vincular socket a '%1$s'"
 
 msgid "Failed to build QEMU command line for acpi-generic-initiator"
-msgstr ""
+msgstr "Falhou ao compilar linha de comandos QEMU para iniciador-genérico-acpi"
 
 msgid "Failed to build acpi-generic-initiator properties"
-msgstr ""
+msgstr "Falhou ao compilar propriedades de iniciador-genérico-acpi"
 
 msgid "Failed to build net json"
 msgstr "Falhou ao compilar net json"
@@ -10344,7 +10346,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid HTTP response code from CH: %1$d"
-msgstr ""
+msgstr "Código de resposta HTTP inválido de CH: %1$d"
 
 #, c-format
 msgid "Invalid IOThread id value: '%1$d'"
@@ -11013,7 +11015,7 @@ msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl inválido"
 
 msgid "Invalid response from CH. Disk removal failed."
-msgstr ""
+msgstr "Resposta inválida de CH. Remoção de disco falhou."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -12188,7 +12190,7 @@ msgid "Missing device name for container-side veth"
 msgstr "Nome de dispositivo a faltar para veth do lado-do-contentor"
 
 msgid "Missing disk alias"
-msgstr ""
+msgstr "nome alternativo de disco em falta"
 
 msgid "Missing disk file path in domain"
 msgstr "Caminho de ficheiro de disco em falta em domínio"
@@ -14264,7 +14266,7 @@ msgid "Persistent"
 msgstr "Persistente"
 
 msgid "Persistent domain state changes are not supported"
-msgstr ""
+msgstr "Alterações de estado de domínio persistente não são suportadas"
 
 msgid "Persistent:"
 msgstr "Persistente:"
@@ -17434,6 +17436,8 @@ msgid ""
 "The 'fqdn' attribute of the <backend> element can only be used with the "
 "<backend> type='passt'"
 msgstr ""
+"O atributo 'fqdn' do elemento <backend> só pode ser usado com o <backend> do "
+"tipo='passt'"
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -22075,12 +22079,16 @@ msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
+"uma slot PCIe é precisa para ligar um controlador PCI modelo='%1$s', mas "
+"nenhuma está disponível, e não pode ser adicionada automaticamente"
 
 #, c-format
 msgid ""
 "a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
 "but none is available, and it cannot be automatically added"
 msgstr ""
+"uma slot PCI convencional é precisa para ligar um controlador PCI modelo='%1$"
+"s', mas nenhuma está disponível, e não pode ser adicionada automaticamente"
 
 msgid "a device with the same address already exists "
 msgstr "já existe um dispositivo com o mesmo endereço "
@@ -29723,7 +29731,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "resposta de guest-get-vcpus tinha em falta dados de retorno"
 
 msgid "guest:"
-msgstr ""
+msgstr "convidado:"
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset não é suportado com esta versão de QEMU"
@@ -34458,6 +34466,8 @@ msgstr "nenhum nwfilter com uuid correspondente '%1$s'"
 msgid ""
 "no panic model provided, and no default for the architecture and machine type"
 msgstr ""
+"nenhum modelo de pânico fornecido, e nenhuma predefinição para a "
+"arquitectura e tipo de máquina"
 
 msgid "no parent for this device"
 msgstr "nenhum pai para este dispositivo"
@@ -34573,7 +34583,7 @@ msgid "no such screen ID"
 msgstr "nenhum tal ID de ecrã"
 
 msgid "no suitable callback authentication callback was found"
-msgstr ""
+msgstr "nenhuma chamada de retorno de autenticação apropriada foi encontrada"
 
 msgid "no suitable callback for host key verification"
 msgstr ""
@@ -34607,26 +34617,26 @@ msgid "no tls service found, unable to update tls files"
 msgstr "nenhum serviço tls encontrado, incapaz de atualizar ficheiros tls"
 
 msgid "no transaction running, nothing to be committed."
-msgstr ""
+msgstr "nenhuma transação a correr, nada a ser cometido."
 
 msgid "no transaction running, nothing to rollback."
-msgstr ""
+msgstr "nenhuma transação a correr, nada a retroceder."
 
 #, c-format
 msgid "no unused %1$s names available"
-msgstr ""
+msgstr "nenhuns nomes %1$s não usados disponíveis"
 
 msgid "no valid connection"
 msgstr "sem ligação válida"
 
 msgid "no valid netlink response was received"
-msgstr ""
+msgstr "nenhuma resposta netlink válida foi recebida"
 
 msgid "no vcpus selected for modification"
-msgstr ""
+msgstr "nenhumas vcpus selecionadas para modificação"
 
 msgid "no virtio-serial controllers are available"
-msgstr ""
+msgstr "nenhuns controladores virtio-série disponíveis"
 
 msgid "no x86 CPU data found"
 msgstr "nenhuns dados de CPU x86 encontrados"
@@ -34636,71 +34646,73 @@ msgid ""
 "node '%1$s' has unexpected NULL content. This could be caused by malformed "
 "input, or a memory allocation failure"
 msgstr ""
+"nó '%1$s' tem conteúdo NULO inesperado. Isto pode ser causado por entrada "
+"mal formada, ou uma falha de alocação de memória"
 
 #, c-format
 msgid "node '%1$s' has unexpected type %2$d"
-msgstr ""
+msgstr "nó '%1$s' tem tipo inesperado %2$d"
 
 msgid "node CPU stats not implemented on this platform"
-msgstr ""
+msgstr "estatísticas de CPU de nó não implementadas nesta plataforma"
 
 msgid "node SEV information"
 msgstr "informação do nó SEV"
 
 msgid "node cpu info not implemented on this platform"
-msgstr ""
+msgstr "informação de CPU de nó não implementada nesta plataforma"
 
 msgid "node cpu map"
-msgstr ""
+msgstr "mapa de cpu de nó"
 
 #, c-format
 msgid "node device '%1$s' in %2$s must match connection"
-msgstr ""
+msgstr "dispositivo de nó '%1$s' em %2$s tem de corresponder a ligação"
 
 #, c-format
 msgid "node device '%1$s' is not persistent"
-msgstr ""
+msgstr "dispositivo de nó '%1$s' não é persistente"
 
 msgid "node device details in XML"
-msgstr ""
+msgstr "detalhes de dispositivo de nó em XML"
 
 #, c-format
 msgid "node device event callback %1$d not registered"
-msgstr ""
+msgstr "chamada de retorno de evento de dispositivo de nó %1$d não registrado"
 
 msgid "node device information"
-msgstr ""
+msgstr "informação de dispositivo de nó"
 
 msgid "node device is not active"
-msgstr ""
+msgstr "dispositivo de nó não está activo"
 
 msgid "node get memory parameters not implemented on this platform"
-msgstr ""
+msgstr "obter de parâmetros de memória de nó não implementado nesta plataforma"
 
 msgid "node info not implemented on this platform"
-msgstr ""
+msgstr "informação de nó não implementada nesta plataforma"
 
 msgid "node information"
 msgstr "informação do nó"
 
 msgid "node memory stats not implemented on this platform"
-msgstr ""
+msgstr "estatísticas de memória de nó não implementadas nesta plataforma"
 
 msgid "node online CPU map not implemented on this platform"
-msgstr ""
+msgstr "mapa de CPU online de nó não implementado nesta plataforma"
 
 msgid "node present CPU map not implemented on this platform"
-msgstr ""
+msgstr "mapa de CPU presente de nó não implementado nesta plataforma"
 
 msgid "node set memory parameters not implemented on this platform"
-msgstr ""
+msgstr "definir parâmetros de memória de nó não implementado nesta plataforma"
 
 #, c-format
 msgid "node-name '%1$s' too long for qemu"
-msgstr ""
+msgstr "nome de nó '%1$s' demasiado longo para o qemu"
 
 msgid "nodedev state driver is not active"
-msgstr ""
+msgstr "controlador de estado de dispositivo de nó não está activo"
 
 #, c-format
 msgid "nodeset attribute of hugepages of sizes %1$llu and %2$llu intersect"
@@ -34708,36 +34720,39 @@ msgstr ""
 
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
+"conjunto de nó para afinação de memória NUMA tem de ser definido se "
+"'placement' for 'static'"
 
 #, c-format
 msgid "non unique alias detected: %1$s"
-msgstr ""
+msgstr "nenhum nome alternativo único detectado: %1$s"
 
 #, c-format
 msgid "non-shared storage migration into '%1$s' target is not supported"
 msgstr ""
+"migração de armazenamento não partilhado para alvo '%1$s' não é suportada"
 
 msgid "nonzero ncpus doesn't match with NULL cpus"
-msgstr ""
+msgstr "ncpus não-zero não correspondem com cpus NULAS"
 
 msgid "nonzero ncpus doesn't match with NULL xmlCPUs"
-msgstr ""
+msgstr "ncpus não-zero não correspondem com xmlCPUs NULAS"
 
 #, c-format
 msgid "not a hugetlbfs mount: '%1$s'"
-msgstr ""
+msgstr "não é uma montagem hugetlbfs: '%1$s'"
 
 msgid "not specified"
 msgstr "não especificado"
 
 msgid "not supported on non-linux platforms"
-msgstr ""
+msgstr "não suportado em plataformas não-linux"
 
 msgid "nothing selected for snapshot"
-msgstr ""
+msgstr "nada selecionado para instantâneo"
 
 msgid "notify server to update TLS related files online."
-msgstr ""
+msgstr "notifica servidor para atualizar ficheiros relacionados com TLS online."
 
 msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
@@ -34746,67 +34761,71 @@ msgstr ""
 
 #, c-format
 msgid "nparams count exceeds maximum: %1$u > %2$u"
-msgstr ""
+msgstr "contagem de nparams excede o máximo: %1$u > %2$u"
 
 #, c-format
 msgid "nparams in %1$s must be %2$d"
-msgstr ""
+msgstr "nparams em %1$s tem de ser %2$d"
 
 #, c-format
 msgid "nparams in %1$s must be equal to %2$d"
-msgstr ""
+msgstr "nparams em %1$s tem de ser igual a %2$d"
 
 msgid "nparams must be non-negative"
-msgstr ""
+msgstr "nparams tem de ser não-negativo"
 
 msgid "nparams too large"
-msgstr ""
+msgstr "nparams demasiado grande"
 
 msgid "numa parameters are not supported by vz driver"
-msgstr ""
+msgstr "parâmetros numa não são suportados pelo controlador vz"
 
 msgid "numad is not available on this host"
-msgstr ""
+msgstr "numad não está disponível nesta máquina"
 
 msgid "number of IO channels to use for parallel restore"
-msgstr ""
+msgstr "número de canais IO a usar para restauro paralelo"
 
 msgid "number of IO channels to use for parallel save"
-msgstr ""
+msgstr "número de canais IO a usar para salva paralela"
 
 msgid "number of bytes read:"
-msgstr ""
+msgstr "número de bytes lidos:"
 
 msgid "number of bytes written:"
-msgstr ""
+msgstr "número de bytes escritos:"
 
 msgid "number of compression threads for multithread compression"
-msgstr ""
+msgstr "número de linhas de compressão para compressão multi-linha de execução"
 
 msgid "number of connections for parallel migration"
-msgstr ""
+msgstr "número de ligações para migração paralela"
 
 msgid "number of decompression threads for multithread compression"
 msgstr ""
+"úmero de linhas de descompressão para compressão multi-linha de execução"
 
 msgid "number of flush operations:"
-msgstr ""
+msgstr "número de operações de lavagem:"
 
 msgid ""
 "number of millisecs the shared memory service should sleep before next scan"
 msgstr ""
+"número de milissegundos que o serviço de memória partilhada deve dormir "
+"antes da próxima sondagem"
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
 msgstr ""
+"número de páginas a sondar antes do serviço de memória partilhada adormecer"
 
 msgid "number of parallel save channels cannot be less than 1"
-msgstr ""
+msgstr "o número de canais de salva paralela não pode ser menor que 1"
 
 msgid "number of read operations:"
-msgstr ""
+msgstr "número de operações de leitura:"
 
 msgid "number of seconds the daemon will run without any active connection"
-msgstr ""
+msgstr "número de segundos que o daemon irá correr sem nenhuma ligação activa"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
 msgstr ""
@@ -34815,60 +34834,61 @@ msgid "number of virtual CPUs"
 msgstr "número de CPUs virtuais"
 
 msgid "number of write operations:"
-msgstr ""
+msgstr "número de operações de escrita:"
 
 msgid "numbers not allowed in VMX format"
-msgstr ""
+msgstr "números não permitidos em formato VMX"
 
 msgid "numeric overflow in conf value"
-msgstr ""
+msgstr "transbordo numérico em valor de configuração"
 
 msgid "numerical overflow"
-msgstr ""
+msgstr "transbordo numérico"
 
 #, c-format
 msgid "numerical overflow: %1$s"
-msgstr ""
+msgstr "transbordo numérico: %1$s"
 
 msgid "nvcpus is zero"
-msgstr ""
+msgstr "nvcpus é zero"
 
 msgid "nvdimm isn't supported by this QEMU binary"
-msgstr ""
+msgstr "nvdimm não é suportado por este binário QEMU"
 
 msgid "nvdimm label must be at least 128KiB"
-msgstr ""
+msgstr "etiqueta nvdimm tem de ter pelo menos 128KiB"
 
 msgid "nvdimm pmem property is not available with this QEMU binary"
-msgstr ""
+msgstr "propriedade pmem de nvdimm não está disponível com este binário QEMU"
 
 msgid "nvdimm readonly property is not available with this QEMU binary"
 msgstr ""
+"propriedade readonly de nvdimm não está disponível com este binário QEMU"
 
 msgid "nvram address type must be spaprvio"
-msgstr ""
+msgstr "tipo de endereço nvram tem de ser spaprvio"
 
 msgid "nvram device is not supported by this QEMU binary"
 msgstr "dispositivo nvram não é suportado por este binário QEMU"
 
 msgid "nvram device is only supported for PPC64"
-msgstr ""
+msgstr "dispositivo nvram é apenas suportado para PPC64"
 
 msgid "nwfilter is in use"
-msgstr ""
+msgstr "nwfilter está em uso"
 
 msgid "nwfilter state driver is not active"
-msgstr ""
+msgstr "controlador de estado nwfilter não está activo"
 
 msgid "object props can't be NULL"
-msgstr ""
+msgstr "propriedades de objeto não podem ser NULAS"
 
 #, c-format
 msgid "object size %1$zu of %2$s is not larger than parent class %3$zu"
-msgstr ""
+msgstr "tamanho de objeto %1$zu de %2$s não é maior que a classe pai %3$zu"
 
 msgid "occupied"
-msgstr ""
+msgstr "ocupado"
 
 msgid "offline"
 msgstr "offline"
@@ -34877,195 +34897,213 @@ msgid "offline migration"
 msgstr "migração offline"
 
 msgid "offline migration cannot handle non-shared storage"
-msgstr ""
+msgstr "migração offline não pode lidar com armazenamento não partilhado"
 
 msgid "offline migration is not supported by the destination host"
-msgstr ""
+msgstr "migração offline não é suportada pela máquina de destino"
 
 msgid "offline migration is not supported by the source host"
-msgstr ""
+msgstr "migração offline não é suportada pela máquina fonte"
 
 msgid "offline migration must be specified with the persistent flag set"
 msgstr ""
+"migração offline tem de ser especificada com o conjunto de bandeiras "
+"persistentes"
 
 msgid "ok"
-msgstr ""
+msgstr "certo"
 
 msgid "old qcow/qcow2 encryption is not supported"
-msgstr ""
+msgstr "encriptação antiga qcow/qcow2 não é suportada"
 
 msgid ""
 "on_reboot, on_poweroff and on_crash parameters are not supported by vz driver"
 msgstr ""
+"parâmetros on_reboot, on_poweroff e on_crash não são suportados pelo "
+"controlador vz"
 
 msgid "one of --enable, --disable is required"
-msgstr ""
+msgstr "um de --enable, --disable é requerido"
 
 msgid "one of --list, --all, or --event <type> is required"
-msgstr ""
+msgstr "um de <tipo> --list, --all, ou --event é requerido"
 
 msgid "online non-hotpluggable vcpus must be ordered in ascending order"
 msgstr ""
+"vcpus de não-ligação-a-quente online têm de ser ordenadas em ordem crescente"
 
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotpluggable vcpus"
 msgstr ""
+"vcpus de não-ligação-a-quente online têm de ser ordenadas antes das vcpus de "
+"ligação-a-quente"
 
 msgid "only 'connect' mode is supported for external TPM device"
-msgstr ""
+msgstr "apenas o modo 'connect' é suportado para dispositivo TPM externo"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
-msgstr ""
+msgstr "apenas endereços 'dimm' são suportados para o dispositivo pc-dimm"
 
 msgid "only 'file' type is supported with NVRAM"
-msgstr ""
+msgstr "apenas o tipo 'file' é suportado com NVRAM"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr ""
+"apenas endereços 'pci' são suportados para o dispositivo de memória "
+"partilhada"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
-msgstr ""
+msgstr "apenas endereços 'pci' são suportados para o dispositivo virtio-pmem"
 
 #, c-format
 msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
-msgstr ""
+msgstr "apenas endereços 'pci' e 'ccw' são suportados para o dispositivo %1$s"
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
-msgstr ""
+msgstr "apenas 'block' nvram de apoio formatado em 'qcow2' pode ser formatado"
 
 msgid "only 'raw' images supported as <dataStore>"
-msgstr ""
+msgstr "apenas imagens 'raw' suportadas como <dataStore>"
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus, rdp) "
 "is supported"
 msgstr ""
+"Apenas 1 dispositivo gráfico para cada tipo (sdl, vnc, spice, headless, "
+"dbus, rdp) é suportado"
 
 msgid "only JSON objects can be top level"
-msgstr ""
+msgstr "apenas objetos JSON podem ser nível de topo"
 
 msgid "only RAW volumes are supported by this storage pool"
-msgstr ""
+msgstr "apenas volumes RAW são suportados por este pool de armazenamento"
 
 msgid "only S390 guests support panic device of model 's390'"
-msgstr ""
+msgstr "apenas convidados S390 suportam dispositivo de pânico do modelo 's390'"
 
 msgid "only TCP protocol can be converted to InetSocketAddress"
-msgstr ""
+msgstr "apenas protocolo TCP pode ser convertido em InetSocketAddress"
 
 msgid "only TCP transport is supported for iSCSI volumes"
-msgstr ""
+msgstr "apenas transporte TCP 'suportado para volumes iSCSI"
 
 msgid "only USB input devices are supported"
-msgstr ""
+msgstr "apenas dispositivos de entrada USB são suportados"
 
 msgid "only a single IOMMU device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo IOMMU é suportado"
 
 msgid "only a single QGS element is supported"
-msgstr ""
+msgstr "apenas um único elemento QGS é suportado"
 
 msgid "only a single TPM Proxy device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo de Proxy TPM é suportado"
 
 msgid "only a single TPM non-proxy device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo não-proxy TPM é suportado"
 
 msgid "only a single memory balloon device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo de balão de memória é suportado"
 
 msgid "only a single nvram device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo nvram é suportado"
 
 msgid "only a single pstore device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo pstore é suportado"
 
 msgid "only a single vsock device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo vsock é suportado"
 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr ""
+"apenas barramento 'virtio' é suportado para dispositivos de entrada "
+"'passthrough'"
 
 #, c-format
 msgid "only bus 'virtio' is supported for input model '%1$s'"
-msgstr ""
+msgstr "apenas barramento 'virtio' é suportado para modelo de entrada '%1$s'"
 
 msgid "only can reboot running/paused domain"
-msgstr ""
+msgstr "apenas pode reiniciar domínio em execução/em pausa"
 
 msgid "only can resume paused domain"
-msgstr ""
+msgstr "apenas se pode retomar domínio em pausa"
 
 msgid "only can save running/paused domain"
-msgstr ""
+msgstr "apenas pode salvar domínio em execução/em pausa"
 
 msgid "only can shutdown running/paused domain"
-msgstr ""
+msgstr "apenas pode encerrar domínio em execução/em pausa"
 
 msgid "only can suspend running domain"
-msgstr ""
+msgstr "apenas pode suspender domínio em execução"
 
 msgid "only connect if safe console handling is supported"
-msgstr ""
+msgstr "apenas liga se o manuseamento de consola segura for suportado"
 
 #, c-format
 msgid ""
 "only cpu feature policies 'require' and 'disable' are supported for %1$s"
 msgstr ""
+"apenas as políticas de funcionalidade de cpu 'require' e 'disable' são "
+"suportadas para %1$s"
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
 msgstr ""
+"apenas convidados i686 e x86_64 suportam dispositivo de pânico do modelo "
+"'hyperv'"
 
 msgid "only list pool of specified type(s) (if supported)"
-msgstr ""
+msgstr "apenas lista pool dos tipo(s) especificados (se suportado)"
 
 msgid "only model 'netfront' is supported for Xen PV(H) domains"
-msgstr ""
+msgstr "apenas modelo 'netfront' é suportado para domínios Xen PV(H)"
 
 msgid "only nmdm console types are supported"
-msgstr ""
+msgstr "apenas tipos de consolas nmdm são suportados"
 
 msgid "only one RNG backend is supported"
-msgstr ""
+msgstr "apenas um backend RNG é suportado"
 
 msgid "only one TPM backend is supported"
-msgstr ""
+msgstr "apenas um backend TPM é suportado"
 
 msgid "only one backup job is supported"
-msgstr ""
+msgstr "apenas um trabalho de salvaguarda é suportado"
 
 msgid "only one crypto backend is supported"
-msgstr ""
+msgstr "apenas um backend de encriptação é suportado"
 
 msgid "only one emulatorpin is supported"
-msgstr ""
+msgstr "apenas um emulatorpin é suportado"
 
 msgid "only one emulatorsched is supported"
-msgstr ""
+msgstr "apenas um emulatorsched é suportado"
 
 msgid "only one filesystem supported"
-msgstr ""
+msgstr "apenas um sistema de ficheiros suportado"
 
 msgid "only one hotpluggable entity can be selected"
-msgstr ""
+msgstr "apenas uma entidade de ligação-a-quente pode ser selecionada"
 
 msgid "only one log element is allowed for character device"
-msgstr ""
+msgstr "apenas um elemento de registo é permitido para dispositivo de caractere"
 
 msgid "only one numatune is supported"
-msgstr ""
+msgstr "apenas um numatune é suportado"
 
 msgid "only one protocol element is allowed for character device"
 msgstr ""
+"apenas um elemento de protocolo é permitido para dispositivo de caractere"
 
 msgid "only one resource element is supported"
-msgstr ""
+msgstr "apenas um elemento de recurso é suportado"
 
 msgid "only one set of redirection filter rule is supported"
-msgstr ""
+msgstr "apenas um conjunto de regras de filtro de redireção é suportado"
 
 msgid "only one source element is allowed for character device"
-msgstr ""
+msgstr "apenas um elemento de fonte é permitido para dispositivo de caractere"
 
 msgid "only one source host address may be specified for the iSCSI hostdev"
 msgstr ""
@@ -35081,7 +35119,7 @@ msgid "only sending a signal to pid 1 is supported"
 msgstr ""
 
 msgid "only single ISA controller is supported"
-msgstr ""
+msgstr "apenas um único controlador ISA é suportado"
 
 msgid "only single USB controller is supported"
 msgstr ""
