@@ -15,7 +15,7 @@
 # Di Wei <dwlinux@outlook.com>, 2019
 # Pany <geekpany@gmail.com>, 2021.
 # Ludek Janda <ljanda@redhat.com>, 2022, 2023.
-# zhanchun li <lzc777@126.com>, 2022.
+# zhanchun li <lzc777@126.com>, 2022, 2025.
 # Yang Yulin <yylteam@icloud.com>, 2022, 2023.
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
@@ -31,8 +31,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-09-16 09:31+0000\n"
-"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
+"PO-Revision-Date: 2025-09-28 10:28+0000\n"
+"Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -15227,7 +15227,7 @@ msgid "Socket path %1$s too big for destination"
 msgstr "对于目标来说套接字路径 %1$s 过大"
 
 msgid "Sockets:"
-msgstr "套接字"
+msgstr "套接字:"
 
 msgid "Some activation file descriptors are unclaimed"
 msgstr "有些激活文件描述符未声明"
@@ -16601,12 +16601,12 @@ msgstr "CA 证书 %1$s 已过期"
 msgid "The CA certificate %1$s is not yet active"
 msgstr "CA 证书 %1$s 还为激活"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
-"所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行:  chown root.root %2$s;"
+"所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行: chown root.root %2$s;"
 "chmod 0644 %3$s"
 
 #, fuzzy, c-format
@@ -35511,10 +35511,10 @@ msgstr "只有 scsi 主机设备支持 sgio"
 msgid "sgx epc isn't supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 sgx epc"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "sgx epc size %1$lld on host node %2$d is less than requested size %3$lld"
-msgstr "主机节点 %d 上的 sgx epc 大小 %lld 小于请求的大小 %lld"
+msgstr "主机节点 %2$d 上的 sgx epc 大小 %1$lld 小于请求的大小 %3$lld"
 
 #, fuzzy, c-format
 msgid ""
