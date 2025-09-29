@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-08-29 14:37+0000\n"
+"PO-Revision-Date: 2025-09-27 07:52+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.13.3\n"
 
 msgid ""
 "\n"
@@ -1477,7 +1477,7 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' 유형 소스의 'pool' 및 'volume'을 함께 지정해야 합니다"
 
 msgid "'qom-list-get' returned unexpected number of paths"
-msgstr ""
+msgstr "'qom-list-get' 이 예상치 못한 경로 수를 반환했습니다"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 상수는 명백한 iothread를 대기열 대응을 위해 구성되어야 합니다"
@@ -1923,7 +1923,7 @@ msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI 지수는 오직 PCI 장치에서만 지원됩니다"
 
 msgid "ACPI nodeset is not supported with this QEMU"
-msgstr ""
+msgstr "ACPI 노드셋은 이 QEMU를 지원하지 않습니다"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI는 이 구조(아키텍쳐)에서 UEFI가 필요합니다"
@@ -2062,7 +2062,7 @@ msgid "Added"
 msgstr "추가됨"
 
 msgid "Adding disk to domain failed"
-msgstr ""
+msgstr "도메인에 디스크 추가를 실패함"
 
 msgid "Address"
 msgstr "주소"
@@ -2150,7 +2150,7 @@ msgid ""
 msgstr "memnode 요소 하에서 인수는 기존 게스트 NUMA cell과 일치하지 않습니다"
 
 msgid "Assigning disk alias failed"
-msgstr ""
+msgstr "디스크 별칭 할당하기를 실패함"
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "적어도 하나 이상의 NUMA 노드는 CPU를 가져야 합니다"
@@ -2968,7 +2968,7 @@ msgstr "초기 PID를 찾을때까지 hostdev를 첨부할 수 없습니다"
 msgid ""
 "Cannot automatically add a new PCI bus for a device with unrecognized "
 "connect flags %1$.2x"
-msgstr ""
+msgstr "미인식 연결 플래그 %1$.2x 용 신규 PCI 버스를 자동으로 추가 할 수 없습니다"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -4265,7 +4265,7 @@ msgid "Core(s) per socket:"
 msgstr "소켓당 코어:"
 
 msgid "Could detach device"
-msgstr ""
+msgstr "장치를 분리 할 수 있습니다"
 
 #, c-format
 msgid "Could find volume with name: %1$s"
@@ -4319,7 +4319,7 @@ msgid "Could not build CURL header list"
 msgstr "CURL 헤더 목록을 빌드할 수 없음"
 
 msgid "Could not build disk json"
-msgstr ""
+msgstr "디스크 json을 제작 할 수 없습니다"
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4698,7 +4698,7 @@ msgstr "호스트 %1$s에 대한 사용 가능한 메모리를 가져올 수 없
 
 #, c-format
 msgid "Could not get index of disk '%1$s'"
-msgstr ""
+msgstr "디스크 '%1$s' 의 개요를 가져 올 수 없습니다"
 
 #, c-format
 msgid "Could not get instance ID for %1$s invocation"
@@ -5021,7 +5021,7 @@ msgid "Could not parse chain priority '%1$s'"
 msgstr "체인 우선 순위 '%1$s'를 구문 분석 할 수 없음"
 
 msgid "Could not parse domain definition"
-msgstr ""
+msgstr "도매인 정의를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6936,7 +6936,7 @@ msgid "Failed to add capability %1$s: %2$d"
 msgstr "기능 추가에 실패 %1$s: %2$d"
 
 msgid "Failed to add device"
-msgstr ""
+msgstr "장치를 추가하는 데 실패함"
 
 #, c-format
 msgid ""
@@ -7029,10 +7029,10 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 바인딩하지 못했습니다"
 
 msgid "Failed to build QEMU command line for acpi-generic-initiator"
-msgstr ""
+msgstr "acpi-generic-initator 용 QEMU 명령 줄 제작에 실패함"
 
 msgid "Failed to build acpi-generic-initiator properties"
-msgstr ""
+msgstr "acpi-generic-initiator 속성을 제작하는 데 실패함"
 
 msgid "Failed to build net json"
 msgstr "net json 제작에 실패함"
@@ -10156,7 +10156,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid HTTP response code from CH: %1$d"
-msgstr ""
+msgstr "CH에서 잘못된 HTTP 응답 코드: %1$d"
 
 #, c-format
 msgid "Invalid IOThread id value: '%1$d'"
@@ -10812,7 +10812,7 @@ msgid "Invalid resctrl monitor"
 msgstr "잘못된 resctrl 모니터"
 
 msgid "Invalid response from CH. Disk removal failed."
-msgstr ""
+msgstr "CH에서 잘못된 응답. 디스크 제거가 실패했습니다."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11954,7 +11954,7 @@ msgid "Missing device name for container-side veth"
 msgstr "컨테이너 측 veth에 대한 장치 이름 누락"
 
 msgid "Missing disk alias"
-msgstr ""
+msgstr "누락된 디스크 별칭"
 
 msgid "Missing disk file path in domain"
 msgstr "도메인에 디스크 파일 경로가 없습니다"
@@ -13970,7 +13970,7 @@ msgid "Persistent"
 msgstr "영구적"
 
 msgid "Persistent domain state changes are not supported"
-msgstr ""
+msgstr "영구적인 도메인 상태 변경은 지원되지 않습니다"
 
 msgid "Persistent:"
 msgstr "영구적:"
@@ -16978,7 +16978,8 @@ msgstr ""
 msgid ""
 "The 'fqdn' attribute of the <backend> element can only be used with the "
 "<backend> type='passt'"
-msgstr ""
+msgstr "<backend> 요소의 'fqdn' 속성은 <backend> type='passt '으로만 사용 될 수 "
+"있습니다"
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -21534,12 +21535,16 @@ msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
+"PCIE 슬롯은 PCI 제어기 모델='%1$s' 을 연결하는 데 필요하지만, 아무 것도 사용 "
+"할 수 없어, 자동으로 추가 될 수 없습니다"
 
 #, c-format
 msgid ""
 "a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
 "but none is available, and it cannot be automatically added"
 msgstr ""
+"기존 PCI 슬롯은 PCI 제어기 모델='%1$s' 을 연결하는 데 필요하지만, 아무 것도 "
+"사용 할 수 없어, 자동으로 추가 될 수 없습니다"
 
 msgid "a device with the same address already exists "
 msgstr "동일한 주소를 가진 장치가 이미 존재합니다 "
@@ -28989,7 +28994,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 응답에 반환 데이터가 누락되었습니다"
 
 msgid "guest:"
-msgstr ""
+msgstr "게스트:"
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset는 이와 같은 QEMU 버전에서 지원되지 않습니다"
@@ -35002,7 +35007,7 @@ msgstr "네트워크 %1$s의 DNS TXT 레코드 이름 '%2$s'에 금지된 문자
 
 #, c-format
 msgid "property '%1$s' in reply data was missing value"
-msgstr ""
+msgstr "응답 자료에서 속성 '%1$s' 에는 누락된 값이 있습니다"
 
 msgid "property with name 'id' can't be overridden"
 msgstr "이름 'id'를 갖는 특성은 재지정 할 수 없습니다"
@@ -35599,7 +35604,7 @@ msgid "reply data was missing 'option' name or parameters"
 msgstr "응답 데이터에 '옵션' 이름 또는 매개변수가 누락되었습니다"
 
 msgid "reply data was missing 'properties' array"
-msgstr ""
+msgstr "응답 자료에 누락된 'properties' 배열이 있습니다"
 
 msgid "reply was missing return data"
 msgstr "회신에 반환 데이터가 누락되었습니다"
