@@ -2189,6 +2189,12 @@ are:
       virtual CPU may or may not contain features which may block migration
       even to an identical host.
 
+   ``host-model``
+      Similar to the ``passthrough`` mode, except libvirt detects which
+      enlightenments are supported by hypervisor and expands them on domain
+      startup into the live XML. In a sense, this is similar to ``host-model``
+      CPU mode (See `CPU model and topology`_). :since:`Since 11.9.0`
+
    The ``mode`` attribute can be omitted and will default to ``custom``.
 
 ``pvspinlock``

@@ -599,6 +599,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
                 libxl_bitmap_set_any(&b_info->u.hvm.viridian_enable);
                 break;
+            case VIR_DOMAIN_HYPERV_MODE_HOST_MODEL:
             case VIR_DOMAIN_HYPERV_MODE_NONE:
             case VIR_DOMAIN_HYPERV_MODE_LAST:
             default:

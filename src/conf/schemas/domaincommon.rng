@@ -8030,6 +8030,9 @@
         <attribute name="mode">
           <value>passthrough</value>
         </attribute>
+        <attribute name="mode">
+          <value>host-model</value>
+        </attribute>
         <group>
           <optional>
             <attribute name="mode">

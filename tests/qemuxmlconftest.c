@@ -1656,6 +1656,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-panic");
     DO_TEST_CAPS_LATEST("hyperv-passthrough");
     DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
+    DO_TEST_CAPS_LATEST("hyperv-host-model");
 
     DO_TEST_CAPS_LATEST("kvm-features");
     DO_TEST_CAPS_LATEST("kvm-features-off");

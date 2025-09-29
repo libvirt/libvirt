@@ -6461,6 +6461,7 @@ qemuBuildCpuHypervCommandLine(virBuffer *buf,
 
     switch ((virDomainHyperVMode) def->features[VIR_DOMAIN_FEATURE_HYPERV]) {
     case VIR_DOMAIN_HYPERV_MODE_CUSTOM:
+    case VIR_DOMAIN_HYPERV_MODE_HOST_MODEL:
         break;
 
     case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:

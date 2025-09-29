@@ -145,6 +145,7 @@ VIR_ENUM_IMPL(virDomainHyperVMode,
               "none",
               "custom",
               "passthrough",
+              "host-model",
 );
 
 VIR_ENUM_IMPL(virDomainBoot,
@@ -17035,7 +17036,8 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
 
     def->features[VIR_DOMAIN_FEATURE_HYPERV] = mode;
 
-    if (mode == VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH)
+    if (mode == VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH ||
+        mode == VIR_DOMAIN_HYPERV_MODE_HOST_MODEL)
         return 0;
 
     node = xmlFirstElementChild(node);
