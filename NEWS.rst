@@ -29,8 +29,8 @@ v11.8.0 (unreleased)
     partitioning a physical GPU into multiple isolated instances, each
     associated with one or more virtual NUMA nodes.
 
-    On the XML side, the existing <acpi> element has been extended with a
-    "nodeset" attribute to specify the NUMA node affinity of a PCI device.
+    On the XML side, the existing ``<acpi>`` element has been extended with a
+    ``nodeset`` attribute to specify the NUMA node affinity of a PCI device.
 
 * **Improvements**
 
