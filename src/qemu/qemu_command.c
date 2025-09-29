@@ -6464,7 +6464,7 @@ qemuBuildCpuHypervCommandLine(virBuffer *buf,
         break;
 
     case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
-        virBufferAsprintf(buf, ",hv-%s=on", "passthrough");
+        virBufferAddLit(buf, ",hv-passthrough=on");
         break;
 
     case VIR_DOMAIN_HYPERV_MODE_NONE:
