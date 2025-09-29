@@ -34,12 +34,25 @@ v11.8.0 (unreleased)
 
 * **Improvements**
 
+  * ch: Events emitting
+
+    The CH driver not only emits more domain lifecycle events but also
+    implements ``virConnectDomainEventRegister()`` and
+    ``virConnectDomainEventDeregister()`` APIs for management applications to
+    listen on those events.
+
 * **Bug fixes**
 
   * qemu: Fix selection of stateless/combined firmware
 
     A stateless firmware will now be correctly chosen when appropriate,
     e.g. for domains configured to use SEV-SNP.
+
+  * ch: Make sure the cloud-hypervisor process is killed in ``virCHProcessStop()``
+
+    Due to wrong assumptions in the CH driver, calling ``virDomainDestroy()``
+    did not kill the corresponding cloud-hypervisor process. Domains can be now
+    destroyed reliably.
 
 
 v11.7.0 (2025-09-01)
