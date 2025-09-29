@@ -6449,6 +6449,89 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
     return 0;
 }
 
+
+static int
+qemuBuildCpuHypervCommandLine(virBuffer *buf,
+                              const virDomainDef *def)
+{
+    size_t i;
+
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_HYPERV_MODE_NONE)
+        return 0;
+
+    switch ((virDomainHyperVMode) def->features[VIR_DOMAIN_FEATURE_HYPERV]) {
+    case VIR_DOMAIN_HYPERV_MODE_CUSTOM:
+        break;
+
+    case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
+        virBufferAsprintf(buf, ",hv-%s=on", "passthrough");
+        break;
+
+    case VIR_DOMAIN_HYPERV_MODE_NONE:
+    case VIR_DOMAIN_HYPERV_MODE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHyperVMode,
+                                def->features[VIR_DOMAIN_FEATURE_HYPERV]);
+        return -1;
+    }
+
+    for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+        switch ((virDomainHyperv) i) {
+        case VIR_DOMAIN_HYPERV_RELAXED:
+        case VIR_DOMAIN_HYPERV_VAPIC:
+        case VIR_DOMAIN_HYPERV_VPINDEX:
+        case VIR_DOMAIN_HYPERV_RUNTIME:
+        case VIR_DOMAIN_HYPERV_SYNIC:
+        case VIR_DOMAIN_HYPERV_STIMER:
+        case VIR_DOMAIN_HYPERV_RESET:
+        case VIR_DOMAIN_HYPERV_FREQUENCIES:
+        case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
+        case VIR_DOMAIN_HYPERV_TLBFLUSH:
+        case VIR_DOMAIN_HYPERV_IPI:
+        case VIR_DOMAIN_HYPERV_EVMCS:
+        case VIR_DOMAIN_HYPERV_AVIC:
+        case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
+        case VIR_DOMAIN_HYPERV_XMM_INPUT:
+            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+                const char *name = virDomainHypervTypeToString(i);
+                g_autofree char *full_name = g_strdup_printf("hv-%s", name);
+                const char *qemu_name = virQEMUCapsCPUFeatureToQEMU(def->os.arch,
+                                                                    full_name);
+                virBufferAsprintf(buf, ",%s=on", qemu_name);
+            }
+            if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
+                (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
+                virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
+            if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
+                if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
+                if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+                    virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_EXT);
+            }
+            break;
+
+        case VIR_DOMAIN_HYPERV_SPINLOCKS:
+            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+                virBufferAsprintf(buf, ",%s=0x%x",
+                                  VIR_CPU_x86_HV_SPINLOCKS,
+                                  def->hyperv_spinlocks);
+            break;
+
+        case VIR_DOMAIN_HYPERV_VENDOR_ID:
+            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+                virBufferAsprintf(buf, ",hv-vendor-id=%s",
+                                  def->hyperv_vendor_id);
+            break;
+
+        case VIR_DOMAIN_HYPERV_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 qemuBuildCpuCommandLine(virCommand *cmd,
                         virQEMUDriver *driver,
@@ -6545,76 +6628,8 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                           VIR_TRISTATE_SWITCH_ON ? "on" : "off");
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_NONE) {
-        switch ((virDomainHyperVMode) def->features[VIR_DOMAIN_FEATURE_HYPERV]) {
-        case VIR_DOMAIN_HYPERV_MODE_CUSTOM:
-            break;
-
-        case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
-            virBufferAsprintf(&buf, ",hv-%s=on", "passthrough");
-            break;
-
-        case VIR_DOMAIN_HYPERV_MODE_NONE:
-        case VIR_DOMAIN_HYPERV_MODE_LAST:
-        default:
-            virReportEnumRangeError(virDomainHyperVMode,
-                                    def->features[VIR_DOMAIN_FEATURE_HYPERV]);
-            return -1;
-        }
-
-        for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-            switch ((virDomainHyperv) i) {
-            case VIR_DOMAIN_HYPERV_RELAXED:
-            case VIR_DOMAIN_HYPERV_VAPIC:
-            case VIR_DOMAIN_HYPERV_VPINDEX:
-            case VIR_DOMAIN_HYPERV_RUNTIME:
-            case VIR_DOMAIN_HYPERV_SYNIC:
-            case VIR_DOMAIN_HYPERV_STIMER:
-            case VIR_DOMAIN_HYPERV_RESET:
-            case VIR_DOMAIN_HYPERV_FREQUENCIES:
-            case VIR_DOMAIN_HYPERV_REENLIGHTENMENT:
-            case VIR_DOMAIN_HYPERV_TLBFLUSH:
-            case VIR_DOMAIN_HYPERV_IPI:
-            case VIR_DOMAIN_HYPERV_EVMCS:
-            case VIR_DOMAIN_HYPERV_AVIC:
-            case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
-            case VIR_DOMAIN_HYPERV_XMM_INPUT:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
-                    const char *name = virDomainHypervTypeToString(i);
-                    g_autofree char *full_name = g_strdup_printf("hv-%s", name);
-                    const char *qemu_name = virQEMUCapsCPUFeatureToQEMU(def->os.arch,
-                                                                        full_name);
-                    virBufferAsprintf(&buf, ",%s=on", qemu_name);
-                }
-                if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
-                    (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
-                    virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
-                if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
-                    if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
-                        virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
-                    if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
-                        virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_EXT);
-                }
-                break;
-
-            case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",%s=0x%x",
-                                      VIR_CPU_x86_HV_SPINLOCKS,
-                                      def->hyperv_spinlocks);
-                break;
-
-            case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv-vendor-id=%s",
-                                      def->hyperv_vendor_id);
-                break;
-
-            case VIR_DOMAIN_HYPERV_LAST:
-                break;
-            }
-        }
-    }
+    if (qemuBuildCpuHypervCommandLine(&buf, def) < 0)
+        return -1;
 
     for (i = 0; i < def->npanics; i++) {
         if (def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_HYPERV) {
