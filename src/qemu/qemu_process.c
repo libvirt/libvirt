@@ -6835,6 +6835,75 @@ qemuProcessPrepareChardevSource(virDomainDef *def,
 }
 
 
+static void
+qemuProcessMaybeAddHypervTimer(virDomainDef *def)
+{
+    g_autofree virDomainTimerDef *timer = NULL;
+
+    if (virDomainDefHasTimer(def, VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK))
+        return;
+
+    timer = g_new0(virDomainTimerDef, 1);
+    timer->name = VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK;
+    timer->present = VIR_TRISTATE_BOOL_YES;
+
+    VIR_APPEND_ELEMENT(def->clock.timers, def->clock.ntimers, timer);
+}
+
+
+static int
+qemuProcessEnableDomainFeatures(virDomainObj *vm)
+{
+    virDomainCapsFeatureHyperv *hv = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    size_t i;
+
+    if (vm->def->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_HOST_MODEL)
+        return 0;
+
+    hv = virQEMUCapsGetHypervCapabilities(priv->qemuCaps);
+    if (!hv || hv->supported != VIR_TRISTATE_BOOL_YES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("host-model hyperv mode unsupported, no hyperv capabilities found"));
+        return -1;
+    }
+
+    for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+        if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(hv->features, i))
+            continue;
+
+        vm->def->hyperv.features[i] = VIR_TRISTATE_SWITCH_ON;
+
+        if (i == VIR_DOMAIN_HYPERV_SPINLOCKS) {
+            if (hv->spinlocks != 0) {
+                vm->def->hyperv.spinlocks = hv->spinlocks;
+            } else {
+                vm->def->hyperv.features[i] = VIR_TRISTATE_SWITCH_ABSENT;
+            }
+        } else if (i == VIR_DOMAIN_HYPERV_STIMER) {
+            vm->def->hyperv.stimer_direct = hv->stimer_direct;
+            /* Both hv-stimer and hv-stimer-direct require hv-time which is
+             * expose as a timer. Enable it. */
+            qemuProcessMaybeAddHypervTimer(vm->def);
+        } else if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
+            vm->def->hyperv.tlbflush_direct = hv->tlbflush_direct;
+            vm->def->hyperv.tlbflush_extended = hv->tlbflush_extended;
+        } else if (i == VIR_DOMAIN_HYPERV_VENDOR_ID) {
+            if (hv->vendor_id) {
+                vm->def->hyperv.vendor_id = g_strdup(hv->vendor_id);
+            } else {
+                vm->def->hyperv.features[i] = VIR_TRISTATE_SWITCH_ABSENT;
+            }
+        }
+    }
+
+    vm->def->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_DOMAIN_HYPERV_MODE_CUSTOM;
+
+    return 0;
+}
+
+
+
 /**
  * qemuProcessPrepareDomain:
  * @driver: qemu driver
@@ -6947,6 +7016,9 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     if (flags & VIR_QEMU_PROCESS_START_NEW) {
         VIR_DEBUG("Aligning guest memory");
         if (qemuDomainAlignMemorySizes(vm->def) < 0)
+            return -1;
+
+        if (qemuProcessEnableDomainFeatures(vm) < 0)
             return -1;
     }
 
