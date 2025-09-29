@@ -2710,6 +2710,13 @@ virQEMUCapsGetSGXCapabilities(virQEMUCaps *qemuCaps)
 }
 
 
+virDomainCapsFeatureHyperv *
+virQEMUCapsGetHypervCapabilities(virQEMUCaps *qemuCaps)
+{
+    return qemuCaps->hypervCapabilities;
+}
+
+
 static int
 virQEMUCapsProbeQMPObjectTypes(virQEMUCaps *qemuCaps,
                                qemuMonitor *mon)
