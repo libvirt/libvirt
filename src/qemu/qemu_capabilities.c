@@ -3155,6 +3155,50 @@ virQEMUCapsProbeHypervCapabilities(virQEMUCaps *qemuCaps,
         if (!(name = STRSKIP(prop.name, "hv-")))
             continue;
 
+        if (STREQ(prop.name, VIR_CPU_x86_HV_SPINLOCKS)) {
+            if (prop.type != QEMU_MONITOR_CPU_PROPERTY_NUMBER) {
+                VIR_DEBUG("Unexpected type '%s' for name '%s'",
+                          qemuMonitorCPUPropertyTypeToString(prop.type), prop.name);
+                continue;
+            }
+
+            if ((uint32_t)prop.value.number != (uint32_t)-1)
+                hvcaps->spinlocks = prop.value.number;
+        } else if (STREQ(prop.name, VIR_CPU_x86_HV_STIMER_DIRECT)) {
+            if (prop.type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN) {
+                VIR_DEBUG("Unexpected type '%s' for name '%s'",
+                          qemuMonitorCPUPropertyTypeToString(prop.type), prop.name);
+            } else {
+                hvcaps->stimer_direct = virTristateSwitchFromBool(prop.value.boolean);
+            }
+            continue;
+        } else if (STREQ(prop.name, VIR_CPU_x86_HV_TLBFLUSH_DIRECT)) {
+            if (prop.type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN) {
+                VIR_DEBUG("Unexpected type '%s' for name '%s'",
+                          qemuMonitorCPUPropertyTypeToString(prop.type), prop.name);
+            } else {
+                hvcaps->tlbflush_direct = virTristateSwitchFromBool(prop.value.boolean);
+            }
+            continue;
+        } else if (STREQ(prop.name, VIR_CPU_x86_HV_TLBFLUSH_EXT)) {
+            if (prop.type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN) {
+                VIR_DEBUG("Unexpected type '%s' for name '%s'",
+                          qemuMonitorCPUPropertyTypeToString(prop.type), prop.name);
+            } else {
+                hvcaps->tlbflush_extended = virTristateSwitchFromBool(prop.value.boolean);
+            }
+            continue;
+        } else if (STREQ(prop.name, "hv-vendor-id")) {
+            if (prop.type != QEMU_MONITOR_CPU_PROPERTY_STRING) {
+                VIR_DEBUG("Unexpected type '%s' for name '%s'",
+                          qemuMonitorCPUPropertyTypeToString(prop.type), prop.name);
+                continue;
+            }
+
+            if (STRNEQ(prop.value.string, ""))
+                hvcaps->vendor_id = g_strdup(prop.value.string);
+        }
+
         hvprop = virDomainHypervTypeFromString(name);
 
         if (hvprop < 0) {

@@ -3756,5 +3756,10 @@
     <cap name='avic'/>
     <cap name='emsr_bitmap'/>
     <cap name='xmm_input'/>
+    <spinlocks>4095</spinlocks>
+    <stimer_direct>on</stimer_direct>
+    <tlbflush_direct>on</tlbflush_direct>
+    <tlbflush_extended>on</tlbflush_extended>
+    <vendor_id>Linux KVM Hv</vendor_id>
   </hypervCapabilities>
 </qemuCaps>
