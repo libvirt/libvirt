@@ -92,6 +92,32 @@ virSGXCapabilitiesFree(virSGXCapability *cap)
 }
 
 
+void
+virDomainCapsFeatureHypervFree(virDomainCapsFeatureHyperv *cap)
+{
+    if (!cap)
+        return;
+
+    g_free(cap->vendor_id);
+    g_free(cap);
+}
+
+
+virDomainCapsFeatureHyperv *
+virDomainCapsFeatureHypervCopy(virDomainCapsFeatureHyperv *cap)
+{
+    virDomainCapsFeatureHyperv *ret = NULL;
+
+    if (!cap)
+        return NULL;
+
+    ret = g_memdup2(cap, sizeof(virDomainCapsFeatureHyperv));
+    ret->vendor_id = g_strdup(cap->vendor_id);
+
+    return ret;
+}
+
+
 static void
 virDomainCapsDispose(void *obj)
 {
@@ -105,7 +131,7 @@ virDomainCapsDispose(void *obj)
     virCPUDefFree(caps->cpu.hostModel);
     virSEVCapabilitiesFree(caps->sev);
     virSGXCapabilitiesFree(caps->sgx);
-    g_free(caps->hyperv);
+    virDomainCapsFeatureHypervFree(caps->hyperv);
 
     values = &caps->os.loader.values;
     for (i = 0; i < values->nvalues; i++)
@@ -791,12 +817,45 @@ static void
 virDomainCapsFeatureHypervFormat(virBuffer *buf,
                                  const virDomainCapsFeatureHyperv *hyperv)
 {
+    virBuffer defaults = VIR_BUFFER_INIT_CHILD(buf);
+
     if (!hyperv)
         return;
 
     FORMAT_PROLOGUE(hyperv);
 
     ENUM_PROCESS(hyperv, features, virDomainHypervTypeToString);
+
+    virBufferAdjustIndent(&defaults, 2);
+
+    if (VIR_DOMAIN_CAPS_ENUM_IS_SET(hyperv->features, VIR_DOMAIN_HYPERV_SPINLOCKS) &&
+        hyperv->spinlocks != 0) {
+        virBufferAsprintf(&defaults, "<spinlocks>%u</spinlocks>\n", hyperv->spinlocks);
+    }
+
+    if (VIR_DOMAIN_CAPS_ENUM_IS_SET(hyperv->features, VIR_DOMAIN_HYPERV_STIMER) &&
+        hyperv->stimer_direct != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&defaults, "<stimer_direct>%s</stimer_direct>\n",
+                          virTristateSwitchTypeToString(hyperv->stimer_direct));
+    }
+
+    if (VIR_DOMAIN_CAPS_ENUM_IS_SET(hyperv->features, VIR_DOMAIN_HYPERV_TLBFLUSH)) {
+        if (hyperv->tlbflush_direct != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&defaults, "<tlbflush_direct>%s</tlbflush_direct>\n",
+                              virTristateSwitchTypeToString(hyperv->tlbflush_direct));
+        }
+
+        if (hyperv->tlbflush_extended != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&defaults, "<tlbflush_extended>%s</tlbflush_extended>\n",
+                              virTristateSwitchTypeToString(hyperv->tlbflush_extended));
+        }
+    }
+
+    if (VIR_DOMAIN_CAPS_ENUM_IS_SET(hyperv->features, VIR_DOMAIN_HYPERV_VENDOR_ID)) {
+        virBufferEscapeString(&defaults, "<vendor_id>%s</vendor_id>\n", hyperv->vendor_id);
+    }
+
+    virXMLFormatElement(buf, "defaults", NULL, &defaults);
 
     FORMAT_EPILOGUE(hyperv);
 }

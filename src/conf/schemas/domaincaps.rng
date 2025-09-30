@@ -509,6 +509,35 @@
     <element name="hyperv">
       <ref name="supported"/>
       <ref name="enum"/>
+      <optional>
+        <element name="defaults">
+          <optional>
+            <element name="spinlocks">
+              <ref name="unsignedInt"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="stimer_direct">
+              <ref name="virOnOff"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="tlbflush_direct">
+              <ref name="virOnOff"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="tlbflush_extended">
+              <ref name="virOnOff"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="vendor_id">
+              <text/>
+            </element>
+          </optional>
+        </element>
+      </optional>
     </element>
   </define>
 

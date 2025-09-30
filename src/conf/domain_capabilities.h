@@ -163,6 +163,11 @@ typedef struct _virDomainCapsFeatureHyperv virDomainCapsFeatureHyperv;
 struct _virDomainCapsFeatureHyperv {
     virTristateBool supported;
     virDomainCapsEnum features; /* Info about supported virDomainHyperv features */
+    unsigned int spinlocks;
+    virTristateSwitch stimer_direct;
+    virTristateSwitch tlbflush_direct;
+    virTristateSwitch tlbflush_extended;
+    char *vendor_id;
 };
 
 STATIC_ASSERT_ENUM(VIR_DOMAIN_LAUNCH_SECURITY_LAST);
@@ -378,3 +383,9 @@ void
 virSGXCapabilitiesFree(virSGXCapability *capabilities);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSGXCapability, virSGXCapabilitiesFree);
+
+void virDomainCapsFeatureHypervFree(virDomainCapsFeatureHyperv *capabilities);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainCapsFeatureHyperv, virDomainCapsFeatureHypervFree);
+
+virDomainCapsFeatureHyperv *
+virDomainCapsFeatureHypervCopy(virDomainCapsFeatureHyperv *cap);

@@ -2070,8 +2070,7 @@ virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGX_EPC))
         virQEMUCapsSGXInfoCopy(&ret->sgxCapabilities, qemuCaps->sgxCapabilities);
 
-    ret->hypervCapabilities = g_memdup2(qemuCaps->hypervCapabilities,
-                                        sizeof(virDomainCapsFeatureHyperv));
+    ret->hypervCapabilities = virDomainCapsFeatureHypervCopy(qemuCaps->hypervCapabilities);
 
     return g_steal_pointer(&ret);
 }
@@ -2113,7 +2112,7 @@ void virQEMUCapsDispose(void *obj)
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
     virSGXCapabilitiesFree(qemuCaps->sgxCapabilities);
 
-    g_free(qemuCaps->hypervCapabilities);
+    virDomainCapsFeatureHypervFree(qemuCaps->hypervCapabilities);
 
     virQEMUCapsAccelClear(&qemuCaps->kvm);
     virQEMUCapsAccelClear(&qemuCaps->hvf);
@@ -3138,7 +3137,7 @@ static int
 virQEMUCapsProbeHypervCapabilities(virQEMUCaps *qemuCaps,
                                    qemuMonitorCPUModelInfo *fullQEMU)
 {
-    g_autofree virDomainCapsFeatureHyperv *hvcaps = NULL;
+    g_autoptr(virDomainCapsFeatureHyperv) hvcaps = NULL;
     size_t i;
 
     if (!fullQEMU)
@@ -4494,7 +4493,7 @@ static int
 virQEMUCapsParseHypervCapabilities(virQEMUCaps *qemuCaps,
                                    xmlXPathContextPtr ctxt)
 {
-    g_autofree virDomainCapsFeatureHyperv *hvcaps = NULL;
+    g_autoptr(virDomainCapsFeatureHyperv) hvcaps = NULL;
     xmlNodePtr n = NULL;
     g_autofree xmlNodePtr *capNodes = NULL;
     int ncapNodes;
@@ -6930,8 +6929,7 @@ static void
 virQEMUCapsFillDomainFeatureHypervCaps(virQEMUCaps *qemuCaps,
                                        virDomainCaps *domCaps)
 {
-    domCaps->hyperv = g_memdup2(qemuCaps->hypervCapabilities,
-                                sizeof(virDomainCapsFeatureHyperv));
+    domCaps->hyperv = virDomainCapsFeatureHypervCopy(qemuCaps->hypervCapabilities);
 }
 
 
