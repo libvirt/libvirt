@@ -6492,7 +6492,7 @@ qemuBuildCpuHypervCommandLine(virBuffer *buf,
         case VIR_DOMAIN_HYPERV_AVIC:
         case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
         case VIR_DOMAIN_HYPERV_XMM_INPUT:
-            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->hyperv.features[i] == VIR_TRISTATE_SWITCH_ON) {
                 const char *name = virDomainHypervTypeToString(i);
                 g_autofree char *full_name = g_strdup_printf("hv-%s", name);
                 const char *qemu_name = virQEMUCapsCPUFeatureToQEMU(def->os.arch,
@@ -6500,27 +6500,27 @@ qemuBuildCpuHypervCommandLine(virBuffer *buf,
                 virBufferAsprintf(buf, ",%s=on", qemu_name);
             }
             if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
-                (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
+                (def->hyperv.stimer_direct == VIR_TRISTATE_SWITCH_ON))
                 virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
             if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
-                if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+                if (def->hyperv.tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
-                if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+                if (def->hyperv.tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
                     virBufferAsprintf(buf, ",%s=on", VIR_CPU_x86_HV_TLBFLUSH_EXT);
             }
             break;
 
         case VIR_DOMAIN_HYPERV_SPINLOCKS:
-            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+            if (def->hyperv.features[i] == VIR_TRISTATE_SWITCH_ON)
                 virBufferAsprintf(buf, ",%s=0x%x",
                                   VIR_CPU_x86_HV_SPINLOCKS,
-                                  def->hyperv_spinlocks);
+                                  def->hyperv.spinlocks);
             break;
 
         case VIR_DOMAIN_HYPERV_VENDOR_ID:
-            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
+            if (def->hyperv.features[i] == VIR_TRISTATE_SWITCH_ON)
                 virBufferAsprintf(buf, ",hv-vendor-id=%s",
-                                  def->hyperv_vendor_id);
+                                  def->hyperv.vendor_id);
             break;
 
         case VIR_DOMAIN_HYPERV_LAST:

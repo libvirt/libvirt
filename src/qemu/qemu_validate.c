@@ -89,8 +89,8 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
 
 
 #define CHECK_HV_FEAT(feat, requires) \
-    if (def->hyperv_features[feat] == VIR_TRISTATE_SWITCH_ON && \
-        def->hyperv_features[requires] != VIR_TRISTATE_SWITCH_ON) { \
+    if (def->hyperv.features[feat] == VIR_TRISTATE_SWITCH_ON && \
+        def->hyperv.features[requires] != VIR_TRISTATE_SWITCH_ON) { \
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
                        _("'%1$s' hyperv feature requires '%2$s' feature"), \
                        virDomainHypervTypeToString(feat), \
@@ -114,7 +114,7 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
 
     CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_SYNIC, VIR_DOMAIN_HYPERV_VPINDEX);
 
-    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+    if (def->hyperv.features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
         if (!virDomainDefHasTimer(def, VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("'%1$s' hyperv feature requires '%2$s' timer"),
@@ -133,9 +133,9 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
 
     CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_EVMCS, VIR_DOMAIN_HYPERV_VAPIC);
 
-    if (def->hyperv_features[VIR_DOMAIN_HYPERV_TLBFLUSH] == VIR_TRISTATE_SWITCH_ON &&
-        def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
-        if (def->hyperv_features[VIR_DOMAIN_HYPERV_VAPIC] != VIR_TRISTATE_SWITCH_ON) {
+    if (def->hyperv.features[VIR_DOMAIN_HYPERV_TLBFLUSH] == VIR_TRISTATE_SWITCH_ON &&
+        def->hyperv.tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
+        if (def->hyperv.features[VIR_DOMAIN_HYPERV_VAPIC] != VIR_TRISTATE_SWITCH_ON) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("'%1$s' hyperv feature requires '%2$s' feature"),
                            VIR_CPU_x86_HV_TLBFLUSH_DIRECT,

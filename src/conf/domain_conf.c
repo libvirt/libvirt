@@ -4020,6 +4020,13 @@ virDomainOSDefClear(virDomainOSDef *os)
 }
 
 
+static void
+virDomainHypervFeaturesClear(virDomainHypervFeatures *hv)
+{
+    g_free(hv->vendor_id);
+}
+
+
 void virDomainDefFree(virDomainDef *def)
 {
     size_t i;
@@ -4147,8 +4154,8 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def->emulator);
     g_free(def->description);
     g_free(def->title);
+    virDomainHypervFeaturesClear(&def->hyperv);
     g_free(def->kvm_features);
-    g_free(def->hyperv_vendor_id);
     g_free(def->tcg_features);
 
     virBlkioDeviceArrayClear(def->blkio.devices,
@@ -17049,7 +17056,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                                      &value) < 0)
             return -1;
 
-        def->hyperv_features[feature] = value;
+        def->hyperv.features[feature] = value;
 
         switch ((virDomainHyperv) feature) {
         case VIR_DOMAIN_HYPERV_RELAXED:
@@ -17075,11 +17082,11 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             while (child) {
                 if (STREQ((const char *)child->name, "direct")) {
                     if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
-                                                 &def->hyperv_tlbflush_direct) < 0)
+                                                 &def->hyperv.tlbflush_direct) < 0)
                         return -1;
                 } else if (STREQ((const char *)child->name, "extended")) {
                     if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
-                                                 &def->hyperv_tlbflush_extended) < 0)
+                                                 &def->hyperv.tlbflush_extended) < 0)
                         return -1;
                 } else {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -17106,7 +17113,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 }
 
                 if (virXMLPropTristateSwitch(child, "state", VIR_XML_PROP_REQUIRED,
-                                             &def->hyperv_stimer_direct) < 0)
+                                             &def->hyperv.stimer_direct) < 0)
                     return -1;
 
                 child = xmlNextElementSibling(child);
@@ -17118,10 +17125,10 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 break;
 
             if (virXMLPropUInt(node, "retries", 0, VIR_XML_PROP_REQUIRED,
-                               &def->hyperv_spinlocks) < 0)
+                               &def->hyperv.spinlocks) < 0)
                 return -1;
 
-            if (def->hyperv_spinlocks < 0xFFF) {
+            if (def->hyperv.spinlocks < 0xFFF) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("HyperV spinlock retry count must be at least 4095"));
                 return -1;
@@ -17132,15 +17139,15 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            g_clear_pointer(&def->hyperv_vendor_id, g_free);
+            g_clear_pointer(&def->hyperv.vendor_id, g_free);
 
-            if (!(def->hyperv_vendor_id = virXMLPropString(node, "value"))) {
+            if (!(def->hyperv.vendor_id = virXMLPropString(node, "value"))) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("missing 'value' attribute for HyperV feature 'vendor_id'"));
                 return -1;
             }
 
-            if (!STRLIM(def->hyperv_vendor_id, VIR_DOMAIN_HYPERV_VENDOR_ID_MAX)) {
+            if (!STRLIM(def->hyperv.vendor_id, VIR_DOMAIN_HYPERV_VENDOR_ID_MAX)) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("HyperV vendor_id value must not be more than %1$d characters."),
                                VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
@@ -17148,7 +17155,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             }
 
             /* ensure that the string can be passed to qemu */
-            if (strchr(def->hyperv_vendor_id, ',')) {
+            if (strchr(def->hyperv.vendor_id, ',')) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("HyperV vendor_id value is invalid"));
                 return -1;
@@ -21641,12 +21648,12 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             case VIR_DOMAIN_HYPERV_AVIC:
             case VIR_DOMAIN_HYPERV_EMSR_BITMAP:
             case VIR_DOMAIN_HYPERV_XMM_INPUT:
-                if (src->hyperv_features[i] != dst->hyperv_features[i]) {
+                if (src->hyperv.features[i] != dst->hyperv.features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of HyperV enlightenment feature '%1$s' differs: source: '%2$s', destination: '%3$s'"),
                                    virDomainHypervTypeToString(i),
-                                   virTristateSwitchTypeToString(src->hyperv_features[i]),
-                                   virTristateSwitchTypeToString(dst->hyperv_features[i]));
+                                   virTristateSwitchTypeToString(src->hyperv.features[i]),
+                                   virTristateSwitchTypeToString(dst->hyperv.features[i]));
                     return false;
                 }
 
@@ -21654,21 +21661,21 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
                 /* spinlock count matters! */
-                if (src->hyperv_spinlocks != dst->hyperv_spinlocks) {
+                if (src->hyperv.spinlocks != dst->hyperv.spinlocks) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("HyperV spinlock retry count differs: source: '%1$u', destination: '%2$u'"),
-                                   src->hyperv_spinlocks,
-                                   dst->hyperv_spinlocks);
+                                   src->hyperv.spinlocks,
+                                   dst->hyperv.spinlocks);
                     return false;
                 }
                 break;
 
             case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                if (STRNEQ_NULLABLE(src->hyperv_vendor_id, dst->hyperv_vendor_id)) {
+                if (STRNEQ_NULLABLE(src->hyperv.vendor_id, dst->hyperv.vendor_id)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("HyperV vendor_id differs: source: '%1$s', destination: '%2$s'"),
-                                   src->hyperv_vendor_id,
-                                   dst->hyperv_vendor_id);
+                                   src->hyperv.vendor_id,
+                                   dst->hyperv.vendor_id);
                     return false;
                 }
                 break;
@@ -21679,12 +21686,12 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
         }
     }
 
-    if (src->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
-        if (src->hyperv_stimer_direct != dst->hyperv_stimer_direct) {
+    if (src->hyperv.features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        if (src->hyperv.stimer_direct != dst->hyperv.stimer_direct) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("State of HyperV stimer direct feature differs: source: '%1$s', destination: '%2$s'"),
-                           virTristateSwitchTypeToString(src->hyperv_stimer_direct),
-                           virTristateSwitchTypeToString(dst->hyperv_stimer_direct));
+                           virTristateSwitchTypeToString(src->hyperv.stimer_direct),
+                           virTristateSwitchTypeToString(dst->hyperv.stimer_direct));
             return false;
         }
     }
@@ -28599,11 +28606,11 @@ virDomainFeaturesHyperVDefFormat(virBuffer *buf,
         g_auto(virBuffer) hypervAttrBuf = VIR_BUFFER_INITIALIZER;
         g_auto(virBuffer) hypervChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
 
-        if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)
+        if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ABSENT)
             continue;
 
         virBufferAsprintf(&hypervAttrBuf, " state='%s'",
-                          virTristateSwitchTypeToString(def->hyperv_features[j]));
+                          virTristateSwitchTypeToString(def->hyperv.features[j]));
 
         switch ((virDomainHyperv) j) {
         case VIR_DOMAIN_HYPERV_RELAXED:
@@ -28622,34 +28629,34 @@ virDomainFeaturesHyperVDefFormat(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_HYPERV_SPINLOCKS:
-            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON) {
                 virBufferAsprintf(&hypervAttrBuf,
-                                  " retries='%d'", def->hyperv_spinlocks);
+                                  " retries='%d'", def->hyperv.spinlocks);
             }
             break;
 
         case VIR_DOMAIN_HYPERV_STIMER:
-            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON &&
-                def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON) {
+            if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON &&
+                def->hyperv.stimer_direct == VIR_TRISTATE_SWITCH_ON) {
                 virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
             }
 
             break;
 
         case VIR_DOMAIN_HYPERV_VENDOR_ID:
-            if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON) {
                 virBufferEscapeString(&hypervAttrBuf, " value='%s'",
-                                      def->hyperv_vendor_id);
+                                      def->hyperv.vendor_id);
             }
             break;
 
         case VIR_DOMAIN_HYPERV_TLBFLUSH:
-            if (def->hyperv_features[j] != VIR_TRISTATE_SWITCH_ON)
+            if (def->hyperv.features[j] != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
+            if (def->hyperv.tlbflush_direct == VIR_TRISTATE_SWITCH_ON)
                 virBufferAddLit(&hypervChildBuf, "<direct state='on'/>\n");
-            if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
+            if (def->hyperv.tlbflush_extended == VIR_TRISTATE_SWITCH_ON)
                 virBufferAddLit(&hypervChildBuf, "<extended state='on'/>\n");
             break;
 

@@ -608,7 +608,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
             }
 
             for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-                if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
+                if (def->hyperv.features[i] != VIR_TRISTATE_SWITCH_ON)
                     continue;
 
                 switch ((virDomainHyperv) i) {

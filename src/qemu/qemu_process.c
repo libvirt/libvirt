@@ -4418,7 +4418,7 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
             i == VIR_DOMAIN_HYPERV_SPINLOCKS)
             continue;
 
-        if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
+        if (def->hyperv.features[i] != VIR_TRISTATE_SWITCH_ON)
             continue;
 
         cpuFeature = g_strdup_printf("hv-%s", virDomainHypervTypeToString(i));
@@ -4429,7 +4429,7 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
             return -1;
         } else if (rc == 1) {
             if (i == VIR_DOMAIN_HYPERV_STIMER) {
-                if (def->hyperv_stimer_direct != VIR_TRISTATE_SWITCH_ON)
+                if (def->hyperv.stimer_direct != VIR_TRISTATE_SWITCH_ON)
                     continue;
 
                 rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_STIMER_DIRECT);
@@ -4444,7 +4444,7 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
                 return -1;
             }
             if (i == VIR_DOMAIN_HYPERV_TLBFLUSH) {
-                if (def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
+                if (def->hyperv.tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
                     rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_TLBFLUSH_DIRECT);
                     if (rc < 0)
                         return -1;
@@ -4455,7 +4455,7 @@ qemuProcessVerifyHypervFeatures(virDomainDef *def,
                         return -1;
                     }
                 }
-                if (def->hyperv_tlbflush_extended == VIR_TRISTATE_SWITCH_ON) {
+                if (def->hyperv.tlbflush_extended == VIR_TRISTATE_SWITCH_ON) {
                     rc = virCPUDataCheckFeature(cpu, VIR_CPU_x86_HV_TLBFLUSH_EXT);
                     if (rc < 0)
                         return -1;
