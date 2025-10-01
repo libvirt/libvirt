@@ -478,9 +478,8 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
                           virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(GHashTable) stats = virHashNew(g_free);
+    g_autoptr(GHashTable) blockNamedNodeData = NULL;
     size_t i;
-    int rc;
 
     /* It is not a bug if there already is a NBD data */
     qemuMigrationCookieNBDFree(mig->nbd);
@@ -496,21 +495,15 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
     mig->nbd->disks = g_new0(struct qemuMigrationCookieNBDDisk, vm->def->ndisks);
     mig->nbd->ndisks = 0;
 
-    if (qemuDomainObjEnterMonitorAsync(vm, vm->job->asyncJob) < 0)
-        return -1;
-
-    rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
-
-    qemuDomainObjExitMonitor(vm);
-
-    if (rc < 0)
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, vm->job->asyncJob)))
         return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
-        qemuBlockStats *entry;
+        qemuBlockNamedNodeData *entry;
 
-        if (!(entry = virHashLookup(stats, qemuBlockStorageSourceGetEffectiveNodename(disk->src))))
+        if (!(entry = virHashLookup(blockNamedNodeData,
+                                    qemuBlockStorageSourceGetEffectiveNodename(disk->src))))
             continue;
 
         mig->nbd->disks[mig->nbd->ndisks].target = g_strdup(disk->dst);
