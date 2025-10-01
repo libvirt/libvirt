@@ -2524,6 +2524,42 @@ qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
 }
 
 
+static int
+qemuMonitorJSONGetOneBlockStatsNamedNodes(size_t pos G_GNUC_UNUSED,
+                                          virJSONValue *val,
+                                          void *opaque)
+{
+    GHashTable *stats = opaque;
+    virJSONValue *image;
+    const char *nodename;
+    qemuBlockStats *entry;
+
+    if (!(nodename = virJSONValueObjectGetString(val, "node-name")) ||
+        !(image = virJSONValueObjectGetObject(val, "image"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-named-block-nodes entry was not in expected format"));
+        return -1;
+    }
+
+    if (!(entry = virHashLookup(stats, nodename))) {
+        entry = qemuBlockStatsNew();
+        g_hash_table_insert(stats, g_strdup(nodename), entry);
+    }
+
+    /* updating actual size makes sense only when virtual size is present */
+    if (virJSONValueObjectGetNumberUlong(image, "virtual-size", &entry->capacity) == 0) {
+        /* if actual-size is missing, image is not thin provisioned */
+        if (virJSONValueObjectGetNumberUlong(image, "actual-size", &entry->physical) < 0)
+            entry->physical = entry->capacity;
+    }
+
+    ignore_value(virJSONValueObjectGetNumberUlong(val, "write_threshold",
+                                                  &entry->write_threshold));
+
+    return 1; /* we don't want to steal the value from the JSON array */
+}
+
+
 int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
                                     GHashTable *hash)
@@ -2533,6 +2569,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
     size_t i;
     g_autoptr(virJSONValue) blockstatsDevices = NULL;
     g_autoptr(virJSONValue) blockstatsNodes = NULL;
+    g_autoptr(virJSONValue) nodes = NULL;
 
     if (!(blockstatsDevices = qemuMonitorJSONQueryBlockstats(mon, false)))
         return -1;
@@ -2580,59 +2617,22 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
             nstats = rc;
     }
 
-    return nstats;
-}
-
-
-static int
-qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos G_GNUC_UNUSED,
-                                                      virJSONValue *val,
-                                                      void *opaque)
-{
-    GHashTable *stats = opaque;
-    virJSONValue *image;
-    const char *nodename;
-    qemuBlockStats *entry;
-
-    if (!(nodename = virJSONValueObjectGetString(val, "node-name")) ||
-        !(image = virJSONValueObjectGetObject(val, "image"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-named-block-nodes entry was not in expected format"));
-        return -1;
-    }
-
-    if (!(entry = virHashLookup(stats, nodename))) {
-        entry = qemuBlockStatsNew();
-        g_hash_table_insert(stats, g_strdup(nodename), entry);
-    }
-
-    /* updating actual size makes sense only when virtual size is present */
-    if (virJSONValueObjectGetNumberUlong(image, "virtual-size", &entry->capacity) == 0) {
-        /* if actual-size is missing, image is not thin provisioned */
-        if (virJSONValueObjectGetNumberUlong(image, "actual-size", &entry->physical) < 0)
-            entry->physical = entry->capacity;
-    }
-
-    ignore_value(virJSONValueObjectGetNumberUlong(val, "write_threshold",
-                                                  &entry->write_threshold));
-
-    return 1; /* we don't want to steal the value from the JSON array */
-}
-
-
-int
-qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
-                                                GHashTable *stats)
-{
-    g_autoptr(virJSONValue) nodes = NULL;
-
     if (!(nodes = qemuMonitorJSONQueryNamedBlockNodes(mon)))
         return -1;
 
     if (virJSONValueArrayForeachSteal(nodes,
-                                      qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker,
-                                      stats) < 0)
+                                      qemuMonitorJSONGetOneBlockStatsNamedNodes,
+                                      hash) < 0)
         return -1;
+
+    return nstats;
+}
+
+
+int
+qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon G_GNUC_UNUSED,
+                                                GHashTable *stats G_GNUC_UNUSED)
+{
 
     return 0;
 }
