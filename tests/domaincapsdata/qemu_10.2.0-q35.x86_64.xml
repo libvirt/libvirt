@@ -1,7 +1,7 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-x86_64</path>
   <domain>kvm</domain>
-  <machine>pc-q35-10.1</machine>
+  <machine>pc-q35-10.2</machine>
   <arch>x86_64</arch>
   <vcpu max='4096'/>
   <iothreads supported='yes'/>
