@@ -789,6 +789,23 @@ qemuMonitorBlockIOStatusToError(const char *status);
 GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitor *mon);
 
+
+struct qemuBlockStatsLimits {
+    unsigned long long request_alignment;
+    unsigned long long discard_max;
+    unsigned long long discard_alignment;
+    unsigned long long write_zeroes_max;
+    unsigned long long write_zeroes_alignment;
+    unsigned long long transfer_optimal;
+    unsigned long long transfer_max;
+    unsigned long long transfer_hw_max;
+    unsigned long long iov_max;
+    unsigned long long iov_hw_max;
+    unsigned long long memory_alignment_minimal;
+    unsigned long long memory_alignment_optimal;
+};
+
+
 struct _qemuBlockStats {
     GObject parent;
 
@@ -810,6 +827,8 @@ struct _qemuBlockStats {
 
     /* write_threshold is valid only if it's non-zero, conforming to qemu semantics */
     unsigned long long write_threshold;
+
+    struct qemuBlockStatsLimits *limits;
 };
 G_DECLARE_FINAL_TYPE(qemuBlockStats, qemu_block_stats, QEMU, BLOCK_STATS, GObject);
 

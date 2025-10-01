@@ -1983,6 +1983,8 @@ qemuBlockStatsFinalize(GObject *object)
     if (!stats)
         return;
 
+    g_free(stats->limits);
+
     G_OBJECT_CLASS(qemu_block_stats_parent_class)->finalize(object);
 }
 

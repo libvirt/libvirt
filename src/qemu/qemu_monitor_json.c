@@ -2524,6 +2524,33 @@ qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
 }
 
 
+static struct qemuBlockStatsLimits *
+qemuMonitorJSONBlockStatsCollectLimits(virJSONValue *limits_json)
+{
+    struct qemuBlockStatsLimits *limits = g_new0(struct qemuBlockStatsLimits, 1);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "request-alignment", &limits->request_alignment);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "max-discard", &limits->discard_max);
+    virJSONValueObjectGetNumberUlong(limits_json, "discard-alignment", &limits->discard_alignment);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "max-write-zeroes", &limits->write_zeroes_max);
+    virJSONValueObjectGetNumberUlong(limits_json, "write-zeroes-alignment", &limits->write_zeroes_alignment);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "opt-transfer", &limits->transfer_optimal);
+    virJSONValueObjectGetNumberUlong(limits_json, "max-transfer", &limits->transfer_max);
+    virJSONValueObjectGetNumberUlong(limits_json, "max-hw-transfer", &limits->transfer_hw_max);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "max-iov", &limits->iov_max);
+    virJSONValueObjectGetNumberUlong(limits_json, "max-hw-iov", &limits->iov_hw_max);
+
+    virJSONValueObjectGetNumberUlong(limits_json, "min-mem-alignment", &limits->memory_alignment_minimal);
+    virJSONValueObjectGetNumberUlong(limits_json, "opt-mem-alignment", &limits->memory_alignment_optimal);
+
+    return limits;
+}
+
+
 static int
 qemuMonitorJSONGetOneBlockStatsNamedNodes(size_t pos G_GNUC_UNUSED,
                                           virJSONValue *val,
@@ -2531,6 +2558,7 @@ qemuMonitorJSONGetOneBlockStatsNamedNodes(size_t pos G_GNUC_UNUSED,
 {
     GHashTable *stats = opaque;
     virJSONValue *image;
+    virJSONValue *limits;
     const char *nodename;
     qemuBlockStats *entry;
 
@@ -2555,6 +2583,9 @@ qemuMonitorJSONGetOneBlockStatsNamedNodes(size_t pos G_GNUC_UNUSED,
 
     ignore_value(virJSONValueObjectGetNumberUlong(val, "write_threshold",
                                                   &entry->write_threshold));
+
+    if ((limits = virJSONValueObjectGetObject(image, "limits")))
+        entry->limits = qemuMonitorJSONBlockStatsCollectLimits(limits);
 
     return 1; /* we don't want to steal the value from the JSON array */
 }
