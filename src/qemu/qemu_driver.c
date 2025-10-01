@@ -9597,7 +9597,6 @@ qemuDomainBlockStatsGatherTotals(qemuBlockStats *data,
  * @driver: driver object
  * @vm: domain object
  * @path: to gather the statistics for
- * @capacity: refresh capacity of the backing image
  * @retstats: returns pointer to structure holding the stats
  *
  * Gathers the block statistics for use in qemuDomainBlockStats* APIs.
@@ -9607,7 +9606,6 @@ qemuDomainBlockStatsGatherTotals(qemuBlockStats *data,
 static int
 qemuDomainBlocksStatsGather(virDomainObj *vm,
                             const char *path,
-                            bool capacity,
                             qemuBlockStats **retstats)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -9644,10 +9642,6 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
     qemuDomainObjEnterMonitor(vm);
     nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats);
-
-    if (capacity && nstats >= 0)
-        rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, blockstats);
-
     qemuDomainObjExitMonitor(vm);
 
     if (nstats < 0 || rc < 0)
@@ -9713,7 +9707,7 @@ qemuDomainBlockStats(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (qemuDomainBlocksStatsGather(vm, path, false, &blockstats) < 0)
+    if (qemuDomainBlocksStatsGather(vm, path, &blockstats) < 0)
         goto endjob;
 
     if (VIR_ASSIGN_IS_OVERFLOW(stats->rd_req, blockstats->rd_req) ||
@@ -9769,8 +9763,7 @@ qemuDomainBlockStatsFlags(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if ((nstats = qemuDomainBlocksStatsGather(vm, path, false,
-                                              &blockstats)) < 0)
+    if ((nstats = qemuDomainBlocksStatsGather(vm, path, &blockstats)) < 0)
         goto endjob;
 
     /* return count of supported stats */
@@ -10603,7 +10596,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         goto endjob;
     }
 
-    if (qemuDomainBlocksStatsGather(vm, path, true, &entry) < 0)
+    if (qemuDomainBlocksStatsGather(vm, path, &entry) < 0)
         goto endjob;
 
     if (!entry->wr_highest_offset_valid) {
@@ -17732,9 +17725,6 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
         qemuDomainObjEnterMonitor(dom);
 
         rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
-
-        if (rc >= 0)
-            rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
 
         qemuDomainObjExitMonitor(dom);
 

@@ -2629,15 +2629,6 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
 }
 
 
-int
-qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon G_GNUC_UNUSED,
-                                                GHashTable *stats G_GNUC_UNUSED)
-{
-
-    return 0;
-}
-
-
 static void
 qemuMonitorJSONBlockNamedNodeDataBitmapFree(qemuBlockNamedNodeDataBitmap *bitmap)
 {

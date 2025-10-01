@@ -2032,18 +2032,6 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
 }
 
 
-int
-qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
-                                            GHashTable *stats)
-{
-    VIR_DEBUG("stats=%p", stats);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(mon, stats);
-}
-
-
 /**
  * qemuMonitorBlockGetNamedNodeData:
  * @mon: monitor object
