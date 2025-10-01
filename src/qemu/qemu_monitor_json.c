@@ -2585,36 +2585,6 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
 
 
 static int
-qemuMonitorJSONBlockStatsUpdateCapacityData(virJSONValue *image,
-                                            const char *name,
-                                            GHashTable *stats,
-                                            qemuBlockStats **entry)
-{
-    qemuBlockStats *bstats;
-
-    if (!(bstats = virHashLookup(stats, name))) {
-        bstats = qemuBlockStatsNew();
-        g_hash_table_insert(stats, g_strdup(name), bstats);
-    }
-
-    if (entry)
-        *entry = bstats;
-
-    /* failures can be ignored after this point */
-    if (virJSONValueObjectGetNumberUlong(image, "virtual-size",
-                                         &bstats->capacity) < 0)
-        return 0;
-
-    /* if actual-size is missing, image is not thin provisioned */
-    if (virJSONValueObjectGetNumberUlong(image, "actual-size",
-                                         &bstats->physical) < 0)
-        bstats->physical = bstats->capacity;
-
-    return 0;
-}
-
-
-static int
 qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos G_GNUC_UNUSED,
                                                       virJSONValue *val,
                                                       void *opaque)
@@ -2631,12 +2601,20 @@ qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos G_GNUC_UNUSED,
         return -1;
     }
 
-    if (qemuMonitorJSONBlockStatsUpdateCapacityData(image, nodename, stats, &entry) < 0)
-        return -1;
+    if (!(entry = virHashLookup(stats, nodename))) {
+        entry = qemuBlockStatsNew();
+        g_hash_table_insert(stats, g_strdup(nodename), entry);
+    }
 
-    if (entry)
-        ignore_value(virJSONValueObjectGetNumberUlong(val, "write_threshold",
-                                                      &entry->write_threshold));
+    /* updating actual size makes sense only when virtual size is present */
+    if (virJSONValueObjectGetNumberUlong(image, "virtual-size", &entry->capacity) == 0) {
+        /* if actual-size is missing, image is not thin provisioned */
+        if (virJSONValueObjectGetNumberUlong(image, "actual-size", &entry->physical) < 0)
+            entry->physical = entry->capacity;
+    }
+
+    ignore_value(virJSONValueObjectGetNumberUlong(val, "write_threshold",
+                                                  &entry->write_threshold));
 
     return 1; /* we don't want to steal the value from the JSON array */
 }
