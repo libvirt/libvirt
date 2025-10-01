@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-09-29 00:36+0000\n"
+"PO-Revision-Date: 2025-10-01 02:39+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -35107,49 +35107,54 @@ msgstr "apenas um elemento de fonte é permitido para dispositivo de caractere"
 
 msgid "only one source host address may be specified for the iSCSI hostdev"
 msgstr ""
+"apenas um endereço de máquina fonte pode ser especificado para o dispositivo "
+"de máquina iSCSI"
 
 msgid "only pSeries guests support panic device of model 'pseries'"
 msgstr ""
+"apenas convidados pSeries suportam dispositivo de pânico do modelo 'pseries'"
 
 #, c-format
 msgid "only scheme, host and port are supported in vz migration URI: %1$s"
 msgstr ""
+"apenas esquema, máquina e porto são suportados em URI de migração vz: %1$s"
 
 msgid "only sending a signal to pid 1 is supported"
-msgstr ""
+msgstr "apenas é suportado enviar um sinal para pid 1"
 
 msgid "only single ISA controller is supported"
 msgstr "apenas um único controlador ISA é suportado"
 
 msgid "only single USB controller is supported"
-msgstr ""
+msgstr "apenas um único controlador USB é suportado"
 
 msgid "only single input device is supported"
-msgstr ""
+msgstr "apenas um único dispositivo de entrada suportado"
 
 msgid "only snapshot=no is supported with vhostuser disk"
-msgstr ""
+msgstr "apenas snapshot=no é suportado com disco vhostuser"
 
 msgid "only source type 'unix' is supported for external TPM device"
-msgstr ""
+msgstr "apenas tipo de fonte 'unix' é suportado para dispositivo TPM externo"
 
 msgid "only supports mount filesystem type"
-msgstr ""
+msgstr "apenas suporta o tipo de sistema de ficheiros de montagem"
 
 msgid "only supports passthrough accessmode"
-msgstr ""
+msgstr "apenas suporta modo de acesso de passagem"
 
 msgid "only tablet input devices are supported"
-msgstr ""
+msgstr "apenas dispositivos de entrada de tabletes são suportados"
 
 msgid "only the 'qemu' driver can be used with network disks"
-msgstr ""
+msgstr "apenas o controlador 'qemu' pode ser usado com discos de rede"
 
 msgid "only two source elements are allowed for character device"
 msgstr ""
+"apenas dois elementos fonte são permitidos para dispositivo de caractere"
 
 msgid "only virtiofs filesystems can be hotplugged"
-msgstr ""
+msgstr "apenas sistemas de ficheiros virtiofs pode ser ligados-a-quente"
 
 msgid "open an editor to modify the description"
 msgstr "abrir um editor para modificar a descrição"
@@ -35189,23 +35194,23 @@ msgstr "operação proibida: %1$s"
 
 #, c-format
 msgid "operation type %1$d not supported"
-msgstr ""
+msgstr "operação do tipo %1$d não suportada"
 
 #, c-format
 msgid "option %1$s requires a positive integer argument"
-msgstr ""
+msgstr "opção %1$s requer um argumento de inteiro positivo"
 
 #, c-format
 msgid "option %1$s takes a numeric argument"
-msgstr ""
+msgstr "opção %1$s recebe um argumento numérico"
 
 #, c-format
 msgid "option '-%1$c' requires an argument"
-msgstr ""
+msgstr "opção '-%1$c' requer um argumento"
 
 #, c-format
 msgid "option '-%1$c'/'--%2$s' requires an argument"
-msgstr ""
+msgstr "opção '-%1$c'/'--%2$s' requer um argumento"
 
 #, c-format
 msgid "option --%1$s already seen"
@@ -35213,35 +35218,35 @@ msgstr "opção --%1$s já vista"
 
 #, c-format
 msgid "option parsing failed: %1$s\n"
-msgstr ""
+msgstr "análise de opção falhou: %1$s\n"
 
 msgid "optional CPU features are not supported"
-msgstr ""
+msgstr "funcionalidades de CPU opcionais não são suportadas"
 
 msgid "optional file of source xml to query for pools"
-msgstr ""
+msgstr "ficheiro opcional de xml fonte para consultar para pools"
 
 msgid "optional file to read keys from"
-msgstr ""
+msgstr "ficheiro opcional de onde ler chaves"
 
 msgid "optional host to query"
-msgstr ""
+msgstr "máquina opcional a consultar"
 
 msgid "optional initiator IQN to use for query"
-msgstr ""
+msgstr "IQN iniciador opcional a usar para consulta"
 
 msgid "optional port to query"
-msgstr ""
+msgstr "porto opcional para consultar"
 
 msgid "options"
 msgstr "opções"
 
 msgid "os.type is not defined"
-msgstr ""
+msgstr "os.type não está definido"
 
 #, c-format
 msgid "out of bounds index - count %1$zu at %2$zu"
-msgstr ""
+msgstr "índice fora dos limites - contagem %1$zu em %2$zu"
 
 msgid "out of memory"
 msgstr "memória esgotada"
@@ -35251,64 +35256,68 @@ msgid "out of memory: %1$s"
 msgstr "memória esgotada: %1$s"
 
 msgid "outbound average is mandatory"
-msgstr ""
+msgstr "média de saída é obrigatória"
 
 msgid "outbound floor is unsupported yet"
-msgstr ""
+msgstr "chão de saída ainda não é suportado"
 
 #, c-format
 msgid "outbound rate larger than maximum %1$u"
-msgstr ""
+msgstr "taxa de saída maior que o máximo %1$u"
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
+"escreve uma string XML para a informação de sistema do hipervisor, se "
+"disponível"
 
 msgid "output help for each command"
-msgstr ""
+msgstr "escreve ajuda para cada comando"
 
 msgid "output the list of options which are missing completers"
-msgstr ""
+msgstr "escreve a lista de opções que são completadores em falta"
 
 msgid "output to stderr"
-msgstr ""
+msgstr "escreve para o stderr"
 
 #, c-format
 msgid "overflow in converting %1$ld MiB/s to bytes"
-msgstr ""
+msgstr "transbordo ao converter %1$ld MiB/s para bytes"
 
 #, c-format
 msgid "overflow in sum of statistic for blkio cgroup (%1$s) field '%2$s'"
 msgstr ""
+"transbordo em sumário de estatísticas para cgroup blkio (%1$s) campo '%2$s'"
 
 msgid "override the destination host name used for TLS verification"
-msgstr ""
+msgstr "sobrepõe o nome de máquina de destino usada para verificação TLS"
 
 msgid "overwrite any existing data"
-msgstr ""
+msgstr "sobrepõe quaisquer dados existentes"
 
 #, c-format
 msgid "owner %1$lld does not hold the resource lock"
-msgstr ""
+msgstr "proprietário %1$lld não detém a tranca de recurso"
 
 msgid "p2p migration is not supported by the source host"
-msgstr ""
+msgstr "migração p2p não é suportada pela máquina fonte"
 
 msgid "packed driver option is only supported for virtio devices"
 msgstr ""
+"opção de controlador de pacote é apenas suportada para dispositivos virtio"
 
 #, c-format
 msgid "packet %1$d bytes received from server too large, want %2$d"
-msgstr ""
+msgstr "pacote de %1$d bytes recebido do servidor muito grande, quero %2$d"
 
 #, c-format
 msgid "packet %1$d bytes received from server too small, want %2$d"
-msgstr ""
+msgstr "pacote de %1$d bytes recebido do servidor muito pequeno, quero %2$d"
 
 msgid "page cache size for xbzrle compression"
-msgstr ""
+msgstr "tamanho de cache de página para compressão xbzrle"
 
 msgid "page count"
-msgstr ""
+msgstr "contagem de páginas"
 
 msgid "page info is not supported on this platform"
 msgstr "informação de página não suportada nesta plataforma"
@@ -35318,20 +35327,20 @@ msgstr "alocação de página de pool não suportada nesta plataforma"
 
 #, c-format
 msgid "page size %1$u is not available"
-msgstr ""
+msgstr "tamanho de página %1$u não está disponível"
 
 #, c-format
 msgid "page size %1$u is not available on node %2$d"
-msgstr ""
+msgstr "tamanho de página %1$u não está disponível em nó %2$d"
 
 msgid "page size (in kibibytes)"
-msgstr ""
+msgstr "tamanho de página (em kibibytes)"
 
 msgid "page_per_vq option is only supported for virtio devices"
-msgstr ""
+msgstr "opção page_per_vq é apenas suportada para dispositivos"
 
 msgid "panic is supported only with ISA address type"
-msgstr ""
+msgstr "pânico é apenas suportado com tipo de endereço ISA"
 
 msgid "panicked"
 msgstr "em pânico"
@@ -35341,124 +35350,128 @@ msgstr "portos paralelos não são suportados"
 
 #, c-format
 msgid "parallels bus does not support %1$s input device"
-msgstr ""
+msgstr "barramentos paralelos não suportam dispositivo de entrada %1$s"
 
 #, c-format
 msgid "parallels containers don't support input bus %1$s"
-msgstr ""
+msgstr "contentores paralelos não suportam barramento de entrada %1$s"
 
 #, c-format
 msgid "parameter %1$s too big for destination"
-msgstr ""
+msgstr "parâmetro %1$s demasiado grande para destino"
 
 #, c-format
 msgid "parameter '%1$s' is missing in reply of guest-get-load"
-msgstr ""
+msgstr "parâmetro '%1$s' em falta em resposta de guest-get-load"
 
 #, c-format
 msgid "parameter '%1$s' not supported"
-msgstr ""
+msgstr "parâmetro '%1$s' não suportado"
 
 #, c-format
 msgid "parameter '%1$s' occurs multiple times"
-msgstr ""
+msgstr "parâmetro '%1$s' ocorre múltiplas vezes"
 
 #, c-format
 msgid "parameter '%1$s' of command '%2$s' has incorrect alias option"
-msgstr ""
+msgstr "parâmetro '%1$s' do comando '%2$s' tem opção de alias incorreta"
 
 #, c-format
 msgid "parameter '%1$s' of command '%2$s' misused 'required' flag"
-msgstr ""
+msgstr "parâmetro '%1$s' do comando '%2$s' usou mal a bandeira 'requerido'"
 
 #, c-format
 msgid ""
 "parameter '%1$s' of command '%2$s' must be listed before optional parameters"
 msgstr ""
+"parâmetro '%1$s' do comando '%2$s' tem de ser listado antes dos parâmetros "
+"opcionais"
 
 #, c-format
 msgid "parameter '%1$s' of command '%2$s' must be listed last"
-msgstr ""
+msgstr "parâmetro '%1$s' do comando '%2$s' tem de ser listado em último"
 
 msgid "parameter=value"
-msgstr ""
+msgstr "parâmetro=valor"
 
 #, c-format
 msgid "parent %1$s for moment %2$s not found"
-msgstr ""
+msgstr "pai %1$s para momento %2$s não encontrado"
 
 #, c-format
 msgid "parent %1$s would create cycle to %2$s"
-msgstr ""
+msgstr "pai %1$s iria criar ciclo para %2$s"
 
 #, c-format
 msgid "parent '%1$s' is not an fc_host for the wwnn/wwpn"
-msgstr ""
+msgstr "pai '%1$s' não é um fc_host para o wwnn/wwpn"
 
 #, c-format
 msgid "parent '%1$s' is not properly formatted"
-msgstr ""
+msgstr "pai '%1$s' não está formatado apropriadamente"
 
 #, c-format
 msgid "parent '%1$s' specified for vHBA does not exist"
-msgstr ""
+msgstr "pai '%1$s' especificado para vHBA não existe"
 
 msgid "parser error"
 msgstr "erro de análise"
 
 msgid "partial string to autocomplete"
-msgstr ""
+msgstr "string parcial para auto-completar"
 
 msgid "pass file descriptors N,M,... along with the command"
-msgstr ""
+msgstr "passa descritores de ficheiro N.M,... juntamente com o comando"
 
 msgid "pass file descriptors N,M,... to the guest"
-msgstr ""
+msgstr "passa descritores de ficheiro N.M,... para o convidado"
 
 msgid "passphrase is too long for the buffer"
-msgstr ""
+msgstr "frase passe é muito longa para o buffer"
 
 msgid "passthrough mode requires a character device type attribute"
-msgstr ""
+msgstr "modo de passagem requer atributo de tipo de dispositivo de caractere"
 
 #, c-format
 msgid "path '%1$s' doesn't reference a file"
-msgstr ""
+msgstr "caminho '%1$s' não referencia um ficheiro"
 
 #, c-format
 msgid "path '%1$s' is not absolute"
-msgstr ""
+msgstr "caminho '%1$s' não é absoluto"
 
 msgid "path does not exist, skipping file type checks"
-msgstr ""
+msgstr "caminho não existe, a saltar verificações de tipo de ficheiro"
 
 #, c-format
 msgid "path is required for model '%1$s'"
-msgstr ""
+msgstr "caminho é requerido para modelo '%1$s'"
 
 msgid "path is required for model 'nvdimm'"
-msgstr ""
+msgstr "caminho é requerido para modelo 'nvdimm'"
 
 msgid "path of backing file in chain for a partial pull"
-msgstr ""
+msgstr "caminho de ficheiro de apoio em cadeia para um puxar parcial"
 
 msgid "path of base file to commit into (default bottom of chain)"
 msgstr ""
+"caminho de ficheiro base para onde cometer (predefinição o fundo da cadeia)"
 
 msgid "path of the copy to create"
-msgstr ""
+msgstr "caminho da cópia para criar"
 
 msgid "path of top file to commit from (default top of chain)"
 msgstr ""
+"caminho de ficheiro de topo de onde cometer (predefinição o topo da cadeia)"
 
 msgid "path to emulator binary (/domain/devices/emulator)"
-msgstr ""
+msgstr "caminho para binário emulador (/domínio/dispositivos/emulador)"
 
 msgid "path to file containing the secret"
-msgstr ""
+msgstr "caminho para ficheiro que contém o segredo"
 
 msgid "path to file containing the secret header"
-msgstr ""
+msgstr "caminho para ficheiro que contém o cabeçalho do segredo"
 
 msgid "path to inputvol secret data file is required"
 msgstr ""
