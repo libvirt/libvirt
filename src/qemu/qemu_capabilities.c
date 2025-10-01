@@ -4496,6 +4496,7 @@ virQEMUCapsParseHypervCapabilities(virQEMUCaps *qemuCaps,
     g_autoptr(virDomainCapsFeatureHyperv) hvcaps = NULL;
     xmlNodePtr n = NULL;
     g_autofree xmlNodePtr *capNodes = NULL;
+    int rc;
     int ncapNodes;
     size_t i;
 
@@ -4530,6 +4531,28 @@ virQEMUCapsParseHypervCapabilities(virQEMUCaps *qemuCaps,
 
         VIR_DOMAIN_CAPS_ENUM_SET(hvcaps->features, val);
     }
+
+    rc = virXPathUInt("string(./hypervCapabilities/spinlocks)",
+                      ctxt, &hvcaps->spinlocks);
+    if (rc == -2)
+        return -1;
+
+    rc = virXPathTristateSwitch("string(./hypervCapabilities/stimer_direct)",
+                                ctxt, &hvcaps->stimer_direct);
+    if (rc == -2)
+        return -1;
+
+    rc = virXPathTristateSwitch("string(./hypervCapabilities/tlbflush_direct)",
+                                ctxt, &hvcaps->tlbflush_direct);
+    if (rc == -2)
+        return -1;
+
+    rc = virXPathTristateSwitch("string(./hypervCapabilities/tlbflush_extended)",
+                                ctxt, &hvcaps->tlbflush_extended);
+    if (rc == -2)
+        return -1;
+
+    hvcaps->vendor_id = virXPathString("string(./hypervCapabilities/vendor_id)", ctxt);
 
     qemuCaps->hypervCapabilities = g_steal_pointer(&hvcaps);
     return 0;
@@ -5070,6 +5093,25 @@ virQEMUCapsFormatHypervCapabilities(virQEMUCaps *qemuCaps,
             virBufferAsprintf(&childBuf, "<cap name='%s'/>\n",
                               virDomainHypervTypeToString(i));
         }
+
+        if (hvcaps->spinlocks != 0) {
+            virBufferAsprintf(&childBuf, "<spinlocks>%u</spinlocks>\n",
+                              hvcaps->spinlocks);
+        }
+        if (hvcaps->stimer_direct != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&childBuf, "<stimer_direct>%s</stimer_direct>\n",
+                              virTristateSwitchTypeToString(hvcaps->stimer_direct));
+        }
+        if (hvcaps->tlbflush_direct != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&childBuf, "<tlbflush_direct>%s</tlbflush_direct>\n",
+                              virTristateSwitchTypeToString(hvcaps->tlbflush_direct));
+        }
+        if (hvcaps->tlbflush_extended != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&childBuf, "<tlbflush_extended>%s</tlbflush_extended>\n",
+                              virTristateSwitchTypeToString(hvcaps->tlbflush_extended));
+        }
+        virBufferEscapeString(&childBuf, "<vendor_id>%s</vendor_id>\n",
+                              hvcaps->vendor_id);
     }
 
     return virXMLFormatElement(buf, "hypervCapabilities", &attrBuf, &childBuf);
