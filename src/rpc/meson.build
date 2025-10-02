@@ -48,6 +48,8 @@ endif
 rpc_gen_headers = []
 rpc_gen_sources = []
 
+rpc_gen_headers += dtrace_gen_headers
+
 foreach name : [ 'virnet', 'virkeepalive' ]
   protocol_file = files('@0@protocol.x'.format(name))
   header_file = '@0@protocol.h'.format(name)
