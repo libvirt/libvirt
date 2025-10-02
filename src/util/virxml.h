@@ -78,6 +78,11 @@ virXPathTristateSwitch(const char *xpath,
                        xmlXPathContextPtr ctxt,
                        virTristateSwitch *value);
 
+int
+virXPathTristateBool(const char *xpath,
+                     xmlXPathContextPtr ctxt,
+                     virTristateBool *value);
+
 xmlNodePtr
 virXMLNodeGetSubelement(xmlNodePtr node,
                         const char *name);

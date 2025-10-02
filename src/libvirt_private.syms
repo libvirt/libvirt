@@ -3827,6 +3827,7 @@ virXPathLongLong;
 virXPathNode;
 virXPathNodeSet;
 virXPathString;
+virXPathTristateBool;
 virXPathTristateSwitch;
 virXPathUInt;
 virXPathUIntBase;

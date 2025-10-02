@@ -319,6 +319,40 @@ virXPathTristateSwitch(const char *xpath,
 
 
 /**
+ * virXPathTristateBool:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned virTristateBool value
+ *
+ * Convenience function to evaluate an XPath tristate value. The @xpath
+ * expression must ensure that the evaluated value is returned as a
+ * string (use the 'string()' conversion in the expression).
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the XPath evaluation failed or -2 if the
+ *         value isn't of a virTristateBool value.
+ */
+int
+virXPathTristateBool(const char *xpath,
+                     xmlXPathContextPtr ctxt,
+                     virTristateBool *value)
+{
+    g_autoptr(xmlXPathObject) obj = NULL;
+    int rc;
+
+    if (!(obj = virXPathEvalString(xpath, ctxt)))
+        return -1;
+
+    rc = virTristateBoolTypeFromString((char *)obj->stringval);
+    if (rc < 0)
+        return -2;
+
+    *value = rc;
+    return 0;
+}
+
+
+/**
  * virXMLCheckIllegalChars:
  * @nodeName: Name of checked node
  * @str: string to check
