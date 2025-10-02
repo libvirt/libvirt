@@ -73,6 +73,11 @@ virXPathLongLong(const char *xpath,
                  xmlXPathContextPtr ctxt,
                  long long *value);
 
+int
+virXPathTristateSwitch(const char *xpath,
+                       xmlXPathContextPtr ctxt,
+                       virTristateSwitch *value);
+
 xmlNodePtr
 virXMLNodeGetSubelement(xmlNodePtr node,
                         const char *name);
