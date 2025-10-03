@@ -8376,8 +8376,8 @@ The watchdog device requires an additional driver and management daemon in the
 guest. Just enabling the watchdog in the libvirt configuration does not do
 anything useful on its own.
 
-Currently libvirt does not support notification when the watchdog fires. This
-feature is planned for a future version of libvirt.
+:since:`Since 0.8.0`, a notification is available when the watchdog fires, using
+the event ID ``VIR_DOMAIN_EVENT_ID_WATCHDOG``.
 
 Having multiple watchdogs is usually not something very common, but be aware
 that this might happen, for example, when an implicit watchdog device is added
