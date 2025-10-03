@@ -871,10 +871,6 @@ are supported. The ``features`` enum corresponds to the ``<hyperv/>`` element
 (well, its children) as documented in `Hypervisor features
 <formatdomain.html#hypervisor-features>`__.
 
-Please note that depending on the QEMU version some capabilities might be
-missing even though QEMU does support them. This is because prior to QEMU-6.1.0
-not all features were reported by QEMU.
-
 Launch security
 ^^^^^^^^^^^^^^^
 
