@@ -168,6 +168,7 @@ pfAddNatFirewallRules(virNetworkDef *def,
     g_autofree const char *forwardIf = g_strdup(virNetworkDefForwardIf(def, 0));
     g_auto(virBuffer) pf_rules_buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommand) cmd = virCommandNew(PFCTL);
+    g_autoptr(virCommand) flush_cmd = virCommandNew(PFCTL);
     virPortRange *portRange = &def->forward.port;
     g_autofree char *portRangeStr = NULL;
 
@@ -240,12 +241,24 @@ pfAddNatFirewallRules(virNetworkDef *def,
                       "block on %s\n",
                       def->bridge);
 
-    /*  pfctl -a libvirt/default -F all -f - */
+    /* pfctl -a libvirt/default -f - */
     virCommandAddArg(cmd, "-a");
     virCommandAddArgFormat(cmd, "libvirt/%s", def->name);
-    virCommandAddArgList(cmd, "-F", "all", "-f", "-", NULL);
+    virCommandAddArgList(cmd, "-f", "-", NULL);
 
     virCommandSetInputBuffer(cmd, virBufferContentAndReset(&pf_rules_buf));
+
+    /* pfctl -a libvirt/default -F all */
+    /* Flush rules as a separate command, so when it fails, e.g. because the
+     * anchor didn't exist, we still proceed with rules creation */
+    virCommandAddArg(flush_cmd, "-a");
+    virCommandAddArgFormat(flush_cmd, "libvirt/%s", def->name);
+    virCommandAddArgList(flush_cmd, "-F", "all", NULL);
+
+    if (virCommandRun(flush_cmd, NULL) < 0) {
+        VIR_WARN("Failed to flush firewall rules for network %s",
+                 def->name);
+    }
 
     if (virCommandRun(cmd, NULL) < 0) {
         VIR_WARN("Failed to create firewall rules for network %s",
