@@ -624,6 +624,98 @@ chCloseFDs(int *fds, size_t nfds)
     return 0;
 }
 
+int
+chProcessAddNetworkDevice(virCHDriver *driver,
+                          virCHMonitor *mon,
+                          virDomainDef *vmdef,
+                          virDomainNetDef *net,
+                          int **nicindexes,
+                          size_t *nnicindexes)
+{
+    VIR_AUTOCLOSE mon_sockfd = -1;
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) http_headers = VIR_BUFFER_INITIALIZER;
+    g_autofree int *tapfds = NULL;
+    g_autofree char *payload = NULL;
+    g_autofree char *response = NULL;
+    size_t tapfd_len;
+    size_t payload_len;
+    int saved_errno;
+    int rc;
+
+    if (!virBitmapIsBitSet(driver->chCaps, CH_MULTIFD_IN_ADDNET)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Guest networking is not supported by this version of ch"));
+        return -1;
+    }
+
+    if ((mon_sockfd = chMonitorSocketConnect(mon)) < 0) {
+        VIR_WARN("chProcessAddNetworkDevices failed");
+        return -1;
+    }
+
+    virBufferAddLit(&http_headers, "PUT /api/v1/vm.add-net HTTP/1.1\r\n");
+    virBufferAddLit(&http_headers, "Host: localhost\r\n");
+    virBufferAddLit(&http_headers, "Content-Type: application/json\r\n");
+
+
+    if (net->driver.virtio.queues == 0) {
+        /* "queues" here refers to queue pairs. When 0, initialize
+            * queue pairs to 1.
+            */
+        net->driver.virtio.queues = 1;
+    }
+    tapfd_len = net->driver.virtio.queues;
+
+    if (virCHDomainValidateActualNetDef(net) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("net definition failed validation"));
+        return -1;
+    }
+
+    tapfds = g_new0(int, tapfd_len);
+    memset(tapfds, -1, (tapfd_len) * sizeof(int));
+
+    /* Connect Guest interfaces */
+    if (virCHConnetNetworkInterfaces(driver, vmdef, net, tapfds,
+                                     nicindexes, nnicindexes) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to connect network interfaces"));
+        return -1;
+    }
+
+    chAssignDeviceNetAlias(vmdef, net);
+    if (virCHMonitorBuildNetJson(net, &payload) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to build net json"));
+        return -1;
+    }
+
+    virBufferAsprintf(&buf, "%s", virBufferCurrentContent(&http_headers));
+    virBufferAsprintf(&buf, "Content-Length: %zu\r\n\r\n", strlen(payload));
+    virBufferAsprintf(&buf, "%s", payload);
+    payload_len = virBufferUse(&buf);
+    payload = virBufferContentAndReset(&buf);
+
+    rc = virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len,
+                                 tapfds, tapfd_len);
+    saved_errno = errno;
+
+    /* Close sent tap fds in Libvirt, as they have been dup()ed in CH */
+    chCloseFDs(tapfds, tapfd_len);
+
+    if (rc < 0) {
+        virReportSystemError(saved_errno, "%s",
+                                _("Failed to send net-add request to CH"));
+        return -1;
+    }
+
+    if (chSocketProcessHttpResponse(mon_sockfd, true) < 0)
+        return -1;
+
+    return 0;
+}
+
 /**
  * chProcessAddNetworkDevices:
  * @driver: pointer to ch driver object
@@ -644,84 +736,13 @@ chProcessAddNetworkDevices(virCHDriver *driver,
                            int **nicindexes,
                            size_t *nnicindexes)
 {
-    size_t i;
-    VIR_AUTOCLOSE mon_sockfd = -1;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) http_headers = VIR_BUFFER_INITIALIZER;
-
-    if (!virBitmapIsBitSet(driver->chCaps, CH_MULTIFD_IN_ADDNET)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Guest networking is not supported by this version of ch"));
-        return -1;
-    }
-
-    if ((mon_sockfd = chMonitorSocketConnect(mon)) < 0)
-        return -1;
-
-    virBufferAddLit(&http_headers, "PUT /api/v1/vm.add-net HTTP/1.1\r\n");
-    virBufferAddLit(&http_headers, "Host: localhost\r\n");
-    virBufferAddLit(&http_headers, "Content-Type: application/json\r\n");
+    size_t i = 0;
 
     for (i = 0; i < vmdef->nnets; i++) {
-        g_autofree int *tapfds = NULL;
-        g_autofree char *payload = NULL;
-        g_autofree char *response = NULL;
-        size_t tapfd_len;
-        size_t payload_len;
-        int saved_errno;
-        int rc;
-
-        if (vmdef->nets[i]->driver.virtio.queues == 0) {
-            /* "queues" here refers to queue pairs. When 0, initialize
-             * queue pairs to 1.
-             */
-            vmdef->nets[i]->driver.virtio.queues = 1;
-        }
-        tapfd_len = vmdef->nets[i]->driver.virtio.queues;
-
-        if (virCHDomainValidateActualNetDef(vmdef->nets[i]) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("net definition failed validation"));
-            return -1;
-        }
-
-        tapfds = g_new0(int, tapfd_len);
-        memset(tapfds, -1, (tapfd_len) * sizeof(int));
-
-        /* Connect Guest interfaces */
-        if (virCHConnetNetworkInterfaces(driver, vmdef, vmdef->nets[i], tapfds,
-                                         nicindexes, nnicindexes) < 0)
-            return -1;
-
-        if (virCHMonitorBuildNetJson(vmdef->nets[i], i, &payload) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Failed to build net json"));
-            return -1;
-        }
-
-        VIR_DEBUG("payload sent with net-add request to CH = %s", payload);
-
-        virBufferAsprintf(&buf, "%s", virBufferCurrentContent(&http_headers));
-        virBufferAsprintf(&buf, "Content-Length: %zu\r\n\r\n", strlen(payload));
-        virBufferAsprintf(&buf, "%s", payload);
-        payload_len = virBufferUse(&buf);
-        payload = virBufferContentAndReset(&buf);
-
-        rc = virSocketSendMsgWithFDs(mon_sockfd, payload, payload_len,
-                                     tapfds, tapfd_len);
-        saved_errno = errno;
-
-        /* Close sent tap fds in Libvirt, as they have been dup()ed in CH */
-        chCloseFDs(tapfds, tapfd_len);
-
-        if (rc < 0) {
-            virReportSystemError(saved_errno, "%s",
-                                 _("Failed to send net-add request to CH"));
-            return -1;
-        }
-
-        if (chSocketProcessHttpResponse(mon_sockfd, true) < 0)
-            return -1;
+       if (chProcessAddNetworkDevice(driver, mon, vmdef, vmdef->nets[i],
+                                     nicindexes, nnicindexes) < 0) {
+        return -1;
+       }
     }
 
     return 0;

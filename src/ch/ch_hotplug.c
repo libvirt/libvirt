@@ -21,6 +21,7 @@
 #include "ch_hotplug.h"
 #include "ch_alias.h"
 #include "ch_domain.h"
+#include "ch_process.h"
 #include "domain_event.h"
 #include "domain_validate.h"
 #include "virlog.h"
@@ -73,6 +74,17 @@ chDomainAttachDeviceLive(virCHDriver *driver,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
+        if (chProcessAddNetworkDevice(driver, mon, vm->def, dev->data.net,
+                                      NULL, NULL) < 0) {
+            break;
+        }
+
+        virDomainNetInsert(vm->def, dev->data.net);
+        alias = dev->data.net->info.alias;
+        dev->data.net = NULL;
+        ret = 0;
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:

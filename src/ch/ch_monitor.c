@@ -379,7 +379,6 @@ virCHMonitorBuildRngJson(virJSONValue *content, virDomainDef *vmdef)
 /**
  * virCHMonitorBuildNetJson:
  * @net: pointer to a guest network definition
- * @netindex: index of the guest network definition
  * @jsonstr: returned network json
  *
  * Build net json to send to CH
@@ -387,15 +386,13 @@ virCHMonitorBuildRngJson(virJSONValue *content, virDomainDef *vmdef)
  */
 int
 virCHMonitorBuildNetJson(virDomainNetDef *net,
-                         int netindex,
                          char **jsonstr)
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
     g_autoptr(virJSONValue) net_json = virJSONValueNewObject();
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
-    g_autofree char *id = g_strdup_printf("%s_%d", CH_NET_ID_PREFIX, netindex);
-    if (virJSONValueObjectAppendString(net_json, "id", id) < 0)
+    if (virJSONValueObjectAppendString(net_json, "id", net->info.alias) < 0)
         return -1;
 
     if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET &&
