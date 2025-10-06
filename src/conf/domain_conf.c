@@ -8297,6 +8297,8 @@ static int
 virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                                xmlNodePtr cur)
 {
+    xmlNodePtr statisticsNode;
+
     def->driverName = virXMLPropString(cur, "name");
 
     if (virXMLPropEnum(cur, "cache", virDomainDiskCacheTypeFromString,
@@ -8345,6 +8347,26 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
 
     if (virDomainIothreadMappingDefParse(cur, &def->iothreads) < 0)
         return -1;
+
+    if ((statisticsNode = virXMLNodeGetSubelement(cur, "statistics"))) {
+        g_autoptr(GPtrArray) statisticNodes = NULL;
+
+        statisticNodes = virXMLNodeGetSubelementList(statisticsNode, "statistic");
+
+        if (statisticNodes->len > 0) {
+            size_t i;
+
+            def->statistics = g_new0(unsigned int, statisticNodes->len + 1);
+
+            for (i = 0; i < statisticNodes->len; i++) {
+                if (virXMLPropUInt(g_ptr_array_index(statisticNodes, i),
+                                   "interval", 10,
+                                   VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                                   def->statistics + i) < 0)
+                    return -1;
+            }
+        }
+    }
 
     if (virXMLPropEnum(cur, "detect_zeroes",
                        virDomainDiskDetectZeroesTypeFromString,
@@ -23863,6 +23885,18 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
     }
 
     virDomainIothreadMappingDefFormat(&childBuf, disk->iothreads);
+
+    if (disk->statistics) {
+        g_auto(virBuffer) statisticsChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+        size_t i;
+
+        for (i = 0; disk->statistics[i] > 0; i++)
+            virBufferAsprintf(&statisticsChildBuf, "<statistic interval='%u'/>\n",
+                              disk->statistics[i]);
+
+        virXMLFormatElement(&childBuf, "statistics", NULL, &statisticsChildBuf);
+    }
+
 
     virXMLFormatElement(buf, "driver", &attrBuf, &childBuf);
 }

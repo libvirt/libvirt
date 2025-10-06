@@ -592,6 +592,8 @@ struct _virDomainDiskDef {
     virDomainDiskDiscard discard;
     unsigned int iothread; /* unused = 0, > 0 specific thread # */
     GSList *iothreads; /* List of virDomainIothreadMappingDef */
+    unsigned int *statistics; /* Optional, zero terminated list of intervals to
+                                collect statistics for */
     virDomainDiskDetectZeroes detect_zeroes;
     virTristateSwitch discard_no_unref;
     char *domain_name; /* backend domain name */
