@@ -33,6 +33,7 @@ module Libvirt_sanlock =
    let lns = ( record | comment | empty ) *
 
    let filter = incl "/etc/libvirt/qemu-sanlock.conf"
+              . incl "/etc/libvirt/libxl-sanlock.conf"
               . Util.stdexcl
 
    let xfm = transform lns filter

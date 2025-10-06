@@ -207,6 +207,14 @@ if conf.has('WITH_LIBVIRTD')
 
   if conf.has('WITH_SANLOCK')
     virt_aug_files += files('libvirt_sanlock.aug')
+    virt_test_aug_files += {
+      'name': 'test_libvirt_sanlock.aug',
+      'aug': files('test_libvirt_sanlock.aug.in'),
+      'conf': files('sanlock.conf'),
+      'test_name': 'libvirt_sanlock',
+      'test_srcdir': meson.current_source_dir(),
+      'test_builddir': meson.current_build_dir(),
+    }
 
     if conf.has('WITH_QEMU')
       qemu_sanlock_conf = configure_file(
@@ -215,14 +223,6 @@ if conf.has('WITH_LIBVIRTD')
         configuration: configmake_conf,
       )
       virt_conf_files += qemu_sanlock_conf
-      virt_test_aug_files += {
-        'name': 'test_libvirt_sanlock.aug',
-        'aug': files('test_libvirt_sanlock.aug.in'),
-        'conf': qemu_sanlock_conf,
-        'test_name': 'libvirt_sanlock',
-        'test_srcdir': meson.current_source_dir(),
-        'test_builddir': meson.current_build_dir(),
-      }
     endif
 
     if conf.has('WITH_LIBXL')
