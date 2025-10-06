@@ -2751,6 +2751,27 @@ Information listed includes:
 * ``block.<num>.physical`` - physical size of source file in bytes
 * ``block.<num>.threshold`` - threshold (in bytes) for delivering the
   VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD event. See domblkthreshold.
+* ``block.<num>.limits.request_alignment`` - Alignment requirement for requests
+  in bytes
+* ``block.<num>.limits.discard_max`` - Maximum number of bytes that can be
+  discarded at once
+* ``block.<num>.limits.discard_alignment`` - Optimal alignment for discard
+  requests in bytes
+* ``block.<num>.limits.write_zeroes_max`` - Maximum number of bytes that can be
+  zeroed out at once
+* ``block.<num>.limits.write_zeroes_alignment`` - Optimal alignment for
+  write_zeroes requests in bytes
+* ``block.<num>.limits.transfer_optimal`` - Optimal transfer length in bytes
+* ``block.<num>.limits.transfer_max`` - Maximal transfer length in bytes
+* ``block.<num>.limits.transfer_hw_max`` - Maximal hardware transfer length of
+  requests bypassing kernel IO scheduler in bytes
+* ``block.<num>.limits.iov_max`` - Maximum number of scatter/gather elements
+* ``block.<num>.limits.iov_hw_max`` - Maximal number of scatter/gather elements
+  of requests bypassing kernel IO scheduler
+* ``block.<num>.limits.memory_alignment_minimal`` - memory alignment in bytes so
+  that no bounce buffer is needed
+* ``block.<num>.limits.memory_alignment_optimal`` - memory alignment in bytes
+  that is used for bounce buffers
 
 
 *--iothread* returns information about IOThreads on the running guest

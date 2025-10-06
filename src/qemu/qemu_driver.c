@@ -17521,6 +17521,67 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
     if (entry->write_threshold)
         virTypedParamListAddULLong(params, entry->write_threshold,
                                    VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD, recordnr);
+
+    if (entry->limits) {
+        if (entry->limits->request_alignment > 0)
+            virTypedParamListAddULLong(params, entry->limits->request_alignment,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_REQUEST_ALIGNMENT,
+                                       recordnr);
+
+        if (entry->limits->discard_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->discard_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_MAX,
+                                       recordnr);
+
+        if (entry->limits->discard_alignment > 0)
+            virTypedParamListAddULLong(params, entry->limits->discard_alignment,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_ALIGNMENT,
+                                       recordnr);
+
+        if (entry->limits->write_zeroes_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->write_zeroes_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_MAX,
+                                       recordnr);
+        if (entry->limits->write_zeroes_alignment > 0)
+            virTypedParamListAddULLong(params, entry->limits->write_zeroes_alignment,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_ALIGNMENT,
+                                       recordnr);
+
+        if (entry->limits->transfer_optimal > 0)
+            virTypedParamListAddULLong(params, entry->limits->transfer_optimal,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_OPTIMAL,
+                                       recordnr);
+
+        if (entry->limits->transfer_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->transfer_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_MAX,
+                                       recordnr);
+
+        if (entry->limits->transfer_hw_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->transfer_hw_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_HW_MAX,
+                                       recordnr);
+
+        if (entry->limits->iov_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->iov_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_MAX,
+                                       recordnr);
+
+        if (entry->limits->iov_hw_max > 0)
+            virTypedParamListAddULLong(params, entry->limits->iov_hw_max,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_HW_MAX,
+                                       recordnr);
+
+        if (entry->limits->memory_alignment_minimal > 0)
+            virTypedParamListAddULLong(params, entry->limits->memory_alignment_minimal,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_MINIMAL,
+                                       recordnr);
+
+        if (entry->limits->memory_alignment_optimal > 0)
+            virTypedParamListAddULLong(params, entry->limits->memory_alignment_optimal,
+                                       VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_OPTIMAL,
+                                       recordnr);
+    }
 }
 
 

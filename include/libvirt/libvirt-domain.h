@@ -3488,6 +3488,154 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_THRESHOLD ".threshold"
 
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_REQUEST_ALIGNMENT:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Alignment requirement, in bytes, for offset/length of I/O requests, as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_REQUEST_ALIGNMENT ".limits.request_alignment"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximum number of bytes that can be discarded at once, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_MAX ".limits.discard_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_ALIGNMENT:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Optimal alignment for discard requests in bytes, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_ALIGNMENT ".limits.discard_alignment"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximum number of bytes that can be zeroed out at once, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_MAX ".limits.write_zeroes_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_ALIGNMENT:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Optimal alignment for write_zeroes requests in bytes, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_ALIGNMENT ".limits.write_zeroes_alignment"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_OPTIMAL:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Optimal transfer length in bytes, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_OPTIMAL ".limits.transfer_optimal"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximal transfer length in bytes, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_MAX ".limits.transfer_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_HW_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximal hardware transfer length of requests bypassing kernel IO scheduler
+ * in bytes, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_HW_MAX ".limits.transfer_hw_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximum number of scatter/gather elements, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_MAX ".limits.iov_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_HW_MAX:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * Maximal number of scatter/gather elements of requests bypassing kernel IO
+ * scheduler, as unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_HW_MAX ".limits.iov_hw_max"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_MINIMAL:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * memory alignment in bytes so that no bounce buffer is needed, as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_MINIMAL ".limits.memory_alignment_minimal"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_OPTIMAL:
+ *
+ * limits represent constraints on individual operations as imposed by the
+ * backing file storage technology.
+ *
+ * memory alignment in bytes that is used for bounce buffers, as
+ * unsigned long long.
+ *
+ * Since: 11.9.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_OPTIMAL ".limits.memory_alignment_optimal"
 
 /**
  * VIR_DOMAIN_STATS_PERF_CMT:
