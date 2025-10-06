@@ -17054,9 +17054,9 @@ qemuDomainGetStatsCpuProc(virDomainObj *vm,
         return;
     }
 
-    virTypedParamListAddULLong(params, cpuTime, "cpu.time");
-    virTypedParamListAddULLong(params, userTime, "cpu.user");
-    virTypedParamListAddULLong(params, sysTime, "cpu.system");
+    virTypedParamListAddULLong(params, cpuTime, VIR_DOMAIN_STATS_CPU_TIME);
+    virTypedParamListAddULLong(params, userTime, VIR_DOMAIN_STATS_CPU_USER);
+    virTypedParamListAddULLong(params, sysTime, VIR_DOMAIN_STATS_CPU_SYSTEM);
 }
 
 
