@@ -17,6 +17,12 @@ v11.9.0 (unreleased)
 
 * **New features**
 
+  * Introduce Hyper-V ``host-model`` mode
+
+    Similarly to CPUs, ``host-model`` mode expands available Hyper-V
+    enlightenments at domain startup into the live XML so that's obvious which
+    enlightenments are enabled.
+
 * **Improvements**
 
   * qemu: Improvements to USB controller model selection
