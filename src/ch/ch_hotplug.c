@@ -23,6 +23,7 @@
 #include "ch_domain.h"
 #include "ch_process.h"
 #include "domain_event.h"
+#include "domain_interface.h"
 #include "domain_validate.h"
 #include "virlog.h"
 
@@ -221,6 +222,50 @@ chDomainFindDisk(virDomainObj *vm,
 
 
 static int
+chFindNetID(virDomainDef *def, const char *dst)
+{
+    size_t i;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (STREQ(def->nets[i]->ifname, dst))
+            return i;
+    }
+
+    return -1;
+}
+
+/**
+ * chDomainFindNet
+ *
+ * Helper function to find a network device definition of a domain.
+ *
+ * Searches through the network devices of a domain by comparing to 'match' and
+ * returns any match via the 'detach' out parameter.
+ */
+static int
+chDomainFindNet(virDomainObj *vm,
+                virDomainNetDef *match,
+                virDomainNetDef **detach)
+{
+    int idx;
+
+    if (!match->ifname) {
+        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
+                       _("no interface name specified"));
+        return -1;
+    }
+    if ((idx = chFindNetID(vm->def, match->ifname)) < 0) {
+        virReportError(VIR_ERR_DEVICE_MISSING,
+                       _("net %1$s not found"), match->ifname);
+        return -1;
+    }
+    *detach = vm->def->nets[idx];
+
+    return 0;
+}
+
+
+static int
 chDomainRemoveDevice(virDomainObj *vm,
                      virDomainDeviceDef *device)
 {
@@ -239,9 +284,19 @@ chDomainRemoveDevice(virDomainObj *vm,
             }
         }
         break;
+    case VIR_DOMAIN_DEVICE_NET:
+        virDomainInterfaceStopDevice(device->data.net);
+        virDomainInterfaceDeleteDevice(vm->def, device->data.net, false, NULL);
+        for (i = 0; i < vm->def->nnets; i++) {
+            if (vm->def->nets[i] == device->data.net) {
+                virDomainNetRemove(vm->def, i);
+                g_clear_pointer(&device->data.net, virDomainNetDefFree);
+                break;
+            }
+        }
+        break;
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -296,9 +351,14 @@ chDomainDetachDeviceLive(virCHDriver *driver,
             return -1;
         }
         break;
+    case VIR_DOMAIN_DEVICE_NET:
+        if (chDomainFindNet(vm, match->data.net,
+                            &detach.data.net) < 0) {
+            return -1;
+        }
+        break;
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -360,8 +420,9 @@ chDomainDetachDeviceLive(virCHDriver *driver,
     alias = g_strdup(info->alias);
 
     if (virCHMonitorRemoveDevice(priv->monitor, info->alias) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Invalid response from CH. Disk removal failed."));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid response from CH. Device removal failed for device %1$s."),
+                       info->alias);
         return -1;
     }
 
