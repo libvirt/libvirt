@@ -32,6 +32,11 @@ v11.9.0 (unreleased)
 
     If the ``retries`` attribute is omitted this value is used.
 
+  * ch: Network hotplug Support
+
+    Users can now attach and detach network interfaces of Cloud Hypervisor
+    domains at runtime.
+
 * **Improvements**
 
   * qemu: Improvements to USB controller model selection
