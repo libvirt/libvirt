@@ -23,5 +23,8 @@
 int
 chAssignDeviceDiskAlias(virDomainDiskDef *disk);
 
+void
+chAssignDeviceNetAlias(virDomainDef *def, virDomainNetDef *net);
+
 int
 chAssignDeviceAliases(virDomainDef *def);

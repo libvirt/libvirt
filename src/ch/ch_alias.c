@@ -18,11 +18,13 @@
 
 #include <config.h>
 
+#include "virstring.h"
 #include "virutil.h"
 
 #include "ch_alias.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
+#define CH_NET_ID_PREFIX "net"
 
 int chAssignDeviceDiskAlias(virDomainDiskDef *disk)
 {
@@ -47,6 +49,47 @@ int chAssignDeviceDiskAlias(virDomainDiskDef *disk)
     return 0;
 }
 
+/**
+ * Extract the index number of some device alias
+ */
+static
+int chDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
+                             const char *prefix)
+{
+    int idx;
+
+    if (!info->alias)
+        return -1;
+    if (!STRPREFIX(info->alias, prefix))
+        return -1;
+
+    if (virStrToLong_i(info->alias + strlen(prefix), NULL, 10, &idx) < 0)
+        return -1;
+
+    return idx;
+}
+
+void chAssignDeviceNetAlias(virDomainDef *def, virDomainNetDef *net)
+{
+    size_t idx = 0;
+    size_t i;
+
+    if (net->info.alias) {
+        return;
+    }
+
+    for (i = 0; i < def->nnets; i++) {
+        int thisidx;
+
+        if ((thisidx = chDomainDeviceAliasIndex(&def->nets[i]->info, CH_NET_ID_PREFIX)) < 0)
+            continue;
+        if (thisidx >= idx)
+            idx = thisidx + 1;
+    }
+
+    net->info.alias = g_strdup_printf("%s%lu", CH_NET_ID_PREFIX, idx);
+}
+
 int chAssignDeviceAliases(virDomainDef *def)
 {
     size_t i;
@@ -54,6 +97,10 @@ int chAssignDeviceAliases(virDomainDef *def)
     for (i = 0; i < def->ndisks; i++) {
         if (chAssignDeviceDiskAlias(def->disks[i]) < 0)
             return -1;
+    }
+
+    for (i = 0; i < def->nnets; i++) {
+        chAssignDeviceNetAlias(def, def->nets[i]);
     }
 
     /* TODO: handle other devices */
