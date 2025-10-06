@@ -149,11 +149,11 @@
 # Enable sanlock library for lock management with QEMU
 # Sanlock is available only on arches where kvm is available for RHEL
 %if 0%{?fedora}
-    %define with_sanlock 0%{!?_without_sanlock:%{with_qemu}}
+    %define with_sanlock 0%{!?_without_sanlock:1}
 %endif
 %if 0%{?rhel}
     %ifarch %{arches_qemu_kvm}
-        %define with_sanlock 0%{!?_without_sanlock:%{with_qemu}}
+        %define with_sanlock 0%{!?_without_sanlock:1}
     %endif
 %endif
 
