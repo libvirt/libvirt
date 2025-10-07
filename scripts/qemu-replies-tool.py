@@ -436,16 +436,16 @@ def dump_device_and_object_properties(conv, dumpprefix):
                 if k not in ['name', 'type', 'description', 'default-value']:
                     raise Exception("Unhandled 'device-list-properties'/'qom-list-properties' typename '%s' field '%s'" % (c['cmd']['arguments']['typename'], k))
 
-                if 'default-value' in arg:
-                    defval = ' (%s)' % str(arg['default-value'])
-                else:
-                    defval = ''
+            if 'default-value' in arg:
+                defval = ' (%s)' % str(arg['default-value'])
+            else:
+                defval = ''
 
-                    ent.append('%s %s %s %s%s' % (prefix,
-                                                  c['cmd']['arguments']['typename'],
-                                                  arg['name'],
-                                                  arg['type'],
-                                                  defval))
+            ent.append('%s %s %s %s%s' % (prefix,
+                                          c['cmd']['arguments']['typename'],
+                                          arg['name'],
+                                          arg['type'],
+                                          defval))
     ent.sort()
 
     for e in ent:
