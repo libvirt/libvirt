@@ -3414,6 +3414,35 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
     if (qemuValidateDomainDeviceDefDiskIOThreads(def, disk, qemuCaps) < 0)
         return -1;
 
+    if (disk->statistics) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_TIMED_STATS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("statistics collection is not supported by this QEMU binary"));
+            return -1;
+        }
+
+        switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+        case VIR_DOMAIN_DISK_BUS_IDE:
+        case VIR_DOMAIN_DISK_BUS_SATA:
+        case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        case VIR_DOMAIN_DISK_BUS_USB:
+            break;
+
+        case VIR_DOMAIN_DISK_BUS_FDC:
+        case VIR_DOMAIN_DISK_BUS_NVME:
+        case VIR_DOMAIN_DISK_BUS_XEN:
+        case VIR_DOMAIN_DISK_BUS_SD:
+        case VIR_DOMAIN_DISK_BUS_NONE:
+        case VIR_DOMAIN_DISK_BUS_UML:
+        case VIR_DOMAIN_DISK_BUS_LAST:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("statistics collection is not supported by disks on bus '%1$s'"),
+                           NULLSTR(virDomainDiskBusTypeToString(disk->bus)));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

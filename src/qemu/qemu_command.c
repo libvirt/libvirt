@@ -1690,6 +1690,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     const char *alias = disk->info.alias;
     g_autofree char *usbdiskalias = NULL;
     const virDomainDeviceInfo *deviceinfo = &disk->info;
+    g_autoptr(virJSONValue) statistics = NULL;
     virDomainDeviceInfo usbSCSIinfo = {
         .type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
         .addr.drive = { .diskbus = VIR_DOMAIN_DISK_BUS_USB },
@@ -1897,6 +1898,19 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
 
     qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
 
+    if (disk->statistics) {
+        size_t i;
+
+        statistics = virJSONValueNewArray();
+
+        for (i = 0; disk->statistics[i] > 0; i++) {
+            g_autoptr(virJSONValue) num = virJSONValueNewNumberUint(disk->statistics[i]);
+
+            if (virJSONValueArrayAppend(statistics, &num) < 0)
+                return NULL;
+        }
+    }
+
     if (virJSONValueObjectAdd(&props,
                               "S:device_id", scsiVPDDeviceId,
                               "T:share-rw", shareRW,
@@ -1921,6 +1935,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:serial", serial,
                               "S:werror", wpolicy,
                               "S:rerror", rpolicy,
+                              "A:stats-intervals", &statistics,
                               NULL) < 0)
         return NULL;
 

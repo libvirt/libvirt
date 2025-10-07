@@ -1829,6 +1829,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");
+    DO_TEST_CAPS_LATEST("disk-statistics-intervals");
 
     DO_TEST_CAPS_ARCH_LATEST("disk-arm-virtio-sd", "aarch64");
 
