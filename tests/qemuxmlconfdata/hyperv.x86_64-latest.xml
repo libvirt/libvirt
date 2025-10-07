@@ -36,7 +36,9 @@
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
   </cpu>
-  <clock offset='utc'/>
+  <clock offset='utc'>
+    <timer name='hypervclock' present='yes'/>
+  </clock>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
