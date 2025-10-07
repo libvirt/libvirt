@@ -477,7 +477,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
     for (i = 0; i < def->clock.ntimers; i++) {
         virDomainTimerDef *timer = def->clock.timers[i];
 
-        switch ((virDomainTimerNameType)timer->name) {
+        switch (timer->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported timer type (name) '%1$s'"),

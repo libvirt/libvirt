@@ -397,7 +397,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
     }
 
     for (i = 0; i < clock.ntimers; i++) {
-        switch ((virDomainTimerNameType) clock.timers[i]->name) {
+        switch (clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_TSC:
             switch (clock.timers[i]->mode) {
             case VIR_DOMAIN_TIMER_MODE_NATIVE:

@@ -335,7 +335,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDef *def,
         if (timer->present == VIR_TRISTATE_BOOL_NO)
             continue;
 
-        switch ((virDomainTimerNameType)timer->name) {
+        switch (timer->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
         case VIR_DOMAIN_TIMER_NAME_TSC:
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:

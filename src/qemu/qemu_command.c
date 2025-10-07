@@ -6047,7 +6047,7 @@ qemuBuildClockCommandLine(virCommand *cmd,
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
+        switch (def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
             /* qemuDomainDefValidateClockTimers will handle this
              * error condition  */
@@ -6491,7 +6491,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
     for (i = 0; i < def->clock.ntimers; i++) {
         virDomainTimerDef *timer = def->clock.timers[i];
 
-        switch ((virDomainTimerNameType)timer->name) {
+        switch (timer->name) {
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
             if (timer->present != VIR_TRISTATE_BOOL_ABSENT) {
                 /* QEMU expects on/off -> virTristateSwitch. */
@@ -7200,7 +7200,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
+        switch (def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_HPET:
             /* qemuBuildClockCommandLine handles the old-style config via '-no-hpet' */
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_HPET) &&

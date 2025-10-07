@@ -2093,7 +2093,7 @@ xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
     }
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        switch ((virDomainTimerNameType)def->clock.timers[i]->name) {
+        switch (def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_TSC:
             switch (def->clock.timers[i]->mode) {
             case VIR_DOMAIN_TIMER_MODE_NATIVE:
