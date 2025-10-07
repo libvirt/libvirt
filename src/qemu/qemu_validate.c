@@ -114,6 +114,19 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
 
     CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_SYNIC, VIR_DOMAIN_HYPERV_VPINDEX);
 
+    if (def->hyperv_features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
+        if (!virDomainDefHasTimer(def, VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("'%1$s' hyperv feature requires '%2$s' timer"),
+                           virDomainHypervTypeToString(VIR_DOMAIN_HYPERV_STIMER),
+                           virDomainTimerNameTypeToString(VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK));
+            return -1;
+        }
+    }
+
+    CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_STIMER, VIR_DOMAIN_HYPERV_VPINDEX);
+    CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_STIMER, VIR_DOMAIN_HYPERV_SYNIC);
+
     return 0;
 }
 
