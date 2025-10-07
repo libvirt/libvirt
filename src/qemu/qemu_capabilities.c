@@ -746,6 +746,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 485 */
               "acpi-generic-initiator", /* QEMU_CAPS_ACPI_GENERIC_INITIATOR */
+              "disk-timed-stats", /* QEMU_CAPS_DISK_TIMED_STATS */
     );
 
 
@@ -1478,6 +1479,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "queue-size", QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
     { "iothread-vq-mapping", QEMU_CAPS_VIRTIO_BLK_IOTHREAD_MAPPING, NULL },
+    { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
@@ -1509,9 +1511,11 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "channel", QEMU_CAPS_SCSI_DISK_CHANNEL, NULL },
     { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
+    { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
+    { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {
@@ -1523,6 +1527,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
+    { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsKVMPit[] = {
