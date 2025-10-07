@@ -8704,7 +8704,7 @@ typedef struct {
 static qemuProcessInShutdownEventData*
 qemuProcessInShutdownEventDataNew(virDomainObj *vm, int pidfd)
 {
-    qemuProcessInShutdownEventData *d = g_new(qemuProcessInShutdownEventData, 1);
+    qemuProcessInShutdownEventData *d = g_new0(qemuProcessInShutdownEventData, 1);
     d->vm = virObjectRef(vm);
     d->pidfd = pidfd;
     return d;

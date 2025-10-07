@@ -644,7 +644,7 @@ static qemuNbdkitProcessEventData*
 qemuNbdkitProcessEventDataNew(qemuNbdkitProcess *proc,
                               virDomainObj *vm)
 {
-    qemuNbdkitProcessEventData *d = g_new(qemuNbdkitProcessEventData, 1);
+    qemuNbdkitProcessEventData *d = g_new0(qemuNbdkitProcessEventData, 1);
     d->proc = proc;
     d->vm = virObjectRef(vm);
     return d;

@@ -131,7 +131,7 @@ findDefaultRouteInterface(void)
                     if (i == RTAX_IFP && sa->sa_family == AF_LINK) {
                         sdl = (struct sockaddr_dl *)(void *)sa;
                         ifname_len = (sdl->sdl_nlen >= IFNAMSIZ) ? IFNAMSIZ - 1 : sdl->sdl_nlen;
-                        ifname = g_new(char, ifname_len + 1);
+                        ifname = g_new0(char, ifname_len + 1);
                         virStrcpy(ifname, sdl->sdl_data, ifname_len + 1);
                         return ifname;
                     }
