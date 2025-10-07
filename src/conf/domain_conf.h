@@ -4727,3 +4727,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainThrottleFilterDef, virDomainThrottleFilte
 virDomainThrottleFilterDef *
 virDomainThrottleFilterFind(const virDomainDiskDef *def,
                             const char *name);
+
+bool
+virDomainDefHasTimer(const virDomainDef *def,
+                     virDomainTimerNameType name);

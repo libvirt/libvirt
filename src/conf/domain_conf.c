@@ -32517,3 +32517,20 @@ virDomainWatchdogDefFind(const virDomainDef *def,
 
     return -1;
 }
+
+
+bool
+virDomainDefHasTimer(const virDomainDef *def,
+                     virDomainTimerNameType name)
+{
+    size_t i;
+
+    for (i = 0; i < def->clock.ntimers; i++) {
+        if (def->clock.timers[i]->name == name &&
+            def->clock.timers[i]->present == VIR_TRISTATE_BOOL_YES) {
+            return true;
+        }
+    }
+
+    return false;
+}
