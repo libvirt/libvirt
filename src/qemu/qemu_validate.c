@@ -133,6 +133,17 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
 
     CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_EVMCS, VIR_DOMAIN_HYPERV_VAPIC);
 
+    if (def->hyperv_features[VIR_DOMAIN_HYPERV_TLBFLUSH] == VIR_TRISTATE_SWITCH_ON &&
+        def->hyperv_tlbflush_direct == VIR_TRISTATE_SWITCH_ON) {
+        if (def->hyperv_features[VIR_DOMAIN_HYPERV_VAPIC] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("'%1$s' hyperv feature requires '%2$s' feature"),
+                           VIR_CPU_x86_HV_TLBFLUSH_DIRECT,
+                           virDomainHypervTypeToString(VIR_DOMAIN_HYPERV_VAPIC));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
