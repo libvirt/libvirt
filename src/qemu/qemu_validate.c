@@ -129,6 +129,8 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
 
     CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_TLBFLUSH, VIR_DOMAIN_HYPERV_VPINDEX);
 
+    CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_IPI, VIR_DOMAIN_HYPERV_VPINDEX);
+
     return 0;
 }
 
