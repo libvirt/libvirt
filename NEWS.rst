@@ -25,6 +25,11 @@ v11.9.0 (unreleased)
     Intel-specific USB controllers are relegated to x86 guests, and model
     selection overall behaves more consistently across architectures.
 
+  * qemu: Validate Hyper-V enlightenment dependencies
+
+    Some Hyper-V enlightenments may require some other enlightenments to be
+    turned on. Libvirt now validates these for new domains.
+
 * **Bug fixes**
 
 
