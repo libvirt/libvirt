@@ -88,6 +88,38 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
 }
 
 
+#define CHECK_HV_FEAT(feat, requires) \
+    if (def->hyperv_features[feat] == VIR_TRISTATE_SWITCH_ON && \
+        def->hyperv_features[requires] != VIR_TRISTATE_SWITCH_ON) { \
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, \
+                       _("'%1$s' hyperv feature requires '%2$s' feature"), \
+                       virDomainHypervTypeToString(feat), \
+                       virDomainHypervTypeToString(requires)); \
+        return -1; \
+    }
+
+static int
+qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
+{
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_DOMAIN_HYPERV_MODE_NONE)
+        return 0;
+
+    if (!ARCH_IS_X86(def->os.arch) && !qemuDomainIsARMVirt(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"),
+                       virArchToString(def->os.arch),
+                       def->os.machine);
+        return -1;
+    }
+
+    CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_SYNIC, VIR_DOMAIN_HYPERV_VPINDEX);
+
+    return 0;
+}
+
+#undef CHECK_HV_FEAT
+
+
 static int
 qemuValidateDomainDefFeatures(const virDomainDef *def,
                               virQEMUCaps *qemuCaps)
@@ -187,14 +219,8 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_HYPERV:
-            if (def->features[i] != VIR_DOMAIN_HYPERV_MODE_NONE &&
-                !ARCH_IS_X86(def->os.arch) && !qemuDomainIsARMVirt(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Hyperv features are not supported for architecture '%1$s' or machine type '%2$s'"),
-                                 virArchToString(def->os.arch),
-                                 def->os.machine);
-                 return -1;
-            }
+            if (qemuValidateDomainDefHypervFeatures(def) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_FEATURE_PMU:
