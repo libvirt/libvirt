@@ -250,7 +250,7 @@ sub xdr_type {
 sub render_caller {
     my ($self, $hfid) = @_;
     my $name = $c->rinc( 'dissect_xdr_'.($self->idstrip || lc($self->xdr_type)) );
-    "$name(tvb, tree, xdrs, hf)";
+    "$name(tvb, pinfo, tree, xdrs, hf)";
 }
 
 sub ft_type {
@@ -345,7 +345,7 @@ BEGIN{::register_profile(
 sub render_caller {
     my ($self) = @_;
     my ($klass) = ref($self) =~ /([^:]+)$/;
-    sprintf '%s(tvb, tree, xdrs, hf, %s)',
+    sprintf '%s(tvb, pinfo, tree, xdrs, hf, %s)',
         $c->rinc('dissect_xdr_'.lc($klass)),
         $c->rinc('dissect_xdr_'.$self->reftype->idstrip);
 }
@@ -359,7 +359,7 @@ BEGIN{::register_profile(
 sub render_caller {
     my ($self, $hfid) = @_;
     my ($klass) = ref($self) =~ /([^:]+)$/;
-    sprintf '%s(tvb, tree, xdrs, hf, %s)',
+    sprintf '%s(tvb, pinfo, tree, xdrs, hf, %s)',
         $c->rinc('dissect_xdr_'.lc($klass)), $self->length || '~0';
 }
 
@@ -447,7 +447,7 @@ BEGIN{::register_profile(
 sub render_caller {
     my ($self, $hfid) = @_;
     my ($pname) = reverse split /__/, $hfid;
-    sprintf 'dissect_xdr_array(tvb, tree, xdrs, hf, %s, %s, "%s", %s, %s)',
+    sprintf 'dissect_xdr_array(tvb, pinfo, tree, xdrs, hf, %s, %s, "%s", %s, %s)',
         $c->rinc('ett_'.$self->idstrip),
         $c->rinc("hf_$hfid\__$pname"),
         $self->reftype->idstrip,
@@ -476,7 +476,7 @@ BEGIN{::register_profile(
 sub render_caller {
     my ($self, $hfid) = @_;
     my ($pname) = reverse split /__/, $hfid;
-    sprintf 'dissect_xdr_vector(tvb, tree, xdrs, hf, %s, %s, "%s", %s, %s)',
+    sprintf 'dissect_xdr_vector(tvb, pinfo, tree, xdrs, hf, %s, %s, "%s", %s, %s)',
         $c->rinc('ett_'.$self->idstrip),
         $c->rinc("hf_$hfid\__$pname"),
         $self->reftype->idstrip,
@@ -857,7 +857,7 @@ __END__<<DUMMY # Dummy heredoc to disable perl syntax highlighting
 my ($self, $ident) = @_;
 return if $self->is_primitive;
 %>
-static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
+static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, packet_info *pinfo G_GNUC_UNUSED, proto_tree *tree, XDR *xdrs, int hf)
 {
     return <%= $self->dealias->render_caller($self->ident eq $ident ? undef : $ident) %>;
 }
@@ -865,7 +865,7 @@ static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *
 <% my ($self, $ident) = @_;
    my $hfvar = $c->rinc('hf_'.$self->idstrip);
 %>
-static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
+static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, packet_info *pinfo G_GNUC_UNUSED, proto_tree *tree, XDR *xdrs, int hf)
 {
     goffset start;
     proto_item *ti;
@@ -890,7 +890,7 @@ static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *
 }
 @@ Sym::Type::Enum#render_dissector
 <% my ($self, $ident) = @_; %>
-static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
+static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, packet_info *pinfo G_GNUC_UNUSED, proto_tree *tree, XDR *xdrs, int hf)
 {
     goffset start;
     enum { DUMMY } es;
@@ -914,7 +914,7 @@ static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *
 my ($self, $ident) = @_;
 my $decl_type = $self->decl->type->idstrip;
 %>
-static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf)
+static gboolean dissect_xdr_<%= $ident %>(tvbuff_t *tvb, packet_info *pinfo G_GNUC_UNUSED, proto_tree *tree, XDR *xdrs, int hf)
 {
     gboolean rc = TRUE;
     goffset start;
