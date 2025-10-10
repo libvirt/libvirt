@@ -140,6 +140,15 @@ static const value_string status_strings[] = {
     { -1, NULL }
 };
 
+static const char *
+G_GNUC_PRINTF(3, 0)
+vir_val_to_str(const uint32_t val,
+               const value_string *vs,
+               const char *fmt)
+{
+    return val_to_str(val, vs, fmt);
+}
+
 static gboolean
 dissect_xdr_string(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
                    guint32 maxlen)
@@ -466,14 +475,14 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
     status = tvb_get_ntohil(tvb, offset); offset += 4;
 
     col_add_fstr(pinfo->cinfo, COL_INFO, "Prog=%s",
-                 val_to_str(prog, program_strings, "%x"));
+                 vir_val_to_str(prog, program_strings, "%x"));
 
     vs = get_program_data(prog, VIR_PROGRAM_PROCSTRINGS);
-    col_append_fstr(pinfo->cinfo, COL_INFO, " Proc=%s", val_to_str(proc, vs, "%d"));
+    col_append_fstr(pinfo->cinfo, COL_INFO, " Proc=%s", vir_val_to_str(proc, vs, "%d"));
 
     col_append_fstr(pinfo->cinfo, COL_INFO, " Type=%s Serial=%u Status=%s",
-                    val_to_str(type, type_strings, "%d"), serial,
-                    val_to_str(status, status_strings, "%d"));
+                    vir_val_to_str(type, type_strings, "%d"), serial,
+                    vir_val_to_str(status, status_strings, "%d"));
 
     if (tree) {
         gint *hf_proc;
