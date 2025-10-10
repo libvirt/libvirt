@@ -9,6 +9,7 @@ shared_library(
   ],
   dependencies: [
     wireshark_dep,
+    wsutil_dep,
     xdr_dep,
     tools_dep,
   ],

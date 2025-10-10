@@ -21,6 +21,11 @@
 #include <wireshark/epan/proto.h>
 #include <wireshark/epan/packet.h>
 #include <wireshark/epan/dissectors/packet-tcp.h>
+#ifdef WITH_WS_EPAN_WMEM
+# include <wireshark/epan/wmem/wmem.h>
+#elif WITH_WS_WSUTIL_WMEM
+# include <wireshark/wsutil/wmem/wmem.h>
+#endif
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 #include "packet-libvirt.h"
@@ -140,13 +145,19 @@ static const value_string status_strings[] = {
     { -1, NULL }
 };
 
-static const char *
+static char *
 G_GNUC_PRINTF(3, 0)
 vir_val_to_str(const uint32_t val,
                const value_string *vs,
                const char *fmt)
 {
-    return val_to_str(val, vs, fmt);
+    return val_to_str_wmem(wmem_packet_scope(), val, vs, fmt);
+}
+
+static void
+vir_wmem_free(void *ptr)
+{
+    wmem_free(wmem_packet_scope(), ptr);
 }
 
 static gboolean
@@ -462,6 +473,10 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
     uint32_t prog, serial;
     int32_t proc, type, status;
     const value_string *vs;
+    char *prog_str = NULL;
+    char *proc_str = NULL;
+    char *type_str = NULL;
+    char *status_str = NULL;
 
     col_set_str(pinfo->cinfo, COL_PROTOCOL, "Libvirt");
     col_clear(pinfo->cinfo, COL_INFO);
@@ -474,15 +489,21 @@ dissect_libvirt_message(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree,
     serial = tvb_get_ntohl(tvb, offset); offset += 4;
     status = tvb_get_ntohil(tvb, offset); offset += 4;
 
-    col_add_fstr(pinfo->cinfo, COL_INFO, "Prog=%s",
-                 vir_val_to_str(prog, program_strings, "%x"));
+    prog_str = vir_val_to_str(prog, program_strings, "%x");
+    col_add_fstr(pinfo->cinfo, COL_INFO, "Prog=%s", prog_str);
+    vir_wmem_free(prog_str);
 
     vs = get_program_data(prog, VIR_PROGRAM_PROCSTRINGS);
-    col_append_fstr(pinfo->cinfo, COL_INFO, " Proc=%s", vir_val_to_str(proc, vs, "%d"));
+    proc_str = vir_val_to_str(proc, vs, "%d");
+    col_append_fstr(pinfo->cinfo, COL_INFO, " Proc=%s", proc_str);
+    vir_wmem_free(proc_str);
 
+    type_str = vir_val_to_str(type, type_strings, "%d");
+    status_str = vir_val_to_str(status, status_strings, "%d");
     col_append_fstr(pinfo->cinfo, COL_INFO, " Type=%s Serial=%u Status=%s",
-                    vir_val_to_str(type, type_strings, "%d"), serial,
-                    vir_val_to_str(status, status_strings, "%d"));
+                    type_str, serial, status_str);
+    vir_wmem_free(status_str);
+    vir_wmem_free(type_str);
 
     if (tree) {
         gint *hf_proc;
