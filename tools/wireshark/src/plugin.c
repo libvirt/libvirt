@@ -72,9 +72,6 @@ void plugin_register(void)
 
 #else /* WIRESHARK_VERSION >= 2009000 */
 
-void proto_register_libvirt(void);
-void proto_reg_handoff_libvirt(void);
-
 WS_DLL_PUBLIC_DEF const gchar plugin_version[] = PLUGIN_VERSION;
 WS_DLL_PUBLIC_DEF const int plugin_want_major = WIRESHARK_VERSION_MAJOR;
 WS_DLL_PUBLIC_DEF const int plugin_want_minor = WIRESHARK_VERSION_MINOR;
