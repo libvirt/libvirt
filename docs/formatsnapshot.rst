@@ -127,9 +127,12 @@ The top-level ``domainsnapshot`` element may contain the following elements:
 
       :since:`Since 8.2.0` the ``snapshot`` attribute supports the ``manual``
       value which instructs the hypervisor to create the snapshot and keep a
-      synchronized state by pausing the VM which allows to snapshot disk
+      synchronized state by pausing the VM (and where supported deactivating
+      the storage backends of the hypervisor), which allows to snapshot disk
       storage from outside of the hypervisor if the storage provider supports
-      it.  The caller is responsible for resuming a VM paused by requesting a
+      it.  VM operations requiring the storage (e.g. blockjobs, migration) should
+      be avoided to ensure that the storage backends can stay deactivated.
+      The caller is responsible for resuming a VM paused by requesting a
       ``manual`` snapshot. When reverting such snapshot, the expectation is that
       the storage is configured in a way where the hypervisor will see the
       correct image state.
