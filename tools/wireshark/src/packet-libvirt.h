@@ -19,5 +19,19 @@
 
 #pragma once
 
+#ifdef WITH_WS_VERSION
+# include <wireshark/ws_version.h>
+#else
+# include <wireshark/config.h>
+# define WIRESHARK_VERSION_MAJOR VERSION_MAJOR
+# define WIRESHARK_VERSION_MINOR VERSION_MINOR
+# define WIRESHARK_VERSION_MICRO VERSION_MICRO
+#endif
+
+#define WIRESHARK_VERSION \
+    ((WIRESHARK_VERSION_MAJOR * 1000 * 1000) + \
+     (WIRESHARK_VERSION_MINOR * 1000) + \
+     (WIRESHARK_VERSION_MICRO))
+
 void proto_register_libvirt(void);
 void proto_reg_handoff_libvirt(void);

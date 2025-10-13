@@ -12,15 +12,6 @@
 
 #include <config.h>
 
-#ifdef WITH_WS_VERSION
-# include <wireshark/ws_version.h>
-#else
-# include <wireshark/config.h>
-# define WIRESHARK_VERSION_MAJOR VERSION_MAJOR
-# define WIRESHARK_VERSION_MINOR VERSION_MINOR
-# define WIRESHARK_VERSION_MICRO VERSION_MICRO
-#endif
-
 #define HAVE_PLUGINS 1
 #include <wireshark/epan/proto.h>
 /* plugins are DLLs */
@@ -31,11 +22,6 @@
 
 /* Let the plugin version be the version of libvirt */
 #define PLUGIN_VERSION VERSION
-
-#define WIRESHARK_VERSION \
-    ((WIRESHARK_VERSION_MAJOR * 1000 * 1000) + \
-     (WIRESHARK_VERSION_MINOR * 1000) + \
-     (WIRESHARK_VERSION_MICRO))
 
 #if WIRESHARK_VERSION < 2005000
 
