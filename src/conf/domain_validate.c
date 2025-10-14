@@ -303,6 +303,11 @@ virSecurityDeviceLabelDefValidate(virSecurityDeviceLabelDef **seclabels,
     for (i = 0; i < nseclabels; i++) {
         seclabel = seclabels[i];
 
+        /* relabel='no' is always valid to request, regardless of
+         * domain level <seclabel> config */
+        if (!seclabel->relabel)
+            continue;
+
         /* find the security label that it's being overridden */
         for (j = 0; j < nvmSeclabels; j++) {
             if (STRNEQ_NULLABLE(vmSeclabels[j]->model, seclabel->model))

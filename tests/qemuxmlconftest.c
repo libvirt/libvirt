@@ -2611,6 +2611,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("seclabel-static-labelskip");
     DO_TEST_CAPS_LATEST("seclabel-none");
     DO_TEST_CAPS_LATEST("seclabel-dac-none");
+    DO_TEST_CAPS_LATEST("seclabel-selinux-none-override");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("seclabel-multiple");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("seclabel-device-duplicates");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("seclabel-device-relabel-invalid");
