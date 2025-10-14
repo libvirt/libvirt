@@ -1370,6 +1370,21 @@ get_files(vahControl * ctl)
         virBufferAddLit(&buf, "  deny \"/var/lib/libvirt/.cache/\" w,\n");
     }
 
+    /* AMD-SEV VM needs to read/write the character device /dev/sev */
+    if (ctl->def->sec) {
+        switch (ctl->def->sec->sectype) {
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
+            virBufferAddLit(&buf, "  \"/dev/sev\" rw,\n");
+            break;
+        case VIR_DOMAIN_LAUNCH_SECURITY_PV:
+        case VIR_DOMAIN_LAUNCH_SECURITY_TDX:
+        case VIR_DOMAIN_LAUNCH_SECURITY_NONE:
+        case VIR_DOMAIN_LAUNCH_SECURITY_LAST:
+            break;
+        }
+    }
+
     if (ctl->newfile &&
         vah_add_file(&buf, ctl->newfile, "rwk") != 0) {
         return -1;
