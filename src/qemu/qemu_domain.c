@@ -1907,7 +1907,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->rememberOwner = false;
 
-    priv->reconnectBlockjobs = VIR_TRISTATE_BOOL_ABSENT;
     priv->allowReboot = VIR_TRISTATE_BOOL_ABSENT;
 
     g_clear_pointer(&priv->migrationCaps, virBitmapFree);
@@ -3211,13 +3210,7 @@ qemuDomainObjPrivateXMLParseBlockjobs(virDomainObj *vm,
 {
     g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes = 0;
-    g_autofree char *active = NULL;
-    int tmp;
     size_t i;
-
-    if ((active = virXPathString("string(./blockjobs/@active)", ctxt)) &&
-        (tmp = virTristateBoolTypeFromString(active)) > 0)
-        priv->reconnectBlockjobs = tmp;
 
     if ((nnodes = virXPathNodeSet("./blockjobs/blockjob", ctxt, &nodes)) < 0)
         return -1;
