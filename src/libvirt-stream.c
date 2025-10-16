@@ -541,6 +541,7 @@ virStreamInData(virStreamPtr stream,
     VIR_DEBUG("stream=%p, data=%p, length=%p", stream, data, length);
 
     virResetLastError();
+    virCheckStreamReturn(stream, -1);
     virCheckNonNullArgReturn(data, -1);
     virCheckNonNullArgReturn(length, -1);
 
