@@ -101,6 +101,8 @@ findMACsFromJSON(json_object *jobj,
             char *macstr;
 
             macobj = json_object_array_get_idx(macsArray, j);
+            if (!macobj)
+                return -1;
             macstr = strdup(json_object_get_string(macobj));
             if (!macstr)
                 return -1;
