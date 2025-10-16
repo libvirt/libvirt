@@ -23,6 +23,7 @@
 
 import os
 import re
+import subprocess
 import sys
 import tempfile
 
@@ -36,11 +37,9 @@ permitted_file = os.path.join(abs_srcdir, 'permitted_file_access.txt')
 
 os.environ['VIR_TEST_FILE_ACCESS_OUTPUT'] = access_file
 
-test = ' '.join(sys.argv[1:])
+proc = subprocess.run(sys.argv[1:])
 
-ret = os.system(test)
-
-if ret != 0 or os.read(access_fd, 10) == b'':
+if proc.returncode != 0 or os.read(access_fd, 10) == b'':
     os.close(access_fd)
     os.remove(access_file)
     sys.exit(ret)
