@@ -122,8 +122,6 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
  cleanup:
     VIR_FREE(tagNodes);
     VIR_FREE(trunk);
-    if (ret < 0)
-        virNetDevVlanClear(def);
     return ret;
 }
 
