@@ -30,9 +30,10 @@ VIR_ENUM_IMPL(virNativeVlanMode,
 );
 
 int
-virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
+virNetDevVlanParse(xmlNodePtr node,
+                   xmlXPathContextPtr ctxt,
+                   virNetDevVlan *def)
 {
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *trunk = NULL;
     g_autofree xmlNodePtr *tagNodes = NULL;
@@ -43,12 +44,12 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
 
     nTags = virXPathNodeSet("./tag", ctxt, &tagNodes);
     if (nTags < 0)
-        goto cleanup;
+        return -1;
 
     if (nTags == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"));
-        goto cleanup;
+        return -1;
     }
 
     def->tag = g_new0(unsigned int, nTags);
@@ -60,12 +61,12 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
 
         if (virXMLPropUInt(tagNodes[i], "id", 10, VIR_XML_PROP_REQUIRED,
                            &def->tag[i]) < 0)
-            goto cleanup;
+            return -1;
 
         if (def->tag[i] > 4095) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("vlan tag id %1$u too large (maximum 4095)"), def->tag[i]);
-            goto cleanup;
+            return -1;
         }
 
         if ((rc = virXMLPropEnum(tagNodes[i], "nativeMode",
@@ -77,7 +78,7 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
             if (def->nativeMode != 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("duplicate native vlan setting"));
-                goto cleanup;
+                return -1;
             }
 
             def->nativeMode = nativeMode;
@@ -101,26 +102,24 @@ virNetDevVlanParse(xmlNodePtr node, xmlXPathContextPtr ctxt, virNetDevVlan *def)
                 virReportError(VIR_ERR_XML_ERROR,
                                _("invalid \"trunk='%1$s'\" in <vlan> - trunk='yes' is required for more than one vlan tag"),
                                trunk);
-                goto cleanup;
+                return -1;
             }
             if (def->nativeMode != 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("invalid configuration in <vlan> - \"trunk='no'\" is not allowed with a native vlan id"));
-                goto cleanup;
+                return -1;
             }
             /* allow (but discard) "trunk='no' if there is a single tag */
             if (STRCASENEQ(trunk, "no")) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("invalid \"trunk='%1$s'\" in <vlan> - must be yes or no"),
                                trunk);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 int
