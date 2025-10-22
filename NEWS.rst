@@ -23,6 +23,15 @@ v11.9.0 (unreleased)
     enlightenments at domain startup into the live XML so that's obvious which
     enlightenments are enabled.
 
+  * Add support for Hyper-V ``spinlocks`` "never notify" mechanism
+
+    The ``retries`` attribute - which defines after how many failed
+    acquisition attempts to notify the hypervisor - can now hold the
+    special value of 4294967295 which means to never notify the
+    hypervisor.
+
+    If the ``retries`` attribute is omitted this value is used.
+
 * **Improvements**
 
   * qemu: Improvements to USB controller model selection
