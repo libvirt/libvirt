@@ -28633,7 +28633,7 @@ virDomainFeaturesHyperVDefFormat(virBuffer *buf,
         case VIR_DOMAIN_HYPERV_SPINLOCKS:
             if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON) {
                 virBufferAsprintf(&hypervAttrBuf,
-                                  " retries='%d'", def->hyperv.spinlocks);
+                                  " retries='%u'", def->hyperv.spinlocks);
             }
             break;
 
