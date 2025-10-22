@@ -17126,9 +17126,10 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
             if (value != VIR_TRISTATE_SWITCH_ON)
                 break;
 
-            if (virXMLPropUInt(node, "retries", 0, VIR_XML_PROP_REQUIRED,
-                               &def->hyperv.spinlocks) < 0)
+            if (virXMLPropUIntDefault(node, "retries", 0, VIR_XML_PROP_NONE,
+                                      &def->hyperv.spinlocks, UINT_MAX) < 0) {
                 return -1;
+            }
 
             if (def->hyperv.spinlocks < 0xFFF) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -28631,7 +28632,8 @@ virDomainFeaturesHyperVDefFormat(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_HYPERV_SPINLOCKS:
-            if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON) {
+            if (def->hyperv.features[j] == VIR_TRISTATE_SWITCH_ON &&
+                def->hyperv.spinlocks != UINT_MAX) {
                 virBufferAsprintf(&hypervAttrBuf,
                                   " retries='%u'", def->hyperv.spinlocks);
             }

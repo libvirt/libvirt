@@ -1655,6 +1655,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-off");
     DO_TEST_CAPS_LATEST("hyperv-panic");
     DO_TEST_CAPS_LATEST("hyperv-passthrough");
+    DO_TEST_CAPS_LATEST("hyperv-spinlocks-never-notify");
     DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
     DO_TEST_CAPS_LATEST("hyperv-host-model");
 
