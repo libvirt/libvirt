@@ -210,13 +210,19 @@ qemuDomainGetPreservedMounts(virQEMUDriverConfig *cfg,
 
 static int
 qemuDomainPopulateDevices(virQEMUDriverConfig *cfg,
+                          virDomainObj *vm,
                           GSList **paths)
 {
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
     size_t i;
 
-    if (!devices)
+    if (!devices) {
         devices = defaultDeviceACL;
+
+        if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
+            *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_KVM));
+        }
+    }
 
     for (i = 0; devices[i]; i++) {
         *paths = g_slist_prepend(*paths, g_strdup(devices[i]));
@@ -694,7 +700,7 @@ qemuDomainBuildNamespace(virQEMUDriverConfig *cfg,
         return 0;
     }
 
-    if (qemuDomainPopulateDevices(cfg, &paths) < 0)
+    if (qemuDomainPopulateDevices(cfg, vm, &paths) < 0)
         return -1;
 
     if (qemuDomainSetupAllDisks(vm, &paths) < 0)

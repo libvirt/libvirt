@@ -41,8 +41,7 @@ VIR_LOG_INIT("qemu.qemu_cgroup");
 const char *const defaultDeviceACL[] = {
     "/dev/null", "/dev/full", "/dev/zero",
     "/dev/random", "/dev/urandom",
-    "/dev/ptmx", "/dev/kvm",
-    "/dev/userfaultfd",
+    "/dev/ptmx", "/dev/userfaultfd",
     NULL,
 };
 #define DEVICE_PTY_MAJOR 136
@@ -782,6 +781,13 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
 
     if (qemuCgroupAllowDevicesPaths(vm, deviceACL, VIR_CGROUP_DEVICE_RW, false) < 0)
         return -1;
+
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
+        /* KVM requires access to /dev/kvm */
+        if (qemuCgroupAllowDevicePath(vm, QEMU_DEV_KVM, VIR_CGROUP_DEVICE_RW,
+                                      false) < 0)
+            return -1;
+    }
 
     if (qemuSetupFirmwareCgroup(vm) < 0)
         return -1;
