@@ -53,6 +53,25 @@ chDomainAddDisk(virCHMonitor *mon,
     return 0;
 }
 
+
+static int
+chDomainAddNet(virCHDriver *driver,
+               virCHMonitor *mon,
+               virDomainObj *vm,
+               virDomainNetDef *net)
+{
+    chAssignDeviceNetAlias(vm->def, net);
+
+    if (chProcessAddNetworkDevice(driver, mon, vm->def, net, NULL, NULL) < 0) {
+        return -1;
+    }
+
+    virDomainNetInsert(vm->def, net);
+
+    return 0;
+}
+
+
 static int
 chDomainAttachDeviceLive(virCHDriver *driver,
                          virDomainObj *vm,
@@ -75,12 +94,10 @@ chDomainAttachDeviceLive(virCHDriver *driver,
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
-        if (chProcessAddNetworkDevice(driver, mon, vm->def, dev->data.net,
-                                      NULL, NULL) < 0) {
+        if (chDomainAddNet(driver, mon, vm, dev->data.net) < 0) {
             break;
         }
 
-        virDomainNetInsert(vm->def, dev->data.net);
         alias = dev->data.net->info.alias;
         dev->data.net = NULL;
         ret = 0;
