@@ -260,7 +260,7 @@ virCPUFeatureDef *
 virCPUDefFindFeature(const virCPUDef *def,
                      const char *name);
 
-int
+void
 virCPUDefFilterFeatures(virCPUDef *cpu,
                         virCPUDefFeatureFilter filter,
                         void *opaque);

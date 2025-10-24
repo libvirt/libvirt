@@ -6552,9 +6552,8 @@ qemuProcessUpdateGuestCPU(virDomainDef *def,
         def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
     }
 
-    if (virCPUDefFilterFeatures(def->cpu, virQEMUCapsCPUFilterFeatures,
-                                &def->os.arch) < 0)
-        return -1;
+    virCPUDefFilterFeatures(def->cpu, virQEMUCapsCPUFilterFeatures,
+                            &def->os.arch);
 
     if (def->cpu->deprecated_feats) {
         virCPUFeaturePolicy policy = VIR_CPU_FEATURE_REQUIRE;

@@ -4023,17 +4023,14 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
 
     if (ARCH_IS_X86(qemuCaps->arch) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES)) {
-        if (cpu &&
-            virCPUDefFilterFeatures(cpu, virCPUx86FeatureFilterDropMSR, NULL) < 0)
-            goto error;
+        if (cpu)
+            virCPUDefFilterFeatures(cpu, virCPUx86FeatureFilterDropMSR, NULL);
 
-        if (migCPU &&
-            virCPUDefFilterFeatures(migCPU, virCPUx86FeatureFilterDropMSR, NULL) < 0)
-            goto error;
+        if (migCPU)
+            virCPUDefFilterFeatures(migCPU, virCPUx86FeatureFilterDropMSR, NULL);
 
-        if (fullCPU &&
-            virCPUDefFilterFeatures(fullCPU, virCPUx86FeatureFilterDropMSR, NULL) < 0)
-            goto error;
+        if (fullCPU)
+            virCPUDefFilterFeatures(fullCPU, virCPUx86FeatureFilterDropMSR, NULL);
     }
 
     if (virQEMUCapsTypeIsAccelerated(type))

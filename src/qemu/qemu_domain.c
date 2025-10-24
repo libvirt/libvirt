@@ -5319,8 +5319,7 @@ qemuDomainMakeCPUMigratable(virArch arch,
             g_auto(GStrv) keep = virCPUDefListExplicitFeatures(origCPU);
             data.keep = keep;
 
-            if (virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data) < 0)
-                return -1;
+            virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data);
         }
     }
 

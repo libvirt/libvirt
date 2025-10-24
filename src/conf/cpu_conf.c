@@ -1017,7 +1017,7 @@ virCPUDefListExplicitFeatures(const virCPUDef *def)
 }
 
 
-int
+void
 virCPUDefFilterFeatures(virCPUDef *cpu,
                         virCPUDefFeatureFilter filter,
                         void *opaque)
@@ -1031,11 +1031,10 @@ virCPUDefFilterFeatures(virCPUDef *cpu,
         }
 
         VIR_FREE(cpu->features[i].name);
-        if (VIR_DELETE_ELEMENT_INPLACE(cpu->features, i, cpu->nfeatures) < 0)
-            return -1;
-    }
 
-    return 0;
+        /* Safe to ignore as an error is returned only for invalid arguments */
+        ignore_value(VIR_DELETE_ELEMENT_INPLACE(cpu->features, i, cpu->nfeatures));
+    }
 }
 
 
