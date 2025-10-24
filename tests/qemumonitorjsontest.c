@@ -2809,6 +2809,7 @@ testQemuMonitorJSONGetGuestCPU(const void *opaque)
                                    data->qomListGet,
                                    "/machine/unattached/device[0]",
                                    virQEMUCapsCPUFeatureFromQEMU,
+                                   virQEMUCapsCPUFilterFeatures,
                                    &dataEnabled, &dataDisabled) < 0)
         return -1;
 

@@ -3686,7 +3686,8 @@ qemuMonitorSetDomainLog(qemuMonitor *mon,
  *      a single qom-list-get QMP command
  * @cpuQOMPath: QOM path of a CPU to probe
  * @translate: callback for translating CPU feature names from QEMU to libvirt
- * @opaque: data for @translate callback
+ * @filter: callback for filtering ignored features, a pointer to @arch is
+ *      passed as opaque pointer to the callback
  * @enabled: returns the CPU data for all enabled features
  * @disabled: returns the CPU data for features which we asked for
  *      (either explicitly or via a named CPU model) but QEMU disabled them
@@ -3701,6 +3702,7 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
                        bool qomListGet,
                        const char *cpuQOMPath,
                        qemuMonitorCPUFeatureTranslationCallback translate,
+                       virCPUDefFeatureFilter filter,
                        virCPUData **enabled,
                        virCPUData **disabled)
 {
@@ -3715,7 +3717,7 @@ qemuMonitorGetGuestCPU(qemuMonitor *mon,
     *disabled = NULL;
 
     return qemuMonitorJSONGetGuestCPU(mon, arch, qomListGet, cpuQOMPath,
-                                      translate, enabled, disabled);
+                                      translate, filter, enabled, disabled);
 }
 
 

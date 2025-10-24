@@ -6795,7 +6795,8 @@ qemuMonitorJSONGetCPUProperties(qemuMonitor *mon,
 static int
 qemuMonitorJSONCPUDataAddFeatures(virCPUData *data,
                                   GStrv props,
-                                  qemuMonitorCPUFeatureTranslationCallback translate)
+                                  qemuMonitorCPUFeatureTranslationCallback translate,
+                                  virCPUDefFeatureFilter filter)
 {
     char **p;
 
@@ -6804,6 +6805,9 @@ qemuMonitorJSONCPUDataAddFeatures(virCPUData *data,
 
         if (translate)
             name = translate(data->arch, name);
+
+        if (filter && !filter(name, VIR_CPU_FEATURE_REQUIRE, &data->arch))
+            continue;
 
         if (virCPUDataAddFeature(data, name) < 0)
             return -1;
@@ -6821,7 +6825,8 @@ qemuMonitorJSONCPUDataAddFeatures(virCPUData *data,
  *      a single qom-list-get QMP command
  * @cpuQOMPath: QOM path of a CPU to probe
  * @translate: callback for translating CPU feature names from QEMU to libvirt
- * @opaque: data for @translate callback
+ * @filter: callback for filtering ignored features, a pointer to @arch is
+ *      passed as opaque pointer to the callback
  * @enabled: returns the CPU data for all enabled features
  * @disabled: returns the CPU data for features which we asked for
  *      (either explicitly or via a named CPU model) but QEMU disabled them
@@ -6836,6 +6841,7 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            bool qomListGet,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
+                           virCPUDefFeatureFilter filter,
                            virCPUData **enabled,
                            virCPUData **disabled)
 {
@@ -6852,8 +6858,10 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                                         &propsEnabled, &propsDisabled) < 0)
         return -1;
 
-    if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled, translate) < 0 ||
-        qemuMonitorJSONCPUDataAddFeatures(cpuDisabled, propsDisabled, translate) < 0)
+    if (qemuMonitorJSONCPUDataAddFeatures(cpuEnabled, propsEnabled,
+                                          translate, filter) < 0 ||
+        qemuMonitorJSONCPUDataAddFeatures(cpuDisabled, propsDisabled,
+                                          translate, filter) < 0)
         return -1;
 
     *enabled = g_steal_pointer(&cpuEnabled);

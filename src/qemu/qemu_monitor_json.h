@@ -558,6 +558,7 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            bool qomListGet,
                            const char *cpuQOMPath,
                            qemuMonitorCPUFeatureTranslationCallback translate,
+                           virCPUDefFeatureFilter filter,
                            virCPUData **enabled,
                            virCPUData **disabled);
 
