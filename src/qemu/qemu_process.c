@@ -9511,12 +9511,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
 
         if (qemuProcessUpdateCPU(vm, VIR_ASYNC_JOB_NONE) < 0)
             return -1;
-    } else if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
-        /* We only try to fix CPUs when the libvirt/QEMU combo used to start
-         * the domain did not know about query-cpu-model-expansion in which
-         * case the host-model is known to not contain features which QEMU
-         * doesn't know about.
-         */
+    } else {
         qemuDomainFixupCPUs(vm, priv->origCPU);
     }
 
