@@ -12,7 +12,6 @@
     <model fallback='allow'>Haswell</model>
     <feature policy='require' name='ds'/>
     <feature policy='optional' name='acpi'/>
-    <feature policy='require' name='ht'/>
     <feature policy='optional' name='tm'/>
     <feature policy='require' name='ds_cpl'/>
     <feature policy='optional' name='vmx'/>

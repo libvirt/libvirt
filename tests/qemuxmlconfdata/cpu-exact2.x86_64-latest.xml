@@ -11,7 +11,6 @@
   <cpu mode='custom' match='exact' check='partial'>
     <model fallback='allow'>core2duo</model>
     <feature policy='require' name='ds'/>
-    <feature policy='require' name='ht'/>
     <feature policy='optional' name='tm'/>
     <feature policy='require' name='ds_cpl'/>
     <feature policy='require' name='xtpr'/>
