@@ -951,6 +951,10 @@ virCHProcessStart(virCHDriver *driver,
         return -1;
     }
 
+    VIR_DEBUG("Setting current domain def as transient");
+    if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
+        return -1;
+
     VIR_DEBUG("Creating domain log file for %s domain", vm->def->name);
     if (!(logCtxt = domainLogContextNew(cfg->stdioLogD, cfg->logDir,
                                         CH_DRIVER_NAME,
@@ -1100,6 +1104,7 @@ virCHProcessStop(virCHDriver *driver,
     virHostdevReAttachDomainDevices(driver->hostdevMgr, CH_DRIVER_NAME, def,
                                     hostdev_flags);
 
+    virDomainObjRemoveTransientDef(vm);
     virErrorRestore(&orig_err);
     return 0;
 }
