@@ -9633,7 +9633,7 @@ qemuDomainUpdateCPU(virDomainObj *vm,
  */
 void
 qemuDomainFixupCPUs(virDomainObj *vm,
-                    virCPUDef **origCPU)
+                    virCPUDef *origCPU)
 {
     virArch arch = vm->def->os.arch;
 
@@ -9649,28 +9649,14 @@ qemuDomainFixupCPUs(virDomainObj *vm,
      * we asked for or libvirt was too old to mess up the translation from
      * host-model.
      */
-    if (!*origCPU)
+    if (!origCPU)
         return;
 
-    if (virCPUDefFindFeature(vm->def->cpu, "cmt")) {
-        g_autoptr(virCPUDef) fixedCPU = virCPUDefCopyWithoutModel(vm->def->cpu);
+    if (virCPUDefFindFeature(vm->def->cpu, "cmt"))
+        virCPUDefFilterFeatures(vm->def->cpu, virQEMUCapsCPUFilterFeatures, &arch);
 
-        virCPUDefCopyModelFilter(fixedCPU, vm->def->cpu, false,
-                                 virQEMUCapsCPUFilterFeatures, &arch);
-
-        virCPUDefFree(vm->def->cpu);
-        vm->def->cpu = g_steal_pointer(&fixedCPU);
-    }
-
-    if (virCPUDefFindFeature(*origCPU, "cmt")) {
-        g_autoptr(virCPUDef) fixedOrig = virCPUDefCopyWithoutModel(*origCPU);
-
-        virCPUDefCopyModelFilter(fixedOrig, *origCPU, false,
-                                 virQEMUCapsCPUFilterFeatures, &arch);
-
-        virCPUDefFree(*origCPU);
-        *origCPU = g_steal_pointer(&fixedOrig);
-    }
+    if (virCPUDefFindFeature(origCPU, "cmt"))
+        virCPUDefFilterFeatures(origCPU, virQEMUCapsCPUFilterFeatures, &arch);
 }
 
 

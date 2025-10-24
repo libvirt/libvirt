@@ -8695,7 +8695,7 @@ qemuProcessStartWithMemoryState(virConnectPtr conn,
      * the CPU definitions.
      */
     if (cookie)
-        qemuDomainFixupCPUs(vm, &cookie->cpu);
+        qemuDomainFixupCPUs(vm, cookie->cpu);
 
     if (cookie && !cookie->slirpHelper)
         priv->disableSlirp = true;
@@ -9517,7 +9517,7 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
          * case the host-model is known to not contain features which QEMU
          * doesn't know about.
          */
-        qemuDomainFixupCPUs(vm, &priv->origCPU);
+        qemuDomainFixupCPUs(vm, priv->origCPU);
     }
 
     return 0;
