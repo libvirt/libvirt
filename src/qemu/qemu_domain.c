@@ -9614,15 +9614,20 @@ qemuDomainUpdateCPU(virDomainObj *vm,
 
 
 /**
- * qemuDomainFixupCPUS:
+ * qemuDomainFixupCPUs:
  * @vm: domain object
  * @origCPU: original CPU used when the domain was started
  *
  * Libvirt older than 3.9.0 could have messed up the expansion of host-model
  * CPU when reconnecting to a running domain by adding features QEMU does not
- * support (such as cmt). This API fixes both the actual CPU provided by QEMU
- * (stored in the domain object) and the @origCPU used when starting the
- * domain.
+ * support (such as cmt).
+ *
+ * Newer libvirt would not include feature unknown to QEMU, but the CPU
+ * definitions could contain features that were removed from QEMU and added to
+ * our list of ignored features as they were not actually doing anything.
+ *
+ * This API fixes both the actual CPU provided by QEMU (stored in the domain
+ * object) and the @origCPU used when starting the domain.
  *
  * This is safe even if the original CPU definition used mode='custom' (rather
  * than host-model) since we know QEMU was able to start the domain and thus
@@ -9652,11 +9657,8 @@ qemuDomainFixupCPUs(virDomainObj *vm,
     if (!origCPU)
         return;
 
-    if (virCPUDefFindFeature(vm->def->cpu, "cmt"))
-        virCPUDefFilterFeatures(vm->def->cpu, virQEMUCapsCPUFilterFeatures, &arch);
-
-    if (virCPUDefFindFeature(origCPU, "cmt"))
-        virCPUDefFilterFeatures(origCPU, virQEMUCapsCPUFilterFeatures, &arch);
+    virCPUDefFilterFeatures(vm->def->cpu, virQEMUCapsCPUFilterFeatures, &arch);
+    virCPUDefFilterFeatures(origCPU, virQEMUCapsCPUFilterFeatures, &arch);
 }
 
 
