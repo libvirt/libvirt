@@ -331,7 +331,7 @@ bhyveBuildUSBControllerArgStr(const virDomainDef *def,
 static int
 bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
                                virDomainControllerDef *controller,
-                               struct _bhyveConn *driver G_GNUC_UNUSED,
+                               struct _bhyveConn *driver,
                                virCommand *cmd)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -343,6 +343,12 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_NVME)
             continue;
+
+        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NVME)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Bhyve version does not support NVMe"));
+            return -1;
+        }
 
         if (disk->info.addr.drive.controller != controller->idx)
             continue;

@@ -311,6 +311,9 @@ mymain(void)
     driver.bhyvecaps &= ~BHYVE_CAP_VNC_PASSWORD;
     DO_TEST_FAILURE("vnc-password");
 
+    driver.bhyvecaps &= ~BHYVE_CAP_NVME;
+    DO_TEST_FAILURE("nvme");
+
     driver.config->bhyveloadTimeout = 300;
     driver.config->bhyveloadTimeoutKill = 20;
     DO_TEST("bhyveload-timeout");
