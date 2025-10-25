@@ -310,7 +310,34 @@ bhyveDomainDefValidate(const virDomainDef *def,
                        void *opaque G_GNUC_UNUSED,
                        void *parseOpaque G_GNUC_UNUSED)
 {
+    size_t i;
     virStorageSource *src = NULL;
+    g_autoptr(GHashTable) nvme_controllers = g_hash_table_new(g_direct_hash,
+                                                              g_direct_equal);
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        int nvme_ctrl = 0;
+        int idx = -1;
+
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_NVME) {
+            if (virDiskNameParse(disk->dst, &nvme_ctrl, &idx, NULL) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Unknown disk name '%1$s' and no address specified"),
+                               disk->dst);
+                return -1;
+            }
+
+            if (g_hash_table_contains(nvme_controllers, GINT_TO_POINTER(nvme_ctrl))) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s",
+                               _("Cannot have more than one disk per NVMe controller"));
+                return -1;
+            }
+
+            g_hash_table_add(nvme_controllers, GINT_TO_POINTER(nvme_ctrl));
+        }
+    }
 
     if (!def->os.loader)
         return 0;
