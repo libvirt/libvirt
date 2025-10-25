@@ -1,0 +1,10 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,ahci,hd:/tmp/freebsd1.img,nmrr=7200,hd:/tmp/freebsd2.img,nmrr=5400,hd:/tmp/freebsd3.img,nmrr=1 \
+-s 3:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 \
+bhyve

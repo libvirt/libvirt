@@ -263,6 +263,8 @@ mymain(void)
     DO_TEST("nvme");
     DO_TEST("2-nvme-2-controllers");
     DO_TEST_FAILURE("2-nvme-same-controller");
+    DO_TEST("sata-rotation-rate");
+    DO_TEST_FAILURE("disk-virtio-rotation-rate");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

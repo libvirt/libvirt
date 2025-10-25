@@ -299,6 +299,12 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                 return -1;
             }
         }
+    } else if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+               dev->data.disk->rotation_rate &&
+               dev->data.disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("rotation rate is only valid for SATA bus"));
+        return -1;
     }
 
     return 0;

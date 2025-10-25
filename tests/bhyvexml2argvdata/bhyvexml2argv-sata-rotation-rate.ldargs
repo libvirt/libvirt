@@ -1,0 +1,4 @@
+bhyveload \
+-m 214 \
+-d /tmp/freebsd1.img \
+bhyve

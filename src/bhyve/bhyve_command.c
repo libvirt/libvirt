@@ -278,6 +278,10 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
                            _("unsupported disk device"));
             return -1;
         }
+
+        if (disk->rotation_rate)
+            virBufferAsprintf(&device, ",nmrr=%u", disk->rotation_rate);
+
         virBufferAddBuffer(&buf, &device);
     }
 
