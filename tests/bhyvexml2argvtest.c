@@ -261,6 +261,7 @@ mymain(void)
     DO_TEST("4-consoles");
     DO_TEST_FAILURE("serial-invalid-port");
     DO_TEST("nvme");
+    DO_TEST("2-nvme-2-controllers");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
