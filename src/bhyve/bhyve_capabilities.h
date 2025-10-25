@@ -54,6 +54,7 @@ typedef enum {
     BHYVE_CAP_VNC_PASSWORD = 1 << 8,
     BHYVE_CAP_VIRTIO_9P = 1 << 9,
     BHYVE_CAP_VIRTIO_RND = 1 << 10,
+    BHYVE_CAP_NVME = 1 << 11,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

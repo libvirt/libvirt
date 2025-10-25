@@ -117,6 +117,7 @@ mymain(void)
     DO_TEST_DIFFERENT("virtio-rnd");
     DO_TEST_DIFFERENT("serial-tcp");
     DO_TEST_DIFFERENT("4-consoles");
+    DO_TEST_DIFFERENT("nvme");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

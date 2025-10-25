@@ -355,6 +355,17 @@ bhyveProbeCapsVirtioRnd(unsigned int *caps, char *binary)
 }
 
 
+static int
+bhyveProbeCapsNvme(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,nvme",
+                                      "pci slot 0:0: unknown device \"nvme\"",
+                                      BHYVE_CAP_NVME);
+}
+
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -393,6 +404,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsVirtioRnd(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsNvme(caps, binary)))
         goto out;
 
  out:

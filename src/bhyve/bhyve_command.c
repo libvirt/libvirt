@@ -329,6 +329,38 @@ bhyveBuildUSBControllerArgStr(const virDomainDef *def,
 }
 
 static int
+bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
+                               virDomainControllerDef *controller,
+                               struct _bhyveConn *driver G_GNUC_UNUSED,
+                               virCommand *cmd)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *disk_source;
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_NVME)
+            continue;
+
+        if (disk->info.addr.drive.controller != controller->idx)
+            continue;
+
+        VIR_DEBUG("disk %zu controller %d", i, controller->idx);
+
+        disk_source = virDomainDiskGetSource(disk);
+
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:0,nvme,%s",
+                               controller->info.addr.pci.slot,
+                               disk_source);
+    }
+
+    return 0;
+}
+
+static int
 bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
                            virDomainDiskDef *disk,
                            virCommand *cmd)
@@ -370,6 +402,9 @@ bhyveBuildDiskArgStr(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_SATA:
         /* Handled by bhyveBuildAHCIControllerArgStr() */
         break;
+    case VIR_DOMAIN_DISK_BUS_NVME:
+        /* Handled by bhyveBuildNVMeControllerArgStr() */
+        break;
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
         if (bhyveBuildVirtIODiskArgStr(def, disk, cmd) < 0)
             return -1;
@@ -382,7 +417,6 @@ bhyveBuildDiskArgStr(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_USB:
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SD:
-    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -432,13 +466,16 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
         virCommandAddArgFormat(cmd, "%d:0,lpc",
                                 controller->info.addr.pci.slot);
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
+        if (bhyveBuildNVMeControllerArgStr(def, controller, driver, cmd) < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
-    case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

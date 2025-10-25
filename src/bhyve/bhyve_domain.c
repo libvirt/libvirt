@@ -111,9 +111,10 @@ bhyveDomainDiskDefAssignAddress(struct _bhyveConn *driver,
                                 virDomainDiskDef *def,
                                 const virDomainDef *vmdef G_GNUC_UNUSED)
 {
-    int idx = virDiskNameToIndex(def->dst);
+    int idx = -1;
+    int nvme_ctrl = 0;
 
-    if (idx < 0) {
+    if (virDiskNameParse(def->dst, &nvme_ctrl, &idx, NULL) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Unknown disk name '%1$s' and no address specified"),
                        def->dst);
@@ -134,6 +135,15 @@ bhyveDomainDiskDefAssignAddress(struct _bhyveConn *driver,
 
         def->info.addr.drive.bus = 0;
         break;
+
+    case VIR_DOMAIN_DISK_BUS_NVME:
+        def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+
+        def->info.addr.drive.controller = nvme_ctrl;
+        def->info.addr.drive.unit = 0;
+        def->info.addr.drive.bus = idx;
+        break;
+
     case VIR_DOMAIN_DISK_BUS_SCSI:
     case VIR_DOMAIN_DISK_BUS_IDE:
     case VIR_DOMAIN_DISK_BUS_FDC:
@@ -143,7 +153,6 @@ bhyveDomainDiskDefAssignAddress(struct _bhyveConn *driver,
     case VIR_DOMAIN_DISK_BUS_USB:
     case VIR_DOMAIN_DISK_BUS_UML:
     case VIR_DOMAIN_DISK_BUS_SD:
-    case VIR_DOMAIN_DISK_BUS_NVME:
     case VIR_DOMAIN_DISK_BUS_LAST:
     default:
         break;
