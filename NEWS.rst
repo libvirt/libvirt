@@ -50,6 +50,12 @@ v11.9.0 (unreleased)
     Some Hyper-V enlightenments may require some other enlightenments to be
     turned on. Libvirt now validates these for new domains.
 
+  * qemu: Introduce virtio options for virtio memory models
+
+    Both virtio-mem and virtio-pmem memory models are virtio devices and as
+    such now support setting various virtio knobs (iommu, ats, packed,
+    page_per_vq) common to other virtio devices.
+
 * **Bug fixes**
 
 
