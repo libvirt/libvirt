@@ -293,18 +293,9 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDef *def,
     }
 
     for (i = 0; i < def->nmems; i++) {
-        switch (def->mems[i]->model) {
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-            if (def->mems[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
-                def->mems[i]->info.type = type;
-            break;
-        case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        case VIR_DOMAIN_MEMORY_MODEL_LAST:
-            break;
+        if (virDomainMemoryIsVirtioModel(def->mems[i]) &&
+            def->mems[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            def->mems[i]->info.type = type;
         }
     }
 
@@ -1024,18 +1015,10 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        switch (dev->data.memory->model) {
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        if (virDomainMemoryIsVirtioModel(dev->data.memory))
             return virtioFlags;
 
-        case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        case VIR_DOMAIN_MEMORY_MODEL_LAST:
-            return 0;
-        }
+        return 0;
         break;
 
     case VIR_DOMAIN_DEVICE_CRYPTO:
@@ -2444,19 +2427,10 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
     for (i = 0; i < def->nmems; i++) {
         virDomainMemoryDef *mem = def->mems[i];
 
-        switch (mem->model) {
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
-        case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-            if (virDeviceInfoPCIAddressIsWanted(&mem->info) &&
-                qemuDomainPCIAddressReserveNextAddr(addrs, &mem->info) < 0)
-                return -1;
-            break;
-        case VIR_DOMAIN_MEMORY_MODEL_NONE:
-        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
-        case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
-        case VIR_DOMAIN_MEMORY_MODEL_LAST:
-            break;
+        if (virDomainMemoryIsVirtioModel(mem) &&
+            virDeviceInfoPCIAddressIsWanted(&mem->info) &&
+            qemuDomainPCIAddressReserveNextAddr(addrs, &mem->info) < 0) {
+            return -1;
         }
     }
 
