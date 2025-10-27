@@ -26472,7 +26472,7 @@ virDomainCryptoDefFree(virDomainCryptoDef *def)
 }
 
 
-static int
+static void
 virDomainMemorySourceDefFormat(virBuffer *buf,
                                virDomainMemoryDef *def)
 {
@@ -26532,8 +26532,6 @@ virDomainMemorySourceDefFormat(virBuffer *buf,
     }
 
     virXMLFormatElement(buf, "source", NULL, &childBuf);
-
-    return 0;
 }
 
 
@@ -26600,7 +26598,7 @@ virDomainMemoryTargetDefFormat(virBuffer *buf,
     virXMLFormatElement(buf, "target", &attrBuf, &childBuf);
 }
 
-static int
+static void
 virDomainMemoryDefFormat(virBuffer *buf,
                          virDomainMemoryDef *def,
                          unsigned int flags)
@@ -26625,8 +26623,7 @@ virDomainMemoryDefFormat(virBuffer *buf,
         virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
     }
 
-    if (virDomainMemorySourceDefFormat(buf, def) < 0)
-        return -1;
+    virDomainMemorySourceDefFormat(buf, def);
 
     virDomainMemoryTargetDefFormat(buf, def, flags);
 
@@ -26634,7 +26631,6 @@ virDomainMemoryDefFormat(virBuffer *buf,
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</memory>\n");
-    return 0;
 }
 
 static void
@@ -29462,8 +29458,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         virDomainShmemDefFormat(buf, def->shmems[n], flags);
 
     for (n = 0; n < def->nmems; n++) {
-        if (virDomainMemoryDefFormat(buf, def->mems[n], flags) < 0)
-            return -1;
+        virDomainMemoryDefFormat(buf, def->mems[n], flags);
     }
 
     for (n = 0; n < def->ncryptos; n++) {
