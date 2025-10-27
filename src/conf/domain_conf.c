@@ -26604,33 +26604,32 @@ virDomainMemoryDefFormat(virBuffer *buf,
                          unsigned int flags)
 {
     const char *model = virDomainMemoryModelTypeToString(def->model);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    virBufferAsprintf(buf, "<memory model='%s'", model);
+    virBufferAsprintf(&attrBuf, " model='%s'", model);
     if (def->access)
-        virBufferAsprintf(buf, " access='%s'",
+        virBufferAsprintf(&attrBuf, " access='%s'",
                           virDomainMemoryAccessTypeToString(def->access));
     if (def->discard)
-        virBufferAsprintf(buf, " discard='%s'",
+        virBufferAsprintf(&attrBuf, " discard='%s'",
                           virTristateBoolTypeToString(def->discard));
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
 
     if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
         def->target.nvdimm.uuid) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         virUUIDFormat(def->target.nvdimm.uuid, uuidstr);
-        virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+        virBufferAsprintf(&childBuf, "<uuid>%s</uuid>\n", uuidstr);
     }
 
-    virDomainMemorySourceDefFormat(buf, def);
+    virDomainMemorySourceDefFormat(&childBuf, def);
 
-    virDomainMemoryTargetDefFormat(buf, def, flags);
+    virDomainMemoryTargetDefFormat(&childBuf, def, flags);
 
-    virDomainDeviceInfoFormat(buf, &def->info, flags);
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</memory>\n");
+    virXMLFormatElement(buf, "memory", &attrBuf, &childBuf);
 }
 
 static void
