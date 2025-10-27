@@ -31,7 +31,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-scsi-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"scsi0","bus":"pci.0","addr":"0x8"}' \
 -device '{"driver":"virtio-serial-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"virtio-serial0","bus":"pci.0","addr":"0x9"}' \
 -object '{"qom-type":"memory-backend-file","id":"memvirtiomem0","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind"}' \
--device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem0","prealloc":true,"memaddr":5637144576,"dynamic-memslots":true,"id":"virtiomem0","bus":"pci.0","addr":"0x5"}' \
+-device '{"driver":"virtio-mem-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem0","prealloc":true,"memaddr":5637144576,"dynamic-memslots":true,"id":"virtiomem0","bus":"pci.0","addr":"0x5"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/img1","node-name":"libvirt-1-storage","read-only":false}' \
 -device '{"driver":"virtio-blk-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"bus":"pci.0","addr":"0xa","drive":"libvirt-1-storage","id":"virtio-disk0","bootindex":1}' \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \

@@ -983,9 +983,11 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
             switch (device->data.memory->model) {
             case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
                 *baseName = "virtio-pmem";
+                *virtioOptions = device->data.memory->virtio;
                 break;
             case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
                 *baseName = "virtio-mem";
+                *virtioOptions = device->data.memory->virtio;
                 break;
             case VIR_DOMAIN_MEMORY_MODEL_DIMM:
             case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
