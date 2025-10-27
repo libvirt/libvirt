@@ -14413,6 +14413,10 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
                                     &def->info, flags) < 0)
         return NULL;
 
+    if (virDomainVirtioOptionsParseXML(virXPathNode("./driver", ctxt),
+                                       &def->virtio) < 0)
+        return NULL;
+
     return g_steal_pointer(&def);
 }
 
@@ -22073,6 +22077,9 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDef *src,
         break;
     }
 
+    if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
+
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
@@ -26626,6 +26633,7 @@ virDomainMemoryDefFormat(virBuffer *buf,
     const char *model = virDomainMemoryModelTypeToString(def->model);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
 
     virBufferAsprintf(&attrBuf, " model='%s'", model);
     if (def->access)
@@ -26642,6 +26650,10 @@ virDomainMemoryDefFormat(virBuffer *buf,
         virUUIDFormat(def->target.nvdimm.uuid, uuidstr);
         virBufferAsprintf(&childBuf, "<uuid>%s</uuid>\n", uuidstr);
     }
+
+    virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);
+
+    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
 
     virDomainMemorySourceDefFormat(&childBuf, def);
 

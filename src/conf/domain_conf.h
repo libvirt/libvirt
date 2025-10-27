@@ -2801,6 +2801,7 @@ struct _virDomainMemoryDef {
     } target;
 
     virDomainDeviceInfo info;
+    virDomainVirtioOptions *virtio;
 };
 
 virDomainMemoryDef *virDomainMemoryDefNew(virDomainMemoryModel model);

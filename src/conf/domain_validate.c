@@ -2723,6 +2723,11 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
     if (virDomainMemoryDefCheckConflict(mem, def) < 0)
         return -1;
 
+    if (!virDomainMemoryIsVirtioModel(mem) &&
+        virDomainCheckVirtioOptionsAreAbsent(mem->virtio) < 0) {
+        return -1;
+    }
+
     return 0;
 }
 
