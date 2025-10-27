@@ -2806,6 +2806,7 @@ struct _virDomainMemoryDef {
 virDomainMemoryDef *virDomainMemoryDefNew(virDomainMemoryModel model);
 void virDomainMemoryDefFree(virDomainMemoryDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainMemoryDef, virDomainMemoryDefFree);
+bool virDomainMemoryIsVirtioModel(const virDomainMemoryDef *def);
 
 
 typedef enum {

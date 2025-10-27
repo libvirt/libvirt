@@ -14333,6 +14333,26 @@ virDomainMemoryDefNew(virDomainMemoryModel model)
 }
 
 
+bool
+virDomainMemoryIsVirtioModel(const virDomainMemoryDef *def)
+{
+    switch (def->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
+    case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
+        return true;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_SGX_EPC:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
+    }
+
+    return false;
+}
+
+
 static virDomainMemoryDef *
 virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
                            xmlNodePtr memdevNode,
