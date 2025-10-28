@@ -51,6 +51,7 @@
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
 
@@ -143,7 +144,10 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virCommand) load_cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
+    g_autofree char *domain_vmm_path = NULL;
+    virTimeBackOffVar timebackoff;
     int ret = -1, rc;
+    bool vmm_appeared = false;
 
     logfile = g_strdup_printf("%s/%s.log", BHYVE_LOG_DIR, vm->def->name);
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
@@ -225,6 +229,24 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     if (virPidFileReadPath(driver->pidfile, &vm->pid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Domain %1$s didn't show up"), vm->def->name);
+        goto cleanup;
+    }
+
+    domain_vmm_path = g_strdup_printf("/dev/vmm/%s", vm->def->name);
+
+    if (virTimeBackOffStart(&timebackoff, 1, 5000) < 0)
+        goto cleanup;
+    while (virTimeBackOffWait(&timebackoff)) {
+        if (virFileExists(domain_vmm_path)) {
+            vmm_appeared = true;
+            break;
+        }
+    }
+
+    if (!vmm_appeared) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Domain %1$s didn't show up in /dev/vmm"),
+                       vm->def->name);
         goto cleanup;
     }
 
