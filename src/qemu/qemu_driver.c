@@ -9657,6 +9657,8 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
         g_autoptr(qemuBlockStats) stats = qemuBlockStatsNew();
 
         for (i = 0; i < vm->def->ndisks; i++) {
+            qemuBlockStats *entry;
+
             disk = vm->def->disks[i];
             entryname = disk->info.alias;
 
@@ -9670,13 +9672,13 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
             if (!entryname)
                 continue;
 
-            if (!(stats = virHashLookup(blockstats, entryname))) {
+            if (!(entry = virHashLookup(blockstats, entryname))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot find statistics for device '%1$s'"), entryname);
                 return -1;
             }
 
-            qemuDomainBlockStatsGatherTotals(stats, *retstats);
+            qemuDomainBlockStatsGatherTotals(entry, stats);
         }
 
         *retstats = g_steal_pointer(&stats);
