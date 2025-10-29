@@ -638,3 +638,24 @@ Example:
 Note: there's no direct way to check if the actual ``bhyve`` binary supports
 the TCP console. Thus, libvirt always assumes it's supported. Please
 refer to the ``bhyve(1)`` manual page to make sure.
+
+NVMe device
+~~~~~~~~~~~
+:since:`Since 11.9.0`, it's possible to use NVMe device.
+
+Example:
+
+::
+
+   ...
+     <disk type='file'>
+       <driver name='file' type='raw'/>
+       <source file='/tmp/freebsd.img'/>
+       <target dev='nvme0n1' bus='nvme'/>
+     </disk>
+    ...
+
+As ``bhyve(1)`` uses one NVMe device per PCI address, it's modeled in a way
+that there is one device per controller. That is, if using more than one
+NVMe device, for device name users should increment controller number rather
+than namespace number, i.e.: ``nvme0n1``, ``nvme1n1``, etc.
