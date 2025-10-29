@@ -37,6 +37,16 @@ v11.9.0 (unreleased)
     Users can now attach and detach network interfaces of Cloud Hypervisor
     domains at runtime.
 
+  * bhyve: NVMe device support
+
+    Domain XMLs now can use NVMe devices::
+
+     <disk type='file'>
+       <driver name='file' type='raw'/>
+       <source file='/path/to/disk.img'/>
+       <target dev='nvme0n1' bus='nvme'/>
+     </disk>
+
 * **Improvements**
 
   * qemu: Improvements to USB controller model selection
