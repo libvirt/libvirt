@@ -3614,6 +3614,7 @@ void virDomainMemoryDefFree(virDomainMemoryDef *def)
     }
 
     virDomainDeviceInfoClear(&def->info);
+    g_free(def->virtio);
     g_free(def);
 }
 
