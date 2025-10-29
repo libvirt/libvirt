@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-09-27 07:52+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1225,6 +1225,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "'%1$s' 파일은 메모리에 들어갈 수 없습니다"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr "'%1$s'는 현재 qemu 암호화 엔진에서 지원되지 않습니다"
 
@@ -2339,6 +2347,9 @@ msgstr ""
 "코어를 버리기 전에, libxenlight를 사용해 도메인 '%1$d'를 중단하는것을 실패했"
 "습니다"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr "Bhyve 버전은 프레임 버퍼를 지원하지 않습니다"
 
@@ -2968,7 +2979,8 @@ msgstr "초기 PID를 찾을때까지 hostdev를 첨부할 수 없습니다"
 msgid ""
 "Cannot automatically add a new PCI bus for a device with unrecognized "
 "connect flags %1$.2x"
-msgstr "미인식 연결 플래그 %1$.2x 용 신규 PCI 버스를 자동으로 추가 할 수 없습니다"
+msgstr ""
+"미인식 연결 플래그 %1$.2x 용 신규 PCI 버스를 자동으로 추가 할 수 없습니다"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -3267,6 +3279,9 @@ msgstr "이름으로 저장소 제어기를 가져올 수 없습니다"
 
 msgid "Cannot get storage controller name"
 msgstr "저장소 제어기의 이름을 가져올 수 없습니다"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr "기술환경 장치를 핫플러그 할 수 없습니다"
@@ -7137,6 +7152,9 @@ msgstr "미디어에서 동작 %1$s를 완료하는데 실패"
 msgid "Failed to complete tree listing"
 msgstr "나무 목록을 완료하지 못했습니다"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "소켓을 '%1$s'에 연결하지 못했습니다"
@@ -10811,8 +10829,9 @@ msgstr "잘못된 상대 경로 '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "잘못된 resctrl 모니터"
 
-msgid "Invalid response from CH. Disk removal failed."
-msgstr "CH에서 잘못된 응답. 디스크 제거가 실패했습니다."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11361,6 +11380,18 @@ msgstr "기계가 Null입니다"
 
 msgid "Machine is null"
 msgstr "기계가 null입니다"
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
+msgstr ""
 
 msgid "Malformatted array index"
 msgstr "잘못된 형식의 배열 인덱스"
@@ -16978,8 +17009,9 @@ msgstr ""
 msgid ""
 "The 'fqdn' attribute of the <backend> element can only be used with the "
 "<backend> type='passt'"
-msgstr "<backend> 요소의 'fqdn' 속성은 <backend> type='passt '으로만 사용 될 수 "
-"있습니다"
+msgstr ""
+"<backend> 요소의 'fqdn' 속성은 <backend> type='passt '으로만 사용 될 수 있습"
+"니다"
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -17874,6 +17906,12 @@ msgstr "USB 버스 %1$u가 요청되었지만 해당 인덱스가 있는 컨트�
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr "USB 제어기 모델 '%1$s'는 이 QEMU 바이너리에서 지원하지 않습니다"
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
+msgstr ""
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -29122,6 +29160,9 @@ msgstr "호스트 USB 장치 공급업체=0x%1$.4x 제품=0x%2$.4x를 찾을 수
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "호스트 인증 모드에는 세 개의 인증서가 필요합니다"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "hostName 필드를 사용할 수 없음(VMware Tools가 누락되었습니까?)"
 
@@ -32925,6 +32966,10 @@ msgstr "SSF %1$d 협상이 충분히 강력하지 않았습니다"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않습니다"
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr "net 정의 검증에 실패함"
 
@@ -33488,6 +33533,9 @@ msgstr "호스트 이름을 찾을 수 없음: %1$s"
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "IQN %1$s 를 위해 정의된 iSCSI 연결장치가 없습니다"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -35441,6 +35489,9 @@ msgstr "읽기 전용 IDE 디스크는 지원되지 않습니다"
 msgid "readonly is not supported with vhostuser disk"
 msgstr "읽기 전용은 vhostuser 디스크에서 지원되지 않습니다"
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "읽기 전용 sata 디스크는 지원되지 않습니다"
 
@@ -35919,6 +35970,9 @@ msgstr "루트 경로는 절대 경로여야 합니다"
 
 msgid "rotation rate is not supported with this QEMU"
 msgstr "이 QEMU에서는 회전 속도가 지원되지 않습니다"
+
+msgid "rotation rate is only valid for SATA bus"
+msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "회전 속도는 SCSI/IDE/SATA 버스에만 유효합니다"
@@ -40906,6 +40960,9 @@ msgid ""
 msgstr ""
 "영역 %1$s 는 네트워크 %2$s 를 위해 요청되었으나 firewqlld는 BSD에서 지원되지 "
 "않습니다"
+
+#~ msgid "Invalid response from CH. Disk removal failed."
+#~ msgstr "CH에서 잘못된 응답. 디스크 제거가 실패했습니다."
 
 #, c-format
 #~ msgid ""

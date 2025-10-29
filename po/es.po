@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-10-14 13:14+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1294,6 +1294,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "el archivo '%1$s' no cabe en la memoria"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr "'%1$s' no es actualmente compatible con el motor de cifrado de QEMU"
 
@@ -2429,6 +2437,9 @@ msgstr ""
 "Antes de volcar el núcleo, falla al suspender el dominio '%1$d' con "
 "libxenlight"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr "La versión de Bhyve no admite framebuffer"
 
@@ -3402,6 +3413,9 @@ msgstr "No se puede obtener controlador de almacenaje por nombre"
 
 msgid "Cannot get storage controller name"
 msgstr "No se puede obtener nombre del controlador de almacenaje"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr "No se puede enchufar caliente en dispositivo de plataforma"
@@ -7307,7 +7321,8 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "Incorrecto al vincular zócalo a '%1$s'"
 
 msgid "Failed to build QEMU command line for acpi-generic-initiator"
-msgstr "Incorrecto al generar línea de comando QEMU para acpi-generic-initiator"
+msgstr ""
+"Incorrecto al generar línea de comando QEMU para acpi-generic-initiator"
 
 msgid "Failed to build acpi-generic-initiator properties"
 msgstr "Incorrecto al crear propiedades de acpi-generic-initiator"
@@ -7414,6 +7429,9 @@ msgstr "Incorrecto al completar acción %1$s en medio"
 
 msgid "Failed to complete tree listing"
 msgstr "Incorrecto al completar listado de árbol"
+
+msgid "Failed to connect network interfaces"
+msgstr ""
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -11213,8 +11231,9 @@ msgstr "Ruta relativa '%1$s' no válida"
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl no válido"
 
-msgid "Invalid response from CH. Disk removal failed."
-msgstr "Respuesta no válida desde CH. Extracción incorrecta del disco."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11797,6 +11816,18 @@ msgstr "Máquina es Nula"
 
 msgid "Machine is null"
 msgstr "Máquina es nula"
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
+msgstr ""
 
 msgid "Malformatted array index"
 msgstr "Índice de array malformado"
@@ -18746,6 +18777,12 @@ msgstr ""
 "Modelo de controlador USB ‘%1$s’ no admitido dentro de este QEMU binario"
 
 #, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
+msgstr ""
+
+#, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
 msgstr ""
 "Tipo ‘qusb1’ o ‘qusb2’ de modelo controlador USB no está admitido en %1$s"
@@ -22527,8 +22564,8 @@ msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"una ranura PCIe es necesaria para conectar un controlador PCI con modelo='%1$"
-"s', pero no está disponible ninguno, y no se puede ser añadido "
+"una ranura PCIe es necesaria para conectar un controlador PCI con "
+"modelo='%1$s', pero no está disponible ninguno, y no se puede ser añadido "
 "automáticamente"
 
 #, c-format
@@ -30354,6 +30391,9 @@ msgstr "no se encontró el dispositivo usb vendor=0x%1$.4x product=0x%2$.4x"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "El modo host-certificates necesita exactamente tres certificados"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr ""
 
@@ -34319,6 +34359,10 @@ msgstr "la negociación SSF %1$d no fue lo suficientemente poderosa"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -34355,7 +34399,8 @@ msgstr "la red '%1$s' ya existe con el uuid %2$s"
 
 #, c-format
 msgid "network '%1$s' claims dev='%2$s' is already in use by a different port"
-msgstr "la red '%1$s' reclama dev='%2$s' ya está en uso por un puerto diferente"
+msgstr ""
+"la red '%1$s' reclama dev='%2$s' ya está en uso por un puerto diferente"
 
 #, c-format
 msgid ""
@@ -34899,6 +34944,9 @@ msgstr "ningún nombre de host encontrado: %1$s"
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "no se ha definido una interface iSCSI para el IQN %1$s"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -35516,7 +35564,8 @@ msgid "only JSON objects can be top level"
 msgstr ""
 
 msgid "only RAW volumes are supported by this storage pool"
-msgstr "solo volúmenes en bruto están disponibles por este consorcio de almacén"
+msgstr ""
+"solo volúmenes en bruto están disponibles por este consorcio de almacén"
 
 msgid "only S390 guests support panic device of model 's390'"
 msgstr ""
@@ -36942,6 +36991,9 @@ msgstr "Discos transitorios aún no tienen soporte"
 msgid "readonly is not supported with vhostuser disk"
 msgstr ""
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "Discos transitorios aún no tienen soporte"
@@ -37460,6 +37512,9 @@ msgid "root path must be absolute"
 msgstr ""
 
 msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SATA bus"
 msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
@@ -42520,6 +42575,9 @@ msgid ""
 msgstr ""
 "zona %1$s solicitada para red %2$s pero cortafuegos firewalld no está "
 "admitido en BSD"
+
+#~ msgid "Invalid response from CH. Disk removal failed."
+#~ msgstr "Respuesta no válida desde CH. Extracción incorrecta del disco."
 
 #, c-format
 #~ msgid ""

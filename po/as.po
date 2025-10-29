@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -1072,6 +1072,14 @@ msgstr "'%1$s' বৰ্তমানে নাইনাই"
 #, c-format
 msgid "'%1$s' file does not fit in memory"
 msgstr "'%1$s' ফাইলটি মেমৰিত ধাৰণ কৰা সম্ভৱ নহয়"
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -2166,6 +2174,9 @@ msgstr "ডিস্ক বিন্যাস %s সমৰ্থিত নহয়
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr "কেন্দ্ৰ ডাম্প কৰাৰ আগত, libxenlight ৰ সৈতে ডমেইন '%1$d' স্থগিত কৰিবলে ব্যৰ্থ"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 #, fuzzy
 msgid "Bhyve version does not support framebuffer"
 msgstr "কাৰনেলে ব্যক্তিগত devpts সমৰ্থন নকৰে"
@@ -3096,6 +3107,9 @@ msgstr "নিয়ন্ত্ৰকৰ ইন্ডেক্স %s বিশ্�
 #, fuzzy
 msgid "Cannot get storage controller name"
 msgstr "নিয়ন্ত্ৰকৰ ইন্ডেক্স %s বিশ্লেষণ কৰিবলৈ ব্যৰ্থ"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr ""
@@ -7039,6 +7053,9 @@ msgstr "মাধ্যমত কাৰ্য্য %1$s সম্পূৰ্�
 msgid "Failed to complete tree listing"
 msgstr "ট্ৰি লিস্টিং সম্পূৰ্ণ কৰিবলে ব্যৰ্থ"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "চকেটক '%1$s' লে সংযোগ কৰিবলে ব্যৰ্থ"
@@ -10710,7 +10727,8 @@ msgstr "অবৈধ প্ৰাসংগিক পথ '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "অবৈধ নেটৱৰ্ক ফিল্টাৰ"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11253,6 +11271,18 @@ msgid "Machine is Null"
 msgstr ""
 
 msgid "Machine is null"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
 msgstr ""
 
 msgid "Malformatted array index"
@@ -17817,6 +17847,12 @@ msgstr ""
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
 msgstr ""
 
 #, c-format
@@ -29284,6 +29320,9 @@ msgstr "হস্ট usb ডিভাইচ vendor=0x%1$.4x product=0x%2$.4x প
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "হস্ট-প্ৰমাণপত্ৰসমূহৰ তিনিটা প্ৰমাণপত্ৰৰ প্ৰয়োজন"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr ""
 
@@ -33186,6 +33225,10 @@ msgstr "পাৰ কৰা SSF %1$d বৰ দৃঢ় নাছিল"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -33757,6 +33800,9 @@ msgstr "ডোমেইন পাৱ নাযায়: %1$s"
 #, fuzzy, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "সংযোগমাধ্যম %s, %sৰ পৰা ব্যাখ্যা কৰা হৈছে\n"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -35777,6 +35823,9 @@ msgstr "পৰিবৰ্তনশীল ডিস্কসমূহ এতি�
 msgid "readonly is not supported with vhostuser disk"
 msgstr ""
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "পৰিবৰ্তনশীল ডিস্কসমূহ এতিয়াও সমৰ্থিত নহয়"
@@ -36278,6 +36327,9 @@ msgid "root path must be absolute"
 msgstr ""
 
 msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SATA bus"
 msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"

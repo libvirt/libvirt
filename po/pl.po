@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2023-02-13 12:20+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1066,6 +1066,14 @@ msgstr "„%1$s” nie istnieje"
 #, c-format
 msgid "'%1$s' file does not fit in memory"
 msgstr "plik „%1$s” nie mieści się w pamięci"
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -2140,6 +2148,9 @@ msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr ""
 "Wyłączenie domeny „%1$d” za pomocą biblioteki libxenlight się nie powiodło"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr ""
 
@@ -3083,6 +3094,9 @@ msgstr "Nie można przetworzyć indeksu kontrolera %s"
 #, fuzzy
 msgid "Cannot get storage controller name"
 msgstr "Nie można przetworzyć indeksu kontrolera %s"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr ""
@@ -7082,6 +7096,9 @@ msgstr "Zrzucanie core domeny %s do %s się nie powiodło"
 msgid "Failed to complete tree listing"
 msgstr "Skompilowanie wyrażenia regularnego %s się nie powiodło"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "uzyskanie sekretu „%1$s” się nie powiodło"
@@ -10913,7 +10930,8 @@ msgstr "Nieprawidłowa względna ścieżka „%1$s”"
 msgid "Invalid resctrl monitor"
 msgstr "Nieprawidłowy filtr sieci"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11462,6 +11480,18 @@ msgid "Machine is Null"
 msgstr ""
 
 msgid "Machine is null"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
 msgstr ""
 
 msgid "Malformatted array index"
@@ -18039,6 +18069,12 @@ msgstr ""
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
 msgstr ""
 
 #, c-format
@@ -29684,6 +29720,9 @@ msgstr "nie odnaleziono urządzenia USB gospodarza %03d.%03d"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "tryb certyfikatów gospodarza wymaga dokładnie trzech certyfikatów"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr ""
 
@@ -33684,6 +33723,10 @@ msgstr "negocjacja SSF %1$d nie była wystarczająco silna"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -34254,6 +34297,9 @@ msgstr "Nie odnaleziono domeny: %1$s"
 #, fuzzy, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "Interfejs %s został określony z %s\n"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -36278,6 +36324,9 @@ msgstr "Wielomonitorowe urządzenia graficzne są nieobsługiwane"
 msgid "readonly is not supported with vhostuser disk"
 msgstr ""
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "typ działania %d jest nieobsługiwany"
@@ -36785,6 +36834,9 @@ msgid "root path must be absolute"
 msgstr ""
 
 msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SATA bus"
 msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"

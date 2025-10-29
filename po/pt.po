@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-10-29 09:06+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
@@ -1250,6 +1250,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "'%1$s' ficheiro não cabe na memória"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr "'%1$s' presentemente não é suportado pelo motor de encriptação do qemu"
 
@@ -2363,6 +2371,9 @@ msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr ""
 "Antes de despejar núcleo, falhou ao suspender domínio '%1$d' com libxenlight"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr "Versão de bhyve não suporta framebuffer"
 
@@ -3321,6 +3332,9 @@ msgstr "Não pode obter controlador de armazenamento pelo nome"
 
 msgid "Cannot get storage controller name"
 msgstr "Não pode obter nome do controlador de armazenamento"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr "Não pode ligar-a-quente dispositivo de plataforma"
@@ -7281,6 +7295,9 @@ msgstr "Falhou ao completar acção %1$s no meio"
 msgid "Failed to complete tree listing"
 msgstr "Falhou ao completar listagem de árvore"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Falhou ao ligar socket para '%1$s'"
@@ -11014,8 +11031,9 @@ msgstr "Caminho relativo inválido '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl inválido"
 
-msgid "Invalid response from CH. Disk removal failed."
-msgstr "Resposta inválida de CH. Remoção de disco falhou."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
+msgstr ""
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11582,6 +11600,18 @@ msgstr "Máquina é Nula"
 
 msgid "Machine is null"
 msgstr "Máquina é nula"
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
+msgstr ""
 
 msgid "Malformatted array index"
 msgstr "Índice de matriz mal formatado"
@@ -18351,6 +18381,12 @@ msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr "Modelo de controlador USB '%1$s' não suportado com este binário QEMU"
 
 #, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
+msgstr ""
+
+#, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
 msgstr ""
 "Tipo de modelo de controlador USB 'qusb1' ou 'qusb2' não é suportado em %1$s"
@@ -22087,8 +22123,9 @@ msgid ""
 "a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
 "but none is available, and it cannot be automatically added"
 msgstr ""
-"uma slot PCI convencional é precisa para ligar um controlador PCI modelo='%1$"
-"s', mas nenhuma está disponível, e não pode ser adicionada automaticamente"
+"uma slot PCI convencional é precisa para ligar um controlador PCI "
+"modelo='%1$s', mas nenhuma está disponível, e não pode ser adicionada "
+"automaticamente"
 
 msgid "a device with the same address already exists "
 msgstr "já existe um dispositivo com o mesmo endereço "
@@ -29866,6 +29903,9 @@ msgstr ""
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "modo host-certificates precisa exatamente de três certificados"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "campo hostName não disponível (a faltar VMware Tools?)"
 
@@ -33802,6 +33842,10 @@ msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 "matriz JSON aninhada para conversão de linha de comandos não é suportada"
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr "definição de rede falhou validação"
 
@@ -34375,6 +34419,9 @@ msgstr "nenhum nome de máquina encontrado: %1$s"
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "nenhuma interface iSCSI definida para IQN %1$s"
 
+msgid "no interface name specified"
+msgstr ""
+
 #, c-format
 msgid "no interface with matching mac '%1$s'"
 msgstr "nenhuma interface com mac correspondente '%1$s'"
@@ -34753,7 +34800,8 @@ msgid "nothing selected for snapshot"
 msgstr "nada selecionado para instantâneo"
 
 msgid "notify server to update TLS related files online."
-msgstr "notifica servidor para atualizar ficheiros relacionados com TLS online."
+msgstr ""
+"notifica servidor para atualizar ficheiros relacionados com TLS online."
 
 msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
@@ -35091,7 +35139,8 @@ msgid "only one hotpluggable entity can be selected"
 msgstr "apenas uma entidade de ligação-a-quente pode ser selecionada"
 
 msgid "only one log element is allowed for character device"
-msgstr "apenas um elemento de registo é permitido para dispositivo de caractere"
+msgstr ""
+"apenas um elemento de registo é permitido para dispositivo de caractere"
 
 msgid "only one numatune is supported"
 msgstr "apenas um numatune é suportado"
@@ -35758,7 +35807,8 @@ msgid "post-copy migration bandwidth limit in MiB/s"
 msgstr "limite de largura de banda de migração pós-cópia em MiB/s"
 
 msgid "post-copy migration is not supported with non-live or paused migration"
-msgstr "migração pós-cópia não é suportada com migração não-ao-vivo ou em pausa"
+msgstr ""
+"migração pós-cópia não é suportada com migração não-ao-vivo ou em pausa"
 
 #, c-format
 msgid "post-copy migration of domain %1$s has not failed"
@@ -35952,7 +36002,8 @@ msgstr "incompatibilidade de programa (atual %1$x, esperado %2$x)"
 
 #, c-format
 msgid "program mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr "incompatibilidade de programa em evento (atual 0x%1$x, esperado 0x%2$x)"
+msgstr ""
+"incompatibilidade de programa em evento (atual 0x%1$x, esperado 0x%2$x)"
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%1$s' of network %2$s"
@@ -36101,7 +36152,8 @@ msgstr ""
 "%1$s"
 
 msgid "qemu-rdp does not support multiple listens for one graphics device."
-msgstr "qemu-rdp não suporta múltiplas escotas para um dispositivo de gráficos."
+msgstr ""
+"qemu-rdp não suporta múltiplas escotas para um dispositivo de gráficos."
 
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
 msgstr ""
@@ -36400,6 +36452,9 @@ msgstr "discos ide só de leitura não são suportados"
 msgid "readonly is not supported with vhostuser disk"
 msgstr "só leitura não é suportado com disco vhostuser"
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "discos sata só de leitura não são suportados"
 
@@ -36500,8 +36555,8 @@ msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
 msgstr ""
-"remote_open: transporte em URL não reconhecido "
-"(deve ser tls|unix|ssh|ext|tcp|libssh2|libssh)"
+"remote_open: transporte em URL não reconhecido (deve ser tls|unix|ssh|ext|"
+"tcp|libssh2|libssh)"
 
 msgid "removable is only valid for usb or scsi disks"
 msgstr "amovível é apenas válido para discos usb ou scsi"
@@ -36510,12 +36565,13 @@ msgid "remove TPM state"
 msgstr "remove estado TPM"
 
 msgid "remove all associated storage volumes (use with caution)"
-msgstr "remover todos os volumes de armazenamento associados (usar com cuidado)"
+msgstr ""
+"remover todos os volumes de armazenamento associados (usar com cuidado)"
 
 msgid "remove all domain checkpoint metadata (vm must be inactive)"
 msgstr ""
-"remove todos os metadados de ponto de verificação de domínio "
-"(vm tem de estar activa)"
+"remove todos os metadados de ponto de verificação de domínio (vm tem de "
+"estar activa)"
 
 msgid "remove all domain snapshot metadata (vm must be inactive)"
 msgstr ""
@@ -36525,8 +36581,8 @@ msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
 msgstr ""
-"remove volumes de armazenamento associados "
-"(lista separada por vírgulas de alvos ou caminhos fonte) (veja domblklist)"
+"remove volumes de armazenamento associados (lista separada por vírgulas de "
+"alvos ou caminhos fonte) (veja domblklist)"
 
 msgid "remove domain logs"
 msgstr "remove relatórios de domínio"
@@ -36660,8 +36716,8 @@ msgstr "quantidade de cpu requisitada excede o máximo (%1$d > %2$d)"
 #, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%1$d > %2$d)"
 msgstr ""
-"quantidade de cpu requisitada excede a máxima quantidade suportada "
-"(%1$d > %2$d)"
+"quantidade de cpu requisitada excede a máxima quantidade suportada (%1$d > "
+"%2$d)"
 
 #, c-format
 msgid "requested firewall_backend '%1$s' is not available"
@@ -36898,6 +36954,9 @@ msgstr "caminho de raiz tem de ser absoluto"
 msgid "rotation rate is not supported with this QEMU"
 msgstr "taxa de rotação não é suportada com este QEMU"
 
+msgid "rotation rate is only valid for SATA bus"
+msgstr ""
+
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "taxa de rotação é apenas válida para barramento SCSI/IDE/SATA"
 
@@ -36908,9 +36967,8 @@ msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
 msgstr ""
-"ação de execução especificada pela opção --timeout-* "
-"(suspensa por predefinição) se a migração ao vivo exceder o tempo limite "
-"(em segundos)"
+"ação de execução especificada pela opção --timeout-* (suspensa por "
+"predefinição) se a migração ao vivo exceder o tempo limite (em segundos)"
 
 msgid "running"
 msgstr "em execução"
@@ -37109,8 +37167,8 @@ msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
 "\"dbus\")"
 msgstr ""
-"seleciona mostrador gráfico particular "
-"(ex. \"vnc\", \"spice\", \"rdp\", \"dbus\")"
+"seleciona mostrador gráfico particular (ex. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 
 msgid "send handler failed"
 msgstr "manuseador de envio alhou"
@@ -37397,7 +37455,8 @@ msgid "shmem name cannot include '/' character"
 msgstr "nome de shmem não pode incluir o caractere '/'"
 
 msgid "shmem size must be a power of 2 and at least 1 MiB (1024 KiB)"
-msgstr "tamanho de shmem tem de ser potência de 2 e pelo menos 1 MiB (1024 KiB)"
+msgstr ""
+"tamanho de shmem tem de ser potência de 2 e pelo menos 1 MiB (1024 KiB)"
 
 msgid "show all possible graphical displays"
 msgstr "mostrar todos os mostradores gráficos possíveis"
@@ -37522,7 +37581,8 @@ msgstr ""
 
 #, c-format
 msgid "snapshot disk '%1$s' was target of not completed snapshot delete"
-msgstr "disco instantâneo '%1$s' foi alvo de apagar não completo de instantâneo"
+msgstr ""
+"disco instantâneo '%1$s' foi alvo de apagar não completo de instantâneo"
 
 msgid "snapshot information"
 msgstr "informação do instantâneo"
@@ -37848,7 +37908,8 @@ msgstr "pool de armazenamento apenas suporta volumes encriptados LUKS"
 
 #, c-format
 msgid "storage pool protocol ver '%1$s' must not contain ','"
-msgstr "versão de protocolo de pool de armazenamento '%1$s' não pode conter ','"
+msgstr ""
+"versão de protocolo de pool de armazenamento '%1$s' não pode conter ','"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%1$s'"
@@ -38265,7 +38326,8 @@ msgid "the state to restore"
 msgstr "o estado a restaurar"
 
 msgid "the time (in milliseconds) how long the keys will be held"
-msgstr "o tempo (em milisegundos) durante quanto tempo as teclas serão mantidas"
+msgstr ""
+"o tempo (em milisegundos) durante quanto tempo as teclas serão mantidas"
 
 msgid "the username"
 msgstr "o nome de utilizador"
@@ -38914,7 +38976,8 @@ msgid "transient is not supported with vhostuser disk"
 msgstr "transiente não é suportado com disco"
 
 msgid "transient node devices do not have any persistent config"
-msgstr "dispositivos de nó transientes não têm nenhuma configuração persistente"
+msgstr ""
+"dispositivos de nó transientes não têm nenhuma configuração persistente"
 
 #, c-format
 msgid "transport '%1$s' does not support socket attribute"
@@ -40194,7 +40257,8 @@ msgstr "modelo de CPU de máquina desconhecido"
 
 #, c-format
 msgid "unknown host device source address type '%1$s'"
-msgstr "tipo de endereço de fonte de dispositivo de máquina desconhecido '%1$s'"
+msgstr ""
+"tipo de endereço de fonte de dispositivo de máquina desconhecido '%1$s'"
 
 #, c-format
 msgid "unknown hub device type '%1$s'"
@@ -41932,6 +41996,9 @@ msgstr "zona %1$s pedida para rede %2$s mas o firewalld não está activo"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#~ msgid "Invalid response from CH. Disk removal failed."
+#~ msgstr "Resposta inválida de CH. Remoção de disco falhou."
 
 #, c-format
 #~ msgid ""

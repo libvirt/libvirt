@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-10-23 07:54+0000\n"
 "Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1283,6 +1283,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "file '%1$s' non entra in memoria"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr "'%1$s' non è attualmente supportato dal motore di crittografia qemu"
 
@@ -1354,8 +1362,8 @@ msgid ""
 "'--migrate-disks-detect-zeroes' requires one of '--copy-storage-all', '--"
 "copy-storage-inc'"
 msgstr ""
-"'--migrate-disks-detect-zeroes' richiede uno tra '--copy-storage-all', "
-"'--copy-storage-inc'"
+"'--migrate-disks-detect-zeroes' richiede uno tra '--copy-storage-all', '--"
+"copy-storage-inc'"
 
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1526,7 +1534,8 @@ msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "'online' mancante nella risposta di guest-get-vcpus"
 
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "'parent' per vHBA non specificato, e non se ne trova uno su questo host"
+msgstr ""
+"'parent' per vHBA non specificato, e non se ne trova uno su questo host"
 
 msgid "'partition' missing in reply of guest-get-disks"
 msgstr "'partition' mancante nella risposta di guest-get-disks"
@@ -2337,8 +2346,8 @@ msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
-"Allocazione auto porta TLS spice richiesta ma TLS spice disabilitato in "
-"qemu.conf"
+"Allocazione auto porta TLS spice richiesta ma TLS spice disabilitato in qemu."
+"conf"
 
 msgid "Auto converge throttle:"
 msgstr "Throttle convergenza auto:"
@@ -2411,6 +2420,9 @@ msgstr "non è supportato il collegamento a caldo dell'unità"
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr ""
 "Prima di dump core, impossibile sospendere dominio '%1$d' con libxenlight"
+
+msgid "Bhyve version does not support NVMe"
+msgstr ""
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "La versione di bhyve non supporta il framebuffer"
@@ -2572,7 +2584,8 @@ msgstr "Architettura CPU (/domain/os/type/@arch)"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with '%2$s' / '%3$s' CPUs"
-msgstr "Modalità cache CPU '%1$s' può essere usata solo con CPU '%2$s' / '%3$s'"
+msgstr ""
+"Modalità cache CPU '%1$s' può essere usata solo con CPU '%2$s' / '%3$s'"
 
 #, c-format
 msgid "CPU cache mode '%1$s' can only be used with level='3'"
@@ -2624,7 +2637,8 @@ msgstr "Funzionalità CPU non supportate da hypervisor per architettura %1$s"
 
 #, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %1$s"
-msgstr "Flag CPU richiesti ma impossibile determinare CPU default per arch %1$s"
+msgstr ""
+"Flag CPU richiesti ma impossibile determinare CPU default per arch %1$s"
 
 msgid "CPU frequency:"
 msgstr "Frequenza CPU:"
@@ -2812,8 +2826,8 @@ msgid ""
 msgstr ""
 "Calcola rate dirty memoria di un dominio per decidere se è appropriato "
 "migrarlo fuori o no.\n"
-"Le informazioni rate dirty calcolate sono disponibili chiamando 'domstats "
-"--dirtyrate'."
+"Le informazioni rate dirty calcolate sono disponibili chiamando 'domstats --"
+"dirtyrate'."
 
 #, c-format
 msgid "Call to %1$s for unexpected type '%2$s'"
@@ -3021,8 +3035,8 @@ msgid ""
 "Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
 "%4$u)"
 msgstr ""
-"Impossibile accedere file backing '%1$s' di file storage '%2$s' "
-"(come uid:%3$u, gid:%4$u)"
+"Impossibile accedere file backing '%1$s' di file storage '%2$s' (come uid:"
+"%3$u, gid:%4$u)"
 
 #, fuzzy, c-format
 msgid "Cannot access storage file '%1$s'"
@@ -3388,6 +3402,9 @@ msgstr "Errore nel parsing del controller indice %s"
 msgid "Cannot get storage controller name"
 msgstr "Errore nel parsing del controller indice %s"
 
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
+
 msgid "Cannot hotplug platform device"
 msgstr "Impossibile hotplug dispositivo platform"
 
@@ -3722,7 +3739,8 @@ msgstr "nessuna interfaccia di rete fornita per '%1$s'"
 
 #, c-format
 msgid "Cannot set interface vlanid to %1$d for ifname %2$s vf %3$d"
-msgstr "Impossibile impostare vlanid interfaccia a %1$d per ifname %2$s vf %3$d"
+msgstr ""
+"Impossibile impostare vlanid interfaccia a %1$d per ifname %2$s vf %3$d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Impossibile impostare la memoria ad un valore maggiore del massimo"
@@ -3796,8 +3814,8 @@ msgstr ""
 #, c-format
 msgid "Cannot update device '%1$s', type mismatch (current type '%2$s')"
 msgstr ""
-"Impossibile aggiornare dispositivo '%1$s', mismatch tipo "
-"(tipo attuale '%2$s')"
+"Impossibile aggiornare dispositivo '%1$s', mismatch tipo (tipo attuale "
+"'%2$s')"
 
 #, c-format
 msgid "Cannot update device '%1$s, uuid mismatch (current uuid '%2$s')"
@@ -3938,7 +3956,8 @@ msgstr ""
 
 msgid ""
 "Change the upper limit to overall number of clients connected to the server."
-msgstr "Cambia limite superiore a numero complessivo client connessi al server."
+msgstr ""
+"Cambia limite superiore a numero complessivo client connessi al server."
 
 msgid "Change upper limit to number of workers."
 msgstr "Cambia limite superiore a numero worker."
@@ -4021,8 +4040,8 @@ msgid ""
 "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
 "SNP)"
 msgstr ""
-"Controllo per AMD Secure Encrypted Virtualization-Secure Nested Paging "
-"(SEV-SNP)"
+"Controllo per AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+"SNP)"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -4208,8 +4227,8 @@ msgstr "Driver stato Cloud-Hypervisor non attivo"
 msgid ""
 "Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
 msgstr ""
-"Versione Cloud-Hypervisor troppo vecchia "
-"(v15.0 è la versione minima supportata)"
+"Versione Cloud-Hypervisor troppo vecchia (v15.0 è la versione minima "
+"supportata)"
 
 #, c-format
 msgid ""
@@ -4709,7 +4728,8 @@ msgstr "Impossibile trovare il dispositivo corrispondente"
 
 #, c-format
 msgid "Could not find any network device under PCI device at %1$s"
-msgstr "Impossibile trovare alcun dispositivo rete sotto dispositivo PCI a %1$s"
+msgstr ""
+"Impossibile trovare alcun dispositivo rete sotto dispositivo PCI a %1$s"
 
 #, fuzzy
 msgid "Could not find any vport capable device"
@@ -4871,7 +4891,8 @@ msgstr "Impossibile ottenere InstanceID default Msvm_DiskDrive"
 
 #, c-format
 msgid "Could not get Msvm_ShutdownComponent for domain with UUID '%1$s'"
-msgstr "Impossibile ottenere Msvm_ShutdownComponent per dominio con UUID '%1$s'"
+msgstr ""
+"Impossibile ottenere Msvm_ShutdownComponent per dominio con UUID '%1$s'"
 
 #, fuzzy
 msgid "Could not get SOAP body"
@@ -5708,7 +5729,8 @@ msgstr ""
 "rete '%2$s'"
 
 msgid "DNS SRV records cannot be modified, only added or deleted"
-msgstr "Record DNS SRV non possono essere modificati, solo aggiunti o eliminati"
+msgstr ""
+"Record DNS SRV non possono essere modificati, solo aggiunti o eliminati"
 
 #, c-format
 msgid ""
@@ -7387,6 +7409,9 @@ msgstr "Impossibile completare l'azione %1\\$s sul supporto"
 #, fuzzy
 msgid "Failed to complete tree listing"
 msgstr "Compilazione regex %s fallita"
+
+msgid "Failed to connect network interfaces"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -11159,7 +11184,8 @@ msgstr "Percorso relativo '%1$s' non valido"
 msgid "Invalid resctrl monitor"
 msgstr "Vettori non validi: %s"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11707,6 +11733,18 @@ msgid "Machine is Null"
 msgstr ""
 
 msgid "Machine is null"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
 msgstr ""
 
 msgid "Malformatted array index"
@@ -18234,6 +18272,12 @@ msgstr ""
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
 msgstr ""
 
 #, c-format
@@ -29858,6 +29902,9 @@ msgstr "dispositivo usb host %03d.%03d non trovato"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "la modalità host-certificates richiede esattamente tre certificati"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr ""
 
@@ -33832,6 +33879,10 @@ msgstr "la negoziazione SSF %1$d non è abbastanza forte"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -34400,6 +34451,9 @@ msgstr "Dominio non trovato: %1$s"
 #, fuzzy, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "nessun numero di interfaccia USB fornito per '%1$s'"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -36410,6 +36464,9 @@ msgstr "Tipo di rete %d non supportata"
 msgid "readonly is not supported with vhostuser disk"
 msgstr ""
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "Tipo di rete %d non supportata"
@@ -36921,6 +36978,9 @@ msgstr "percorso root deve essere assoluto"
 msgid "rotation rate is not supported with this QEMU"
 msgstr "rate rotazione non supportato con questo QEMU"
 
+msgid "rotation rate is only valid for SATA bus"
+msgstr ""
+
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "rate rotazione valido solo per bus SCSI/IDE/SATA"
 
@@ -37146,8 +37206,8 @@ msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", "
 "\"dbus\")"
 msgstr ""
-"seleziona display grafico particolare "
-"(es. \"vnc\", \"spice\", \"rdp\", \"dbus\")"
+"seleziona display grafico particolare (es. \"vnc\", \"spice\", \"rdp\", "
+"\"dbus\")"
 
 #, fuzzy
 msgid "send handler failed"
@@ -38331,7 +38391,8 @@ msgstr "c'è già record DNS TXT con nome '%1$s' in rete %2$s"
 msgid ""
 "there is already at least one DNS HOST record with a matching field in "
 "network %1$s"
-msgstr "c'è già almeno un record DNS HOST con campo corrispondente in rete %1$s"
+msgstr ""
+"c'è già almeno un record DNS HOST con campo corrispondente in rete %1$s"
 
 #, c-format
 msgid ""
@@ -38346,32 +38407,32 @@ msgid ""
 "there is an existing dhcp host entry in network '%1$s' that matches \"<host "
 "mac='%2$s' name='%3$s' ip='%4$s'/>\""
 msgstr ""
-"c'è entry host dhcp esistente in rete '%1$s' che corrisponde "
-"\"<host mac='%2$s' name='%3$s' ip='%4$s'/>\""
+"c'è entry host dhcp esistente in rete '%1$s' che corrisponde \"<host "
+"mac='%2$s' name='%3$s' ip='%4$s'/>\""
 
 #, c-format
 msgid ""
 "there is an existing dhcp range entry in network '%1$s' that matches "
 "\"<range start='%2$s' end='%3$s'/>\""
 msgstr ""
-"c'è entry range dhcp esistente in rete '%1$s' che corrisponde "
-"\"<range start='%2$s' end='%3$s'/>\""
+"c'è entry range dhcp esistente in rete '%1$s' che corrisponde \"<range "
+"start='%2$s' end='%3$s'/>\""
 
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%1$s' that matches "
 "\"<interface dev='%2$s'>\""
 msgstr ""
-"c'è entry interfaccia esistente in rete '%1$s' che corrisponde "
-"\"<interface dev='%2$s'>\""
+"c'è entry interfaccia esistente in rete '%1$s' che corrisponde \"<interface "
+"dev='%2$s'>\""
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%1$s' that matches "
 "\"<portgroup name='%2$s'>\""
 msgstr ""
-"c'è entry portgroup esistente in rete '%1$s' che corrisponde "
-"\"<portgroup name='%2$s'>\""
+"c'è entry portgroup esistente in rete '%1$s' che corrisponde \"<portgroup "
+"name='%2$s'>\""
 
 msgid "there is another transaction running."
 msgstr "c'è un'altra transazione in esecuzione."
@@ -38491,7 +38552,8 @@ msgstr ""
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr "thread_pool_min e thread_pool_max non supportati da questo binario QEMU"
+msgstr ""
+"thread_pool_min e thread_pool_max non supportati da questo binario QEMU"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
 msgstr "thread_pool_min deve essere minore o uguale a thread_pool_max"
@@ -40567,8 +40629,8 @@ msgid ""
 "unsupported <bandwidth> element in <portgroup name='%1$s'> of network '%2$s' "
 "with forward mode='%3$s'"
 msgstr ""
-"elemento <bandwidth> non supportato in <portgroup name='%1$s'> di rete '%2$"
-"s' con forward mode='%3$s'"
+"elemento <bandwidth> non supportato in <portgroup name='%1$s'> di rete "
+"'%2$s' con forward mode='%3$s'"
 
 #, fuzzy, c-format
 msgid "unsupported CPU cache level for mode '%1$s'"
@@ -40998,7 +41060,8 @@ msgstr "Utilizzo:"
 #, c-format
 msgid ""
 "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
-msgstr "tipo controller usb '%1$s' non supporta 'ports' con questo binario QEMU"
+msgstr ""
+"tipo controller usb '%1$s' non supporta 'ports' con questo binario QEMU"
 
 msgid "usb device not found"
 msgstr "dispositivo USB non trovato"
@@ -41301,8 +41364,8 @@ msgid ""
 "vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
 "%3$zd' which was partially selected"
 msgstr ""
-"vcpu '%1$zu' non selezionata ma appartiene a entità hotpluggable '%2$zd-%3$"
-"zd' parzialmente selezionata"
+"vcpu '%1$zu' non selezionata ma appartiene a entità hotpluggable '%2$zd-"
+"%3$zd' parzialmente selezionata"
 
 msgid "vcpu 0 can't be offline"
 msgstr "vcpu 0 non può essere offline"
@@ -41742,8 +41805,8 @@ msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
 "operation "
 msgstr ""
-"vmplayer non supporta operazione suspend/resume libvirt "
-"(vmware pause/unpause) "
+"vmplayer non supporta operazione suspend/resume libvirt (vmware pause/"
+"unpause) "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
 msgstr "funzionalità vmport richiede funzionalità ps2 non disabilitata"

@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1264,6 +1264,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "le fichier ’%1$s’ ne tient pas en mémoire"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr ""
 "'%1$s' n'est actuellement pas supporté par le moteur de cryptage de qemu"
@@ -2395,6 +2403,9 @@ msgstr ""
 "Avant de vider le noyau, il a été impossible de suspendre le domaine '%1$d' "
 "avec libxenlight"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr "La version Bhyve ne prend pas en charge le framebuffer"
 
@@ -3394,6 +3405,9 @@ msgstr "Impossible d'obtenir le contrôleur de stockage par son nom"
 
 msgid "Cannot get storage controller name"
 msgstr "Impossible d'obtenir le nom du contrôleur de stockage"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr ""
@@ -7423,6 +7437,9 @@ msgstr "Échec de l'action %1$s sur le média"
 msgid "Failed to complete tree listing"
 msgstr "Échec de l'établissement de la liste d’arborescence"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "Échec de la connexion du socket à '%1$s'"
@@ -11234,7 +11251,8 @@ msgstr "Chemin relatif non valide '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "Moniteur resctrl non valide"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11826,6 +11844,18 @@ msgstr "La machine est Null"
 
 msgid "Machine is null"
 msgstr "La machine est Null"
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
+msgstr ""
 
 msgid "Malformatted array index"
 msgstr "Index de tableau mal formaté"
@@ -18771,6 +18801,12 @@ msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr ""
 "Le modèle de contrôleur USB '%1$s' n'est pas pris en charge par ce binaire "
 "QEMU"
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
+msgstr ""
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -30549,6 +30585,9 @@ msgstr "périphérique hôte usb vendor=0x%1$.4x product=0x%2$.4x non trouvé"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "le mode host-certificates requiert exactement trois certificats"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "le champ hostName n'est pas disponible (outils VMware manquants ?)"
 
@@ -34570,6 +34609,10 @@ msgstr ""
 "la conversion de tableaux JSON imbriqués en ligne de commande n'est pas "
 "prise en charge"
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -35150,6 +35193,9 @@ msgstr "aucun nom d'hôte trouvé : %1$s"
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "pas d'interface iSCSI définie pour l'IQN %1$s"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -37247,6 +37293,9 @@ msgstr "Les disques ide en lecture seule ne sont pas pris en charge"
 msgid "readonly is not supported with vhostuser disk"
 msgstr "readonly n'est pas pris en charge avec le disque vhostuser"
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "Les disques sata en lecture seule ne sont pas pris en charge"
 
@@ -37767,6 +37816,9 @@ msgstr "le chemin de la racine doit être absolu"
 
 msgid "rotation rate is not supported with this QEMU"
 msgstr "Le taux de rotation n'est pas pris en charge par ce système QEMU"
+
+msgid "rotation rate is only valid for SATA bus"
+msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "Le taux de rotation n'est valable que pour les bus SCSI/IDE/SATA"

@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-09-28 10:28+0000\n"
 "Last-Translator: zhanchun li <lzc777@126.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1194,6 +1194,14 @@ msgid "'%1$s' file does not fit in memory"
 msgstr "内存中放不下 '%1$s' 文件"
 
 #, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
+
+#, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
 msgstr "QEMU 加密引擎当前不支持 '%1$s'"
 
@@ -2247,6 +2255,9 @@ msgstr "不支持带宽速率限制"
 msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr "转储 core 之前，使用 libxenlight 挂起域 '%1$d' 失败"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 msgid "Bhyve version does not support framebuffer"
 msgstr "Bhyve 版本不支持帧缓冲"
 
@@ -3142,6 +3153,9 @@ msgstr "无法通过名称获取存储控制器"
 
 msgid "Cannot get storage controller name"
 msgstr "无法获取存储控制器名称"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr "无法热插拔平台设备"
@@ -6944,6 +6958,9 @@ msgstr "在介质中完成动作 %1$s 失败"
 msgid "Failed to complete tree listing"
 msgstr "显示树形列表失败"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "将插槽连接到 '%1$s' 失败"
@@ -10553,7 +10570,8 @@ msgstr "无效间接路径 '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "无效的 resctrl 监控"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11089,6 +11107,18 @@ msgstr "机器为 Null"
 
 msgid "Machine is null"
 msgstr "机器为 null"
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
+msgstr ""
 
 msgid "Malformatted array index"
 msgstr "不正常的数组下标"
@@ -17425,6 +17455,12 @@ msgstr "请求 USB 总线 %1$u ，但不存在具有该索引的控制器"
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 USB 控制器型号 '%1$s'"
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
+msgstr ""
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -28468,6 +28504,9 @@ msgstr "未找到 host usb device vendor=0x%1$.4x product=0x%2$.4x"
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "主机认证模式需要三个证书"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "hostName 字段不可用（缺少 VMware 工具？）"
 
@@ -32184,6 +32223,10 @@ msgstr "协商 SSF %1$d 不够强大"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr "不支持嵌套 JSON 数组到命令行的转换"
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr "网络定义未通过验证"
 
@@ -32731,6 +32774,9 @@ msgstr "主机名未找到：%1$s"
 #, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "没有为 IQN %1$s 定义的 iSCSI 接口"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -34659,6 +34705,9 @@ msgstr "不支持只读 ide 磁盘"
 msgid "readonly is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持只读"
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "不支持只读 sata 磁盘"
 
@@ -35129,6 +35178,9 @@ msgstr "根路径必须是绝对路径"
 
 msgid "rotation rate is not supported with this QEMU"
 msgstr "此 QEMU 不支持轮转率"
+
+msgid "rotation rate is only valid for SATA bus"
+msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "轮转率仅对 SCSI/IDE/SATA 总线有效"

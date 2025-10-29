@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-09-25 09:31+0000\n"
+"POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1125,6 +1125,14 @@ msgstr "'%1$s' உள்ளிருக்கவில்லை"
 #, c-format
 msgid "'%1$s' file does not fit in memory"
 msgstr "'%1$s' கோப்பு நினைவகத்தில் பொருந்தவில்லை"
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' feature"
+msgstr ""
+
+#, c-format
+msgid "'%1$s' hyperv feature requires '%2$s' timer"
+msgstr ""
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -2242,6 +2250,9 @@ msgstr ""
 "கோரை டம்ப் செய்யும் முன்பு, டொமைன் '%1$d' ஐ libxenlight கொண்டு இடைநிறுத்துவதில் "
 "தோல்வியடைந்தது"
 
+msgid "Bhyve version does not support NVMe"
+msgstr ""
+
 #, fuzzy
 msgid "Bhyve version does not support framebuffer"
 msgstr "கெர்னல் தனிப்பட்ட devpts ஐ ஆதரிக்காது"
@@ -3175,6 +3186,9 @@ msgstr "கட்டுப்படுத்தி அட்டவணை %sஐ �
 #, fuzzy
 msgid "Cannot get storage controller name"
 msgstr "கட்டுப்படுத்தி அட்டவணை %sஐ பாகுபடுத்த முடியவில்லை"
+
+msgid "Cannot have more than one disk per NVMe controller"
+msgstr ""
 
 msgid "Cannot hotplug platform device"
 msgstr ""
@@ -7141,6 +7155,9 @@ msgstr "ஊடகத்தில் செயல் %1$s ஐ முடிக்�
 msgid "Failed to complete tree listing"
 msgstr "கிளையமைப்பு பட்டியலிடுதலை முடிக்க முடியவில்லை"
 
+msgid "Failed to connect network interfaces"
+msgstr ""
+
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
 msgstr "சாக்கெட்டை '%1$s' உடன் இணைப்பதில் தோல்வி"
@@ -10838,7 +10855,8 @@ msgstr "தவாறான தொடர்புடைய பாதை '%1$s'"
 msgid "Invalid resctrl monitor"
 msgstr "தவறான பிணைய வடிப்பி"
 
-msgid "Invalid response from CH. Disk removal failed."
+#, c-format
+msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
 
 #, c-format
@@ -11389,6 +11407,18 @@ msgid "Machine is Null"
 msgstr ""
 
 msgid "Machine is null"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' does not support PCI"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' supports PCI but no PCI controller added"
+msgstr ""
+
+#, c-format
+msgid "Machine type '%1$s' wants PCI but PCI is not supported"
 msgstr ""
 
 msgid "Malformatted array index"
@@ -17997,6 +18027,12 @@ msgstr ""
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid ""
+"USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
+"support PCI"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29484,6 +29520,9 @@ msgstr "வழங்கி usb சாதன வென்டார்=0x%1$.4x �
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "வழங்கி-சான்றிதழ்கள் பயன்முறைக்கு சரியாக மூன்று சான்றிதழ்கள் அவசியம்"
 
+msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
+msgstr ""
+
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr ""
 
@@ -33409,6 +33448,10 @@ msgstr "SSF %1$d போதிய பலமாக இல்லை"
 msgid "nested JSON array to commandline conversion is not supported"
 msgstr ""
 
+#, c-format
+msgid "net %1$s not found"
+msgstr ""
+
 msgid "net definition failed validation"
 msgstr ""
 
@@ -33984,6 +34027,9 @@ msgstr "செயற்களம் இல்லை: %1$s"
 #, fuzzy, c-format
 msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "இடைமுக %sஐ %sலிருந்து வரையறுக்கவும்\n"
+
+msgid "no interface name specified"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -36007,6 +36053,9 @@ msgstr "வாசிக்க மட்டுமான ide வட்டுகள
 msgid "readonly is not supported with vhostuser disk"
 msgstr ""
 
+msgid "readonly mode cannot be set for externally started virtiofsd"
+msgstr ""
+
 msgid "readonly sata disks are not supported"
 msgstr "வாசிக்க மட்டுமான sata வட்டுகளுக்கு ஆதரவு இல்லை"
 
@@ -36510,6 +36559,9 @@ msgid "root path must be absolute"
 msgstr ""
 
 msgid "rotation rate is not supported with this QEMU"
+msgstr ""
+
+msgid "rotation rate is only valid for SATA bus"
 msgstr ""
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
