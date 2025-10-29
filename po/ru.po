@@ -20,7 +20,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-03-16 17:56+0000\n"
+"PO-Revision-Date: 2025-10-02 06:24+0000\n"
 "Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.10.2\n"
+"X-Generator: Weblate 5.13.3\n"
 
 msgid ""
 "\n"
@@ -566,7 +566,7 @@ msgstr "%1$s не может быть пустым"
 
 #, c-format
 msgid "%1$s cannot be set higher than %2$s"
-msgstr ""
+msgstr "Для %1$s нельзя устанавливать значение, превышающее %2$s"
 
 #, c-format
 msgid "%1$s cannot parse GID '%2$s'"
@@ -582,7 +582,7 @@ msgstr "Поддержка диска %1$s в этом исполняемом ф
 
 #, c-format
 msgid "%1$s does not support file storage"
-msgstr ""
+msgstr "%1$s не поддерживает файловое хранилище данных"
 
 #, c-format
 msgid "%1$s does not support passing a passphrase using a file descriptor"
@@ -826,7 +826,7 @@ msgstr ""
 
 #, c-format
 msgid "%1$s: Failed to parse and process events"
-msgstr ""
+msgstr "%1$s: Не удалось проанализировать и обработать события"
 
 #, c-format
 msgid "%1$s: Failed to process JSON event doc: %2$s"
@@ -1552,7 +1552,7 @@ msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr "ответ guest-get-fsinfo не содержит «type»"
 
 msgid "'usb' disk must not be empty"
-msgstr ""
+msgstr "диск «usb» не должен быть пустым"
 
 msgid "'user' missing in reply of guest-get-users"
 msgstr "Ответ guest-get-users не содержит «user»"
@@ -12150,7 +12150,7 @@ msgstr "Документ JSON не содержит данных keepaliveInterv
 
 #, c-format
 msgid "Missing key file '%1$s'"
-msgstr ""
+msgstr "Отсутствует файл ключа «%1$s»"
 
 msgid "Missing listen element"
 msgstr "Отсутствует элемент ожидания (listen)"
