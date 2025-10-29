@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-09-25 09:31+0000\n"
-"PO-Revision-Date: 2025-07-21 10:56+0000\n"
+"PO-Revision-Date: 2025-10-02 13:17+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.13.3\n"
 
 msgid ""
 "\n"
@@ -5987,7 +5987,7 @@ msgid "Domain:"
 msgstr "Toimialue:"
 
 msgid "Done.\n"
-msgstr ""
+msgstr "Tehty.\n"
 
 msgid "Download length is too large"
 msgstr ""
@@ -15338,13 +15338,12 @@ msgstr ""
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
 
-#, fuzzy
 msgid "Storage volume not found"
-msgstr "Verkkoa ei löytynyt"
+msgstr "Tallennustaltiota ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage volume not found: %1$s"
-msgstr "Verkkoa ei löytynyt %1$s"
+msgstr "Tallennustaltiota ei löytynyt: %1$s"
 
 #, c-format
 msgid ""
@@ -15409,9 +15408,8 @@ msgstr ""
 msgid "Suspend operation already in progress"
 msgstr ""
 
-#, fuzzy
 msgid "Suspend operation failed"
-msgstr "POST-toimenpide epäonnistui"
+msgstr "Keskeytystoiminto epäonnistui"
 
 msgid ""
 "Suspend the host node for a given time duration and attempt to resume "
@@ -16334,9 +16332,9 @@ msgstr ""
 msgid "The '%1$s' timer can't be disabled"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
-msgstr "komento ”%1$s” ei tue valitsinta --%2$s"
+msgstr "Ajastin '%1$s' ei tue rastikäytäntöä '%2$s'"
 
 msgid ""
 "The 'dev' attribute of the <source> element can only be used with "
@@ -16830,7 +16828,7 @@ msgid "Time elapsed:"
 msgstr ""
 
 msgid "Time remaining:"
-msgstr ""
+msgstr "Jäljellä oleva aika:"
 
 #, c-format
 msgid "Time: %1$lld"
@@ -16840,9 +16838,8 @@ msgstr ""
 msgid "Time: %1$s"
 msgstr "Aika: %1$s"
 
-#, fuzzy
 msgid "Timed out during operation"
-msgstr "Levytietojen haku epäonnistui"
+msgstr "Aikakatkaisu toiminnan aikana"
 
 #, c-format
 msgid "Timed out during operation: %1$s"
@@ -16924,17 +16921,21 @@ msgstr ""
 msgid "Too many drivers, cannot register %1$s"
 msgstr "Liian monta ajuria, ei pysty rekisteröimään %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register storage backend '%1$s'"
-msgstr "liian monta rekisteröityä ajuria kohteessa %1$s"
+msgstr ""
+"Liian monta ajureita, tallennustaustajärjestelmää '%1$s' ei voida "
+"rekisteröidä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register storage file backend '%1$s'"
-msgstr "liian monta rekisteröityä ajuria kohteessa %1$s"
+msgstr ""
+"Liian monta ajureita, tallennustiedoston taustajärjestelmää '%1$s' ei voida "
+"rekisteröidä"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many filesystems detected for %1$s"
-msgstr "liian monta rekisteröityä ajuria kohteessa %1$s"
+msgstr "Liian monta tiedostojärjestelmää havaittu kohteelle %1$s"
 
 msgid "Too many id mappings defined."
 msgstr ""
@@ -17187,9 +17188,8 @@ msgstr ""
 msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
 msgstr ""
 
-#, fuzzy
 msgid "USB host device is missing bus/device information"
-msgstr "laitetietoja puuttuu"
+msgstr "USB-isäntälaitteelta puuttuu väylä-/laitetiedot"
 
 msgid "USB host device must use 'usb' address type"
 msgstr ""
@@ -17230,9 +17230,8 @@ msgstr ""
 msgid "UUID:"
 msgstr "UUID:"
 
-#, fuzzy
 msgid "Unable to accept client"
-msgstr "sisältöä ei voitu tallentaa"
+msgstr "Asiakasta ei voida hyväksyä"
 
 #, c-format
 msgid "Unable to access %1$s"
@@ -17242,9 +17241,9 @@ msgstr "Ei pääse kohteeseen %1$s"
 msgid "Unable to access cache '%1$s' for '%2$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to access config file %1$s"
-msgstr "asetustiedoston %1$s jäsentäminen epäonnistui"
+msgstr "Määritystiedostoon %1$s ei pääse"
 
 #, c-format
 msgid "Unable to access file descriptor %1$d"
@@ -17364,9 +17363,9 @@ msgstr ""
 msgid "Unable to associate file %1$s with loop device"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to attach %1$s to loop device"
-msgstr "Laitteen liittäminen tiedostosta %1$s epäonnistui"
+msgstr "%1$s:ta ei voitu liittää silmukkalaitteeseen"
 
 msgid "Unable to become session leader"
 msgstr ""
@@ -17392,17 +17391,15 @@ msgstr "Ei voi muuttaa MaxMemorySizeä"
 msgid "Unable to change balloon collection period."
 msgstr "Pallon kokoelman aikaa ei voi muuttaa."
 
-#, fuzzy
 msgid "Unable to change blkio parameters"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Blkio-parametreja ei voi muuttaa"
 
 #, fuzzy
 msgid "Unable to change block I/O throttle"
 msgstr "Ei voi muuttaa MaxMemorySizeä"
 
-#, fuzzy
 msgid "Unable to change daemon logging settings"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Daemon-lokiasetuksia ei voi muuttaa"
 
 msgid "Unable to change lifecycle action."
 msgstr "Elinkaaritoimintoa ei voida muuttaa."
@@ -17414,13 +17411,11 @@ msgstr ""
 "Aktiivisen toimialueen muistia ei voida muuttaa ilman ilmapallolaitetta ja "
 "vieras käyttöjärjestelmän ilmapallon ohjainta"
 
-#, fuzzy
 msgid "Unable to change memory parameters"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Muistiparametreja ei voi muuttaa"
 
-#, fuzzy
 msgid "Unable to change numa parameters"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Numa-parametreja ei voi muuttaa"
 
 msgid "Unable to change server workerpool parameters"
 msgstr ""
@@ -17435,13 +17430,12 @@ msgstr ""
 msgid "Unable to change to %1$s"
 msgstr "Ei voi muuttaa %1$s:ksi"
 
-#, fuzzy
 msgid "Unable to change to root dir"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Ei voida vaihtaa juurihakemistoon"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to chdir(%1$s)"
-msgstr "mkdir %1$s epäonnistui"
+msgstr "chdir(%1$s) ei voi tehdä"
 
 #, c-format
 msgid "Unable to check interface %1$s"
@@ -17509,9 +17503,8 @@ msgstr ""
 msgid "Unable to convert lease expiry time to long long: %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to convert time"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Aikaa ei voi muuntaa"
 
 msgid "Unable to copy socket file handle"
 msgstr ""
@@ -17540,9 +17533,8 @@ msgstr ""
 msgid "Unable to create TAP devices on this platform"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create UNIX socket"
-msgstr "XML:n luonti epäonnistui"
+msgstr "UNIX-pistoketta ei voi luoda"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %1$s: %2$s"
@@ -17551,40 +17543,37 @@ msgstr ""
 msgid "Unable to create blkid library handle"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create bridge %1$s"
-msgstr "Toimialueen luonti tiedostosta %1$s epäonnistui"
+msgstr "Siltaa %1$s ei voi luoda"
 
-#, fuzzy
 msgid "Unable to create bridge device"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Siltalaitetta ei voi luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create device %1$s"
-msgstr "Toimialueen luonti tiedostosta %1$s epäonnistui"
+msgstr "Laitetta %1$s ei voitu luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create directory %1$s"
-msgstr "Toimialueen luonti tiedostosta %1$s epäonnistui"
+msgstr "Hakemistoa %1$s ei voitu luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create directory '%1$s'"
-msgstr "Toimialueen luonti tiedostosta %1$s epäonnistui"
+msgstr "Hakemistoa '%1$s' ei voitu luoda"
 
-#, fuzzy
 msgid "Unable to create epoll fd"
-msgstr "Verkon luominen tiedostosta %s epäonnistui"
+msgstr "Epoll fd:ta ei voi luoda"
 
 msgid "Unable to create firewall command"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create kqueue"
-msgstr "XML:n luonti epäonnistui"
+msgstr "Kqueue:ta ei voi luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create lock '%1$s'"
-msgstr "Verkon luominen tiedostosta %1$s epäonnistui"
+msgstr "Lukitusta '%1$s' ei voi luoda"
 
 #, c-format
 msgid "Unable to create lockspace %1$s"
@@ -17596,17 +17585,15 @@ msgid ""
 "directory"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create media registry"
-msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
+msgstr "Mediarekisteriä ei voi luoda"
 
 #, c-format
 msgid "Unable to create mediated device: %1$s"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create migration thread"
-msgstr "asetustiedoston lukeminen epäonnistui"
+msgstr "Siirtosäiettä ei voi luoda"
 
 #, c-format
 msgid ""
@@ -17617,32 +17604,29 @@ msgstr ""
 msgid "Unable to create pipes"
 msgstr "putkien luominen epäonnistui"
 
-#, fuzzy
 msgid "Unable to create socket"
-msgstr "XML:n luonti epäonnistui"
+msgstr "Pistoketta ei voi luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create socket object: %1$s"
-msgstr "Verkon luominen tiedostosta %1$s epäonnistui"
+msgstr "Socket-objektia ei voi luoda: %1$s"
 
 #, c-format
 msgid "Unable to create symlink %1$s (pointing to %2$s)"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create tap device"
-msgstr "Ei voi muuttaa MaxMemorySizeä"
+msgstr "Tap-laitetta ei voi luoda"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create tap device %1$s"
-msgstr "Laitteen liittäminen tiedostosta %1$s epäonnistui"
+msgstr "Tap-laitetta %1$s ei voi luoda"
 
 msgid "Unable to create thread to process command's IO"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to create tunnel migration thread"
-msgstr "asetustiedoston lukeminen epäonnistui"
+msgstr "Tunnelin siirtosäiettä ei voi luoda"
 
 #, c-format
 msgid ""
@@ -17709,16 +17693,16 @@ msgstr ""
 msgid "Unable to detect SCHED_CORE"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to detect filesystem for %1$s"
-msgstr "Laitteen irrottaminen tiedostosta %1$s epäonnistui"
+msgstr "Tiedostojärjestelmää ei voi havaita %1$s:lle"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to determine current file inode: %1$s"
-msgstr "asetustiedoston kirjoitus epäonnistui: %1$s"
+msgstr "Nykyisen tiedoston inode: %1$s ei voida määrittää"
 
 #, c-format
 msgid "Unable to determine current file offset: %1$s"
@@ -17862,9 +17846,9 @@ msgstr ""
 msgid "Unable to find correct value in 'bonding/mode' for '%1$s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find filesystem type for %1$s"
-msgstr "Verkkoa ei löytynyt: %1$s"
+msgstr "Tiedostojärjestelmän tyyppiä ei voi löytää %1$s:lle"
 
 #, c-format
 msgid "Unable to find major for %1$s"
@@ -17874,13 +17858,13 @@ msgstr ""
 msgid "Unable to find the hard disk with uuid %1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find the snapshot %1$s"
-msgstr "Verkkoa ei löytynyt: %1$s"
+msgstr "Tilannevedosta %1$s ei voi löytää"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to find the snapshot with name %1$s"
-msgstr "Verkkoa ei löytynyt: %1$s"
+msgstr "%1$s-nimistä tilannevedosta ei voi löytää"
 
 msgid "Unable to force bind to IPv6 only"
 msgstr ""
@@ -17903,16 +17887,16 @@ msgstr ""
 msgid "Unable to freeze filesystems"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get ACLs on %1$s"
-msgstr "toimialueen ”%1$s” hakeminen epäonnistui"
+msgstr "ACL-luetteloita ei voi saada %1$s:lla"
 
 msgid "Unable to get Capabilities"
 msgstr "Ominaisuuksien hakeminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get Console object for domain %1$s"
-msgstr "Toimialueen %1$s uudelleenkäynnistys epäonnistui"
+msgstr "Konsoliobjektia ei voi hakea toimialueelle %1$s"
 
 msgid "Unable to get IP address on this platform"
 msgstr ""
@@ -17921,25 +17905,25 @@ msgstr ""
 msgid "Unable to get IPv4 address for interface %1$s via ioctl"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get Keyboard object for domain %1$s"
-msgstr "Toimialueen %1$s uudelleenkäynnistys epäonnistui"
+msgstr "Näppäimistöobjektia ei voi hakea toimialueelle %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get LVM key for %1$s"
-msgstr "verkon ”%1$s” hakeminen epäonnistui"
+msgstr "LVM-avainta ei voida saada %1$s:lle"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get SCSI key for %1$s"
-msgstr "verkon ”%1$s” hakeminen epäonnistui"
+msgstr "SCSI-avainta ei voida saada %1$s:lle"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get SELinux label from %1$s"
-msgstr "Toimialueen luonti tiedostosta %1$s epäonnistui"
+msgstr "SELinux-nimiötä ei voi saada %1$s:lta"
 
 #, c-format
 msgid "Unable to get STP delay on %1$s on this platform"
@@ -17979,9 +17963,9 @@ msgstr "ominaisuuksien hakeminen epäonnistui"
 msgid "Unable to get block I/O throttle parameters"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get bridge %1$s %2$s"
-msgstr "Lohkotilastojen haku epäonnistui %1$s %2$s"
+msgstr "Siltaa %1$s %2$s ei voida saada"
 
 #, c-format
 msgid "Unable to get bridge %1$s port %2$s %3$s"
@@ -18061,9 +18045,9 @@ msgstr "Levytietojen haku epäonnistui"
 msgid "Unable to get domain status"
 msgstr "toimialueen ”%s” hakeminen epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get driver name for '%1$s'"
-msgstr "verkon ”%1$s” hakeminen epäonnistui"
+msgstr "Ajurin nimeä ei saatu '%1$s':lle"
 
 #, fuzzy
 msgid "Unable to get filesystem information"
@@ -18106,9 +18090,9 @@ msgstr "Liitännän tietojen haku epäonnistui"
 msgid "Unable to get interface parameters"
 msgstr "Liitännän tietojen haku epäonnistui"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get kvm descriptor: %1$s"
-msgstr "verkon ”%1$s” hakeminen epäonnistui"
+msgstr "KVM-kuvaajaa ei voi saada: %1$s"
 
 msgid "Unable to get launch security parameters"
 msgstr ""
@@ -18351,9 +18335,9 @@ msgstr ""
 msgid "Unable to make TAP device non-persistent"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to make dir %1$s"
-msgstr "mkdir %1$s epäonnistui"
+msgstr "Hakemistoa %1$s ei voi luoda"
 
 #, fuzzy
 msgid "Unable to mark loop device as autoclear"
@@ -18384,9 +18368,9 @@ msgstr ""
 msgid "Unable to monitor directory: %1$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to move %1$s mount to %2$s"
-msgstr "Toimialueen %1$s tallentaminen tiedostoon %2$s epäonnistui"
+msgstr "%1$s:n liitosta ei voi siirtää kohteeseen %2$s"
 
 msgid "Unable to notify child process"
 msgstr ""
@@ -18522,9 +18506,9 @@ msgstr ""
 msgid "Unable to parse child device"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse class id '%1$s'"
-msgstr "asetustiedoston %1$s jäsentäminen epäonnistui"
+msgstr "Luokkatunnusta %1$s ei voi jäsentää"
 
 #, c-format
 msgid "Unable to parse cloud-hypervisor version: %1$s"
@@ -18540,9 +18524,9 @@ msgstr ""
 msgid "Unable to parse integer parameter"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse integer parameter %1$s"
-msgstr "asetustiedoston %1$s jäsentäminen epäonnistui"
+msgstr "Kokonaislukuparametria %1$s ei voi jäsentää"
 
 #, c-format
 msgid "Unable to parse integer parameter '%1$s'"
@@ -18862,9 +18846,9 @@ msgstr "Toimialueen %1$s palautus epäonnistui"
 msgid "Unable to restart self"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to restore file labels under %1$s"
-msgstr "Toimialueen palautetus tiedostosta %1$s epäonnistui"
+msgstr "%1$s:n alla olevia tiedostojen nimiöitä ei voi palauttaa"
 
 msgid "Unable to retrieve client limits from server's configuration"
 msgstr "Asiakkaan rajoituksia ei voida noutaa palvelimen kokoonpanosta"
@@ -18923,9 +18907,9 @@ msgstr "Socket-tilaa ei voida tallentaa, kun SASL-istunto on aktiivinen"
 msgid "Unable to save socket state when TLS session is active"
 msgstr "Socket-tilaa ei voida tallentaa, kun TLS-istunto on aktiivinen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to save state file %1$s"
-msgstr "asetustiedoston %1$s jäsentäminen epäonnistui"
+msgstr "Tilatiedostoa %1$s ei voi tallentaa"
 
 #, fuzzy
 msgid "Unable to save the xml"
@@ -18967,9 +18951,9 @@ msgstr ""
 msgid "Unable to send container continue message"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to send keyboard scan codes to domain %1$s"
-msgstr "Toimialueen %1$s uudelleenkäynnistys epäonnistui"
+msgstr "Näppäimistön skannauskoodeja ei voi lähettää verkkotunnukseen %1$s"
 
 #, c-format
 msgid "Unable to send keyboard scancodes for domain %1$s"
@@ -18978,9 +18962,9 @@ msgstr ""
 msgid "Unable to serialize the machine description"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set ACLs on %1$s"
-msgstr "Toimialueen %1$s käynnistys epäonnistui"
+msgstr "ACL-luetteloita ei voi asettaa %1$s:lle"
 
 #, c-format
 msgid "Unable to set FD %1$d blocking"
@@ -28265,7 +28249,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr ""
 
 msgid "guest:"
-msgstr ""
+msgstr "vieras:"
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr ""
@@ -35110,9 +35094,8 @@ msgstr ""
 msgid "resume failed post-copy migration"
 msgstr ""
 
-#, fuzzy
 msgid "resume operation failed"
-msgstr "toimenpide epäonnistui"
+msgstr "toiminnon jatkaminen epäonnistui"
 
 msgid "resuming after dump failed"
 msgstr ""
