@@ -29,7 +29,7 @@ But all other transport modes are supported too
 
 
 Example guest domain XML configurations
-=======================================
+---------------------------------------
 
 The Cloud Hypervisor driver in libvirt is in its early stage under active
 development only supporting a limited number of Cloud Hypervisor features.
