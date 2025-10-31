@@ -66,7 +66,19 @@ v11.9.0 (unreleased)
     such now support setting various virtio knobs (iommu, ats, packed,
     page_per_vq) common to other virtio devices.
 
+  * wireshark: Adapt to wireshark-4.6.0
+
+    Libvirt's wireshark dissector plugin adapted to changes made to wireshark
+    dissector API in its 4.6.0 release.
+
 * **Bug fixes**
+
+  * ch: Load ``ch.conf`` from ``SYSCONFDIR``
+
+    Previously, the ``ch.conf`` file for ``ch:///system`` URI was mistakenly
+    loaded from a path under ``LOCALSTATEDIR`` (``/var/...``). This is now
+    fixed and the configuration file is loaded from the ``SYSCONFDIR``
+    (``/etc/...``) location where it's also installed.
 
 
 v11.8.0 (2025-10-01)
