@@ -28,6 +28,22 @@ But all other transport modes are supported too
 (see `documentation <uri.html#remote-uris>`__).
 
 
+Location of configuration files
+-------------------------------
+
+The CH driver comes with sane default values. However, during its
+initialization it reads a configuration file which offers system
+administrator or an user to override some of that default. The location
+of the file depends on the connection URI, as follows:
+
+=================== ======================================
+``ch:///system``    ``/etc/libvirt/ch.conf``
+``ch:///session``   ``$XDG_CONFIG_HOME/libvirt/ch/ch.conf``
+=================== ======================================
+
+If ``$XDG_CONFIG_HOME`` is not set in the environment, it defaults to
+``$HOME/.config``.
+
 Example guest domain XML configurations
 ---------------------------------------
 
