@@ -71,6 +71,12 @@ v11.9.0 (unreleased)
     Libvirt's wireshark dissector plugin adapted to changes made to wireshark
     dissector API in its 4.6.0 release.
 
+  * qemu: 'manual' disk snapshot mode improvements
+
+    The 'manual' snapshot mode now ensures that also metadata of the images is
+    written out to disk so that user can take snapshots of e.g. qcow2 image
+    safely.
+
 * **Bug fixes**
 
   * ch: Load ``ch.conf`` from ``SYSCONFDIR``
