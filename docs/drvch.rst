@@ -12,13 +12,20 @@ customers inside a cloud provider. For our purposes this means modern
 operating systems with most I/O handled by paravirtualised devices
 (i.e. virtio), no requirement for legacy devices, and 64-bit CPUs.
 
-The libvirt Cloud Hypervisor driver is intended to be run as a session
-driver without privileges. The cloud-hypervisor binary itself should be
-``setcap cap_net_admin+ep`` (in order to create tap interfaces).
+The libvirt Cloud Hypervisor (CH) driver is intended to be run as a
+session driver without privileges. The cloud-hypervisor binary itself
+should be ``setcap cap_net_admin+ep`` (in order to create tap
+interfaces). Though, system-wide connection URI is also supported.
 
 Expected connection URI would be
 
-``ch:///session``
+::
+
+  ch:///session         (local access to per-user instance)
+  ch:///system          (local access to system instance)
+
+But all other transport modes are supported too
+(see `documentation <uri.html#remote-uris>`__).
 
 
 Example guest domain XML configurations
