@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-10-29 09:06+0000\n"
+"PO-Revision-Date: 2025-10-31 09:58+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -1251,11 +1251,11 @@ msgstr "'%1$s' ficheiro não cabe na memória"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "a funcionalidade hyperv '%1$s' requer a funcionalidade '%2$s'"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "a funcionalidade hyperv '%1$s' requer temporizador '%2$s'"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -2372,7 +2372,7 @@ msgstr ""
 "Antes de despejar núcleo, falhou ao suspender domínio '%1$d' com libxenlight"
 
 msgid "Bhyve version does not support NVMe"
-msgstr ""
+msgstr "versão de Bhyve não suporta"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "Versão de bhyve não suporta framebuffer"
@@ -3334,7 +3334,7 @@ msgid "Cannot get storage controller name"
 msgstr "Não pode obter nome do controlador de armazenamento"
 
 msgid "Cannot have more than one disk per NVMe controller"
-msgstr ""
+msgstr "Não pode ter mais do que um disco por controlador"
 
 msgid "Cannot hotplug platform device"
 msgstr "Não pode ligar-a-quente dispositivo de plataforma"
@@ -7296,7 +7296,7 @@ msgid "Failed to complete tree listing"
 msgstr "Falhou ao completar listagem de árvore"
 
 msgid "Failed to connect network interfaces"
-msgstr ""
+msgstr "Falhou a ligar interfaces de rede"
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -11034,6 +11034,8 @@ msgstr "Monitor resctrl inválido"
 #, c-format
 msgid "Invalid response from CH. Device removal failed for device %1$s."
 msgstr ""
+"Resposta inválida de CH. A remoção de dispositivo falhou para dispositivo "
+"%1$s."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11603,15 +11605,15 @@ msgstr "Máquina é nula"
 
 #, c-format
 msgid "Machine type '%1$s' does not support PCI"
-msgstr ""
+msgstr "Tipo de máquina '%1$s' não suporta PCI"
 
 #, c-format
 msgid "Machine type '%1$s' supports PCI but no PCI controller added"
-msgstr ""
+msgstr "Tipo de máquina '%1$s' suporta PCI mas nenhum controlado PCI adicionado"
 
 #, c-format
 msgid "Machine type '%1$s' wants PCI but PCI is not supported"
-msgstr ""
+msgstr "Tipo de máquina '%1$s' quer PCI mas PCI não é suportado"
 
 msgid "Malformatted array index"
 msgstr "Índice de matriz mal formatado"
@@ -18385,6 +18387,8 @@ msgid ""
 "USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
 "support PCI"
 msgstr ""
+"Modelo de controlador USB '%1$s' requer PCI mas o tipo de máquina '%2$s' não "
+"suporta PCI"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -29905,6 +29909,8 @@ msgstr "modo host-certificates precisa exatamente de três certificados"
 
 msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
 msgstr ""
+"modo hyperv de modelo-de-máquina não suportado, nenhumas capacidades hyperv "
+"encontradas"
 
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "campo hostName não disponível (a faltar VMware Tools?)"
@@ -33844,7 +33850,7 @@ msgstr ""
 
 #, c-format
 msgid "net %1$s not found"
-msgstr ""
+msgstr "rede %1$s não encontrada"
 
 msgid "net definition failed validation"
 msgstr "definição de rede falhou validação"
@@ -34420,7 +34426,7 @@ msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "nenhuma interface iSCSI definida para IQN %1$s"
 
 msgid "no interface name specified"
-msgstr ""
+msgstr "nenhum nome de interface especificado"
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -36454,6 +36460,8 @@ msgstr "só leitura não é suportado com disco vhostuser"
 
 msgid "readonly mode cannot be set for externally started virtiofsd"
 msgstr ""
+"modo de só-leitura não pode ser definido para virtiofsd arrancado "
+"externamente"
 
 msgid "readonly sata disks are not supported"
 msgstr "discos sata só de leitura não são suportados"
@@ -36955,7 +36963,7 @@ msgid "rotation rate is not supported with this QEMU"
 msgstr "taxa de rotação não é suportada com este QEMU"
 
 msgid "rotation rate is only valid for SATA bus"
-msgstr ""
+msgstr "taxa de rotação é apenas válida para barramento SATA"
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "taxa de rotação é apenas válida para barramento SCSI/IDE/SATA"
@@ -40822,6 +40830,7 @@ msgstr "tipo de monitor não suportado '%1$s'"
 #, c-format
 msgid "unsupported nested HVM setting for %1$s machine on this Xen version"
 msgstr ""
+"definição HVM aninhada não suportada para máquina %1$s nesta versão de Xen"
 
 #, c-format
 msgid "unsupported network event ID %1$d"
@@ -40852,7 +40861,7 @@ msgstr "opção não suportada '-%1$c'. Veja --help."
 
 #, c-format
 msgid "unsupported pit tickpolicy '%1$s'"
-msgstr ""
+msgstr "tickpolicy de poço não suportado '%1$s'"
 
 #, c-format
 msgid "unsupported protocol family '%1$s'"
@@ -40868,11 +40877,11 @@ msgstr ""
 
 #, c-format
 msgid "unsupported rtc timer tickpolicy '%1$s'"
-msgstr ""
+msgstr "tickpolicy de temporizador rtc não suportado '%1$s'"
 
 #, c-format
 msgid "unsupported rtc timer track '%1$s'"
-msgstr ""
+msgstr "rastreio de temporizador rtc não suportado '%1$s'"
 
 #, c-format
 msgid "unsupported save image format: %1$d"
@@ -40895,10 +40904,10 @@ msgstr "valor de estado não suportado"
 
 #, c-format
 msgid "unsupported storage pool event ID %1$d"
-msgstr ""
+msgstr "ID de evento de pool de armazenamento não suportado %1$d"
 
 msgid "unsupported storage type for this code path"
-msgstr ""
+msgstr "tipo de armazenamento não suportado para este caminho de código"
 
 #, c-format
 msgid "unsupported timer type (name) '%1$s'"
@@ -40906,11 +40915,11 @@ msgstr "tipo de temporizador não suportado (nome) '%1$s'"
 
 #, c-format
 msgid "unsupported type '%1$s' in interface's <actual> element"
-msgstr ""
+msgstr "tipo não suportado '%1$s' em elemento <actual> da interface"
 
 #, c-format
 msgid "unsupported type='%1$s' to model 'none'"
-msgstr ""
+msgstr "tipo não suportado '%1$s' para modelo 'none'"
 
 msgid "unsupported usb model"
 msgstr "modelo usb não suportado"
@@ -40937,28 +40946,30 @@ msgid ""
 "unwanted_positional flag of argument '%1$s' of command '%2$s' must not be "
 "used together with positional"
 msgstr ""
+"bandeira unwanted_positional do argumento '%1$s' do comando '%2$s' não pode "
+"ser usada em conjunto com positional"
 
 msgid "update device from an XML file"
 msgstr "atualizar dispositivo a partir de um ficheiro XML"
 
 msgid "update guest CPU according to host CPU"
-msgstr ""
+msgstr "atualiza CPU de convidado de acordo com a CPU do anfitrião"
 
 msgid "update memory device of a domain"
-msgstr ""
+msgstr "atualiza dispositivo de memória de um domínio"
 
 msgid "update parts of an existing network's configuration"
-msgstr ""
+msgstr "atualiza partes duma configuração de rede existente"
 
 #, c-format
 msgid "updating device type '%1$s' is unsupported"
-msgstr ""
+msgstr "atualizar tipo de dispositivo '%1$s' não é suportado"
 
 msgid "upload file contents to a volume"
 msgstr "enviar conteúdo de ficheiro para um volume"
 
 msgid "upper boundary for worker thread pool"
-msgstr ""
+msgstr "limite superior para pool de linha de execução de trabalhador"
 
 #, c-format
 msgid "uptime file has unexpected format '%1$s'"
@@ -40971,6 +40982,7 @@ msgstr "utilização:"
 msgid ""
 "usb controller type '%1$s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
+"tipo de controlador usb '%1$s' não suporta 'ports' com este binário QEMU"
 
 msgid "usb device not found"
 msgstr "dispositivo usb não encontrado"
@@ -40985,238 +40997,252 @@ msgid "usb-hub not supported by QEMU binary"
 msgstr "usb-hub não suportado pelo binário QEMU"
 
 msgid "usb-serial requires address of usb type"
-msgstr ""
+msgstr "usb-serial requer endereço de tipo de usb"
 
 msgid "use TLS for migration"
 msgstr "use TLS para migração"
 
 msgid "use an editor to change the metadata"
-msgstr ""
+msgstr "usa um editor para alterar os metadados"
 
 msgid "use backing file of top as base"
-msgstr ""
+msgstr "usa ficheiro de apoio do topo como base"
 
 msgid "use btrfs COW lightweight copy"
 msgstr "usar cópia leve btrfs COW"
 
 msgid "use capacity as a delta to current size, rather than the new size"
-msgstr ""
+msgstr "usa capacidade como um delta para tamanho atual, em vez do novo tamanho"
 
 msgid "use multifunction pci under specified address"
-msgstr ""
+msgstr "usa pci de multi-funções sob endereço especificado"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"uso de 'VIR_MIGRATE_PARAM_MIGRATE_DISKS' requer uso de bandeira "
+"'VIR_MIGRATE_NON_SHARED_DISK' ou 'VIR_MIGRATE_NON_SHARED_INC'"
 
 msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
+"uso de 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requer uso de "
+"bandeira 'VIR_MIGRATE_NON_SHARED_DISK' ou 'VIR_MIGRATE_NON_SHARED_INC'"
 
 msgid "use of <server> requires pull mode backup"
-msgstr ""
+msgstr "uso de <server> requer salvaguarda de modo de puxar"
 
 msgid "use of deprecated configuration settings"
-msgstr ""
+msgstr "uso de definições de configuração descontinuadas"
 
 msgid "use of flags requires a copy job"
-msgstr ""
+msgstr "uso de bandeiras requer uma tarefa de copiar"
 
 msgid "use of host cdrom passthrough"
-msgstr ""
+msgstr "uso de passagem de cdrom de máquina"
 
 msgid "use seclabels allowing writes"
-msgstr ""
+msgstr "usa seclabels que permitem escritas"
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
-msgstr ""
+msgstr "usa virDomainMigrateToURI3 para migração peer-to-peer"
 
 msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
+msgstr "usa mecanismo de zero-cópia para migrar páginas de memória"
 
 msgid "user"
 msgstr "utilizador"
 
 msgid "user cancelled authentication process"
-msgstr ""
+msgstr "utilizador cancelou processo de autenticação"
 
 msgid "user to list authorized keys for"
-msgstr ""
+msgstr "utilizador para listar chaves autorizadas para"
 
 msgid "user to set authorized keys for"
-msgstr ""
+msgstr "utilizador para definir chaves autorizadas para"
 
 msgid "user:"
 msgstr "utilizador:"
 
 #, c-format
 msgid "using '%1$s' pools for backing 'volume' disks isn't yet supported"
-msgstr ""
+msgstr "usar pools '%1$s' para apoiar discos 'volume' ainda não é suportado"
 
 #, c-format
 msgid ""
 "using disk target name '%1$s' conflicts with SCSI host device address "
 "controller='%2$u' bus='%3$u' target='%4$u' unit='%5$u"
 msgstr ""
+"usar nome de alvo de disco '%1$s' faz conflito com controlador de endereço "
+"de dispositivo de máquina SCSI='%2$u' barramento='%3$u' alvo='%4$u' "
+"unidade='%5$u"
 
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
+"usar definição de CPU de máquina como entrada pode fornecer resultados "
+"incorretos"
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
-msgstr ""
+msgstr "usar socket unix e servidor remoto '%1$s' não é suportado."
 
 #, c-format
 msgid "uuidstr in %1$s must be a valid UUID"
-msgstr ""
+msgstr "uuidstr em %1$s tem de ser um UUID válido"
 
 #, c-format
 msgid "v1 controller '%1$s' is not enabled for group"
-msgstr ""
+msgstr "controlador v1 '%1$s' não está activo para grupo"
 
 #, c-format
 msgid "v1 controller '%1$s' is not mounted"
-msgstr ""
+msgstr "controlador v1 '%1$s' não está montado"
 
 #, c-format
 msgid "v2 controller '%1$s' is not available"
-msgstr ""
+msgstr "controlador v2 '%1$s' não está disponível"
 
 #, c-format
 msgid "vCPU '%1$u' is not offlinable"
-msgstr ""
+msgstr "vCPU '%1$u' não é desligável"
 
 #, c-format
 msgid "vCPU '%1$u' is not present in domain definition"
-msgstr ""
+msgstr "vCPU '%1$u' não está presente em definição do domínio"
 
 msgid "vCPU '0' can't be modified"
-msgstr ""
+msgstr "vCPU '0' não pode ser modificada"
 
 #, c-format
 msgid "vCPU count exceeds maximum: %1$d > %2$d"
-msgstr ""
+msgstr "contagem de vCPU excede o máximo: %1$d > %2$d"
 
 msgid ""
 "vCPU count provided by the guest agent can only be requested for live domains"
 msgstr ""
+"contagem de vCPU fornecida pelo agente convidado só pode ser requisitada "
+"para domínios ao vivo"
 
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %1$d > %2$d"
-msgstr ""
+msgstr "comprimento do buffer de mapa vCPU excede o máximo: %1$d > %2$d"
 
 #, c-format
 msgid "vCPUs count must be a multiple of the vCPU hotplug granularity (%1$u)"
 msgstr ""
+"contagem de vCPU tem de ser um múltiplo da granularidade de ligação a quente "
+"de vCPU (%1$u)"
 
 #, c-format
 msgid "vDPA chardev path '%1$s' does not exist"
-msgstr ""
+msgstr "caminho de dispositivo de caractere vDPA '%1$s' não existe"
 
 msgid "vDPA devices are not supported with this QEMU binary"
 msgstr "dispositivos vDPA não suportados com este binário QEMU"
 
 msgid "vDPA devices cannot be migrated"
-msgstr ""
+msgstr "dispositivos vDPA não podem ser migrados"
 
 msgid "vTPM usage specified, but name is missing"
-msgstr ""
+msgstr "utilização de vTPM especificada, mas o nome está a faltar"
 
 msgid "validate the XML against the schema"
-msgstr ""
+msgstr "valida o XML contra o esquema"
 
 msgid "validate the XML document against schema"
-msgstr ""
+msgstr "valida o documento XML contra esquema"
 
 msgid "validate the redefined checkpoint"
-msgstr ""
+msgstr "valida o ponto de verificação redefinido"
 
 #, c-format
 msgid "value '%1$llu' is too big for '%2$s' parameter, maximum is '%3$llu'"
-msgstr ""
+msgstr "valor '%1$llu' é muito grande para parâmetro '%2$s', máximo é '%3$llu'"
 
 #, c-format
 msgid "value '%1$llu' is too big for coalesce parameter, maximum is '%2$lu'"
 msgstr ""
+"valor '%1$llu' é muito grande para parâmetro de coalescer, máximo é '%2$lu'"
 
 #, c-format
 msgid "value '%1$s' cannot be set if '%2$s' is not set"
-msgstr ""
+msgstr "valor '%1$s' não pode ser definido se '%2$s' não estiver definido"
 
 #, c-format
 msgid "value '%1$s' cannot be smaller than '%2$s'"
-msgstr ""
+msgstr "valor '%1$s' não pode ser menor que '%2$s'"
 
 #, c-format
 msgid "value for 'ram' must be less than '%1$u'"
-msgstr ""
+msgstr "valor para 'ram' tem de ser menor que '%1$u'"
 
 msgid "value for 'vgamem' must be at least 1 MiB (1024 KiB)"
-msgstr ""
+msgstr "valor para 'vgamem' tem de ser pelo menos 1 MiB (1024 KiB)"
 
 msgid "value for 'vgamem' must be power of two"
-msgstr ""
+msgstr "valor para 'vgamem' tem de ser potencia de dois"
 
 msgid "value for 'vram' must be at least 1 MiB (1024 KiB)"
-msgstr ""
+msgstr "valor para 'vram' tem de ser pelo menos 1 MiB (1024 KiB)"
 
 #, c-format
 msgid "value for 'vram' must be less than '%1$u'"
-msgstr ""
+msgstr "valor para 'vram' tem de ser menor que '%1$u'"
 
 msgid "value for typeid out of range"
-msgstr ""
+msgstr "valor para typeid fora de alcance"
 
 #, c-format
 msgid "value of '%1$s' is out of range [%2$lld, %3$lld]"
-msgstr ""
+msgstr "valor de '%1$s' está fora de alcance [%2$lld, %3$lld]"
 
 #, c-format
 msgid "value of '%1$s' is too large"
-msgstr ""
+msgstr "valor de '%1$s' é demasiado grande"
 
 #, c-format
 msgid "value of cookie '%1$s' contains invalid characters"
-msgstr ""
+msgstr "valor de cookie '%1$s' contém caracteres inválidos"
 
 msgid "value of managerid out of range"
-msgstr ""
+msgstr "valor de managerid fora de alcance"
 
 msgid "value of the 'size' attribute of 'mtu' element must be at most 100000"
-msgstr ""
+msgstr "valor do atributo 'size' do elemento 'mtu' tem de ser no máximo 100000"
 
 msgid "value of typeidversion out of range"
-msgstr ""
+msgstr "valor de typeidversion fora de alcance"
 
 #, c-format
 msgid "value too large: %1$llu%2$s"
-msgstr ""
+msgstr "valor demasiado grande: %1$llu%2$s"
 
 #, c-format
 msgid "vcpu %1$d is out of range of live cpu count %2$d"
-msgstr ""
+msgstr "vcpu %1$d está fora de alcance da contagem de cpu ao vivo %2$d"
 
 #, c-format
 msgid "vcpu %1$d is out of range of persistent cpu count %2$d"
-msgstr ""
+msgstr "vcpu %1$d está fora de alcance da contagem de cpu persistente %2$d"
 
 #, c-format
 msgid "vcpu %1$zd is not present in live config"
-msgstr ""
+msgstr "vcpu %1$zd não está presente na configuração ao vivo"
 
 #, c-format
 msgid "vcpu %1$zd is not present in persistent config"
-msgstr ""
+msgstr "vcpu %1$zd não está presente na configuração persistente"
 
 #, c-format
 msgid "vcpu '%1$u' can't be unplugged"
-msgstr ""
+msgstr "vcpu '%1$u' não pode ser desligada"
 
 #, c-format
 msgid "vcpu '%1$u' is not active"
-msgstr ""
+msgstr "vcpu '%1$u' não está activa"
 
 #, c-format
 msgid ""
@@ -41226,7 +41252,7 @@ msgstr ""
 
 #, c-format
 msgid "vcpu '%1$zd' can't be hotunplugged"
-msgstr ""
+msgstr "vcpu '%1$zd' não pode ser desligada a quente"
 
 #, c-format
 msgid ""
@@ -41236,15 +41262,15 @@ msgstr ""
 
 #, c-format
 msgid "vcpu '%1$zd' is already in requested state"
-msgstr ""
+msgstr "vcpu '%1$zd' já está em estado requisitado"
 
 #, c-format
 msgid "vcpu '%1$zu' is both offline and not hotpluggable"
-msgstr ""
+msgstr "vcpu '%1$zu' está ambos offline e não é desligável a quente"
 
 #, c-format
 msgid "vcpu '%1$zu' is missing hotplug data"
-msgstr ""
+msgstr "vcpu '%1$zu' tem a faltar dados de ligação a quente"
 
 #, c-format
 msgid ""
@@ -41253,7 +41279,7 @@ msgid ""
 msgstr ""
 
 msgid "vcpu 0 can't be offline"
-msgstr ""
+msgstr "vcpu 0 não pode estar offline"
 
 #, c-format
 msgid ""
@@ -41306,7 +41332,7 @@ msgid "vcpus overlaps in resctrl groups"
 msgstr ""
 
 msgid "vendor id is invalid"
-msgstr ""
+msgstr "id de fornecedor é inválido"
 
 msgid "vendor is not supported with vhostuser disk"
 msgstr ""
