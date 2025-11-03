@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
 "PO-Revision-Date: 2025-11-03 07:03+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -41539,10 +41539,12 @@ msgstr "tipo de virtualização '%1$s' não é suportada"
 msgid ""
 "virtio (non-)transitional models are not supported for address type=%1$s"
 msgstr ""
+"modelos (não-)transicionais virtio não são suportados para endereço tipo=%1$s"
 
 #, c-format
 msgid "virtio (non-)transitional models are not supported for input type=%1$s"
 msgstr ""
+"modelos (não-)transicionais virtio não são suportados para entrada tipo=%1$s"
 
 #, c-format
 msgid "virtio disk cannot have an address of type '%1$s'"
@@ -41559,13 +41561,13 @@ msgstr "rss de virtio não é suportado com este binário QEMU"
 
 #, c-format
 msgid "virtio rx_queue_size option %1$d is not same with tx_queue_size %2$d"
-msgstr ""
+msgstr "opção rx_queue_size de virtio %1$d não é o mesmo com tx_queue_size %2$d"
 
 #, c-format
 msgid "virtio serial controller %1$u does not have port %2$u"
 msgstr "controlador série virtio %1$u não tem porto %2$u"
 
-#, c-format, fuzzy
+#, c-format
 msgid "virtio serial controller %1$u is missing"
 msgstr "controlador série virtio %1$u está em falta"
 
@@ -41624,6 +41626,8 @@ msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
 "controllers"
 msgstr ""
+"IOThreads virtio-scsi apenas disponíveis para pci virtio e controladores ccw "
+"virtio"
 
 #, c-format
 msgid "virtio-serial controller %1$u not available"
@@ -41701,7 +41705,7 @@ msgstr ""
 "estivesse definida"
 
 msgid "vlan trunking is not supported by SR-IOV network devices"
-msgstr ""
+msgstr "trunking de vlan não é suportado por dispositivos de rede SR-IOV"
 
 #, c-format
 msgid "vlanid out of range: %1$d"
@@ -41741,25 +41745,27 @@ msgstr "directório vnc_tls_x509_cert_dir '%1$s' não existe"
 msgid ""
 "vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
 "maxvcpus"
-msgstr "confifuração vnuma contem %1$zu vcpus, o que é maior que %2$zu maxvcpus"
+msgstr "configuração vnuma contem %1$zu vcpus, o que é maior que %2$zu maxvcpus"
 
 #, c-format
 msgid ""
 "vnuma pnode %1$d configured '%2$s' (count %3$zu) doesn't fit the number of "
 "specified vnodes %4$zu"
 msgstr ""
+"pnode vnuma %1$d configurado '%2$s' (contagem %3$zu) não corresponde ao "
+"número de vnodes especificados %4$zu"
 
 #, c-format
 msgid "vnuma sibling %1$zu missing vcpus set"
-msgstr ""
+msgstr "irmão de vnuma %1$zu com definição de vcpus em falta"
 
 #, c-format
 msgid "vnuma vnode %1$zu contains invalid pnode value '%2$s'"
-msgstr ""
+msgstr "vnode vnuma %1$zu contém valor pnode inválido '%2$s'"
 
 #, c-format
 msgid "vnuma vnode invalid format '%1$s'"
-msgstr ""
+msgstr "formato inválido de vnode vnuma '%1$s'"
 
 msgid "vol information in XML"
 msgstr "informação de volume em XML"
@@ -41776,48 +41782,48 @@ msgid "volume '%1$s' is still in use."
 msgstr "volume '%1$s' ainda está a ser usado."
 
 msgid "volume capacity required for this storage pool"
-msgstr ""
+msgstr "capacidade de volume requisitada para este pool de armazenamento"
 
 #, c-format
 msgid "volume encryption unsupported with format %1$s"
 msgstr "encriptação de volume não suportada com formato %1$s"
 
 msgid "volume key or path"
-msgstr ""
+msgstr "chave ou caminho de volume"
 
 #, c-format
 msgid "volume name '%1$s' cannot contain '/'"
-msgstr ""
+msgstr "nome de volume '%1$s' não pode conter '/'"
 
 msgid "volume name or key"
-msgstr ""
+msgstr "nome ou chave de volume"
 
 msgid "volume name or path"
-msgstr ""
+msgstr "nome ou caminho de volume"
 
 msgid "volume offset to download from"
-msgstr ""
+msgstr "desvio de volume de onde descarregar"
 
 msgid "volume offset to upload to"
-msgstr ""
+msgstr "desvio de volume para onde enviar"
 
 #, c-format
 msgid "volume target path '%1$s' already exists"
-msgstr ""
+msgstr "caminho de alvo de volume '%1$s' já existe"
 
 #, c-format
 msgid "volume target path empty for source path '%1$s'"
-msgstr ""
+msgstr "caminho de alvo de volume vazio para caminho de fonte '%1$s'"
 
 msgid "volume usage specified, but volume path is missing"
-msgstr ""
+msgstr "utilização de volume especificada, mas caminho de volume está em falta"
 
 #, c-format
 msgid "vport operation '%1$s' is not supported for host%2$d"
-msgstr ""
+msgstr "operação vport '%1$s' não suportada para host%2$d"
 
 msgid "vram64 attribute only supported for video type qxl"
-msgstr ""
+msgstr "atributo vram64 apenas suportado para tipo de vídeo qxl"
 
 msgid "vsock device is not supported with this QEMU binary"
 msgstr "dispositivo vsock não é suportado com este binário QEMU"
