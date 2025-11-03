@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-10-31 09:58+0000\n"
+"PO-Revision-Date: 2025-11-02 21:55+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.14\n"
 
 msgid ""
 "\n"
@@ -41249,6 +41249,8 @@ msgid ""
 "vcpu '%1$zd' belongs to a larger hotpluggable entity, but siblings were not "
 "selected"
 msgstr ""
+"vcpu '%1$zd' pertence a uma entidade de ligação a quente maior, mas não "
+"foram selecionados irmãos"
 
 #, c-format
 msgid "vcpu '%1$zd' can't be hotunplugged"
@@ -41259,6 +41261,8 @@ msgid ""
 "vcpu '%1$zd' can't be modified as it is followed by non-hotpluggable online "
 "vcpus"
 msgstr ""
+"vcpu '%1$zd' não pode ser modificada pois é seguida por vcpus online não "
+"ligáveis a quente"
 
 #, c-format
 msgid "vcpu '%1$zd' is already in requested state"
@@ -41277,6 +41281,8 @@ msgid ""
 "vcpu '%1$zu' was not selected but it belongs to hotpluggable entity '%2$zd-"
 "%3$zd' which was partially selected"
 msgstr ""
+"vcpu '%1$zu' não foi selecionada mas pertence a entidade de ligação a quente "
+"'%2$zd-%3$zd' a qual foi parcialmente selecionada"
 
 msgid "vcpu 0 can't be offline"
 msgstr "vcpu 0 não pode estar offline"
@@ -41286,77 +41292,84 @@ msgid ""
 "vcpu enable order of vCPU '%1$zu' differs between source and destination "
 "definitions"
 msgstr ""
+"ordem de ativação de cvpu da vCPU '%1$zu' difere entre definições de fonte e "
+"destino"
 
 #, c-format
 msgid "vcpu id '%1$u' is out of range of maximum vcpu count"
-msgstr ""
+msgstr "id de vcpu '%1$u' está fora de alcance da contagem de vcpu máxima"
 
 #, c-format
 msgid "vcpu id '%1$u' reported by guest agent is out of range"
-msgstr ""
+msgstr "id de vcpu '%1$u' reportado pelo agente convidado está fora de alcance"
 
 msgid "vcpu number"
 msgstr "número do vCPU"
 
 #, c-format
 msgid "vcpu order '%1$u' exceeds vcpu count"
-msgstr ""
+msgstr "ordem de vcpu '%1$u' excede contagem de vcpu"
 
 msgid ""
 "vcpu unplug request timed out. Unplug result must be manually inspected in "
 "the domain"
 msgstr ""
+"pedido de desligar de vcpu esgotou tempo limite. Resultado de desligar tem "
+"de ser inspecionado manualmente no domínio"
 
 msgid "vcpu0 can't be hotpluggable"
-msgstr ""
+msgstr "vcpu0 não pode ser ligável a quente"
 
 msgid "vcpu0 must be enabled first"
-msgstr ""
+msgstr "vcpu0 tem de ser activada primeiro"
 
 msgid "vcpupin cpumask differs from default cpumask"
-msgstr ""
+msgstr "cpumask de vcpupin difere da cpumask predefinida"
 
 msgid "vcpupin: Missing vCPU number in pin mode."
-msgstr ""
+msgstr "vcpupin: Número de vCPU em falta em modo de pin."
 
 #, c-format
 msgid ""
 "vcpus '%1$zu' and '%2$zu' are in the same hotplug group but differ in "
 "configuration"
 msgstr ""
+"vcpus '%1$zu' e '%2$zu' estão no mesmo grupo de ligação a quente mas diferem "
+"na configuração"
 
 msgid "vcpus is empty"
-msgstr ""
+msgstr "vcpus está vazio"
 
 msgid "vcpus overlaps in resctrl groups"
-msgstr ""
+msgstr "sobreposições de vcpus em grupos resctrl"
 
 msgid "vendor id is invalid"
 msgstr "id de fornecedor é inválido"
 
 msgid "vendor is not supported with vhostuser disk"
-msgstr ""
+msgstr "fornecedor não é suportado com disco"
 
 #, c-format
 msgid "vendor_id must be exactly %1$d characters long"
-msgstr ""
+msgstr "vendor_id tem de ter exatamente %1$d caracteres de comprimento"
 
 #, c-format
 msgid "version mismatch (actual %1$x, expected %2$x)"
-msgstr ""
+msgstr "incompatibilidade de versão (actual %1$x, esperado %2$x)"
 
 #, c-format
 msgid "version mismatch in event (actual 0x%1$x, expected 0x%2$x)"
-msgstr ""
+msgstr "incompatibilidade de versão em evento (actual 0x%1$x, esperado 0x%2$x)"
 
 msgid "version parsing error"
 msgstr "erro na análise da versão"
 
 msgid "vfio migration was active, but 'transferred' data was missing"
 msgstr ""
+"migração vfio estava activa, mas dados de 'transferido' estavam em falta"
 
 msgid "vgamem attribute only supported for video type qxl"
-msgstr ""
+msgstr "atributo vgamem apenas suportado para vídeo do tipo"
 
 msgid "vhost-net is not supported with this QEMU binary"
 msgstr "vhost-net não é suportado com este binário QEMU"
@@ -41365,155 +41378,162 @@ msgid "vhost-net is only supported for virtio network interfaces"
 msgstr "vhost-net é apenas suportado para interfaces de rede virtio"
 
 msgid "vhost-net was requested for an interface, but is unavailable"
-msgstr ""
+msgstr "vhost-net foi requisitado para uma interface, mas está indisponível"
 
 #, c-format
 msgid "vhost-scsi device file '%1$s' cannot be found"
-msgstr ""
+msgstr "ficheiro de dispositivo vhost-scsi '%1$s' não pode ser encontrado"
 
 #, c-format
 msgid "vhost-user type '%1$s' not supported"
-msgstr ""
+msgstr "tipo de vhost-user '%1$s' não suportado"
 
 msgid "vhost-user-gpu failed to start"
-msgstr ""
+msgstr "vhost-user-gpu falhou ao arrancar"
 
 msgid "vhostuser disk supports only virtio bus"
-msgstr ""
+msgstr "disco vhostuser suporta apenas barramento"
 
 msgid "video resolution values must be greater than 0"
 msgstr "valores de resolução de vídeo tem de ser maior que 0"
 
 #, c-format
 msgid "video type %1$s is not supported by libxl"
-msgstr ""
+msgstr "tipo de vídeo %1$s não é suportado por libxl"
 
 #, c-format
 msgid "video type '%1$s' does not support blob resources"
-msgstr ""
+msgstr "tipo de vídeo '%1$s' não suporta recursos blob"
 
 #, c-format
 msgid "video type '%1$s' does not support edid"
-msgstr ""
+msgstr "tipo de vídeo '%1$s' não suporta"
 
 #, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
-msgstr ""
+msgstr "tipo de vídeo '%1$s' não suporta múltiplos"
 
 #, c-format
 msgid "video type '%1$s' is only valid as primary video device"
 msgstr ""
+"tipo de vídeo '%1$s' é apenas válido como dispositivo de vídeo principal"
 
 msgid "videoram must be at least 128MB for QXL"
-msgstr ""
+msgstr "ram de vídeo tem de ser pelo menos 128MB para"
 
 msgid "videoram must be at least 16MB for VGA"
-msgstr ""
+msgstr "ram de vídeo tem de ser pelo menos 16MB para VGA"
 
 msgid "videoram must be at least 4MB for CIRRUS"
-msgstr ""
+msgstr "ram de vídeo tem de ser pelo menos 4MB para CIRRUS"
 
 msgid "videoram must be at least 8MB for CIRRUS"
-msgstr ""
+msgstr "ram de vídeo tem de ser pelo menos 8MB para CIRRUS"
 
 msgid "videoram must be at least 8MB for VGA"
-msgstr ""
+msgstr "ram de vídeo tem de ser pelo menos 8MB para VGA"
 
 msgid "view domain IOThreads"
-msgstr ""
+msgstr "ver IOThreads de domínio"
 
 msgid "virDirCreate is not implemented for WIN32"
-msgstr ""
+msgstr "virDirCreate não está implementado para WIN32"
 
 msgid "virDomainCheckpointGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainCheckpointGetXMLDesc com bandeira de segurança"
 
 msgid "virDomainGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainGetXMLDesc com bandeira de segurança"
 
 msgid "virDomainManagedSaveGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainManagedSaveGetXMLDesc com bandeira de segurança"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
-msgstr ""
+msgstr "virDomainSnapshotGetXMLDesc com bandeira de segurança"
 
 msgid "virFileDiskCopy unsupported on this platform"
-msgstr ""
+msgstr "virFileDiskCopy não suportado nesta plataforma"
 
 msgid "virFileOpenAs is not implemented for WIN32"
-msgstr ""
+msgstr "virFileOpenAs não está implementado para WIN32"
 
 msgid "virFileWrapperFd unsupported on this platform"
-msgstr ""
+msgstr "virFileWrapperFd não suportado nesta plataforma"
 
 msgid "virGetGroupID is not available"
-msgstr ""
+msgstr "virGetGroupID não está disponível"
 
 msgid "virGetGroupName is not available"
-msgstr ""
+msgstr "virGetGroupName não está disponível"
 
 msgid "virGetUserDirectory is not available"
-msgstr ""
+msgstr "virGetUserDirectory não está disponível"
 
 msgid "virGetUserID is not available"
-msgstr ""
+msgstr "virGetUserID não está disponível"
 
 msgid "virGetUserName is not available"
-msgstr ""
+msgstr "virGetUserName não está disponível"
 
 msgid "virGetUserShell is not available"
-msgstr ""
+msgstr "virGetUserShell não está disponível"
 
 msgid "virInterfaceDefFormat NULL def"
-msgstr ""
+msgstr "virInterfaceDefFormat definição NULA"
 
 msgid "virInterfaceDefFormat missing interface name"
-msgstr ""
+msgstr "virInterfaceDefFormat a faltar nome de interface"
 
 msgid "virInterfaceDefFormat unknown startmode"
-msgstr ""
+msgstr "virInterfaceDefFormat modo de arranque desconhecido"
 
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq ifname map failed on interface \"%1$s\" key \"%2$s\""
 msgstr ""
+"virNWFilterDHCPSnoopReq mapa de ifname falhou na interface \"%1$s\" chave "
+"\"%2$s\""
 
 #, c-format
 msgid ""
 "virNWFilterDHCPSnoopReq req add failed on interface \"%1$s\" ifkey \"%2$s\""
 msgstr ""
+"virNWFilterDHCPSnoopReq adicionar de req falhou na interface \"%1$s\" ifkey "
+"\"%2$s\""
 
 #, c-format
 msgid "virNWFilterDHCPSnoopReq virThreadCreate failed on interface '%1$s'"
-msgstr ""
+msgstr "virNWFilterDHCPSnoopReq virThreadCreate falhou na interface '%1$s'"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad lease file line %1$d corrupt"
 msgstr ""
+"virNWFilterSnoopLeaseFileLoad linha de ficheiro de aluguer %1$d corrupta"
 
 #, c-format
 msgid "virNWFilterSnoopLeaseFileLoad req add failed on interface \"%1$s\""
 msgstr ""
+"virNWFilterSnoopLeaseFileLoad adicionar de req falhou na interface \"%1$s\""
 
 msgid "virNWFilterSnoopListDel failed"
-msgstr ""
+msgstr "virNWFilterSnoopListDel falhou"
 
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%1$s\" (%2$zu)"
-msgstr ""
+msgstr "virNWFilterSnoopReqNew chamado com chave inválida \"%1$s\" (%2$zu)"
 
 msgid "virSetUIDGID is not available"
-msgstr ""
+msgstr "virSetUIDGID não está disponível"
 
 msgid "virVMXContext has no formatFileName function set"
-msgstr ""
+msgstr "virVMXContext não tem função formatFileName definida"
 
 msgid "virVMXContext has no parseFileName function set"
-msgstr ""
+msgstr "virVMXContext não tem função parseFileName definida"
 
 #, c-format
 msgid "virt type '%1$s' is not supported"
-msgstr ""
+msgstr "tipo de virtualização '%1$s' não é suportada"
 
 #, c-format
 msgid ""
@@ -41526,10 +41546,10 @@ msgstr ""
 
 #, c-format
 msgid "virtio disk cannot have an address of type '%1$s'"
-msgstr ""
+msgstr "disco virtio não pode ter um endereço do tipo '%1$s'"
 
 msgid "virtio non-transitional model not supported for this qemu"
-msgstr ""
+msgstr "modelo não transicional de virtio não suportado por este qemu"
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr "reportar cinza rss de virtio não é suportado com este binário QEMU"
@@ -41543,55 +41563,62 @@ msgstr ""
 
 #, c-format
 msgid "virtio serial controller %1$u does not have port %2$u"
-msgstr ""
+msgstr "controlador série virtio %1$u não tem porto %2$u"
 
 #, c-format
 msgid "virtio serial controller %1$u is missing"
-msgstr ""
+msgstr "controlador série virtio %1$u está em falta"
 
 #, c-format
 msgid ""
 "virtio serial controller with index %1$u already exists in the address set"
 msgstr ""
+"controlador série virtio com índice %1$u já existe no conjunto de endereços"
 
 msgid "virtio serial device has invalid address type"
-msgstr ""
+msgstr "dispositivo série virtio tem tipo de endereço inválido"
 
 #, c-format
 msgid "virtio serial port %1$u on controller %2$u is already occupied"
-msgstr ""
+msgstr "porto série virtio %1$u no controlador %2$u já está ocupado"
 
 msgid "virtio-mem device is missing <requested/>"
-msgstr ""
+msgstr "dispositivo de memória virtio tem a faltar <requested/>"
 
 msgid "virtio-mem does not support dynamicMemslots"
-msgstr ""
+msgstr "memória virtio não suporta"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
-msgstr ""
+msgstr "memória virtio não é suportada por este binário QEMU"
 
 msgid "virtio-mem-ccw can't use different page size than the boot memory"
 msgstr ""
+"virtio-mem-ccw não pode usar tamanho de página diferente que a memória de "
+"arranque"
 
 #, c-format
 msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
 "'%1$s'"
 msgstr ""
+"interface persistente de equipa virtio-net tem de ser <model type='virtio'/"
+">,e não '%1$s'"
 
 #, c-format
 msgid ""
 "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
 msgstr ""
+"interface transiente de equipa virtio-net tem de ser tipo='hostdev', não "
+"'%1$s'"
 
 msgid "virtio-pmem does not support NUMA nodes"
-msgstr ""
+msgstr "virtio-pmem não suporta nós NUMA"
 
 msgid "virtio-pmem isn't supported by this QEMU binary"
-msgstr ""
+msgstr "virtio-pmem não é suportado por este binário QEMU"
 
 msgid "virtio-s390 bus doesn't have an address"
-msgstr ""
+msgstr "barramento virtio-s390 não tem um endereço"
 
 msgid ""
 "virtio-scsi IOThreads only available for virtio pci and virtio ccw "
@@ -41600,114 +41627,121 @@ msgstr ""
 
 #, c-format
 msgid "virtio-serial controller %1$u not available"
-msgstr ""
+msgstr "controlador série virtio %1$u não disponível"
 
 msgid "virtio-sound controller is not supported in this QEMU binary"
-msgstr ""
+msgstr "controlador de som virtio não é suportado neste binário QEMU"
 
 msgid "virtiofs does not support fmode and dmode"
-msgstr ""
+msgstr "virtiofs não suporta fmode e dmode"
 
 msgid "virtiofs does not support format"
-msgstr ""
+msgstr "virtiofs não suporta formato"
 
 msgid "virtiofs does not support model"
-msgstr ""
+msgstr "virtiofs não suporta modelo"
 
 msgid "virtiofs does not support multidevs"
-msgstr ""
+msgstr "virtiofs não suporta"
 
 msgid "virtiofs does not support wrpolicy"
-msgstr ""
+msgstr "virtiofs não suporta"
 
 msgid "virtiofs is not supported with this QEMU binary"
 msgstr "virtiofs não é suportado com este binário QEMU"
 
 msgid "virtiofs only supports passthrough accessmode"
-msgstr ""
+msgstr "virtiofs apenas suporta modo de acesso de passagem"
 
 #, c-format
 msgid "virtiofsd binary '%1$s' is not executable"
-msgstr ""
+msgstr "binário virtiofsd '%1$s' não é executável"
 
 msgid "virtiofsd died unexpectedly"
-msgstr ""
+msgstr "virtiofsd morreu de maneira inesperada"
 
 msgid "virtual FAT storage can't be accessed in read-write mode"
-msgstr ""
+msgstr "armazenamento FAT virtual não pode ser acedido em modo leitura-escrita"
 
 msgid "virtualization type (/domain/@type)"
-msgstr ""
+msgstr "tipo de virtualização (/domínio/@tipo)"
 
 #, c-format
 msgid ""
 "virtualport type %1$s is currently not supported on interfaces of type "
 "hostdev"
 msgstr ""
+"tipo de porto virtual %1$s presentemente não é suportado em interfaces do "
+"tipo"
 
 #, c-format
 msgid "vlan can only be set for SR-IOV VFs, but %1$s is not a VF"
-msgstr ""
+msgstr "vlan só pode ser definida para SR-IOV VFs, mas %1$s não é uma VF"
 
 msgid "vlan interface misses name attribute"
-msgstr ""
+msgstr "interface vlan tem a faltar atributo de nome"
 
 msgid "vlan interface misses the tag attribute"
-msgstr ""
+msgstr "interface vlan tem a faltar o atributo de etiqueta"
 
 msgid "vlan interface misses the vlan element"
-msgstr ""
+msgstr "interface vlan tem a faltar o elemento vlan"
 
 msgid "vlan misses the tag name"
-msgstr ""
+msgstr "vlan tem a faltar o nome de etiqueta"
 
 #, c-format
 msgid "vlan tag id %1$u too large (maximum 4095)"
-msgstr ""
+msgstr "id de etiqueta vlan %1$u demasiado grande (máximo 4095)"
 
 #, c-format
 msgid "vlan tag set for interface %1$s but caller requested it not be set"
 msgstr ""
+"etiqueta vlan definida para interface %1$s mas o chamador requisitou que não "
+"estivesse definida"
 
 msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr ""
 
 #, c-format
 msgid "vlanid out of range: %1$d"
-msgstr ""
+msgstr "vlanid fora de alcance: %1$d"
 
 msgid "vmcoreinfo is not available with this QEMU binary"
-msgstr ""
+msgstr "vmcoreinfo não está disponível com este binário QEMU"
 
 msgid ""
 "vmplayer does not support libvirt suspend/resume (vmware pause/unpause) "
 "operation "
 msgstr ""
+"vmplayer não suporta operação suspender/retomar do libvirt "
+"(vmware pausa/continuar) "
 
 msgid "vmport feature requires the ps2 feature not to be disabled"
 msgstr ""
+"funcionalidade vmport requer que a funcionalidade ps2 não seja desativada"
 
 msgid "vmport is not available with this QEMU binary"
-msgstr ""
+msgstr "vmport não está disponível com este binário QEMU"
 
 msgid "vmrun utility is missing"
-msgstr ""
+msgstr "utilitário vmrun está em falta"
 
 msgid "vnc display"
 msgstr "visualização de VNC"
 
 msgid "vnc port must be in range [5900,65535]"
-msgstr ""
+msgstr "porto vnc tem de estar na gama"
 
 #, c-format
 msgid "vnc_tls_x509_cert_dir directory '%1$s' does not exist"
-msgstr ""
+msgstr "directório vnc_tls_x509_cert_dir '%1$s' não existe"
 
 #, c-format
 msgid ""
 "vnuma configuration contains %1$zu vcpus, which is greater than %2$zu "
 "maxvcpus"
-msgstr ""
+msgstr "confifuração vnuma contem %1$zu vcpus, o que é maior que %2$zu maxvcpus"
 
 #, c-format
 msgid ""
@@ -41735,18 +41769,18 @@ msgstr "nome de volume, chave ou caminho"
 
 #, c-format
 msgid "volume '%1$s' is still being allocated."
-msgstr ""
+msgstr "volume '%1$s' ainda está a ser alocado."
 
 #, c-format
 msgid "volume '%1$s' is still in use."
-msgstr ""
+msgstr "volume '%1$s' ainda está a ser usado."
 
 msgid "volume capacity required for this storage pool"
 msgstr ""
 
 #, c-format
 msgid "volume encryption unsupported with format %1$s"
-msgstr ""
+msgstr "encriptação de volume não suportada com formato %1$s"
 
 msgid "volume key or path"
 msgstr ""
