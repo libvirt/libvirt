@@ -26,7 +26,15 @@ module Test_@DAEMON_NAME@ =
         }
 @CUT_ENABLE_IP@
         { "key_file" = "@sysconfdir@/pki/libvirt/private/serverkey.pem" }
+        { "key_files"
+             { "1" = "@sysconfdir@/pki/libvirt/private/serverkey-0.pem" }
+             { "2" = "@sysconfdir@/pki/libvirt/private/serverkey-1.pem" }
+        }
         { "cert_file" = "@sysconfdir@/pki/libvirt/servercert.pem" }
+        { "cert_files"
+             { "1" = "@sysconfdir@/pki/libvirt/servercert-0.pem" }
+             { "2" = "@sysconfdir@/pki/libvirt/servercert-1.pem" }
+        }
         { "ca_file" = "@sysconfdir@/pki/CA/cacert.pem" }
         { "crl_file" = "@sysconfdir@/pki/CA/crl.pem" }
         { "tls_no_sanity_certificate" = "1" }

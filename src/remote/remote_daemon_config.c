@@ -192,9 +192,9 @@ daemonConfigFree(struct daemonConfig *data)
 
     g_free(data->tls_priority);
 
-    g_free(data->key_file);
+    g_strfreev(data->key_files);
     g_free(data->ca_file);
-    g_free(data->cert_file);
+    g_strfreev(data->cert_files);
     g_free(data->crl_file);
 #endif /* ! WITH_IP */
 
@@ -212,8 +212,12 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                         virConf *conf)
 {
     int rc G_GNUC_UNUSED;
-
 #ifdef WITH_IP
+    g_autofree char *cert_file = NULL;
+    g_autofree char *key_file = NULL;
+    size_t ncerts;
+    size_t nkeys;
+
     if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)
         return -1;
     if (virConfGetValueBool(conf, "listen_tls", &data->listen_tls) < 0)
@@ -269,10 +273,39 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (virConfGetValueBool(conf, "tls_no_verify_certificate", &data->tls_no_verify_certificate) < 0)
         return -1;
 
-    if (virConfGetValueString(conf, "key_file", &data->key_file) < 0)
+    if (virConfGetValueString(conf, "key_file", &key_file) < 0)
         return -1;
-    if (virConfGetValueString(conf, "cert_file", &data->cert_file) < 0)
+    if (virConfGetValueString(conf, "cert_file", &cert_file) < 0)
         return -1;
+    if (virConfGetValueStringList(conf, "key_files", false, &data->key_files) < 0)
+        return -1;
+    if (virConfGetValueStringList(conf, "cert_files", false, &data->cert_files) < 0)
+        return -1;
+    if ((cert_file && data->cert_files) ||
+         (key_file && data->key_files)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cert_file/key_file are mutually exclusive with cert_files/key_files"));
+        return -1;
+    }
+    if (cert_file) {
+        data->cert_files = g_new0(char *, 2);
+        data->cert_files[0] = g_steal_pointer(&cert_file);
+        data->cert_files[1] = NULL;
+    }
+    if (key_file) {
+        data->key_files = g_new0(char *, 2);
+        data->key_files[0] = g_steal_pointer(&key_file);
+        data->key_files[1] = NULL;
+    }
+    ncerts = data->cert_files ? g_strv_length(data->cert_files) : 0;
+    nkeys = data->key_files ? g_strv_length(data->key_files) : 0;
+    if (ncerts != nkeys) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Number of certificates (%1$zu) must match number of keys (%2$zu)"),
+                       ncerts, nkeys);
+        return -1;
+    }
+
     if (virConfGetValueString(conf, "ca_file", &data->ca_file) < 0)
         return -1;
     if (virConfGetValueString(conf, "crl_file", &data->crl_file) < 0)

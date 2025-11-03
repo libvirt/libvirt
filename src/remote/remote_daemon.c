@@ -325,31 +325,31 @@ daemonSetupNetworking(virNetServer *srv,
         virNetTLSContext *ctxt = NULL;
 
         if (config->ca_file ||
-            config->cert_file ||
-            config->key_file) {
-            const char *certs[] = { config->cert_file, NULL };
-            const char *keys[] = { config->key_file, NULL };
-
+            config->cert_files ||
+            config->key_files) {
+            g_autofree char *certs = g_strjoinv(", ", config->cert_files);
+            g_autofree char *keys = g_strjoinv(", ", config->key_files);
             if (!config->ca_file) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("No CA certificate path set to match server key/cert"));
+                               _("No CA certificate path set to match server key(s)/cert(s)"));
                 return -1;
             }
-            if (!config->cert_file) {
+            if (!config->cert_files) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("No server certificate path set to match server key"));
+                               _("No server certificate path(s) set to match server key(s)"));
                 return -1;
             }
-            if (!config->key_file) {
+            if (!config->key_files) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("No server key path set to match server cert"));
+                               _("No server key path(s) set to match server cert(s)"));
                 return -1;
             }
-            VIR_DEBUG("Using CA='%s' cert='%s' key='%s'",
-                      config->ca_file, config->cert_file, config->key_file);
+            VIR_DEBUG("Using CA='%s' certs='%s' keys='%s'",
+                      config->ca_file, certs, keys);
             if (!(ctxt = virNetTLSContextNewServer(config->ca_file,
                                                    config->crl_file,
-                                                   certs, keys,
+                                                   (const char *const*)config->cert_files,
+                                                   (const char *const*)config->key_files,
                                                    (const char *const*)config->tls_allowed_dn_list,
                                                    config->tls_priority,
                                                    config->tls_no_sanity_certificate ? false : true,

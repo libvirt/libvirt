@@ -244,11 +244,27 @@
 
 # Override the default server key file path
 #
+# This parameter is mutually exclusive with 'key_files'
+#
 #key_file = "@sysconfdir@/pki/libvirt/private/serverkey.pem"
+
+# Override the default server key file path(s)
+#
+# This parameter is mutually exclusive with 'key_file'
+#
+#key_files = ["@sysconfdir@/pki/libvirt/private/serverkey-0.pem", "@sysconfdir@/pki/libvirt/private/serverkey-1.pem"]
 
 # Override the default server certificate file path
 #
+# This parameter is mutually exclusive with 'cert_files'
+#
 #cert_file = "@sysconfdir@/pki/libvirt/servercert.pem"
+
+# Override the default server certificate file path(s)
+#
+# This parameter is mutually exclusive with 'cert_file'
+#
+#cert_files = ["@sysconfdir@/pki/libvirt/servercert-0.pem", "@sysconfdir@/pki/libvirt/servercert-1.pem"]
 
 # Override the default CA certificate path
 #

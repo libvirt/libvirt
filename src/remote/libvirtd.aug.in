@@ -47,6 +47,8 @@ module @DAEMON_NAME_UC@ =
 
    let certificate_entry = str_entry "key_file"
                          | str_entry "cert_file"
+                         | str_array_entry "key_files"
+                         | str_array_entry "cert_files"
                          | str_entry "ca_file"
                          | str_entry "crl_file"
 

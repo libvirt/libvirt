@@ -58,8 +58,8 @@ struct daemonConfig {
     char *tls_priority;
     unsigned int tcp_min_ssf;
 
-    char *key_file;
-    char *cert_file;
+    char **key_files;
+    char **cert_files;
     char *ca_file;
     char *crl_file;
 #endif /* ! WITH_IP */
