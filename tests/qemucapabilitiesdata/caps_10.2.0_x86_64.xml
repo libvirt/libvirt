@@ -215,9 +215,9 @@
   <flag name='acpi-generic-initiator'/>
   <flag name='disk-timed-stats'/>
   <flag name='query-accelerators'/>
-  <version>10001050</version>
+  <version>10001091</version>
   <microcodeVersion>43100287</microcodeVersion>
-  <package>v10.1.0-1969-g53b41bb789</package>
+  <package>v10.2.0-rc1-38-gfb241d0a1f</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>

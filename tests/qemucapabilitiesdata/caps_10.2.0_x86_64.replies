@@ -16,11 +16,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
+      "micro": 91,
       "minor": 1,
       "major": 10
     },
-    "package": "v10.1.0-1969-g53b41bb789"
+    "package": "v10.2.0-rc1-38-gfb241d0a1f"
   },
   "id": "libvirt-2"
 }
@@ -14607,6 +14607,9 @@
           "name": "active"
         },
         {
+          "name": "postcopy-device"
+        },
+        {
           "name": "postcopy-active"
         },
         {
@@ -14644,6 +14647,7 @@
         "cancelling",
         "cancelled",
         "active",
+        "postcopy-device",
         "postcopy-active",
         "postcopy-paused",
         "postcopy-recover-setup",
@@ -28391,7 +28395,7 @@
       "type": "bool"
     },
     {
-      "default-value": false,
+      "default-value": true,
       "name": "guest_tunnel_csum",
       "description": "on/off",
       "type": "bool"
@@ -28412,7 +28416,7 @@
       "type": "uint32"
     },
     {
-      "default-value": false,
+      "default-value": true,
       "name": "host_tunnel",
       "description": "on/off",
       "type": "bool"
@@ -28622,7 +28626,7 @@
       "type": "bool"
     },
     {
-      "default-value": false,
+      "default-value": true,
       "name": "host_tunnel_csum",
       "description": "on/off",
       "type": "bool"
@@ -28674,7 +28678,7 @@
       "type": "bool"
     },
     {
-      "default-value": false,
+      "default-value": true,
       "name": "guest_tunnel",
       "description": "on/off",
       "type": "bool"
@@ -29213,7 +29217,7 @@
     {
       "default-value": "auto",
       "name": "enable-migration",
-      "description": "Enale device migration. Also requires a host VFIO PCI variant or mdev driver with migration support enabled",
+      "description": "Enable device migration. Also requires a host VFIO PCI variant or mdev driver with migration support enabled",
       "type": "OnOffAuto"
     },
     {
@@ -31973,7 +31977,7 @@
       "type": "bool"
     },
     {
-      "default-value": 16,
+      "default-value": 64,
       "name": "extended-tseg-mbytes",
       "type": "uint16"
     }
@@ -39064,6 +39068,10 @@
         {
           "name": "user",
           "type": "string"
+        },
+        {
+          "name": "exit-with-parent",
+          "type": "boolean"
         },
         {
           "name": "chroot",
