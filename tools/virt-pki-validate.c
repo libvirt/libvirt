@@ -163,6 +163,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
 {
     g_autofree char *cacert = NULL, *cacrl = NULL;
     g_autofree char *cert = NULL, *key = NULL;
+    const char *certs[] = { cert, NULL };
     bool ok = true;
     const char *scope = isServer ? "SERVER" : "CLIENT";
 
@@ -274,7 +275,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
 
     if (virNetTLSCertSanityCheck(isServer,
                                  cacert,
-                                 cert) < 0) {
+                                 certs) < 0) {
         virValidateFail(VIR_VALIDATE_FAIL, "%s",
                         virGetLastErrorMessage());
         ok = false;

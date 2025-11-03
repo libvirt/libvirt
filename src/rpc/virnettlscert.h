@@ -28,7 +28,7 @@
 
 int virNetTLSCertSanityCheck(bool isServer,
                              const char *cacertFile,
-                             const char *certFile);
+                             const char *const *certFiles);
 
 int virNetTLSCertValidateCA(gnutls_x509_crt_t cert,
                             bool isServer);

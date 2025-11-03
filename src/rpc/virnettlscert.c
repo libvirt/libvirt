@@ -440,40 +440,50 @@ int virNetTLSCertLoadListFromFile(const char *certFile,
 #define MAX_CERTS 16
 int virNetTLSCertSanityCheck(bool isServer,
                              const char *cacertFile,
-                             const char *certFile)
+                             const char *const *certFiles)
 {
-    gnutls_x509_crt_t cert = NULL;
+    gnutls_x509_crt_t *certs = NULL;
     gnutls_x509_crt_t cacerts[MAX_CERTS] = { 0 };
     size_t ncacerts = 0;
     size_t i;
     int ret = -1;
 
-    if ((access(certFile, R_OK) == 0) &&
-        !(cert = virNetTLSCertLoadFromFile(certFile, isServer)))
-        goto cleanup;
+    certs = g_new0(gnutls_x509_crt_t, g_strv_length((gchar **)certFiles));
+    for (i = 0; certFiles[i] != NULL; i++) {
+        if ((access(certFiles[i], R_OK) == 0) &&
+            !(certs[i] = virNetTLSCertLoadFromFile(certFiles[i], isServer)))
+            goto cleanup;
+    }
     if ((access(cacertFile, R_OK) == 0) &&
         virNetTLSCertLoadListFromFile(cacertFile, cacerts,
                                       MAX_CERTS, &ncacerts) < 0)
         goto cleanup;
 
-    if (cert &&
-        virNetTLSCertCheck(cert, certFile, isServer, false) < 0)
-        goto cleanup;
+    for (i = 0; certFiles[i] != NULL; i++) {
+        if (certs[i] &&
+            virNetTLSCertCheck(certs[i], certFiles[i], isServer, false) < 0)
+            goto cleanup;
+    }
 
     for (i = 0; i < ncacerts; i++) {
         if (virNetTLSCertCheck(cacerts[i], cacertFile, isServer, true) < 0)
             goto cleanup;
     }
 
-    if (cert && ncacerts &&
-        virNetTLSCertCheckPair(cert, certFile, cacerts, ncacerts, cacertFile, isServer) < 0)
-        goto cleanup;
+    for (i = 0; certFiles[i] != NULL && ncacerts; i++) {
+        if (certs[i] && ncacerts &&
+            virNetTLSCertCheckPair(certs[i], certFiles[i], cacerts, ncacerts, cacertFile, isServer) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
  cleanup:
-    if (cert)
-        gnutls_x509_crt_deinit(cert);
+    for (i = 0; certFiles[i] != NULL; i++) {
+        if (certs[i])
+            gnutls_x509_crt_deinit(certs[i]);
+    }
+    g_free(certs);
     for (i = 0; i < ncacerts; i++)
         gnutls_x509_crt_deinit(cacerts[i]);
     return ret;

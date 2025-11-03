@@ -199,6 +199,7 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
 {
     virNetTLSContext *ctxt;
     int err;
+    const char *certs[] = { cert, NULL };
 
     if (virNetTLSContextInitialize() < 0)
         return NULL;
@@ -224,7 +225,7 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
     }
 
     if (sanityCheckCert &&
-        virNetTLSCertSanityCheck(isServer, cacert, cert) < 0)
+        virNetTLSCertSanityCheck(isServer, cacert, certs) < 0)
         goto error;
 
     if (virNetTLSContextLoadCredentials(ctxt, isServer, cacert, cacrl, cert, key) < 0)
@@ -367,6 +368,7 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
     g_autofree char *cacrl = NULL;
     g_autofree char *cert = NULL;
     g_autofree char *key = NULL;
+    const char *certs[] = { cert, NULL };
 
     x509credBak = g_steal_pointer(&ctxt->x509cred);
 
@@ -382,7 +384,7 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
         goto error;
     }
 
-    if (virNetTLSCertSanityCheck(true, cacert, cert))
+    if (virNetTLSCertSanityCheck(true, cacert, certs))
         goto error;
 
     if (virNetTLSContextLoadCredentials(ctxt, true, cacert, cacrl, cert, key))
