@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-11-02 21:55+0000\n"
-"Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
+"PO-Revision-Date: 2025-11-03 07:03+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
 "Language: pt\n"
@@ -41565,7 +41565,7 @@ msgstr ""
 msgid "virtio serial controller %1$u does not have port %2$u"
 msgstr "controlador série virtio %1$u não tem porto %2$u"
 
-#, c-format
+#, c-format, fuzzy
 msgid "virtio serial controller %1$u is missing"
 msgstr "controlador série virtio %1$u está em falta"
 
