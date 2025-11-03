@@ -438,7 +438,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 265 */
               "virtio-net.tx_queue_size", /* X_QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
-              "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
+              "chardev-reconnect", /* X_QEMU_CAPS_CHARDEV_RECONNECT */
               "virtio-gpu.max_outputs", /* X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
               "vxhs", /* X_QEMU_CAPS_VXHS */
               "virtio-blk.num-queues", /* X_QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
@@ -1602,7 +1602,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+qcow2/discard-no-unref", QEMU_CAPS_QCOW2_DISCARD_NO_UNREF },
     { "blockdev-add/arg-type/+virtio-blk-vhost-vdpa/$fdset", QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA},
     { "calc-dirty-rate/arg-type/mode", QEMU_CAPS_DIRTYRATE_MODE },
-    { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "chardev-add/arg-type/backend/+socket/data/reconnect-ms", QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS },
     { "chardev-add/arg-type/backend/+qemu-vdagent", QEMU_CAPS_CHARDEV_QEMU_VDAGENT },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },

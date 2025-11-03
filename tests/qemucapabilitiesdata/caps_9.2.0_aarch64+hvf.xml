@@ -54,7 +54,6 @@
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='qemu-xhci'/>
-  <flag name='chardev-reconnect'/>
   <flag name='vmcoreinfo'/>
   <flag name='pl011'/>
   <flag name='pcie-pci-bridge'/>

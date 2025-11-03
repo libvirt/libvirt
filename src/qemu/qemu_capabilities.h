@@ -419,7 +419,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 265 */
     X_QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, /* virtio-net-*.tx_queue_size */
-    QEMU_CAPS_CHARDEV_RECONNECT, /* -chardev reconnect */
+    X_QEMU_CAPS_CHARDEV_RECONNECT, /* -chardev reconnect */
     X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, /* -device virtio-(vga|gpu-*),max-outputs= */
     X_QEMU_CAPS_VXHS, /* -drive file.driver=vxhs via query-qmp-schema */
     X_QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, /* virtio-blk-*.num-queues */

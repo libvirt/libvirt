@@ -13,7 +13,6 @@
   <flag name='rng-egd'/>
   <flag name='spice-gl'/>
   <flag name='spice-rendernode'/>
-  <flag name='chardev-reconnect'/>
   <flag name='nbd-tls'/>
   <flag name='pr-manager-helper'/>
   <flag name='screendump_device'/>

@@ -37,7 +37,6 @@
   <flag name='query-cpu-model-expansion'/>
   <flag name='query-cpu-definitions'/>
   <flag name='qemu-xhci'/>
-  <flag name='chardev-reconnect'/>
   <flag name='sclplmconsole'/>
   <flag name='virtio-gpu-ccw'/>
   <flag name='virtio-keyboard-ccw'/>

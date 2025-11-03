@@ -86,7 +86,6 @@
   <flag name='intel-iommu.caching-mode'/>
   <flag name='intel-iommu.eim'/>
   <flag name='intel-iommu.device-iotlb'/>
-  <flag name='chardev-reconnect'/>
   <flag name='vmcoreinfo'/>
   <flag name='isa-serial'/>
   <flag name='pcie-pci-bridge'/>
