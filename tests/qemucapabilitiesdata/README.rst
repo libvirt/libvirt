@@ -28,7 +28,10 @@ or::
 
 ``$QEMUVERSION``
 
-  Numeric representation of the qemu version, e.g.: ``7.0.0``
+  Numeric representation of the qemu version, e.g.: ``7.0.0`` of the dump. In
+  case when the dump is obtained from a currently developed tree
+  (see `Unreleased qemu versions`_) filename should match the expected
+  final version.
 
 ``$ARCHITECTURE``
 
@@ -109,6 +112,16 @@ Place the captured output ``.replies`` file into this directory and run::
 
 This runs the test-suite instructing it to update and/or generate all new data
 the test would normally expect.
+
+Unreleased qemu versions
+------------------------
+
+Generally the repository should contain only dumps from released qemu trees
+without any extra patches.
+
+A notable exception is the currently developed version. It is acceptable to
+submit dumps from current master provided that they are updated to the final
+state of the code when the version becomes released.
 
 Manual modifications the ``.replies`` file
 ==========================================
