@@ -104,17 +104,15 @@ qemuPasstAddNetProps(virDomainObj *vm,
         return -1;
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT)) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS)) {
-            if (virJSONValueObjectAdd(netprops, "u:reconnect-ms",
-                                      QEMU_PASST_RECONNECT_TIMEOUT * 1000, NULL) < 0) {
-                return -1;
-            }
-        } else {
-            if (virJSONValueObjectAdd(netprops, "u:reconnect",
-                                      QEMU_PASST_RECONNECT_TIMEOUT, NULL) < 0) {
-                return -1;
-            }
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS)) {
+        if (virJSONValueObjectAdd(netprops, "u:reconnect-ms",
+                                  QEMU_PASST_RECONNECT_TIMEOUT * 1000, NULL) < 0) {
+            return -1;
+        }
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_STREAM_RECONNECT)) {
+        if (virJSONValueObjectAdd(netprops, "u:reconnect",
+                                  QEMU_PASST_RECONNECT_TIMEOUT, NULL) < 0) {
+            return -1;
         }
     }
 
