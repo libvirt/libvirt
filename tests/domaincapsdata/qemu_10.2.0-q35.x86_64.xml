@@ -127,7 +127,6 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v3'>Cascadelake-Server-noTSX</model>
       <blockers model='Cascadelake-Server-noTSX'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
       </blockers>
@@ -139,7 +138,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v2</model>
       <blockers model='Cascadelake-Server-v2'>
-        <feature name='arch-capabilities'/>
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
@@ -147,19 +145,16 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v3</model>
       <blockers model='Cascadelake-Server-v3'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v4</model>
       <blockers model='Cascadelake-Server-v4'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v5</model>
       <blockers model='Cascadelake-Server-v5'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
       </blockers>
@@ -167,7 +162,6 @@
       <model usable='yes' vendor='Intel'>Conroe-v1</model>
       <model usable='no' vendor='Intel' canonical='Cooperlake-v1'>Cooperlake</model>
       <blockers model='Cooperlake'>
-        <feature name='arch-capabilities'/>
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
@@ -176,7 +170,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cooperlake-v1</model>
       <blockers model='Cooperlake-v1'>
-        <feature name='arch-capabilities'/>
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
@@ -185,7 +178,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Cooperlake-v2</model>
       <blockers model='Cooperlake-v2'>
-        <feature name='arch-capabilities'/>
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
@@ -194,22 +186,14 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Denverton-v1'>Denverton</model>
       <blockers model='Denverton'>
-        <feature name='arch-capabilities'/>
         <feature name='mpx'/>
       </blockers>
       <model usable='no' vendor='Intel'>Denverton-v1</model>
       <blockers model='Denverton-v1'>
-        <feature name='arch-capabilities'/>
         <feature name='mpx'/>
       </blockers>
-      <model usable='no' vendor='Intel'>Denverton-v2</model>
-      <blockers model='Denverton-v2'>
-        <feature name='arch-capabilities'/>
-      </blockers>
-      <model usable='no' vendor='Intel'>Denverton-v3</model>
-      <blockers model='Denverton-v3'>
-        <feature name='arch-capabilities'/>
-      </blockers>
+      <model usable='yes' vendor='Intel'>Denverton-v2</model>
+      <model usable='yes' vendor='Intel'>Denverton-v3</model>
       <model usable='yes' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
       <model usable='yes' vendor='Hygon'>Dhyana-v1</model>
       <model usable='yes' vendor='Hygon'>Dhyana-v2</model>
@@ -252,7 +236,6 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='fbsdp-no'/>
@@ -280,7 +263,6 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='fbsdp-no'/>
@@ -308,7 +290,6 @@
         <feature name='amx-fp16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx10'/>
         <feature name='avx10-128'/>
         <feature name='avx10-256'/>
@@ -402,7 +383,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v3</model>
       <blockers model='Icelake-Server-v3'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
@@ -410,7 +390,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v4</model>
       <blockers model='Icelake-Server-v4'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
@@ -418,7 +397,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v5</model>
       <blockers model='Icelake-Server-v5'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
@@ -426,7 +404,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v6</model>
       <blockers model='Icelake-Server-v6'>
-        <feature name='arch-capabilities'/>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
@@ -434,7 +411,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v7</model>
       <blockers model='Icelake-Server-v7'>
-        <feature name='arch-capabilities'/>
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
@@ -505,7 +481,6 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='fsrc'/>
@@ -526,7 +501,6 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='fsrc'/>
@@ -547,7 +521,6 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='fbsdp-no'/>
@@ -571,7 +544,6 @@
         <feature name='amx-bf16'/>
         <feature name='amx-int8'/>
         <feature name='amx-tile'/>
-        <feature name='arch-capabilities'/>
         <feature name='avx512-fp16'/>
         <feature name='bus-lock-detect'/>
         <feature name='cldemote'/>
@@ -594,7 +566,6 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
-        <feature name='arch-capabilities'/>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni-int8'/>
@@ -612,7 +583,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>SierraForest-v1</model>
       <blockers model='SierraForest-v1'>
-        <feature name='arch-capabilities'/>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni-int8'/>
@@ -706,7 +676,6 @@
       </blockers>
       <model usable='no' vendor='Intel' canonical='Snowridge-v1'>Snowridge</model>
       <blockers model='Snowridge'>
-        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='mpx'/>
@@ -714,7 +683,6 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v1</model>
       <blockers model='Snowridge-v1'>
-        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='mpx'/>
@@ -722,21 +690,18 @@
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v2</model>
       <blockers model='Snowridge-v2'>
-        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v3</model>
       <blockers model='Snowridge-v3'>
-        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v4</model>
       <blockers model='Snowridge-v4'>
-        <feature name='arch-capabilities'/>
         <feature name='cldemote'/>
       </blockers>
       <model usable='yes' vendor='Intel' canonical='Westmere-v1'>Westmere</model>

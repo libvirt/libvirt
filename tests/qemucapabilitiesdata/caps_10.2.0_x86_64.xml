@@ -180,7 +180,6 @@
   <flag name='virtio-crypto'/>
   <flag name='cryptodev-backend-lkcf'/>
   <flag name='pvpanic-pci'/>
-  <flag name='netdev.stream.reconnect'/>
   <flag name='virtio-gpu.blob'/>
   <flag name='rbd-encryption-layering'/>
   <flag name='rbd-encryption-luks-any'/>
@@ -216,7 +215,7 @@
   <flag name='acpi-generic-initiator'/>
   <version>10001050</version>
   <microcodeVersion>43100287</microcodeVersion>
-  <package>v10.1.0-1060-geb7abb4a71</package>
+  <package>v10.1.0-1969-g53b41bb789</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -278,6 +277,7 @@
     <property name='mce' type='boolean' value='true' migratable='yes'/>
     <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt' type='boolean' value='false'/>
+    <property name='tsa-sq-no' type='boolean' value='true' migratable='yes'/>
     <property name='sgx' type='boolean' value='false'/>
     <property name='srso-user-kernel-no' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-exit-load-pat' type='boolean' value='false'/>
@@ -377,6 +377,7 @@
     <property name='ace2-en' type='boolean' value='false'/>
     <property name='pae' type='boolean' value='true' migratable='yes'/>
     <property name='pat' type='boolean' value='true' migratable='yes'/>
+    <property name='tsa-l1-no' type='boolean' value='true' migratable='yes'/>
     <property name='sse' type='boolean' value='true' migratable='yes'/>
     <property name='phe-en' type='boolean' value='false'/>
     <property name='vmx-tsc-offset' type='boolean' value='false'/>
@@ -536,6 +537,7 @@
     <property name='nodeid-msr' type='boolean' value='false'/>
     <property name='md-clear' type='boolean' value='false'/>
     <property name='sbpb' type='boolean' value='true' migratable='yes'/>
+    <property name='verw-clear' type='boolean' value='false'/>
     <property name='misalignsse' type='boolean' value='true' migratable='yes'/>
     <property name='split-lock-detect' type='boolean' value='false'/>
     <property name='min-xlevel' type='number' value='2147483682'/>
@@ -668,7 +670,6 @@
   <cpu type='kvm' name='YongFeng-v3' typename='YongFeng-v3-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -683,7 +684,6 @@
   <cpu type='kvm' name='YongFeng-v2' typename='YongFeng-v2-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -698,7 +698,6 @@
   <cpu type='kvm' name='YongFeng-v1' typename='YongFeng-v1-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -713,7 +712,6 @@
   <cpu type='kvm' name='YongFeng' typename='YongFeng-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -731,31 +729,26 @@
   <cpu type='kvm' name='Westmere' typename='Westmere-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Snowridge-v4' typename='Snowridge-v4-x86_64-cpu' usable='no'>
     <blocker name='cldemote'/>
-    <blocker name='arch-capabilities'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v3' typename='Snowridge-v3-x86_64-cpu' usable='no'>
     <blocker name='cldemote'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v2' typename='Snowridge-v2-x86_64-cpu' usable='no'>
     <blocker name='cldemote'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v1' typename='Snowridge-v1-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
     <blocker name='cldemote'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge' typename='Snowridge-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
     <blocker name='cldemote'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
@@ -826,7 +819,6 @@
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='cmpccxadd'/>
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
@@ -850,7 +842,6 @@
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='cmpccxadd'/>
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
@@ -872,7 +863,6 @@
     <blocker name='pcid'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='cmpccxadd'/>
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
@@ -889,7 +879,6 @@
     <blocker name='pcid'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='cmpccxadd'/>
     <blocker name='fsrs'/>
     <blocker name='avx-ifma'/>
@@ -916,7 +905,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -941,7 +929,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -964,7 +951,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -987,7 +973,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1007,7 +992,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1072,35 +1056,30 @@
     <blocker name='hle'/>
     <blocker name='rtm'/>
     <blocker name='la57'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v6' typename='Icelake-Server-v6-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='la57'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v5' typename='Icelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='la57'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v4' typename='Icelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='la57'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='la57'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1170,7 +1149,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1203,7 +1181,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1234,7 +1211,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1261,7 +1237,6 @@
     <blocker name='avx512-fp16'/>
     <blocker name='amx-tile'/>
     <blocker name='amx-int8'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='fzrm'/>
     <blocker name='fsrs'/>
     <blocker name='fsrc'/>
@@ -1324,25 +1299,18 @@
   <cpu type='kvm' name='Dhyana-v2' typename='Dhyana-v2-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Dhyana-v1' typename='Dhyana-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Dhyana' typename='Dhyana-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Denverton-v3' typename='Denverton-v3-x86_64-cpu' usable='no'>
-    <blocker name='arch-capabilities'/>
-  </cpu>
-  <cpu type='kvm' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='no'>
-    <blocker name='arch-capabilities'/>
-  </cpu>
+  <cpu type='kvm' name='Denverton-v3' typename='Denverton-v3-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Denverton-v1' typename='Denverton-v1-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
-    <blocker name='arch-capabilities'/>
   </cpu>
   <cpu type='kvm' name='Denverton' typename='Denverton-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
-    <blocker name='arch-capabilities'/>
   </cpu>
   <cpu type='kvm' name='Cooperlake-v2' typename='Cooperlake-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1350,7 +1318,6 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1358,7 +1325,6 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1370,7 +1336,6 @@
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='sha512'/>
     <blocker name='sm3'/>
     <blocker name='sm4'/>
@@ -1401,7 +1366,6 @@
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='sha512'/>
     <blocker name='sm3'/>
     <blocker name='sm4'/>
@@ -1428,24 +1392,20 @@
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v5' typename='Cascadelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v2' typename='Cascadelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v1' typename='Cascadelake-Server-v1-x86_64-cpu' usable='no'>
@@ -1455,7 +1415,6 @@
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-noTSX' typename='Cascadelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
-    <blocker name='arch-capabilities'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
@@ -1596,6 +1555,7 @@
     <property name='mce' type='boolean' value='true' migratable='yes'/>
     <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt' type='boolean' value='false'/>
+    <property name='tsa-sq-no' type='boolean' value='false'/>
     <property name='sgx' type='boolean' value='false'/>
     <property name='srso-user-kernel-no' type='boolean' value='false'/>
     <property name='vmx-exit-load-pat' type='boolean' value='false'/>
@@ -1695,6 +1655,7 @@
     <property name='ace2-en' type='boolean' value='false'/>
     <property name='pae' type='boolean' value='true' migratable='yes'/>
     <property name='pat' type='boolean' value='true' migratable='yes'/>
+    <property name='tsa-l1-no' type='boolean' value='false'/>
     <property name='sse' type='boolean' value='true' migratable='yes'/>
     <property name='phe-en' type='boolean' value='false'/>
     <property name='vmx-tsc-offset' type='boolean' value='false'/>
@@ -1854,6 +1815,7 @@
     <property name='nodeid-msr' type='boolean' value='false'/>
     <property name='md-clear' type='boolean' value='false'/>
     <property name='sbpb' type='boolean' value='false'/>
+    <property name='verw-clear' type='boolean' value='false'/>
     <property name='misalignsse' type='boolean' value='false'/>
     <property name='split-lock-detect' type='boolean' value='false'/>
     <property name='min-xlevel' type='number' value='2147483681'/>
