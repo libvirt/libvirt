@@ -44,21 +44,21 @@ virNetTLSContext *virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool requireValidCert);
 
 virNetTLSContext *virNetTLSContextNewServer(const char *cacert,
-                                              const char *cacrl,
-                                              const char *cert,
-                                              const char *key,
-                                              const char *const *x509dnACL,
-                                              const char *priority,
-                                              bool sanityCheckCert,
-                                              bool requireValidCert);
+                                            const char *cacrl,
+                                            const char *const *certs,
+                                            const char *const *keys,
+                                            const char *const *x509dnACL,
+                                            const char *priority,
+                                            bool sanityCheckCert,
+                                            bool requireValidCert);
 
 virNetTLSContext *virNetTLSContextNewClient(const char *cacert,
-                                              const char *cacrl,
-                                              const char *cert,
-                                              const char *key,
-                                              const char *priority,
-                                              bool sanityCheckCert,
-                                              bool requireValidCert);
+                                            const char *cacrl,
+                                            const char *const *certs,
+                                            const char *const *keys,
+                                            const char *priority,
+                                            bool sanityCheckCert,
+                                            bool requireValidCert);
 
 int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
                                     bool tryUserPkiPath);

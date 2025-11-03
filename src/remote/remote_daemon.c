@@ -327,6 +327,9 @@ daemonSetupNetworking(virNetServer *srv,
         if (config->ca_file ||
             config->cert_file ||
             config->key_file) {
+            const char *certs[] = { config->cert_file, NULL };
+            const char *keys[] = { config->key_file, NULL };
+
             if (!config->ca_file) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("No CA certificate path set to match server key/cert"));
@@ -346,8 +349,7 @@ daemonSetupNetworking(virNetServer *srv,
                       config->ca_file, config->cert_file, config->key_file);
             if (!(ctxt = virNetTLSContextNewServer(config->ca_file,
                                                    config->crl_file,
-                                                   config->cert_file,
-                                                   config->key_file,
+                                                   certs, keys,
                                                    (const char *const*)config->tls_allowed_dn_list,
                                                    config->tls_priority,
                                                    config->tls_no_sanity_certificate ? false : true,

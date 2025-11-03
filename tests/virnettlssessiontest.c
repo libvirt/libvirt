@@ -81,6 +81,9 @@ static int testTLSSessionInit(const void *opaque)
     int channel[2];
     bool clientShake = false;
     bool serverShake = false;
+    const char *keys[] = { KEYFILE, NULL };
+    const char *clientcerts[] = { data->clientcrt, NULL };
+    const char *servercerts[] = { data->servercrt, NULL };
 
 
     /* We'll use this for our fake client-server connection */
@@ -102,8 +105,7 @@ static int testTLSSessionInit(const void *opaque)
      */
     serverCtxt = virNetTLSContextNewServer(data->servercacrt,
                                            NULL,
-                                           data->servercrt,
-                                           KEYFILE,
+                                           servercerts, keys,
                                            data->wildcards,
                                            "NORMAL",
                                            false,
@@ -111,8 +113,7 @@ static int testTLSSessionInit(const void *opaque)
 
     clientCtxt = virNetTLSContextNewClient(data->clientcacrt,
                                            NULL,
-                                           data->clientcrt,
-                                           KEYFILE,
+                                           clientcerts, keys,
                                            "NORMAL",
                                            false,
                                            true);

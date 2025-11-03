@@ -56,12 +56,14 @@ static int testTLSContextInit(const void *opaque)
     struct testTLSContextData *data = (struct testTLSContextData *)opaque;
     virNetTLSContext *ctxt = NULL;
     int ret = -1;
+    const char *certs[] = { data->crt, NULL };
+    const char *keys[] = { KEYFILE, NULL };
 
     if (data->isServer) {
         ctxt = virNetTLSContextNewServer(data->cacrt,
                                          NULL,
-                                         data->crt,
-                                         KEYFILE,
+                                         certs,
+                                         keys,
                                          NULL,
                                          "NORMAL",
                                          true,
@@ -69,8 +71,8 @@ static int testTLSContextInit(const void *opaque)
     } else {
         ctxt = virNetTLSContextNewClient(data->cacrt,
                                          NULL,
-                                         data->crt,
-                                         KEYFILE,
+                                         certs,
+                                         keys,
                                          "NORMAL",
                                          true,
                                          true);

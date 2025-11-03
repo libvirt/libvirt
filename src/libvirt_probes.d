@@ -54,7 +54,8 @@ provider libvirt {
 	# file: src/rpc/virnettlscontext.c
 	# prefix: rpc
 	probe rpc_tls_context_new(void *ctxt, const char *cacert, const char *cacrl,
-				  const char *cert, const char *key, int sanityCheckCert, int requireValidCert, int isServer);
+				  const char **cert, const char **keys,
+				  int sanityCheckCert, int requireValidCert, int isServer);
 	probe rpc_tls_context_dispose(void *ctxt);
 	probe rpc_tls_context_session_allow(void *ctxt, void *sess, const char *dname);
 	probe rpc_tls_context_session_deny(void *ctxt, void *sess, const char *dname);

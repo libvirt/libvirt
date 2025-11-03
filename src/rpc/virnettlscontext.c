@@ -115,10 +115,11 @@ static int virNetTLSContextLoadCredentials(virNetTLSContext *ctxt,
                                            bool isServer,
                                            const char *cacert,
                                            const char *cacrl,
-                                           const char *cert,
-                                           const char *key)
+                                           const char *const *certs,
+                                           const char *const *keys)
 {
     int err;
+    size_t i;
 
     if (cacert && cacert[0] != '\0') {
         if (virNetTLSContextCheckCertFile("CA certificate", cacert, false) < 0)
@@ -157,29 +158,29 @@ static int virNetTLSContextLoadCredentials(virNetTLSContext *ctxt,
         }
     }
 
-    if (cert && cert[0] != '\0' && key && key[0] != '\0') {
+    for (i = 0; certs[i] != NULL && keys[i] != NULL; i++) {
         int rv;
-        if ((rv = virNetTLSContextCheckCertFile("certificate", cert, !isServer)) < 0)
+        if ((rv = virNetTLSContextCheckCertFile("certificate", certs[i], !isServer)) < 0)
             return -1;
         if (rv == 0 &&
-            (rv = virNetTLSContextCheckCertFile("private key", key, !isServer)) < 0)
+            (rv = virNetTLSContextCheckCertFile("private key", keys[i], !isServer)) < 0)
             return -1;
 
         if (rv == 0) {
-            VIR_DEBUG("loading cert and key from %s and %s", cert, key);
+            VIR_DEBUG("loading cert and key from %s and %s", certs[i], keys[i]);
             err =
                 gnutls_certificate_set_x509_key_file(ctxt->x509cred,
-                                                     cert, key,
+                                                     certs[i], keys[i],
                                                      GNUTLS_X509_FMT_PEM);
             if (err < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Unable to set x509 key and certificate: %1$s, %2$s: %3$s"),
-                               key, cert, gnutls_strerror(err));
+                               keys[i], certs[i], gnutls_strerror(err));
                 return -1;
             }
         } else {
             VIR_DEBUG("Skipping non-existent cert %s key %s on client",
-                      cert, key);
+                      certs[i], keys[i]);
         }
     }
 
@@ -189,8 +190,8 @@ static int virNetTLSContextLoadCredentials(virNetTLSContext *ctxt,
 
 static virNetTLSContext *virNetTLSContextNew(const char *cacert,
                                              const char *cacrl,
-                                             const char *cert,
-                                             const char *key,
+                                             const char *const *certs,
+                                             const char *const *keys,
                                              const char *const *x509dnACL,
                                              const char *priority,
                                              bool sanityCheckCert,
@@ -199,7 +200,6 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
 {
     virNetTLSContext *ctxt;
     int err;
-    const char *certs[] = { cert, NULL };
 
     if (virNetTLSContextInitialize() < 0)
         return NULL;
@@ -228,7 +228,8 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
         virNetTLSCertSanityCheck(isServer, cacert, certs) < 0)
         goto error;
 
-    if (virNetTLSContextLoadCredentials(ctxt, isServer, cacert, cacrl, cert, key) < 0)
+    if (virNetTLSContextLoadCredentials(ctxt, isServer, cacert, cacrl,
+                                        certs, keys) < 0)
         goto error;
 
     ctxt->requireValidCert = requireValidCert;
@@ -236,8 +237,8 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
     ctxt->isServer = isServer;
 
     PROBE(RPC_TLS_CONTEXT_NEW,
-          "ctxt=%p cacert=%s cacrl=%s cert=%s key=%s sanityCheckCert=%d requireValidCert=%d isServer=%d",
-          ctxt, cacert, NULLSTR(cacrl), cert, key, sanityCheckCert, requireValidCert, isServer);
+          "ctxt=%p cacert=%s cacrl=%s cert=%p key=%p sanityCheckCert=%d requireValidCert=%d isServer=%d",
+          ctxt, cacert, NULLSTR(cacrl), certs, keys, sanityCheckCert, requireValidCert, isServer);
 
     return ctxt;
 
@@ -313,12 +314,14 @@ static virNetTLSContext *virNetTLSContextNewPath(const char *pkipath,
     g_autofree char *cacrl = NULL;
     g_autofree char *key = NULL;
     g_autofree char *cert = NULL;
+    const char *certs[] = { cert, NULL };
+    const char *keys[] = { key, NULL };
 
     if (virNetTLSContextLocateCredentials(pkipath, tryUserPkiPath, isServer,
                                           &cacert, &cacrl, &cert, &key) < 0)
         return NULL;
 
-    return virNetTLSContextNew(cacert, cacrl, cert, key,
+    return virNetTLSContextNew(cacert, cacrl, certs, keys,
                                x509dnACL, priority, sanityCheckCert,
                                requireValidCert, isServer);
 }
@@ -347,14 +350,14 @@ virNetTLSContext *virNetTLSContextNewClientPath(const char *pkipath,
 
 virNetTLSContext *virNetTLSContextNewServer(const char *cacert,
                                             const char *cacrl,
-                                            const char *cert,
-                                            const char *key,
+                                            const char *const *certs,
+                                            const char *const *keys,
                                             const char *const *x509dnACL,
                                             const char *priority,
                                             bool sanityCheckCert,
                                             bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, cert, key, x509dnACL, priority,
+    return virNetTLSContextNew(cacert, cacrl, certs, keys, x509dnACL, priority,
                                sanityCheckCert, requireValidCert, true);
 }
 
@@ -369,6 +372,7 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
     g_autofree char *cert = NULL;
     g_autofree char *key = NULL;
     const char *certs[] = { cert, NULL };
+    const char *keys[] = { key, NULL };
 
     x509credBak = g_steal_pointer(&ctxt->x509cred);
 
@@ -387,7 +391,8 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
     if (virNetTLSCertSanityCheck(true, cacert, certs))
         goto error;
 
-    if (virNetTLSContextLoadCredentials(ctxt, true, cacert, cacrl, cert, key))
+    if (virNetTLSContextLoadCredentials(ctxt, true, cacert, cacrl,
+                                        certs, keys))
         goto error;
 
     gnutls_certificate_free_credentials(x509credBak);
@@ -404,13 +409,13 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
 
 virNetTLSContext *virNetTLSContextNewClient(const char *cacert,
                                             const char *cacrl,
-                                            const char *cert,
-                                            const char *key,
+                                            const char *const *certs,
+                                            const char *const *keys,
                                             const char *priority,
                                             bool sanityCheckCert,
                                             bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, cert, key, NULL, priority,
+    return virNetTLSContextNew(cacert, cacrl, certs, keys, NULL, priority,
                                sanityCheckCert, requireValidCert, false);
 }
 
