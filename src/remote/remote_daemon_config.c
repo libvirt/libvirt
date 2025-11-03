@@ -168,8 +168,6 @@ daemonConfigNew(bool privileged G_GNUC_UNUSED)
 void
 daemonConfigFree(struct daemonConfig *data)
 {
-    char **tmp;
-
     if (!data)
         return;
 
@@ -179,12 +177,7 @@ daemonConfigFree(struct daemonConfig *data)
     g_free(data->tcp_port);
 #endif /* ! WITH_IP */
 
-    tmp = data->access_drivers;
-    while (tmp && *tmp) {
-        g_free(*tmp);
-        tmp++;
-    }
-    g_free(data->access_drivers);
+    g_strfreev(data->access_drivers);
 
     g_free(data->unix_sock_admin_perms);
     g_free(data->unix_sock_ro_perms);
@@ -192,20 +185,10 @@ daemonConfigFree(struct daemonConfig *data)
     g_free(data->unix_sock_group);
     g_free(data->unix_sock_dir);
 
-    tmp = data->sasl_allowed_username_list;
-    while (tmp && *tmp) {
-        g_free(*tmp);
-        tmp++;
-    }
-    g_free(data->sasl_allowed_username_list);
+    g_strfreev(data->sasl_allowed_username_list);
 
 #ifdef WITH_IP
-    tmp = data->tls_allowed_dn_list;
-    while (tmp && *tmp) {
-        g_free(*tmp);
-        tmp++;
-    }
-    g_free(data->tls_allowed_dn_list);
+    g_strfreev(data->tls_allowed_dn_list);
 
     g_free(data->tls_priority);
 
