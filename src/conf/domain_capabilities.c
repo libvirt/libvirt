@@ -375,7 +375,7 @@ virDomainCapsStringValuesFormat(virBuffer *buf,
 
 #define FORMAT_PROLOGUE(item) \
     do { \
-        if (item->supported == VIR_TRISTATE_BOOL_ABSENT) \
+        if (!item || item->supported == VIR_TRISTATE_BOOL_ABSENT) \
             return; \
         virBufferAsprintf(buf, "<" #item " supported='%s'%s\n", \
                 (item->supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no", \
@@ -817,9 +817,6 @@ virDomainCapsFeatureHypervFormat(virBuffer *buf,
                                  const virDomainCapsFeatureHyperv *hyperv)
 {
     virBuffer defaults = VIR_BUFFER_INIT_CHILD(buf);
-
-    if (!hyperv)
-        return;
 
     FORMAT_PROLOGUE(hyperv);
 
