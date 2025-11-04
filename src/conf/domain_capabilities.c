@@ -446,8 +446,6 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
 {
     size_t i;
 
-    virBufferAdjustIndent(buf, 2);
-
     for (i = 0; i < custom->nmodels; i++) {
         virDomainCapsCPUModel *model = custom->models + i;
 
@@ -480,8 +478,6 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
             virBufferAddLit(buf, "</blockers>\n");
         }
     }
-
-    virBufferAdjustIndent(buf, -2);
 }
 
 static void
@@ -539,7 +535,9 @@ virDomainCapsCPUFormat(virBuffer *buf,
                       virCPUModeTypeToString(VIR_CPU_MODE_CUSTOM));
     if (cpu->custom && cpu->custom->nmodels) {
         virBufferAddLit(buf, "supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
         virDomainCapsCPUCustomFormat(buf, cpu->custom);
+        virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</mode>\n");
     } else {
         virBufferAddLit(buf, "supported='no'/>\n");
