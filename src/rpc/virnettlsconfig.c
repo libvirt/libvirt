@@ -49,7 +49,7 @@ static void virNetTLSConfigTrust(const char *cacertdir,
     VIR_DEBUG("TLS CA CRL %s", *cacrl);
 }
 
-static void virNetTLSConfigIdentity(int isServer,
+static void virNetTLSConfigIdentity(bool isServer,
                                     const char *certdir,
                                     const char *keydir,
                                     char **cert,
@@ -102,7 +102,7 @@ void virNetTLSConfigSystemTrust(char **cacert,
 }
 
 void virNetTLSConfigCustomIdentity(const char *pkipath,
-                                   int isServer,
+                                   bool isServer,
                                    char **cert,
                                    char **key)
 {
@@ -114,7 +114,7 @@ void virNetTLSConfigCustomIdentity(const char *pkipath,
                             key);
 }
 
-void virNetTLSConfigUserIdentity(int isServer,
+void virNetTLSConfigUserIdentity(bool isServer,
                                  char **cert,
                                  char **key)
 {
@@ -129,7 +129,7 @@ void virNetTLSConfigUserIdentity(int isServer,
                             key);
 }
 
-void virNetTLSConfigSystemIdentity(int isServer,
+void virNetTLSConfigSystemIdentity(bool isServer,
                                    char **cert,
                                    char **key)
 {
@@ -143,7 +143,7 @@ void virNetTLSConfigSystemIdentity(int isServer,
 }
 
 void virNetTLSConfigCustomCreds(const char *pkipath,
-                                int isServer,
+                                bool isServer,
                                 char **cacert,
                                 char **cacrl,
                                 char **cert,
@@ -161,7 +161,7 @@ void virNetTLSConfigCustomCreds(const char *pkipath,
                             key);
 }
 
-void virNetTLSConfigUserCreds(int isServer,
+void virNetTLSConfigUserCreds(bool isServer,
                               char **cacert,
                               char **cacrl,
                               char **cert,
@@ -182,7 +182,7 @@ void virNetTLSConfigUserCreds(int isServer,
                             key);
 }
 
-void virNetTLSConfigSystemCreds(int isServer,
+void virNetTLSConfigSystemCreds(bool isServer,
                                 char **cacert,
                                 char **cacrl,
                                 char **cert,

@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "internal.h"
 #include "configmake.h"
 
 #define LIBVIRT_PKI_DIR SYSCONFDIR "/pki"
@@ -39,29 +40,29 @@ void virNetTLSConfigSystemTrust(char **cacert,
                                 char **cacrl);
 
 void virNetTLSConfigCustomIdentity(const char *pkipath,
-                                   int isServer,
+                                   bool isServer,
                                    char **cert,
                                    char **key);
-void virNetTLSConfigUserIdentity(int isServer,
+void virNetTLSConfigUserIdentity(bool isServer,
                                  char **cert,
                                  char **key);
-void virNetTLSConfigSystemIdentity(int isServer,
+void virNetTLSConfigSystemIdentity(bool isServer,
                                    char **cert,
                                    char **key);
 
 
 void virNetTLSConfigCustomCreds(const char *pkipath,
-                                int isServer,
+                                bool isServer,
                                 char **cacert,
                                 char **cacrl,
                                 char **cert,
                                 char **key);
-void virNetTLSConfigUserCreds(int isServer,
+void virNetTLSConfigUserCreds(bool isServer,
                               char **cacert,
                               char **cacrl,
                               char **cert,
                               char **key);
-void virNetTLSConfigSystemCreds(int isServer,
+void virNetTLSConfigSystemCreds(bool isServer,
                                 char **cacert,
                                 char **cacrl,
                                 char **cert,
