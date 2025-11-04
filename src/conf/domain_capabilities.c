@@ -488,67 +488,64 @@ static void
 virDomainCapsCPUFormat(virBuffer *buf,
                        const virDomainCapsCPU *cpu)
 {
-    virBufferAddLit(buf, "<cpu>\n");
-    virBufferAdjustIndent(buf, 2);
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) hostPassModeChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+    g_auto(virBuffer) hostPassModeAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) maxModeChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+    g_auto(virBuffer) maxModeAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) hostModeChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+    g_auto(virBuffer) hostModeAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) customModeChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+    g_auto(virBuffer) customModeAttrBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAsprintf(buf, "<mode name='%s' supported='%s'",
+    virBufferAsprintf(&hostPassModeAttrBuf, " name='%s' supported='%s'",
                       virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
                       cpu->hostPassthrough ? "yes" : "no");
 
     if (cpu->hostPassthrough && cpu->hostPassthroughMigratable.report) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        ENUM_PROCESS(cpu, hostPassthroughMigratable,
-                     virTristateSwitchTypeToString);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</mode>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
+        virDomainCapsEnumFormat(&hostPassModeChildBuf,
+                                &cpu->hostPassthroughMigratable,
+                                "hostPassthroughMigratable",
+                                virTristateSwitchTypeToString);
     }
 
-    virBufferAsprintf(buf, "<mode name='%s' supported='%s'",
+    virXMLFormatElement(&childBuf, "mode", &hostPassModeAttrBuf, &hostPassModeChildBuf);
+
+    virBufferAsprintf(&maxModeAttrBuf, " name='%s' supported='%s'",
                       virCPUModeTypeToString(VIR_CPU_MODE_MAXIMUM),
                       cpu->maximum ? "yes" : "no");
 
     if (cpu->maximum && cpu->maximumMigratable.report) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        ENUM_PROCESS(cpu, maximumMigratable,
-                     virTristateSwitchTypeToString);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</mode>\n");
-    } else {
-        virBufferAddLit(buf, "/>\n");
+        virDomainCapsEnumFormat(&maxModeChildBuf,
+                                &cpu->maximumMigratable,
+                                "maximumMigratable",
+                                virTristateSwitchTypeToString);
     }
 
-    virBufferAsprintf(buf, "<mode name='%s' ",
-                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL));
+    virXMLFormatElement(&childBuf, "mode", &maxModeAttrBuf, &maxModeChildBuf);
+
+    virBufferAsprintf(&hostModeAttrBuf, " name='%s' supported='%s'",
+                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL),
+                      cpu->hostModel ? "yes" : "no");
+
     if (cpu->hostModel) {
-        virBufferAddLit(buf, "supported='yes'>\n");
-        virBufferAdjustIndent(buf, 2);
-
-        virCPUDefFormatBuf(buf, cpu->hostModel);
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</mode>\n");
-    } else {
-        virBufferAddLit(buf, "supported='no'/>\n");
+        virCPUDefFormatBuf(&hostModeChildBuf, cpu->hostModel);
     }
 
-    virBufferAsprintf(buf, "<mode name='%s' ",
+    virXMLFormatElement(&childBuf, "mode", &hostModeAttrBuf, &hostModeChildBuf);
+
+    virBufferAsprintf(&customModeAttrBuf, " name='%s'",
                       virCPUModeTypeToString(VIR_CPU_MODE_CUSTOM));
     if (cpu->custom && cpu->custom->nmodels) {
-        virBufferAddLit(buf, "supported='yes'>\n");
-        virBufferAdjustIndent(buf, 2);
-        virDomainCapsCPUCustomFormat(buf, cpu->custom);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</mode>\n");
+        virBufferAddLit(&customModeAttrBuf, " supported='yes'");
+        virDomainCapsCPUCustomFormat(&customModeChildBuf, cpu->custom);
     } else {
-        virBufferAddLit(buf, "supported='no'/>\n");
+        virBufferAddLit(&customModeAttrBuf, " supported='no'");
     }
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</cpu>\n");
+    virXMLFormatElement(&childBuf, "mode", &customModeAttrBuf, &customModeChildBuf);
+
+    virXMLFormatElement(buf, "cpu", NULL, &childBuf);
 }
 
 static void
