@@ -373,27 +373,38 @@ virDomainCapsStringValuesFormat(virBuffer *buf,
 }
 
 
+/**
+ * FORMAT_PROLOGUE:
+ * @item: item to format
+ *
+ * Formats part of domain capabilities for @item. The element name is #item so
+ * variable name is important. If the particular capability is not supported,
+ * then the macro also returns early.
+ *
+ * Additionally, the macro declares two variables: @childBuf and @attrBuf where
+ * the former holds contents of the child elements and the latter holds
+ * contents of <#item/> attributes (so far limited to "supported='yes/no'").
+ */
 #define FORMAT_PROLOGUE(item) \
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf); \
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER; \
     do { \
         if (!item || item->supported == VIR_TRISTATE_BOOL_ABSENT) \
             return; \
-        virBufferAsprintf(buf, "<" #item " supported='%s'%s\n", \
-                (item->supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no", \
-                (item->supported == VIR_TRISTATE_BOOL_YES) ? ">" : "/>"); \
-        if (item->supported == VIR_TRISTATE_BOOL_NO) \
+        virBufferAsprintf(&attrBuf, " supported='%s'", \
+                          (item->supported == VIR_TRISTATE_BOOL_YES) ? "yes" : "no"); \
+        if (item->supported == VIR_TRISTATE_BOOL_NO) { \
+            virXMLFormatElement(buf, #item, &attrBuf, NULL); \
             return; \
-        virBufferAdjustIndent(buf, 2); \
+        } \
     } while (0)
 
 #define FORMAT_EPILOGUE(item) \
-    do { \
-        virBufferAdjustIndent(buf, -2); \
-        virBufferAddLit(buf, "</" #item ">\n"); \
-    } while (0)
+    virXMLFormatElement(buf, #item, &attrBuf, &childBuf)
 
 #define ENUM_PROCESS(master, capsEnum, valToStr) \
     do { \
-        virDomainCapsEnumFormat(buf, &master->capsEnum, \
+        virDomainCapsEnumFormat(&childBuf, &master->capsEnum, \
                                 #capsEnum, valToStr); \
     } while (0)
 
@@ -417,7 +428,7 @@ virDomainCapsLoaderFormat(virBuffer *buf,
 {
     FORMAT_PROLOGUE(loader);
 
-    virDomainCapsStringValuesFormat(buf, &loader->values);
+    virDomainCapsStringValuesFormat(&childBuf, &loader->values);
     ENUM_PROCESS(loader, type, virDomainLoaderTypeToString);
     ENUM_PROCESS(loader, readonly, virTristateBoolTypeToString);
     ENUM_PROCESS(loader, secure, virTristateBoolTypeToString);
@@ -435,7 +446,7 @@ virDomainCapsOSFormat(virBuffer *buf,
 
     ENUM_PROCESS(os, firmware, virDomainOsDefFirmwareTypeToString);
 
-    virDomainCapsLoaderFormat(buf, loader);
+    virDomainCapsLoaderFormat(&childBuf, loader);
 
     FORMAT_EPILOGUE(os);
 }
@@ -851,7 +862,7 @@ virDomainCapsFeatureHypervFormat(virBuffer *buf,
         virBufferEscapeString(&defaults, "<vendor_id>%s</vendor_id>\n", hyperv->vendor_id);
     }
 
-    virXMLFormatElement(buf, "defaults", NULL, &defaults);
+    virXMLFormatElement(&childBuf, "defaults", NULL, &defaults);
 
     FORMAT_EPILOGUE(hyperv);
 }
