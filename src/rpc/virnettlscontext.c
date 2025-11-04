@@ -271,32 +271,34 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
         virNetTLSConfigCustomCreds(pkipath, isServer,
                                    cacert, cacrl,
                                    cert, key);
-    } else if (tryUserPkiPath) {
-        virNetTLSConfigUserCreds(isServer,
-                                 cacert, cacrl,
-                                 cert, key);
+    } else {
+        if (tryUserPkiPath) {
+            virNetTLSConfigUserCreds(isServer,
+                                     cacert, cacrl,
+                                     cert, key);
 
-        /*
-         * If some of the files can't be found, fallback
-         * to the global location for them
-         */
-        if (!virFileExists(*cacert))
-            VIR_FREE(*cacert);
-        if (!virFileExists(*cacrl))
-            VIR_FREE(*cacrl);
+            /*
+             * If some of the files can't be found, fallback
+             * to the global location for them
+             */
+            if (!virFileExists(*cacert))
+                VIR_FREE(*cacert);
+            if (!virFileExists(*cacrl))
+                VIR_FREE(*cacrl);
 
-        /* Check these as a pair, since it they are
-         * mutually dependent
-         */
-        if (!virFileExists(*key) || !virFileExists(*cert)) {
-            VIR_FREE(*key);
-            VIR_FREE(*cert);
+            /* Check these as a pair, since it they are
+             * mutually dependent
+             */
+            if (!virFileExists(*key) || !virFileExists(*cert)) {
+                VIR_FREE(*key);
+                VIR_FREE(*cert);
+            }
         }
-    }
 
-    virNetTLSConfigSystemCreds(isServer,
-                               cacert, cacrl,
-                               cert, key);
+        virNetTLSConfigSystemCreds(isServer,
+                                   cacert, cacrl,
+                                   cert, key);
+    }
 
     return 0;
 }
