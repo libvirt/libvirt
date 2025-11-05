@@ -93,7 +93,11 @@ def translate_feature(name, model):
         "CPUID_7_1_EDX_AVX_NE_CONVERT": "avx-ne-convert",
         "CPUID_7_1_EDX_AVX_VNNI_INT8": "avx-vnni-int8",
         "CPUID_7_1_EDX_PREFETCHITI": "prefetchiti",
+        "CPUID_7_1_EDX_AVX10": "avx10",
         "CPUID_7_2_EDX_MCDT_NO": "mcdt-no",
+        "CPUID_24_0_EBX_AVX10_128": "avx10-128",
+        "CPUID_24_0_EBX_AVX10_256": "avx10-256",
+        "CPUID_24_0_EBX_AVX10_512": "avx10-512",
         "CPUID_8000_0008_EBX_AMD_PSFD": "amd-psfd",
         "CPUID_8000_0008_EBX_AMD_SSBD": "amd-ssbd",
         "CPUID_8000_0008_EBX_CLZERO": "clzero",
@@ -313,6 +317,7 @@ def translate_feature(name, model):
         name in ("CPUID_EXT3_TOPOEXT", "topoext"),
         name in ("MSR_VMX_EPT_UC", "MSR_VMX_EPT_WB"),
         name in ("MSR_VMX_EPT_INVVPID_SINGLE_CONTEXT"),
+        name in ("x-force-cpuid-0x1f", "avx10-version"),
     ])
 
     if ignore:
