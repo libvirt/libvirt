@@ -58,7 +58,7 @@ function install_buildenv() {
             libcap-ng-dev:ppc64el \
             libcurl4-gnutls-dev:ppc64el \
             libdevmapper-dev:ppc64el \
-            libfuse-dev:ppc64el \
+            libfuse3-dev:ppc64el \
             libglib2.0-dev:ppc64el \
             libglusterfs-dev:ppc64el \
             libgnutls28-dev:ppc64el \

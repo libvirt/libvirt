@@ -38,7 +38,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libclang-dev \
                       libcurl4-gnutls-dev \
                       libdevmapper-dev \
-                      libfuse-dev \
+                      libfuse3-dev \
                       libglib2.0-dev \
                       libglusterfs-dev \
                       libgnutls28-dev \

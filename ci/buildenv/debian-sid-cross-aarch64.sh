@@ -58,7 +58,7 @@ function install_buildenv() {
             libcap-ng-dev:arm64 \
             libcurl4-gnutls-dev:arm64 \
             libdevmapper-dev:arm64 \
-            libfuse-dev:arm64 \
+            libfuse3-dev:arm64 \
             libglib2.0-dev:arm64 \
             libglusterfs-dev:arm64 \
             libgnutls28-dev:arm64 \

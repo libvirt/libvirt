@@ -22,7 +22,7 @@ function install_buildenv() {
         cyrus-sasl-dev \
         diffutils \
         eudev-dev \
-        fuse-dev \
+        fuse3-dev \
         gcc \
         gettext \
         git \

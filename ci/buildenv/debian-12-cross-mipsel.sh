@@ -58,7 +58,7 @@ function install_buildenv() {
             libcap-ng-dev:mipsel \
             libcurl4-gnutls-dev:mipsel \
             libdevmapper-dev:mipsel \
-            libfuse-dev:mipsel \
+            libfuse3-dev:mipsel \
             libglib2.0-dev:mipsel \
             libglusterfs-dev:mipsel \
             libgnutls28-dev:mipsel \

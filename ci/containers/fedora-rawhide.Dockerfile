@@ -35,7 +35,7 @@ exec "$@"\n' > /usr/bin/nosync && \
                dwarves \
                ebtables \
                firewalld-filesystem \
-               fuse-devel \
+               fuse3-devel \
                gcc \
                gettext \
                git \

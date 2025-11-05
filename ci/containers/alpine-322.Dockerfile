@@ -23,7 +23,7 @@ RUN apk update && \
         cyrus-sasl-dev \
         diffutils \
         eudev-dev \
-        fuse-dev \
+        fuse3-dev \
         gcc \
         gettext \
         git \

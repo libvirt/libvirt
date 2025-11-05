@@ -69,7 +69,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libcap-ng-dev:armel \
                       libcurl4-gnutls-dev:armel \
                       libdevmapper-dev:armel \
-                      libfuse-dev:armel \
+                      libfuse3-dev:armel \
                       libglib2.0-dev:armel \
                       libgnutls28-dev:armel \
                       libiscsi-dev:armel \

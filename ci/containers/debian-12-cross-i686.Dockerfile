@@ -69,7 +69,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libcap-ng-dev:i386 \
                       libcurl4-gnutls-dev:i386 \
                       libdevmapper-dev:i386 \
-                      libfuse-dev:i386 \
+                      libfuse3-dev:i386 \
                       libglib2.0-dev:i386 \
                       libglusterfs-dev:i386 \
                       libgnutls28-dev:i386 \

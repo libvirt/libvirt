@@ -24,7 +24,7 @@ function install_buildenv() {
            diffutils \
            dwarves \
            ebtables \
-           fuse-devel \
+           fuse3-devel \
            gcc \
            gettext-runtime \
            git \

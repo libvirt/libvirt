@@ -69,7 +69,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libcap-ng-dev:armhf \
                       libcurl4-gnutls-dev:armhf \
                       libdevmapper-dev:armhf \
-                      libfuse-dev:armhf \
+                      libfuse3-dev:armhf \
                       libglib2.0-dev:armhf \
                       libglusterfs-dev:armhf \
                       libgnutls28-dev:armhf \

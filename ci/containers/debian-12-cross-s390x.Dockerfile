@@ -69,7 +69,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libcap-ng-dev:s390x \
                       libcurl4-gnutls-dev:s390x \
                       libdevmapper-dev:s390x \
-                      libfuse-dev:s390x \
+                      libfuse3-dev:s390x \
                       libglib2.0-dev:s390x \
                       libglusterfs-dev:s390x \
                       libgnutls28-dev:s390x \

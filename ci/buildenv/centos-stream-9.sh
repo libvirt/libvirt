@@ -25,7 +25,7 @@ function install_buildenv() {
         dwarves \
         ebtables \
         firewalld-filesystem \
-        fuse-devel \
+        fuse3-devel \
         gcc \
         gettext \
         git \

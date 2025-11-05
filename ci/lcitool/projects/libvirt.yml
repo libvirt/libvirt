@@ -19,7 +19,7 @@ packages:
   - ebtables
   - firewalld-filesystem
   - flake8
-  - fuse
+  - fuse3
   - gcc
   - gettext
   - gettext-native
