@@ -1287,6 +1287,43 @@
         <feature name='vpclmulqdq'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v3</model>
+      <blockers model='SierraForest-v3'>
+        <feature name='arch-capabilities'/>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cldemote'/>
+        <feature name='cmpccxadd'/>
+        <feature name='erms'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrm'/>
+        <feature name='fsrs'/>
+        <feature name='gfni'/>
+        <feature name='ibrs-all'/>
+        <feature name='intel-psfd'/>
+        <feature name='invpcid'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='pbrsb-no'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='psdp-no'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ss'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Client-v1'>Skylake-Client</model>
       <blockers model='Skylake-Client'>
         <feature name='erms'/>
