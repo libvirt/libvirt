@@ -23,7 +23,7 @@ def translate_vendor(name):
     return name
 
 
-def translate_feature(name):
+def translate_feature(name, model):
     T = {
         "CPUID_6_EAX_ARAT": "arat",
         "CPUID_7_0_EBX_ADX": "adx",
@@ -325,7 +325,7 @@ def translate_feature(name):
         if name.replace("-", "_") == v.replace("-", "_"):
             return v
 
-    print(f"warning: Unknown feature '{name}'")
+    print(f"warning: Unknown feature '{name}' in model '{model}'")
     return name
 
 
@@ -480,7 +480,7 @@ def expand_model(outdir, model):
     for k in [k for k in model if k.startswith(".features")]:
         v = model.pop(k)
         for feature in v.split():
-            translated = translate_feature(feature)
+            translated = translate_feature(feature, result["name"])
             if translated:
                 result["features"].add(translated)
 
@@ -513,7 +513,7 @@ def expand_model(outdir, model):
         props = version.pop(".props", dict())
         for k, v in props:
             if k not in ("model-id", "stepping", "model"):
-                k = translate_feature(k)
+                k = translate_feature(k, result["name"])
             if k is None:
                 continue
 
