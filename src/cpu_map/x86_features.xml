@@ -895,6 +895,9 @@
   <feature name='fb-clear'>
     <msr index='0x0000010a' edx='0x00000000' eax='0x00020000'/>
   </feature>
+  <feature name='bhi-no'>
+    <msr index='0x0000010a' edx='0x00000000' eax='0x00100000'/>
+  </feature>
   <feature name='pbrsb-no'>
     <msr index='0x0000010a' edx='0x00000000' eax='0x01000000'/>
   </feature>

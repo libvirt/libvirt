@@ -194,6 +194,7 @@ def translate_feature(name):
         "MSR_ARCH_CAP_SBDR_SSDP_NO": "sbdr-ssdp-no",
         "MSR_ARCH_CAP_SKIP_L1DFL_VMENTRY": "skip-l1dfl-vmentry",
         "MSR_ARCH_CAP_TAA_NO": "taa-no",
+        "MSR_ARCH_CAP_BHI_NO": "bhi-no",
         "MSR_CORE_CAP_SPLIT_LOCK_DETECT": "split-lock-detect",
 
         # FEAT_VMX_PROCBASED_CTLS
