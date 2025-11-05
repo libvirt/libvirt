@@ -50,20 +50,25 @@ void virNetTLSConfigSystemIdentity(bool isServer,
                                    char **cert,
                                    char **key);
 
+int virNetTLSConfigCheckIdentity(const char *cert, const char *key,
+                                 bool *identityExists, bool allowMissing);
+int virNetTLSConfigCheckTrust(const char *cacert, const char *cacrl,
+                              bool *cacertExists, bool *cacrlExists,
+                              bool allowMissingCA);
 
-void virNetTLSConfigCustomCreds(const char *pkipath,
-                                bool isServer,
-                                char **cacert,
-                                char **cacrl,
-                                char **cert,
-                                char **key);
-void virNetTLSConfigUserCreds(bool isServer,
-                              char **cacert,
-                              char **cacrl,
-                              char **cert,
-                              char **key);
-void virNetTLSConfigSystemCreds(bool isServer,
-                                char **cacert,
-                                char **cacrl,
-                                char **cert,
-                                char **key);
+int virNetTLSConfigCustomCreds(const char *pkipath,
+                               bool isServer,
+                               char **cacert,
+                               char **cacrl,
+                               char **cert,
+                               char **key);
+int virNetTLSConfigUserCreds(bool isServer,
+                             char **cacert,
+                             char **cacrl,
+                             char **cert,
+                             char **key);
+int virNetTLSConfigSystemCreds(bool isServer,
+                               char **cacert,
+                               char **cacrl,
+                               char **cert,
+                               char **key);
