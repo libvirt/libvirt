@@ -490,6 +490,22 @@
         <feature name='psdp-no'/>
         <feature name='sbdr-ssdp-no'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v2</model>
+      <blockers model='SierraForest-v2'>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='cmpccxadd'/>
+        <feature name='fbsdp-no'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='psdp-no'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='sbdr-ssdp-no'/>
+      </blockers>
       <model usable='yes' vendor='Intel' canonical='Skylake-Client-v1'>Skylake-Client</model>
       <model usable='yes' vendor='Intel' canonical='Skylake-Client-v2'>Skylake-Client-IBRS</model>
       <model usable='yes' vendor='Intel' canonical='Skylake-Client-v3'>Skylake-Client-noTSX-IBRS</model>
