@@ -107,7 +107,7 @@ def translate_feature(name):
         "CPUID_8000_0021_EAX_LFENCE_ALWAYS_SERIALIZING":
             "lfence-always-serializing",
         "CPUID_8000_0021_EAX_NULL_SEL_CLR_BASE": "null-sel-clr-base",
-        "CPUID_8000_0021_EAX_No_NESTED_DATA_BP": "no-nested-data-bp",
+        "CPUID_8000_0021_EAX_NO_NESTED_DATA_BP": "no-nested-data-bp",
         "CPUID_8000_0021_EAX_FS_GS_BASE_NS": "fs-gs-base-ns",
         "CPUID_8000_0021_EAX_PREFETCHI": "prefetchi",
         "CPUID_8000_0021_EAX_VERW_CLEAR": "verw-clear",
