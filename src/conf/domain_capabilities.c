@@ -447,35 +447,39 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
     size_t i;
 
     for (i = 0; i < custom->nmodels; i++) {
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
         virDomainCapsCPUModel *model = custom->models + i;
 
-        virBufferAsprintf(buf, "<model usable='%s'",
+        virBufferAsprintf(&attrBuf, " usable='%s'",
                           virDomainCapsCPUUsableTypeToString(model->usable));
 
         if (model->deprecated)
-            virBufferAddLit(buf, " deprecated='yes'");
+            virBufferAddLit(&attrBuf, " deprecated='yes'");
 
         if (model->vendor)
-            virBufferAsprintf(buf, " vendor='%s'", model->vendor);
+            virBufferAsprintf(&attrBuf, " vendor='%s'", model->vendor);
         else
-            virBufferAddLit(buf, " vendor='unknown'");
+            virBufferAddLit(&attrBuf, " vendor='unknown'");
 
         if (model->canonical)
-            virBufferAsprintf(buf, " canonical='%s'", model->canonical);
+            virBufferAsprintf(&attrBuf, " canonical='%s'", model->canonical);
 
-        virBufferAsprintf(buf, ">%s</model>\n", model->name);
+        virBufferAddStr(&childBuf, model->name);
+
+        virXMLFormatElementDirect(buf, "model", &attrBuf, &childBuf);
 
         if (model->blockers) {
+            g_auto(virBuffer) blockerAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) blockerChildBuf = VIR_BUFFER_INIT_CHILD(buf);
             char **blocker;
 
-            virBufferAsprintf(buf, "<blockers model='%s'>\n", model->name);
-            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(&blockerAttrBuf, " model='%s'", model->name);
 
             for (blocker = model->blockers; *blocker; blocker++)
-                virBufferAsprintf(buf, "<feature name='%s'/>\n", *blocker);
+                virBufferAsprintf(&blockerChildBuf, "<feature name='%s'/>\n", *blocker);
 
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</blockers>\n");
+            virXMLFormatElement(buf, "blockers", &blockerAttrBuf, &blockerChildBuf);
         }
     }
 }
