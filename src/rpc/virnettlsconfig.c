@@ -248,6 +248,39 @@ static int virNetTLSConfigEnsureIdentity(char **cert, char **key,
 }
 
 
+static int virNetTLSConfigCreds(const char *cacertdir,
+                                const char *cacrldir,
+                                const char *certdir,
+                                const char *keydir,
+                                bool isServer,
+                                bool allowMissingCA,
+                                bool allowMissingIdentity,
+                                char **cacert,
+                                char **cacrl,
+                                char **cert,
+                                char **key)
+{
+    virNetTLSConfigTrust(cacertdir,
+                         cacrldir,
+                         cacert,
+                         cacrl);
+
+    if (virNetTLSConfigEnsureTrust(cacert, cacrl, allowMissingCA) < 0)
+        return -1;
+
+    virNetTLSConfigIdentity(isServer,
+                            certdir,
+                            keydir,
+                            cert,
+                            key);
+
+    if (virNetTLSConfigEnsureIdentity(cert, key, allowMissingIdentity) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int virNetTLSConfigCustomCreds(const char *pkipath,
                                bool isServer,
                                char **cacert,
@@ -256,26 +289,16 @@ int virNetTLSConfigCustomCreds(const char *pkipath,
                                char **key)
 {
     VIR_DEBUG("Locating creds in custom dir %s", pkipath);
-    virNetTLSConfigTrust(pkipath,
-                         pkipath,
-                         cacert,
-                         cacrl);
 
-    if (virNetTLSConfigEnsureTrust(cacert, cacrl, false) < 0)
-        return -1;
-
-    virNetTLSConfigIdentity(isServer,
-                            pkipath,
-                            pkipath,
-                            cert,
-                            key);
-
-
-    if (virNetTLSConfigEnsureIdentity(cert, key, !isServer) < 0)
-        return -1;
-
-    return 0;
+    return virNetTLSConfigCreds(pkipath, pkipath,
+                                pkipath, pkipath,
+                                isServer,
+                                false,
+                                !isServer,
+                                cacert, cacrl,
+                                cert, key);
 }
+
 
 int virNetTLSConfigUserCreds(bool isServer,
                              char **cacert,
@@ -287,24 +310,13 @@ int virNetTLSConfigUserCreds(bool isServer,
 
     VIR_DEBUG("Locating creds in user dir %s", pkipath);
 
-    virNetTLSConfigTrust(pkipath,
-                         pkipath,
-                         cacert,
-                         cacrl);
-
-    if (virNetTLSConfigEnsureTrust(cacert, cacrl, true) < 0)
-        return -1;
-
-    virNetTLSConfigIdentity(isServer,
-                            pkipath,
-                            pkipath,
-                            cert,
-                            key);
-
-    if (virNetTLSConfigEnsureIdentity(cert, key, true) < 0)
-        return -1;
-
-    return 0;
+    return virNetTLSConfigCreds(pkipath, pkipath,
+                                pkipath, pkipath,
+                                isServer,
+                                true,
+                                true,
+                                cacert, cacrl,
+                                cert, key);
 }
 
 int virNetTLSConfigSystemCreds(bool isServer,
@@ -315,22 +327,13 @@ int virNetTLSConfigSystemCreds(bool isServer,
 {
     VIR_DEBUG("Locating creds in system dir %s", LIBVIRT_PKI_DIR);
 
-    virNetTLSConfigTrust(LIBVIRT_CACERT_DIR,
-                         LIBVIRT_CACRL_DIR,
-                         cacert,
-                         cacrl);
-
-    if (virNetTLSConfigEnsureTrust(cacert, cacrl, false) < 0)
-        return -1;
-
-    virNetTLSConfigIdentity(isServer,
-                            LIBVIRT_CERT_DIR,
-                            LIBVIRT_KEY_DIR,
-                            cert,
-                            key);
-
-    if (virNetTLSConfigEnsureIdentity(cert, key, !isServer) < 0)
-        return -1;
-
-    return 0;
+    return virNetTLSConfigCreds(LIBVIRT_CACERT_DIR,
+                                LIBVIRT_CACRL_DIR,
+                                LIBVIRT_CERT_DIR,
+                                LIBVIRT_KEY_DIR,
+                                isServer,
+                                false,
+                                !isServer,
+                                cacert, cacrl,
+                                cert, key);
 }
