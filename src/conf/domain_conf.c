@@ -2444,6 +2444,7 @@ virDomainDiskDefFree(virDomainDiskDef *def)
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
     g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainIothreadMappingDefFree);
+    g_free(def->statistics);
 
     if (def->throttlefilters) {
         size_t i;
