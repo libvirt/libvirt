@@ -89,6 +89,7 @@ def translate_feature(name):
         "CPUID_7_1_EAX_FSRC": "fsrc",
         "CPUID_7_1_EAX_FSRS": "fsrs",
         "CPUID_7_1_EAX_FZRM": "fzrm",
+        "CPUID_7_1_ECX_MSR_IMM": "msr-imm",
         "CPUID_7_1_EDX_AVX_NE_CONVERT": "avx-ne-convert",
         "CPUID_7_1_EDX_AVX_VNNI_INT8": "avx-vnni-int8",
         "CPUID_7_1_EDX_PREFETCHITI": "prefetchiti",

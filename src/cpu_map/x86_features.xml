@@ -468,6 +468,11 @@
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' eax='0x04000000'/>
   </feature>
 
+  <!-- cpuid level 0x00000007, 0x0001 (ecx) -->
+  <feature name='msr-imm'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' ecx='0x00000020'/>
+  </feature>
+
   <!-- cpuid level 0x00000007, 0x0001 (edx) -->
   <feature name='avx-vnni-int8'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00000010'/>
