@@ -32,6 +32,7 @@
   <feature policy='require' name='avic'/>
   <feature policy='require' name='v-vmsave-vmload'/>
   <feature policy='require' name='vgif'/>
+  <feature policy='require' name='fs-gs-base-ns'/>
   <feature policy='require' name='perfmon-v2'/>
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>

@@ -69,6 +69,8 @@
       <feature policy='require' name='pfthreshold'/>
       <feature policy='require' name='v-vmsave-vmload'/>
       <feature policy='require' name='vgif'/>
+      <feature policy='require' name='fs-gs-base-ns'/>
+      <feature policy='require' name='prefetchi'/>
       <feature policy='require' name='sbpb'/>
       <feature policy='require' name='ibpb-brtype'/>
       <feature policy='require' name='srso-user-kernel-no'/>

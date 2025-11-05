@@ -108,6 +108,8 @@ def translate_feature(name):
             "lfence-always-serializing",
         "CPUID_8000_0021_EAX_NULL_SEL_CLR_BASE": "null-sel-clr-base",
         "CPUID_8000_0021_EAX_No_NESTED_DATA_BP": "no-nested-data-bp",
+        "CPUID_8000_0021_EAX_FS_GS_BASE_NS": "fs-gs-base-ns",
+        "CPUID_8000_0021_EAX_PREFETCHI": "prefetchi",
         "CPUID_ACPI": "acpi",
         "CPUID_APIC": "apic",
         "CPUID_CLFLUSH": "clflush",

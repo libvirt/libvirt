@@ -803,6 +803,9 @@
   <feature name='no-nested-data-bp'>
     <cpuid eax_in='0x80000021' eax='0x00000001'/>
   </feature>
+  <feature name='fs-gs-base-ns'>
+    <cpuid eax_in='0x80000021' eax='0x00000002'/>
+  </feature>
   <feature name='lfence-always-serializing'>
     <cpuid eax_in='0x80000021' eax='0x00000004'/>
   </feature>
@@ -811,6 +814,9 @@
   </feature>
   <feature name='auto-ibrs'>
     <cpuid eax_in='0x80000021' eax='0x00000100'/>
+  </feature>
+  <feature name='prefetchi'>
+    <cpuid eax_in='0x80000021' eax='0x00100000'/>
   </feature>
   <feature name='eraps'>
     <cpuid eax_in='0x80000021' eax='0x01000000'/>

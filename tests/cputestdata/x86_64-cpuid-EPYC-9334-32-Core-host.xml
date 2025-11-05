@@ -34,6 +34,7 @@
   <feature name='avic'/>
   <feature name='v-vmsave-vmload'/>
   <feature name='vgif'/>
+  <feature name='fs-gs-base-ns'/>
   <feature name='perfmon-v2'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
