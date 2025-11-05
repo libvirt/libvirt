@@ -73,6 +73,8 @@
       <feature policy='require' name='sbpb'/>
       <feature policy='require' name='ibpb-brtype'/>
       <feature policy='require' name='srso-user-kernel-no'/>
+      <feature policy='require' name='tsa-sq-no'/>
+      <feature policy='require' name='tsa-l1-no'/>
       <feature policy='require' name='perfmon-v2'/>
       <feature policy='disable' name='pcid'/>
       <feature policy='disable' name='la57'/>
