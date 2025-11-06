@@ -273,6 +273,11 @@
         <feature name='la57'/>
         <feature name='pcid'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Genoa-v2</model>
+      <blockers model='EPYC-Genoa-v2'>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+      </blockers>
       <model usable='yes' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>

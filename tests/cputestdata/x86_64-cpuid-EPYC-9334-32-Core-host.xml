@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-Genoa-v1</model>
+  <model>EPYC-Genoa-v2</model>
   <vendor>AMD</vendor>
   <signature family='25' model='17' stepping='1'/>
   <feature name='monitor'/>
@@ -20,22 +20,10 @@
   <feature name='tce'/>
   <feature name='topoext'/>
   <feature name='perfctr_nb'/>
-  <feature name='overflow-recov'/>
-  <feature name='succor'/>
   <feature name='invtsc'/>
-  <feature name='lbrv'/>
   <feature name='svm-lock'/>
-  <feature name='tsc-scale'/>
-  <feature name='vmcb-clean'/>
-  <feature name='flushbyasid'/>
   <feature name='decodeassists'/>
-  <feature name='pause-filter'/>
-  <feature name='pfthreshold'/>
   <feature name='avic'/>
-  <feature name='v-vmsave-vmload'/>
-  <feature name='vgif'/>
-  <feature name='fs-gs-base-ns'/>
-  <feature name='perfmon-v2'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>

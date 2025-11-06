@@ -534,6 +534,54 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Genoa-v2</model>
+      <blockers model='EPYC-Genoa-v2'>
+        <feature name='amd-psfd'/>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='clzero'/>
+        <feature name='flushbyasid'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fxsr_opt'/>
+        <feature name='gfni'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='lbrv'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='overflow-recov'/>
+        <feature name='pause-filter'/>
+        <feature name='pcid'/>
+        <feature name='perfctr_core'/>
+        <feature name='perfmon-v2'/>
+        <feature name='pfthreshold'/>
+        <feature name='stibp-always-on'/>
+        <feature name='succor'/>
+        <feature name='topoext'/>
+        <feature name='tsc-scale'/>
+        <feature name='v-vmsave-vmload'/>
+        <feature name='vmcb-clean'/>
+        <feature name='vnmi'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <blockers model='EPYC-IBPB'>
         <feature name='fxsr_opt'/>

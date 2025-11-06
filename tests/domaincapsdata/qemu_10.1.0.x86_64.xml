@@ -492,6 +492,38 @@
         <feature name='vpclmulqdq'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Genoa-v2</model>
+      <blockers model='EPYC-Genoa-v2'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fsrm'/>
+        <feature name='gfni'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='pcid'/>
+        <feature name='perfmon-v2'/>
+        <feature name='pku'/>
+        <feature name='stibp-always-on'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='yes' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>

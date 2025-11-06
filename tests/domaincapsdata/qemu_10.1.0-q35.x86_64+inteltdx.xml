@@ -228,6 +228,26 @@
         <feature name='stibp-always-on'/>
         <feature name='xsaveerptr'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Genoa-v2</model>
+      <blockers model='EPYC-Genoa-v2'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='clzero'/>
+        <feature name='cr8legacy'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fxsr_opt'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='mmxext'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='null-sel-clr-base'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='perfmon-v2'/>
+        <feature name='sse4a'/>
+        <feature name='stibp-always-on'/>
+        <feature name='xsaveerptr'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
       <blockers model='EPYC-IBPB'>
         <feature name='cr8legacy'/>
