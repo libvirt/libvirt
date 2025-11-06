@@ -725,6 +725,30 @@
         <feature name='topoext'/>
         <feature name='xsavec'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v5</model>
+      <blockers model='EPYC-Rome-v5'>
+        <feature name='amd-ssbd'/>
+        <feature name='amd-stibp'/>
+        <feature name='clzero'/>
+        <feature name='flushbyasid'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='ibrs'/>
+        <feature name='lbrv'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='overflow-recov'/>
+        <feature name='pause-filter'/>
+        <feature name='perfctr_core'/>
+        <feature name='pfthreshold'/>
+        <feature name='succor'/>
+        <feature name='topoext'/>
+        <feature name='tsc-scale'/>
+        <feature name='v-vmsave-vmload'/>
+        <feature name='vmcb-clean'/>
+        <feature name='xsavec'/>
+      </blockers>
       <model usable='no' vendor='AMD'>EPYC-v1</model>
       <blockers model='EPYC-v1'>
         <feature name='fxsr_opt'/>

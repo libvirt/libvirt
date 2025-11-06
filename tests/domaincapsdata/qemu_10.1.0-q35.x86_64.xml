@@ -583,6 +583,10 @@
       <blockers model='EPYC-Rome-v4'>
         <feature name='ibrs'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v5</model>
+      <blockers model='EPYC-Rome-v5'>
+        <feature name='ibrs'/>
+      </blockers>
       <model usable='yes' vendor='AMD'>EPYC-v1</model>
       <model usable='yes' vendor='AMD'>EPYC-v2</model>
       <model usable='no' vendor='AMD'>EPYC-v3</model>

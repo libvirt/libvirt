@@ -75,6 +75,7 @@ cpumap_data = [
   'x86_EPYC-Rome-v2.xml',
   'x86_EPYC-Rome-v3.xml',
   'x86_EPYC-Rome-v4.xml',
+  'x86_EPYC-Rome-v5.xml',
   'x86_EPYC-Rome.xml',
   'x86_EPYC-v1.xml',
   'x86_EPYC-v2.xml',

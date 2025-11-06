@@ -1,12 +1,13 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-Rome-v3</model>
+  <model>EPYC-Rome-v5</model>
   <vendor>AMD</vendor>
   <signature family='23' model='104' stepping='1'/>
   <feature name='monitor'/>
   <feature name='osxsave'/>
   <feature name='ht'/>
   <feature name='cmt'/>
+  <feature name='xsaves'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>
   <feature name='cmp_legacy'/>
@@ -17,20 +18,10 @@
   <feature name='tce'/>
   <feature name='topoext'/>
   <feature name='perfctr_nb'/>
-  <feature name='overflow-recov'/>
-  <feature name='succor'/>
   <feature name='invtsc'/>
-  <feature name='lbrv'/>
   <feature name='svm-lock'/>
-  <feature name='tsc-scale'/>
-  <feature name='vmcb-clean'/>
-  <feature name='flushbyasid'/>
   <feature name='decodeassists'/>
-  <feature name='pause-filter'/>
-  <feature name='pfthreshold'/>
   <feature name='avic'/>
-  <feature name='v-vmsave-vmload'/>
-  <feature name='vgif'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>

@@ -296,6 +296,7 @@
       <model usable='yes' vendor='AMD'>EPYC-Rome-v2</model>
       <model usable='yes' vendor='AMD'>EPYC-Rome-v3</model>
       <model usable='yes' vendor='AMD'>EPYC-Rome-v4</model>
+      <model usable='yes' vendor='AMD'>EPYC-Rome-v5</model>
       <model usable='yes' vendor='AMD'>EPYC-v1</model>
       <model usable='yes' vendor='AMD'>EPYC-v2</model>
       <model usable='yes' vendor='AMD'>EPYC-v3</model>
