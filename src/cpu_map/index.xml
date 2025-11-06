@@ -182,6 +182,9 @@
       <include filename='x86_Dhyana-v1.xml'/>
       <include filename='x86_Dhyana-v2.xml'/>
     </group>
+
+    <group name='Zhaoxin CentaurHauls CPU models'>
+    </group>
   </arch>
 
   <arch name='ppc64'>

@@ -14,6 +14,7 @@ def translate_vendor(name):
         "CPUID_VENDOR_AMD": "AMD",
         "CPUID_VENDOR_INTEL": "Intel",
         "CPUID_VENDOR_HYGON": "Hygon",
+        "CPUID_VENDOR_ZHAOXIN1": "Zhaoxin CentaurHauls",
     }
 
     if name in T:
