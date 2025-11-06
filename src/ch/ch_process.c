@@ -637,6 +637,7 @@ chProcessAddNetworkDevice(virCHDriver *driver,
     g_auto(virBuffer) http_headers = VIR_BUFFER_INITIALIZER;
     g_autofree int *tapfds = NULL;
     g_autofree char *payload = NULL;
+    g_autofree char *netJSONPayload = NULL;
     g_autofree char *response = NULL;
     size_t tapfd_len;
     size_t payload_len;
@@ -685,15 +686,15 @@ chProcessAddNetworkDevice(virCHDriver *driver,
     }
 
     chAssignDeviceNetAlias(vmdef, net);
-    if (virCHMonitorBuildNetJson(net, &payload) < 0) {
+    if (virCHMonitorBuildNetJson(net, &netJSONPayload) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("Failed to build net json"));
         return -1;
     }
 
     virBufferAsprintf(&buf, "%s", virBufferCurrentContent(&http_headers));
-    virBufferAsprintf(&buf, "Content-Length: %zu\r\n\r\n", strlen(payload));
-    virBufferAsprintf(&buf, "%s", payload);
+    virBufferAsprintf(&buf, "Content-Length: %zu\r\n\r\n", strlen(netJSONPayload));
+    virBufferAddStr(&buf, netJSONPayload);
     payload_len = virBufferUse(&buf);
     payload = virBufferContentAndReset(&buf);
 
