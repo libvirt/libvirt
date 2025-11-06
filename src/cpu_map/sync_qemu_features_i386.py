@@ -30,17 +30,6 @@ FEATURES_IGNORE = (
     "kvmclock-stable-bit",
     "kvmclock2",
 
-    "xstore",
-    "xstore-en",
-    "xcrypt",
-    "xcrypt-en",
-    "ace2",
-    "ace2-en",
-    "phe",
-    "phe-en",
-    "pmm",
-    "pmm-en",
-
     "full-width-write",
 )
 
