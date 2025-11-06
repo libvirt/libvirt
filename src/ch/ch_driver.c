@@ -1277,6 +1277,7 @@ static char *chDomainGetXMLDesc(virDomainPtr dom,
 {
     virCHDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
+    virDomainDef *def;
     char *ret = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
@@ -1287,7 +1288,13 @@ static char *chDomainGetXMLDesc(virDomainPtr dom,
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def, driver->xmlopt,
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef) {
+        def = vm->newDef;
+    } else {
+        def = vm->def;
+    }
+
+    ret = virDomainDefFormat(def, driver->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
