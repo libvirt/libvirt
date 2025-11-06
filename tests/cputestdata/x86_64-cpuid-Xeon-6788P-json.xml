@@ -1,0 +1,43 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>GraniteRapids</model>
+  <vendor>Intel</vendor>
+  <feature policy='require' name='dtes64'/>
+  <feature policy='require' name='vmx'/>
+  <feature policy='require' name='pdcm'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='ds'/>
+  <feature policy='require' name='ss'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='fdp-excptn-only'/>
+  <feature policy='require' name='zero-fcs-fds'/>
+  <feature policy='require' name='waitpkg'/>
+  <feature policy='require' name='cldemote'/>
+  <feature policy='require' name='movdiri'/>
+  <feature policy='require' name='movdir64b'/>
+  <feature policy='require' name='md-clear'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='flush-l1d'/>
+  <feature policy='require' name='avx10'/>
+  <feature policy='require' name='intel-psfd'/>
+  <feature policy='require' name='ipred-ctrl'/>
+  <feature policy='require' name='rrsba-ctrl'/>
+  <feature policy='require' name='ddpd-u'/>
+  <feature policy='require' name='bhi-ctrl'/>
+  <feature policy='require' name='avx10-128'/>
+  <feature policy='require' name='avx10-256'/>
+  <feature policy='require' name='avx10-512'/>
+  <feature policy='require' name='ibpb'/>
+  <feature policy='require' name='ibrs'/>
+  <feature policy='require' name='amd-stibp'/>
+  <feature policy='require' name='amd-ssbd'/>
+  <feature policy='require' name='tsx-ctrl'/>
+  <feature policy='require' name='gds-no'/>
+  <feature policy='require' name='rfds-no'/>
+  <feature policy='require' name='its-no'/>
+  <feature policy='require' name='vmx-activity-wait-sipi'/>
+  <feature policy='require' name='vmx-tsc-scaling'/>
+  <feature policy='require' name='vmx-enable-user-wait-pause'/>
+  <feature policy='disable' name='hle'/>
+  <feature policy='disable' name='rtm'/>
+  <feature policy='disable' name='taa-no'/>
+</cpu>
