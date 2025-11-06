@@ -302,6 +302,7 @@
       <model usable='yes' vendor='AMD'>EPYC-v2</model>
       <model usable='yes' vendor='AMD'>EPYC-v3</model>
       <model usable='yes' vendor='AMD'>EPYC-v4</model>
+      <model usable='yes' vendor='AMD'>EPYC-v5</model>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
         <feature name='amx-bf16'/>

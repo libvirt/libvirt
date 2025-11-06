@@ -596,6 +596,10 @@
       <blockers model='EPYC-v4'>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v5</model>
+      <blockers model='EPYC-v5'>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
         <feature name='amx-bf16'/>

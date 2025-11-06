@@ -412,6 +412,18 @@
         <feature name='sse4a'/>
         <feature name='xsaveerptr'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v5</model>
+      <blockers model='EPYC-v5'>
+        <feature name='clzero'/>
+        <feature name='cr8legacy'/>
+        <feature name='fxsr_opt'/>
+        <feature name='misalignsse'/>
+        <feature name='mmxext'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='sse4a'/>
+        <feature name='xsaveerptr'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
         <feature name='fbsdp-no'/>

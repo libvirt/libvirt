@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>EPYC-v4</model>
+  <model>EPYC-v5</model>
   <vendor>AMD</vendor>
   <signature family='23' model='1' stepping='2'/>
   <feature name='monitor'/>
@@ -13,18 +13,8 @@
   <feature name='tce'/>
   <feature name='topoext'/>
   <feature name='perfctr_nb'/>
-  <feature name='overflow-recov'/>
-  <feature name='succor'/>
   <feature name='invtsc'/>
-  <feature name='lbrv'/>
   <feature name='svm-lock'/>
-  <feature name='tsc-scale'/>
-  <feature name='vmcb-clean'/>
-  <feature name='flushbyasid'/>
   <feature name='decodeassists'/>
-  <feature name='pause-filter'/>
-  <feature name='pfthreshold'/>
   <feature name='avic'/>
-  <feature name='v-vmsave-vmload'/>
-  <feature name='vgif'/>
 </cpu>

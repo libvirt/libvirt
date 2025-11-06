@@ -81,6 +81,7 @@ cpumap_data = [
   'x86_EPYC-v2.xml',
   'x86_EPYC-v3.xml',
   'x86_EPYC-v4.xml',
+  'x86_EPYC-v5.xml',
   'x86_EPYC.xml',
   'x86_features.xml',
   'x86_GraniteRapids-v1.xml',

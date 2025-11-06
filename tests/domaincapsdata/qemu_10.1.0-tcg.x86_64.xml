@@ -794,6 +794,28 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v5</model>
+      <blockers model='EPYC-v5'>
+        <feature name='clzero'/>
+        <feature name='flushbyasid'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb'/>
+        <feature name='lbrv'/>
+        <feature name='misalignsse'/>
+        <feature name='nrip-save'/>
+        <feature name='osvw'/>
+        <feature name='overflow-recov'/>
+        <feature name='pause-filter'/>
+        <feature name='perfctr_core'/>
+        <feature name='pfthreshold'/>
+        <feature name='succor'/>
+        <feature name='topoext'/>
+        <feature name='tsc-scale'/>
+        <feature name='v-vmsave-vmload'/>
+        <feature name='vmcb-clean'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
         <feature name='amx-bf16'/>
