@@ -561,6 +561,21 @@
         <feature name='vpclmulqdq'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v3</model>
+      <blockers model='EPYC-Milan-v3'>
+        <feature name='amd-psfd'/>
+        <feature name='erms'/>
+        <feature name='fsrm'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='pcid'/>
+        <feature name='pku'/>
+        <feature name='stibp-always-on'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
       <blockers model='EPYC-Rome'>
         <feature name='xsaves'/>

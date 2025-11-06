@@ -291,6 +291,10 @@
       <blockers model='EPYC-Milan-v2'>
         <feature name='pcid'/>
       </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Milan-v3</model>
+      <blockers model='EPYC-Milan-v3'>
+        <feature name='pcid'/>
+      </blockers>
       <model usable='yes' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
       <model usable='yes' vendor='AMD'>EPYC-Rome-v1</model>
       <model usable='yes' vendor='AMD'>EPYC-Rome-v2</model>
