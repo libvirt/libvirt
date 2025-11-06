@@ -24947,14 +24947,19 @@
 }
 
 {
-  "execute": "query-kvm",
+  "execute": "query-accelerators",
   "id": "libvirt-5"
 }
 
 {
   "return": {
-    "enabled": true,
-    "present": true
+    "enabled": "kvm",
+    "present": [
+      "kvm",
+      "mshv",
+      "qtest",
+      "tcg"
+    ]
   },
   "id": "libvirt-5"
 }

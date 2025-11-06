@@ -3466,6 +3466,27 @@ virQEMUCapsProbeQMPKVMState(virQEMUCaps *qemuCaps,
     return 0;
 }
 
+
+static int
+virQEMUCapsProbeAccels(virQEMUCaps *qemuCaps,
+                       qemuMonitor *mon)
+{
+    g_autofree char *enabled = NULL;
+
+    if (qemuMonitorGetAccelerators(mon, &enabled) < 0)
+        return -1;
+
+    if (STREQ(enabled, "tcg"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_TCG);
+    else if (STREQ(enabled, "hvf"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
+    else if (STREQ(enabled, "kvm"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_KVM);
+
+    return 0;
+}
+
+
 #ifdef __APPLE__
 bool
 virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
@@ -5781,12 +5802,17 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
     if (virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
         return -1;
 
-    /* Some capabilities may differ depending on KVM state */
-    if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
-        return -1;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_ACCELERATORS)) {
+        if (virQEMUCapsProbeAccels(qemuCaps, mon) < 0)
+            return -1;
+    } else {
+        /* Some capabilities may differ depending on KVM state */
+        if (virQEMUCapsProbeQMPKVMState(qemuCaps, mon) < 0)
+            return -1;
 
-    if (virQEMUCapsProbeHVF(qemuCaps))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
+        if (virQEMUCapsProbeHVF(qemuCaps))
+            virQEMUCapsSet(qemuCaps, QEMU_CAPS_HVF);
+    }
 
     type = virQEMUCapsGetVirtType(qemuCaps);
     accel = virQEMUCapsGetAccel(qemuCaps, type);

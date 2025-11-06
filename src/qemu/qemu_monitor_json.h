@@ -452,6 +452,11 @@ qemuMonitorJSONGetKVMState(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
+qemuMonitorJSONGetAccelerators(qemuMonitor *mon,
+                               char **enabled)
+     ATTRIBUTE_NONNULL(2);
+
+int
 qemuMonitorJSONGetObjectTypes(qemuMonitor *mon,
                               char ***types)
     ATTRIBUTE_NONNULL(2);
