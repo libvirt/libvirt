@@ -486,14 +486,20 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     if (!caps)
         return NULL;
 
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(xml, provconn->xmlopt, parse_flags)))
+        return NULL;
+
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
+        return NULL;
+
+    g_clear_pointer(&def, virDomainDefFree);
+
     if ((def = virDomainDefParseString(xml, privconn->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
-        goto cleanup;
-
-    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
@@ -889,11 +895,17 @@ bhyveDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
         start_flags |= VIR_BHYVE_PROCESS_START_AUTODESTROY;
 
-    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
-                                       NULL, parse_flags)) == NULL)
-        goto cleanup;
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(xml, provconn->xmlopt, parse_flags)))
+        return NULL;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        return NULL;
+
+    g_clear_pointer(&def, virDomainDefFree);
+
+    if ((def = virDomainDefParseString(xml, privconn->xmlopt,
+                                       NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
