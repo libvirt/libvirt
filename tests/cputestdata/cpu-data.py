@@ -145,6 +145,15 @@ def gather_msr():
     addresses = [
         0x10a,  # IA32_ARCH_CAPABILITIES_MSR
         0xcf,   # IA32_CORE_CAPABILITY_MSR
+        0x480,  # MSR_IA32_VMX_BASIC
+        0x485,  # MSR_IA32_VMX_MISC
+        0x48b,  # MSR_IA32_VMX_PROCBASED_CTLS2
+        0x48c,  # MSR_IA32_VMX_EPT_VPID_CAP
+        0x48d,  # MSR_IA32_VMX_TRUE_PINBASED_CTLS
+        0x48e,  # MSR_IA32_VMX_TRUE_PROCBASED_CTLS
+        0x48f,  # MSR_IA32_VMX_TRUE_EXIT_CTLS
+        0x490,  # MSR_IA32_VMX_TRUE_ENTRY_CTLS
+        0x491,  # MSR_IA32_VMX_VMFUNC
     ]
     KVM_GET_MSRS = 0xc008ae88
 
