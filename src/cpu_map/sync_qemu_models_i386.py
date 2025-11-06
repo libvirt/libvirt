@@ -592,10 +592,16 @@ def update_index(outdir, models):
             continue
 
         group = groups[-1]
-        last = group.getchildren()[-1]
-        group_indent = last.tail
-        indent = f"{group_indent}  "
-        last.tail = indent
+        children = group.getchildren()
+        if children:
+            last = children()[-1]
+            group_indent = last.tail
+            indent = f"{group_indent}  "
+            last.tail = indent
+        else:
+            group_indent = f"{group.tail}  "
+            indent = f"{group_indent}  "
+            group.text = f"{group_indent}  "
 
         for file in files:
             include = lxml.etree.SubElement(group, "include", filename=file)
