@@ -20447,6 +20447,35 @@ virDomainDefParse(const char *xmlStr,
 }
 
 virDomainDef *
+virDomainDefIDsParseString(const char *xmlStr,
+                           virDomainXMLOption *xmlopt,
+                           unsigned int flags)
+{
+    g_autoptr(virDomainDef) def = NULL;
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    bool uuid_generated = false;
+
+    xml = virXMLParseWithIndent(NULL, xmlStr, _("(domain_definition)"),
+                                "domain", &ctxt, "domain.rng", false);
+
+    if (!xml)
+        return NULL;
+
+    def = virDomainDefNew(xmlopt);
+    if (!def)
+        return NULL;
+
+    if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)
+        return NULL;
+
+    if (uuid_generated)
+        memset(def->uuid, 0, VIR_UUID_BUFLEN);
+
+    return g_steal_pointer(&def);
+}
+
+virDomainDef *
 virDomainDefParseString(const char *xmlStr,
                         virDomainXMLOption *xmlopt,
                         void *parseOpaque,

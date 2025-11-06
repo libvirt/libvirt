@@ -3948,6 +3948,9 @@ virDomainDiskDef *virDomainDiskDefParse(const char *xmlStr,
 virStorageSource *virDomainDiskDefParseSource(const char *xmlStr,
                                               virDomainXMLOption *xmlopt,
                                               unsigned int flags);
+virDomainDef * virDomainDefIDsParseString(const char *xmlStr,
+                                          virDomainXMLOption *xmlopt,
+                                          unsigned int flags);
 virDomainDef *virDomainDefParseString(const char *xmlStr,
                                       virDomainXMLOption *xmlopt,
                                       void *parseOpaque,

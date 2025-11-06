@@ -352,6 +352,7 @@ virDomainDefHasTimer;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefHasVDPANet;
+virDomainDefIDsParseString;
 virDomainDefLifecycleActionAllowed;
 virDomainDefMaybeAddController;
 virDomainDefMaybeAddInput;
