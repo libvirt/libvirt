@@ -149,6 +149,7 @@ cpumap_data = [
   'x86_SapphireRapids-v1.xml',
   'x86_SapphireRapids-v2.xml',
   'x86_SapphireRapids-v3.xml',
+  'x86_SapphireRapids-v4.xml',
   'x86_SapphireRapids.xml',
   'x86_SierraForest-v1.xml',
   'x86_SierraForest-v2.xml',

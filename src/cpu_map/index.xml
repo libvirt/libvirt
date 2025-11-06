@@ -119,6 +119,7 @@
       <include filename='x86_SapphireRapids-v1.xml'/>
       <include filename='x86_SapphireRapids-v2.xml'/>
       <include filename='x86_SapphireRapids-v3.xml'/>
+      <include filename='x86_SapphireRapids-v4.xml'/>
       <include filename='x86_GraniteRapids.xml'/>
       <include filename='x86_GraniteRapids-v1.xml'/>
       <include filename='x86_GraniteRapids-v2.xml'/>

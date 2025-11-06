@@ -567,6 +567,31 @@
         <feature name='tsx-ldtrk'/>
         <feature name='xfd'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SapphireRapids-v4</model>
+      <blockers model='SapphireRapids-v4'>
+        <feature name='amx-bf16'/>
+        <feature name='amx-int8'/>
+        <feature name='amx-tile'/>
+        <feature name='avx512-fp16'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cldemote'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrc'/>
+        <feature name='fsrs'/>
+        <feature name='fzrm'/>
+        <feature name='hle'/>
+        <feature name='ibrs-all'/>
+        <feature name='la57'/>
+        <feature name='pcid'/>
+        <feature name='psdp-no'/>
+        <feature name='rtm'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='ss'/>
+        <feature name='taa-no'/>
+        <feature name='tsx-ldtrk'/>
+        <feature name='xfd'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
         <feature name='avx-ifma'/>
