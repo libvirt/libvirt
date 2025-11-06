@@ -81,6 +81,7 @@ cpumap_data = [
   'x86_features.xml',
   'x86_GraniteRapids-v1.xml',
   'x86_GraniteRapids-v2.xml',
+  'x86_GraniteRapids-v3.xml',
   'x86_GraniteRapids.xml',
   'x86_Haswell-IBRS.xml',
   'x86_Haswell-noTSX-IBRS.xml',
