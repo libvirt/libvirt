@@ -187,6 +187,7 @@
       <include filename='x86_YongFeng.xml'/>
       <include filename='x86_YongFeng-v1.xml'/>
       <include filename='x86_YongFeng-v2.xml'/>
+      <include filename='x86_YongFeng-v3.xml'/>
     </group>
   </arch>
 
