@@ -151,20 +151,28 @@ def gather_msr():
     try:
         with open("/dev/cpu/0/msr", "rb") as f:
             for addr in addresses:
-                f.seek(addr)
-                buf = f.read(8)
-                msrs[addr] = struct.unpack("=Q", buf)[0]
-            return "", msrs
+                try:
+                    f.seek(addr)
+                    buf = f.read(8)
+                    msrs[addr] = struct.unpack("=Q", buf)[0]
+                except IOError:
+                    pass
+            if msrs:
+                return "", msrs
     except IOError as e:
         print("Warning: {}".format(e), file=sys.stderr)
 
     try:
         with open("/dev/kvm", "rb") as f:
             for addr in addresses:
-                bufIn = struct.pack("=LLLLQ", 1, 0, addr, 0, 0)
-                bufOut = fcntl.ioctl(f, KVM_GET_MSRS, bufIn)
-                msrs[addr] = struct.unpack("=LLLLQ", bufOut)[4]
-            return " via KVM", msrs
+                try:
+                    bufIn = struct.pack("=LLLLQ", 1, 0, addr, 0, 0)
+                    bufOut = fcntl.ioctl(f, KVM_GET_MSRS, bufIn)
+                    msrs[addr] = struct.unpack("=LLLLQ", bufOut)[4]
+                except IOError:
+                    pass
+            if msrs:
+                return " via KVM", msrs
     except IOError as e:
         print("Warning: {}".format(e), file=sys.stderr)
 
