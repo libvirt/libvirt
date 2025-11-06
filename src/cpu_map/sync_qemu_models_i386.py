@@ -111,6 +111,7 @@ def translate_feature(name, model):
         "CPUID_24_0_EBX_AVX10_128": "avx10-128",
         "CPUID_24_0_EBX_AVX10_256": "avx10-256",
         "CPUID_24_0_EBX_AVX10_512": "avx10-512",
+        "CPUID_APM_INVTSC": "invtsc",
         "CPUID_8000_0007_EBX_OVERFLOW_RECOV": "overflow-recov",
         "CPUID_8000_0007_EBX_SUCCOR": "succor",
         "CPUID_8000_0008_EBX_AMD_PSFD": "amd-psfd",
@@ -239,6 +240,7 @@ def translate_feature(name, model):
         "MSR_CORE_CAP_SPLIT_LOCK_DETECT": "split-lock-detect",
         "MSR_ARCH_CAP_GDS_NO": "gds-no",
         "MSR_ARCH_CAP_RFDS_NO": "rfds-no",
+        "MSR_ARCH_CAP_SSB_NO": "ssb-no",
 
         # FEAT_VMX_PROCBASED_CTLS
         "VMX_CPU_BASED_VIRTUAL_INTR_PENDING": "vmx-vintr-pending",
@@ -357,6 +359,7 @@ def translate_feature(name, model):
         name in ("MSR_VMX_EPT_UC", "MSR_VMX_EPT_WB"),
         name in ("MSR_VMX_EPT_INVVPID_SINGLE_CONTEXT"),
         name in ("x-force-cpuid-0x1f", "avx10-version"),
+        name in ("VMX_VM_EXIT_HOST_ADDR_SPACE_SIZE"),
     ])
 
     if ignore:

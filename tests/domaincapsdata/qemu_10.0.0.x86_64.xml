@@ -1587,6 +1587,42 @@
       <blockers model='Westmere-v2'>
         <feature name='spec-ctrl'/>
       </blockers>
+      <model usable='no' vendor='Zhaoxin CentaurHauls' canonical='YongFeng-v1'>YongFeng</model>
+      <blockers model='YongFeng'>
+        <feature name='ace2'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='phe'/>
+        <feature name='phe-en'/>
+        <feature name='pku'/>
+        <feature name='pmm'/>
+        <feature name='pmm-en'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ss'/>
+        <feature name='ssb-no'/>
+        <feature name='xcrypt'/>
+        <feature name='xcrypt-en'/>
+        <feature name='xstore'/>
+        <feature name='xstore-en'/>
+      </blockers>
+      <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v1</model>
+      <blockers model='YongFeng-v1'>
+        <feature name='ace2'/>
+        <feature name='invpcid'/>
+        <feature name='pcid'/>
+        <feature name='phe'/>
+        <feature name='phe-en'/>
+        <feature name='pku'/>
+        <feature name='pmm'/>
+        <feature name='pmm-en'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ss'/>
+        <feature name='ssb-no'/>
+        <feature name='xcrypt'/>
+        <feature name='xcrypt-en'/>
+        <feature name='xstore'/>
+        <feature name='xstore-en'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='athlon-v1'>athlon</model>
       <blockers model='athlon'>
         <feature name='3dnow'/>

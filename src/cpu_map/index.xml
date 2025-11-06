@@ -184,6 +184,8 @@
     </group>
 
     <group name='Zhaoxin CentaurHauls CPU models'>
+      <include filename='x86_YongFeng.xml'/>
+      <include filename='x86_YongFeng-v1.xml'/>
     </group>
   </arch>
 
