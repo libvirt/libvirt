@@ -220,13 +220,13 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
                                              bool isServer,
                                              char **cacert,
                                              char **cacrl,
-                                             char **cert,
-                                             char **key)
+                                             char ***certs,
+                                             char ***keys)
 {
     *cacert = NULL;
     *cacrl = NULL;
-    *key = NULL;
-    *cert = NULL;
+    *keys = NULL;
+    *certs = NULL;
 
     VIR_DEBUG("pkipath=%s isServer=%d tryUserPkiPath=%d",
               pkipath, isServer, tryUserPkiPath);
@@ -237,20 +237,31 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
     if (pkipath) {
         if (virNetTLSConfigCustomCreds(pkipath, isServer,
                                        cacert, cacrl,
-                                       cert, key) < 0)
+                                       certs, keys) < 0)
             return -1;
     } else {
         if (tryUserPkiPath &&
             virNetTLSConfigUserCreds(isServer,
                                      cacert, cacrl,
-                                     cert, key) < 0)
+                                     certs, keys) < 0)
             return -1;
 
         if (virNetTLSConfigSystemCreds(isServer,
                                        cacert, cacrl,
-                                       cert, key) < 0)
+                                       certs, keys) < 0)
             return -1;
     }
+
+    /*
+     * Ensure the cert list is always non-NULL, even
+     * if it is an empty list, so that callers don't
+     * need to have repeated checks for a NULL array.
+     */
+    if (*certs == NULL)
+        *certs = g_new0(char *, 1);
+    if (*keys == NULL)
+        *keys = g_new0(char *, 1);
+
     return 0;
 }
 
@@ -265,16 +276,16 @@ static virNetTLSContext *virNetTLSContextNewPath(const char *pkipath,
 {
     g_autofree char *cacert = NULL;
     g_autofree char *cacrl = NULL;
-    g_autofree char *key = NULL;
-    g_autofree char *cert = NULL;
-    const char *certs[] = { cert, NULL };
-    const char *keys[] = { key, NULL };
+    g_auto(GStrv) keys = NULL;
+    g_auto(GStrv) certs = NULL;
 
     if (virNetTLSContextLocateCredentials(pkipath, tryUserPkiPath, isServer,
-                                          &cacert, &cacrl, &cert, &key) < 0)
+                                          &cacert, &cacrl, &certs, &keys) < 0)
         return NULL;
 
-    return virNetTLSContextNew(cacert, cacrl, certs, keys,
+    return virNetTLSContextNew(cacert, cacrl,
+                               (const char *const *)certs,
+                               (const char *const *)keys,
                                x509dnACL, priority, sanityCheckCert,
                                requireValidCert, isServer);
 }
@@ -329,15 +340,13 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
     int err;
     g_autofree char *cacert = NULL;
     g_autofree char *cacrl = NULL;
-    g_autofree char *cert = NULL;
-    g_autofree char *key = NULL;
-    const char *certs[] = { cert, NULL };
-    const char *keys[] = { key, NULL };
+    g_auto(GStrv) certs = NULL;
+    g_auto(GStrv) keys = NULL;
 
     x509credBak = g_steal_pointer(&ctxt->x509cred);
 
     if (virNetTLSContextLocateCredentials(NULL, tryUserPkiPath, true,
-                                          &cacert, &cacrl, &cert, &key))
+                                          &cacert, &cacrl, &certs, &keys))
         goto error;
 
     err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
@@ -348,11 +357,13 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
         goto error;
     }
 
-    if (virNetTLSCertSanityCheck(true, cacert, certs))
+    if (virNetTLSCertSanityCheck(true, cacert,
+                                 (const char *const *)certs))
         goto error;
 
     if (virNetTLSContextLoadCredentials(ctxt, cacert, cacrl,
-                                        certs, keys))
+                                        (const char *const *)certs,
+                                        (const char *const *)keys))
         goto error;
 
     gnutls_certificate_free_credentials(x509credBak);

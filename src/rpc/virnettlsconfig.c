@@ -31,6 +31,9 @@
 
 VIR_LOG_INIT("rpc.nettlsconfig");
 
+
+#define VIR_NET_TLS_CONFIG_MAX_INDEXED 4
+
 char *virNetTLSConfigUserPKIBaseDir(void)
 {
     g_autofree char *userdir = virGetUserDirectory();
@@ -64,6 +67,24 @@ static void virNetTLSConfigIdentity(bool isServer,
     if (!*cert)
         *cert = g_strdup_printf("%s/%s", certdir,
                                 isServer ? "servercert.pem" : "clientcert.pem");
+
+    VIR_DEBUG("TLS key %s", *key);
+    VIR_DEBUG("TLS cert %s", *cert);
+}
+
+static void virNetTLSConfigIdentityIndexed(bool isServer,
+                                           const char *certdir,
+                                           const char *keydir,
+                                           size_t idx,
+                                           char **cert,
+                                           char **key)
+{
+    if (!*key)
+        *key = g_strdup_printf("%s/%skey%zu.pem", keydir,
+                               (isServer ? "server" : "client"), idx);
+    if (!*cert)
+        *cert = g_strdup_printf("%s/%scert%zu.pem", certdir,
+                                (isServer ? "server" : "client"), idx);
 
     VIR_DEBUG("TLS key %s", *key);
     VIR_DEBUG("TLS cert %s", *cert);
@@ -257,8 +278,8 @@ static int virNetTLSConfigCreds(const char *cacertdir,
                                 bool allowMissingIdentity,
                                 char **cacert,
                                 char **cacrl,
-                                char **cert,
-                                char **key)
+                                char ***certs,
+                                char ***keys)
 {
     virNetTLSConfigTrust(cacertdir,
                          cacrldir,
@@ -268,14 +289,68 @@ static int virNetTLSConfigCreds(const char *cacertdir,
     if (virNetTLSConfigEnsureTrust(cacert, cacrl, allowMissingCA) < 0)
         return -1;
 
-    virNetTLSConfigIdentity(isServer,
-                            certdir,
-                            keydir,
-                            cert,
-                            key);
+    if (!*certs && !*keys) {
+        g_auto(GStrv) certlist =
+            g_new0(char *, VIR_NET_TLS_CONFIG_MAX_INDEXED + 2);
+        g_auto(GStrv) keylist =
+            g_new0(char *, VIR_NET_TLS_CONFIG_MAX_INDEXED + 2);
+        size_t i;
 
-    if (virNetTLSConfigEnsureIdentity(cert, key, allowMissingIdentity) < 0)
-        return -1;
+        /*
+         * When searching for indexed certs/keys, the first
+         * missing index terminates the search, so we don't
+         * get gaps in the returned array. All indexed files
+         * are optional, as if they're all missing, we'll
+         * still honour the traditional file names
+         */
+        for (i = 0; i < VIR_NET_TLS_CONFIG_MAX_INDEXED; i++) {
+            virNetTLSConfigIdentityIndexed(isServer,
+                                           certdir,
+                                           keydir,
+                                           i,
+                                           &(certlist[i + 1]),
+                                           &(keylist[i + 1]));
+
+            if (virNetTLSConfigEnsureIdentity(&(certlist[i + 1]),
+                                              &(keylist[i + 1]), true) < 0)
+                return -1;
+
+            if (certlist[i + 1] == NULL) {
+                break;
+            }
+        }
+
+        /*
+         * If we find index 0, then allow the traditional
+         * default files to be optional
+         */
+        if (certlist[1] != NULL)
+            allowMissingIdentity = true;
+
+        virNetTLSConfigIdentity(isServer,
+                                certdir,
+                                keydir,
+                                &(certlist[0]),
+                                &(keylist[0]));
+
+        if (virNetTLSConfigEnsureIdentity(&(certlist[0]),
+                                          &(keylist[0]), allowMissingIdentity) < 0)
+            return -1;
+
+        if (certlist[0] == NULL) {
+            memmove(certlist, certlist + 1,
+                    VIR_NET_TLS_CONFIG_MAX_INDEXED * sizeof(char *));
+            memmove(keylist, keylist + 1,
+                    VIR_NET_TLS_CONFIG_MAX_INDEXED * sizeof(char *));
+            certlist[VIR_NET_TLS_CONFIG_MAX_INDEXED] = NULL;
+            keylist[VIR_NET_TLS_CONFIG_MAX_INDEXED] = NULL;
+        }
+
+        if (certlist[0] != NULL) {
+            *certs = g_steal_pointer(&certlist);
+            *keys = g_steal_pointer(&keylist);
+        }
+    }
 
     return 0;
 }
@@ -285,8 +360,8 @@ int virNetTLSConfigCustomCreds(const char *pkipath,
                                bool isServer,
                                char **cacert,
                                char **cacrl,
-                               char **cert,
-                               char **key)
+                               char ***certs,
+                               char ***keys)
 {
     VIR_DEBUG("Locating creds in custom dir %s", pkipath);
 
@@ -296,15 +371,15 @@ int virNetTLSConfigCustomCreds(const char *pkipath,
                                 false,
                                 !isServer,
                                 cacert, cacrl,
-                                cert, key);
+                                certs, keys);
 }
 
 
 int virNetTLSConfigUserCreds(bool isServer,
                              char **cacert,
                              char **cacrl,
-                             char **cert,
-                             char **key)
+                             char ***certs,
+                             char ***keys)
 {
     g_autofree char *pkipath = virNetTLSConfigUserPKIBaseDir();
 
@@ -316,14 +391,14 @@ int virNetTLSConfigUserCreds(bool isServer,
                                 true,
                                 true,
                                 cacert, cacrl,
-                                cert, key);
+                                certs, keys);
 }
 
 int virNetTLSConfigSystemCreds(bool isServer,
                                char **cacert,
                                char **cacrl,
-                               char **cert,
-                               char **key)
+                               char ***certs,
+                               char ***keys)
 {
     VIR_DEBUG("Locating creds in system dir %s", LIBVIRT_PKI_DIR);
 
@@ -335,5 +410,5 @@ int virNetTLSConfigSystemCreds(bool isServer,
                                 false,
                                 !isServer,
                                 cacert, cacrl,
-                                cert, key);
+                                certs, keys);
 }

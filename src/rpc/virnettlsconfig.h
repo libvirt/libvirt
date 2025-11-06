@@ -60,15 +60,15 @@ int virNetTLSConfigCustomCreds(const char *pkipath,
                                bool isServer,
                                char **cacert,
                                char **cacrl,
-                               char **cert,
-                               char **key);
+                               char ***certs,
+                               char ***keys);
 int virNetTLSConfigUserCreds(bool isServer,
                              char **cacert,
                              char **cacrl,
-                             char **cert,
-                             char **key);
+                             char ***certs,
+                             char ***keys);
 int virNetTLSConfigSystemCreds(bool isServer,
                                char **cacert,
                                char **cacrl,
-                               char **cert,
-                               char **key);
+                               char ***certs,
+                               char ***keys);
