@@ -214,6 +214,7 @@
   <flag name='qom-list-get'/>
   <flag name='acpi-generic-initiator'/>
   <flag name='disk-timed-stats'/>
+  <flag name='query-accelerators'/>
   <version>10001050</version>
   <microcodeVersion>43100287</microcodeVersion>
   <package>v10.1.0-1969-g53b41bb789</package>
