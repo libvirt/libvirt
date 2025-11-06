@@ -190,6 +190,7 @@ cpumap_data = [
   'x86_Westmere-v2.xml',
   'x86_Westmere.xml',
   'x86_YongFeng-v1.xml',
+  'x86_YongFeng-v2.xml',
   'x86_YongFeng.xml',
 ]
 

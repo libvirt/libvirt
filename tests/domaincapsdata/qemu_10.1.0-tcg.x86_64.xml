@@ -2086,6 +2086,24 @@
         <feature name='xstore'/>
         <feature name='xstore-en'/>
       </blockers>
+      <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v2</model>
+      <blockers model='YongFeng-v2'>
+        <feature name='ace2'/>
+        <feature name='arch-capabilities'/>
+        <feature name='invpcid'/>
+        <feature name='invtsc'/>
+        <feature name='pcid'/>
+        <feature name='phe'/>
+        <feature name='phe-en'/>
+        <feature name='pmm'/>
+        <feature name='pmm-en'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='xcrypt'/>
+        <feature name='xcrypt-en'/>
+        <feature name='xstore'/>
+        <feature name='xstore-en'/>
+      </blockers>
       <model usable='yes' vendor='AMD' canonical='athlon-v1'>athlon</model>
       <model usable='yes' vendor='AMD'>athlon-v1</model>
       <model usable='yes' vendor='Intel' canonical='core2duo-v1'>core2duo</model>
