@@ -216,12 +216,17 @@ chDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(vmdef = virDomainDefIDsParseString(xml, driver->xmlopt, parse_flags)))
+        return NULL;
+
+    if (virDomainCreateXMLEnsureACL(conn, vmdef) < 0)
+        return NULL;
+
+    g_clear_pointer(&vmdef, virDomainDefFree);
 
     if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
-        goto cleanup;
-
-    if (virDomainCreateXMLEnsureACL(conn, vmdef) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
@@ -347,14 +352,20 @@ chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(vmdef = virDomainDefIDsParseString(xml, driver->xmlopt, parse_flags)))
+        return NULL;
+
+    if (virDomainDefineXMLFlagsEnsureACL(conn, vmdef) < 0)
+        return NULL;
+
+    g_clear_pointer(&vmdef, virDomainDefFree);
+
     if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (virXMLCheckIllegalChars("name", vmdef->name, "\n") < 0)
-        goto cleanup;
-
-    if (virDomainDefineXMLFlagsEnsureACL(conn, vmdef) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, &vmdef,
@@ -920,16 +931,24 @@ chDomainSaveXMLRead(int fd)
     return g_steal_pointer(&xml);
 }
 
-static int chDomainSaveImageRead(virCHDriver *driver,
+static int chDomainSaveImageRead(virConnectPtr conn,
                                  const char *path,
-                                 virDomainDef **ret_def)
+                                 virDomainDef **ret_def,
+                                 unsigned int flags,
+                                 int (*ensureACL)(virConnectPtr, virDomainDef *),
+                                 int (*ensureACLWithFlags)(virConnectPtr,
+                                                           virDomainDef *,
+                                                           unsigned int))
 {
+    virCHDriver *driver = conn->privateData;
     g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(driver);
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *from = NULL;
     g_autofree char *xml = NULL;
     VIR_AUTOCLOSE fd = -1;
     int ret = -1;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
 
     from = g_strdup_printf("%s/%s", path, CH_SAVE_XML);
     if ((fd = virFileOpenAs(from, O_RDONLY, 0, cfg->user, cfg->group, 0)) < 0) {
@@ -942,9 +961,23 @@ static int chDomainSaveImageRead(virCHDriver *driver,
     if (!(xml = chDomainSaveXMLRead(fd)))
         goto end;
 
-    if (!(def = virDomainDefParseString(xml, driver->xmlopt, NULL,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+    if (ensureACL || ensureACLWithFlags) {
+        /* Parse only the IDs for ACL checks */
+        g_autoptr(virDomainDef) aclDef = virDomainDefIDsParseString(xml,
+                                                                    driver->xmlopt,
+                                                                    parse_flags);
+
+        if (!aclDef)
+            goto end;
+
+        if (ensureACL && ensureACL(conn, aclDef) < 0)
+            goto end;
+
+        if (ensureACLWithFlags && ensureACLWithFlags(conn, aclDef, flags) < 0)
+            goto end;
+    }
+
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt, NULL, parse_flags)))
         goto end;
 
     *ret_def = g_steal_pointer(&def);
@@ -965,10 +998,9 @@ chDomainSaveImageGetXMLDesc(virConnectPtr conn,
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
-    if (chDomainSaveImageRead(driver, path, &def) < 0)
-        goto cleanup;
-
-    if (virDomainSaveImageGetXMLDescEnsureACL(conn, def) < 0)
+    if (chDomainSaveImageRead(conn, path, &def, flags,
+                              virDomainSaveImageGetXMLDescEnsureACL,
+                              NULL) < 0)
         goto cleanup;
 
     ret = virDomainDefFormat(def, driver->xmlopt,
@@ -1068,10 +1100,9 @@ chDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     path = chDomainManagedSavePath(driver, vm);
-    if (chDomainSaveImageRead(driver, path, &def) < 0)
-        goto cleanup;
-
-    if (virDomainManagedSaveGetXMLDescEnsureACL(dom->conn, def, flags) < 0)
+    if (chDomainSaveImageRead(dom->conn, path, &def, flags,
+                              NULL,
+                              virDomainManagedSaveGetXMLDescEnsureACL) < 0)
         goto cleanup;
 
     ret = virDomainDefFormat(def, driver->xmlopt,
@@ -1123,10 +1154,9 @@ chDomainRestoreFlags(virConnectPtr conn,
         return -1;
     }
 
-    if (chDomainSaveImageRead(driver, from, &def) < 0)
-        goto cleanup;
-
-    if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
+    if (chDomainSaveImageRead(conn, from, &def, flags,
+                              virDomainRestoreFlagsEnsureACL,
+                              NULL) < 0)
         goto cleanup;
 
     if (chDomainSaveRestoreAdditionalValidation(driver, def) < 0)
