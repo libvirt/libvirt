@@ -134,7 +134,9 @@ qemuMigrationAnyPrepareDef(virQEMUDriver *driver,
                            virQEMUCaps *qemuCaps,
                            const char *dom_xml,
                            const char *dname,
-                           char **origname);
+                           char **origname,
+                           virConnectPtr sconn,
+                           int (*ensureACL)(virConnectPtr, virDomainDef *));
 
 int
 qemuMigrationDstPrepareTunnel(virQEMUDriver *driver,

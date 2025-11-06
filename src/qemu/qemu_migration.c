@@ -4030,7 +4030,9 @@ qemuMigrationAnyPrepareDef(virQEMUDriver *driver,
                            virQEMUCaps *qemuCaps,
                            const char *dom_xml,
                            const char *dname,
-                           char **origname)
+                           char **origname,
+                           virConnectPtr sconn,
+                           int (*ensureACL)(virConnectPtr, virDomainDef *))
 {
     virDomainDef *def;
     char *name = NULL;
@@ -4039,6 +4041,24 @@ qemuMigrationAnyPrepareDef(virQEMUDriver *driver,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no domain XML passed"));
         return NULL;
+    }
+
+    if (ensureACL) {
+        g_autoptr(virDomainDef) aclDef = NULL;
+
+        /* Avoid parsing the whole domain definition for ACL checks */
+        if (!(aclDef = virDomainDefIDsParseString(dom_xml, driver->xmlopt,
+                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+            return NULL;
+
+        if (dname) {
+            VIR_FREE(aclDef->name);
+            aclDef->name = g_strdup(dname);
+        }
+
+        if (ensureACL(sconn, aclDef) < 0) {
+            return NULL;
+        }
     }
 
     if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
@@ -4969,6 +4989,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
             if (!(persistDef = qemuMigrationAnyPrepareDef(driver,
                                                           priv->qemuCaps,
                                                           persist_xml,
+                                                          NULL, NULL,
                                                           NULL, NULL)))
                 goto error;
         } else {

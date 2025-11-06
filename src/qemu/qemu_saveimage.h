@@ -98,9 +98,11 @@ int
 qemuSaveImageGetMetadata(virQEMUDriver *driver,
                          virQEMUCaps *qemuCaps,
                          const char *path,
+                         int (*ensureACL)(virConnectPtr, virDomainDef *),
+                         virConnectPtr conn,
                          virDomainDef **ret_def,
                          virQEMUSaveData **ret_data)
-    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7);
 
 int
 qemuSaveImageOpen(virQEMUDriver *driver,

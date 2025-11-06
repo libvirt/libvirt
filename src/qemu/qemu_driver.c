@@ -1556,11 +1556,17 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_RESET_NVRAM)
         start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
-    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
-                                        NULL, parse_flags)))
-        goto cleanup;
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(xml, driver->xmlopt, parse_flags)))
+        return NULL;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
+        return NULL;
+
+    g_clear_pointer(&def, virDomainDefFree);
+
+    if (!(def = virDomainDefParseString(xml, driver->xmlopt,
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, &def,
@@ -5780,7 +5786,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
         reset_nvram = true;
 
-    if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
+    if (qemuSaveImageGetMetadata(driver, NULL, path, ensureACL, conn, &def, &data) < 0)
         goto cleanup;
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
@@ -5791,9 +5797,6 @@ qemuDomainRestoreInternal(virConnectPtr conn,
                            (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                            sparse, &wrapperFd, false);
     if (fd < 0)
-        goto cleanup;
-
-    if (ensureACL(conn, def) < 0)
         goto cleanup;
 
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -5923,10 +5926,9 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
 
-    if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
-        goto cleanup;
-
-    if (virDomainSaveImageGetXMLDescEnsureACL(conn, def) < 0)
+    if (qemuSaveImageGetMetadata(driver, NULL, path,
+                                 virDomainSaveImageGetXMLDescEnsureACL,
+                                 conn, &def, &data) < 0)
         goto cleanup;
 
     ret = qemuDomainDefFormatXML(driver, NULL, def, flags);
@@ -5956,15 +5958,14 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
         state = 0;
 
-    if (qemuSaveImageGetMetadata(driver, NULL, path, &def, &data) < 0)
+    if (qemuSaveImageGetMetadata(driver, NULL, path,
+                                 virDomainSaveImageDefineXMLEnsureACL,
+                                 conn, &def, &data) < 0)
         goto cleanup;
 
     fd = qemuSaveImageOpen(driver, path, false, false, NULL, true);
 
     if (fd < 0)
-        goto cleanup;
-
-    if (virDomainSaveImageDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (STREQ(data->xml, dxml) &&
@@ -6038,7 +6039,8 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto cleanup;
     }
 
-    if (qemuSaveImageGetMetadata(driver, priv->qemuCaps, path, &def, &data) < 0)
+    if (qemuSaveImageGetMetadata(driver, priv->qemuCaps, path,
+                                 NULL, NULL, &def, &data) < 0)
         goto cleanup;
 
     ret = qemuDomainDefFormatXML(driver, priv->qemuCaps, def, flags);
@@ -6102,7 +6104,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     bool sparse = false;
     g_autoptr(qemuMigrationParams) restoreParams = NULL;
 
-    ret = qemuSaveImageGetMetadata(driver, NULL, path, &def, &data);
+    ret = qemuSaveImageGetMetadata(driver, NULL, path, NULL, NULL, &def, &data);
     if (ret < 0) {
         if (qemuSaveImageIsCorrupt(driver, path)) {
             if (unlink(path) < 0) {
@@ -6464,14 +6466,20 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(xml, driver->xmlopt, parse_flags)))
+        return NULL;
+
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
+        return NULL;
+
+    g_clear_pointer(&def, virDomainDefFree);
+
     if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         return NULL;
 
     if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
-        goto cleanup;
-
-    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, &def,
@@ -10769,10 +10777,9 @@ qemuDomainMigratePrepareTunnel(virConnectPtr dconn,
         return -1;
     }
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepareTunnelEnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepareTunnelEnsureACL)))
         return -1;
 
     return qemuMigrationDstPrepareTunnel(driver, dconn,
@@ -10822,10 +10829,9 @@ qemuDomainMigratePrepare2(virConnectPtr dconn,
         return -1;
     }
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepare2EnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepare2EnsureACL)))
         return -1;
 
     /* Do not use cookies in v2 protocol, since the cookie
@@ -11045,10 +11051,9 @@ qemuDomainMigratePrepare3(virConnectPtr dconn,
                                                    QEMU_MIGRATION_DESTINATION)))
         return -1;
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepare3EnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepare3EnsureACL)))
         return -1;
 
     return qemuMigrationDstPrepareDirect(driver, dconn,
@@ -11148,10 +11153,9 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
         return -1;
     }
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepare3ParamsEnsureACL)))
         return -1;
 
     return qemuMigrationDstPrepareDirect(driver, dconn,
@@ -11193,10 +11197,9 @@ qemuDomainMigratePrepareTunnel3(virConnectPtr dconn,
                                                    QEMU_MIGRATION_DESTINATION)))
         return -1;
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepareTunnel3EnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepareTunnel3EnsureACL)))
         return -1;
 
     return qemuMigrationDstPrepareTunnel(driver, dconn,
@@ -11245,10 +11248,9 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                                    QEMU_MIGRATION_DESTINATION)))
         return -1;
 
-    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname)))
-        return -1;
-
-    if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
+    if (!(def = qemuMigrationAnyPrepareDef(driver, NULL, dom_xml, dname, &origname,
+                                           dconn,
+                                           virDomainMigratePrepareTunnel3ParamsEnsureACL)))
         return -1;
 
     return qemuMigrationDstPrepareTunnel(driver, dconn,

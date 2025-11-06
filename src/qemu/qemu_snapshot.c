@@ -2486,8 +2486,8 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
         g_autoptr(virDomainDef) savedef = NULL;
 
         memdata->path = snapdef->memorysnapshotfile;
-        if (qemuSaveImageGetMetadata(driver, NULL, memdata->path, &savedef,
-                                     &memdata->data) < 0)
+        if (qemuSaveImageGetMetadata(driver, NULL, memdata->path, NULL, NULL,
+                                     &savedef, &memdata->data) < 0)
             return -1;
 
         memdata->fd = qemuSaveImageOpen(driver, memdata->path,

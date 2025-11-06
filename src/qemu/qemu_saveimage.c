@@ -614,16 +614,21 @@ qemuSaveImageIsCorrupt(virQEMUDriver *driver, const char *path)
  * @driver: qemu driver data
  * @qemuCaps: pointer to qemuCaps if the domain is running or NULL
  * @path: path of the save image
+ * @ensureACL: ACL callback to check against the definition or NULL
+ * @conn: parameter for the @ensureACL callback
  * @ret_def: returns domain definition created from the XML stored in the image
  * @ret_data: returns structure filled with data from the image header
  *
- * Open the save image file, read libvirt's save image metadata, and populate
- * the @ret_def and @ret_data structures. Returns 0 on success and -1 on failure.
+ * Open the save image file, read libvirt's save image metadata, optionally
+ * check ACLs before parsing the whole domain definition and populate the
+ * @ret_def and @ret_data structures. Returns 0 on success and -1 on failure.
  */
 int
 qemuSaveImageGetMetadata(virQEMUDriver *driver,
                          virQEMUCaps *qemuCaps,
                          const char *path,
+                         int (*ensureACL)(virConnectPtr, virDomainDef *),
+                         virConnectPtr conn,
                          virDomainDef **ret_def,
                          virQEMUSaveData **ret_data)
 {
@@ -631,6 +636,8 @@ qemuSaveImageGetMetadata(virQEMUDriver *driver,
     VIR_AUTOCLOSE fd = -1;
     virQEMUSaveData *data;
     g_autoptr(virDomainDef) def = NULL;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
     int rc;
 
     if ((fd = qemuDomainOpenFile(cfg, NULL, path, O_RDONLY, NULL)) < 0)
@@ -640,10 +647,20 @@ qemuSaveImageGetMetadata(virQEMUDriver *driver,
         return rc;
 
     data = *ret_data;
+
+    if (ensureACL) {
+        /* Parse only the IDs for ACL checks */
+        g_autoptr(virDomainDef) aclDef = virDomainDefIDsParseString(data->xml,
+                                                                    driver->xmlopt,
+                                                                    parse_flags);
+
+        if (!aclDef || ensureACL(conn, aclDef) < 0)
+            return -1;
+    }
+
     /* Create a domain from this XML */
     if (!(def = virDomainDefParseString(data->xml, driver->xmlopt, qemuCaps,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+                                        parse_flags)))
         return -1;
 
     *ret_def = g_steal_pointer(&def);
