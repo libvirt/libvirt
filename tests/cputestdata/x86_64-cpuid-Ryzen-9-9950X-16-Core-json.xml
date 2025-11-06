@@ -1,0 +1,36 @@
+<cpu mode='custom' match='exact'>
+  <model fallback='forbid'>EPYC-Genoa</model>
+  <vendor>AMD</vendor>
+  <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='tsc-deadline'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='movdiri'/>
+  <feature policy='require' name='movdir64b'/>
+  <feature policy='require' name='avx512-vp2intersect'/>
+  <feature policy='require' name='spec-ctrl'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='flush-l1d'/>
+  <feature policy='require' name='ssbd'/>
+  <feature policy='require' name='avx-vnni'/>
+  <feature policy='require' name='cmp_legacy'/>
+  <feature policy='require' name='overflow-recov'/>
+  <feature policy='require' name='succor'/>
+  <feature policy='require' name='virt-ssbd'/>
+  <feature policy='require' name='lbrv'/>
+  <feature policy='require' name='tsc-scale'/>
+  <feature policy='require' name='vmcb-clean'/>
+  <feature policy='require' name='flushbyasid'/>
+  <feature policy='require' name='pause-filter'/>
+  <feature policy='require' name='pfthreshold'/>
+  <feature policy='require' name='v-vmsave-vmload'/>
+  <feature policy='require' name='vgif'/>
+  <feature policy='require' name='fs-gs-base-ns'/>
+  <feature policy='require' name='prefetchi'/>
+  <feature policy='require' name='sbpb'/>
+  <feature policy='require' name='ibpb-brtype'/>
+  <feature policy='require' name='srso-user-kernel-no'/>
+  <feature policy='require' name='perfmon-v2'/>
+  <feature policy='disable' name='pcid'/>
+  <feature policy='disable' name='la57'/>
+</cpu>
