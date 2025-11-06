@@ -601,6 +601,84 @@
       <blockers model='EPYC-Rome-v5'>
         <feature name='ibrs'/>
       </blockers>
+      <model usable='no' vendor='AMD' canonical='EPYC-Turin-v1'>EPYC-Turin</model>
+      <blockers model='EPYC-Turin'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-vp2intersect'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fsrm'/>
+        <feature name='gfni'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='pcid'/>
+        <feature name='perfmon-v2'/>
+        <feature name='pku'/>
+        <feature name='prefetchi'/>
+        <feature name='sbpb'/>
+        <feature name='srso-user-kernel-no'/>
+        <feature name='stibp-always-on'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Turin-v1</model>
+      <blockers model='EPYC-Turin-v1'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-vp2intersect'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='erms'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fsrm'/>
+        <feature name='gfni'/>
+        <feature name='ibrs'/>
+        <feature name='invpcid'/>
+        <feature name='la57'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='pcid'/>
+        <feature name='perfmon-v2'/>
+        <feature name='pku'/>
+        <feature name='prefetchi'/>
+        <feature name='sbpb'/>
+        <feature name='srso-user-kernel-no'/>
+        <feature name='stibp-always-on'/>
+        <feature name='vaes'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='yes' vendor='AMD'>EPYC-v1</model>
       <model usable='yes' vendor='AMD'>EPYC-v2</model>
       <model usable='no' vendor='AMD'>EPYC-v3</model>

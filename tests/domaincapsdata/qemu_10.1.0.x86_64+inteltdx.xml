@@ -386,6 +386,56 @@
         <feature name='sse4a'/>
         <feature name='xsaveerptr'/>
       </blockers>
+      <model usable='no' vendor='AMD' canonical='EPYC-Turin-v1'>EPYC-Turin</model>
+      <blockers model='EPYC-Turin'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx512-vp2intersect'/>
+        <feature name='clzero'/>
+        <feature name='cr8legacy'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb-brtype'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='mmxext'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='null-sel-clr-base'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='perfmon-v2'/>
+        <feature name='prefetchi'/>
+        <feature name='sbpb'/>
+        <feature name='srso-user-kernel-no'/>
+        <feature name='sse4a'/>
+        <feature name='stibp-always-on'/>
+        <feature name='xsaveerptr'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Turin-v1</model>
+      <blockers model='EPYC-Turin-v1'>
+        <feature name='amd-psfd'/>
+        <feature name='auto-ibrs'/>
+        <feature name='avx512-vp2intersect'/>
+        <feature name='clzero'/>
+        <feature name='cr8legacy'/>
+        <feature name='fs-gs-base-ns'/>
+        <feature name='fxsr_opt'/>
+        <feature name='ibpb-brtype'/>
+        <feature name='lfence-always-serializing'/>
+        <feature name='misalignsse'/>
+        <feature name='mmxext'/>
+        <feature name='no-nested-data-bp'/>
+        <feature name='null-sel-clr-base'/>
+        <feature name='osvw'/>
+        <feature name='perfctr_core'/>
+        <feature name='perfmon-v2'/>
+        <feature name='prefetchi'/>
+        <feature name='sbpb'/>
+        <feature name='srso-user-kernel-no'/>
+        <feature name='sse4a'/>
+        <feature name='stibp-always-on'/>
+        <feature name='xsaveerptr'/>
+      </blockers>
       <model usable='no' vendor='AMD'>EPYC-v1</model>
       <blockers model='EPYC-v1'>
         <feature name='cr8legacy'/>
