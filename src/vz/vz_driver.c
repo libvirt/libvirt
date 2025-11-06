@@ -789,14 +789,20 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(xml, driver->xmlopt, parse_flags)))
+        return NULL;
+
+    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
+        return NULL;
+
+    g_clear_pointer(&def, virDomainDefFree);
+
     if ((def = virDomainDefParseString(xml, driver->xmlopt,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
-        goto cleanup;
-
-    if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
     dom = virDomainObjListFindByUUID(driver->domains, def->uuid);
@@ -2966,9 +2972,9 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
                      | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         return -1;
 
-    if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
-                                        NULL,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+    /* Avoid parsing the whole domain definition for ACL checks */
+    if (!(def = virDomainDefIDsParseString(dom_xml, driver->xmlopt,
+                                           VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         return -1;
 
     if (dname) {
