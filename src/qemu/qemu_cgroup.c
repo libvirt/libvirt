@@ -788,6 +788,12 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
                                       false) < 0)
             return -1;
     }
+    if (vm->def->virtType == VIR_DOMAIN_VIRT_HYPERV) {
+        /* HYPERV domains require access to /dev/mshv */
+        if (qemuCgroupAllowDevicePath(vm, "/dev/mshv", VIR_CGROUP_DEVICE_RW,
+                                      false) < 0)
+            return -1;
+    }
 
     if (qemuSetupFirmwareCgroup(vm) < 0)
         return -1;

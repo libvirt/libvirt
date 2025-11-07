@@ -221,6 +221,8 @@ qemuDomainPopulateDevices(virQEMUDriverConfig *cfg,
 
         if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
             *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_KVM));
+        } else if (vm->def->virtType == VIR_DOMAIN_VIRT_HYPERV) {
+            *paths = g_slist_prepend(*paths, g_strdup("/dev/mshv"));
         }
     }
 
