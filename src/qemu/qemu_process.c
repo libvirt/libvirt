@@ -10103,7 +10103,7 @@ qemuProcessQMPInit(qemuProcessQMP *proc)
 
 
 #if defined(__linux__)
-# define hwaccel "kvm:tcg"
+# define hwaccel "kvm:mshv:tcg"
 #elif defined(__APPLE__)
 # define hwaccel "hvf:tcg"
 #else
