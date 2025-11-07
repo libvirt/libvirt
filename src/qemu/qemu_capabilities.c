@@ -748,6 +748,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "acpi-generic-initiator", /* QEMU_CAPS_ACPI_GENERIC_INITIATOR */
               "disk-timed-stats", /* QEMU_CAPS_DISK_TIMED_STATS */
               "query-accelerators", /* QEMU_CAPS_QUERY_ACCELERATORS */
+              "mshv", /* QEMU_CAPS_MSHV */
     );
 
 

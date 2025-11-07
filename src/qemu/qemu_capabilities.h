@@ -729,6 +729,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_ACPI_GENERIC_INITIATOR, /* -object acpi-generic-initiator */
     QEMU_CAPS_DISK_TIMED_STATS, /* timed stats support ('stats-intervals' property of disk frontends) */
     QEMU_CAPS_QUERY_ACCELERATORS, /* query-accelerators command */
+    QEMU_CAPS_MSHV, /* -accel mshv */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
