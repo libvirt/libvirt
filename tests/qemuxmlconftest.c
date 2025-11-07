@@ -1618,6 +1618,9 @@ mymain(void)
                                   ARG_CAPS_VARIANT, "+inteltdx",
                                   ARG_END);
 
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-varstore-q35");
+    DO_TEST_CAPS_VER_PARSE_ERROR("firmware-manual-efi-varstore-q35", "8.2.0");
+
     /* Make sure all combinations of ACPI and UEFI behave as expected */
     DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-acpi-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-acpi-q35");
