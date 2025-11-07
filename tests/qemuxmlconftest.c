@@ -3293,6 +3293,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hwuuid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hwuuid-smbios-uuid-match");
 
+    DO_TEST_CAPS_ARCH_LATEST_FULL("mshv-x86_64-q35-headless", "x86_64",
+                                  ARG_CAPS_VARIANT, "+mshv", ARG_END);
+    /* MSHV guests should not work on Linux with KVM */
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("mshv-x86_64-q35-headless");
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;
