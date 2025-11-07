@@ -32,7 +32,7 @@
   </define>
 
   <define name="domaincontents">
-    <ref name="hvs"/>
+    <ref name="virttype"/>
     <optional>
       <attribute name="id">
         <ref name="unsignedInt"/>
@@ -240,27 +240,6 @@
         </group>
       </choice>
     </element>
-  </define>
-  <define name="hvs">
-    <attribute name="type">
-      <choice>
-        <value>qemu</value>
-        <value>kqemu</value>
-        <value>kvm</value>
-        <value>xen</value>
-        <value>lxc</value>
-        <value>uml</value> <!-- NOT USED ANYMORE -->
-        <value>openvz</value>
-        <value>test</value>
-        <value>vmware</value>
-        <value>hyperv</value>
-        <value>vbox</value>
-        <value>phyp</value> <!-- NOT USED ANYMORE -->
-        <value>vz</value>
-        <value>bhyve</value>
-        <value>hvf</value>
-      </choice>
-    </attribute>
   </define>
   <define name="os">
     <choice>

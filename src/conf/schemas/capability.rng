@@ -421,19 +421,7 @@
 
   <define name="domain">
     <element name="domain">
-      <attribute name="type">
-        <choice>
-          <value>qemu</value>
-          <value>kqemu</value>
-          <value>kvm</value>
-          <value>xen</value>
-          <value>uml</value> <!-- NOT USED ANYMORE -->
-          <value>lxc</value>
-          <value>openvz</value>
-          <value>test</value>
-          <value>hvf</value>
-        </choice>
-      </attribute>
+      <ref name="virttype"/>
 
       <optional>
         <ref name="emulator"/>
