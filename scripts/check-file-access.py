@@ -42,7 +42,7 @@ proc = subprocess.run(sys.argv[1:])
 if proc.returncode != 0 or os.read(access_fd, 10) == b'':
     os.close(access_fd)
     os.remove(access_file)
-    sys.exit(ret)
+    sys.exit(proc.returncode)
 
 known_actions = ["open", "fopen", "access", "stat", "lstat", "connect"]
 
