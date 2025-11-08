@@ -8,7 +8,7 @@
   </os>
   <devices>
     <disk type='file'>
-      <driver name='file' type='raw'/>
+      <driver name='file' type='raw' queues='2' queue_size='256'/>
       <source file='/tmp/freebsd.img'/>
       <target dev='nvme0n1' bus='nvme'/>
     </disk>

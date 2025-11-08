@@ -371,6 +371,9 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
+        g_autofree char *nvme_opts = NULL;
+
+        g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
         virDomainDiskDef *disk = def->disks[i];
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_NVME)
@@ -389,10 +392,19 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
 
         disk_source = virDomainDiskGetSource(disk);
 
+        if (disk->queues)
+            virBufferAsprintf(&opt, ",maxq=%d", disk->queues);
+        if (disk->queue_size)
+            virBufferAsprintf(&opt, ",qsz=%d", disk->queue_size);
+
+        nvme_opts = virBufferContentAndReset(&opt);
+
         virCommandAddArg(cmd, "-s");
-        virCommandAddArgFormat(cmd, "%d:0,nvme,%s",
+        virCommandAddArgFormat(cmd, "%d:0,nvme,%s%s",
                                controller->info.addr.pci.slot,
-                               disk_source);
+                               disk_source,
+                               NULLSTR_EMPTY(nvme_opts));
+
     }
 
     return 0;
