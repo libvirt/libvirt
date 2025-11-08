@@ -659,3 +659,27 @@ As ``bhyve(1)`` uses one NVMe device per PCI address, it's modeled in a way
 that there is one device per controller. That is, if using more than one
 NVMe device, for device name users should increment controller number rather
 than namespace number, i.e.: ``nvme0n1``, ``nvme1n1``, etc.
+
+Device passthrough
+~~~~~~~~~~~~~~~~~~
+:since:`Since 11.10.0`, it is possible to passthrough PCI devices.
+
+Example:
+
+::
+
+  ...
+    <hostdev mode='subsystem' type='pci' managed='no'>
+      <source>
+        <address domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+      </source>
+    </hostdev>
+  ...
+
+Using passthrough devices requires wiring guest memory, see `Wiring guest memory`_.
+
+Note: currently, the `nodedev <drvnodedev.html>`_ driver is not supported
+on FreeBSD.
+Users must configure the device for passthrough manually either by
+using ``devctl(8)`` or by setting ``pptdevs`` in ``loader.conf(5)``.
+Please refer to the ``vmm(4)`` manual page for more details.
