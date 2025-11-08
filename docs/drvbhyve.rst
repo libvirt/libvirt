@@ -683,3 +683,19 @@ on FreeBSD.
 Users must configure the device for passthrough manually either by
 using ``devctl(8)`` or by setting ``pptdevs`` in ``loader.conf(5)``.
 Please refer to the ``vmm(4)`` manual page for more details.
+
+Guest-specific considerations
+-----------------------------
+
+Windows
+~~~~~~~
+
+For Windows guests, it is recommended to have the LPC controller on slot 31.
+As the libvirt driver allocates slot 1 for the LPC controller by default,
+the address must be specified explicitly:
+
+::
+
+    <controller type='isa' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x0'/>
+    </controller>
