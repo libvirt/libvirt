@@ -393,7 +393,7 @@ exposed to the guest using the ``vgaconf`` attribute:
 
 If not specified, bhyve's default mode for ``vgaconf`` will be used. Please
 refer to the
-`bhyve(8) <https://www.freebsd.org/cgi/man.cgi?query=bhyve&sektion=8&manpath=FreeBSD+12-current>`__
+`bhyve(8) <https://www.freebsd.org/cgi/man.cgi?query=bhyve&sektion=8>`__
 manual page and the `bhyve wiki <https://wiki.freebsd.org/bhyve>`__ for more
 details on using the ``vgaconf`` option.
 
