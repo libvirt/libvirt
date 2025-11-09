@@ -316,6 +316,13 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
             return -1;
         }
 
+        if ((disk->queues || disk->queue_size) &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_NVME) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("queue configuration is only valid for NVMe bus"));
+            return -1;
+        }
+
         break;
     }
     case VIR_DOMAIN_DEVICE_AUDIO:
