@@ -3698,6 +3698,20 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
         }
     }
 
+    if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        if (disk->queues) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("queues attribute in disk driver element is only supported for virtio bus"));
+            return -1;
+        }
+
+        if (disk->queue_size) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("queue_size attribute in disk driver is only supported for virtio bus"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
