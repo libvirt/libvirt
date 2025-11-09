@@ -248,13 +248,15 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                              void *opaque G_GNUC_UNUSED,
                              void *parseOpaque G_GNUC_UNUSED)
 {
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
-        dev->data.controller->idx != 0) {
-        return -1;
-    }
+    switch (dev->type) {
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+        if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
+            dev->data.controller->idx != 0) {
+            return -1;
+        }
+        break;
 
-    if (dev->type == VIR_DOMAIN_DEVICE_RNG) {
+    case VIR_DOMAIN_DEVICE_RNG:
         if (dev->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO) {
             if (dev->data.rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
                 if (STRNEQ(dev->data.rng->source.file, "/dev/random")) {
@@ -272,39 +274,76 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            _("Only 'virio' RNG device model is supported"));
             return -1;
         }
-    } else if (dev->type == VIR_DOMAIN_DEVICE_CHR &&
-               dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
-        virDomainChrDef *chr = dev->data.chr;
-        if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM &&
-            chr->source->type != VIR_DOMAIN_CHR_TYPE_TCP) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only 'nmdm' and 'tcp' console types are supported"));
-            return -1;
-        }
-        if (chr->target.port > 3) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only four serial ports are supported"));
-            return -1;
-        }
-        if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP) {
-            if (chr->source->data.tcp.listen == false) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only listening TCP sockets are supported"));
-                return -1;
-            }
+        break;
 
-            if (chr->source->data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
+    case VIR_DOMAIN_DEVICE_CHR:
+        if (dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
+            virDomainChrDef *chr = dev->data.chr;
+            if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM &&
+                chr->source->type != VIR_DOMAIN_CHR_TYPE_TCP) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Only 'raw' protocol is supported for TCP sockets"));
+                               _("Only 'nmdm' and 'tcp' console types are supported"));
                 return -1;
             }
+            if (chr->target.port > 3) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only four serial ports are supported"));
+                return -1;
+            }
+            if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP) {
+                if (chr->source->data.tcp.listen == false) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Only listening TCP sockets are supported"));
+                    return -1;
+                }
+
+                if (chr->source->data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Only 'raw' protocol is supported for TCP sockets"));
+                    return -1;
+                }
+            }
         }
-    } else if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
-               dev->data.disk->rotation_rate &&
-               dev->data.disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("rotation rate is only valid for SATA bus"));
-        return -1;
+        break;
+
+    case VIR_DOMAIN_DEVICE_DISK: {
+        virDomainDiskDef *disk = dev->data.disk;
+
+        if (disk->rotation_rate &&
+            disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("rotation rate is only valid for SATA bus"));
+            return -1;
+        }
+
+        break;
+    }
+    case VIR_DOMAIN_DEVICE_AUDIO:
+    case VIR_DOMAIN_DEVICE_CRYPTO:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_PSTORE:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+        break;
     }
 
     return 0;
