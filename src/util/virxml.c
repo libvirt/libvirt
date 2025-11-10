@@ -1920,23 +1920,14 @@ virXMLFormatMetadata(virBuffer *buf,
 {
     g_autoptr(xmlBuffer) xmlbuf = NULL;
     const char *xmlbufContent = NULL;
-    int oldIndentTreeOutput = xmlIndentTreeOutput;
 
     if (!metadata)
         return 0;
 
-    /* Indentation on output requires that we previously set
-     * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
-     * spaces per level of indentation of intermediate elements,
-     * but no leading indentation before the starting element.
-     * Thankfully, libxml maps what looks like globals into
-     * thread-local uses, so we are thread-safe.  */
-    xmlIndentTreeOutput = 1;
     xmlbuf = virXMLBufferCreate();
 
     if (xmlNodeDump(xmlbuf, metadata->doc, metadata,
                     virBufferGetIndent(buf) / 2, 1) < 0) {
-        xmlIndentTreeOutput = oldIndentTreeOutput;
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to format metadata element"));
         return -1;
@@ -1948,7 +1939,6 @@ virXMLFormatMetadata(virBuffer *buf,
     virSkipSpaces(&xmlbufContent);
 
     virBufferAsprintf(buf, "%s\n", xmlbufContent);
-    xmlIndentTreeOutput = oldIndentTreeOutput;
 
     return 0;
 }
