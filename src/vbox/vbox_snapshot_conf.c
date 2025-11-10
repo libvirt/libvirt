@@ -943,9 +943,6 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     g_auto(GStrv) secondRegex = NULL;
     int secondRegexResult = 0;
     const int parseFlags = XML_PARSE_NONET | XML_PARSE_NOBLANKS;
-    int oldIndentTreeOutput = xmlIndentTreeOutput;
-
-    xmlIndentTreeOutput = 1;
 
     if (machine == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1127,8 +1124,6 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachine *machine,
     ret = 0;
 
  cleanup:
-    xmlIndentTreeOutput = oldIndentTreeOutput;
-
     VIR_FREE(currentSnapshot);
     VIR_FREE(timeStamp);
 
