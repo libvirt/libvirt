@@ -13,6 +13,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -machine virt-8.2,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=on \
 -accel kvm \
 -bios /usr/share/edk2/aarch64/QEMU_EFI.qemuvars.fd \
+-device '{"driver":"uefi-vars-sysbus","jsonfile":"/path/to/guest.json"}' \
 -m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
 -overcommit mem-lock=off \

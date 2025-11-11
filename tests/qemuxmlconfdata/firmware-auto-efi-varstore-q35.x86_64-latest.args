@@ -14,6 +14,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-guest/.config \
 -accel kvm \
 -cpu qemu64 \
 -bios /usr/share/edk2/ovmf/OVMF.qemuvars.fd \
+-device '{"driver":"uefi-vars-x64","jsonfile":"/var/lib/libvirt/qemu/varstore/guest.json"}' \
 -m size=1048576k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
 -overcommit mem-lock=off \

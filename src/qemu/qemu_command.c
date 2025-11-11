@@ -9816,6 +9816,37 @@ qemuBuildDomainLoaderCommandLine(virCommand *cmd,
 
 
 static int
+qemuBuildUefiVarsCommandLine(virCommand *cmd,
+                             const virDomainDef *def,
+                             virQEMUCaps *qemuCaps)
+{
+    virDomainLoaderDef *loader = def->os.loader;
+    virDomainVarstoreDef *varstore = def->os.varstore;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *model = NULL;
+
+    if (!loader || !varstore || !varstore->path)
+        return 0;
+
+    if (ARCH_IS_X86(def->os.arch))
+        model = "uefi-vars-x64";
+    else
+        model = "uefi-vars-sysbus";
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:driver", model,
+                              "s:jsonfile", varstore->path,
+                              NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuBuildTPMDevCmd(virCommand *cmd,
                    const virDomainDef *def,
                    virDomainTPMDef *tpm,
@@ -10888,6 +10919,9 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     qemuBuildDomainLoaderCommandLine(cmd, def);
+
+    if (qemuBuildUefiVarsCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
 
     if (qemuBuildMemCommandLine(cmd, def, qemuCaps, priv) < 0)
         return NULL;
