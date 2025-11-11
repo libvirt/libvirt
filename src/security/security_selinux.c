@@ -2631,7 +2631,7 @@ virSecuritySELinuxRestoreSavedStateLabel(virSecurityManager *mgr,
     if (!secdef || !secdef->relabel)
         return 0;
 
-    return virSecuritySELinuxRestoreFileLabel(mgr, savefile, true);
+    return virSecuritySELinuxRestoreFileLabel(mgr, savefile, false);
 }
 
 
