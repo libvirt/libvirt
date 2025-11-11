@@ -2171,10 +2171,10 @@ virSecuritySELinuxSetSCSILabel(virSCSIDevice *dev,
 
     if (virSCSIDeviceGetShareable(dev))
         return virSecuritySELinuxSetFilecon(mgr, file,
-                                            data->file_context, true);
+                                            data->file_context, false);
     else if (virSCSIDeviceGetReadonly(dev))
         return virSecuritySELinuxSetFilecon(mgr, file,
-                                            data->content_context, true);
+                                            data->content_context, false);
     else
         return virSecuritySELinuxSetFilecon(mgr, file,
                                             secdef->imagelabel, true);
