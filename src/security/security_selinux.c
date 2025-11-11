@@ -2841,7 +2841,7 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDef *def,
         database = dev->data.cert.database;
         if (!database)
             database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
-        return virSecuritySELinuxRestoreFileLabel(mgr, database, true, false);
+        return virSecuritySELinuxRestoreFileLabel(mgr, database, true, true);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
         return virSecuritySELinuxRestoreChardevLabel(mgr, def,
@@ -2878,7 +2878,7 @@ virSecuritySELinuxRestoreSysinfoLabel(virSecurityManager *mgr,
         virSysinfoFWCfgDef *f = &def->fw_cfgs[i];
 
         if (f->file &&
-            virSecuritySELinuxRestoreFileLabel(mgr, f->file, true, false) < 0)
+            virSecuritySELinuxRestoreFileLabel(mgr, f->file, true, true) < 0)
             return -1;
     }
 
@@ -2974,23 +2974,23 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
     }
 
     if (def->os.kernel &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.kernel, true, false) < 0)
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.kernel, true, true) < 0)
         rc = -1;
 
     if (def->os.initrd &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.initrd, true, false) < 0)
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.initrd, true, true) < 0)
         rc = -1;
 
     if (def->os.shim &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.shim, true, false) < 0)
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.shim, true, true) < 0)
         rc = -1;
 
     if (def->os.dtb &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.dtb, true, false) < 0)
+        virSecuritySELinuxRestoreFileLabel(mgr, def->os.dtb, true, true) < 0)
         rc = -1;
 
     for (i = 0; i < def->os.nacpiTables; i++) {
-        if (virSecuritySELinuxRestoreFileLabel(mgr, def->os.acpiTables[i]->path, true, false) < 0)
+        if (virSecuritySELinuxRestoreFileLabel(mgr, def->os.acpiTables[i]->path, true, true) < 0)
             rc = -1;
     }
 
