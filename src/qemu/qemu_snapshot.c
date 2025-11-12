@@ -228,6 +228,9 @@ qemuSnapshotCreateQcow2Files(virDomainDef *def,
                                          NULL)))
             return -1;
 
+        /* ensure that new files are only readable by the user */
+        virCommandSetUmask(cmd, 0077);
+
         /* adds cmd line arg: backing_fmt=format,backing_file=/path/to/backing/file */
         virBufferAsprintf(&buf, "backing_fmt=%s,backing_file=",
                           virStorageFileFormatTypeToString(defdisk->src->format));
