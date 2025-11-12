@@ -223,6 +223,7 @@ mymain(void)
     DO_TEST("esx-in-the-wild-14");
     DO_TEST("esx-in-the-wild-15");
     DO_TEST("esx-in-the-wild-16");
+    DO_TEST("esx-in-the-wild-17");
 
     DO_TEST("gsx-in-the-wild-1");
     DO_TEST("gsx-in-the-wild-2");

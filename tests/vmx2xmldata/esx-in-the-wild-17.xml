@@ -1,0 +1,46 @@
+<domain type='vmware'>
+  <name>esx8.0-win11-with-second-disk-in-subfolder</name>
+  <uuid>42256ec1-e066-9364-3dd1-36a0b75263dd</uuid>
+  <genid>3191ed70-eb21-9c71-2478-373fb27fed9b</genid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <cputune>
+    <shares>2000</shares>
+  </cputune>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/esx8.0-win11-with-second-disk-in-subfolder.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/subfolder/esx8.0-win11-with-second-disk-in-subfolder_1.vmdk'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <source file='[f84f070c-0d65498d] win-iso/windows_11_x64_official_dvd.iso'/>
+      <target dev='sda' bus='sata'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsisas1068'/>
+    <controller type='sata' index='0'/>
+    <interface type='bridge'>
+      <mac address='00:50:56:a5:b8:68' type='generated'/>
+      <source bridge='Mgmt Network'/>
+      <model type='e1000e'/>
+    </interface>
+    <video>
+      <model type='vmvga' vram='8192' primary='yes'/>
+    </video>
+  </devices>
+</domain>
