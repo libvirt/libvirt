@@ -35,6 +35,10 @@ qemuBackupJobCancelBlockjobs(virDomainObj *vm,
                              int asyncJob);
 
 void
+qemuBackupNotifyBlockjobEndStopNBD(virDomainObj *vm,
+                                   int asyncJob);
+
+void
 qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
                             const char *diskdst,
                             qemuBlockjobState state,

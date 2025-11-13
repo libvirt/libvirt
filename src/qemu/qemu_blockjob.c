@@ -1392,8 +1392,7 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
     if (job->disk)
         diskdst = job->disk->dst;
 
-    qemuBackupNotifyBlockjobEnd(vm, diskdst, newstate, job->errmsg,
-                                progressCurrent, progressTotal, asyncJob);
+    qemuBackupNotifyBlockjobEndStopNBD(vm, asyncJob);
 
     if (job->data.backup.store &&
         !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store)))
@@ -1415,6 +1414,10 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
 
     if (job->data.backup.store)
         qemuDomainStorageSourceAccessRevoke(driver, vm, job->data.backup.store);
+
+    qemuBackupNotifyBlockjobEnd(vm, diskdst, newstate, job->errmsg,
+                                progressCurrent, progressTotal, asyncJob);
+
 }
 
 

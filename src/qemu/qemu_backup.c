@@ -982,6 +982,33 @@ qemuBackupGetXMLDesc(virDomainObj *vm,
 
 
 void
+qemuBackupNotifyBlockjobEndStopNBD(virDomainObj *vm,
+                                   int asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainBackupDef *backup = priv->backup;
+
+    VIR_DEBUG("vm: '%s'", vm->def->name);
+
+    if (!backup ||
+        backup->type != VIR_DOMAIN_BACKUP_TYPE_PULL ||
+        backup->nbdStopped)
+        return;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return;
+    ignore_value(qemuMonitorNBDServerStop(priv->mon));
+    if (backup->tlsAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
+    if (backup->tlsSecretAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
+    qemuDomainObjExitMonitor(vm);
+
+    backup->nbdStopped = true;
+}
+
+
+void
 qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
                             const char *diskdst,
                             qemuBlockjobState state,
@@ -1005,20 +1032,8 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
     if (!backup)
         return;
 
+    /* update the final statistics with the current job's data */
     if (backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
-        if (!backup->nbdStopped) {
-            if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-                return;
-            ignore_value(qemuMonitorNBDServerStop(priv->mon));
-            if (backup->tlsAlias)
-                ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
-            if (backup->tlsSecretAlias)
-                ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
-            qemuDomainObjExitMonitor(vm);
-            backup->nbdStopped = true;
-        }
-
-        /* update the final statistics with the current job's data */
         backup->pull_tmp_used += cur;
         backup->pull_tmp_total += end;
     } else {
