@@ -33,11 +33,12 @@
 #include "vmx.h"
 #include "virtypedparam.h"
 #include "esx_driver.h"
+#define LIBVIRT_ESX_DRIVERPRIV_H_ALLOW
+#include "esx_driverpriv.h"
 #include "esx_interface_driver.h"
 #include "esx_network_driver.h"
 #include "esx_storage_driver.h"
 #include "esx_private.h"
-#include "esx_vi.h"
 #include "esx_vi_methods.h"
 #include "esx_util.h"
 #include "esx_stream.h"
@@ -49,14 +50,6 @@
 VIR_LOG_INIT("esx.esx_driver");
 
 static int esxDomainGetMaxVcpus(virDomainPtr domain);
-
-typedef struct _esxVMX_Data esxVMX_Data;
-
-struct _esxVMX_Data {
-    esxVI_Context *ctx;
-    char *datastorePathWithoutFileName;
-};
-
 
 
 static void
@@ -124,7 +117,7 @@ esxFreePrivate(esxPrivate **priv)
  * exception and need special handling. Parse the datastore name and use it
  * to lookup the datastore by name to verify that it exists.
  */
-static int
+int
 esxParseVMXFileName(const char *fileName,
                     void *opaque,
                     char **out,

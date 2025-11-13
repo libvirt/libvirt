@@ -2,6 +2,10 @@
 # These symbols are dependent upon --with-esx via WITH_ESX
 #
 
+# esx/esx_driverpriv.h
+esxParseVMXFileName;
+
+
 # esx/esx_util.h
 esxUtil_EscapeDatastoreItem;
 esxUtil_ParseDatastorePath;
