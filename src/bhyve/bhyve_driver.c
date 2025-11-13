@@ -487,7 +487,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
         return NULL;
 
     /* Avoid parsing the whole domain definition for ACL checks */
-    if (!(def = virDomainDefIDsParseString(xml, provconn->xmlopt, parse_flags)))
+    if (!(def = virDomainDefIDsParseString(xml, privconn->xmlopt, parse_flags)))
         return NULL;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -896,7 +896,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
         start_flags |= VIR_BHYVE_PROCESS_START_AUTODESTROY;
 
     /* Avoid parsing the whole domain definition for ACL checks */
-    if (!(def = virDomainDefIDsParseString(xml, provconn->xmlopt, parse_flags)))
+    if (!(def = virDomainDefIDsParseString(xml, privconn->xmlopt, parse_flags)))
         return NULL;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
