@@ -13682,6 +13682,11 @@ virDomainAgentSetResponseTimeout(virDomainPtr domain,
  * temporary files described by the @backupXML document were created by the
  * caller with correct format and size to hold the backup or temporary data.
  *
+ * When the VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN flag is used
+ * libvirt will not terminate the VM if the guest OS shuts down while the
+ * backup is running. The VM will be kept in the VIR_DOMAIN_PAUSED state
+ * until the backup job finishes or until it's resumed via virDomainResume.
+ *
  * The creation of a new checkpoint allows for future incremental backups.
  * Note that some hypervisors may require a particular disk format, such as
  * qcow2, in order to take advantage of checkpoints, while allowing arbitrary

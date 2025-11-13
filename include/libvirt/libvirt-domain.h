@@ -8518,8 +8518,10 @@ int virDomainAgentSetResponseTimeout(virDomainPtr domain,
  * Since: 6.0.0
  */
 typedef enum {
-    VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL = (1 << 0), /* reuse separately
-                                                          provided images (Since: 6.0.0) */
+    /* reuse separately provided images (Since: 6.0.0) */
+    VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL = (1 << 0),
+    /* preserve the domain if the guest OS shuts down while the backup is running (Since: 11.10.0) */
+    VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN = (1 << 1),
 } virDomainBackupBeginFlags;
 
 int virDomainBackupBegin(virDomainPtr domain,

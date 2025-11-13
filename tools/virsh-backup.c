@@ -48,6 +48,10 @@ static const vshCmdOptDef opts_backup_begin[] = {
      .type = VSH_OT_BOOL,
      .help = N_("reuse files provided by caller"),
     },
+    {.name = "preserve-domain-on-shutdown",
+     .type = VSH_OT_BOOL,
+     .help = N_("avoid shutdown of the domain while the backup is running"),
+    },
     {.name = NULL}
 };
 
@@ -64,6 +68,9 @@ cmdBackupBegin(vshControl *ctl,
 
     if (vshCommandOptBool(cmd, "reuse-external"))
         flags |= VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL;
+
+    if (vshCommandOptBool(cmd, "preserve-domain-on-shutdown"))
+        flags |= VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
