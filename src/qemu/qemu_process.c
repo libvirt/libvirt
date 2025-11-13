@@ -597,6 +597,51 @@ qemuProcessFakeReboot(void *opaque)
 }
 
 
+static void
+qemuProcessResetPreservedDomain(void *opaque)
+{
+    virDomainObj *vm = opaque;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    virObjectEvent *event = NULL;
+    int rc;
+
+    VIR_DEBUG("vm=%p", vm);
+
+    virObjectLock(vm);
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest unexpectedly quit"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(vm);
+    rc = qemuMonitorSystemReset(priv->mon);
+    qemuDomainObjExitMonitor(vm);
+
+    /* A guest-initiated OS shutdown completes qemu pauses the CPUs thus we need
+     * to also update the state */
+    virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_SHUTTING_DOWN);
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_SUSPENDED,
+                                              VIR_DOMAIN_EVENT_SUSPENDED_GUEST_SHUTDOWN);
+
+    if (rc < 0)
+        goto endjob;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    qemuDomainSaveStatus(vm);
+    virDomainObjEndAPI(&vm);
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
+
+
 /**
  * qemuProcessShutdownOrReboot:
  * @vm: domain object
@@ -627,6 +672,37 @@ qemuProcessShutdownOrReboot(virDomainObj *vm)
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
             priv->pausedShutdown = false;
             qemuDomainSetFakeReboot(vm, false);
+            virObjectUnref(vm);
+        }
+
+        return false;
+    } else if (priv->backup && priv->backup->apiFlags & VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN) {
+        /* The users can request that while the 'backup' job is active (and
+         * possibly also other block jobs in the future) the qemu process will
+         * be kept around even when the guest OS shuts down, evem when the
+         * requested action is to terminate the VM.
+         *
+         * In such case we'll reset the VM and keep it paused with proper state
+         * so that users can re-start it if needed.
+         *
+         * Terminating of the qemu process once the backup job is
+         * completed/terminated (unless the guest was unpaused/restarted) is
+         * then done in qemuBackupJobTerminate by invoking this function once
+         * again.
+         */
+        g_autofree char *name = g_strdup_printf("reset-%s", vm->def->name);
+        virThread th;
+
+        VIR_DEBUG("preserving qemu process while backup job is running");
+
+        virObjectRef(vm);
+        if (virThreadCreateFull(&th,
+                                false,
+                                qemuProcessResetPreservedDomain,
+                                name,
+                                false,
+                                vm) < 0) {
+            VIR_WARN("Failed to create thread to reset shutdown VM");
             virObjectUnref(vm);
         }
 

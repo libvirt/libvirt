@@ -27,6 +27,7 @@
 #include "qemu_checkpoint.h"
 #include "qemu_command.h"
 #include "qemu_security.h"
+#include "qemu_process.h"
 
 #include "storage_source.h"
 #include "storage_source_conf.h"
@@ -559,6 +560,8 @@ qemuBackupJobTerminate(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    /* some flags need to be probed after the private data is freed */
+    unsigned int apiFlags = priv->backup->apiFlags;
     size_t i;
 
     for (i = 0; i < priv->backup->ndisks; i++) {
@@ -623,6 +626,23 @@ qemuBackupJobTerminate(virDomainObj *vm,
 
     if (vm->job->asyncJob == VIR_ASYNC_JOB_BACKUP)
         virDomainObjEndAsyncJob(vm);
+
+    /* Users can request that the VM is preserved after a guest OS shutdown for
+     * the duration of the backup. This is the place where we need to check if
+     * this happened and optionally terminate the VM if the guest OS is still
+     * shut down */
+    if (apiFlags & VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN) {
+        int reason = -1;
+        virDomainState state = virDomainObjGetState(vm, &reason);
+
+        VIR_DEBUG("state: '%u', reason:'%d'", state, reason);
+
+        if (state == VIR_DOMAIN_SHUTDOWN ||
+            (state == VIR_DOMAIN_PAUSED && reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN)) {
+            VIR_DEBUG("backup job finished terminating the previously shutdown VM");
+            ignore_value(qemuProcessShutdownOrReboot(vm));
+        }
+    }
 }
 
 
@@ -766,7 +786,8 @@ qemuBackupBegin(virDomainObj *vm,
     int ret = -1;
     g_autoptr(qemuFDPassDirect) fdpass = NULL;
 
-    virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL, -1);
+    virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL |
+                  VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN, -1);
 
     if (!(def = virDomainBackupDefParseString(backupXML, priv->driver->xmlopt, 0)))
         return -1;
