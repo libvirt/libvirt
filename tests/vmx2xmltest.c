@@ -8,6 +8,8 @@
 
 # include "internal.h"
 # include "vmx/vmx.h"
+# define LIBVIRT_ESX_DRIVERPRIV_H_ALLOW
+# include "esx_driverpriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 
@@ -104,60 +106,12 @@ testCompareHelper(const void *data)
     return ret;
 }
 
-static int
-testParseVMXFileName(const char *fileName,
-                     void *opaque G_GNUC_UNUSED,
-                     char **src,
-                     bool allow_missing)
-{
-    g_autofree char *copyOfFileName = NULL;
-    char *tmp = NULL;
-    char *saveptr = NULL;
-    char *datastoreName = NULL;
-    char *directoryAndFileName = NULL;
-
-    *src = NULL;
-
-    if (STRPREFIX(fileName, "/vmfs/volumes/")) {
-        /* Found absolute path referencing a file inside a datastore */
-        copyOfFileName = g_strdup(fileName);
-
-        /* Expected format: '/vmfs/volumes/<datastore>/<path>' */
-        if ((tmp = STRSKIP(copyOfFileName, "/vmfs/volumes/")) == NULL ||
-            (datastoreName = strtok_r(tmp, "/", &saveptr)) == NULL ||
-            (directoryAndFileName = strtok_r(NULL, "", &saveptr)) == NULL) {
-            return -1;
-        }
-
-        if (STREQ(datastoreName, "missing") ||
-            STRPREFIX(directoryAndFileName, "missing")) {
-            if (allow_missing)
-                return 0;
-
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "Referenced missing file '%s'", fileName);
-            return -1;
-        }
-
-        *src = g_strdup_printf("[%s] %s", datastoreName, directoryAndFileName);
-    } else if (STRPREFIX(fileName, "/")) {
-        /* Found absolute path referencing a file outside a datastore */
-        *src = g_strdup(fileName);
-    } else if (strchr(fileName, '/') != NULL) {
-        /* Found relative path, this is not supported */
-        return -1;
-    } else {
-        /* Found single file name referencing a file inside a datastore */
-        *src = g_strdup_printf("[datastore] directory/%s", fileName);
-    }
-
-    return 0;
-}
 
 static int
 mymain(void)
 {
     int ret = 0;
+    esxVMX_Data data = { 0 };
 
 # define DO_TEST_FULL(file, should_fail) \
         do { \
@@ -180,8 +134,10 @@ mymain(void)
     if (!(xmlopt = virVMXDomainXMLConfInit(caps)))
         return EXIT_FAILURE;
 
-    ctx.opaque = NULL;
-    ctx.parseFileName = testParseVMXFileName;
+    data.datastorePathWithoutFileName = (char*) "[datastore] directory";
+
+    ctx.opaque = &data;
+    ctx.parseFileName = esxParseVMXFileName;
     ctx.formatFileName = NULL;
     ctx.autodetectSCSIControllerModel = NULL;
     ctx.datacenterPath = NULL;
@@ -296,7 +252,8 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("vmx2xml"))
 
 #else
 
