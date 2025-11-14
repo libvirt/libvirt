@@ -5,6 +5,9 @@
 # esx/esx_util.h
 esxUtil_EscapeDatastoreItem;
 esxUtil_ParseDatastorePath;
+
+
+# esx/esx_vi_types.h
 esxVI_DateTime_ConvertToCalendarTime;
 
 # Let emacs know we want case-insensitive sorting
