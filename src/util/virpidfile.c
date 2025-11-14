@@ -526,8 +526,6 @@ virPidFileConstructPath(bool privileged,
                         const char *progname,
                         char **pidfile)
 {
-    g_autofree char *rundir = NULL;
-
     if (privileged) {
         /*
          * This is here just to allow calling this function with
@@ -540,7 +538,7 @@ virPidFileConstructPath(bool privileged,
         }
         *pidfile = g_strdup_printf("%s/%s.pid", runstatedir, progname);
     } else {
-        rundir = virGetUserRuntimeDirectory();
+        g_autofree char *rundir = virGetUserRuntimeDirectory();
 
         if (g_mkdir_with_parents(rundir, 0700) < 0) {
             virReportSystemError(errno,
