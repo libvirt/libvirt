@@ -126,10 +126,9 @@ remoteGetUNIXSocketHelper(remoteDriverTransport transport,
                           unsigned int flags)
 {
     char *sockname = NULL;
-    g_autofree char *userdir = NULL;
 
     if (flags & REMOTE_DRIVER_OPEN_USER) {
-        userdir = virGetUserRuntimeDirectory();
+        g_autofree char *userdir = virGetUserRuntimeDirectory();
 
         sockname = g_strdup_printf("%s/%s-sock", userdir, sock_prefix);
     } else {
