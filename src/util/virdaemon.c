@@ -216,9 +216,6 @@ virDaemonUnixSocketPaths(const char *sock_prefix,
                          char **rosockfile,
                          char **admsockfile)
 {
-    int ret = -1;
-    char *rundir = NULL;
-
     if (unix_sock_dir) {
         if (sockfile)
             *sockfile = g_strdup_printf("%s/%s-sock", unix_sock_dir, sock_prefix);
@@ -244,13 +241,12 @@ virDaemonUnixSocketPaths(const char *sock_prefix,
                                                RUNSTATEDIR, sock_prefix);
         } else {
             mode_t old_umask;
-
-            rundir = virGetUserRuntimeDirectory();
+            g_autofree char *rundir = virGetUserRuntimeDirectory();
 
             old_umask = umask(077);
             if (g_mkdir_with_parents(rundir, 0777) < 0) {
                 umask(old_umask);
-                goto cleanup;
+                return -1;
             }
             umask(old_umask);
 
@@ -261,10 +257,7 @@ virDaemonUnixSocketPaths(const char *sock_prefix,
         }
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(rundir);
-    return ret;
+    return 0;
 }
 
 #else /* WIN32 */
