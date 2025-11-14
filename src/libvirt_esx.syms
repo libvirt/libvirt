@@ -11,6 +11,10 @@ esxUtil_EscapeDatastoreItem;
 esxUtil_ParseDatastorePath;
 
 
+# esx/esx_vi.h
+esxVI_LookupDatastoreList;
+
+
 # esx/esx_vi_types.h
 esxVI_DateTime_ConvertToCalendarTime;
 

@@ -397,7 +397,7 @@ int esxVI_LookupVirtualMachineByUuidAndPrepareForTask
        bool autoAnswer);
 
 int esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList,
-                              esxVI_ObjectContent **datastoreList);
+                              esxVI_ObjectContent **datastoreList) ATTRIBUTE_MOCKABLE;
 
 int esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                                 esxVI_String *propertyNameList,
