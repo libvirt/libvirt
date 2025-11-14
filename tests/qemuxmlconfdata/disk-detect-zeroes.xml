@@ -21,13 +21,40 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='unmap'/>
-      <source file='/var/lib/libvirt/images/f14.img'/>
+      <source file='/var/lib/libvirt/images/detect-zeroes-unmap.img'/>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/detect-zeroes-unmap-back.img'/>
+        <backingStore/>
+      </backingStore>
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='on'/>
+      <source file='/var/lib/libvirt/images/detect-zeroes-on.img'/>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/detect-zeroes-on-back.img'/>
+        <backingStore/>
+      </backingStore>
+      <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2' discard='unmap' detect_zeroes='off'/>
+      <source file='/var/lib/libvirt/images/detect-zeroes-off.img'/>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/detect-zeroes-off-back.img'/>
+        <backingStore/>
+      </backingStore>
+      <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw' discard='ignore' detect_zeroes='unmap'/>
-      <source file='/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso'/>
+      <source file='/var/lib/libvirt/detect-zeroes-cdrom.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
