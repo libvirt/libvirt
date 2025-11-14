@@ -16,6 +16,7 @@
 {
   "node-name": "node-b-f",
   "read-only": true,
+  "detect-zeroes": "on",
   "driver": "qed",
   "file": "node-b-s",
   "backing": "node-c-f"
@@ -30,6 +31,7 @@
 {
   "node-name": "node-c-f",
   "read-only": true,
+  "detect-zeroes": "on",
   "driver": "vmdk",
   "file": "node-c-s",
   "backing": "node-d-f"
@@ -49,6 +51,7 @@
 {
   "node-name": "node-d-f",
   "read-only": true,
+  "detect-zeroes": "on",
   "driver": "raw",
   "file": "node-d-s"
 }

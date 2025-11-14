@@ -9702,11 +9702,7 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDef *disk,
     if (!disk)
         return;
 
-    /* transfer properties valid only for the top level image */
-    if (src == disk->src || src == disk->src->dataFileStore)
-        src->detect_zeroes = disk->detect_zeroes;
-
-    /* transfer properties valid for the full chain */
+    src->detect_zeroes = disk->detect_zeroes;
     src->iomode = disk->iomode;
     src->cachemode = disk->cachemode;
     src->discard = disk->discard;
