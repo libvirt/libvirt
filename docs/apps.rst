@@ -185,6 +185,10 @@ Infrastructure as a Service (IaaS)
    software-defined datacenter. The key strengths of ZStack in terms of
    management are scalability, performance, and a fast, user-friendly
    deployment.
+`Apache CloudStack <https://cloudstack.apache.org/>`__
+   Apache CloudStack™ is an open-source software system designed to
+   deploy and manage large networks of virtual machines, as a highly available,
+   highly scalable Infrastructure as a Service (IaaS) cloud computing platform.
 
 Libraries
 ---------
