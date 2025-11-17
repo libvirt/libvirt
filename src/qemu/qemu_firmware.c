@@ -1913,13 +1913,11 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         return -1;
     }
 
-    /* If firmware autoselection is disabled and the loader is a ROM
-     * instead of a PFLASH device, then we're using BIOS and we don't
-     * need any information at all */
-    if (!autoSelection &&
-        (!loader || (loader && loader->type == VIR_DOMAIN_LOADER_TYPE_ROM))) {
+    /* If firmware autoselection is disabled and no information
+     * related to the loader was provided, then we're using the
+     * default built-in firmware and we can stop here */
+    if (!autoSelection && !loader)
         return 0;
-    }
 
     /* Look for the information we need in firmware descriptors */
     if ((ret = qemuFirmwareFillDomainModern(driver, def)) < 0)
