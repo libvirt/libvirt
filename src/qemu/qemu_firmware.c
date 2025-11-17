@@ -1470,6 +1470,7 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
         loader = def->os.loader;
 
         loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+        loader->format = VIR_STORAGE_FILE_RAW;
 
         VIR_FREE(loader->path);
         loader->path = g_strdup(memory->filename);
