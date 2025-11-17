@@ -937,23 +937,6 @@ qemuFirmwareOSInterfaceTypeToOsDefFirmware(qemuFirmwareOSInterface interface)
 }
 
 
-static qemuFirmwareOSInterface
-qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
-{
-    switch (type) {
-    case VIR_DOMAIN_LOADER_TYPE_ROM:
-        return QEMU_FIRMWARE_OS_INTERFACE_BIOS;
-    case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-        return QEMU_FIRMWARE_OS_INTERFACE_UEFI;
-    case VIR_DOMAIN_LOADER_TYPE_NONE:
-    case VIR_DOMAIN_LOADER_TYPE_LAST:
-        break;
-    }
-
-    return QEMU_FIRMWARE_OS_INTERFACE_NONE;
-}
-
-
 /**
  * qemuFirmwareEnsureNVRAM:
  * @def: domain definition
@@ -1100,6 +1083,8 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     const virDomainLoaderDef *loader = def->os.loader;
     size_t i;
     qemuFirmwareOSInterface want;
+    bool wantUEFI = false;
+    bool wantBIOS = false;
     bool supportsS3 = false;
     bool supportsS4 = false;
     bool requiresSMM = false;
@@ -1115,12 +1100,34 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.firmware);
 
     if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE && loader) {
-        want = qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(loader->type);
+        /* If an explicit request for a specific type of firmware is
+         * not present, we can still infer this information from
+         * other factors. Specifically, the pflash loader type is
+         * only used for UEFI, while the rom loader type can be used
+         * both for UEFI and BIOS */
+        switch (loader->type) {
+        case VIR_DOMAIN_LOADER_TYPE_PFLASH:
+            wantUEFI = true;
+            break;
+        case VIR_DOMAIN_LOADER_TYPE_ROM:
+            wantUEFI = true;
+            wantBIOS = true;
+            break;
+        case VIR_DOMAIN_LOADER_TYPE_NONE:
+        case VIR_DOMAIN_LOADER_TYPE_LAST:
+        default:
+            break;
+        }
     }
 
     for (i = 0; i < fw->ninterfaces; i++) {
         if (fw->interfaces[i] == want)
             break;
+
+        if ((fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_UEFI && wantUEFI) ||
+            (fw->interfaces[i] == QEMU_FIRMWARE_OS_INTERFACE_BIOS && wantBIOS)) {
+            break;
+        }
     }
 
     if (i == fw->ninterfaces) {
