@@ -1553,6 +1553,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-stateless");
 
+    DO_TEST_CAPS_ARCH_LATEST_FULL("firmware-manual-efi-sev-snp", "x86_64",
+                                  ARG_CAPS_VARIANT, "+amdsev",
+                                  ARG_END);
+
     /* Make sure all combinations of ACPI and UEFI behave as expected */
     DO_TEST_CAPS_ARCH_LATEST("firmware-manual-efi-acpi-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-acpi-q35");
