@@ -2161,6 +2161,7 @@ qemuFirmwareGetSupported(const char *machine,
 
         case QEMU_FIRMWARE_DEVICE_MEMORY:
             fwpath = memory->filename;
+            nvrampath = memory->template;
             break;
 
         case QEMU_FIRMWARE_DEVICE_NONE:
