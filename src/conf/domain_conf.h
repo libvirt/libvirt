@@ -2048,6 +2048,7 @@ struct _virDomainGraphicsDef {
             virDomainGraphicsVNCSharePolicy sharePolicy;
             virTristateBool powerControl;
             unsigned int audioId;
+            virTristateBool wait;
         } vnc;
         struct {
             char *display;

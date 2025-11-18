@@ -4358,6 +4358,11 @@
                   <ref name="virYesNo"/>
                 </attribute>
               </optional>
+              <optional>
+                <attribute name="wait">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
             </group>
             <group>
               <optional>

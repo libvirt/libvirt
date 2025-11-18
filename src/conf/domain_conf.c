@@ -11940,6 +11940,10 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDef *def,
 
     def->data.vnc.keymap = virXMLPropString(node, "keymap");
 
+    if (virXMLPropTristateBool(node, "wait", VIR_XML_PROP_NONE,
+                               &def->data.vnc.wait) < 0)
+        return -1;
+
     ctxt->node = node;
     audioNode = virXPathNode("./audio", ctxt);
     if (audioNode) {
@@ -27212,6 +27216,10 @@ virDomainGraphicsDefFormatVNC(virBuffer *attrBuf,
         if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
             virBufferAsprintf(attrBuf, " websocketGenerated='%s'",
                               def->data.vnc.websocketGenerated ? "yes" : "no");
+
+        if (def->data.vnc.wait != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(attrBuf, " wait='%s'",
+                              virTristateBoolTypeToString(def->data.vnc.wait));
 
         virDomainGraphicsListenDefFormatAddr(attrBuf, glisten, flags);
         break;
