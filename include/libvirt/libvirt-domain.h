@@ -5401,6 +5401,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6, /* Some APIs (e.g., migration, snapshot) internally need to suspend a domain. This event detail is used when resume operation at the end of such API fails. (Since: 1.0.1) */
     VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY = 7, /* suspended for post-copy migration (Since: 1.3.3) */
     VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED = 8, /* suspended after failed post-copy (Since: 1.3.3) */
+    VIR_DOMAIN_EVENT_SUSPENDED_GUEST_SHUTDOWN = 9, /* suspended after guest os shut-down (a long running job is preserving the VM until completion) (Since: 11.10.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_SUSPENDED_LAST /* (Since: 0.9.10) */

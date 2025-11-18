@@ -85,7 +85,8 @@ VIR_ENUM_IMPL(virshDomainEventSuspended,
               N_("Snapshot"),
               N_("API error"),
               N_("Post-copy"),
-              N_("Post-copy Error"));
+              N_("Post-copy Error"),
+              N_("guest shutdown"));
 
 VIR_ENUM_DECL(virshDomainEventResumed);
 VIR_ENUM_IMPL(virshDomainEventResumed,

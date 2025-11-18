@@ -180,6 +180,9 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED:
                 return "Post-copy Error";
 
+            case VIR_DOMAIN_EVENT_SUSPENDED_GUEST_SHUTDOWN:
+                return "guest OS shutdown";
+
             case VIR_DOMAIN_EVENT_SUSPENDED_LAST:
                 break;
             }
