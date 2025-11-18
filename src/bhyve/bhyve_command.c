@@ -651,6 +651,9 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
         virBufferAsprintf(&opt, ",vga=%s",
                           virDomainVideoVGAConfTypeToString(video->driver->vgaconf));
 
+    if (graphics->data.vnc.wait == VIR_TRISTATE_BOOL_YES)
+        virBufferAddLit(&opt, ",wait");
+
     virCommandAddArg(cmd, "-s");
     virCommandAddArgBuffer(cmd, &opt);
     return 0;

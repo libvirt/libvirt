@@ -235,6 +235,8 @@ mymain(void)
     DO_TEST("vnc-autoport");
     DO_TEST("vnc-resolution");
     DO_TEST("vnc-password");
+    DO_TEST("vnc-wait");
+    DO_TEST("vnc-wait-no");
     DO_TEST_FAILURE("vnc-password-comma");
     DO_TEST("cputopology");
     DO_TEST_FAILURE("cputopology-nvcpu-mismatch");
