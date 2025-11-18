@@ -257,6 +257,7 @@ virDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob)
 {
     return !jobs->asyncJob ||
            newJob == VIR_JOB_NONE ||
+           (newJob == VIR_JOB_MODIFY_MIGRATION_SAFE && jobs->mask & JOB_MASK(VIR_JOB_MODIFY)) ||
            (jobs->mask & JOB_MASK(newJob));
 }
 
