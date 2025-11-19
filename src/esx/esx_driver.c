@@ -72,9 +72,11 @@ esxFreePrivate(esxPrivate **priv)
  * Parse a file name from a .vmx file and convert it to datastore path format
  * if possible. A .vmx file can contain file names in various formats:
  *
- * - A single name referencing a file in the same directory as the .vmx file:
+ * - A single name referencing a file in the same directory as the .vmx file,
+ *   or in a subdirectory:
  *
  *     test1.vmdk
+ *     subdir/test2.vmdk
  *
  * - An absolute file name referencing a file in a datastore that is mounted at
  *   /vmfs/volumes/<datastore>:
@@ -106,8 +108,9 @@ esxFreePrivate(esxPrivate **priv)
  *
  * Firstly this functions checks if the given file name contains a separator.
  * If it doesn't then the referenced file is in the same directory as the .vmx
- * file. The datastore name and directory of the .vmx file are passed to this
- * function via the opaque parameter by the caller of virVMXParseConfig.
+ * file, or in a subdirectory. The datastore name and directory of the .vmx
+ * file are passed to this function via the opaque parameter by the caller of
+ * virVMXParseConfig.
  *
  * Otherwise query for all known datastores and their mount directories. Then
  * try to find a datastore with a mount directory that is a prefix to the given
@@ -138,7 +141,7 @@ esxParseVMXFileName(const char *fileName,
 
     *out = NULL;
 
-    if (!strchr(fileName, '/') && !strchr(fileName, '\\')) {
+    if (*fileName != '/' && !strchr(fileName, '\\')) {
         /* Plain file name, use same directory as for the .vmx file */
         *out = g_strdup_printf("%s/%s", data->datastorePathWithoutFileName,
                                fileName);
