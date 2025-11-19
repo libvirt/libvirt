@@ -2029,12 +2029,6 @@ elif get_option('sysctl_config').enabled()
   error('sysctl configuration is supported only on linux')
 endif
 
-if not get_option('userfaultfd_sysctl').disabled() and conf.has('WITH_SYSCTL')
-  conf.set('WITH_USERFAULTFD_SYSCTL', 1)
-elif get_option('userfaultfd_sysctl').enabled()
-  error('userfaultfd_sysctl option requires sysctl_config to be enabled')
-endif
-
 prio = get_option('tls_priority')
 if prio == 'auto'
     # If local OS has 'crypto-policies' then default to that
@@ -2345,7 +2339,6 @@ misc_summary = {
   'sysctl config': conf.has('WITH_SYSCTL'),
   'tests': tests_enabled,
   'TLS priority': conf.get_unquoted('TLS_PRIORITY'),
-  'userfaultfd sysctl': conf.has('WITH_USERFAULTFD_SYSCTL'),
   'virt-host-validate': conf.has('WITH_HOST_VALIDATE'),
   'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'Warning Flags': supported_cc_flags,

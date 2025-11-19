@@ -210,14 +210,6 @@ if conf.has('WITH_QEMU')
     'in_file': files('virtqemud.init.in'),
   }
 
-  if conf.has('WITH_USERFAULTFD_SYSCTL')
-    install_data(
-      'postcopy-migration.sysctl',
-      install_dir: prefix / 'lib' / 'sysctl.d',
-      rename: [ '60-qemu-postcopy-migration.conf' ],
-    )
-  endif
-
   virt_install_dirs += [
     confdir / 'qemu',
     confdir / 'qemu' / 'autostart',
