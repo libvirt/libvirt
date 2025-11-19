@@ -18,7 +18,17 @@ esxVI_LookupDatastoreList;
 
 
 # esx/esx_vi_types.h
+esxVI_AnyType_Alloc;
 esxVI_DateTime_ConvertToCalendarTime;
+
+
+# esx/esx/esx_vi_types.generated.h
+esxVI_DatastoreHostMount_Alloc;
+esxVI_DynamicProperty_Alloc;
+esxVI_DynamicProperty_AppendToList;
+esxVI_HostMountInfo_Alloc;
+esxVI_ObjectContent_Alloc;
+esxVI_ObjectContent_AppendToList;
 
 # Let emacs know we want case-insensitive sorting
 # Local Variables:

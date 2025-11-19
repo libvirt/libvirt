@@ -553,6 +553,9 @@ if conf.has('WITH_VMX')
     { 'name': 'vmx2xmltest' },
     { 'name': 'xml2vmxtest' },
   ]
+  mock_libs += [
+    { 'name': 'vmx2xmlmock', 'deps': [ esx_dep ] },
+  ]
 endif
 
 if conf.has('WITH_JSON')
