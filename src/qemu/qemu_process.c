@@ -597,7 +597,16 @@ qemuProcessFakeReboot(void *opaque)
 }
 
 
-void
+/**
+ * qemuProcessShutdownOrReboot:
+ * @vm: domain object
+ *
+ * Perform the appropriate action when the guest OS shuts down. This can be
+ * either fake reboot (the VM is reset started again) or the VM is terminated.
+ *
+ * The function returns true if the VM was terminated.
+ */
+bool
 qemuProcessShutdownOrReboot(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -620,9 +629,14 @@ qemuProcessShutdownOrReboot(virDomainObj *vm)
             qemuDomainSetFakeReboot(vm, false);
             virObjectUnref(vm);
         }
+
+        return false;
     } else {
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
+        return true;
     }
+
+    return false;
 }
 
 
@@ -714,7 +728,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
     if (priv->agent)
         qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SHUTDOWN);
 
-    qemuProcessShutdownOrReboot(vm);
+    ignore_value(qemuProcessShutdownOrReboot(vm));
 
  unlock:
     virObjectUnlock(vm);
@@ -9705,8 +9719,11 @@ qemuProcessReconnect(void *opaque)
          reason == VIR_DOMAIN_PAUSED_USER)) {
         VIR_DEBUG("Finishing shutdown sequence for domain %s",
                   obj->def->name);
-        qemuProcessShutdownOrReboot(obj);
-        goto cleanup;
+        /* qemuProcessShutdownOrReboot returns 'true' if the VM was terminated.
+         * If the VM is kept (e.g. for fake reboot) we need to continue the
+         * reconnection */
+        if (qemuProcessShutdownOrReboot(obj))
+            goto cleanup;
     }
 
     /* if domain requests security driver we haven't loaded, report error, but

@@ -192,7 +192,8 @@ int qemuProcessKill(virDomainObj *vm, unsigned int flags);
 
 int qemuProcessFakeRebootViaRecreate(virDomainObj *vm, bool locked);
 
-void qemuProcessShutdownOrReboot(virDomainObj *vm);
+bool qemuProcessShutdownOrReboot(virDomainObj *vm)
+    G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuProcessAutoDestroy(virDomainObj *dom,
                             virConnectPtr conn);

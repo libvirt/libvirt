@@ -3557,7 +3557,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
         qemuDomainSetFakeReboot(vm, true);
-        qemuProcessShutdownOrReboot(vm);
+        ignore_value(qemuProcessShutdownOrReboot(vm));
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
