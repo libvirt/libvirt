@@ -12,6 +12,7 @@ esxUtil_ParseDatastorePath;
 
 
 # esx/esx_vi.h
+esxVI_LookupDatastoreHostMount;
 esxVI_LookupDatastoreList;
 
 

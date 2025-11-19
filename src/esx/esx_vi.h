@@ -413,7 +413,7 @@ int esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
 int esxVI_LookupDatastoreHostMount(esxVI_Context *ctx,
                                    esxVI_ManagedObjectReference *datastore,
                                    esxVI_DatastoreHostMount **hostMount,
-                                   esxVI_Occurrence occurrence);
+                                   esxVI_Occurrence occurrence) ATTRIBUTE_MOCKABLE;
 
 int esxVI_LookupTaskInfoByTask(esxVI_Context *ctx,
                                esxVI_ManagedObjectReference *task,
