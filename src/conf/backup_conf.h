@@ -99,6 +99,10 @@ struct _virDomainBackupDef {
     char *errmsg; /* error message of failed sub-blockjob */
 
     unsigned int apiFlags; /* original flags used when starting the job */
+
+    bool nbdStopped; /* The NBD server for a pull-mode backup was stopped. This
+                        flag is deliberately not stored in the status XML as
+                        it's related only to termination of the backup. */
 };
 
 typedef enum {

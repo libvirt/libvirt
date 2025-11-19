@@ -1006,14 +1006,17 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
         return;
 
     if (backup->type == VIR_DOMAIN_BACKUP_TYPE_PULL) {
-        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
-            return;
-        ignore_value(qemuMonitorNBDServerStop(priv->mon));
-        if (backup->tlsAlias)
-            ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
-        if (backup->tlsSecretAlias)
-            ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
-        qemuDomainObjExitMonitor(vm);
+        if (!backup->nbdStopped) {
+            if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+                return;
+            ignore_value(qemuMonitorNBDServerStop(priv->mon));
+            if (backup->tlsAlias)
+                ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
+            if (backup->tlsSecretAlias)
+                ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
+            qemuDomainObjExitMonitor(vm);
+            backup->nbdStopped = true;
+        }
 
         /* update the final statistics with the current job's data */
         backup->pull_tmp_used += cur;
