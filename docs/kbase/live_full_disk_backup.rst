@@ -1,3 +1,5 @@
+.. role:: since
+
 ===============================
 Efficient live full disk backup
 ===============================
@@ -83,6 +85,24 @@ This requires libvirt-7.2.0 and QEMU-4.2, or higher versions.
     $> ls -lash /var/lib/libvirt/images/vm1.qcow2*
     15M -rw-r--r--. 1 qemu qemu 15M May 10 12:22 vm1.qcow2
     21M -rw-------. 1 root root 21M May 10 12:23 vm1.qcow2.1620642185
+
+Shutdown of the guest OS during backup
+--------------------------------------
+
+The backup job is a long running job, potentially copying a lot of data, which
+requires the VM to be active (The backup is done by the qemu process) and
+can't be continued if the VM shuts down. This includes shut down initiated by
+the guest OS itself.
+
+:since:`Since libvirt-11.10` the ``virDomainBackupBegin()`` supports the
+``VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN`` flag
+(``virsh backup-begin --preserve-domain-on-shutdown``) which instructs libvirt
+to avoid termination of the VM if the guest OS shuts down while the backup is
+still running. The VM is in that scenario reset and paused instead of terminated
+allowing the backup to finish. Once the backup finishes the VM process is
+terminated. Users can resume the VM (e.g. ``virsh resume``) which causes it
+to boot normally using the existing VM process and will continue to run after
+completion of the backup job.
 
 
 Full backup with older libvirt versions
