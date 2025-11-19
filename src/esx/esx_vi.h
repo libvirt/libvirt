@@ -402,7 +402,7 @@ int esxVI_LookupDatastoreList(esxVI_Context *ctx, esxVI_String *propertyNameList
 int esxVI_LookupDatastoreByName(esxVI_Context *ctx, const char *name,
                                 esxVI_String *propertyNameList,
                                 esxVI_ObjectContent **datastore,
-                                esxVI_Occurrence occurrence);
+                                esxVI_Occurrence occurrence) ATTRIBUTE_MOCKABLE;
 
 int esxVI_LookupDatastoreByAbsolutePath(esxVI_Context *ctx,
                                         const char *absolutePath,
