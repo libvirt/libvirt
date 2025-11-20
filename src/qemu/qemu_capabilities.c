@@ -7136,14 +7136,13 @@ static void
 virQEMUCapsFillDomainFeatureS390PVCaps(virQEMUCaps *qemuCaps,
                                        virDomainCaps *domCaps)
 {
-    if (ARCH_IS_S390(qemuCaps->arch)) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) &&
-            virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps))
-            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_YES;
-        else
-            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_NO;
-    }
+    if (ARCH_IS_S390(qemuCaps->arch) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_S390_PV_GUEST) &&
+        virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps))
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_YES;
+    else
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_S390_PV] = VIR_TRISTATE_BOOL_NO;
 }
 
 
