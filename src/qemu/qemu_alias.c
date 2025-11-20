@@ -650,10 +650,14 @@ qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock)
 
 
 static void
-qemuAssignDeviceIOMMUAlias(virDomainIOMMUDef *iommu)
+qemuAssignDeviceIOMMUAlias(virDomainDef *def,
+                           virDomainIOMMUDef **iommu)
 {
-    if (!iommu->info.alias)
-        iommu->info.alias = g_strdup("iommu0");
+    size_t i;
+    for (i = 0; i < def->niommus; i++) {
+        if (!iommu[i]->info.alias)
+            iommu[i]->info.alias = g_strdup_printf("iommu%zu", i);
+    }
 }
 
 
@@ -769,8 +773,9 @@ qemuAssignDeviceAliases(virDomainDef *def)
     if (def->vsock) {
         qemuAssignDeviceVsockAlias(def->vsock);
     }
-    if (def->iommu)
-        qemuAssignDeviceIOMMUAlias(def->iommu);
+    if (def->niommus > 0) {
+        qemuAssignDeviceIOMMUAlias(def, def->iommus);
+    }
     for (i = 0; i < def->ncryptos; i++) {
         qemuAssignDeviceCryptoAlias(def, def->cryptos[i]);
     }

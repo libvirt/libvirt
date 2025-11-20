@@ -8371,7 +8371,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def)
         int factor = nvdpa + nnvme;
 
         if (nvfio) {
-            if (def->iommu)
+            if (def->niommus > 0)
                 factor += nvfio;
             else
                 factor += 1;

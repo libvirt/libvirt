@@ -2396,9 +2396,8 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
         /* Nada - none are PCI based (yet) */
     }
 
-    if (def->iommu) {
-        virDomainIOMMUDef *iommu = def->iommu;
-
+    for (i = 0; i < def->niommus; i++) {
+        virDomainIOMMUDef *iommu = def->iommus[i];
         switch (iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
         case VIR_DOMAIN_IOMMU_MODEL_AMD:

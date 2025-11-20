@@ -1470,7 +1470,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         }
     }
 
-    if (addIOMMU && !def->iommu &&
+    if (addIOMMU && !def->iommus && def->niommus == 0 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM)) {
@@ -1482,7 +1482,8 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         iommu->intremap = VIR_TRISTATE_SWITCH_ON;
         iommu->eim = VIR_TRISTATE_SWITCH_ON;
 
-        def->iommu = g_steal_pointer(&iommu);
+        def->iommus = g_new0(virDomainIOMMUDef *, 1);
+        def->iommus[def->niommus++] = g_steal_pointer(&iommu);
     }
 
     if (qemuDomainDefAddDefaultAudioBackend(driver, def) < 0)
@@ -1558,8 +1559,8 @@ qemuDomainDefEnableDefaultFeatures(virDomainDef *def,
      * domain already has IOMMU without inremap. This will be fixed in
      * qemuDomainIOMMUDefPostParse() but there domain definition can't be
      * modified so change it now. */
-    if (def->iommu &&
-        (def->iommu->intremap == VIR_TRISTATE_SWITCH_ON ||
+    if (def->iommus && def->niommus == 1 &&
+        (def->iommus[0]->intremap == VIR_TRISTATE_SWITCH_ON ||
          qemuDomainNeedsIOMMUWithEIM(def)) &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_NONE) {
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] = VIR_DOMAIN_IOAPIC_QEMU;

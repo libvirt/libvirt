@@ -3304,6 +3304,9 @@ struct _virDomainDef {
     size_t nwatchdogs;
     virDomainWatchdogDef **watchdogs;
 
+    size_t niommus;
+    virDomainIOMMUDef **iommus;
+
     /* At maximum 2 TPMs on the domain if a TPM Proxy is present. */
     size_t ntpms;
     virDomainTPMDef **tpms;
@@ -3313,7 +3316,6 @@ struct _virDomainDef {
     virDomainNVRAMDef *nvram;
     virCPUDef *cpu;
     virDomainRedirFilterDef *redirfilter;
-    virDomainIOMMUDef *iommu;
     virDomainVsockDef *vsock;
     virDomainPstoreDef *pstore;
 
@@ -4320,6 +4322,11 @@ virDomainShmemDef *virDomainShmemDefRemove(virDomainDef *def, size_t idx)
     ATTRIBUTE_NONNULL(1);
 ssize_t virDomainInputDefFind(const virDomainDef *def,
                               const virDomainInputDef *input)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+bool virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
+                             const virDomainIOMMUDef *b);
+ssize_t virDomainIOMMUDefFind(const virDomainDef *def,
+                              const virDomainIOMMUDef *iommu)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 bool virDomainVsockDefEquals(const virDomainVsockDef *a,
                              const virDomainVsockDef *b)

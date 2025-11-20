@@ -6969,9 +6969,9 @@
         <zeroOrMore>
           <ref name="panic"/>
         </zeroOrMore>
-        <optional>
+        <zeroOrMore>
           <ref name="iommu"/>
-        </optional>
+        </zeroOrMore>
         <optional>
           <ref name="vsock"/>
         </optional>
