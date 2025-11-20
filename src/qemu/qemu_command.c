@@ -332,7 +332,7 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
 
 static char *
 qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
-                                const virDomainDeviceInfo *info)
+                                const virPCIDeviceAddress *pci)
 {
     g_autofree char *devStr = NULL;
     const char *contAlias = NULL;
@@ -340,14 +340,14 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
     int contTargetIndex = 0;
     size_t i;
 
-    if (!(devStr = virPCIDeviceAddressAsString(&info->addr.pci)))
+    if (!(devStr = virPCIDeviceAddressAsString(pci)))
         return NULL;
 
     for (i = 0; i < domainDef->ncontrollers; i++) {
         virDomainControllerDef *cont = domainDef->controllers[i];
 
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
-            cont->idx == info->addr.pci.bus) {
+            cont->idx == pci->bus) {
             contAlias = cont->info.alias;
             contIsPHB = virDomainControllerIsPSeriesPHB(cont);
             contTargetIndex = cont->opts.pciopts.targetIndex;
@@ -355,7 +355,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
             if (!contAlias) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Device alias was not set for PCI controller with index '%1$u' required for device at address '%2$s'"),
-                               info->addr.pci.bus, devStr);
+                               pci->bus, devStr);
                 return NULL;
             }
 
@@ -397,7 +397,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
     if (!contAlias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find PCI controller with index '%1$u' required for device at address '%2$s'"),
-                       info->addr.pci.bus, devStr);
+                       pci->bus, devStr);
         return NULL;
     }
 
@@ -584,7 +584,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
     switch (info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
         g_autofree char *pciaddr = NULL;
-        g_autofree char *bus = qemuBuildDeviceAddressPCIGetBus(domainDef, info);
+        g_autofree char *bus = qemuBuildDeviceAddressPCIGetBus(domainDef, &info->addr.pci);
 
         if (!bus)
             return -1;
