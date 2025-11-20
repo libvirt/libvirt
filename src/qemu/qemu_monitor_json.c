@@ -5401,7 +5401,7 @@ qemuMonitorJSONParseCPUModelExpansion(const char *cpu_name,
 
     if (cpu_deprecated_props &&
         virJSONValueArraySize(cpu_deprecated_props) &&
-        (!(expanded_model->deprecated_props = virJSONValueArrayToStringList(cpu_deprecated_props)))) {
+        (!(expanded_model->full_dep_props = virJSONValueArrayToStringList(cpu_deprecated_props)))) {
         return -1;
     }
 
