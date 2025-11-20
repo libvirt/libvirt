@@ -63,13 +63,23 @@ static bool virValidateWantEscape(void)
 
 void virValidatePass(void)
 {
+    virValidatePassDetails(NULL);
+}
+
+void virValidatePassDetails(const char *info)
+{
     if (quiet)
         return;
 
     if (virValidateWantEscape())
-        fprintf(stdout, "\033[32m%s\033[0m\n", _("PASS"));
+        fprintf(stdout, "\033[32m%s\033[0m", _("PASS"));
     else
         fprintf(stdout, "%s\n", _("PASS"));
+
+    if (info)
+        fprintf(stdout, " (%s)\n", info);
+    else
+        fprintf(stdout, "\n");
 }
 
 

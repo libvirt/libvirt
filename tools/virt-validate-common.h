@@ -52,6 +52,7 @@ void virValidateCheck(const char *prefix,
                       ...) G_GNUC_PRINTF(2, 3);
 
 void virValidatePass(void);
+void virValidatePassDetails(const char *info);
 void virValidateFail(virValidateLevel level,
                      const char *format,
                      ...) G_GNUC_PRINTF(2, 3);
