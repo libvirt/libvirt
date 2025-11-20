@@ -3437,15 +3437,24 @@ virQEMUCapsUpdateCPUDeprecatedFeatures(virQEMUCaps *qemuCaps,
                                        virCPUFeaturePolicy policy)
 {
     qemuMonitorCPUModelInfo *modelInfo;
+    GStrv props;
     size_t i;
 
     modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, virtType);
 
-    if (!modelInfo || !modelInfo->full_dep_props)
+    if (!modelInfo)
         return;
 
-    for (i = 0; i < g_strv_length(modelInfo->full_dep_props); i++) {
-        virCPUDefUpdateFeature(cpu, modelInfo->full_dep_props[i], policy);
+    /* Only allow policy "require" on features that are actually
+     * supported on the CPU model */
+    if (policy == VIR_CPU_FEATURE_REQUIRE) {
+        props = modelInfo->static_dep_props;
+    } else {
+        props = modelInfo->full_dep_props;
+    }
+
+    for (i = 0; i < g_strv_length(props); i++) {
+        virCPUDefUpdateFeature(cpu, props[i], policy);
     }
 }
 
