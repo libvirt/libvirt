@@ -1159,6 +1159,7 @@
     <backup supported='yes'/>
     <async-teardown supported='no'/>
     <ps2 supported='yes'/>
+    <tdx supported='no'/>
     <sev supported='no'/>
     <sgx supported='no'/>
     <launchSecurity supported='no'/>

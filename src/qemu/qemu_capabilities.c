@@ -7191,7 +7191,9 @@ virQEMUCapsFillDomainFeatureTDXCaps(virQEMUCaps *qemuCaps,
         domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST) &&
         virQEMUCapsGetKVMSupportsSecureGuest(qemuCaps))
-            domCaps->features[VIR_DOMAIN_CAPS_FEATURE_TDX] = VIR_TRISTATE_BOOL_YES;
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_TDX] = VIR_TRISTATE_BOOL_YES;
+    else
+        domCaps->features[VIR_DOMAIN_CAPS_FEATURE_TDX] = VIR_TRISTATE_BOOL_NO;
 }
 
 

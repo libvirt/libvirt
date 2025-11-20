@@ -1938,6 +1938,7 @@
     <backup supported='yes'/>
     <async-teardown supported='yes'/>
     <ps2 supported='yes'/>
+    <tdx supported='no'/>
     <sev supported='yes'>
       <cbitpos>51</cbitpos>
       <reducedPhysBits>1</reducedPhysBits>
