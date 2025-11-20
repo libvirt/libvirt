@@ -378,8 +378,7 @@ bool virHostKernelModuleIsLoaded(const char *module)
 
 
 static int
-virHostValidateAMDSev(const char *hvname,
-                      virValidateLevel level)
+virHostValidateAMDSev(virValidateLevel level)
 {
     g_autofree char *mod_value = NULL;
     uint32_t eax, ebx;
@@ -405,31 +404,14 @@ virHostValidateAMDSev(const char *hvname,
         return VIR_VALIDATE_FAILURE(level);
     }
 
-    virValidatePass();
-
-    virValidateCheck(hvname, "%s",
-                     _("Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"));
-
     virHostCPUX86GetCPUID(0x8000001F, 0, &eax, &ebx, NULL, NULL);
 
-    if (eax & (1U << 3)) {
-        virValidatePass();
-    } else {
-        virValidateFail(level,
-                        "AMD SEV-ES is not supported");
-        return VIR_VALIDATE_FAILURE(level);
-    }
-
-    virValidateCheck(hvname, "%s",
-                     _("Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-SNP)"));
-
-    if (eax & (1U << 4)) {
-        virValidatePass();
-    } else {
-        virValidateFail(level,
-                        "AMD SEV-SNP is not supported");
-        return VIR_VALIDATE_FAILURE(level);
-    }
+    if (eax & (1U << 4))
+        virValidatePassDetails("SEV-SNP");
+    else if (eax & (1U << 3))
+        virValidatePassDetails("SEV-ES");
+    else
+        virValidatePassDetails("SEV");
 
     return 1;
 }
@@ -453,7 +435,7 @@ static int virHostValidateIntelTDX(virValidateLevel level)
         return VIR_VALIDATE_FAILURE(level);
     }
 
-    virValidatePass();
+    virValidatePassDetails("TDX");
     return 1;
 }
 
@@ -496,7 +478,7 @@ int virHostValidateSecureGuests(const char *hvname,
                                            G_N_ELEMENTS(kIBMValues),
                                            VIR_KERNEL_CMDLINE_FLAGS_SEARCH_FIRST |
                                            VIR_KERNEL_CMDLINE_FLAGS_CMP_PREFIX)) {
-                virValidatePass();
+                virValidatePassDetails("PROT-VIRT");
                 return 1;
             } else {
                 virValidateFail(level,
