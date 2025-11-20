@@ -260,7 +260,7 @@ int virHostValidateIOMMU(const char *hvname,
 
     if (isIntel) {
         if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
-            virValidatePass();
+            virValidatePassDetails("DMAR");
             bootarg = "intel_iommu=on";
         } else {
             virValidateFail(level,
@@ -271,7 +271,7 @@ int virHostValidateIOMMU(const char *hvname,
         }
     } else if (isAMD) {
         if (access("/sys/firmware/acpi/tables/IVRS", F_OK) == 0) {
-            virValidatePass();
+            virValidatePassDetails("IVRS");
             bootarg = "iommu=pt iommu=1";
         } else {
             virValidateFail(level,
@@ -318,7 +318,7 @@ int virHostValidateIOMMU(const char *hvname,
                                 "No SMMU found");
                 return VIR_VALIDATE_FAILURE(level);
             } else {
-                virValidatePass();
+                virValidatePassDetails("SMMU");
             }
         }
     } else {
