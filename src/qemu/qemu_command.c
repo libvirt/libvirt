@@ -6239,6 +6239,33 @@ qemuBuildBootCommandLine(virCommand *cmd,
 }
 
 
+static virJSONValue *
+qemuBuildPCINestedSmmuv3DevProps(const virDomainDef *def,
+                                 const virDomainIOMMUDef *iommu)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *bus = NULL;
+    virPCIDeviceAddress addr = { .bus = iommu->pci_bus };
+
+    bus = qemuBuildDeviceAddressPCIGetBus(def, &addr);
+
+    if (!bus) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Could not find a suitable controller for smmuv3"));
+        return NULL;
+    }
+
+    if (virJSONValueObjectAdd(&props,
+                              "s:driver", "arm-smmuv3",
+                              "s:primary-bus", bus,
+                              "s:id", iommu->info.alias,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
+}
+
+
 static int
 qemuBuildIOMMUCommandLine(virCommand *cmd,
                           const virDomainDef *def,
@@ -6269,6 +6296,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                 return -1;
 
             break;
+
         case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
             if (virJSONValueObjectAdd(&props,
                                       "s:driver", "virtio-iommu",
@@ -6283,9 +6311,6 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
             if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
                 return -1;
 
-            break;
-        case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
-            /* There is no -device for SMMUv3, so nothing to be done here */
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_AMD:
@@ -6314,6 +6339,15 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
             if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
                 return -1;
 
+            break;
+
+        case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
+            if (iommu->pci_bus >= 0) {
+                if (!(props = qemuBuildPCINestedSmmuv3DevProps(def, iommu)))
+                    return -1;
+                if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+                    return -1;
+            }
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_LAST:

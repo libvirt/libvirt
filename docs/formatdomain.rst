@@ -9238,6 +9238,10 @@ Example:
       Enable x2APIC mode. Useful for higher number of guest CPUs.
       :since:`Since 11.5.0` (QEMU/KVM and ``amd`` model only)
 
+   ``pciBus``
+      The ``pciBus`` attribute notes the index of the controller that an
+      IOMMU device is attached to. (QEMU/KVM and ``smmuv3`` model only)
+
 The ``virtio`` IOMMU devices can further have ``address`` element as described
 in `Device addresses`_ (address has to by type of ``pci``).
 
