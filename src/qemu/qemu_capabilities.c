@@ -4234,7 +4234,9 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
 
     ctxt->node = hostCPUNode;
     if (virQEMUCapsParseHostCPUModelInfoDepFeats(ctxt, &hostCPU->full_dep_props,
-                                                "./deprecatedFeatures") < 0) {
+                                                "./deprecatedFeatures") < 0 ||
+        virQEMUCapsParseHostCPUModelInfoDepFeats(ctxt, &hostCPU->static_dep_props,
+                                                "./hostDeprecatedFeatures") < 0) {
         return -1;
     }
 
@@ -5017,6 +5019,8 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsAccel *caps,
 
     virQEMUCapsFormatHostCPUModelInfoDepFeats(buf, model->full_dep_props,
                                               "deprecatedFeatures");
+    virQEMUCapsFormatHostCPUModelInfoDepFeats(buf, model->static_dep_props,
+                                              "hostDeprecatedFeatures");
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</hostCPU>\n");

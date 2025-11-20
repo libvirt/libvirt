@@ -3375,6 +3375,7 @@ qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfo *model_info)
     }
 
     g_strfreev(model_info->full_dep_props);
+    g_strfreev(model_info->static_dep_props);
     g_free(model_info->props);
     g_free(model_info->name);
     g_free(model_info);
@@ -3420,6 +3421,7 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
     }
 
     copy->full_dep_props = g_strdupv(orig->full_dep_props);
+    copy->static_dep_props = g_strdupv(orig->static_dep_props);
 
     return copy;
 }

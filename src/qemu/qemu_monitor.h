@@ -1431,6 +1431,7 @@ struct _qemuMonitorCPUModelInfo {
     size_t nprops;
     qemuMonitorCPUProperty *props;
     GStrv full_dep_props;   /* deprecated properties resulting from a full model expansion */
+    GStrv static_dep_props; /* deprecated properties resulting from a static model expansion */
     bool migratability;
 };
 

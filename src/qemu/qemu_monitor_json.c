@@ -5392,17 +5392,30 @@ static int
 qemuMonitorJSONParseCPUModelExpansion(const char *cpu_name,
                                       virJSONValue *cpu_props,
                                       virJSONValue *cpu_deprecated_props,
+                                      qemuMonitorCPUModelExpansionType type,
                                       qemuMonitorCPUModelInfo **model_info)
 {
     g_autoptr(qemuMonitorCPUModelInfo) expanded_model = NULL;
+    GStrv dep_props = NULL;
 
     if (qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, &expanded_model) < 0)
         return -1;
 
     if (cpu_deprecated_props &&
         virJSONValueArraySize(cpu_deprecated_props) &&
-        (!(expanded_model->full_dep_props = virJSONValueArrayToStringList(cpu_deprecated_props)))) {
+        (!(dep_props = virJSONValueArrayToStringList(cpu_deprecated_props)))) {
         return -1;
+    }
+
+    switch (type) {
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC:
+        expanded_model->static_dep_props = dep_props;
+        break;
+
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL:
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL:
+        expanded_model->full_dep_props = dep_props;
+        break;
     }
 
     *model_info = g_steal_pointer(&expanded_model);
@@ -5509,7 +5522,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
 
     return qemuMonitorJSONParseCPUModelExpansion(cpu_name, cpu_props,
                                                  cpu_deprecated_props,
-                                                 model_info);
+                                                 type, model_info);
 }
 
 
