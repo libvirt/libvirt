@@ -4107,12 +4107,39 @@ virQEMUCapsSetCPUModelInfo(virQEMUCaps *qemuCaps,
 
 
 static int
+virQEMUCapsParseHostCPUModelInfoDepFeats(xmlXPathContextPtr ctxt,
+                                         GStrv *dep_props,
+                                         const char *xpath)
+{
+    xmlNodePtr node;
+    size_t i;
+
+    if ((node = virXPathNode(xpath, ctxt))) {
+        g_autoptr(GPtrArray) props = virXMLNodeGetSubelementList(node, NULL);
+
+        *dep_props = g_new0(char *, props->len + 1);
+
+        for (i = 0; i < props->len; i++) {
+            xmlNodePtr prop = g_ptr_array_index(props, i);
+
+            if (!((*dep_props)[i] = virXMLPropString(prop, "name"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                _("missing 'name' attribute for a host CPU model deprecated property in QEMU capabilities cache"));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
                                 xmlXPathContextPtr ctxt,
                                 const char *typeStr)
 {
     xmlNodePtr hostCPUNode;
-    xmlNodePtr deprecated_props;
     g_autofree xmlNodePtr *nodes = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autoptr(qemuMonitorCPUModelInfo) hostCPU = NULL;
@@ -4206,21 +4233,9 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
     }
 
     ctxt->node = hostCPUNode;
-
-    if ((deprecated_props = virXPathNode("./deprecatedFeatures", ctxt))) {
-        g_autoptr(GPtrArray) props = virXMLNodeGetSubelementList(deprecated_props, NULL);
-
-        hostCPU->full_dep_props = g_new0(char *, props->len + 1);
-
-        for (i = 0; i < props->len; i++) {
-            xmlNodePtr prop = g_ptr_array_index(props, i);
-
-            if (!(hostCPU->full_dep_props[i] = virXMLPropString(prop, "name"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing 'name' attribute for a host CPU model deprecated property in QEMU capabilities cache"));
-                return -1;
-            }
-        }
+    if (virQEMUCapsParseHostCPUModelInfoDepFeats(ctxt, &hostCPU->full_dep_props,
+                                                "./deprecatedFeatures") < 0) {
+        return -1;
     }
 
     caps->hostCPU.info = g_steal_pointer(&hostCPU);
@@ -4931,6 +4946,27 @@ virQEMUCapsLoadCache(virArch hostArch,
 
 
 static void
+virQEMUCapsFormatHostCPUModelInfoDepFeats(virBuffer *buf,
+                                          GStrv props,
+                                          const char *xmlStr)
+{
+    size_t i;
+
+    if (!props)
+        return;
+
+    virBufferAsprintf(buf, "<%s>\n", xmlStr);
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < g_strv_length(props); i++)
+        virBufferAsprintf(buf, "<property name='%s'/>\n", props[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAsprintf(buf, "</%s>\n", xmlStr);
+}
+
+
+static void
 virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsAccel *caps,
                                   virBuffer *buf,
                                   const char *typeStr)
@@ -4979,17 +5015,8 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsAccel *caps,
         virBufferAddLit(buf, "/>\n");
     }
 
-    if (model->full_dep_props) {
-        virBufferAddLit(buf, "<deprecatedFeatures>\n");
-        virBufferAdjustIndent(buf, 2);
-
-        for (i = 0; i < g_strv_length(model->full_dep_props); i++)
-            virBufferAsprintf(buf, "<property name='%s'/>\n",
-                              model->full_dep_props[i]);
-
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</deprecatedFeatures>\n");
-    }
+    virQEMUCapsFormatHostCPUModelInfoDepFeats(buf, model->full_dep_props,
+                                              "deprecatedFeatures");
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</hostCPU>\n");
