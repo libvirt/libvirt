@@ -48,6 +48,12 @@ virHostCPUGetPhysAddrSize(const virArch hostArch,
 }
 
 #if WITH_QEMU
+bool
+virQEMUCapsKVMSupportsVMTypeTDX(void)
+{
+    return true;
+}
+
 static bool (*real_virQEMUCapsGetKVMSupportsSecureGuest)(virQEMUCaps *qemuCaps);
 
 bool

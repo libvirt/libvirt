@@ -980,3 +980,6 @@ int
 virQEMUCapsProbeQMPMachineTypes(virQEMUCaps *qemuCaps,
                                 virDomainVirtType virtType,
                                 qemuMonitor *mon);
+
+bool
+virQEMUCapsKVMSupportsVMTypeTDX(void) ATTRIBUTE_MOCKABLE;

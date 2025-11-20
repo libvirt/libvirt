@@ -54,10 +54,16 @@
 # include <sys/types.h>
 # include <sys/sysctl.h>
 #endif
+#ifdef WITH_LINUX_KVM_H
+# include <linux/kvm.h>
+# include <sys/ioctl.h>
+#endif
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_capabilities");
+
+#define KVM_DEVICE "/dev/kvm"
 
 /* While not public, these strings must not change. They
  * are used in domain status files which are read on
@@ -3686,6 +3692,50 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
 }
 
 
+bool
+virQEMUCapsKVMSupportsVMTypeTDX(void)
+{
+#if defined(KVM_CAP_VM_TYPES) && defined(KVM_X86_TDX_VM)
+    VIR_AUTOCLOSE kvmfd = -1;
+    int types;
+
+    if (!virFileExists(KVM_DEVICE))
+        return false;
+
+    if ((kvmfd = open(KVM_DEVICE, O_RDONLY)) < 0) {
+        VIR_DEBUG("Unable to open %s, cannot check TDX", KVM_DEVICE);
+        return false;
+    }
+
+    if ((types = ioctl(kvmfd, KVM_CHECK_EXTENSION, KVM_CAP_VM_TYPES)) < 0)
+        types = 0;
+
+    VIR_DEBUG("KVM VM types: 0x%x", types);
+
+    return !!(types & (1 << KVM_X86_TDX_VM));
+#else
+    VIR_DEBUG("KVM not compiled");
+    return false;
+#endif
+}
+
+
+/* This ought to be virQEMUCapsProbeQMPTDXCapabilities,
+ * but there is no 'query-tdx-capabilities' command
+ * available in QEMU currently. If one arrives, rename
+ * this method & switch to using that on new enough QEMU
+ */
+static void
+virQEMUCapsProbeTDXCapabilities(virQEMUCaps *qemuCaps)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_TDX_GUEST))
+        return;
+
+    if (!virQEMUCapsKVMSupportsVMTypeTDX())
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_TDX_GUEST);
+}
+
+
 static int
 virQEMUCapsProbeQMPSGXCapabilities(virQEMUCaps *qemuCaps,
                                    qemuMonitor *mon)
@@ -5910,6 +5960,7 @@ virQEMUCapsInitQMPMonitor(virQEMUCaps *qemuCaps,
         return -1;
     if (virQEMUCapsProbeQMPSGXCapabilities(qemuCaps, mon) < 0)
         return -1;
+    virQEMUCapsProbeTDXCapabilities(qemuCaps);
 
     virQEMUCapsInitProcessCaps(qemuCaps);
 
