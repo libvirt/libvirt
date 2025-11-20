@@ -34,6 +34,7 @@ int virHostValidateQEMU(void)
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
     virArch arch = virArchFromHost();
+    const char *hwVirtName = NULL;
     const char *kvmhint = _("Check that CPU and firmware supports virtualization and kvm module is loaded");
 
     if (!(flags = virHostValidateGetCPUFlags()))
@@ -44,18 +45,26 @@ int virHostValidateQEMU(void)
     case VIR_ARCH_X86_64:
         hasVirtFlag = true;
         kvmhint = _("Check that the 'kvm-intel' or 'kvm-amd' modules are loaded & the BIOS has enabled virtualization");
-        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
-            virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
+        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM)) {
+            hwVirtName = "SVM";
             hasHwVirt = true;
+        }
+        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX)) {
+            hwVirtName = "VMX";
+            hasHwVirt = true;
+        }
         break;
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
         hasVirtFlag = true;
-        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SIE))
+        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SIE)) {
+            hwVirtName = "SIE";
             hasHwVirt = true;
+        }
         break;
     case VIR_ARCH_PPC64:
     case VIR_ARCH_PPC64LE:
+        hwVirtName = "LPCR";
         hasVirtFlag = true;
         hasHwVirt = true;
         break;
@@ -66,7 +75,7 @@ int virHostValidateQEMU(void)
     if (hasVirtFlag) {
         virValidateCheck("QEMU", "%s", _("Checking for hardware virtualization"));
         if (hasHwVirt) {
-            virValidatePass();
+            virValidatePassDetails(hwVirtName);
         } else {
             virValidateFail(VIR_VALIDATE_FAIL,
                             _("Host not compatible with KVM; HW virtualization CPU features not found. Only emulated CPUs are available; performance will be significantly limited"));
