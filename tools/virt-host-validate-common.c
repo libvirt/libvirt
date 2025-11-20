@@ -492,13 +492,17 @@ int virHostValidateSecureGuests(const char *hvname,
                             "support for IBM Secure Execution");
             return VIR_VALIDATE_FAILURE(level);
         }
-    } else if (hasAMDSev) {
-        return virHostValidateAMDSev(hvname, level);
-    } else if (hasIntelTDX) {
-        return virHostValidateIntelTDX(level);
+    } else if (arch == VIR_ARCH_X86_64) {
+        if (hasAMDSev) {
+            return virHostValidateAMDSev(level);
+        } else if (hasIntelTDX) {
+            return virHostValidateIntelTDX(level);
+        } else {
+            virValidateFail(level, "None of SEV, SEV-ES, SEV-SNP, TDX available");
+        }
+    } else {
+        virValidateFail(level,
+                        "Unknown if this platform has Secure Guest support");
     }
-
-    virValidateFail(level,
-                    "Unknown if this platform has Secure Guest support");
     return VIR_VALIDATE_FAILURE(level);
 }
