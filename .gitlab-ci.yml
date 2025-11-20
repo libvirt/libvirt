@@ -173,3 +173,53 @@ coverity:
     - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
       when: on_success
     - when: never
+
+# Check that we have CVE git tags for CVEs mentioned in commit messages and NEWS
+# and expose the list of CVE tags
+cve_tags:
+  image: $CI_REGISTRY/$RUN_UPSTREAM_NAMESPACE/libvirt/ci-$NAME:latest
+  variables:
+    NAME: almalinux-9
+    GIT_STRATEGY: clone
+    GIT_DEPTH: ""
+  stage: sanity_checks
+  needs:
+    - job: x86_64-almalinux-9-container
+      optional: true
+      artifacts: false
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
+    - when: never
+  script:
+    # fetch list of git tags and exceptions
+    - git tag | grep -o 'CVE-[0-9]\+-[0-9]\+' > cve-tags
+    - grep -o 'CVE-[0-9]\+-[0-9]\+' .cve_exceptions > cve-allowed-exceptions
+    - sort -u cve-tags cve-allowed-exceptions > cve-allowed
+    # lookup CVE ids in 'git-log'
+    - git log | grep -o '[Cc][Vv][Ee]-[0-9]\+-[0-9]\+' | sort -u > cves-found-log
+    - comm -2 -3 cves-found-log cve-allowed > cves-missing-tags-log
+    # lookup CVE ids in 'NEWS.rst'
+    - grep -o '[Cc][Vv][Ee]-[0-9]\+-[0-9]\+' NEWS.rst | sort -u > cves-found-news
+    - comm -2 -3 cves-found-news cve-allowed > cves-missing-tags-news
+    # lookup CVE ids in index of security notices
+    - curl -fsSL https://security.libvirt.org/index.xml | grep -o 'CVE-[0-9]\+-[0-9]\+' | sort -u > cves-found-notices
+    - comm -2 -3 cves-found-notices cve-allowed > cves-missing-tags-notices
+    - if [ -s cves-missing-tags-log ] || [ -s cves-missing-tags-news ] || [ -s cves-missing-tags-notices ];
+      then
+        echo "Following CVE's are either missing a git tag or an exception in '.cve_exceptions:";
+        echo "Source 'git log'";
+        cat cves-missing-tags-log;
+        echo "Source 'NEWS.rst'";
+        cat cves-missing-tags-news;
+        echo "Source 'security.libvirt.org/index.xml'";
+        cat cves-missing-tags-notices;
+        false;
+      fi
+  artifacts:
+    expose_as: 'CVE tags'
+    name: 'cve_tags'
+    when: always
+    expire_in: 30 days
+    paths:
+      - cve-tags

@@ -1,0 +1,46 @@
+This file contains CVE IDs mentioned in either the commit log or the NEWS which
+are not actually CVEs in libvirt and is used for the sanity check ensuring that
+we have git tags for all CVE patches.
+
+This file can contain any other text explaining given CVE as it's filtered for
+just CVE ids for matching.
+
+Commit messages mention the following non-libvirt CVEs:
+
+ - CVE-2011-4127: Kernel privilege escalation via SG_IO
+
+   Mentioned as justification to introduce new disk access mode 'lun'
+
+ - CVE-2012-3386: GNU Automake granting world-writable permissions to extraction directory
+
+   Mentioned as justification for fixing a syntax check failure.
+
+ - CVE-2013-0242: Buffer overflow in glibc's regexec code
+
+   gnulib update
+
+ - CVE-2013-4288: race condition in polkit allowing bypass of restrictions
+
+   The libvirt patch references the required pokit fix
+
+ - CVE-2014-6458: unspecified vulnerability in Oracle Java
+
+   mentioned by mistake, same CVE id from 2013 was intended
+
+ - CVE-2022-24765: git for windows safe directory handling
+
+   CI needed to adapt to this fix
+
+Libvirt adjecent CVEs:
+ - CVE-2020-15708: libvirtd.sock being configured as world-writable
+
+   This was a packaging/deployment bug in Ubuntu 20.10 allowing anyone access
+   the system connection as they shipped default socket permissions. Libvirt
+   later changed the default to harden against this
+
+The following CVEs mentioned in our NEWS or commitlog are referencing CPU bugs
+that libvirt covered but didn't publish a LSN for:
+ - CVE-2018-12126: Microarchitectural Store Buffer Data Sampling (MSBDS)
+ - CVE-2018-12127: Microarchitectural Fill Buffer Data Sampling (MFBDS)
+ - CVE-2018-12130: Microarchitectural Load Port Data Sampling (MLPDS)
+ - CVE-2019-11091: Microarchitectural Data Sampling Uncacheable Memory (MDSUM)
