@@ -1936,6 +1936,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:werror", wpolicy,
                               "S:rerror", rpolicy,
                               "A:stats-intervals", &statistics,
+                              "T:dpofua", disk->dpofua, /* SCSI-only, ensured by validation */
                               NULL) < 0)
         return NULL;
 

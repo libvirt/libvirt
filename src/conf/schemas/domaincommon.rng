@@ -2594,6 +2594,11 @@
           <ref name="positiveInteger"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="dpofua">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="geometry">

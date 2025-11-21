@@ -38,12 +38,12 @@
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk4.img'/>
-      <target dev='sdd' bus='scsi'/>
+      <target dev='sdd' bus='scsi' dpofua='on'/>
       <address type='drive' controller='3' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='disk'>
       <source file='/tmp/scsidisk5.img'/>
-      <target dev='sde' bus='scsi' removable='on'/>
+      <target dev='sde' bus='scsi' removable='on' dpofua='off'/>
       <address type='drive' controller='4' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='usb' index='0'/>

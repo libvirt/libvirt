@@ -1024,6 +1024,13 @@ virDomainDiskDefValidate(const virDomainDef *def,
         }
     }
 
+    if (disk->dpofua != VIR_TRISTATE_SWITCH_ABSENT &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'dpofua' option is available only for SCSI disks"));
+            return -1;
+    }
+
     return 0;
 }
 

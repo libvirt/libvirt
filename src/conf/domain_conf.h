@@ -601,6 +601,7 @@ struct _virDomainDiskDef {
     unsigned int queue_size;
     virDomainDiskModel model;
     virDomainVirtioOptions *virtio;
+    virTristateSwitch dpofua; /* only SCSI disks; control of the DPO/FUA cache setting */
 
     bool diskElementAuth;
     bool diskElementEnc;

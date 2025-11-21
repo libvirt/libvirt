@@ -3378,6 +3378,11 @@ paravirtualized driver is specified via the ``disk`` element.
    :since:`since after 0.4.4`; "sata" attribute value :since:`since 0.9.7`;
    "removable" attribute value :since:`since 1.1.3`;
    "rotation_rate" attribute value :since:`since 7.3.0`
+   The optional attribute ``dpofua`` (:since:`Since 11.10.0, only QEMU driver`)
+   controls the support of DPO(Disable Page Out) and FUA(Force Unit Access)
+   properties of a SCSI disk cache access (both must be present or absent).
+   If the value is omitted hypervisor default is applied (which may depend on
+   the machine type version) and is the suggested setting.
 ``throttlefilters``
    The optional ``throttlefilters`` element provides the ability to provide additional
    per-device throttle chain :since:`Since 11.2.0`
