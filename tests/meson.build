@@ -550,7 +550,7 @@ endif
 
 if conf.has('WITH_VMX') and conf.has('WITH_ESX')
   tests += [
-    { 'name': 'vmx2xmltest', 'include': [ esx_inc_dir ], 'link_with': [ esx_lib ] },
+    { 'name': 'vmx2xmltest', 'include': [ esx_inc_dir ] },
     { 'name': 'xml2vmxtest' },
   ]
   mock_libs += [
