@@ -548,7 +548,7 @@ if conf.has('WITH_VMWARE')
   ]
 endif
 
-if conf.has('WITH_VMX')
+if conf.has('WITH_VMX') and conf.has('WITH_ESX')
   tests += [
     { 'name': 'vmx2xmltest', 'include': [ esx_inc_dir ], 'link_with': [ esx_lib ] },
     { 'name': 'xml2vmxtest' },
