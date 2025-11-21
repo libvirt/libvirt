@@ -19,6 +19,19 @@ targets:
           RPM: skip
           CC: clang
 
+  almalinux-10:
+    jobs:
+      - arch: x86_64
+        builds: false
+        variables:
+          RPM: skip
+
+      - arch: x86_64
+        suffix: -clang
+        variables:
+          RPM: skip
+          CC: clang
+
   alpine-322: x86_64
 
   alpine-edge:
@@ -27,6 +40,14 @@ targets:
         allow-failure: true
 
   centos-stream-9:
+    jobs:
+      - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
+
+  centos-stream-10:
     jobs:
       - arch: x86_64
         artifacts:
@@ -104,7 +125,7 @@ targets:
         containers: false
         builds: false
 
-  fedora-41:
+  fedora-42:
     jobs:
       - arch: x86_64
         artifacts:
@@ -112,7 +133,7 @@ targets:
           paths:
             - libvirt-rpms
 
-  fedora-42:
+  fedora-43:
     jobs:
       - arch: x86_64
         artifacts:

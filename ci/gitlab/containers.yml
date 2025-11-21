@@ -14,6 +14,13 @@ x86_64-almalinux-9-container:
     NAME: almalinux-9
 
 
+x86_64-almalinux-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: almalinux-10
+
+
 x86_64-alpine-322-container:
   extends: .container_job
   allow_failure: false
@@ -35,6 +42,13 @@ x86_64-centos-stream-9-container:
     NAME: centos-stream-9
 
 
+x86_64-centos-stream-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: centos-stream-10
+
+
 x86_64-debian-12-container:
   extends: .container_job
   allow_failure: false
@@ -49,18 +63,18 @@ x86_64-debian-sid-container:
     NAME: debian-sid
 
 
-x86_64-fedora-41-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: fedora-41
-
-
 x86_64-fedora-42-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: fedora-42
+
+
+x86_64-fedora-43-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-43
 
 
 x86_64-fedora-rawhide-container:
@@ -220,19 +234,19 @@ s390x-debian-sid-container:
     NAME: debian-sid-cross-s390x
 
 
-mingw32-fedora-42-container:
+mingw32-fedora-43-container:
   extends: .container_job
   allow_failure: false
   variables:
     JOB_OPTIONAL: 1
-    NAME: fedora-42-cross-mingw32
+    NAME: fedora-43-cross-mingw32
 
 
-mingw64-fedora-42-container:
+mingw64-fedora-43-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: fedora-42-cross-mingw64
+    NAME: fedora-43-cross-mingw64
 
 
 mingw32-fedora-rawhide-container:
