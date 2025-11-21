@@ -184,6 +184,7 @@
   <flag name='query-accelerators'/>
   <flag name='virtio-iommu.aw-bits'/>
   <flag name='iommufd'/>
+  <flag name='uefi-vars'/>
   <version>10002000</version>
   <microcodeVersion>61700287</microcodeVersion>
   <package>v10.2.0</package>

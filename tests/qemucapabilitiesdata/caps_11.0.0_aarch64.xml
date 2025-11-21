@@ -185,6 +185,7 @@
   <flag name='virtio-iommu.aw-bits'/>
   <flag name='scsi-block.migrate-pr'/>
   <flag name='iommufd'/>
+  <flag name='uefi-vars'/>
   <version>10002050</version>
   <microcodeVersion>61700286</microcodeVersion>
   <package>v10.2.0-1114-gb3abdfa486</package>
