@@ -754,6 +754,23 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
 
 
 static int
+qemuValidateDomainDefVarstore(const virDomainDef *def,
+                              virQEMUCaps *qemuCaps)
+{
+    if (!def->os.varstore)
+        return 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_UEFI_VARS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("The uefi-vars device is not supported by this QEMU binary"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDefBoot(const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
@@ -795,6 +812,9 @@ qemuValidateDomainDefBoot(const virDomainDef *def,
         }
 
         if (qemuValidateDomainDefNvram(def, qemuCaps) < 0)
+            return -1;
+
+        if (qemuValidateDomainDefVarstore(def, qemuCaps) < 0)
             return -1;
     }
 
