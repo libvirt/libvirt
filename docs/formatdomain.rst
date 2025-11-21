@@ -6907,6 +6907,10 @@ interaction with the admin.
       ID is specified, then the default audio backend will be used.
       :since:`Since 7.2.0, qemu`.
 
+      The optional ``wait`` attribute, when set to ``yes``, causes the guest
+      to wait for an incoming VNC connection before booting.
+      :since:`Since 11.10.0, bhyve`.
+
    ``spice`` :since:`Since 0.8.6`
       Starts a SPICE server. The ``port`` attribute specifies the TCP port
       number (with -1 as legacy syntax indicating that it should be

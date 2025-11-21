@@ -429,6 +429,16 @@ Note: VNC password authentication is known to be cryptographically weak.
 Additionally, the password is passed as a command line argument in clear text.
 Make sure you understand the risks associated with this feature before using it.
 
+:since:`Since 11.10.0`, the guest can be configured to wait for an incoming
+VNC connection before booting:
+
+::
+
+    <graphics type='vnc' port='5904' wait='yes'>
+      <listen type='address' address='127.0.0.1'/>
+    </graphics>
+
+
 Clock configuration
 ~~~~~~~~~~~~~~~~~~~
 
