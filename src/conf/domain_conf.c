@@ -20896,6 +20896,14 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
     }
 
+    if (src->removable != dst->removable) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk 'removable' property %1$s does not match source %2$s"),
+                       virTristateSwitchTypeToString(dst->removable),
+                       virTristateSwitchTypeToString(src->removable));
+        return false;
+    }
+
     if (src->queues != dst->queues) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target disk queue count %1$u does not match source %2$u"),
