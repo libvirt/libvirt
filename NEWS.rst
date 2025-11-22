@@ -19,6 +19,11 @@ v11.10.0 (unreleased)
 
 * **Improvements**
 
+  * bhyve: VNC ``wait`` attribute support
+
+    Bhyve guests can now be configured to wait for a VNC connection before
+    booting.
+
 * **Bug fixes**
 
 
