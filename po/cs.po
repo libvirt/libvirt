@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-11-17 17:48+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2025-11-19 10:34+0000\n"
+"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
 "Language: cs\n"
@@ -484,7 +484,7 @@ msgstr " Úložiště:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr " --%1$s <řetězec>..."
+msgstr " [--%1$s <řetězec>]…"
 
 #, c-format
 msgid ""
@@ -1667,7 +1667,7 @@ msgstr "--%1$s <řetězec>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr "--%1$s <řetězec>"
+msgstr "--%1$s <řetězec>…"
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -11370,7 +11370,7 @@ msgid "List checkpoints for a domain"
 msgstr "Vypsat kontrolní body pro doménu"
 
 msgid "List domains"
-msgstr "vypsat domény"
+msgstr "Vypsat domény"
 
 msgid "List event types, or wait for domain events to occur"
 msgstr "Vypsat typy událostí, nebo čekat na výskyt událostí domény"
@@ -11391,22 +11391,22 @@ msgid "List interfaces"
 msgstr ""
 
 msgid "List network filter bindings"
-msgstr "vypsat navázání pravidla brány firewall"
+msgstr "Vypsat navázání pravidla brány firewall"
 
 msgid "List network filters"
-msgstr "vypsat pravidla brány firewall"
+msgstr "Vypsat pravidla brány firewall"
 
 msgid "List network ports"
-msgstr "vypsat síťové porty"
+msgstr "Vypsat síťové porty"
 
 msgid "List networks"
-msgstr "vypsat sítě"
+msgstr "Vypsat sítě"
 
 msgid "List node devices"
 msgstr ""
 
 msgid "List secrets"
-msgstr "vypsat tajemství"
+msgstr "Vypsat tajemství"
 
 msgid "List snapshots for a domain"
 msgstr "Zobrazit zachycené stavy domény"
@@ -19827,7 +19827,8 @@ msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní 
 
 #, c-format, fuzzy
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
-msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s"
+msgstr ""
+"Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s: %2$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
@@ -19835,7 +19836,8 @@ msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní 
 
 #, c-format, fuzzy
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
-msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s"
+msgstr ""
+"Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s: %2$s"
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "Nepodařilo se spustit jednorázový inicializátor GDBus"
@@ -21810,7 +21812,7 @@ msgstr "[--%1$s] <řetězec>"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr "[--%1$s] <řetězec>"
+msgstr "[--%1$s] <řetězec>…"
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -23095,7 +23097,7 @@ msgstr "není možné uplatnit schopnosti procesu %1$d"
 
 #, c-format
 msgid "cannot apply process capabilities: %1$d"
-msgstr ""
+msgstr "není možné uplatnit schopnosti procesu: %1$d"
 
 msgid "cannot become session leader"
 msgstr "nedaří se stát vedoucím relace"
@@ -29426,7 +29428,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "odpověď guest-get-vcpus postrádala návratová data"
 
 msgid "guest:"
-msgstr "host"
+msgstr "host:"
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset není touto verzí QEMU podporováno"
@@ -38882,7 +38884,7 @@ msgstr "nedaří se získat kontext stávajícího procesu „%1$s“"
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr "Nedaří se získat pořadové číslo rozhraní %1$s"
+msgstr "nedaří se získat pořadové číslo rozhraní pro %1$s"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -40359,7 +40361,7 @@ msgstr "nepodporované hledání gluster"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
-msgstr "Nepodporovaný typ grafického rozhraní „%1$s“"
+msgstr "nepodporovaný typ grafiky %1$s"
 
 #, c-format
 msgid "unsupported guest information types '0x%1$x'"
