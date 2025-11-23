@@ -35,6 +35,7 @@ foreach data : html_xslt_gen
       '--stringparam', 'timestamp', docs_timestamp,
       '--stringparam', 'link_href_base', data.get('href_base', ''),
       '--stringparam', 'asset_href_base', data.get('href_base', ''),
+      '--stringparam', 'edit_href_base', 'https://gitlab.com/libvirt/libvirt/-/blob/master/',
       '--nonet',
       site_xsl,
       '@INPUT@',

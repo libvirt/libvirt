@@ -30,6 +30,7 @@
       <xsl:with-param name="timestamp" select="$timestamp"/>
       <xsl:with-param name="link_href_base" select="$link_href_base"/>
       <xsl:with-param name="asset_href_base" select="$asset_href_base"/>
+      <xsl:with-param name="edit_href_base" select="$edit_href_base"/>
     </xsl:apply-templates>
   </xsl:template>
 

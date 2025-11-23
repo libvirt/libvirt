@@ -19,6 +19,7 @@
     <xsl:param name="timestamp"/>
     <xsl:param name="link_href_base"/>
     <xsl:param name="asset_href_base"/>
+    <xsl:param name="edit_href_base"/>
     <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;
 </xsl:text>
     <html lang="en" data-sourcedoc="{$pagesrc}">
@@ -105,11 +106,11 @@
               <li><a href="https://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
             </ul>
           </div>
-          <xsl:if test="$pagesrc != ''">
+          <xsl:if test="$pagesrc != '' and $edit_href_base != ''">
             <div id="contribute">
               <h3>Contribute</h3>
               <ul>
-                <li><a href="https://gitlab.com/libvirt/libvirt/-/blob/master/{$pagesrc}">edit this page</a></li>
+                <li><a href="{$edit_href_base}{$pagesrc}">edit this page</a></li>
               </ul>
             </div>
           </xsl:if>
