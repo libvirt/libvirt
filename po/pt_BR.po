@@ -17,13 +17,14 @@
 # Filipe Rosset <rosset.filipe@gmail.com>, 2017
 # Adolfo Jayme Barrientos <fitoschido@gmail.com>, 2020.
 # Gildasio Junior <gildasiojunior@riseup.net>, 2024.
+# Renan Birck Pinheiro <renan.birck.pinheiro@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2024-07-15 13:19+0000\n"
-"Last-Translator: Gildasio Junior <gildasiojunior@riseup.net>\n"
+"PO-Revision-Date: 2025-11-23 07:06+0000\n"
+"Last-Translator: Renan Birck Pinheiro <renan.birck.pinheiro@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -31,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.6.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 msgid ""
 "\n"
@@ -567,13 +568,15 @@ msgstr ""
 
 #, c-format
 msgid "%1$s model of watchdog is only part of q35 machine"
-msgstr ""
+msgstr "o modelo %1$s de watchdog só é parte da máquina q35"
 
 #, c-format
 msgid ""
 "%1$s model of watchdog is part of the machine and cannot have any address "
 "set."
 msgstr ""
+"o modelo de watchdog %1$s é parte da máquina e não pode ter qualquer "
+"endereço definido."
 
 #, c-format
 msgid "%1$s model of watchdog is virtual and cannot go on any bus."
@@ -2138,7 +2141,7 @@ msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
-"Auto alocação de porta TLS do spice requesitado mas o TLS do spice está "
+"Auto alocação de porta TLS do spice solicitado, mas o TLS do spice está "
 "desabilitado no qemu.conf"
 
 msgid "Auto converge throttle:"
@@ -2177,9 +2180,8 @@ msgstr ""
 msgid "Backup Dump XML"
 msgstr "XML do Despejo de Snapshot"
 
-#, fuzzy
 msgid "Backup started\n"
-msgstr "Cópia de bloco iniciada"
+msgstr "Backup iniciado\n"
 
 #, c-format
 msgid "Bad $%1$s value."
@@ -41953,6 +41955,7 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+"zona %1$s solicitada para a rede %2$s, mas firewalld não é suportado no BSD"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"
