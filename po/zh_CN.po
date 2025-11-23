@@ -31,8 +31,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-09-28 10:28+0000\n"
-"Last-Translator: zhanchun li <lzc777@126.com>\n"
+"PO-Revision-Date: 2025-11-17 17:48+0000\n"
+"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -40,7 +40,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.14.3\n"
 
 msgid ""
 "\n"
@@ -18621,11 +18621,11 @@ msgstr "无法修改实时设备"
 
 #, c-format
 msgid "Unable to modify mediated device '%1$s': %2$s"
-msgstr ""
+msgstr "无法修改中介设备 '%1$s'：%2$s"
 
 #, c-format
 msgid "Unable to modify mediated device '%1$s': modify unsupported"
-msgstr ""
+msgstr "无法修改中介设备 '%1$s'：不支持修改"
 
 #, c-format
 msgid "Unable to monitor directory: %1$s"
@@ -18894,7 +18894,7 @@ msgid "Unable to query process ID start time"
 msgstr "无法查询进程 ID 启示时间"
 
 msgid "Unable to query process stats"
-msgstr ""
+msgstr "无法查询进程统计信息"
 
 #, c-format
 msgid "Unable to query sector size %1$s"
@@ -19906,7 +19906,7 @@ msgstr "未知的数据源 '%1$s'"
 
 #, c-format
 msgid "Unknown default_cpu_deprecated_features value %1$s"
-msgstr ""
+msgstr "未知的 default_cpu_deprecated_features 值 %1$s"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %1$s"
@@ -20243,7 +20243,7 @@ msgstr "不支持的算法 '%1$s'"
 
 #, c-format
 msgid "Unsupported await condition name '%1$s'"
-msgstr ""
+msgstr "不支持的等待条件名称 '%1$s'"
 
 #, c-format
 msgid "Unsupported boot device type: '%1$s'"
@@ -20700,10 +20700,10 @@ msgid "VFIO CCW device assignment is not supported by this version of QEMU"
 msgstr "此版本的 QEMU 不支持 VFIO CCW 设备分配"
 
 msgid "VFIO PCI device assignment is not supported by the host"
-msgstr ""
+msgstr "主机不支持 VFIO PCI 设备分配"
 
 msgid "VFIO PCI device assignment is not supported by this QEMU binary"
-msgstr ""
+msgstr "该 QEMU 二进制文件不支持 VFIO PCI 设备分配"
 
 msgid "VFIO PCI device assignment is not supported by this version of QEMU"
 msgstr "此版本的 QEMU 不支持 VFIO PCI 设备分配"
@@ -21083,13 +21083,14 @@ msgstr "'none' 视频类型必须是为域定义的唯一视频设备"
 msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
-msgstr ""
+msgstr "连接 PCI 控制器型号='%1$s' 需要一个 PCIe 插槽，但没有可用插槽，也无法自动添加"
 
 #, c-format
 msgid ""
 "a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
 "but none is available, and it cannot be automatically added"
-msgstr ""
+msgstr "连接 PCI 控制器型号='%1$s' 需要一个传统的 PCI 插槽，但没有可用插槽，且无法自"
+"动添加"
 
 msgid "a device with the same address already exists "
 msgstr "具有相同地址的设备已经存在 "
@@ -21602,7 +21603,7 @@ msgid "avoid file system cache when saving"
 msgstr "保存时避免文件系统缓存"
 
 msgid "await a domain event"
-msgstr ""
+msgstr "等待域事件"
 
 msgid "background job"
 msgstr "背景任务"
@@ -23869,7 +23870,7 @@ msgstr "命令 '%1$s' 缺少帮助"
 
 #, c-format
 msgid "command '%1$s' must have exactly one of the handler callbacks set"
-msgstr ""
+msgstr "命令 '%1$s' 必须恰好设置一个处理回调"
 
 #, c-format
 msgid "command '%1$s' requires --%2$s option"
@@ -26958,7 +26959,7 @@ msgid "failed to get launch security policy"
 msgstr "无法获得启动安全策略"
 
 msgid "failed to get launch security policy for launch security type TDX"
-msgstr ""
+msgstr "获取 TDX 启动安全类型的启动安全策略失败"
 
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
@@ -27562,7 +27563,7 @@ msgstr "无法关闭客户虚拟机"
 msgid ""
 "failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
 "components"
-msgstr ""
+msgstr "无法将路径 '%1$s' 分割为 'pool/image' 或 'pool/namespace/image' 部分"
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -27635,7 +27636,7 @@ msgid "failed to update device in BPF cgroup map"
 msgstr "无法在 BPF cgroup 图中更新设备"
 
 msgid "failed to update domain state"
-msgstr ""
+msgstr "更新域状态失败"
 
 #, c-format
 msgid "failed to validate SSH host key: %1$s"
@@ -28376,7 +28377,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "guest-get-vcpus 回复缺少返回数据"
 
 msgid "guest:"
-msgstr ""
+msgstr "客户机："
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "这个版本的 QEMU 不支持 guestReset"
@@ -28505,7 +28506,7 @@ msgid "host-certificates mode needs exactly three certificates"
 msgstr "主机认证模式需要三个证书"
 
 msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
-msgstr ""
+msgstr "不支持主机模式 Hyper-V，未发现 Hyper-V 功能"
 
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "hostName 字段不可用（缺少 VMware 工具？）"
@@ -28672,7 +28673,7 @@ msgstr "忽略调试级别 %1$d 。调试级别范围是 [%2$d-%3$d]"
 
 msgid ""
 "ignoring host is only allowed when computing baseline from multiple CPUs"
-msgstr ""
+msgstr "仅在从多个 CPU 计算基线时才允许忽略主机"
 
 msgid "image magic is incorrect"
 msgstr "镜像魔法不正确"
@@ -29707,7 +29708,7 @@ msgstr "iommu 模型 '%1$s' 不支持附加属性"
 
 #, c-format
 msgid "iommu model '%1$s' doesn't support some additional attributes"
-msgstr ""
+msgstr "iommu 模型 '%1$s' 不支持某些附加属性"
 
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: 此 QEMU 二进制文件不支持 aw_bits"
@@ -32225,7 +32226,7 @@ msgstr "不支持嵌套 JSON 数组到命令行的转换"
 
 #, c-format
 msgid "net %1$s not found"
-msgstr ""
+msgstr "未找到网络 %1$s"
 
 msgid "net definition failed validation"
 msgstr "网络定义未通过验证"
@@ -32776,7 +32777,7 @@ msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "没有为 IQN %1$s 定义的 iSCSI 接口"
 
 msgid "no interface name specified"
-msgstr ""
+msgstr "未指定接口名称"
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -33325,7 +33326,7 @@ msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "'dimm' 地址只支持 pc-dimm 设备"
 
 msgid "only 'file' type is supported with NVRAM"
-msgstr ""
+msgstr "NVRAM 仅支持“文件”类型"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "'pci' 地址只支持共享内存设备"
@@ -33370,7 +33371,7 @@ msgid "only a single IOMMU device is supported"
 msgstr "只支持单个 IOMMU 设备"
 
 msgid "only a single QGS element is supported"
-msgstr ""
+msgstr "仅支持单个 QGS 元素"
 
 msgid "only a single TPM Proxy device is supported"
 msgstr "只支持单个 TPM 代理设备"
@@ -34282,7 +34283,7 @@ msgstr "网络 %1$s 的 DNS TXT 记录名称 '%2$s' 中禁用的字符"
 
 #, c-format
 msgid "property '%1$s' in reply data was missing value"
-msgstr ""
+msgstr "回复数据中的属性 '%1$s' 缺少值"
 
 msgid "property with name 'id' can't be overridden"
 msgstr "名为 'id' 的属性不能被覆盖"
@@ -34706,7 +34707,7 @@ msgid "readonly is not supported with vhostuser disk"
 msgstr "vhostuser 磁盘不支持只读"
 
 msgid "readonly mode cannot be set for externally started virtiofsd"
-msgstr ""
+msgstr "不能为外部启动的 virtiofsd 设置只读模式"
 
 msgid "readonly sata disks are not supported"
 msgstr "不支持只读 sata 磁盘"
@@ -34869,7 +34870,7 @@ msgid "reply data was missing 'option' name or parameters"
 msgstr "答复数据缺少 'option' 名称或参数"
 
 msgid "reply data was missing 'properties' array"
-msgstr ""
+msgstr "回复数据缺少 'properties' 数组"
 
 msgid "reply was missing return data"
 msgstr "条目缺少返回值"
@@ -35180,7 +35181,7 @@ msgid "rotation rate is not supported with this QEMU"
 msgstr "此 QEMU 不支持轮转率"
 
 msgid "rotation rate is only valid for SATA bus"
-msgstr ""
+msgstr "旋转速率仅适用于 SATA 总线"
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "轮转率仅对 SCSI/IDE/SATA 总线有效"
@@ -36073,7 +36074,7 @@ msgstr "存储池协议 ver 不支持池类型 '%1$s'"
 
 #, c-format
 msgid "storage protocol '%1$s' is not supported by this QEMU"
-msgstr ""
+msgstr "该 QEMU 不支持存储协议 '%1$s'"
 
 #, c-format
 msgid "storage source pool '%1$s' volume '%2$s' is not translated"
@@ -36560,7 +36561,7 @@ msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
 msgstr "此 libvirtd 实例只允许带 VIR_MIGRATE_TLS 标志的迁移"
 
 msgid "this machine type do not support floppy devices"
-msgstr ""
+msgstr "这种机器类型不支持软盘设备"
 
 msgid "this network exists already"
 msgstr "这个网络已存在"
@@ -37781,7 +37782,7 @@ msgid "unexpected address type for ide disk"
 msgstr "ide 磁盘的意外的地址类型"
 
 msgid "unexpected address type for nvme disk"
-msgstr ""
+msgstr "NVMe 磁盘的地址类型不在预期之内"
 
 msgid "unexpected address type for sata disk"
 msgstr "sata 磁盘的意外的地址类型"
@@ -39423,7 +39424,7 @@ msgstr "视频类型 '%1$s' 不支持 blob 资源"
 
 #, c-format
 msgid "video type '%1$s' does not support edid"
-msgstr ""
+msgstr "视频类型 '%1$s' 不支持编辑"
 
 #, c-format
 msgid "video type '%1$s' doesn't support multiple 'heads'"
@@ -39879,7 +39880,7 @@ msgid "wait for job to reach mirroring phase"
 msgstr "等待任务达到镜像阶段"
 
 msgid "waits for a certain domain event to happen and then terminates"
-msgstr ""
+msgstr "等待某个特定的域事件发生，然后终止"
 
 msgid "wakeup a domain from pmsuspended state"
 msgstr "从 pmsuspended 状态唤醒域"
@@ -39889,7 +39890,7 @@ msgstr "警告"
 
 #, c-format
 msgid "warning: %1$s\n"
-msgstr ""
+msgstr "警告：%1$s\n"
 
 msgid "watchdog"
 msgstr "watchdog"
@@ -39904,10 +39905,11 @@ msgstr "webSocket"
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT 重量"
 
+#, fuzzy
 msgid ""
 "when computing baseline from several CPUs, do not take hypervisor "
 "capabilities into account and work with input data only"
-msgstr ""
+msgstr "在从多个 CPU 计算基线时，不要考虑虚拟机管理程序的能力，仅使用输入数据进行计算"
 
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
@@ -39937,7 +39939,7 @@ msgid "where to store the screenshot"
 msgstr "要在哪里保存截屏"
 
 msgid "which condition to wait until"
-msgstr ""
+msgstr "等到什么条件"
 
 msgid "which event type to wait for"
 msgstr "要等待哪个事件类型"
@@ -40053,7 +40055,7 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 #, c-format
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
-msgstr ""
+msgstr "区域 %1$s 请求网络 %2$s，但 BSD 不支持 firewalld"
 
 #, c-format
 #~ msgid ""
