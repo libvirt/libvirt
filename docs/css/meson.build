@@ -4,6 +4,7 @@ docs_css_files = [
   'libvirt.css',
   'libvirt-api.css',
   'libvirt-template.css',
+  'local.css',
   'main.css',
   'mobile-template.css',
   'mobile-libvirt.css',
