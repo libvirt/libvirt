@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-09-27 07:52+0000\n"
+"PO-Revision-Date: 2025-11-10 06:58+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.14.3\n"
 
 msgid ""
 "\n"
@@ -1226,11 +1226,11 @@ msgstr "'%1$s' 파일은 메모리에 들어갈 수 없습니다"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "'%1$s' hyperv 기능은 '%2$s' 기능이 필요합니다"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "'%1$s' hyperv 기능은 '%2$s' 타이머가 필요합니다"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -2348,7 +2348,7 @@ msgstr ""
 "습니다"
 
 msgid "Bhyve version does not support NVMe"
-msgstr ""
+msgstr "Bhyve 버전은 NVME를 지원하지 않습니다"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "Bhyve 버전은 프레임 버퍼를 지원하지 않습니다"
@@ -3281,7 +3281,7 @@ msgid "Cannot get storage controller name"
 msgstr "저장소 제어기의 이름을 가져올 수 없습니다"
 
 msgid "Cannot have more than one disk per NVMe controller"
-msgstr ""
+msgstr "NVMe 제어기당 디스크를 두 개 이상 가질 수 없습니다"
 
 msgid "Cannot hotplug platform device"
 msgstr "기술환경 장치를 핫플러그 할 수 없습니다"
@@ -7153,7 +7153,7 @@ msgid "Failed to complete tree listing"
 msgstr "나무 목록을 완료하지 못했습니다"
 
 msgid "Failed to connect network interfaces"
-msgstr ""
+msgstr "네트워크 연결장치에 연결하는 데 실패함"
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -10831,7 +10831,7 @@ msgstr "잘못된 resctrl 모니터"
 
 #, c-format
 msgid "Invalid response from CH. Device removal failed for device %1$s."
-msgstr ""
+msgstr "CH에서 잘못된 응답. 장치 %1$s 용 장치 제거가 실패함."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11383,15 +11383,15 @@ msgstr "기계가 null입니다"
 
 #, c-format
 msgid "Machine type '%1$s' does not support PCI"
-msgstr ""
+msgstr "장비 유형 '%1$s' 는 PCI를 지원하지 않습니다"
 
 #, c-format
 msgid "Machine type '%1$s' supports PCI but no PCI controller added"
-msgstr ""
+msgstr "장비 유형 %1$s' 는 PCI를 지원하지만 추가된 PCI 제어기가 없습니다"
 
 #, c-format
 msgid "Machine type '%1$s' wants PCI but PCI is not supported"
-msgstr ""
+msgstr "장비 유형 '%1$s' 는 PCI가 필요하지만 PCI가 지원되지 않습니다"
 
 msgid "Malformatted array index"
 msgstr "잘못된 형식의 배열 인덱스"
@@ -17911,7 +17911,8 @@ msgstr "USB 제어기 모델 '%1$s'는 이 QEMU 바이너리에서 지원하지 
 msgid ""
 "USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
 "support PCI"
-msgstr ""
+msgstr "USB 제어기 모델 '%1$s' 는 PCI가 필요하지만 장비 유형 '%2$s' 는 PCI를 지원하지"
+" 않습니다"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -29161,7 +29162,7 @@ msgid "host-certificates mode needs exactly three certificates"
 msgstr "호스트 인증 모드에는 세 개의 인증서가 필요합니다"
 
 msgid "host-model hyperv mode unsupported, no hyperv capabilities found"
-msgstr ""
+msgstr "host-model hyperv 방식 미지원됨, hyperv 기능을 찾을 수 없습니다"
 
 msgid "hostName field not available (missing VMware Tools?)"
 msgstr "hostName 필드를 사용할 수 없음(VMware Tools가 누락되었습니까?)"
@@ -32968,7 +32969,7 @@ msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않�
 
 #, c-format
 msgid "net %1$s not found"
-msgstr ""
+msgstr "net %1$s 를 찾을 수 없습니다"
 
 msgid "net definition failed validation"
 msgstr "net 정의 검증에 실패함"
@@ -33535,7 +33536,7 @@ msgid "no iSCSI interface defined for IQN %1$s"
 msgstr "IQN %1$s 를 위해 정의된 iSCSI 연결장치가 없습니다"
 
 msgid "no interface name specified"
-msgstr ""
+msgstr "지정된 연결장치 이름이 없습니다"
 
 #, c-format
 msgid "no interface with matching mac '%1$s'"
@@ -35490,7 +35491,7 @@ msgid "readonly is not supported with vhostuser disk"
 msgstr "읽기 전용은 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid "readonly mode cannot be set for externally started virtiofsd"
-msgstr ""
+msgstr "읽기전용 방식은 외부에서 시작된 virtiofsd를 위해 설정 할 수 없습니다"
 
 msgid "readonly sata disks are not supported"
 msgstr "읽기 전용 sata 디스크는 지원되지 않습니다"
@@ -35972,7 +35973,7 @@ msgid "rotation rate is not supported with this QEMU"
 msgstr "이 QEMU에서는 회전 속도가 지원되지 않습니다"
 
 msgid "rotation rate is only valid for SATA bus"
-msgstr ""
+msgstr "회전 속도는 SATA 버스에서만 유효합니다"
 
 msgid "rotation rate is only valid for SCSI/IDE/SATA bus"
 msgstr "회전 속도는 SCSI/IDE/SATA 버스에만 유효합니다"
