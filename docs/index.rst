@@ -34,7 +34,8 @@ Quick Links
   Already a regular open source contributor and have git set up? Have a quick
   look at how to propose your changes to libvirt correctly
 `Security vulnerabilities <securityprocess.html>`__
-  View security notices and report vulnerabilities to the libvirt security
+  View `security notices <https://security.libvirt.org>`__ and
+  `report vulnerabilities <securityprocess.html>`__ to the libvirt security
   response team
 `Bug reporting <bugs.html>`__
   View and report bugs in libvirt packages
