@@ -12,13 +12,14 @@
 # Matej Cepl <mcepl@cepl.eu>, 2021.
 # Daniel P. Berrange <berrange@redhat.com>, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2023.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-08-28 07:01+0000\n"
-"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
+"PO-Revision-Date: 2025-11-17 17:48+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
 "Language: cs\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.13\n"
+"X-Generator: Weblate 5.14.3\n"
 
 msgid ""
 "\n"
@@ -483,7 +484,7 @@ msgstr " Úložiště:"
 
 #, c-format
 msgid " [--%1$s <string>]..."
-msgstr ""
+msgstr " --%1$s <řetězec>..."
 
 #, c-format
 msgid ""
@@ -1666,7 +1667,7 @@ msgstr "--%1$s <řetězec>"
 
 #, c-format
 msgid "--%1$s <string>..."
-msgstr ""
+msgstr "--%1$s <řetězec>"
 
 #, c-format
 msgid "--%1$s and --current are mutually exclusive"
@@ -11369,7 +11370,7 @@ msgid "List checkpoints for a domain"
 msgstr "Vypsat kontrolní body pro doménu"
 
 msgid "List domains"
-msgstr ""
+msgstr "vypsat domény"
 
 msgid "List event types, or wait for domain events to occur"
 msgstr "Vypsat typy událostí, nebo čekat na výskyt událostí domény"
@@ -11390,22 +11391,22 @@ msgid "List interfaces"
 msgstr ""
 
 msgid "List network filter bindings"
-msgstr ""
+msgstr "vypsat navázání pravidla brány firewall"
 
 msgid "List network filters"
-msgstr ""
+msgstr "vypsat pravidla brány firewall"
 
 msgid "List network ports"
-msgstr ""
+msgstr "vypsat síťové porty"
 
 msgid "List networks"
-msgstr ""
+msgstr "vypsat sítě"
 
 msgid "List node devices"
 msgstr ""
 
 msgid "List secrets"
-msgstr ""
+msgstr "vypsat tajemství"
 
 msgid "List snapshots for a domain"
 msgstr "Zobrazit zachycené stavy domény"
@@ -19824,17 +19825,17 @@ msgstr ""
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
-msgstr ""
+msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s"
 
 #, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
-msgstr ""
+msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s"
 
 msgid "Unable to run one time GDBus initializer"
 msgstr "Nepodařilo se spustit jednorázový inicializátor GDBus"
@@ -21809,7 +21810,7 @@ msgstr "[--%1$s] <řetězec>"
 
 #, c-format
 msgid "[--%1$s] <string>..."
-msgstr ""
+msgstr "[--%1$s] <řetězec>"
 
 msgid ""
 "a 'none' video type must be the only video device defined for the domain"
@@ -29425,7 +29426,7 @@ msgid "guest-get-vcpus reply was missing return data"
 msgstr "odpověď guest-get-vcpus postrádala návratová data"
 
 msgid "guest:"
-msgstr ""
+msgstr "host"
 
 msgid "guestReset is not supported with this version of QEMU"
 msgstr "guestReset není touto verzí QEMU podporováno"
@@ -38881,7 +38882,7 @@ msgstr "nedaří se získat kontext stávajícího procesu „%1$s“"
 
 #, c-format
 msgid "unable to get interface index for %1$s"
-msgstr ""
+msgstr "Nedaří se získat pořadové číslo rozhraní %1$s"
 
 #, c-format
 msgid "unable to get machine from console. (error %1$d)"
@@ -40358,7 +40359,7 @@ msgstr "nepodporované hledání gluster"
 
 #, c-format
 msgid "unsupported graphics type %1$s"
-msgstr ""
+msgstr "Nepodporovaný typ grafického rozhraní „%1$s“"
 
 #, c-format
 msgid "unsupported guest information types '0x%1$x'"
