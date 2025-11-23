@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-10-29 11:46+0000\n"
-"PO-Revision-Date: 2025-11-03 07:03+0000\n"
+"PO-Revision-Date: 2025-11-04 21:09+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -12750,7 +12750,7 @@ msgstr "Células NUMA:"
 
 #, c-format
 msgid "NUMA cells %1$u and %2$zu have overlapping vCPU ids"
-msgstr "Células NUMA %1$u e %2$z têm ids de vCPU sobrepostos"
+msgstr "Células NUMA %1$u e %2$zu têm ids de vCPU sobrepostos"
 
 msgid "NUMA distances defined without siblings"
 msgstr "Distâncias NUMA definidas sem irmãos"
@@ -41830,63 +41830,68 @@ msgstr "dispositivo vsock não é suportado com este binário QEMU"
 
 msgid "vz driver doesn't support exclusive share policy for VNC graphics."
 msgstr ""
+"controlador vz não suporta política de partilha exclusiva para gráficos VNC."
 
 msgid "vz driver doesn't support given action in case of password change."
 msgstr ""
+"controlador vz não suporta a ação dada no caso de mudança da palavra passe."
 
 msgid "vz driver doesn't support more than one listening VNC server per domain"
 msgstr ""
+"controlador vz não suporta mais do que um servidor VNC a escutar por domínio"
 
 msgid "vz driver doesn't support multihead video adapters."
-msgstr ""
+msgstr "controlador vz não suporta adaptadores de vídeo de multi-cabeça."
 
 msgid "vz driver doesn't support setting password expire time."
-msgstr ""
+msgstr "controlador vz não suporta definir tempo de expiração de palavra passe."
 
 msgid "vz driver doesn't support setting video acceleration parameters."
-msgstr ""
+msgstr "controlador vz não suporta definir parâmetros de aceleração de vídeo."
 
 msgid "vz driver doesn't support specified serial source type."
-msgstr ""
+msgstr "controlador vz não suporta o tipo de fonte série especificado."
 
 msgid "vz driver doesn't support websockets for VNC graphics."
-msgstr ""
+msgstr "controlador vz não suporta sockets web para gráficos VNC."
 
 msgid "vz driver supports only \"en-us\" keymap for VNC graphics."
 msgstr ""
+"controlador vz apenas suporta mapa de teclas \"en-us\" para gráficos VNC."
 
 msgid "vz driver supports only VGA video adapters."
-msgstr ""
+msgstr "controlador vz suporta apenas adaptadores de vídeo VGA."
 
 msgid "vz driver supports only VNC graphics"
-msgstr ""
+msgstr "controlador vz suporta apenas adaptadores de vídeo VNC"
 
 msgid "vz driver supports only VNC graphics."
-msgstr ""
+msgstr "controlador vz suporta apenas gráficos VNC."
 
 msgid "vz driver supports only address-based VNC listening"
-msgstr ""
+msgstr "controlador vz apenas suporta escuta VNC baseada em endereço"
 
 msgid "vz driver supports only one video adapter."
-msgstr ""
+msgstr "controlador vz suporta apenas um adaptador vídeo."
 
 msgid "vz state driver is not active"
-msgstr ""
+msgstr "controlador de estado vz não está activo"
 
 msgid "wait for all events instead of just one type"
-msgstr ""
+msgstr "espera por todos os eventos em vez de apenas um tipo"
 
 msgid "wait for job to complete (with --active, wait for job to sync)"
 msgstr ""
+"espera por tarefa completar (com --active, espera por tarefa sincronizar)"
 
 msgid "wait for job to finish"
-msgstr ""
+msgstr "espera por tarefa terminar"
 
 msgid "wait for job to reach mirroring phase"
-msgstr ""
+msgstr "espera por tarefa alcançar fase de espelhamento"
 
 msgid "waits for a certain domain event to happen and then terminates"
-msgstr ""
+msgstr "espera que um certo evento de domínio aconteça e depois termina"
 
 msgid "wakeup a domain from pmsuspended state"
 msgstr "acorda um domínio de um estado pm-suspenso"
@@ -41896,7 +41901,7 @@ msgstr "aviso"
 
 #, c-format
 msgid "warning: %1$s\n"
-msgstr ""
+msgstr "aviso: %1$s\n"
 
 msgid "watchdog"
 msgstr "watchdog"
@@ -41907,7 +41912,7 @@ msgstr ""
 "watchdogs com ações diferentes não são suportados com este binário QEMU"
 
 msgid "webSocket"
-msgstr ""
+msgstr "Socket web"
 
 msgid "weight for XEN_CREDIT"
 msgstr "peso para XEN_CREDIT"
@@ -41916,24 +41921,28 @@ msgid ""
 "when computing baseline from several CPUs, do not take hypervisor "
 "capabilities into account and work with input data only"
 msgstr ""
+"quando computa a linha base a partir de várias CPUs, não toma as capacidades "
+"do hipervisor em conta e trabalha apenas dados de entrada"
 
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
-msgstr ""
+msgstr "quando se fornece wwnn pai='%1$s', o wwpn também tem de ser fornecido"
 
 #, c-format
 msgid "when providing parent wwpn='%1$s', the wwnn must also be provided"
-msgstr ""
+msgstr "quando se fornece wwpn pai='%1$s', o wwnn também tem de ser fornecido"
 
 #, c-format
 msgid ""
 "when providing parent_wwnn='%1$s', the parent_wwpn must also be provided"
 msgstr ""
+"quando se fornece wwnn pai='%1$s', o wwpn pai também tem de ser fornecido"
 
 #, c-format
 msgid ""
 "when providing parent_wwpn='%1$s', the parent_wwnn must also be provided"
 msgstr ""
+"quando se fornece wwpn pai='%1$s', o wwnn pai também tem de ser fornecido"
 
 msgid "where to dump the core"
 msgstr "onde despejar o núcleo"
@@ -41945,63 +41954,65 @@ msgid "where to store the screenshot"
 msgstr "onde gravar a captura de ecrã"
 
 msgid "which condition to wait until"
-msgstr ""
+msgstr "por qual condição esperar até que"
 
 msgid "which event type to wait for"
-msgstr ""
+msgstr "por qual tipo de evento esperar"
 
 msgid "which mount point to trim"
-msgstr ""
+msgstr "qual o ponto de montagem a aparar"
 
 msgid "which parent object to search through"
-msgstr ""
+msgstr "qual objeto pai para procurar através"
 
 msgid "which section of network configuration to update"
-msgstr ""
+msgstr "qual a secção de configuração de rede para atualizar"
 
 msgid "wipe a vol"
-msgstr ""
+msgstr "limpa um volume"
 
 msgid "wipe data on the removed volumes"
-msgstr ""
+msgstr "limpa dados nos volumes removidos"
 
 #, c-format
 msgid "wiping algorithm %1$d not supported"
-msgstr ""
+msgstr "algoritmo de limpeza %1$d não suportado"
 
 msgid "with --from, list all descendants"
-msgstr ""
+msgstr "com --from, lista todos os descendentes"
 
 msgid "with --wait, abort if pull exceeds timeout (in seconds)"
-msgstr ""
+msgstr "com --wait, aborta se o puxar exceder o tempo limite (em segundos)"
 
 msgid "with --wait, display the progress"
-msgstr ""
+msgstr "com --wait, mostra o progresso"
 
 msgid "with --wait, don't wait for cancel to finish"
-msgstr ""
+msgstr "com --wait, não espera que a operação de cancelar termine"
 
 msgid "with redefine, set current snapshot"
-msgstr ""
+msgstr "com redefine, define o instantâneo atual"
 
 msgid "wrap xpath results in an common root element"
-msgstr ""
+msgstr "embrulha resultados do xpath num elemento raiz comum"
 
 msgid "write I/O operations limit per second"
-msgstr ""
+msgstr "limite de operações I/O de escrita por segundo"
 
 msgid "write I/O operations max"
-msgstr ""
+msgstr "máximo de operações I/O de escrita"
 
 #, c-format
 msgid "write failed: %1$s"
 msgstr "escrever falhou: %1$s"
 
 msgid "write max, as scaled integer (default bytes)"
-msgstr ""
+msgstr "máximo de escrita, como inteiro escalado (predefinição bytes)"
 
 msgid "write throughput limit, as scaled integer (default bytes)"
 msgstr ""
+"limite de taxa de transferência de escrita, como inteiro escalado "
+"(predefinição bytes)"
 
 #, c-format
 msgid "write: %1$s: failed to write to temporary file: %2$s"
@@ -42009,11 +42020,12 @@ msgstr "escrever: %1$s: falhou ao escreve no ficheiro temporário: %2$s"
 
 #, c-format
 msgid "writing %1$llu bytes failed on RBD image %2$s at offset %3$llu"
-msgstr ""
+msgstr "escrita de %1$llu bytes falhou em imagem RBD %2$s no desvio %3$llu"
 
 #, c-format
 msgid "wrong format of 'cookie' field in backing store definition '%1$s'"
 msgstr ""
+"formato errado do campo 'cookie' em definição de armazém de apoio '%1$s'"
 
 msgid "wrong nlmsg len"
 msgstr "comprimento nlmsg errado"
@@ -42026,30 +42038,30 @@ msgstr "wwn de dispositivo de disco"
 
 #, c-format
 msgid "xen bus does not support %1$s input device"
-msgstr ""
+msgstr "barramento xen não suporta dispositivo de entrada %1$s"
 
 msgid "xml data file to export from"
 msgstr "ficheiro de dados xml para exportar de"
 
 msgid "xml modification unsupported"
-msgstr ""
+msgstr "modificação de xml não suportada"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "expressão xpath para filtrar o documento XML"
 
 #, c-format
 msgid "xsd:dateTime value '%1$s' has unexpected format"
-msgstr ""
+msgstr "valor de xsd:dateTime '%1$s' tem formato inesperado"
 
 msgid "y - yes, start editor again"
-msgstr ""
+msgstr "y - sim, arrancar o editor outra vez"
 
 msgid "yes"
 msgstr "sim"
 
 #, c-format
 msgid "zPCI %1$s %2$o is already reserved"
-msgstr ""
+msgstr "zPCI %1$s %2$o já está reservada"
 
 msgid "zero-copy is only available for parallel migration"
 msgstr "zero-copy só está disponível para migração paralela"
@@ -42062,6 +42074,7 @@ msgstr "zona %1$s pedida para rede %2$s mas o firewalld não está activo"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+"zona %1$s requisitada para rede %2$s mas o firewalld não é suportado em BSD"
 
 #~ msgid "Invalid response from CH. Disk removal failed."
 #~ msgstr "Resposta inválida de CH. Remoção de disco falhou."
