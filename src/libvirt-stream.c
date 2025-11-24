@@ -182,6 +182,15 @@ virStreamSend(virStreamPtr stream,
     virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(data, error);
 
+    /*
+     * We accept size_t which could be 2^64-1, but we need to return
+     * bytes processed in a signed int, so must cap the request to
+     * fit in a 'signed int' on a 32-bit platform.
+     */
+    if (nbytes > G_MAXINT32) {
+        nbytes = G_MAXINT32;
+    }
+
     if (stream->driver &&
         stream->driver->streamSend) {
         int ret;
@@ -279,6 +288,15 @@ virStreamRecv(virStreamPtr stream,
     virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(data, error);
 
+    /*
+     * We accept size_t which could be 2^64-1, but we need to return
+     * bytes processed in a signed int, so must cap the request to
+     * fit in a 'signed int' on a 32-bit platform.
+     */
+    if (nbytes > G_MAXINT32) {
+        nbytes = G_MAXINT32;
+    }
+
     if (stream->driver &&
         stream->driver->streamRecv) {
         int ret;
@@ -369,6 +387,15 @@ virStreamRecvFlags(virStreamPtr stream,
 
     virCheckStreamReturn(stream, -1);
     virCheckNonNullArgGoto(data, error);
+
+    /*
+     * We accept size_t which could be 2^64-1, but we need to return
+     * bytes processed in a signed int, so must cap the request to
+     * fit in a 'signed int' on a 32-bit platform.
+     */
+    if (nbytes > G_MAXINT32) {
+        nbytes = G_MAXINT32;
+    }
 
     if (stream->driver &&
         stream->driver->streamRecvFlags) {
