@@ -145,6 +145,7 @@ typedef enum {
     QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS,
     QEMU_FIRMWARE_FEATURE_REQUIRES_SMM,
     QEMU_FIRMWARE_FEATURE_SECURE_BOOT,
+    QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS,
     QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC,
     QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC,
 
@@ -164,6 +165,7 @@ VIR_ENUM_IMPL(qemuFirmwareFeature,
               "enrolled-keys",
               "requires-smm",
               "secure-boot",
+              "host-uefi-vars",
               "verbose-dynamic",
               "verbose-static"
 );
@@ -1181,6 +1183,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             hasEnrolledKeys = true;
             break;
 
+        case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_NONE:
@@ -1515,6 +1518,7 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
         case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
+        case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_NONE:
@@ -1570,6 +1574,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_NONE:
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
+        case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_LAST:
@@ -2084,6 +2089,7 @@ qemuFirmwareGetSupported(const char *machine,
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
             case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
+            case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
             case QEMU_FIRMWARE_FEATURE_LAST:
