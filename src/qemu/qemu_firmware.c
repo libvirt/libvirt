@@ -1602,6 +1602,32 @@ qemuFirmwareFetchParsedConfigs(bool privileged,
 
 
 /**
+ * qemuFirmwareFillDomainCustom:
+ * @def: domain definition
+ *
+ * Fill in whatever information we can when totally custom firmware
+ * paths are in use.
+ *
+ * Should only be used as a fallback in case looking at the firmware
+ * descriptors yielded no results, and neither did going through the
+ * legacy list of CODE:VARS pairs.
+ */
+static void
+qemuFirmwareFillDomainCustom(virDomainDef *def)
+{
+    virDomainLoaderDef *loader = def->os.loader;
+
+    if (!loader)
+        return;
+
+    if (!loader->format)
+        loader->format = VIR_STORAGE_FILE_RAW;
+
+    return;
+}
+
+
+/**
  * qemuFirmwareFillDomainLegacy:
  * @driver: QEMU driver
  * @def: domain definition
@@ -1890,15 +1916,11 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
             if ((ret = qemuFirmwareFillDomainLegacy(driver, def)) < 0)
                 return -1;
 
-            /* If we've gotten this far without finding a match, it
-             * means that we're dealing with a set of completely
-             * custom paths. In that case, unless the user has
-             * specified otherwise, we have to assume that they're in
-             * raw format */
             if (ret == 1) {
-                if (loader && !loader->format) {
-                    loader->format = VIR_STORAGE_FILE_RAW;
-                }
+                /* If we've gotten this far without finding a match,
+                 * it means that we're dealing with a set of completely
+                 * custom paths. We can still fill in some information */
+                qemuFirmwareFillDomainCustom(def);
             }
         } else {
             virReportError(VIR_ERR_OPERATION_FAILED,
