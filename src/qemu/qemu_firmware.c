@@ -1421,14 +1421,8 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
             loader->nvramTemplateFormat = VIR_STORAGE_FILE_NONE;
 
             if (!loader->nvram || virStorageSourceIsLocalStorage(loader->nvram)) {
-                /* validation when parsing the JSON files ensures that we get
-                 * only 'raw' and 'qcow2' here. Fall back to sharing format with loader */
-                if (flash->nvram_template.format)
-                    loader->nvramTemplateFormat = virStorageFileFormatTypeFromString(flash->nvram_template.format);
-                else
-                    loader->nvramTemplateFormat = loader->format;
-
                 loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
+                loader->nvramTemplateFormat = virStorageFileFormatTypeFromString(flash->nvram_template.format);
             }
         }
 
