@@ -1328,8 +1328,7 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
 
 
 #if WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
-    (defined(__i386__) || defined(__x86_64__)) && \
-    (defined(__linux__) || defined(__FreeBSD__))
+    (defined(__i386__) || defined(__x86_64__))
 static int
 virHostCPUGetMSRFromKVM(unsigned long index,
                         uint64_t *result)
@@ -1585,8 +1584,7 @@ virHostCPUGetTscInfo(void)
 }
 
 #endif /* WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
-          (defined(__i386__) || defined(__x86_64__)) && \
-          (defined(__linux__) || defined(__FreeBSD__)) */
+          (defined(__i386__) || defined(__x86_64__)) */
 
 int
 virHostCPUReadSignature(virArch arch,
