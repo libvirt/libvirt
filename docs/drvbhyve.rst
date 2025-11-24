@@ -694,6 +694,30 @@ Users must configure the device for passthrough manually either by
 using ``devctl(8)`` or by setting ``pptdevs`` in ``loader.conf(5)``.
 Please refer to the ``vmm(4)`` manual page for more details.
 
+SLIRP networking
+~~~~~~~~~~~~~~~~
+:since:`Since 12.0.0`, it is possible to use SLIRP networking.
+
+Example:
+
+::
+
+  ...
+    <interface type='user'>
+      <model type='e1000'/>
+    </interface>
+  ...
+
+Then the guest will have external network connectivity without
+any configuration on the host.
+
+.. note::
+   This configuration requires SLIRP open mode support by ``bhyve``.
+   It was introduced in FreeBSD -CURRENT in this commit:
+   https://cgit.FreeBSD.org/src/commit/?id=0e62ebd20172f67283bac9526c2aaeaffeb41b45.
+   Unfortunately, there is no (easy) way to probe its support in libvirt,
+   so please consult the ``bhyve(8)`` manual page to make sure it is available.
+
 Guest-specific considerations
 -----------------------------
 
