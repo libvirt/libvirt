@@ -76,8 +76,10 @@
     %define with_storage_gluster 0
 %endif
 
-# Fedora had zfs-fuse until F43
-%if 0%{?fedora} && 0%{?fedora} < 43
+# On Fedora 43, the 'zfs-fuse' package was removed, but is obtainable via
+# other means. Build the backend, but it's no longer considered to be part
+# of 'daemon-driver-storage'.
+%if 0%{?fedora}
     %define with_storage_zfs      0%{!?_without_storage_zfs:1}
 %else
     %define with_storage_zfs      0
@@ -667,9 +669,6 @@ Requires: /usr/bin/qemu-img
 Obsoletes: libvirt-daemon-driver-storage-rbd < 5.2.0
     %endif
 Obsoletes: libvirt-daemon-driver-storage-sheepdog < 8.8.0
-    %if !%{with_storage_zfs}
-Obsoletes: libvirt-daemon-driver-storage-zfs < 11.4.0
-    %endif
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
@@ -770,9 +769,13 @@ volumes using the ceph protocol.
 Summary: Storage driver plugin for ZFS
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-# Support any conforming implementation of zfs
+# Starting with Fedora 43 the 'zfs-fuse' is no longer shipped but obtainable
+# externally. The package builds fine without these. Users will have to provide
+# their own implementation.
+        %if 0%{?fedora} && 0%{?fedora} < 43
 Requires: /sbin/zfs
 Requires: /sbin/zpool
+        %endif
 
 %description daemon-driver-storage-zfs
 The storage driver backend adding implementation of the storage APIs for
@@ -796,7 +799,10 @@ Requires: libvirt-daemon-driver-storage-gluster = %{version}-%{release}
     %if %{with_storage_rbd}
 Requires: libvirt-daemon-driver-storage-rbd = %{version}-%{release}
     %endif
-    %if %{with_storage_zfs}
+# Starting with Fedora 43 the 'zfs-fuse' is no longer shipped but obtainable
+# externally. We do not want to install this as part of 'daemon-driver-storage'
+# any more.
+    %if %{with_storage_zfs} && 0%{?fedora} && 0%{?fedora} < 43
 Requires: libvirt-daemon-driver-storage-zfs = %{version}-%{release}
     %endif
 
