@@ -1552,6 +1552,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
     bool requiresSMM = false;
     bool supportsSecureBoot = false;
     bool hasEnrolledKeys = false;
+    bool usesUefiVarsDevice = false;
     bool isConfidential = false;
 
     for (i = 0; i < fw->nfeatures; i++) {
@@ -1565,6 +1566,9 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
             hasEnrolledKeys = true;
             break;
+        case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
+            usesUefiVarsDevice = true;
+            break;
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
@@ -1574,7 +1578,6 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_NONE:
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
-        case QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_LAST:
@@ -1588,14 +1591,21 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
      * support SMM. This is OK, because EFI binaries for confidential
      * VMs also don't support EFI variable storage in NVRAM, instead
      * the secureboot state is hardcoded to enabled.
+     *
+     * Similarly, use of the uefi-vars QEMU device guarantees that
+     * protected EFI variables work as expected without requiring SMM
+     * emulation.
      */
     if (!isConfidential &&
+        !usesUefiVarsDevice &&
         supportsSecureBoot != requiresSMM) {
         VIR_WARN("Firmware description '%s' has invalid set of features: "
-                 "%s = %d, %s = %d (isConfidential = %d)",
+                 "%s = %d, %s = %d, %s = %d (isConfidential = %d)",
                  filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_REQUIRES_SMM),
                  requiresSMM,
+                 qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_HOST_UEFI_VARS),
+                 usesUefiVarsDevice,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
                  supportsSecureBoot,
                  isConfidential);
