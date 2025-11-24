@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import enum
 import os
 import re
 
@@ -202,6 +203,22 @@ def add_feature_cpuid(eax, ecx, reg, bit, name):
     _FEATURES["cpuid"][eax][ecx][reg][bit] = name
 
 
+class VmxMsr(enum.Enum):
+    MSR_IA32_VMX_PROCBASED_CTLS2 = 0x0000048b
+    MSR_IA32_VMX_TRUE_PINBASED_CTLS = 0x0000048d
+    MSR_IA32_VMX_TRUE_PROCBASED_CTLS = 0x0000048e
+    MSR_IA32_VMX_TRUE_ENTRY_CTLS = 0x00000490
+    MSR_IA32_VMX_TRUE_EXIT_CTLS = 0x0000048f
+
+
+def is_vmx_msr(msr):
+    try:
+        VmxMsr(msr)
+        return True
+    except ValueError:
+        return False
+
+
 # add new msr feature bit
 def add_feature_msr(msr, bit, name):
     if not name:
@@ -212,6 +229,11 @@ def add_feature_msr(msr, bit, name):
 
     if msr not in _FEATURES["msr"]:
         _FEATURES["msr"][msr] = dict()
+
+    # VMX-* features are specified in the 32 higher bits
+    # of the MSR value
+    if is_vmx_msr(msr):
+        bit += 32
 
     _FEATURES["msr"][msr][bit] = name
 
