@@ -1589,14 +1589,21 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
      * VMs also don't support EFI variable storage in NVRAM, instead
      * the secureboot state is hardcoded to enabled.
      */
-    if ((!isConfidential &&
-         (supportsSecureBoot != requiresSMM)) ||
-        (hasEnrolledKeys && !supportsSecureBoot)) {
+    if (!isConfidential &&
+        supportsSecureBoot != requiresSMM) {
         VIR_WARN("Firmware description '%s' has invalid set of features: "
-                 "%s = %d, %s = %d, %s = %d",
+                 "%s = %d, %s = %d (isConfidential = %d)",
                  filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_REQUIRES_SMM),
                  requiresSMM,
+                 qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
+                 supportsSecureBoot,
+                 isConfidential);
+    }
+    if (hasEnrolledKeys && !supportsSecureBoot) {
+        VIR_WARN("Firmware description '%s' has invalid set of features: "
+                 "%s = %d, %s = %d",
+                 filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
                  supportsSecureBoot,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS),
