@@ -1623,6 +1623,11 @@ qemuFirmwareFillDomainCustom(virDomainDef *def)
     if (!loader->format)
         loader->format = VIR_STORAGE_FILE_RAW;
 
+    if (loader->nvramTemplate &&
+        !loader->nvramTemplateFormat) {
+        loader->nvramTemplateFormat = loader->format;
+    }
+
     return;
 }
 
