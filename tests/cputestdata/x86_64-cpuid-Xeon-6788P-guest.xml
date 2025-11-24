@@ -55,6 +55,7 @@
   <feature policy='require' name='rfds-no'/>
   <feature policy='require' name='vmx-any-errcode'/>
   <feature policy='require' name='vmx-nested-exception'/>
+  <feature policy='require' name='vmx-ple'/>
   <feature policy='disable' name='hle'/>
   <feature policy='disable' name='rtm'/>
   <feature policy='disable' name='taa-no'/>
@@ -63,16 +64,7 @@
   <feature policy='disable' name='vmx-store-lma'/>
   <feature policy='disable' name='vmx-activity-hlt'/>
   <feature policy='disable' name='vmx-vmwrite-vmexit-fields'/>
-  <feature policy='disable' name='vmx-apicv-xapic'/>
-  <feature policy='disable' name='vmx-ept'/>
-  <feature policy='disable' name='vmx-desc-exit'/>
-  <feature policy='disable' name='vmx-rdtscp-exit'/>
-  <feature policy='disable' name='vmx-apicv-x2apic'/>
-  <feature policy='disable' name='vmx-vpid'/>
-  <feature policy='disable' name='vmx-wbinvd-exit'/>
-  <feature policy='disable' name='vmx-unrestricted-guest'/>
   <feature policy='disable' name='vmx-apicv-register'/>
-  <feature policy='disable' name='vmx-apicv-vid'/>
   <feature policy='disable' name='vmx-rdrand-exit'/>
   <feature policy='disable' name='vmx-invpcid-exit'/>
   <feature policy='disable' name='vmx-vmfunc'/>
@@ -99,6 +91,11 @@
   <feature policy='disable' name='vmx-vintr-pending'/>
   <feature policy='disable' name='vmx-tsc-offset'/>
   <feature policy='disable' name='vmx-hlt-exit'/>
+  <feature policy='disable' name='vmx-invlpg-exit'/>
+  <feature policy='disable' name='vmx-mwait-exit'/>
+  <feature policy='disable' name='vmx-rdpmc-exit'/>
+  <feature policy='disable' name='vmx-rdtsc-exit'/>
+  <feature policy='disable' name='vmx-cr3-load-noexit'/>
   <feature policy='disable' name='vmx-cr3-store-noexit'/>
   <feature policy='disable' name='vmx-cr8-load-exit'/>
   <feature policy='disable' name='vmx-cr8-store-exit'/>
@@ -112,6 +109,7 @@
   <feature policy='disable' name='vmx-monitor-exit'/>
   <feature policy='disable' name='vmx-pause-exit'/>
   <feature policy='disable' name='vmx-secondary-ctls'/>
+  <feature policy='disable' name='vmx-exit-nosave-debugctl'/>
   <feature policy='disable' name='vmx-exit-load-perf-global-ctrl'/>
   <feature policy='disable' name='vmx-exit-ack-intr'/>
   <feature policy='disable' name='vmx-exit-save-pat'/>
@@ -119,6 +117,7 @@
   <feature policy='disable' name='vmx-exit-save-efer'/>
   <feature policy='disable' name='vmx-exit-load-efer'/>
   <feature policy='disable' name='vmx-exit-save-preemption-timer'/>
+  <feature policy='disable' name='vmx-entry-noload-debugctl'/>
   <feature policy='disable' name='vmx-entry-ia32e-mode'/>
   <feature policy='disable' name='vmx-entry-load-perf-global-ctrl'/>
   <feature policy='disable' name='vmx-entry-load-pat'/>

@@ -11,11 +11,11 @@
   <msr index='0x10a' edx='0x00000000' eax='0x0d00e06b'/>
   <msr index='0x480' edx='0x00c00000' eax='0x00000000'/>
   <msr index='0x485' edx='0x00000000' eax='0x20000160'/>
-  <msr index='0x48b' edx='0x00000000' eax='0x06137bff'/>
+  <msr index='0x48b' edx='0x06137bff' eax='0x00000000'/>
   <msr index='0x48c' edx='0x00000d01' eax='0x06330041'/>
-  <msr index='0x48d' edx='0x00000000' eax='0x000000e9'/>
-  <msr index='0x48e' edx='0x00000000' eax='0xfbf99e8c'/>
-  <msr index='0x48f' edx='0x00000000' eax='0x007c9004'/>
-  <msr index='0x490' edx='0x00000000' eax='0x0000e204'/>
+  <msr index='0x48d' edx='0x000000e9' eax='0x00000000'/>
+  <msr index='0x48e' edx='0xfbf99e8c' eax='0x00000000'/>
+  <msr index='0x48f' edx='0x007c9004' eax='0x00000000'/>
+  <msr index='0x490' edx='0x0000e204' eax='0x00000000'/>
   <msr index='0x491' edx='0x00000000' eax='0x00000001'/>
 </cpudata>

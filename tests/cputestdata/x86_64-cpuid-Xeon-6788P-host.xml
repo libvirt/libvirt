@@ -89,13 +89,16 @@
   <feature name='rfds-no'/>
   <feature name='vmx-any-errcode'/>
   <feature name='vmx-nested-exception'/>
+  <feature name='vmx-apicv-xapic'/>
+  <feature name='vmx-ept'/>
+  <feature name='vmx-desc-exit'/>
+  <feature name='vmx-rdtscp-exit'/>
+  <feature name='vmx-apicv-x2apic'/>
+  <feature name='vmx-vpid'/>
+  <feature name='vmx-wbinvd-exit'/>
+  <feature name='vmx-unrestricted-guest'/>
+  <feature name='vmx-apicv-vid'/>
+  <feature name='vmx-ple'/>
   <feature name='vmx-invept-single-context'/>
   <feature name='vmx-invept-all-context'/>
-  <feature name='vmx-invlpg-exit'/>
-  <feature name='vmx-mwait-exit'/>
-  <feature name='vmx-rdpmc-exit'/>
-  <feature name='vmx-rdtsc-exit'/>
-  <feature name='vmx-cr3-load-noexit'/>
-  <feature name='vmx-exit-nosave-debugctl'/>
-  <feature name='vmx-entry-noload-debugctl'/>
 </cpu>
