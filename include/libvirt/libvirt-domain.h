@@ -3497,7 +3497,7 @@ struct _virDomainStatsRecord {
  * Alignment requirement, in bytes, for offset/length of I/O requests, as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_REQUEST_ALIGNMENT ".limits.request_alignment"
 
@@ -3509,7 +3509,7 @@ struct _virDomainStatsRecord {
  *
  * Maximum number of bytes that can be discarded at once, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_MAX ".limits.discard_max"
 
@@ -3521,7 +3521,7 @@ struct _virDomainStatsRecord {
  *
  * Optimal alignment for discard requests in bytes, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_DISCARD_ALIGNMENT ".limits.discard_alignment"
 
@@ -3533,7 +3533,7 @@ struct _virDomainStatsRecord {
  *
  * Maximum number of bytes that can be zeroed out at once, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_MAX ".limits.write_zeroes_max"
 
@@ -3545,7 +3545,7 @@ struct _virDomainStatsRecord {
  *
  * Optimal alignment for write_zeroes requests in bytes, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_WRITE_ZEROES_ALIGNMENT ".limits.write_zeroes_alignment"
 
@@ -3557,7 +3557,7 @@ struct _virDomainStatsRecord {
  *
  * Optimal transfer length in bytes, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_OPTIMAL ".limits.transfer_optimal"
 
@@ -3569,7 +3569,7 @@ struct _virDomainStatsRecord {
  *
  * Maximal transfer length in bytes, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_MAX ".limits.transfer_max"
 
@@ -3582,7 +3582,7 @@ struct _virDomainStatsRecord {
  * Maximal hardware transfer length of requests bypassing kernel IO scheduler
  * in bytes, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_TRANSFER_HW_MAX ".limits.transfer_hw_max"
 
@@ -3594,7 +3594,7 @@ struct _virDomainStatsRecord {
  *
  * Maximum number of scatter/gather elements, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_MAX ".limits.iov_max"
 
@@ -3607,7 +3607,7 @@ struct _virDomainStatsRecord {
  * Maximal number of scatter/gather elements of requests bypassing kernel IO
  * scheduler, as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_IOV_HW_MAX ".limits.iov_hw_max"
 
@@ -3620,7 +3620,7 @@ struct _virDomainStatsRecord {
  * memory alignment in bytes so that no bounce buffer is needed, as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_MINIMAL ".limits.memory_alignment_minimal"
 
@@ -3633,7 +3633,7 @@ struct _virDomainStatsRecord {
  * memory alignment in bytes that is used for bounce buffers, as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LIMITS_MEMORY_ALIGNMENT_OPTIMAL ".limits.memory_alignment_optimal"
 
@@ -3643,7 +3643,7 @@ struct _virDomainStatsRecord {
  * Number of groups of statistics accounted in a configured time intervals as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_COUNT ".timed_group.count"
 
@@ -3654,7 +3654,7 @@ struct _virDomainStatsRecord {
  * prefix, the entry number formatted as an unsigned integer and one of the
  * timed group suffix parameters to form a complete paramter name.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX ".timed_group."
 
@@ -3664,7 +3664,7 @@ struct _virDomainStatsRecord {
  * The time interval in seconds as unsigned long long for which the statistics
  * in this group were collected.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_INTERVAL ".interval"
 
@@ -3674,7 +3674,7 @@ struct _virDomainStatsRecord {
  * Minimum latency of read operations in the defined interval, in nanoseconds as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MIN ".rd_latency_min"
 
@@ -3684,7 +3684,7 @@ struct _virDomainStatsRecord {
  * Maximum latency of read operations in the defined interval, in nanoseconds as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_MAX ".rd_latency_max"
 
@@ -3694,7 +3694,7 @@ struct _virDomainStatsRecord {
  * Average latency of read operations in the defined interval, in nanoseconds as
  * unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_LATENCY_AVG ".rd_latency_avg"
 
@@ -3704,7 +3704,7 @@ struct _virDomainStatsRecord {
  * Minimum latency of write operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MIN ".wr_latency_min"
 
@@ -3714,7 +3714,7 @@ struct _virDomainStatsRecord {
  * Maximum latency of write operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_MAX ".wr_latency_max"
 
@@ -3724,7 +3724,7 @@ struct _virDomainStatsRecord {
  * Average latency of write operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_LATENCY_AVG ".wr_latency_avg"
 
@@ -3733,7 +3733,7 @@ struct _virDomainStatsRecord {
  * Minimum latency of zone append operations in the defined interval, in
  * nanoseconds as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MIN ".zone_append_latency_min"
 
@@ -3743,7 +3743,7 @@ struct _virDomainStatsRecord {
  * Maximum latency of zone append operations in the defined interval, in
  * nanoseconds as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_MAX ".zone_append_latency_max"
 
@@ -3753,7 +3753,7 @@ struct _virDomainStatsRecord {
  * Average latency of zone append operations in the defined interval, in
  * nanoseconds as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_LATENCY_AVG ".zone_append_latency_avg"
 
@@ -3763,7 +3763,7 @@ struct _virDomainStatsRecord {
  * Minimum latency of flush operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MIN ".flush_latency_min"
 
@@ -3773,7 +3773,7 @@ struct _virDomainStatsRecord {
  * Maximum latency of flush operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_MAX ".flush_latency_max"
 
@@ -3783,7 +3783,7 @@ struct _virDomainStatsRecord {
  * Average latency of flush operations in the defined interval, in nanoseconds
  * as unsigned long long.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_FLUSH_LATENCY_AVG ".flush_latency_avg"
 
@@ -3792,7 +3792,7 @@ struct _virDomainStatsRecord {
  *
  * Average number of pending read operations in the defined interval as double.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_RD_QUEUE_DEPTH_AVG ".rd_queue_depth_avg"
 
@@ -3801,7 +3801,7 @@ struct _virDomainStatsRecord {
  *
  * Average number of pending write operations in the defined interval as double.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_WR_QUEUE_DEPTH_AVG ".wr_queue_depth_avg"
 
@@ -3811,7 +3811,7 @@ struct _virDomainStatsRecord {
  * Average number of pending zone append operations in the defined interval as
  * double.
  *
- * Since: 11.9.0
+ * Since: 11.10.0
  */
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_QUEUE_DEPTH_AVG ".zone_append_queue_depth_avg"
 
