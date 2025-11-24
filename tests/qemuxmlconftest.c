@@ -3186,8 +3186,10 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("cpu-Icelake-Server-pconfig");
 
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-kvm-virt-4.2", "aarch64");
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-tcg-virt-4.2", "aarch64");
+    DO_TEST_CAPS_ARCH_VER("aarch64-default-cpu-kvm-virt-4.2", "aarch64", "10.0.0");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-kvm-virt-10.0", "aarch64");
+    DO_TEST_CAPS_ARCH_VER("aarch64-default-cpu-tcg-virt-4.2", "aarch64", "10.0.0");
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-tcg-virt-10.0", "aarch64");
     DO_TEST_CAPS_ARCH_VER("ppc64-default-cpu-kvm-pseries-2.7", "ppc64", "7.0.0");
     DO_TEST_CAPS_ARCH_VER("ppc64-default-cpu-tcg-pseries-2.7", "ppc64", "7.0.0");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-default-cpu-kvm-pseries-3.1", "ppc64");
