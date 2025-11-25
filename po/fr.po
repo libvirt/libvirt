@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1413,6 +1413,9 @@ msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 "'disk' manque ou n'est pas un tableau dans la réponse de guest-get-fsinfo"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' n'est pas pris en charge par le niveau de compat %1$s"
@@ -2009,8 +2012,8 @@ msgstr "Abandonne la tâche de domaine en cours d'exécution"
 #, c-format
 msgid "Accept SSH host key with hash '%1$s' for host '%2$s:%3$d' (%4$s/%5$s)?"
 msgstr ""
-"Accepter la clé hôte SSH avec le hachage '%1$s' pour l'hôte '%2$s:"
-"%3$d' (%4$s/%5$s) ?"
+"Accepter la clé hôte SSH avec le hachage '%1$s' pour l'hôte '%2$s:%3$d' "
+"(%4$s/%5$s) ?"
 
 msgid "Access connection"
 msgstr ""
@@ -2518,6 +2521,10 @@ msgstr ""
 
 msgid "Busy"
 msgstr "Occupé"
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
 
 msgid "CA certificate:"
 msgstr "Certificat AC :"
@@ -3619,10 +3626,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "Impossible d'imprimer le type de données %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "Impossible de lire %1$s '%2$s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "Impossible de lire le cputime pour le domaine"
 
@@ -3898,6 +3901,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "L'utilisation du certificat %1$s ne permet pas la signature numérique"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "La validation du certificat a échoué : %1$s"
 
@@ -4021,15 +4032,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4200,9 +4202,9 @@ msgid ""
 "--verbose option."
 msgstr ""
 "Le nom distinctif du client ne figure pas dans la liste des clients "
-"autorisés (tls_allowed_dn_list).  Utilisez 'virt-pki-query-dn clientcert."
-"pem' pour afficher le champ ’Distinguished Name’ dans le certificat du "
-"client, ou exécutez ce démon avec l'option --verbose."
+"autorisés (tls_allowed_dn_list).  Utilisez 'virt-pki-query-dn "
+"clientcert.pem' pour afficher le champ ’Distinguished Name’ dans le "
+"certificat du client, ou exécutez ce démon avec l'option --verbose."
 
 msgid "Client's username is not on the list of allowed clients"
 msgstr ""
@@ -4695,6 +4697,9 @@ msgstr "Impossible de trouver PhysicalNic avec la clé '%1$s'"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Impossible de trouver PhysicalNic avec le nom '%1$s'"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Impossible de trouver un élément \"réseau\" dans le fichier d'état"
@@ -6182,6 +6187,10 @@ msgstr "Ne pas inclure de fonctionnalités qui bloquent la migration"
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Le domaine %1$s n'est pas sorti"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8556,6 +8565,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Échec de l'analyse de l'adresse MAC de '%1$s'"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Échec de l'analyse de l'adresse de configuration PCI '%1$s'"
 
@@ -10234,6 +10247,9 @@ msgstr ""
 "Le remappage d'interruption IOMMU nécessite un APIC d'E/S divisé (pilote "
 "ioapic='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11590,6 +11606,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr "Le chemin de l'image du noyau dans ce domaine n'est pas défini"
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -13333,10 +13353,8 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr "Support Nicdev non disponible"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"Aucun chemin d'accès au certificat de l'autorité de certification n'a été "
-"défini pour correspondre à la clé/au certificat du serveur"
 
 msgid "No DRM render nodes available"
 msgstr "Aucun nœud de rendu DRM disponible"
@@ -13354,6 +13372,9 @@ msgstr "Aucune adresse IP pour l'hôte '%1$s' n'a été trouvée : %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "Aucune implémentation du parseur JSON n'est disponible"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "Aucun bus PCI disponible"
@@ -13621,15 +13642,11 @@ msgstr "Aucun nom d'environnement qemu n'est spécifié"
 msgid "No runstatedir specified"
 msgstr "Aucun runstatedir n'est spécifié"
 
-msgid "No server certificate path set to match server key"
+msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
-"Le chemin du certificat du serveur n'est pas défini pour correspondre à la "
-"clé du serveur"
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
-"Le chemin de la clé du serveur n'est pas défini pour correspondre au "
-"certificat du serveur"
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13859,6 +13876,10 @@ msgstr "Le nombre de CPU dans <numa> dépasse le compte <vcpu>"
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr ""
 "Le nombre de CPU dans <numa> dépasse le nombre maximum de vcpu souhaité"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -17250,6 +17271,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "Le disque cible %1$s ne correspond pas à la source %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "Le mode d’accès du disque cible ne correspond pas à la source"
 
@@ -17318,10 +17347,9 @@ msgstr ""
 "Le mode de mise en cache du périphérique IOMMU du domaine cible '%1$s' ne "
 "correspond pas à la source '%2$s'"
 
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
-"Le nombre de périphériques IOMMU du domaine cible ne correspond pas à la "
-"source"
 
 #, c-format
 msgid ""
@@ -17355,6 +17383,11 @@ msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "Le modèle de périphérique IOMMU du domaine cible '%1$s' ne correspond pas à "
 "la source '%2$s'"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -18105,8 +18138,8 @@ msgstr "Le certificat du client %1$s n'est pas encore actif"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -18190,14 +18223,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
@@ -18941,6 +18974,9 @@ msgstr "Impossible d'ajouter le disque dur au registre des médias"
 msgid "Unable to add hardware machine"
 msgstr "Impossible d'ajouter une machine matérielle"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Impossible d'ajouter un lockspace %1$s"
@@ -18949,11 +18985,23 @@ msgstr "Impossible d'ajouter un lockspace %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Impossible d'ajouter le lockspace %1$s : %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "Impossible d'ajouter le registre des médias d'autres médias"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 msgid "Unable to add storage controller"
@@ -18974,6 +19022,23 @@ msgid ""
 msgstr ""
 "Impossible d'ajouter cet instantané, il y a déjà un instantané lié à la "
 "machine"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "Impossible d'ajouter/supprimer des entrées fdb sur cette plateforme"
@@ -22561,8 +22626,8 @@ msgstr "Le nœud XML ne contient pas de texte, on attend une valeur %1$s"
 
 msgid "XML node doesn't contain text, expecting an xsd:dateTime value"
 msgstr ""
-"Le noeud XML ne contient pas de texte, il faut attendre une valeur xsd:"
-"dateTime"
+"Le noeud XML ne contient pas de texte, il faut attendre une valeur "
+"xsd:dateTime"
 
 #, c-format
 msgid "XPath evaluation of response for call to '%1$s' failed"
@@ -23180,6 +23245,9 @@ msgstr "éviter le cache du système de fichiers lors de la restauration"
 
 msgid "avoid file system cache when saving"
 msgstr "éviter le cache du système de fichiers lors de la sauvegarde"
+
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
 
 msgid "await a domain event"
 msgstr ""
@@ -25269,8 +25337,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "ne peut pas mettre à jour le CPU invité pour l'architecture %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 "Impossible de mettre à jour l'action du cycle de vie car QEMU a été lancé "
 "avec un paramètre -no-reboot incompatible"
@@ -25370,6 +25438,9 @@ msgstr "cellNum dans %1$s doit être inférieur ou égal à %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum dans %1$s n'accepte que %2$d comme valeur négative"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -26940,6 +27011,11 @@ msgstr "le type de périphérique '%1$s' ne peut pas être mis à jour"
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "type de périphérique '%1$s' ne peut pas être débranché à chaud"
 
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
+
 msgid "devices cgroup isn't mounted"
 msgstr "Les périphériques cgroup ne sont pas montés"
 
@@ -27111,8 +27187,8 @@ msgstr "attributs du disque : disk[,checkpoint=type][,bitmap=name]"
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
 msgstr ""
-"attributs du disque : disk[,snapshot=type][,driver=type][,stype=type][,"
-"file=name]"
+"attributs du disque : disk[,snapshot=type][,driver=type][,stype=type]"
+"[,file=name]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
@@ -30426,6 +30502,9 @@ msgstr "interface invité"
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "L'invité ne possède pas les vCPUs '%1$s'"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "L'invité a démissionné de manière inattendue"
@@ -35826,9 +35905,6 @@ msgstr "seul le transport TCP est pris en charge pour les volumes iSCSI"
 msgid "only USB input devices are supported"
 msgstr "seuls les périphériques d'entrée USB sont pris en charge"
 
-msgid "only a single IOMMU device is supported"
-msgstr "un seul périphérique IOMMU est pris en charge"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -36403,8 +36479,8 @@ msgstr "migration peer-2-peer"
 
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
 msgstr ""
-"Poids des entrées-sorties par périphérique, sous la forme /path/to/device,"
-"weight,..."
+"Poids des entrées-sorties par périphérique, sous la forme /path/to/"
+"device,weight,..."
 
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
@@ -36412,29 +36488,29 @@ msgstr ""
 "les éléments os/boot"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
-"octets lus par périphérique par seconde, sous la forme /path/to/device,"
-"read_bytes_sec,..."
+"octets lus par périphérique par seconde, sous la forme /path/to/"
+"device,read_bytes_sec,..."
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
-"octets écrits par périphérique par seconde, sous la forme /path/to/device,"
-"write_bytes_sec,..."
+"octets écrits par périphérique par seconde, sous la forme /path/to/"
+"device,write_bytes_sec,..."
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 "limite d'E/S en lecture par périphérique par seconde, sous la forme /path/to/"
 "device,read_iops_sec,..."
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 "limite d'E/S en écriture par périphérique par seconde, sous la forme /path/"
 "to/device,write_iops_sec,..."
@@ -37005,6 +37081,9 @@ msgstr "La requête n'est prise en charge que par les protocoles HTTP(S)"
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "demande ou modification de l'état du vcpu dans l'invité (via l'agent)"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr ""
 "l'entrée du périphérique query-block n'était pas dans le format attendu"
@@ -37192,6 +37271,9 @@ msgstr ""
 "l'interrogation de la vitesse maximale de migration post-copie n'est pas "
 "prise en charge par le binaire QEMU"
 
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
+
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "La propriété queue-size n'est pas prise en charge par ce binaire QEMU"
 
@@ -37361,8 +37443,8 @@ msgstr "rafraichir un pool"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
 msgstr ""
-"échec du rafraîchissement de ploop : impossible de supprimer DiskDescriptor."
-"xml"
+"échec du rafraîchissement de ploop : impossible de supprimer "
+"DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
@@ -38683,6 +38765,13 @@ msgid "statistic value too large"
 msgstr "valeur de la statistique trop grande"
 
 #, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
+
+#, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
 msgstr "erreur d'état dans l'événement (réel 0x%1$x, attendu 0x%2$x)"
 
@@ -39862,8 +39951,8 @@ msgstr ""
 #, c-format
 msgid "transient disk supported only with 'disk' device (%1$s)"
 msgstr ""
-"disque transitoire pris en charge uniquement avec le périphérique "
-"'disk' (%1$s)"
+"disque transitoire pris en charge uniquement avec le périphérique 'disk' "
+"(%1$s)"
 
 #, c-format
 msgid "transient disk supported only with 'file' type (%1$s)"
@@ -42004,6 +42093,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -43031,6 +43123,33 @@ msgstr "zone %1$s demandée pour le réseau %2$s mais firewalld n'est pas actif"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "Impossible de lire %1$s '%2$s'"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr ""
+#~ "Aucun chemin d'accès au certificat de l'autorité de certification n'a été "
+#~ "défini pour correspondre à la clé/au certificat du serveur"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr ""
+#~ "Le chemin du certificat du serveur n'est pas défini pour correspondre à "
+#~ "la clé du serveur"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr ""
+#~ "Le chemin de la clé du serveur n'est pas défini pour correspondre au "
+#~ "certificat du serveur"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "Le nombre de périphériques IOMMU du domaine cible ne correspond pas à la "
+#~ "source"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "un seul périphérique IOMMU est pris en charge"
 
 #, c-format
 #~ msgid ""

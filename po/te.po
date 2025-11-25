@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Telugu <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1208,6 +1208,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2278,6 +2281,10 @@ msgstr "ide నియంత్రిక కొరకు బస్ తప్ప�
 msgid "Busy"
 msgstr "తీరికలేదు"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 #, fuzzy
 msgid "CA certificate:"
 msgstr "చెల్లని దృవీకరణపత్రము"
@@ -3317,10 +3324,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "దత్తాంశం వ్రాయలేదు"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "%1$s '%2$s' చదువలేదు"
-
 msgid "Cannot read cputime for domain"
 msgstr "డొమైన్ కొరకు cputime చదువలేము"
 
@@ -3573,6 +3576,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "ధృవీకరణపత్రం %1$s వాడుక డిజిటల్ సంతకంను అనుమతించదు"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "ధృవీకరణపత్రం నిర్ధారణ విఫలమైంది: %1$s"
 
@@ -3686,15 +3697,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4341,6 +4343,9 @@ msgstr "PhysicalNic ను '%1$s' కీ కొరకు కనుగొనల�
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "PhysicalNic ను '%1$s' పేరుతో కనుగొనలేక పోయింది"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "స్థితి ఫైలునందు ఏ 'network' మూలకం కనుగొనలేక పోయింది"
@@ -5779,6 +5784,10 @@ msgstr ""
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "డొమైన్ %1$s చూపబడలేదు"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8094,6 +8103,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "'%1$s' నుండి uid మరియు gid పార్స్ చేయలేదు"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "PCI ఆకృతీకరణ చిరునామా '%1$s' పార్స్ చేయుటకు విఫలమైంది"
 
@@ -9690,6 +9703,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -10971,6 +10987,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 #, fuzzy
@@ -12668,7 +12688,7 @@ msgstr "నిరోధక పరికరం యొక్క కొత్త �
 msgid "Nicdev support unavailable"
 msgstr "వ్యవస్థ అందుబాటులో లేదు"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12689,6 +12709,9 @@ msgstr "అతిధేయ '%1$s' కొరకు ఏ ఐపి చిరున�
 
 msgid "No JSON parser implementation is available"
 msgstr "ఎటువంటి JSON పార్శర్ అభివృద్ది అందుబాటులో లేదు"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "ఏ PCI బస్‌లు అందుబాటులో లేవు"
@@ -12963,11 +12986,10 @@ msgstr "ఏ qemu ఎన్విరాన్మెంట్ పేరు తె�
 msgid "No runstatedir specified"
 msgstr "ఏ బ్రిడ్జ్ పేరు తెలుపలేదు"
 
-#, fuzzy
-msgid "No server certificate path set to match server key"
-msgstr "సేవిక ధృవీకరణపత్రం %s ఇంకా క్రియాశీలమవలేదు"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13190,6 +13212,10 @@ msgstr "<numa> నందు వున్న CPUల సంఖ్య <vcpu> లె
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> నందు వున్న CPUల సంఖ్య <vcpu> లెక్కకు మించెను"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16357,6 +16383,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "లక్ష్యపు డిస్కు %1$s మూలం %2$s తో సరిపోలడంలేదు"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "లక్ష్యపు డిస్కు యాక్సెస్ రీతి అనునది మూలంతో సరిపోలడం లేదు"
 
@@ -16414,9 +16448,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
-msgstr "లక్ష్యపు డొమైన్ హబ్ పరికరం లెక్క %zu మూలం %zu తో సరిపోలడంలేదు"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16442,6 +16476,11 @@ msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూ�
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "లక్ష్యపు డొమైన్ పేరు '%1$s' మూలం '%2$s' తో సరిపోలుటలేదు"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17075,8 +17114,8 @@ msgstr "క్లైంట్ ధృవీకరణపత్రం %1$s ఇం�
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17148,14 +17187,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -17882,6 +17921,9 @@ msgstr "బ్రిడ్జ్ %s పోర్ట్ %s జతచేయలే�
 msgid "Unable to add hardware machine"
 msgstr "vmware లాగ్ ఫైలు చదువలేక పోయింది"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "లాక్‌స్పేస్ %1$s జతచేయలేదు"
@@ -17890,12 +17932,24 @@ msgstr "లాక్‌స్పేస్ %1$s జతచేయలేదు"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "లాక్‌స్పేస్ %s జతచేయలేదు"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "మానిటర్ ఘటనలను నమోదుచేయలేక పోయింది"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -17917,6 +17971,23 @@ msgstr "కొత్త డొమైన్ వివరణను అమర్చ
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22026,6 +22097,9 @@ msgstr "తిరిగినిల్వప్పుడు ఫైల్ వ్�
 msgid "avoid file system cache when saving"
 msgstr "దాయునప్పుడు ఫైల్ వ్యవస్థ క్యాచీను తప్పించండి"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -23984,8 +24058,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "%1$s ఆకృతి కొరకు CPU డాటాను డీకోడ్ చేయలేము"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24077,6 +24151,9 @@ msgstr "%1$s నందలి cellNum తప్పక %2$d కు సమానం
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s నందలి cellNum అనునది %2$d ను మాత్రమే ఋణ విలువగా ఆమోదించును"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25576,6 +25653,11 @@ msgstr "పరికర రకం '%1$s' నవీకరించబడలేద
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "పరికరం రకం '%1$s' హాట్ అన్‌ప్లగ్‌డ్ కాలేదు"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "పరికరాల cgroup మౌంట్ కాలేదు"
@@ -29017,6 +29099,9 @@ msgstr "ఇప్పటికేవున్న యింటర్ఫేస్ �
 #, fuzzy, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "ప్రవేశంకు 'వేగం' దొరకలేదు"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "అతిథి అనుకోకుండా నిష్క్రమించెను"
@@ -34290,10 +34375,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "ఒక TPM పరికరం మాత్రమే తోడ్పాటునిచ్చును"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "ఒక TPM పరికరం మాత్రమే తోడ్పాటునిచ్చును"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -34854,26 +34935,26 @@ msgstr "os/boot మూలకాలతో ఒక్కో-పరికరం బ�
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "ఒక్కో-పరికరానికి IO వెయిట్స్, /path/to/device,weight,... రూపంలో"
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "ఒక్కో-పరికరానికి IO వెయిట్స్, /path/to/device,weight,... రూపంలో"
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "ఒక్కో-పరికరానికి IO వెయిట్స్, /path/to/device,weight,... రూపంలో"
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "ఒక్కో-పరికరానికి IO వెయిట్స్, /path/to/device,weight,... రూపంలో"
 
 #, fuzzy, c-format
@@ -35425,6 +35506,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "అతిథి నందు cpu స్థితి సవరించు"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "నిరోధకగణాంకాల పరికర ప్రవేశం అనుకున్న ఫార్మాట్‌లో లేదు"
@@ -35592,6 +35676,9 @@ msgstr "'qemu' దత్తాంశం క్వరీ-వర్షన్ ప�
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "QEMU బైనరీ చేత కుదించిన మైగ్రేషన్ తోడ్పాటునిచ్చుటలేదు"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37010,6 +37097,13 @@ msgstr "'%1$s' గణాంకం విఫలమైంది"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "విలువ మరీ పెద్దది: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40212,6 +40306,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "యునిక్స్ సాకెట్ మరియు రిమోట్ సేవిక '%1$s' వుపయోగించుటకు తోడ్పాటులేదు."
@@ -41176,6 +41273,22 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "%1$s '%2$s' చదువలేదు"
+
+#, fuzzy
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "సేవిక ధృవీకరణపత్రం %s ఇంకా క్రియాశీలమవలేదు"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "లక్ష్యపు డొమైన్ హబ్ పరికరం లెక్క %zu మూలం %zu తో సరిపోలడంలేదు"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "ఒక TPM పరికరం మాత్రమే తోడ్పాటునిచ్చును"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"

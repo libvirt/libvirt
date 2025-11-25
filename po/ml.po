@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1222,6 +1222,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -1746,8 +1749,8 @@ msgid ""
 "A network with forward mode='%1$s' can specify a bridge name or a forward "
 "dev, but not both (network '%2$s')"
 msgstr ""
-"ഫോര്‍വേഡ് മോഡ്='%1$s' എന്ന നെറ്റ്‌വര്‍ക്കിനു് ഒരു ബ്രിഡ്ജ് നാമം അല്ലെങ്കില്‍ മുമ്പോട്ടുള്ള dev നല്‍കാം,"
-"പക്ഷേ രണ്ടും പാടില്ല (നെറ്റ്‌ര്‍ക്ക് '%2$s')"
+"ഫോര്‍വേഡ് മോഡ്='%1$s' എന്ന നെറ്റ്‌വര്‍ക്കിനു് ഒരു ബ്രിഡ്ജ് നാമം അല്ലെങ്കില്‍ മുമ്പോട്ടുള്ള dev "
+"നല്‍കാം,പക്ഷേ രണ്ടും പാടില്ല (നെറ്റ്‌ര്‍ക്ക് '%2$s')"
 
 #, fuzzy
 msgid "A node device driver is already registered"
@@ -2299,6 +2302,10 @@ msgstr "PIIX3 USB അല്ലെങ്കില്‍ ഐഡിഇ കണ്ട
 
 msgid "Busy"
 msgstr "തിരക്കില്‍"
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
 
 #, fuzzy
 msgid "CA certificate:"
@@ -3340,10 +3347,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "ഡേറ്റാ സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "%1$s '%2$s' ലഭ്യമാക്കുവാനായില്ല"
-
 msgid "Cannot read cputime for domain"
 msgstr "ഡൊമെയിനുള്ള cputime ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -3598,6 +3601,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "സര്‍ട്ടിഫിക്കേറ്റ് %1$s ഉപയോഗം ഡിജിറ്റല്‍ സിഗ്നേച്ചര്‍ അനുവദിച്ചില്ല"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "സമ്മതപത്ര പരിശോധന പരാജയപ്പെട്ടു: %1$s"
 
@@ -3711,15 +3722,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4369,6 +4371,9 @@ msgstr "'%1$s' കീയ്ക്കൊപ്പം PhysicalNic കണ്ടു�
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "'%1$s' എന്ന പേരുള്ള PhysicalNic കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമായില്ല"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "അവസ്ഥ ഫയലില്‍ 'network' എലമെന്റ് ലഭ്യമായില്ല"
@@ -5818,6 +5823,10 @@ msgstr ""
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "ഡൊമെയിന്‍ %1$s ലഭ്യമല്ല"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8163,6 +8172,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "'%1$s'-ല്‍ നിന്നും uid, gid പാഴ്സ് ചെയ്യുന്നതില്‍ പരാജയം"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr " '%1$s' എന്ന പിസിഐ കോണ്‍ഫിഗ് വിലാസം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
@@ -9776,6 +9789,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11070,6 +11086,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 #, fuzzy
@@ -12773,7 +12793,7 @@ msgstr "ബ്ലോക്ക് ഡിവൈസിന്റെ പുതിയ 
 msgid "Nicdev support unavailable"
 msgstr "സിസ്റ്റം ലഭ്യമല്ല"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12794,6 +12814,9 @@ msgstr "'%1$s' ഹോസ്റ്റിനു് ഐപി വിലാസങ്
 
 msgid "No JSON parser implementation is available"
 msgstr "ജേസണ്‍ പാര്‍സറിന്റെ ഇംപ്ലിമെന്റേഷനൊന്നും ലഭ്യമല്ല"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "പിസിഐ ബസുകള്‍ ലഭ്യമല്ല"
@@ -13067,11 +13090,10 @@ msgstr "qemu എന്‍വയണ്മെന്റ് നാമം നല്�
 msgid "No runstatedir specified"
 msgstr "ബ്രിഡ്ജ് നാമം നല്‍കിയിട്ടില്ല"
 
-#, fuzzy
-msgid "No server certificate path set to match server key"
-msgstr "സര്‍വര്‍ സമ്മപത്രം %s സജീമല്ല"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13296,6 +13318,10 @@ msgstr "<numa>-ലുള്ള സിപിയുകളുടെ എണ്ണം
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa>-ലുള്ള സിപിയുകളുടെ എണ്ണം <vcpu> കൌണ്ടിനേക്കാള്‍ കൂടുതലാകുന്നു"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16507,6 +16533,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "ലക്ഷ്യമായ ഡിസ്ക് %1$s ഉറവിടം %2$s-ഉമായി യോജിക്കുന്നില്ല"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "ലക്ഷ്യമായ ഡിസ്ക് ആക്സസ് മോഡ് ഉറവിവുമായി യോജിക്കുന്നില്ല"
 
@@ -16564,10 +16598,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%1$s', '%2$s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
-"ടാര്‍ഗറ്റ് ഡൊമെയിന്‍ ഹബ് ഡിവൈസിന്റെ എണ്ണം %zu-നു്,  %zu ശ്രോതസ്സൂമായി പൊരുത്തപ്പെടുന്നില്ല."
 
 #, c-format
 msgid ""
@@ -16593,6 +16626,11 @@ msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%1$s', '%2$
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "ലക്ഷ്യ ഡൊമെയിന്‍ നാമം '%1$s', '%2$s'-മായി പൊരുത്തപ്പെടുന്നില്ല"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17252,8 +17290,8 @@ msgstr "ക്ലയന്റ് സമ്മപത്രം %1$s സജീമ�
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17327,14 +17365,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -18066,6 +18104,9 @@ msgstr "ബ്രിഡ്ജ് %s പോര്‍ട്ട് %s ചേര്�
 msgid "Unable to add hardware machine"
 msgstr "vmware ലോഗ് ഫയല്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "ലോക്ക്സ്പെയിസ് %1$s ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
@@ -18074,12 +18115,24 @@ msgstr "ലോക്ക്സ്പെയിസ് %1$s ചേര്‍ക്ക
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "ലോക്ക്സ്പെയിസ് %s ചേര്‍ക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "മോണിറ്റര്‍ ഇവന്റുകള്‍ രജിസ്ടര്‍ ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -18101,6 +18154,23 @@ msgstr "ഡൊമൈന്‍ വിവരണം ക്രമീകരിക്�
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22236,6 +22306,9 @@ msgstr "തിരിച്ചെടുക്കുമ്പോള്‍ ഫയ�
 msgid "avoid file system cache when saving"
 msgstr "സൂക്ഷിക്കുമ്പോള്‍ ഫയല്‍ സിസ്റ്റം ക്യാഷ് അവഗണിക്കുക"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24205,8 +24278,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "%1$s ആര്‍ക്കിറ്റക്ചറിനുള്ള സിപിയു ഡേറ്റാ ഡീക്കോഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24298,6 +24371,9 @@ msgstr "%1$s ലെ cellNum %2$d നു തുല്യമോ അതിനേക
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$sലെ cellNum %2$d എന്നത് നെഗറ്റീവ് വില (ഋണമൂല്യം) ആയി മാത്രമേ സ്വീകരിക്കൂ"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25807,6 +25883,11 @@ msgstr "ഡിവൈസ് തരം '%1$s' പരിഷ്കരിയ്ക്
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "ഉപകരണത്തിന്റെ തരം '%1$s' ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യാന്‍ സാധ്യമല്ല"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "ഡിവൈസുകളുടെ cgroup മൌണ്ട് ചെയ്തിട്ടില്ല"
@@ -29262,6 +29343,9 @@ msgstr "ഇപ്പോഴത്തെ ഇന്റര്‍ഫെയിസ് �
 #, fuzzy, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "എന്‍ട്രിയില്‍ 'speed' ലഭ്യമല്ല"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "ഗസ്റ്റ് അപ്രതീക്ഷിതമായി നിന്നിരിക്കുന്നു"
@@ -34533,10 +34617,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35097,26 +35177,26 @@ msgstr "ഓരോ ഡിവൈസിനുള്ള ബൂട്ട് എലമ
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "ഓരോ ഉപകരണത്തിലെയും IO ഭാരം, വഴി, ഭാരെ എന്ന രീതിയില്‍,..."
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "ഓരോ ഉപകരണത്തിലെയും IO ഭാരം, വഴി, ഭാരെ എന്ന രീതിയില്‍,..."
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "ഓരോ ഉപകരണത്തിലെയും IO ഭാരം, വഴി, ഭാരെ എന്ന രീതിയില്‍,..."
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "ഓരോ ഉപകരണത്തിലെയും IO ഭാരം, വഴി, ഭാരെ എന്ന രീതിയില്‍,..."
 
 #, fuzzy, c-format
@@ -35667,6 +35747,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "ഗസ്റ്റിലുള്ള സിപിയു അവസ്ഥയില്‍ മാറ്റം വരുത്തുക"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ഡിവൈസ് എന്‍ട്രി പ്രതീക്ഷിച്ച ശൈലിയിലല്ല"
@@ -35834,6 +35917,9 @@ msgstr "query-version മറുപടിയില്‍ 'qemu' ഡേറ്റ�
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "ക്യൂഇഎംയു ബൈനറി കമ്പ്രസ്സ്ഡ് മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37261,6 +37347,13 @@ msgstr "'%1$s'-ന്റെ സ്റ്റാറ്റ് പരാജയപ്
 #, fuzzy
 msgid "statistic value too large"
 msgstr "വില വളരെ വലുതാണു്: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40463,6 +40556,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "യുണിക്സ് സോക്കറ്റും റിമോട്ട് സര്‍വര്‍ '%1$s'-ഉം പിന്തുണയ്ക്കുന്നില്ല."
@@ -40887,8 +40983,8 @@ msgstr "virNWFilterSnoopListDel പരാജയപ്പെട്ടു"
 #, c-format
 msgid "virNWFilterSnoopReqNew called with invalid key \"%1$s\" (%2$zu)"
 msgstr ""
-"virNWFilterSnoopReqNew സാധുവല്ലാത്ത  കീ ഉപയോഗിച്ച്  വിളിച്ചിരിക്കുന്നു  "
-"\"%1$s\" (%2$zu)"
+"virNWFilterSnoopReqNew സാധുവല്ലാത്ത  കീ ഉപയോഗിച്ച്  വിളിച്ചിരിക്കുന്നു  \"%1$s\" "
+"(%2$zu)"
 
 msgid "virSetUIDGID is not available"
 msgstr "virSetUIDGID ലഭ്യമല്ല"
@@ -41430,6 +41526,23 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "%1$s '%2$s' ലഭ്യമാക്കുവാനായില്ല"
+
+#, fuzzy
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "സര്‍വര്‍ സമ്മപത്രം %s സജീമല്ല"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "ടാര്‍ഗറ്റ് ഡൊമെയിന്‍ ഹബ് ഡിവൈസിന്റെ എണ്ണം %zu-നു്,  %zu ശ്രോതസ്സൂമായി പൊരുത്തപ്പെടുന്നില്ല."
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "ഒറ്റ ടിപിഎം ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"

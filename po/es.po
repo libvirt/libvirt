@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-10-14 13:14+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -904,8 +904,8 @@ msgstr "%1$s: Documento de suceso JSON no válido: %2$s"
 #, c-format
 msgid "%1$s: Invalid netmask '%2$s' for address '%3$s' (both must be IPv4)"
 msgstr ""
-"Máscara de red '%1$s' para dirección '%2$s' es no válida en red "
-"'%3$s' (ambas deben ser IPv4)"
+"Máscara de red '%1$s' para dirección '%2$s' es no válida en red '%3$s' "
+"(ambas deben ser IPv4)"
 
 #, c-format
 msgid ""
@@ -1443,6 +1443,9 @@ msgstr "'discard_no_unref' solo funciona con formatos de disco qcow2"
 
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "falta 'disk' o este no es un array en la respuesta de guest-get-fsinfo"
+
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -2448,9 +2451,9 @@ msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%1$s' has unexpected value '%2$c', expecting '0' or '1'"
 msgstr ""
-"El bit 29 (Modo extenso) de la propiedad HostSystem 'hardware.cpuFeature[]."
-"edx' con el valor '%1$s' posee el valor no esperado '%2$c', cuando se "
-"esperaba '0' o '1'"
+"El bit 29 (Modo extenso) de la propiedad HostSystem "
+"'hardware.cpuFeature[].edx' con el valor '%1$s' posee el valor no esperado "
+"'%2$c', cuando se esperaba '0' o '1'"
 
 msgid "Block Commit"
 msgstr "Envío de bloque"
@@ -2549,6 +2552,10 @@ msgstr "El bus 0 debe ser PCI para controladores integrados PIIX3 USB o IDE"
 
 msgid "Busy"
 msgstr "Ocupado"
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
 
 msgid "CA certificate:"
 msgstr "Certificado AC:"
@@ -3624,10 +3631,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "No se puede declarar el tipo de datos %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "No se puede leer %1$s '%2$s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "No se puede leer cputime para el dominio"
 
@@ -3898,6 +3901,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "El uso del certificado %1$s no permite firma digital de certificado"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "Validación incorrecta del certificado: %1$s"
 
@@ -4018,17 +4029,6 @@ msgstr "Comprobar acceso al dir base PKI personal"
 #, c-format
 msgid "Checking for %1$s module"
 msgstr "Comprobar para módulo %1$s"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr "Comprobar para Estado de Virtualización-Cifrada Segura de AMD (SEV-ES)"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
-msgstr ""
-"Comprobar Paginación Anidada de Virtualización-Segura de Cifrado AMD (SEV-"
-"SNP)"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -4690,6 +4690,9 @@ msgstr "No se encontró PhysicalNic con llave '%1$s'"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "No se encontró PhysicalNic con nombre '%1$s'"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "No se pudo encontrar ningún elemento 'network' en archivo de estatus"
@@ -6174,6 +6177,10 @@ msgstr "No incluye características que bloquee migración"
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Dominio %1$s no apareció"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8542,6 +8549,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "No se pudo procesar la dirección MAC desde '%1$s'"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "No se pudo interpretar dirección de configuración PCI '%1$s'"
 
@@ -10209,6 +10220,9 @@ msgstr ""
 "La reasignación de interrupciones de IOMMU requiere un APIC de E/S "
 "desglosada (controlador ioapic='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr "Encabezado de tabla IORT finalizó antes de tiempo"
 
@@ -11567,6 +11581,10 @@ msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr ""
 "La ruta de la imagen del kernel no está definida. Con sev_snp=on, pasar una "
 "ruta igvm"
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -12989,8 +13007,8 @@ msgid ""
 "NOTE: Connecting to default daemon. Specify daemon using '-c' (e.g. "
 "virtqemud:///system)\n"
 msgstr ""
-"NOTA: conectando a demonio por defecto. Especifique demonio utilizando '-"
-"c' (p.ej. virtqemud:///system)\n"
+"NOTA: conectando a demonio por defecto. Especifique demonio utilizando '-c' "
+"(p.ej. virtqemud:///system)\n"
 
 msgid "NULL JSON type can't be converted to commandline"
 msgstr "Tipo de JSON NULL no puede ser convertido a línea de comando"
@@ -13315,10 +13333,8 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr "Soporte nicdev no disponible"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"Ninguna ruta de certificado AC establecido para coincidir con clave/"
-"certificado"
 
 msgid "No DRM render nodes available"
 msgstr "Sin nodos intérprete DRM disponibles"
@@ -13336,6 +13352,9 @@ msgstr "Ninguna dirección IP para host '%1$s' encontrada: %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "No existe disponible una implementación para analizador JSON"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "No hay buses PCI disponibles"
@@ -13607,15 +13626,11 @@ msgstr "No se ha indicado ningún nombre de entorno qemu"
 msgid "No runstatedir specified"
 msgstr "No hay especificado ningún directorio de ejecución de estado"
 
-msgid "No server certificate path set to match server key"
+msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
-"No hay ruta de certificado del servidor configurada para que coincida con la "
-"clave del servidor"
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
-"No hay ninguna ruta de clave fijada del servidor para coincidir con el "
-"certificado del servidor"
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13845,6 +13860,10 @@ msgstr "El número de las CPU en <numa> supera el conteo <vcpu>"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "El número de las CPU en <numa> supera el conteo <vcpu>"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -14945,8 +14964,8 @@ msgid ""
 "Query parameter 'proxy' has unexpected port value '%1$s' (should be "
 "[1..65535])"
 msgstr ""
-"Solicitud de parámetro 'proxy' tiene un valor de puerto inesperado "
-"'%1$s' (debe ser [1..65535])"
+"Solicitud de parámetro 'proxy' tiene un valor de puerto inesperado '%1$s' "
+"(debe ser [1..65535])"
 
 #, c-format
 msgid ""
@@ -17178,6 +17197,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "El disco %1$s destino no coincide con el origen %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "El modo de acceso al disco destino no coincide con el origen"
 
@@ -17242,9 +17269,9 @@ msgstr ""
 "Dominio destino del dispositivo IOMMU en modo caché '%1$s' no coincide con "
 "origen '%2$s'"
 
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
-"Contador de dispositivo IOMMU del dominio destino no coincide con origen"
 
 #, c-format
 msgid ""
@@ -17280,6 +17307,11 @@ msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "Modelo '%1$s' de dispositivo IOMMU de dominio destino no coincide con origen "
 "'%2$s'"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -18047,8 +18079,8 @@ msgstr "El cliente de certificado %1$s aún no está activo"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 "La llave de cliente %1$s debe ser accesible a todos los usuarios. Como root "
 "ejecute: chown root.root %2$s; chmod 0644 %3$s"
@@ -18140,16 +18172,16 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 "La máquina no puede actuar como un cliente. Consulte https://libvirt.org/"
 "kbase/tlscerts.html#issuing-client-certificates acerca de como regenerar %1$s"
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 "La máquina no puede actuar como un servidor. Consulte https://libvirt.org/"
 "kbase/tlscerts.html#issuing-server-certificates para como generar %1$s"
@@ -18918,6 +18950,9 @@ msgstr "No es capaz de añadir disco duro al registro del medio"
 msgid "Unable to add hardware machine"
 msgstr "No es capaz de añadir máquina de hardware"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "No es capaz de añadir lockspace %1$s"
@@ -18926,12 +18961,24 @@ msgstr "No es capaz de añadir lockspace %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "No es capaz de añadir lockspace %1$s: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "No es capaz de añadir registro de medio de otro medio"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "No es capaz de añadir puerto %1$s al puente OVS %2$s: %3$s"
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "No es capaz de añadir controlador de almacenamiento"
@@ -18951,6 +18998,23 @@ msgid ""
 msgstr ""
 "No es capaz de añadir esta instantánea, ya hay una instantánea enlazada a la "
 "máquina"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "No es capaz de añadir/borrar apuntes fdb sobre esta plataforma"
@@ -19481,8 +19545,8 @@ msgstr "No es capaz de encontrar dirección para dispositivo antecesor '%1$s'"
 #, c-format
 msgid "Unable to find an unused port in range '%1$s' (%2$d-%3$d)"
 msgstr ""
-"No es capaz de encontrar un puerto no utilizado dentro de intervalo "
-"'%1$s' (%2$d-%3$d)"
+"No es capaz de encontrar un puerto no utilizado dentro de intervalo '%1$s' "
+"(%2$d-%3$d)"
 
 msgid "Unable to find any /dev mount"
 msgstr "No es capaz de encontrar cualquier /dev montado"
@@ -23137,6 +23201,9 @@ msgstr "Evita cache de sistema de archivos al restaurar"
 msgid "avoid file system cache when saving"
 msgstr "Evitar cache de sistema de archivos al guardar"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr "esperar un evento de dominio"
 
@@ -25159,8 +25226,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "no se puede actualizar la CPU invitada para arquitectura %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -25255,6 +25322,9 @@ msgstr "cellNum en %1$s debe ser menor que o igual a %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum en %1$s únicamente acepta %2$d como un valor negativo"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -26782,6 +26852,11 @@ msgstr "Tipo de dispositivo '%1$s' no puede actualizarse"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "Tipo de dispositivo '%1$s' no se pudo desconectar en caliente"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "cgroup de dispositivos no está montado"
@@ -30229,6 +30304,9 @@ msgstr "Nombre de la interfaz existente"
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "al huésped le faltan vCPUs '%1$s'"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "el huésped ha finalizado inesperadamente"
@@ -35118,8 +35196,8 @@ msgstr ""
 #, c-format
 msgid "no storage pool with matching target path '%1$s' (%2$s)"
 msgstr ""
-"no existe ningún grupo de almacenamiento que corresponda con la ruta "
-"'%1$s' (%2$s)"
+"no existe ningún grupo de almacenamiento que corresponda con la ruta '%1$s' "
+"(%2$s)"
 
 #, c-format
 msgid "no storage pool with matching uuid '%1$s'"
@@ -35578,9 +35656,6 @@ msgstr ""
 
 msgid "only USB input devices are supported"
 msgstr "solo se admiten dispositivos de entrada USB"
-
-msgid "only a single IOMMU device is supported"
-msgstr "solo se admite un único dispositivo IOMMU"
 
 msgid "only a single QGS element is supported"
 msgstr ""
@@ -36146,29 +36221,29 @@ msgstr ""
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
 "Pesos de E/S por dispositivo, en forma de /ruta/a/dispositivo, peso,..."
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
 "Pesos de E/S por dispositivo, en forma de /ruta/a/dispositivo, peso,..."
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 "Pesos de E/S por dispositivo, en forma de /ruta/a/dispositivo, peso,..."
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 "Pesos de E/S por dispositivo, en forma de /ruta/a/dispositivo, peso,..."
 
@@ -36717,6 +36792,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "Modificar estado de CPU en el huésped"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr ""
@@ -36887,6 +36965,9 @@ msgstr "A la respuesta query-version le faltan datos de 'qemu'"
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "Binario QEMU no admite migración comprimida"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -38342,6 +38423,13 @@ msgstr "falló estadística de '%1$s'"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "valor demasiado grande: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -41599,6 +41687,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "el uso de socket de unix y servidor remoto '%1$s' no tiene soporte."
@@ -42575,6 +42666,44 @@ msgid ""
 msgstr ""
 "zona %1$s solicitada para red %2$s pero cortafuegos firewalld no está "
 "admitido en BSD"
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "No se puede leer %1$s '%2$s'"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+#~ msgstr ""
+#~ "Comprobar para Estado de Virtualización-Cifrada Segura de AMD (SEV-ES)"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging "
+#~ "(SEV-SNP)"
+#~ msgstr ""
+#~ "Comprobar Paginación Anidada de Virtualización-Segura de Cifrado AMD (SEV-"
+#~ "SNP)"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr ""
+#~ "Ninguna ruta de certificado AC establecido para coincidir con clave/"
+#~ "certificado"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr ""
+#~ "No hay ruta de certificado del servidor configurada para que coincida con "
+#~ "la clave del servidor"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr ""
+#~ "No hay ninguna ruta de clave fijada del servidor para coincidir con el "
+#~ "certificado del servidor"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "Contador de dispositivo IOMMU del dominio destino no coincide con origen"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "solo se admite un único dispositivo IOMMU"
 
 #~ msgid "Invalid response from CH. Disk removal failed."
 #~ msgstr "Respuesta no válida desde CH. Extracción incorrecta del disco."
@@ -45148,9 +45277,9 @@ msgstr ""
 #~ "daemon with --verbose option."
 #~ msgstr ""
 #~ "Nombre distintivo de cliente no está en la lista de los clientes "
-#~ "permitidos (tls_allowed_dn_list). Use 'certtool -i --infile clientcert."
-#~ "pem' para ver el campo de nombre completo en el certificado de cliente, o "
-#~ "ejecute este demonio con --verbose "
+#~ "permitidos (tls_allowed_dn_list). Use 'certtool -i --infile "
+#~ "clientcert.pem' para ver el campo de nombre completo en el certificado de "
+#~ "cliente, o ejecute este demonio con --verbose "
 
 #, fuzzy
 #~ msgid "Failed to load snapshot: %s"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2024-12-14 20:38+0000\n"
 "Last-Translator: Anders Jonsson <anders.jonsson@norsjovallen.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1365,6 +1365,9 @@ msgstr "”discard_no_unref” fungerar bara med diskformatet qcow2"
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "”disk” saknas eller är inte en vektor i svaret på guest-get-fsinfo"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "”extended_l2” stödjs inte med kompatibilitetsnivå %1$s"
@@ -2442,6 +2445,10 @@ msgstr "Buss 0 måste vara PCI för integrerade PIIX3 USB- eller IDE-styrenheter
 msgid "Busy"
 msgstr "Upptagen"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 msgid "CA certificate:"
 msgstr "CA-certifikat:"
 
@@ -2927,8 +2934,8 @@ msgid ""
 "Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
 "%4$u)"
 msgstr ""
-"Kan inte komma åt den bakomliggande filen ”%1$s” för lagringsfilen "
-"”%2$s” (som aid:%3$u, gid:%4$u)"
+"Kan inte komma åt den bakomliggande filen ”%1$s” för lagringsfilen ”%2$s” "
+"(som aid:%3$u, gid:%4$u)"
 
 #, c-format
 msgid "Cannot access storage file '%1$s'"
@@ -3486,10 +3493,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "Det går inte att skriva ut datatyp %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "Kan inte läsa %1$s ”%2$s”"
-
 msgid "Cannot read cputime for domain"
 msgstr "Kan inte läsa cpu-tid för domänen"
 
@@ -3755,6 +3758,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "Användning av certifikatet %1$s tillåter inte digitala signaturer"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "Certifikatet kunde inte valideras: %1$s"
 
@@ -3843,8 +3854,8 @@ msgid ""
 "Check that the 'kvm-intel' or 'kvm-amd' modules are loaded & the BIOS has "
 "enabled virtualization"
 msgstr ""
-"Kontrollera att modulen ”kvm-intel” eller ”kvm-amd” är laddad och att BIOS:"
-"et har virtualisering aktiverat"
+"Kontrollera att modulen ”kvm-intel” eller ”kvm-amd” är laddad och att "
+"BIOS:et har virtualisering aktiverat"
 
 #, c-format
 msgid ""
@@ -3875,19 +3886,6 @@ msgstr "Kontrollerar åtkomst av anpassad PKI-baskatalog"
 #, c-format
 msgid "Checking for %1$s module"
 msgstr "Kontrollerar att modulen %1$s finns"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-"Kontrollerar om AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES) "
-"finns"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
-msgstr ""
-"Kontrollerar om AMD Secure Encrypted Virtualization-Secure Nested Paging "
-"(SEV-SNP) finns"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -4536,6 +4534,9 @@ msgstr "Kunde inte hitta PhysicalNic med nyckeln ”%1$s”"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Kunde inte hitta PhysicalNic med namnet ”%1$s”"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Kunde inte hitta något ”network”-element i statusfilen"
@@ -5989,6 +5990,10 @@ msgstr "Inkludera inte funktioner som förhindrar migrering"
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Domänen %1$s dök inte upp"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8305,6 +8310,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Misslyckades med att tolka MAC-adressen från ”%1$s”"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Misslyckades med att tolka PCI-konfigurationsadressen ”%1$s”"
 
@@ -9939,6 +9948,9 @@ msgid ""
 msgstr ""
 "IOMMU omavbildning av avbrott kräver delad I/O APIC (ioapic driver=”qemu”)"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr "IORT-tabellhuvudet slutade för tidigt"
 
@@ -10429,8 +10441,8 @@ msgid ""
 "info on interface of type '%1$s'. This is only supported on interfaces of "
 "type 'ethernet'"
 msgstr ""
-"Felaktigt försök att sätta nätverksgränssnittets värdside-IP-rutt och/eller -"
-"adressinformation på gränssnitt av typen ”%1$s”. Detta stödjs endast på "
+"Felaktigt försök att sätta nätverksgränssnittets värdside-IP-rutt och/eller "
+"-adressinformation på gränssnitt av typen ”%1$s”. Detta stödjs endast på "
 "gränssnitt av typen ”ethernet”"
 
 msgid "Invalid attempt to set peer IP for guest"
@@ -11262,6 +11274,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr "Kärnavbildens sökväg i denna domän är inte definierad"
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -12918,8 +12934,8 @@ msgstr "Ny storlek på blockenheten, som ett skalat heltal (standard KiB)"
 msgid "Nicdev support unavailable"
 msgstr "Nicdev-stöd är inte tillgängligt"
 
-msgid "No CA certificate path set to match server key/cert"
-msgstr "Ingen CA-certifikatsväg angiven till att matcha servernyckel/-cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
+msgstr ""
 
 msgid "No DRM render nodes available"
 msgstr "Inga DRM-renderingsnoder tillgängliga"
@@ -12937,6 +12953,9 @@ msgstr "Ingen IP-adress för värden ”%1$s” funnen: %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "Ingen JSON-parserimplementation är tillgänglig"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "Inga PCI-bussar tillgängliga"
@@ -13198,11 +13217,11 @@ msgstr "Inget miljönamn till qemu angivet"
 msgid "No runstatedir specified"
 msgstr "Inget runstatedir angivet"
 
-msgid "No server certificate path set to match server key"
-msgstr "Ingen servercertifikatsökväg angiven till att matcha servernyckeln"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
-msgstr "Ingen servernyckelsökväg angiven till att matcha servercertifikatet"
+msgid "No server key path(s) set to match server cert(s)"
+msgstr ""
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13425,6 +13444,10 @@ msgstr "Antals CPU:er i <numa> överskrider antalet <vcpu>"
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr ""
 "Antalet CPU:er i <numa> överskridet det önskade maximala antalet vcpu:er"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16587,6 +16610,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "Måldisken %1$s matchar inte källan %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "Målenhetens diskåtkomstläge stämmer inte med källan"
 
@@ -16648,8 +16679,9 @@ msgid ""
 msgstr ""
 "Måldomänens IOMMU-enhets cachningsläge ”%1$s” stämmer inte med källan ”%2$s”"
 
-msgid "Target domain IOMMU device count does not match source"
-msgstr "Måldomänens IOMMU-enhetsantal stämmer inte med källan"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16679,6 +16711,11 @@ msgstr ""
 #, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "Måldomänens IOMMU-enhetsmodell ”%1$s” stämmer inte med källan ”%2$s”"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17360,8 +17397,8 @@ msgstr "Klientcertifikatet %1$s är inte aktivt ännu"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 "Klientnyckeln %1$s måste vara tillgänglig för alla användare. Kör som root: "
 "chown root.root %2$s; chmod 0644 %3$s"
@@ -17445,19 +17482,19 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
-"Maskinen kan inte agera som en klient. Se https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates om hur man regenererar %1$s"
+"Maskinen kan inte agera som en klient. Se https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates om hur man regenererar %1$s"
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
-"Maskinen kan inte agera som server. Se https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates om hur man regenererar %1$s"
+"Maskinen kan inte agera som server. Se https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates om hur man regenererar %1$s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Maskinen har ingen ögonblicksbild och borde ha det"
@@ -18203,6 +18240,9 @@ msgstr "Kan inte lägga till en hårddisk till mediaregistret"
 msgid "Unable to add hardware machine"
 msgstr "Kan inte lägga till en hårdvarumaskin"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Kan inte lägga till låsutrymmet %1$s"
@@ -18211,12 +18251,24 @@ msgstr "Kan inte lägga till låsutrymmet %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Kan inte lägga till låsutrymmet %1$s: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "Kan inte lägga till mediaregistret för andra media"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "Kan inte lägga till porten %1$s till OVS-bryggan %2$s: %3$s"
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "Kan inte lägga till lagringsstyrenhet"
@@ -18236,6 +18288,23 @@ msgid ""
 msgstr ""
 "Kan inte lägga till denna ögonblicksbild, det finns redan en ögonblicksbild "
 "länkad till maskinen"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "Kan inte lägga till/ta bort fdb-poster på denna plattform"
@@ -22309,6 +22378,9 @@ msgstr "undvik filsystemscachen vid återställning"
 msgid "avoid file system cache when saving"
 msgstr "undvik filsystemscachen vid sparande"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24289,8 +24361,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "kan inte uppdatera gäst-CPU:n för arkitekturen %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 "kan inte uppdatera livscykelåtgärden eftersom QEMU startades med den "
 "inkompatibla inställningen -no-reboot"
@@ -24385,6 +24457,9 @@ msgstr "cellNum i %1$s måste vara mindre än eller lika med %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum i %1$s accepterar endast %2$d som ett negativt värde"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25873,6 +25948,11 @@ msgstr "enhetstypen ”%1$s” kan inte uppdateras"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "enhetstypen ”%1$s” kan inte tas bort under drift"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "enhetsstyrgruppen är inte monterad"
@@ -29292,6 +29372,9 @@ msgstr "gästgränssnitt"
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "gästen saknar vCPU:er ”%1$s”"
 
+msgid "guest shutdown"
+msgstr ""
+
 msgid "guest unexpectedly quit"
 msgstr "gästen avslutade oväntat"
 
@@ -29790,8 +29873,8 @@ msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
 msgstr ""
-"heltalsspill på %1$s. Kontakta utvecklingsgruppen för libvirt på devel@lists."
-"libvirt.org"
+"heltalsspill på %1$s. Kontakta utvecklingsgruppen för libvirt på "
+"devel@lists.libvirt.org"
 
 #, c-format
 msgid ""
@@ -34495,9 +34578,6 @@ msgstr "endast TCP-transport stödjs till iSCSI-volymer"
 msgid "only USB input devices are supported"
 msgstr "endast USB-inmatningsenheter stödjs"
 
-msgid "only a single IOMMU device is supported"
-msgstr "bara en enda IOMMU-enhet stödjs"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35034,32 +35114,32 @@ msgstr ""
 "startelement per enhet kan inte användas tillsammans med os-/startelement"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
-"lästa byte per enhet per sekund, på formatet /sökväg/till/enhet,"
-"lästa_byte_s,…"
+"lästa byte per enhet per sekund, på formatet /sökväg/till/"
+"enhet,lästa_byte_s,…"
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
-"skrivna byte per enhet per sekund, på formatet /sökväg/till/enhet,"
-"skrivna_byte_s,…"
+"skrivna byte per enhet per sekund, på formatet /sökväg/till/"
+"enhet,skrivna_byte_s,…"
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
-"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
-"lästa_op_s,…"
+"läs-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
+"enhet,lästa_op_s,…"
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
-"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/enhet,"
-"skrivna_op_s,…"
+"skriv-I/O-gräns per enhet per sekund, på formatet /sökväg/till/"
+"enhet,skrivna_op_s,…"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
@@ -35606,6 +35686,9 @@ msgstr "frågan stödjs endast med protokollet HTTP(S)"
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "fråga om eller ändra tillståndet på vcpu:n i gästen (via agenten)"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr "enhetsposten från query-block var inte på det förväntade formatet"
 
@@ -35768,6 +35851,9 @@ msgid ""
 msgstr ""
 "att fråga om maximal migreringshastighet efter kopiering stödjs inte av QEMU-"
 "binären"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "egenskapen queue-size stödjs inte av denna QEMU-binär"
@@ -37200,6 +37286,13 @@ msgstr "status av ”%1$s” misslyckades"
 
 msgid "statistic value too large"
 msgstr "statistikvärdet är för stort"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40422,6 +40515,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "att använda unix-uttag och fjärrservern ”%1$s” stödjs inte."
@@ -41405,6 +41501,38 @@ msgid ""
 msgstr ""
 
 #, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "Kan inte läsa %1$s ”%2$s”"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+#~ msgstr ""
+#~ "Kontrollerar om AMD Secure Encrypted Virtualization-Encrypted State (SEV-"
+#~ "ES) finns"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging "
+#~ "(SEV-SNP)"
+#~ msgstr ""
+#~ "Kontrollerar om AMD Secure Encrypted Virtualization-Secure Nested Paging "
+#~ "(SEV-SNP) finns"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr "Ingen CA-certifikatsväg angiven till att matcha servernyckel/-cert"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "Ingen servercertifikatsökväg angiven till att matcha servernyckeln"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr "Ingen servernyckelsökväg angiven till att matcha servercertifikatet"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "Måldomänens IOMMU-enhetsantal stämmer inte med källan"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "bara en enda IOMMU-enhet stödjs"
+
+#, c-format
 #~ msgid ""
 #~ "Cannot automatically add a new PCI bus for a device with connect flags "
 #~ "%1$.2x"
@@ -41630,8 +41758,8 @@ msgstr ""
 #~ "https://libvirt.org/kbase/failed_connection_after_install.html"
 #~ msgstr ""
 #~ "Kan inte använda direkt uttagsläge om ingen URI är satt. För mer "
-#~ "information se https://libvirt.org/kbase/failed_connection_after_install."
-#~ "html"
+#~ "information se https://libvirt.org/kbase/"
+#~ "failed_connection_after_install.html"
 
 #, c-format
 #~ msgid "Failed to delete snapshot: %1$s"
@@ -43297,8 +43425,8 @@ msgstr ""
 #~ "CPU maximum physical address bits mode '%s' can only be used with '%s' "
 #~ "CPUs"
 #~ msgstr ""
-#~ "Maximalt fysiskt CPU-adressbitsläge ”%s” kan endast användas med ”%s”-CPU:"
-#~ "er"
+#~ "Maximalt fysiskt CPU-adressbitsläge ”%s” kan endast användas med ”%s”-"
+#~ "CPU:er"
 
 #~ msgid "Cannot parse <local> 'port' attribute with socket interface"
 #~ msgstr "Kan inte tolka <local> ”port”-attribut med uttagsgränssnitt"

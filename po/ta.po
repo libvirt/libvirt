@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1266,6 +1266,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2365,6 +2368,10 @@ msgstr ""
 msgid "Busy"
 msgstr "பணியில்"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 #, fuzzy
 msgid "CA certificate:"
 msgstr "தவறான சான்றிதழ்"
@@ -3409,10 +3416,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "தரவை எழுத முடியவில்லை"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "%1$s '%2$s' ஐ வாசிக்க முடியவில்லை"
-
 msgid "Cannot read cputime for domain"
 msgstr "செயற்களத்திற்கான cputimeஐ வாசிக்க முடியவில்லை"
 
@@ -3667,6 +3670,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "சான்றிதழ் %1$s பயன்பாடு டிஜிட்டல் கையொப்பத்தை அனுமதிக்காது"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "சான்றிதழ் சரிபார்த்தல் தோல்வி: %1$s"
 
@@ -3782,15 +3793,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4440,6 +4442,9 @@ msgstr "'%1$s' என்ற விசை கொண்ட PhysicalNic ஐக் �
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "'%1$s' என்ற பெயர் கொண்ட PhysicalNic ஐக் கண்டறிய முடியவில்லை"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "நிலை கோப்பில் 'network' கூறு எதையும் காண முடியவில்லை"
@@ -5908,6 +5913,10 @@ msgstr ""
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "டொமைன் %1$s காண்பிக்கப்படவில்லை"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8253,6 +8262,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "'%1$s' இலிருந்து uid மற்றும் gid ஐப் பாகுபடுத்தல் தோல்வியடைந்தது"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "PCL அமைவாக்க முகவரி '%1$s' ஐப் பாகுபடுத்துவது தோல்வி"
 
@@ -9868,6 +9881,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11172,6 +11188,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 #, fuzzy
@@ -12874,7 +12894,7 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr "கணினி கிடைக்கவில்லை"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12895,6 +12915,9 @@ msgstr "வழங்கி '%1$s' க்கான IP முகவரி இல�
 
 msgid "No JSON parser implementation is available"
 msgstr "JSON இடைநிறுத்தி கருவி கிடைக்கவில்லை"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "PCI பஸ்கள் கிடைக்கவில்லை"
@@ -13168,11 +13191,10 @@ msgstr "qemu சூழல் பெயர் குறிப்பிடப்�
 msgid "No runstatedir specified"
 msgstr "பிரிட்ஜ் பெயர் குறிப்பிடப்படவில்லை"
 
-#, fuzzy
-msgid "No server certificate path set to match server key"
-msgstr "சேவையக சான்றிதழ் %s இன்னும் செயல்படவில்லை"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13397,6 +13419,10 @@ msgstr "<numa> இல் உள்ள CPUகளின் எண்ணிக்�
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> இல் உள்ள CPUகளின் எண்ணிக்கை <vcpu> எண்ணிக்கையை மீறுகிறது"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16626,6 +16652,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "இலக்கு வட்டு %1$s ஆனது மூலம் %2$s உடன் பொருந்தவில்லை"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "இலக்கு வட்டு அணுகல் பயன்முறை மூலத்துடன் பொருந்தவில்லை"
 
@@ -16683,9 +16717,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "இலக்கு டொமைன் பெயர் '%1$s' ஆனது மூலம் '%2$s' உடன் பொருந்தவில்லை"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
-msgstr "இலக்கு டொமைன் RNG சாதன எண்ணிக்கை %zu ஆனது மூலம் %zu உடன் பொருந்தவில்லை"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16711,6 +16745,11 @@ msgstr "இலக்கு டொமைன் பெயர் '%1$s' ஆனத�
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "இலக்கு டொமைன் பெயர் '%1$s' ஆனது மூலம் '%2$s' உடன் பொருந்தவில்லை"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17357,8 +17396,8 @@ msgstr "கிளையன்ட் சான்றிதாழ் %1$s இன�
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17431,14 +17470,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -18166,6 +18205,9 @@ msgstr "பிரிட்ஜ் %s முனையம் %s ஐச் சேர
 msgid "Unable to add hardware machine"
 msgstr "vmware பதிவுக் கோப்பினை படிக்க முடியவில்லை"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "லாக்ஸ்பேஸ் %1$s ஐ சேர்க்க முடியவில்லை"
@@ -18174,12 +18216,24 @@ msgstr "லாக்ஸ்பேஸ் %1$s ஐ சேர்க்க முட�
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "லாக்ஸ்பேஸ் %s ஐ சேர்க்க முடியவில்லை"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "கணினி நிகழ்வுகளை பதிவுசெய்ய முடியவில்லை"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -18201,6 +18255,23 @@ msgstr "டொமைனின் புதிய விளக்கத்தை 
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22335,6 +22406,9 @@ msgstr "மீட்டமைக்கும் போது கோப்பு 
 msgid "avoid file system cache when saving"
 msgstr "ஏற்றும் போது கோப்பு முறைமை தேக்ககச் செயலைத் தவிர்க்கவும்"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24304,8 +24378,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "CPU தரவு %1$s கட்டமைப்புக்காக மறிகுறியீடப்படவில்லை"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24398,6 +24472,9 @@ msgstr ""
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s இல் உள்ள cellNum எதிர்க்குறி மதிப்பாக %2$d ஐ மட்டுமே ஏற்றுக்கொள்ளும்"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25909,6 +25986,11 @@ msgstr "சாதன வகை '%1$s'ஐ புதுப்பிக்க ம�
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "வட்டு வகை '%1$s' ஐ ஹாட் அன்ப்ளக் செய்ய முடியவில்லை"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "devices cgroup மவுன்ட் செய்யப்படவில்லை"
@@ -29363,6 +29445,9 @@ msgstr "முன்பே உள்ள இடைமுக பெயர்"
 #, fuzzy, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "உள்ளீட்டில் 'speed' இல்லை"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "விருந்தினர்கள் எதிர்பாராவிதமாக வெளியேறிவிட்டன"
@@ -34646,10 +34731,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "ஒரே ஒரு TPM சாதனம் மட்டுமே ஆதரிக்கப்படும்"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "ஒரே ஒரு TPM சாதனம் மட்டுமே ஆதரிக்கப்படும்"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35207,26 +35288,26 @@ msgstr "பெர்-டிவைஸ் பூட் கூறுகளை os/�
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "per-device IO எடைகள், /path/to/device,weight,... என்ற வடிவத்தில்"
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "per-device IO எடைகள், /path/to/device,weight,... என்ற வடிவத்தில்"
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "per-device IO எடைகள், /path/to/device,weight,... என்ற வடிவத்தில்"
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "per-device IO எடைகள், /path/to/device,weight,... என்ற வடிவத்தில்"
 
 #, fuzzy, c-format
@@ -35783,6 +35864,9 @@ msgstr "ISA முகவரி வகையுடன் மட்டுமே �
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "விருந்தினரில் cpu நிலையை மாற்று"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats சாதனம் எதிர்பார்த்த வடித்தை கொண்டிருக்கவில்லை"
@@ -35950,6 +36034,9 @@ msgstr "க்வெரி-பதிப்பு பதிலளிப்பி�
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "QEMU பைனரி சுருக்கப்பட்ட இடப்பெயர்ப்பை ஆதரிக்காது"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37388,6 +37475,13 @@ msgstr "'%1$s' ஐ துவக்க முடியவில்லை"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "மதிப்பு மிகப் பெரியது: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40602,6 +40696,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "unix சாக்கெட் மற்றும் தொலைநிலை சேவையகம் '%1$s' ஐப் பயன்படுத்த ஆதரவில்லை."
@@ -41575,6 +41672,22 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "%1$s '%2$s' ஐ வாசிக்க முடியவில்லை"
+
+#, fuzzy
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "சேவையக சான்றிதழ் %s இன்னும் செயல்படவில்லை"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "இலக்கு டொமைன் RNG சாதன எண்ணிக்கை %zu ஆனது மூலம் %zu உடன் பொருந்தவில்லை"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "ஒரே ஒரு TPM சாதனம் மட்டுமே ஆதரிக்கப்படும்"
 
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"
 #~ msgstr "இந்த QEMU பைனரியில் உள்வரும் RDMA இடப்பெயர்ப்புக்கு ஆதரவில்லை"

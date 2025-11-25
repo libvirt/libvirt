@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-10-02 06:24+0000\n"
 "Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1389,6 +1389,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2275,8 +2278,8 @@ msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
-"Запрошено автоматическое выделение порта TLS, но SPICE TLS отключён в qemu."
-"conf"
+"Запрошено автоматическое выделение порта TLS, но SPICE TLS отключён в "
+"qemu.conf"
 
 msgid "Auto converge throttle:"
 msgstr "Регулирование скорости для автосхождения:"
@@ -2468,6 +2471,10 @@ msgstr ""
 
 msgid "Busy"
 msgstr "Занято"
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
 
 msgid "CA certificate:"
 msgstr "Сертификат ЦС:"
@@ -3517,10 +3524,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "Не удалось вывести тип данных %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "Ошибка чтения %1$s «%2$s»"
-
 msgid "Cannot read cputime for domain"
 msgstr "Не удалось прочитать cputime для домена"
 
@@ -3789,6 +3792,14 @@ msgstr ""
 "Ограничения использования сертификата %1$s не позволяют цифровую подпись"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "Сертификат не прошел проверку: %1$s"
 
@@ -3907,15 +3918,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4558,6 +4560,9 @@ msgstr "Не удалось найти PhysicalNic с ключом «%1$s»"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Не удалось найти PhysicalNic «%1$s»"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Файл состояния должен содержать элемент «network»"
@@ -5997,6 +6002,10 @@ msgstr "Не включать характеристики, блокирующи
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Домен %1$s не появился в списке процессов"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8309,6 +8318,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Не удалось извлечь MAC-адрес из «%1$s»"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Не удалось обработать адрес конфигурации PCI «%1$s»"
 
@@ -9937,6 +9950,9 @@ msgstr ""
 "Для изменения привязки прерываний IOMMU требуется APIC разделения ввода-"
 "вывода (ioapic driver='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11233,8 +11249,8 @@ msgstr "Тип задания:"
 
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
-"Просто ориентир для игнорирования непрерывных свободных диапазонов с длиной,"
-"которая меньше этой (в байтах)"
+"Просто ориентир для игнорирования непрерывных свободных диапазонов с "
+"длиной,которая меньше этой (в байтах)"
 
 msgid "KVM is not supported on this platform"
 msgstr "Эта платформа не поддерживает KVM"
@@ -11252,6 +11268,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -12952,9 +12972,8 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr "Поддержка nicdev недоступна"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"Не указан путь к сертификату ЦС для проверки ключа / сертификата сервера"
 
 msgid "No DRM render nodes available"
 msgstr "Нет доступных узлов обработки DRM"
@@ -12972,6 +12991,9 @@ msgstr "Нет IP-адреса для узла «%1$s»: %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "Нет доступных реализаций для разбора JSON"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "Нет шин PCI"
@@ -13149,8 +13171,8 @@ msgid ""
 "No free busNr lower than current lowest busNr is available to auto-assign to "
 "bus %1$d. Must be manually assigned"
 msgstr ""
-"Нет свободного номера шины, который меньше текущего наименьшего номера шины,"
-"доступного для автоназначения шине %1$d. Необходимо назначить вручную"
+"Нет свободного номера шины, который меньше текущего наименьшего номера "
+"шины,доступного для автоназначения шине %1$d. Необходимо назначить вручную"
 
 msgid "No graphical display found"
 msgstr "Не найден графический дисплей"
@@ -13234,11 +13256,11 @@ msgstr "Не задано имя окружения qemu"
 msgid "No runstatedir specified"
 msgstr "Не указано runstatedir"
 
-msgid "No server certificate path set to match server key"
-msgstr "Не указан путь к сертификату сервера для проверки ключа сервера"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
-msgstr "Не указан путь к ключу сервера для проверки сертификата сервера"
+msgid "No server key path(s) set to match server cert(s)"
+msgstr ""
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13464,6 +13486,10 @@ msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr ""
 "Количество процессоров в <numa> превышает желаемое максимальное количество "
 "виртуальных процессоров"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16700,6 +16726,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "%1$s не соответствует исходному диску  %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr ""
 "Режим доступа к диску назначения не соответствует режиму исходного диска"
@@ -16763,9 +16797,9 @@ msgstr ""
 "Режим кэширования устройства IOMMU домена назначения «%1$s» не совпадает с "
 "источником «%2$s»"
 
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
-"Количество устройств IOMMU домена назначения не соответствует источнику"
 
 #, c-format
 msgid ""
@@ -16799,6 +16833,11 @@ msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "Модель устройства IOMMU домена назначения «%1$s» не соответствует источнику "
 "«%2$s»"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17491,8 +17530,8 @@ msgstr "Сертификат клиента %1$s не активен"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17573,14 +17612,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
@@ -18317,6 +18356,9 @@ msgstr "Не удалось добавить жесткий диск в реес
 msgid "Unable to add hardware machine"
 msgstr "Не удалось добавить информацию об оборудовании"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Не удалось добавить пространство блокирования %1$s"
@@ -18325,11 +18367,23 @@ msgstr "Не удалось добавить пространство блоки
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Не удалось добавить пространство блокирования %1$s: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "Не удалось добавить другой носитель в реестр"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 msgid "Unable to add storage controller"
@@ -18349,6 +18403,23 @@ msgid ""
 "machine"
 msgstr ""
 "Для этой машины уже есть один снимок, поэтому вы не сможете добавить другой"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "Невозможно добавлять или удалять записи fdb на этой платформе"
@@ -22441,6 +22512,9 @@ msgstr "не использовать кэш файловой системы п�
 msgid "avoid file system cache when saving"
 msgstr "не использовать кэш файловой системы при сохранении"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24459,8 +24533,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "не удалось обновить процессор гостевой системы для архитектуры %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24552,6 +24626,9 @@ msgstr "cellNum в %1$s должно быть меньше или равно %2$
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr ""
 "cellNum в %1$s принимает только %2$d в качестве отрицательного значения"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -26046,6 +26123,11 @@ msgstr "тип устройства «%1$s» не может быть обнов
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "устройства типа «%1$s» не могут быть отключены в горячем режиме"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "cgroup устройств не смонтирована"
@@ -29439,6 +29521,9 @@ msgstr "интерфейс гостевой системы"
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "в гостевой системе отсутствуют виртуальные процессоры «%1$s»"
 
+msgid "guest shutdown"
+msgstr ""
+
 msgid "guest unexpectedly quit"
 msgstr "неожиданное завершение работы гостя"
 
@@ -31584,8 +31669,8 @@ msgstr "драйвер состояния lxc не активен"
 
 msgid "lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"
 msgstr ""
-"обнаружено lxc.mount.fstab или lxc.mount, но следует использовать строки lxc."
-"mount.entry"
+"обнаружено lxc.mount.fstab или lxc.mount, но следует использовать строки "
+"lxc.mount.entry"
 
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() передал недопустимое определение виртуальной машины"
@@ -34710,9 +34795,6 @@ msgstr "для томов iSCSI поддерживается передача д
 msgid "only USB input devices are supported"
 msgstr "поддерживаются только USB-устройства ввода"
 
-msgid "only a single IOMMU device is supported"
-msgstr "поддерживается только одно устройство IOMMU"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35263,8 +35345,8 @@ msgstr "миграция P2P"
 
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
 msgstr ""
-"значение веса для индивидуального устройства в формате /путь/к/устройству,"
-"вес..."
+"значение веса для индивидуального устройства в формате /путь/к/"
+"устройству,вес..."
 
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
@@ -35272,29 +35354,29 @@ msgstr ""
 "<boot> в секции <os>"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
 "максимальная скорость чтения (байтов в секунду) для индивидуального "
 "устройства в формате /путь/к/устройству, байт_в_сек,..."
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
 "максимальная скорость записи (байтов в секунду) для индивидуального "
 "устройства в формате  /путь/к/устройству,байт_в_сек,..."
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 "максимальная скорость чтения (операций в секунду) для индивидуального "
 "устройства в формате /путь/к/устройству, число_операций_в_сек,..."
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 "максимальная скорость чтения (операций в секунду) для индивидуального "
 "устройства в формате /путь/к/устройству,число_операций_в_сек,..."
@@ -35850,6 +35932,9 @@ msgstr ""
 "запросить или изменить состояние виртуального процессора в гостевой системе "
 "(с помощью агента)"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr "неверный формат записи устройства query-block"
 
@@ -36011,6 +36096,9 @@ msgid ""
 msgstr ""
 "этот исполняемый файл QEMU не поддерживает запрос максимальной скорости "
 "миграции с пост-копированием"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37438,6 +37526,13 @@ msgstr "ошибка stat для «%1$s»"
 
 msgid "statistic value too large"
 msgstr "слишком большое статическое значение"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40687,6 +40782,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -41700,6 +41798,27 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "Ошибка чтения %1$s «%2$s»"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr ""
+#~ "Не указан путь к сертификату ЦС для проверки ключа / сертификата сервера"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "Не указан путь к сертификату сервера для проверки ключа сервера"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr "Не указан путь к ключу сервера для проверки сертификата сервера"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "Количество устройств IOMMU домена назначения не соответствует источнику"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "поддерживается только одно устройство IOMMU"
 
 #, c-format
 #~ msgid ""

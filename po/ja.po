@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2023-03-22 15:20+0000\n"
 "Last-Translator: Jiri Denemark <jdenemar@redhat.com>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1370,6 +1370,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo の応答に 'disk' がないか、配列ではありませんでした"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' は互換レベル %1$s ではサポートされません"
@@ -2453,6 +2456,10 @@ msgstr ""
 msgid "Busy"
 msgstr "ビジー"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 msgid "CA certificate:"
 msgstr "CA 証明書:"
 
@@ -3492,10 +3499,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "データタイプ %1$x を出力できません"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "%1$s '%2$s' を読み取れません"
-
 msgid "Cannot read cputime for domain"
 msgstr "ドメインの CPU 時間を読み込めません"
 
@@ -3751,6 +3754,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "証明書 %1$s の使用法は電子署名を許可しません"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "証明書は検証に失敗しました: %1$s"
 
@@ -3864,15 +3875,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4520,6 +4522,9 @@ msgstr "キー '%1$s' を持つ物理 NIC を見つけられませんでした"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "名前 '%1$s' を持つ物理 NIC を見つけられませんでした"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "ステータスファイルに何も 'network' 要素が見つかりませんでした"
@@ -5971,6 +5976,10 @@ msgid "Domain %1$s didn't show up"
 msgstr "ドメイン %1$s が現れませんでした"
 
 #, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
+
+#, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
 msgstr "libxenlight がドメイン '%1$d' を一時停止するので実行する必要があります"
 
@@ -6808,8 +6817,8 @@ msgstr ""
 msgid ""
 "Expecting VMX entry 'virtualHW.version' to be 4 or higher but found %1$lld"
 msgstr ""
-"VMX のエントリー 'virtualHW.version' が 4 以上であることが期待されます"
-"が、%1$lld が見つかりました"
+"VMX のエントリー 'virtualHW.version' が 4 以上であることが期待されますが、"
+"%1$lld が見つかりました"
 
 #, c-format
 msgid "Expecting domain XML CPU mode 'custom' but found '%1$s'"
@@ -8304,6 +8313,10 @@ msgstr ""
 #, c-format
 msgid "Failed to parse MAC address from '%1$s'"
 msgstr "'%1$s' からの MAC アドレスの解析に失敗しました"
+
+#, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
 
 #, c-format
 msgid "Failed to parse PCI config address '%1$s'"
@@ -9938,6 +9951,9 @@ msgstr ""
 "IOMMU 割り込みの再マッピングには、分割 I/O APIC が必要です (ioapic "
 "driver='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11266,6 +11282,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr "このドメインのカーネルイメージパスが定義されていません"
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -12941,9 +12961,8 @@ msgstr "ブロックデバイスの新しい容量、単位付き整数 (初期�
 msgid "Nicdev support unavailable"
 msgstr "Nicdev サポートは利用できません"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"サーバーキー/証明書と一致するようにサーバー証明書パスが設定されていません"
 
 msgid "No DRM render nodes available"
 msgstr "利用可能な DRM レンダリングノードがありません"
@@ -12961,6 +12980,9 @@ msgstr "ホスト '%1$s' の IP アドレスがありません: %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "JSON パーサーが利用できません"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "利用可能な PCI バスがありません"
@@ -13221,11 +13243,11 @@ msgstr "QEMU 環境名が指定されていません"
 msgid "No runstatedir specified"
 msgstr "runstatedir が指定されていません"
 
-msgid "No server certificate path set to match server key"
-msgstr "サーバーキーと一致するようにサーバー証明書パスが設定されていません"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
-msgstr "サーバー証明書と一致するようにサーバーキーパスが設定されていません"
+msgid "No server key path(s) set to match server cert(s)"
+msgstr ""
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13448,6 +13470,10 @@ msgstr "<numa> にある CPU 数が <vcpu> カウントを超えています"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> の CPU 数が希望する最大 vcpu 数を超えています"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16668,6 +16694,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "ターゲットディスク %1$s がソース %2$s と一致しません"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "ターゲットディスクのアクセスモードがソースと一致しません"
 
@@ -16729,8 +16763,9 @@ msgstr ""
 "ターゲットドメインの IOMMU デバイスキャッシングモード '%1$s' がソース '%2$s' "
 "と一致しません"
 
-msgid "Target domain IOMMU device count does not match source"
-msgstr "ターゲットドメインの IOMMU デバイス数がソースと一致しません"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16764,6 +16799,11 @@ msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "ターゲットドメイン IOMMU のデバイスモデル '%1$s' がソース '%2$s' と一致しませ"
 "ん"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17472,8 +17512,8 @@ msgstr "クライアント証明書 %1$s がまだアクティブではありま
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17555,14 +17595,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
@@ -18303,6 +18343,9 @@ msgstr "メディアレジストリーにハードディスクを追加できま
 msgid "Unable to add hardware machine"
 msgstr "ハードウェアマシンを追加できません"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "ロック空間 %1$s を追加できません"
@@ -18311,11 +18354,23 @@ msgstr "ロック空間 %1$s を追加できません"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "ロック空間 %1$s を追加できません: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "他のメディアにメディアレジストリーを追加できません"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 msgid "Unable to add storage controller"
@@ -18336,6 +18391,23 @@ msgid ""
 msgstr ""
 "このスナップショットを追加できません、マシンにリンクされているスナップショッ"
 "トがすでに存在します"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "このプラットフォームで fdb エントリーを追加/削除できません"
@@ -22408,6 +22480,9 @@ msgstr "復元時のファイルシステムキャッシュの回避"
 msgid "avoid file system cache when saving"
 msgstr "保存するときにファイルシステムキャッシュを回避します"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24373,8 +24448,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "%1$s アーキテクチャーのゲスト CPU を更新できません"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 "QEMU が互換性のない -no-reboot 設定で開始されたため、ライフサイクルアクション"
 "を更新できません"
@@ -24469,6 +24544,9 @@ msgstr "%1$s の cellNum は %2$d より小さいか同じである必要があ�
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s の cellNum は負の値として %2$d のみを受け付けます"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25966,6 +26044,11 @@ msgstr "デバイスタイプ '%1$s' は更新できません"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "ディスクタイプ '%1$s' はホットアンプラグできません"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "デバイス cgroup がマウントされていません"
@@ -29395,6 +29478,9 @@ msgstr "ゲストインターフェイス"
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "ゲストに vCPU '%1$s' がありません"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "ゲストが予期せず終了しました"
@@ -34631,9 +34717,6 @@ msgstr "iSCSI ボリュームでサポートされるのは TCP トランスポ�
 msgid "only USB input devices are supported"
 msgstr "USB 入力デバイスのみがサポートされます"
 
-msgid "only a single IOMMU device is supported"
-msgstr "単一の IOMMU デバイスのみがサポートされます"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35192,32 +35275,32 @@ msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "per-device boot 要素は os/boot 要素と同時に指定できません"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
-"デバイスごとの 1 秒あたりの読み取りバイト数 (/path/to/device,"
-"read_bytes_sec,... の形式)"
+"デバイスごとの 1 秒あたりの読み取りバイト数 (/path/to/"
+"device,read_bytes_sec,... の形式)"
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
-"デバイスごとの 1 秒あたりの書き込みバイト数 (/path/to/device,"
-"write_bytes_sec,... の形式)"
+"デバイスごとの 1 秒あたりの書き込みバイト数 (/path/to/"
+"device,write_bytes_sec,... の形式)"
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
-"デバイスごとの 1 秒あたりの読み取り I/O 制限 (/path/to/device,"
-"read_iops_sec,... の形式)"
+"デバイスごとの 1 秒あたりの読み取り I/O 制限 (/path/to/"
+"device,read_iops_sec,... の形式)"
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
-"デバイスごとの 1 秒あたりの書き込み I/O 制限 (/path/to/device,"
-"write_iops_sec,... の形式)"
+"デバイスごとの 1 秒あたりの書き込み I/O 制限 (/path/to/"
+"device,write_iops_sec,... の形式)"
 
 #, c-format
 msgid "perf event '%1$s' was already specified"
@@ -35764,6 +35847,9 @@ msgstr "クエリーは HTTP(S) プロトコルでのみサポートされます
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "ゲストの vcpu の状態をクエリーまたは変更します (エージェントを介して)"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr "query-block デバイスエントリーが予期された形式ではありませんでした"
 
@@ -35928,6 +36014,9 @@ msgid ""
 msgstr ""
 "QEMU バイナリーでは、post-copy の最大マイグレーション速度のクエリーはサポート"
 "されていません"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "この QEMU バイナリーでは、queue-size プロパティーはサポートされません"
@@ -37351,6 +37440,13 @@ msgstr "'%1$s' の統計に失敗しました"
 
 msgid "statistic value too large"
 msgstr "統計値が大きすぎます"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40597,6 +40693,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "unix ソケットとリモートサーバー '%1$s' の使用はサポートされません"
@@ -41597,6 +41696,26 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "%1$s '%2$s' を読み取れません"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr ""
+#~ "サーバーキー/証明書と一致するようにサーバー証明書パスが設定されていません"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "サーバーキーと一致するようにサーバー証明書パスが設定されていません"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr "サーバー証明書と一致するようにサーバーキーパスが設定されていません"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "ターゲットドメインの IOMMU デバイス数がソースと一致しません"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "単一の IOMMU デバイスのみがサポートされます"
 
 #, c-format
 #~ msgid ""

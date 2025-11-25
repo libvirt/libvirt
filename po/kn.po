@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Kannada <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1243,6 +1243,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2144,8 +2147,8 @@ msgid ""
 "Auto allocation of spice TLS port requested but spice TLS is disabled in "
 "qemu.conf"
 msgstr ""
-"ಸ್ಪೈಸ್ TLS ಸಂಪರ್ಕಸ್ಥಾನದ ಸ್ವಯಂ ನಿಯೋಜನೆಗೆ ಮನವಿ ಮಾಡಲಾಗಿದೆ ಆದರೆ ಸ್ಪೈಸ್ TLS ಅನ್ನು qemu."
-"conf ನಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
+"ಸ್ಪೈಸ್ TLS ಸಂಪರ್ಕಸ್ಥಾನದ ಸ್ವಯಂ ನಿಯೋಜನೆಗೆ ಮನವಿ ಮಾಡಲಾಗಿದೆ ಆದರೆ ಸ್ಪೈಸ್ TLS ಅನ್ನು "
+"qemu.conf ನಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
 
 msgid "Auto converge throttle:"
 msgstr ""
@@ -2235,9 +2238,9 @@ msgid ""
 "Bit 29 (Long Mode) of HostSystem property 'hardware.cpuFeature[].edx' with "
 "value '%1$s' has unexpected value '%2$c', expecting '0' or '1'"
 msgstr ""
-"'%1$s' ಮೌಲ್ಯವನ್ನು ಹೊಂದಿರುವ ಬಿಟ್ 29 (Long Mode) HostSystem ಗುಣ 'hardware."
-"cpuFeature[].edx' ದಲ್ಲಿ ಅನಿರೀಕ್ಷಿತವಾದ '%2$c'  ಕಂಡುಬಂದಿದೆ, '0' ಅಥವ '1' ಅನ್ನು "
-"ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
+"'%1$s' ಮೌಲ್ಯವನ್ನು ಹೊಂದಿರುವ ಬಿಟ್ 29 (Long Mode) HostSystem ಗುಣ "
+"'hardware.cpuFeature[].edx' ದಲ್ಲಿ ಅನಿರೀಕ್ಷಿತವಾದ '%2$c'  ಕಂಡುಬಂದಿದೆ, '0' ಅಥವ "
+"'1' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
 
 msgid "Block Commit"
 msgstr "ಬ್ಲಾಕ್‌ ಸಲ್ಲಿಕೆ"
@@ -2339,6 +2342,10 @@ msgstr "ide ನಿಯಂತ್ರಕಕ್ಕಾಗಿ ಬಸ್ 0 ಆಗಿರ�
 
 msgid "Busy"
 msgstr "ಕಾರ್ಯನಿರತ"
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
 
 #, fuzzy
 msgid "CA certificate:"
@@ -3390,10 +3397,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "ದತ್ತಾಂಶವನ್ನು ಬರೆಯಲಾಗಲಿಲ್ಲ"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "%1$s '%2$s' ಅನ್ನು ಓದಲಾಗಿಲ್ಲ"
-
 msgid "Cannot read cputime for domain"
 msgstr "ಡೊಮೇನ್‌ಗಾಗಿ cputime ಅನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
@@ -3656,6 +3659,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "%1$s ಪ್ರಮಾಣಪತ್ರದ ಬಳಕೆಯು ಡಿಜಿಟಲ್ ಸಹಿಯನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "ಪ್ರಮಾಣಪತ್ರದ ಪರಿಶೀಲನೆ ವಿಫಲಗೊಂಡಿದೆ: %1$s"
 
@@ -3771,15 +3782,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4428,6 +4430,9 @@ msgstr "\"%1$s\" ಎಂಬ ಕೀಲಿಯನ್ನು ಹೊಂದಿದ Physic
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "\"%1$s\" ಎಂಬ ಹೆಸರಿನ PhysicalNic ಕಂಡುಬಂದಿಲ್ಲ"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "ಸ್ಥಿತಿ ಕಡತದಲ್ಲಿ ಯಾವುದೆ 'network' ಘಟಕವು ಕಂಡುಬಂದಿಲ್ಲ"
@@ -5890,6 +5895,10 @@ msgstr ""
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "%1$s ಡೊಮೈನ್‌ ಕಂಡುಬಂದಿಲ್ಲ"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8256,6 +8265,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "'%1$s' ಇಂದ uid ಮತ್ತು gid ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "PCI ಸಂರಚನಾ ವಿಳಾಸ '%1$s' ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -9888,6 +9901,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11188,6 +11204,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 #, fuzzy
@@ -12901,7 +12921,7 @@ msgstr "ಅಳತೆ ಬದಲಾಯಿಸಲಾದ ಪೂರ್ಣಾಂಕದ 
 msgid "Nicdev support unavailable"
 msgstr "ವ್ಯವಸ್ಥೆಯು ಲಭ್ಯವಿಲ್ಲ"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12922,6 +12942,9 @@ msgstr "'%1$s' ಆತಿಥೇಯಕ್ಕಾಗಿ ಯಾವುದೆ IP ವಿ
 
 msgid "No JSON parser implementation is available"
 msgstr "ಯಾವುದೆ JSON ಪಾರ್ಸರ್ ಅನ್ವಯಿಸುವಿಕೆಯು ಲಭ್ಯವಿಲ್ಲ"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "ಯಾವುದೆ PCI ಬಸ್‌ಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ"
@@ -13196,11 +13219,10 @@ msgstr "ಯಾವುದೆ qemu ಪರಿಸರದ ಹೆಸರನ್ನು ಸ�
 msgid "No runstatedir specified"
 msgstr "ಯಾವುದೆ ಬ್ರಿಜ್‌ನ ಹೆಸರನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ"
 
-#, fuzzy
-msgid "No server certificate path set to match server key"
-msgstr "%s ಪೂರೈಕೆಗಣಕ ಪ್ರಮಾಣಪತ್ರವು ಇನ್ನೂ ಸಹ ಸಕ್ರಿಯಗೊಂಡಿಲ್ಲ"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13431,6 +13453,10 @@ msgstr "<numa> ನಲ್ಲಿನ ವರ್ಚುವಲ್ CPUಗಳ ಸಂಖ�
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> ನಲ್ಲಿನ ವರ್ಚುವಲ್ CPUಗಳ ಸಂಖ್ಯೆಯು <vcpu> ಎಣಿಕೆಯ ಮಿತಿಯನ್ನು ಮೀರಿದೆ"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16657,6 +16683,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "%1$s ಎಂಬ ಗುರಿ ಡಿಸ್ಕ್‍ %2$s ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "ಗುರಿ ಡಿಸ್ಕ್‍  ನಿಲುಕಣಾ ಕ್ರಮವು ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
@@ -16714,9 +16748,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
-msgstr "ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %zu ಎಂಬುದು %zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16742,6 +16776,11 @@ msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'�
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "'%1$s' ಎಂಬ ಗುರಿ ಡೊಮೈನ್ ಹೆಸರು '%2$s'ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17410,8 +17449,8 @@ msgstr "%1$s ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವು ಇನ�
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17483,14 +17522,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -18224,6 +18263,9 @@ msgstr "ಬ್ರಿಜ್ %s ಸಂಪರ್ಕಸ್ಥಾನ %s ಅನ್ನ�
 msgid "Unable to add hardware machine"
 msgstr "vmware ಲಾಗ್‌ ಕಡತವನ್ನು ಓದಲಾಗಿಲ್ಲ"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "%1$s ಲಾಕ್‌ಸ್ಪೇಸ್ ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -18232,12 +18274,24 @@ msgstr "%1$s ಲಾಕ್‌ಸ್ಪೇಸ್ ಅನ್ನು ಸೇರಿಸ�
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "%s ಲಾಕ್‌ಸ್ಪೇಸ್ ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "ಮಾನಿಟರ್ ಘಟನೆಗಳನ್ನು ನೋಂದಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -18259,6 +18313,23 @@ msgstr "ಹೊಸ ಡೊಮೇನ್‌ ವಿವರಣೆಯನ್ನು ಹೊ
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22405,6 +22476,9 @@ msgstr "ಮರಳಿ ಸ್ಥಾಪಿಸುವಾಗ ಕಡತ ವ್ಯವಸ
 msgid "avoid file system cache when saving"
 msgstr "ಉಳಿಸುವಾಗ ಕಡತ ವ್ಯವಸ್ಥೆ ಕ್ಯಾಶೆಯನ್ನು ತಪ್ಪಿಸಿ"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24374,8 +24448,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "%1$s ಆರ್ಕಿಟೆಕ್ಚರಿಗಾಗಿ CPU ದತ್ತಾಂಶವನ್ನು ಡಿಕೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24467,6 +24541,9 @@ msgstr "%1$s ನಲ್ಲಿನ cellNum %2$d ಗೆ ಸಮನಾಗಿರಬೇ�
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s ನಲ್ಲಿನ cellNum ಕೇವಲ %2$d ಅನ್ನು ಒಂದು ಋಣ ಮೌಲ್ಯವಾಗಿ ಸ್ವೀಕರಿಸುತ್ತದೆ"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25982,6 +26059,11 @@ msgstr "ಸಾಧನದ ಬಗೆ %1$s ಅನ್ನು ಅಪ್‌ಡೇಟ್ 
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "'%1$s' ಬಗೆಯ ಸಾಧನವನ್ನು ಕಳಚಿಹಾಕಲು(ಅನ್‌ಪ್ಲಗ್) ಸಾಧ್ಯವಿಲ್ಲ"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "ಸಾಧನಗಳ cgroup ಅನ್ನು ಏರಿಸಲಾಗಿಲ್ಲ"
@@ -29449,6 +29531,9 @@ msgstr "ಈಗಿರುವ ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು"
 #, fuzzy, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "ನಮೂದಿನಲ್ಲಿ 'speed' ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "ಅತಿಥಿಯು ಅನಿರೀಕ್ಷಿತವಾಗಿ ನಿರ್ಗಮಿಸಿದೆ"
@@ -34768,10 +34853,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "ಕೇವಲ ಒಂದು TPM ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಬೆಂಬಲವಿದೆ"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "ಕೇವಲ ಒಂದು TPM ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಬೆಂಬಲವಿದೆ"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35332,26 +35413,26 @@ msgstr "ಪ್ರತಿ-ಸಾಧನದ ಬೂಟ್ ಘಟಕಗಳನ್ನು
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "ಪ್ರತಿ-ಸಾಧನ IO ತೂಕಗಳು, /path/to/device,ತೂಕ,... ರೂಪದಲ್ಲಿ"
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "ಪ್ರತಿ-ಸಾಧನ IO ತೂಕಗಳು, /path/to/device,ತೂಕ,... ರೂಪದಲ್ಲಿ"
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "ಪ್ರತಿ-ಸಾಧನ IO ತೂಕಗಳು, /path/to/device,ತೂಕ,... ರೂಪದಲ್ಲಿ"
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "ಪ್ರತಿ-ಸಾಧನ IO ತೂಕಗಳು, /path/to/device,ತೂಕ,... ರೂಪದಲ್ಲಿ"
 
 #, fuzzy, c-format
@@ -35906,6 +35987,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "ಅತಿಥಿಯಲ್ಲಿ cpu ಸ್ಥಿತಿಯನ್ನು ಮಾರ್ಪಡಿಸಿ"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ಸಾಧನದ ನಮೂದು ನಿರೀಕ್ಷಿಸಲಾದ ವಿನ್ಯಾಸದಲ್ಲಿ ಇಲ್ಲ"
@@ -36073,6 +36157,9 @@ msgstr "query-version ಪ್ರತ್ಯುತ್ತರದಲ್ಲಿ 'qemu' �
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "QEMU ಬೈನರಿಯೊಂದಿಗೆ ಸಂಕುಚಿತ ವರ್ಗಾವಣೆಗೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37507,6 +37594,13 @@ msgstr "'%1$s' ನ stat ವಿಫಲಗೊಂಡಿದೆ"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "ಮೌಲ್ಯವು ಬಹಳ ದೊಡ್ಡದಾಗಿದೆ: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40733,6 +40827,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -41710,6 +41807,23 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "%1$s '%2$s' ಅನ್ನು ಓದಲಾಗಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "%s ಪೂರೈಕೆಗಣಕ ಪ್ರಮಾಣಪತ್ರವು ಇನ್ನೂ ಸಹ ಸಕ್ರಿಯಗೊಂಡಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "ಗುರಿ ಡೊಮೈನ್ ಹಬ್ ಸಾಧನ ಎಣಿಕೆ %zu ಎಂಬುದು %zu ಮೂಲದೊಂದಿಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "ಕೇವಲ ಒಂದು TPM ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಬೆಂಬಲವಿದೆ"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"
@@ -44185,8 +44299,8 @@ msgstr ""
 #~ "daemon with --verbose option."
 #~ msgstr ""
 #~ "ಅನುಮತಿ ಇರುವ ಕ್ಲೈಂಟಿನ ಪಟ್ಟಿಯಲ್ಲಿ (tls_allowed_dn_list) ಕ್ಲೈಂಟಿನ ವಿಶಿಷ್ಟವಾದ "
-#~ "ಹೆಸರು ಇಲ್ಲ. ಕ್ಲೈಂಟಿನ ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿ ವಿಶಿಷ್ಟವಾದ ಹೆಸರಿನ ಸ್ಥಳವನ್ನು ನೋಡಲು 'certtool -"
-#~ "i --infile clientcert.pem' ಅನ್ನು ಬಳಸಿ, ಅಥವ ಈ ಡೀಮನ್ ಅನ್ನು --verbose "
+#~ "ಹೆಸರು ಇಲ್ಲ. ಕ್ಲೈಂಟಿನ ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿ ವಿಶಿಷ್ಟವಾದ ಹೆಸರಿನ ಸ್ಥಳವನ್ನು ನೋಡಲು 'certtool "
+#~ "-i --infile clientcert.pem' ಅನ್ನು ಬಳಸಿ, ಅಥವ ಈ ಡೀಮನ್ ಅನ್ನು --verbose "
 #~ "ಆಯ್ಕೆಯೊಂದಿಗೆ ಚಲಾಯಿಸಿ."
 
 #, fuzzy

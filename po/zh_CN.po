@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-11-17 17:48+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1339,6 +1339,9 @@ msgstr "'discard_no_unref'仅适用于 qcow2 磁盘格式"
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "在 guest-get-fsinfo 的回复中缺少 'disk' 或者不是一个阵列"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "compat 级别 %1$s 不支持 'extended_l2'"
@@ -2363,6 +2366,10 @@ msgstr "集成 PIIX3 USB 或 IDE 控制器的总线 0 必须为 PCI"
 msgid "Busy"
 msgstr "忙碌"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 msgid "CA certificate:"
 msgstr "CA 证书："
 
@@ -3359,10 +3366,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "无法打印数据类型 %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "无法读取 %1$s '%2$s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "无法为域读取 cputime"
 
@@ -3613,6 +3616,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "证书 %1$s 用法不允许数字签名"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "证书验证失败：%1$s"
 
@@ -3725,17 +3736,6 @@ msgstr "检查自定义 PKI 基本目录访问权限"
 #, fuzzy, c-format
 msgid "Checking for %1$s module"
 msgstr "正在检查 %1$s 模块"
-
-#, fuzzy
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr "检查 AMD 安全加密虚拟化加密状态 （SEV-ES）"
-
-#, fuzzy
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
-msgstr "检查 AMD 安全加密虚拟化 - 安全嵌套分页 （SEV-SNP）"
 
 #, fuzzy, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -4384,6 +4384,9 @@ msgstr "无法找到使用密钥 '%1$s' 的 PhysicaNic"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "无法找到名为 '%1$s' 的 PhysicalNic"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "无法在状态文件中找到任何 'network' 元素"
@@ -5790,6 +5793,10 @@ msgstr "不包括阻止迁移的功能"
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "未显示域 %1$s"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8039,6 +8046,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "解析 '%1$s' 中的 MAC 地址失败"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "解析 PCI 配置地址 '%1$s' 失败"
 
@@ -9619,6 +9630,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr "IOMMU 中断重映射需要分离 I/O APIC(ioapic driver='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 #, fuzzy
 msgid "IORT table header ended early"
 msgstr "IORT 表头提前结束"
@@ -10877,6 +10891,10 @@ msgstr "此域中的内核镜像路径未定义"
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr "内核映像路径未定义。启用 sev_snp 时，请传递 igvm 路径"
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "必须为私钥身份验证提供密钥文件路径"
@@ -12491,8 +12509,8 @@ msgstr "新块设备大小，以整数计（默认为 KiB）"
 msgid "Nicdev support unavailable"
 msgstr "Nicdev 支持不可用"
 
-msgid "No CA certificate path set to match server key/cert"
-msgstr "没有设置为与服务器密钥/证书匹配的 CA 证书路径"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
+msgstr ""
 
 msgid "No DRM render nodes available"
 msgstr "没有 DRM 渲染节点可用"
@@ -12511,6 +12529,9 @@ msgstr "没有找到主机 '%1$s' 的 IP 地址：%2$s"
 msgid "No JSON parser implementation is available"
 msgstr "没有可用 JSON 解析程序"
 
+msgid "No PCI address provided"
+msgstr ""
+
 msgid "No PCI buses available"
 msgstr "没有可用 PCI 总线"
 
@@ -12524,8 +12545,8 @@ msgid ""
 "kbase/failed_connection_after_install.html"
 msgstr ""
 "未提供 URI，无法识别任何监听守护进程套接字路径进行连接。请确保预期的守护进程"
-"套接字处于活动状态和/或提供显式 URI。有关更多信息，请参见 https://libvirt."
-"org/kbase/failed_connection_after_install.html"
+"套接字处于活动状态和/或提供显式 URI。有关更多信息，请参见 https://"
+"libvirt.org/kbase/failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
 msgstr "未指定 URI 模式"
@@ -12773,11 +12794,11 @@ msgstr "未指定 qemu 环境名称"
 msgid "No runstatedir specified"
 msgstr "未指定 runstatedir"
 
-msgid "No server certificate path set to match server key"
-msgstr "没有设置服务器证书路径来匹配服务器密钥"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
-msgstr "没有设置服务器密钥路径来匹配服务器证书"
+msgid "No server key path(s) set to match server cert(s)"
+msgstr ""
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -12992,6 +13013,10 @@ msgstr "<numa> 中的 CPUs 数超过 <vcpu> 计数"
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> 中的 CPU 数量超过所需的最大 vcpu 数量"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16036,6 +16061,14 @@ msgstr "目标设备 virtio 串口地址 %1$d:%2$d:%3$d 与源 %4$d:%5$d:%6$d �
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "目标磁盘 %1$s 与源 %2$s 不匹配"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "目标磁盘访问模式与源不匹配"
 
@@ -16093,8 +16126,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "目标域 IOMMU 设备缓存模式 '%1$s' 与源 '%2$s' 不匹配"
 
-msgid "Target domain IOMMU device count does not match source"
-msgstr "目标域 IOMMU 设备数与源不匹配"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16120,6 +16154,11 @@ msgstr "目标域 IOMMU 设备 iotlb 值 '%1$s' 与源 '%2$s' 不匹配"
 #, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "目标域 IOMMU 设备型号 '%1$s' 与源 '%2$s' 不匹配"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -16636,8 +16675,8 @@ msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
-"所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行: chown root.root %2$s;"
-"chmod 0644 %3$s"
+"所有用户都必须可以访问 CA 证书 %1$s。以 root 身份运行: chown root.root "
+"%2$s;chmod 0644 %3$s"
 
 #, fuzzy, c-format
 msgid ""
@@ -16769,8 +16808,8 @@ msgstr "客户端证书 %1$s 尚未激活"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 "客户端密钥 %1$s 必须对所有用户可访问。以 root 身份运行：chown root.root "
 "%2$s; chmod 0644 %3$s"
@@ -16848,21 +16887,21 @@ msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
-"本机不能充当客户端或服务器。有关如何安装 %1$s 的信息，请参见 https://libvirt."
-"org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca"
+"本机不能充当客户端或服务器。有关如何安装 %1$s 的信息，请参见 https://"
+"libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca"
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 "本机不能充当客户端。有关如何重新生成 %1$s 的信息，请参见 https://libvirt.org/"
 "kbase/tlscerts.html#issuing-client-certificates"
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 "本机不能充当服务器。有关如何重新生成 %1$s 的信息，请参见 https://libvirt.org/"
 "kbase/tlscerts.html#issuing-server-certificates"
@@ -17587,6 +17626,9 @@ msgstr "无法将硬盘添加到介质注册表"
 msgid "Unable to add hardware machine"
 msgstr "无法添加硬件机器"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "无法软件锁空间 %1$s"
@@ -17595,12 +17637,24 @@ msgstr "无法软件锁空间 %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "无法添加锁空间 %1$s: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "无法将其他介质添加到介质注册表"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "无法将端口 %1$s 添加到 OVS 桥 %2$s：%3$s"
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "无法添加存储控制器"
@@ -17618,6 +17672,23 @@ msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
 msgstr "无法添加此快照，已有一个连接到机器的快照"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "无法在此平台上添加/删除 fdb 条目"
@@ -21083,13 +21154,15 @@ msgstr "'none' 视频类型必须是为域定义的唯一视频设备"
 msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
-msgstr "连接 PCI 控制器型号='%1$s' 需要一个 PCIe 插槽，但没有可用插槽，也无法自动添加"
+msgstr ""
+"连接 PCI 控制器型号='%1$s' 需要一个 PCIe 插槽，但没有可用插槽，也无法自动添加"
 
 #, c-format
 msgid ""
 "a conventional PCI slot is needed to connect a PCI controller model='%1$s', "
 "but none is available, and it cannot be automatically added"
-msgstr "连接 PCI 控制器型号='%1$s' 需要一个传统的 PCI 插槽，但没有可用插槽，且无法自"
+msgstr ""
+"连接 PCI 控制器型号='%1$s' 需要一个传统的 PCI 插槽，但没有可用插槽，且无法自"
 "动添加"
 
 msgid "a device with the same address already exists "
@@ -21601,6 +21674,9 @@ msgstr "恢复时避免文件系统缓存"
 
 msgid "avoid file system cache when saving"
 msgstr "保存时避免文件系统缓存"
+
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
 
 msgid "await a domain event"
 msgstr "等待域事件"
@@ -23502,8 +23578,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "无法更新 %1$s 架构的客户机 CPU"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr "无法更新生命周期操作，因为 QEMU 是使用不兼容的 -no-reboot 设置启动的"
 
 #, c-format
@@ -23589,6 +23665,9 @@ msgstr "%1$s 中的 cellNum 必须小于等于 %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s 中的 cellNum 只接受负数 %2$d"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25035,6 +25114,11 @@ msgstr "无法更新设备类型 '%1$s'"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "无法热插拔设备类型 '%1$s'。"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "为挂载设备 cgroup"
@@ -28355,6 +28439,9 @@ msgstr "客户机接口"
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "客户机缺少 vCPU '%1$s'"
 
+msgid "guest shutdown"
+msgstr ""
+
 msgid "guest unexpectedly quit"
 msgstr "虚拟机意外退出"
 
@@ -28835,8 +28922,8 @@ msgid ""
 "integer overflow on %1$s. Please contact the libvirt development team at "
 "devel@lists.libvirt.org"
 msgstr ""
-"在 %1$s 上发生整数溢出。请联系 libvirt 开发团队，邮箱：devel@lists.libvirt."
-"org"
+"在 %1$s 上发生整数溢出。请联系 libvirt 开发团队，邮箱："
+"devel@lists.libvirt.org"
 
 #, c-format
 msgid ""
@@ -33367,9 +33454,6 @@ msgstr "TCP 传输只支持 iSCSI 卷"
 msgid "only USB input devices are supported"
 msgstr "只支持 USB 输入设备"
 
-msgid "only a single IOMMU device is supported"
-msgstr "只支持单个 IOMMU 设备"
-
 msgid "only a single QGS element is supported"
 msgstr "仅支持单个 QGS 元素"
 
@@ -33902,23 +33986,23 @@ msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "每个设备的 boot 元素无法与 os/boot 元素联合使用"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "每个设备每秒读取的字节，格式为 /path/to/device,read_bytes_sec..."
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "每个设备每秒写入的字节，格式为 /path/to/device,write_bytes_sec...。"
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "每个设备每秒读取的 I/O 限制，格式为 /path/to/device,read_iops_sec..."
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "每个设备每秒写入的 I/O 限制，格式为 /path/to/device,write_iops_sec..."
 
 #, c-format
@@ -34452,6 +34536,9 @@ msgstr "仅 HTTP(S)协议支持查询"
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "查询或修改客户机中 vcpu 的状态（通过代理）"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr "query-block 设备条目不是期望的格式"
 
@@ -34608,6 +34695,9 @@ msgstr "query-version 回复缺少 'qemu' 数据"
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "QEMU 二进制文件不支持查询最大 post-copy 迁移速度"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 queue-size 属性"
@@ -35960,6 +36050,13 @@ msgstr "'%1$s' 的统计失败"
 
 msgid "statistic value too large"
 msgstr "统计值太大"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -39120,6 +39217,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr "使用主机 CPU 定义作为输入可能会提供不正确的结果"
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "不支持少于 unix 插槽并删除服务器 '%1$s'"
@@ -39909,7 +40009,8 @@ msgstr "XEN_CREDIT 重量"
 msgid ""
 "when computing baseline from several CPUs, do not take hypervisor "
 "capabilities into account and work with input data only"
-msgstr "在从多个 CPU 计算基线时，不要考虑虚拟机管理程序的能力，仅使用输入数据进行计算"
+msgstr ""
+"在从多个 CPU 计算基线时，不要考虑虚拟机管理程序的能力，仅使用输入数据进行计算"
 
 #, c-format
 msgid "when providing parent wwnn='%1$s', the wwpn must also be provided"
@@ -40056,6 +40157,36 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr "区域 %1$s 请求网络 %2$s，但 BSD 不支持 firewalld"
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "无法读取 %1$s '%2$s'"
+
+#, fuzzy
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+#~ msgstr "检查 AMD 安全加密虚拟化加密状态 （SEV-ES）"
+
+#, fuzzy
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging "
+#~ "(SEV-SNP)"
+#~ msgstr "检查 AMD 安全加密虚拟化 - 安全嵌套分页 （SEV-SNP）"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr "没有设置为与服务器密钥/证书匹配的 CA 证书路径"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "没有设置服务器证书路径来匹配服务器密钥"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr "没有设置服务器密钥路径来匹配服务器证书"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "目标域 IOMMU 设备数与源不匹配"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "只支持单个 IOMMU 设备"
 
 #, c-format
 #~ msgid ""
@@ -41108,8 +41239,8 @@ msgstr "区域 %1$s 请求网络 %2$s，但 BSD 不支持 firewalld"
 #~ "integer overflow on %1$s. Please contact the libvirt development team at "
 #~ "libvir-list@redhat.com"
 #~ msgstr ""
-#~ "%1$s 中的整数溢出。请联络 libvirt 开发团队，邮件地址：libvir-list@redhat."
-#~ "com"
+#~ "%1$s 中的整数溢出。请联络 libvirt 开发团队，邮件地址：libvir-"
+#~ "list@redhat.com"
 
 #, c-format
 #~ msgid ""

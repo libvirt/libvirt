@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -1146,6 +1146,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2188,6 +2191,10 @@ msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgstr ""
 
 msgid "Busy"
+msgstr ""
+
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
 msgstr ""
 
 #, fuzzy
@@ -3236,10 +3243,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "không thể đồng bộ dữ liệu vào tập tin '%s'"
 
-#, fuzzy, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "không thể đọc '%s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "Không thể đọc cputime cho miền"
 
@@ -3500,6 +3503,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr ""
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr ""
 
@@ -3610,15 +3621,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4273,6 +4275,9 @@ msgstr "Không thể tìm miền với tên '%1$s'"
 #, fuzzy, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Không thể tìm miền với tên '%1$s'"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find any 'network' element in status file"
@@ -5738,6 +5743,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Miền %1$s đang được tắt\n"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8126,6 +8135,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Thất bại khi phân tích địa chỉ cấu hình PCI '%1$s'"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Thất bại khi phân tích địa chỉ cấu hình PCI '%1$s'"
 
@@ -9762,6 +9775,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11053,6 +11069,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -12726,7 +12746,7 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr ""
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12747,6 +12767,9 @@ msgstr "Không có địa chỉ IP cho máy chủ '%1$s' được tìm thấy: %
 
 msgid "No JSON parser implementation is available"
 msgstr "Không có sự thi hành bộ phân tích JSON có sẵn"
+
+msgid "No PCI address provided"
+msgstr ""
 
 #, fuzzy
 msgid "No PCI buses available"
@@ -13023,10 +13046,10 @@ msgstr "Không có tên môi trường qemu được chỉ định"
 msgid "No runstatedir specified"
 msgstr "Không có tên môi trường qemu được chỉ định"
 
-msgid "No server certificate path set to match server key"
+msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13246,6 +13269,10 @@ msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr ""
 
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
+msgstr ""
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
 msgstr ""
 
 #, c-format
@@ -16386,6 +16413,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr ""
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr ""
 
@@ -16443,7 +16478,8 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "Tên tập tin cấu hình mạng '%1$s' không khớp tên mạng '%2$s'"
 
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
 
 #, c-format
@@ -16470,6 +16506,11 @@ msgstr "Tên tập tin cấu hình mạng '%1$s' không khớp tên mạng '%2$s
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "Tên tập tin cấu hình mạng '%1$s' không khớp tên mạng '%2$s'"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17098,8 +17139,8 @@ msgstr "Chứng thực không đáng tin"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17172,14 +17213,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -17910,6 +17951,9 @@ msgstr ""
 msgid "Unable to add hardware machine"
 msgstr ""
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Không thể mở %1$s"
@@ -17918,12 +17962,24 @@ msgstr "Không thể mở %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Không thể mở %s (%d)"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "không thể đăng ký các sự kiện bộ theo dõi"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -17943,6 +17999,23 @@ msgstr ""
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22161,6 +22234,9 @@ msgstr ""
 msgid "avoid file system cache when saving"
 msgstr ""
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24142,8 +24218,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "không thể giải mã dữ liệu CPU cho kiến trúc %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, fuzzy, c-format
@@ -24231,6 +24307,9 @@ msgstr ""
 
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
+msgstr ""
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
 msgstr ""
 
 #, c-format
@@ -25748,6 +25827,11 @@ msgstr "kiểu thiết bị '%1$s' không thể được gắn"
 #, fuzzy, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "kiểu thiết bị đĩa '%1$s' không thể được cắm nóng"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr ""
@@ -29217,6 +29301,9 @@ msgstr "kiểu giao diện mạng"
 
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
+msgstr ""
+
+msgid "guest shutdown"
 msgstr ""
 
 msgid "guest unexpectedly quit"
@@ -34546,10 +34633,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35111,23 +35194,23 @@ msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr ""
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 
 #, fuzzy, c-format
@@ -35679,6 +35762,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr ""
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "mục thiết bị blockstats không trong định dạng mong đợi"
@@ -35839,6 +35925,9 @@ msgstr "phản hồi di trú thông tin thiếu trạng thái trả về
 
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
+msgstr ""
+
+msgid "queue configuration is only valid for NVMe bus"
 msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
@@ -37259,6 +37348,13 @@ msgid "stat of '%1$s' failed"
 msgstr "thống kê '%1$s' thất bại"
 
 msgid "statistic value too large"
+msgstr ""
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
 msgstr ""
 
 #, fuzzy, c-format
@@ -40465,6 +40561,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -41427,6 +41526,14 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "không thể đọc '%s'"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "chỉ có một thiết bị watchdog đơn được hỗ trợ"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-10-30 20:54+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1433,6 +1433,9 @@ msgstr "«discard_no_unref» працює лише із форматом дис�
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "пропущено «disk» або відповідь guest-get-fsinfo не є масивом"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "підтримки «extended_l2» не передбачено із рівнем сумісності %1$s"
@@ -2551,6 +2554,10 @@ msgstr ""
 msgid "Busy"
 msgstr "Зайнятий"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 msgid "CA certificate:"
 msgstr "Сертифікат CA:"
 
@@ -3639,10 +3646,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "Не вдалося вивести тип даних %1$x"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "Не вдалося прочитати %1$s «%2$s»"
-
 msgid "Cannot read cputime for domain"
 msgstr "Не вдалось прочитати cputime домену"
 
@@ -3926,6 +3929,14 @@ msgstr ""
 "підписів"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "Сертифікат не пройшов перевірки: %1$s"
 
@@ -4053,18 +4064,6 @@ msgstr "Перевірка доступу до нетипового базово
 #, c-format
 msgid "Checking for %1$s module"
 msgstr "Перевіряємо модуль %1$s"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-"Перевіряємо Secure Encrypted Virtualization-Encrypted State (SEV-ES) AMD"
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
-msgstr ""
-"Перевіряємо Secure Encrypted Virtualization-Secure Nested Paging (SEV-SNP) "
-"AMD"
 
 #, c-format
 msgid "Checking for Linux >= %1$d.%2$d.%3$d"
@@ -4729,6 +4728,9 @@ msgstr "Не вдалося знайти PhysicalNic з ключем «%1$s»"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Не вдалося знайти PhysicalNic з назвою «%1$s»"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Не вдалося знайти жодного елемента «network» у файлі стану"
@@ -6208,6 +6210,10 @@ msgstr "Не включати можливостей, які блокують п
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Домен %1$s не показано"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8561,6 +8567,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Не вдалося обробити MAC-адресу з «%1$s»"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Не вдалося обробити адресу налаштування PCI «%1$s»"
 
@@ -10248,6 +10258,9 @@ msgstr ""
 "зміна прив'язки переривань IOMMU потребує поділу APIC введення-виведення "
 "(ioapic driver='qemu')"
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr "Передчасне завершення заголовка таблиці IORT"
 
@@ -11605,6 +11618,10 @@ msgstr "Шлях до образу ядра у цьому домені не ви
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
 msgstr "Шлях до образу ядра не визначено. З sev_snp=on передано шлях igvm"
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
+msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -13341,10 +13358,8 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr "Підтримка Nicdev недоступна"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"Не встановлено шляху до сертифікатів CA, який відповідав би ключу або "
-"сертифікату сервера"
 
 msgid "No DRM render nodes available"
 msgstr "Немає доступних вузлів обробки DRM"
@@ -13363,6 +13378,9 @@ msgstr "Не знайдено IP-адреси для вузла «%1$s»: %2$s"
 msgid "No JSON parser implementation is available"
 msgstr "Реалізація обробника JSON недоступна"
 
+msgid "No PCI address provided"
+msgstr ""
+
 msgid "No PCI buses available"
 msgstr "Немає доступних каналів PCI"
 
@@ -13378,8 +13396,8 @@ msgstr ""
 "Не надано адреси і не вдалося виявити якийсь шлях для очікування даних від "
 "фонової служби, за яким можна було б з'єднатися. Будь ласка, переконайтеся, "
 "що сокети фонової служби є активними і надайте адресу явним чином. "
-"Докладніший опис: https://libvirt.org/kbase/failed_connection_after_install."
-"html"
+"Докладніший опис: https://libvirt.org/kbase/"
+"failed_connection_after_install.html"
 
 msgid "No URI scheme specified"
 msgstr "Не вказано схеми адреси"
@@ -13627,15 +13645,11 @@ msgstr "Не вказано назви середовища qemu"
 msgid "No runstatedir specified"
 msgstr "Не вказано runstatedir"
 
-msgid "No server certificate path set to match server key"
+msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
-"Не встановлено шляху до сертифікатів CA сервера, який відповідав би ключу "
-"сервера"
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
-"Не встановлено шляху до ключів CA сервера, який відповідав би сертифікату "
-"сервера"
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13864,6 +13878,10 @@ msgstr ""
 "віртуальних процесорів"
 
 #, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
+
+#, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
 msgstr ""
 "Кількість записів щодо статистики домену дорівнює %1$d, що перевищує "
@@ -14035,8 +14053,8 @@ msgid ""
 "Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
 "security policy"
 msgstr ""
-"Для захисту запуску intel TDX передбачено підтримку лише bit0(debug) і bit28"
-"(sept-ve-disable)"
+"Для захисту запуску intel TDX передбачено підтримку лише bit0(debug) і "
+"bit28(sept-ve-disable)"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "Можна долучати лише пристрої veth з містком"
@@ -17243,6 +17261,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "Диск призначення, %1$s, не збігається з диском джерела, %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr ""
 "Режим доступу до диска призначення не відповідає режиму доступ диска джерела"
@@ -17315,10 +17341,9 @@ msgstr ""
 "Режим кешування пристрою IOMMU домену призначення, «%1$s», не збігається із "
 "моделлю джерела, «%2$s»"
 
-msgid "Target domain IOMMU device count does not match source"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
-"Кількість пристроїв IOMMU домену призначення не збігається із кількістю у "
-"джерелі"
 
 #, c-format
 msgid ""
@@ -17353,6 +17378,11 @@ msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
 "Модель пристрою IOMMU домену призначення, «%1$s», не збігається із моделлю "
 "джерела, «%2$s»"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -18171,8 +18201,8 @@ msgstr "Клієнтський сертифікат %1$s ще не набув ч
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 "Клієнтський ключ %1$s має бути доступним для усіх користувачів. Від імені "
 "root віддайте таку команду: chown root.root %2$s; chmod 0644 %3$s"
@@ -18261,19 +18291,19 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
-"Машина не може працювати як клієнт. Див. https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates щодо повторного створення %1$s"
+"Машина не може працювати як клієнт. Див. https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates щодо повторного створення %1$s"
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
-"Машина не може працювати як сервер. Див. https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates щодо повторного створення %1$s"
+"Машина не може працювати як сервер. Див. https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates щодо повторного створення %1$s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Машина не має знімків, хоча повинна була б мати"
@@ -18405,8 +18435,8 @@ msgid ""
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
 "Загальносистемний каталог сертифікатів %1$s має бути доступним для усіх "
-"користувачів. Від імені користувача root віддайте таку команду: chown root."
-"root; chmod 0755 %2$s"
+"користувачів. Від імені користувача root віддайте таку команду: chown "
+"root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
@@ -18421,8 +18451,8 @@ msgid ""
 "root.root; chmod 0755 %2$s"
 msgstr ""
 "Загальносистемний каталог ключів %1$s має бути доступним для усіх "
-"користувачів. Від імені користувача root віддайте таку команду: chown root."
-"root; chmod 0755 %2$s"
+"користувачів. Від імені користувача root віддайте таку команду: chown "
+"root.root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -19058,6 +19088,9 @@ msgstr "Не вдалося додати запис диска до реєстр
 msgid "Unable to add hardware machine"
 msgstr "Не вдалося додати апаратну частину машини"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Не вдалося додати простір блокувань %1$s"
@@ -19066,12 +19099,24 @@ msgstr "Не вдалося додати простір блокувань %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Не вдалося додати простір блокування %1$s: %2$s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 msgid "Unable to add media registry other media"
 msgstr "Не вдалося додати інші носії до реєстру носіїв даних"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "Не вдалося додати порт %1$s до містка OVS %2$s: %3$s"
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
+msgstr ""
 
 msgid "Unable to add storage controller"
 msgstr "Не вдалося додати контролер сховища даних"
@@ -19089,6 +19134,23 @@ msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
 msgstr "Неможливо додати цей знімок: з цією машиною вже пов'язано знімок"
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
+msgstr ""
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "Неможливо додавати або вилучати записи fdb на цій платформі"
@@ -22685,8 +22747,8 @@ msgid ""
 "a PCIe slot is needed to connect a PCI controller model='%1$s', but none is "
 "available, and it cannot be automatically added"
 msgstr ""
-"потрібен слот PCIe для встановлення з'єднання із контролером PCI model='%1$"
-"s', але немає жодного доступного слоту, і його не може бути додано "
+"потрібен слот PCIe для встановлення з'єднання із контролером PCI "
+"model='%1$s', але немає жодного доступного слоту, і його не може бути додано "
 "автоматично"
 
 #, c-format
@@ -23262,6 +23324,9 @@ msgstr "уникати кешування файлової системи під
 
 msgid "avoid file system cache when saving"
 msgstr "уникати кешування файлової системи під час збереження"
+
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
 
 msgid "await a domain event"
 msgstr "очікувати на подію домену"
@@ -25326,8 +25391,8 @@ msgstr ""
 "не вдалося оновити запис процесора гостьової системи для архітектури %1$s"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 "оновлення дії життєвого циклу неможливе, оскільки QEMU було запущено із "
 "несумісним параметром -no-reboot"
@@ -25422,6 +25487,9 @@ msgstr "cellNum у %1$s має бути меншим або дорівнюват
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum у %1$s приймає %2$d лише як від'ємне значення"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -26975,6 +27043,11 @@ msgstr "пристрої типу «%1$s» не можна оновлювати"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "диск типу «%1$s» не можна від'єднувати у «гарячому» режимі"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "cgroup пристроїв не змонтовано"
@@ -29619,8 +29692,8 @@ msgid ""
 "failed to split path '%1$s' into 'pool/image' or 'pool/namespace/image' "
 "components"
 msgstr ""
-"не вдалося розділити шлях «%1$s» на компоненти «буфер/образ» або "
-"«буфер/простір_назв/образ»"
+"не вдалося розділити шлях «%1$s» на компоненти «буфер/образ» або «буфер/"
+"простір_назв/образ»"
 
 #, c-format
 msgid "failed to stat remote file '%1$s'"
@@ -30483,6 +30556,9 @@ msgstr "гостьовий інтерфейс"
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "у гостьовій системі немає віртуальних процесорів «%1$s»"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "гостьова система несподівано завершила роботу"
@@ -35937,9 +36013,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "підтримку передбачено лише для пристроїв введення з інтерфейсом USB"
 
-msgid "only a single IOMMU device is supported"
-msgstr "передбачено підтримку лише одинарного пристрою IOMMU"
-
 msgid "only a single QGS element is supported"
 msgstr "передбачено підтримку лише одного елемента QGS"
 
@@ -36518,29 +36591,29 @@ msgstr ""
 "елементами ОС або завантаження"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
-"читання байтів на пристрій на секунду у форматі /шлях/до/пристрою,"
-"читання_байтів_на_секунду,..."
+"читання байтів на пристрій на секунду у форматі /шлях/до/"
+"пристрою,читання_байтів_на_секунду,..."
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
-"запис байтів на пристрій на секунду у форматі /шлях/до/пристрою,"
-"запис_байтів_на_секунду,..."
+"запис байтів на пристрій на секунду у форматі /шлях/до/"
+"пристрою,запис_байтів_на_секунду,..."
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 "обмеження кількості дій з введення-виведення для читання на секунду на "
 "пристрій у форматі /шлях/до/пристрою,к-ть_дій_на_секунду,..."
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 "обмеження кількості дій з введення-виведення для запису на секунду на "
 "пристрій у форматі /шлях/до/пристрою,к-ть_дій_на_секунду,..."
@@ -37121,6 +37194,9 @@ msgstr ""
 "визначити або змінити стан віртуального процесора у гостьовій системі (за "
 "допомогою агента)"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 msgid "query-block device entry was not in expected format"
 msgstr "запис пристрою query-block зберігається у неочікуваному форматі"
 
@@ -37292,6 +37368,9 @@ msgid ""
 msgstr ""
 "у виконуваному файлі QEMU не передбачено підтримки опитування максимальної "
 "швидкості перенесення із посткопіюванням"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37473,8 +37552,8 @@ msgstr "оновити буфер"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
 msgstr ""
-"спроба оновлення ploop зазнала невдачі: не вдалося вилучити DiskDescriptor."
-"xml"
+"спроба оновлення ploop зазнала невдачі: не вдалося вилучити "
+"DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
@@ -38782,6 +38861,13 @@ msgstr "помилка stat для «%1$s»"
 
 msgid "statistic value too large"
 msgstr "статистичне значення є надто великим"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -42089,6 +42175,9 @@ msgstr ""
 "використання визначення процесора вузла як вхідних даних може призвести до "
 "неправильних результатів"
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -43134,6 +43223,45 @@ msgid ""
 msgstr ""
 "потрібна зона %1$s для мережі %2$s, але підтримки firewalld у BSD не "
 "передбачено"
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "Не вдалося прочитати %1$s «%2$s»"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
+#~ msgstr ""
+#~ "Перевіряємо Secure Encrypted Virtualization-Encrypted State (SEV-ES) AMD"
+
+#~ msgid ""
+#~ "Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging "
+#~ "(SEV-SNP)"
+#~ msgstr ""
+#~ "Перевіряємо Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
+#~ "SNP) AMD"
+
+#~ msgid "No CA certificate path set to match server key/cert"
+#~ msgstr ""
+#~ "Не встановлено шляху до сертифікатів CA, який відповідав би ключу або "
+#~ "сертифікату сервера"
+
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr ""
+#~ "Не встановлено шляху до сертифікатів CA сервера, який відповідав би ключу "
+#~ "сервера"
+
+#~ msgid "No server key path set to match server cert"
+#~ msgstr ""
+#~ "Не встановлено шляху до ключів CA сервера, який відповідав би сертифікату "
+#~ "сервера"
+
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr ""
+#~ "Кількість пристроїв IOMMU домену призначення не збігається із кількістю у "
+#~ "джерелі"
+
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "передбачено підтримку лише одинарного пристрою IOMMU"
 
 #, c-format
 #~ msgid ""

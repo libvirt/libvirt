@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -1166,6 +1166,9 @@ msgstr ""
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr ""
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr ""
@@ -2219,6 +2222,10 @@ msgstr ""
 msgid "Busy"
 msgstr "ব্যস্ত"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 #, fuzzy
 msgid "CA certificate:"
 msgstr "অবৈধ সার্টিফিকেট"
@@ -3262,10 +3269,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "ফাইল '%s'-এ তথ্য সুসংগত করতে ব্যর্থ"
 
-#, fuzzy, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "'%s' পড়তে ব্যর্থ"
-
 msgid "Cannot read cputime for domain"
 msgstr "ডোমেইনের জন্য cputime পড়তে ব্যর্থ"
 
@@ -3526,6 +3529,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr ""
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr ""
 
@@ -3636,15 +3647,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4295,6 +4297,9 @@ msgstr "'%1$s' typefile পাওয়া যায়নি"
 #, fuzzy, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "'%1$s' typefile পাওয়া যায়নি"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "স্ট্যাটাস ফাইলে কোনো 'network' উপাদান খুঁজে পাওয়া যায়নি"
@@ -5767,6 +5772,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "ডোমেইন %1$s বন্ধ করা হচ্ছে\n"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8117,6 +8126,10 @@ msgstr ""
 msgid "Failed to parse MAC address from '%1$s'"
 msgstr "ডিরেক্টরির নাম '%1$s' পার্স করতে ব্যর্থ"
 
+#, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "MAC ঠিকানা '%1$s' পার্স করতে ব্যর্থ"
@@ -9753,6 +9766,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11044,6 +11060,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 msgid "Key file path must be provided for private key authentication"
@@ -12731,7 +12751,7 @@ msgstr ""
 msgid "Nicdev support unavailable"
 msgstr ""
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12752,6 +12772,9 @@ msgstr ""
 
 msgid "No JSON parser implementation is available"
 msgstr "কোনো JSON পার্সারের বাস্তবায়ন উপলব্ধ নেই"
+
+msgid "No PCI address provided"
+msgstr ""
 
 #, fuzzy
 msgid "No PCI buses available"
@@ -13026,10 +13049,10 @@ msgstr ""
 msgid "No runstatedir specified"
 msgstr "কোনো মাস্টার USB কন্ট্রোলার নির্দিষ্ট করা হয়নি"
 
-msgid "No server certificate path set to match server key"
+msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13251,6 +13274,10 @@ msgstr "<numa> এ CPU এর সংখ্যা <vcpu> গণনা ছাড�
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "<numa> এ CPU এর সংখ্যা <vcpu> গণনা ছাড়িয়ে গেছে"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16396,6 +16423,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "টার্গেট ডিস্ক %1$s %2$s সোর্সের সংগে মেলে না"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "টার্গেট ডিস্ক অ্যাক্সেস মোড সোর্সের সংগে মিলছে না"
 
@@ -16453,9 +16488,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "টার্গেট ডোমেন নাম '%1$s' '%2$s' সোর্সের সংগে মিলছে না"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
-msgstr "টার্গেট ডোমেন হাব ডিভাইস গণনা %zu %zu সোর্সের সংগে মেলে না"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16481,6 +16516,11 @@ msgstr "টার্গেট ডোমেন নাম '%1$s' '%2$s' সোর�
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "টার্গেট ডোমেন নাম '%1$s' '%2$s' সোর্সের সংগে মিলছে না"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17120,8 +17160,8 @@ msgstr "সার্টিফিকেট বিশ্বস্ত নয়।"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17194,14 +17234,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 msgid "The machine has no snapshot and it should have it"
@@ -17927,6 +17967,9 @@ msgstr ""
 msgid "Unable to add hardware machine"
 msgstr "সকেট নির্মাণ করতে ব্যর্থ"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "%1$s খুলতে ব্যর্থ"
@@ -17935,12 +17978,24 @@ msgstr "%1$s খুলতে ব্যর্থ"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "%s খুলতে ব্যর্থ"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "মনিটর ইভেন্ট নিবন্ধন করতে ব্যর্থ"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -17960,6 +18015,23 @@ msgstr ""
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22166,6 +22238,9 @@ msgstr ""
 msgid "avoid file system cache when saving"
 msgstr ""
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24149,8 +24224,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "%1$s আর্কিটেকচারের জন্য CPU-র জন্য ডি-কোড করা সম্ভব নয়"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, fuzzy, c-format
@@ -24239,6 +24314,9 @@ msgstr ""
 
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
+msgstr ""
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
 msgstr ""
 
 #, c-format
@@ -25765,6 +25843,11 @@ msgstr "'%1$s' ধরনের ডিভাইস সংযুক্ত কর�
 #, fuzzy, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "'%1$s' ডিস্ক ডিভাইসের ধরন হট-প্লাগ করা সম্ভব নয়"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr ""
@@ -29239,6 +29322,9 @@ msgstr "নেটওয়ার্ক ইন্টারফেসের ধরন"
 
 #, c-format
 msgid "guest is missing vCPUs '%1$s'"
+msgstr ""
+
+msgid "guest shutdown"
 msgstr ""
 
 #, fuzzy
@@ -34567,10 +34653,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "শুধুমাত্র একটি TPM ডিভাইস সমর্থিত হবে"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "শুধুমাত্র একটি TPM ডিভাইস সমর্থিত হবে"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35134,23 +35216,23 @@ msgstr ""
 "per-device boot উপাদান os/boot elements এর সংগে একসংগে ব্যবহার করা যাবে না"
 
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr ""
 
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr ""
 
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr ""
 
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr ""
 
 #, fuzzy, c-format
@@ -35705,6 +35787,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr ""
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats ডিভাইসের এনট্রি প্রত্যাশিত বিন্যাসে নেই"
@@ -35865,6 +35950,9 @@ msgstr "info মাইগ্রেশনের উত্তরের মধ্�
 
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
+msgstr ""
+
+msgid "queue configuration is only valid for NVMe bus"
 msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
@@ -37295,6 +37383,13 @@ msgstr "'%1$s'-র stat করতে ব্যর্থ"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "ncpus অত্যধিক বড়"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40524,6 +40619,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr ""
@@ -41485,6 +41583,18 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "'%s' পড়তে ব্যর্থ"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "টার্গেট ডোমেন হাব ডিভাইস গণনা %zu %zu সোর্সের সংগে মেলে না"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "শুধুমাত্র একটি TPM ডিভাইস সমর্থিত হবে"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"

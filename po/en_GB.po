@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-10-29 11:46+0000\n"
+"POT-Creation-Date: 2025-11-25 09:28+0000\n"
 "PO-Revision-Date: 2025-03-29 02:07+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
@@ -1351,6 +1351,9 @@ msgstr "'discard_no_unref' only works with qcow2 disk format"
 msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "'disk' missing or not an array in reply of guest-get-fsinfo"
 
+msgid "'dpofua' option is available only for SCSI disks"
+msgstr ""
+
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
 msgstr "'extended_l2' not supported with compat level %1$s"
@@ -2417,6 +2420,10 @@ msgstr "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
 msgid "Busy"
 msgstr "Busy"
 
+#, c-format
+msgid "CA certificate '%1$s' does not exist"
+msgstr ""
+
 msgid "CA certificate:"
 msgstr "CA certificate:"
 
@@ -3464,10 +3471,6 @@ msgstr ""
 msgid "Cannot print data type %1$x"
 msgstr "Cannot write data"
 
-#, c-format
-msgid "Cannot read %1$s '%2$s'"
-msgstr "Cannot read %1$s '%2$s'"
-
 msgid "Cannot read cputime for domain"
 msgstr "Cannot read cputime for domain"
 
@@ -3722,6 +3725,14 @@ msgid "Certificate %1$s usage does not permit digital signature"
 msgstr "Certificate %1$s usage does not permit digital signature"
 
 #, c-format
+msgid "Certificate '%1$s' does not exist"
+msgstr ""
+
+#, c-format
+msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
+msgstr ""
+
+#, c-format
 msgid "Certificate failed validation: %1$s"
 msgstr "Certificate failed validation: %1$s"
 
@@ -3834,15 +3845,6 @@ msgstr ""
 
 #, c-format
 msgid "Checking for %1$s module"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Encrypted State (SEV-ES)"
-msgstr ""
-
-msgid ""
-"Checking for AMD Secure Encrypted Virtualization-Secure Nested Paging (SEV-"
-"SNP)"
 msgstr ""
 
 #, c-format
@@ -4487,6 +4489,9 @@ msgstr "Could not find PhysicalNic with key '%1$s'"
 #, c-format
 msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Could not find PhysicalNic with name '%1$s'"
+
+msgid "Could not find a suitable controller for smmuv3"
+msgstr ""
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Could not find any 'network' element in status file"
@@ -5938,6 +5943,10 @@ msgstr ""
 #, c-format
 msgid "Domain %1$s didn't show up"
 msgstr "Domain %1$s didn't show up"
+
+#, c-format
+msgid "Domain %1$s didn't show up in /dev/vmm"
+msgstr ""
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8258,6 +8267,10 @@ msgid "Failed to parse MAC address from '%1$s'"
 msgstr "Failed to parse uid and gid from '%1$s'"
 
 #, c-format
+msgid "Failed to parse PCI address %1$s"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse PCI config address '%1$s'"
 msgstr "Failed to parse PCI config address '%1$s'"
 
@@ -9865,6 +9878,9 @@ msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
 
+msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
+msgstr ""
+
 msgid "IORT table header ended early"
 msgstr ""
 
@@ -11162,6 +11178,10 @@ msgid "Kernel image path in this domain is not defined"
 msgstr ""
 
 msgid "Kernel image path is not defined. With sev_snp=on, pass an igvm path"
+msgstr ""
+
+#, c-format
+msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
 msgstr ""
 
 #, fuzzy
@@ -12861,7 +12881,7 @@ msgstr "New size of the block device, as scaled integer (default KiB)"
 msgid "Nicdev support unavailable"
 msgstr "System is not available"
 
-msgid "No CA certificate path set to match server key/cert"
+msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
 
 #, fuzzy
@@ -12882,6 +12902,9 @@ msgstr "No IP address for host '%1$s' found: %2$s"
 
 msgid "No JSON parser implementation is available"
 msgstr "No JSON parser implementation is available"
+
+msgid "No PCI address provided"
+msgstr ""
 
 msgid "No PCI buses available"
 msgstr "No PCI buses available"
@@ -13154,11 +13177,10 @@ msgstr "No qemu environment name specified"
 msgid "No runstatedir specified"
 msgstr "No bridge name specified"
 
-#, fuzzy
-msgid "No server certificate path set to match server key"
-msgstr "The server certificate %s is not yet active"
+msgid "No server certificate path(s) set to match server key(s)"
+msgstr ""
 
-msgid "No server key path set to match server cert"
+msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
 
 #, fuzzy, c-format
@@ -13385,6 +13407,10 @@ msgstr "Number of CPUs in <numa> exceeds the <vcpu> count"
 #, fuzzy
 msgid "Number of CPUs in <numa> exceeds the desired maximum vcpu count"
 msgstr "Number of CPUs in <numa> exceeds the <vcpu> count"
+
+#, c-format
+msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
+msgstr ""
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -16597,6 +16623,14 @@ msgstr ""
 msgid "Target disk %1$s does not match source %2$s"
 msgstr "Target disk %1$s does not match source %2$s"
 
+#, c-format
+msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
+msgstr ""
+
+#, c-format
+msgid "Target disk 'removable' property %1$s does not match source %2$s"
+msgstr ""
+
 msgid "Target disk access mode does not match source"
 msgstr "Target disk access mode does not match source"
 
@@ -16654,9 +16688,9 @@ msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr "Target domain name '%1$s' does not match source '%2$s'"
 
-#, fuzzy
-msgid "Target domain IOMMU device count does not match source"
-msgstr "Target domain hub device count %zu does not match source %zu"
+#, c-format
+msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -16682,6 +16716,11 @@ msgstr "Target domain name '%1$s' does not match source '%2$s'"
 #, fuzzy, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr "Target domain name '%1$s' does not match source '%2$s'"
+
+#, c-format
+msgid ""
+"Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
+msgstr ""
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -17321,8 +17360,8 @@ msgstr "The client certificate %1$s is not yet active"
 
 #, c-format
 msgid ""
-"The client key %1$s must be accessible to all users. As root run: chown root."
-"root %2$s; chmod 0644 %3$s"
+"The client key %1$s must be accessible to all users. As root run: chown "
+"root.root %2$s; chmod 0644 %3$s"
 msgstr ""
 
 #, c-format
@@ -17396,14 +17435,14 @@ msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a client. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-client-certificates on how to regenerate %1$s"
+"The machine cannot act as a client. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, c-format
 msgid ""
-"The machine cannot act as a server. See https://libvirt.org/kbase/tlscerts."
-"html#issuing-server-certificates on how to regenerate %1$s"
+"The machine cannot act as a server. See https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
 
 #, fuzzy
@@ -18131,6 +18170,9 @@ msgstr "Unable to add bridge %s port %s"
 msgid "Unable to add hardware machine"
 msgstr "unable to read vmware log file"
 
+msgid "Unable to add keepalive timer"
+msgstr ""
+
 #, c-format
 msgid "Unable to add lockspace %1$s"
 msgstr "Unable to add lockspace %1$s"
@@ -18139,12 +18181,24 @@ msgstr "Unable to add lockspace %1$s"
 msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Unable to add lockspace %s"
 
+msgid "Unable to add log cleanup timer"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to add media registry other media"
 msgstr "unable to register monitor events"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
+msgstr ""
+
+msgid "Unable to add service timer"
+msgstr ""
+
+msgid "Unable to add shutdown timer"
+msgstr ""
+
+msgid "Unable to add socket timer"
 msgstr ""
 
 #, fuzzy
@@ -18166,6 +18220,23 @@ msgstr "Failed to set new domain description"
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
+msgstr ""
+
+msgid "Unable to add timer to event loop"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on log FD %1$d"
+msgstr ""
+
+msgid "Unable to add watch on stdin"
+msgstr ""
+
+msgid "Unable to add watch on stdout"
+msgstr ""
+
+#, c-format
+msgid "Unable to add watch on udev FD %1$d"
 msgstr ""
 
 #, fuzzy
@@ -22283,6 +22354,9 @@ msgstr "avoid file system cache when restoring"
 msgid "avoid file system cache when saving"
 msgstr "avoid file system cache when saving"
 
+msgid "avoid shutdown of the domain while the backup is running"
+msgstr ""
+
 msgid "await a domain event"
 msgstr ""
 
@@ -24246,8 +24320,8 @@ msgid "cannot update guest CPU for %1$s architecture"
 msgstr "cannot decode CPU data for %1$s architecture"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with incompatible -"
-"no-reboot setting"
+"cannot update lifecycle action because QEMU was started with incompatible "
+"-no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -24338,6 +24412,9 @@ msgstr "cellNum in %1$s must be less than or equal to %2$d"
 #, c-format
 msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum in %1$s only accepts %2$d as a negative value"
+
+msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
+msgstr ""
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25842,6 +25919,11 @@ msgstr "device type '%1$s' cannot be updated"
 #, c-format
 msgid "device type '%1$s' cannot hot unplugged"
 msgstr "device type '%1$s' cannot hot unplugged"
+
+msgid ""
+"device-pluggable IOMMU with pciBus attribute must be specified for multiple "
+"IOMMU definitions"
+msgstr ""
 
 msgid "devices cgroup isn't mounted"
 msgstr "devices cgroup isn't mounted"
@@ -29285,6 +29367,9 @@ msgstr "existing interface name"
 #, fuzzy, c-format
 msgid "guest is missing vCPUs '%1$s'"
 msgstr "entry was missing 'speed'"
+
+msgid "guest shutdown"
+msgstr ""
 
 msgid "guest unexpectedly quit"
 msgstr "guest unexpectedly quit"
@@ -34562,10 +34647,6 @@ msgstr ""
 msgid "only USB input devices are supported"
 msgstr "only a single TPM device is supported"
 
-#, fuzzy
-msgid "only a single IOMMU device is supported"
-msgstr "only a single TPM device is supported"
-
 msgid "only a single QGS element is supported"
 msgstr ""
 
@@ -35124,26 +35205,26 @@ msgstr "per-device boot elements cannot be used together with os/boot elements"
 
 #, fuzzy
 msgid ""
-"per-device bytes read per second, in the form of /path/to/device,"
-"read_bytes_sec,..."
+"per-device bytes read per second, in the form of /path/to/"
+"device,read_bytes_sec,..."
 msgstr "per-device IO Weights, in the form of /path/to/device,weight,..."
 
 #, fuzzy
 msgid ""
-"per-device bytes wrote per second, in the form of /path/to/device,"
-"write_bytes_sec,..."
+"per-device bytes wrote per second, in the form of /path/to/"
+"device,write_bytes_sec,..."
 msgstr "per-device IO Weights, in the form of /path/to/device,weight,..."
 
 #, fuzzy
 msgid ""
-"per-device read I/O limit per second, in the form of /path/to/device,"
-"read_iops_sec,..."
+"per-device read I/O limit per second, in the form of /path/to/"
+"device,read_iops_sec,..."
 msgstr "per-device IO Weights, in the form of /path/to/device,weight,..."
 
 #, fuzzy
 msgid ""
-"per-device write I/O limit per second, in the form of /path/to/device,"
-"write_iops_sec,..."
+"per-device write I/O limit per second, in the form of /path/to/"
+"device,write_iops_sec,..."
 msgstr "per-device IO Weights, in the form of /path/to/device,weight,..."
 
 #, fuzzy, c-format
@@ -35696,6 +35777,9 @@ msgstr ""
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "modify cpu state in the guest"
 
+msgid "query-accelerators was missing 'enabled'"
+msgstr ""
+
 #, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr "blockstats device entry was not in expected format"
@@ -35863,6 +35947,9 @@ msgstr "query-version reply was missing 'qemu' data"
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr "Compressed migration is not supported by QEMU binary"
+
+msgid "queue configuration is only valid for NVMe bus"
+msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -37290,6 +37377,13 @@ msgstr "stat of '%1$s' failed"
 #, fuzzy
 msgid "statistic value too large"
 msgstr "value too large: %llu%s"
+
+#, c-format
+msgid "statistics collection is not supported by disks on bus '%1$s'"
+msgstr ""
+
+msgid "statistics collection is not supported by this QEMU binary"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -40496,6 +40590,9 @@ msgstr ""
 msgid "using host CPU definition as input may provide incorrect results"
 msgstr ""
 
+msgid "using passthrough devices requires locking guest memory"
+msgstr ""
+
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
 msgstr "using unix socket and remote server '%1$s' is not supported."
@@ -41463,6 +41560,22 @@ msgstr "zone %1$s requested for network %2$s but firewalld is not active"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Cannot read %1$s '%2$s'"
+#~ msgstr "Cannot read %1$s '%2$s'"
+
+#, fuzzy
+#~ msgid "No server certificate path set to match server key"
+#~ msgstr "The server certificate %s is not yet active"
+
+#, fuzzy
+#~ msgid "Target domain IOMMU device count does not match source"
+#~ msgstr "Target domain hub device count %zu does not match source %zu"
+
+#, fuzzy
+#~ msgid "only a single IOMMU device is supported"
+#~ msgstr "only a single TPM device is supported"
 
 #, fuzzy
 #~ msgid "incoming RDMA migration is not supported with this QEMU binary"
