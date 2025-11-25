@@ -17,6 +17,12 @@ v11.10.0 (unreleased)
 
 * **New features**
 
+  * Hyper-V virttype support for Qemu domains
+
+    Libvirt now supports Hyper-V virttype while lauching QEMU domains. This
+    feature requires Qemu version 10.2.0 or later and is available on Linux
+    hosts where the /dev/mshv is present.
+
 * **Improvements**
 
   * bhyve: VNC ``wait`` attribute support
