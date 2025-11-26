@@ -484,17 +484,23 @@ virTrimSpaces(char *str, char **endp)
  * but spaces.
  */
 void
-virSkipSpacesBackwards(const char *str, char **endp)
+virSkipSpacesBackwards(const char *str,
+                       const char **endp)
 {
-    /* Casting away const is safe, since virTrimSpaces does not
-     * modify string with this particular usage.  */
-    char *s = (char*) str;
+    const char *end;
 
     if (!*endp)
-        *endp = s + strlen(s);
-    virTrimSpaces(s, endp);
-    if (s == *endp)
+        end = str + strlen(str);
+    else
+        end = *endp;
+
+    while (end > str && g_ascii_isspace(end[-1]))
+        end--;
+
+    if (str == end)
         *endp = NULL;
+    else
+        *endp = end;
 }
 
 /**

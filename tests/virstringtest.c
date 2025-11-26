@@ -118,7 +118,7 @@ static int
 testSkipSpacesBackwards(const void *opaque G_GNUC_UNUSED)
 {
     const char *str = TEST_STR TEST_SPACES;
-    char *eol = NULL;
+    const char *eol = NULL;
 
     virSkipSpacesBackwards(str, &eol);
 
