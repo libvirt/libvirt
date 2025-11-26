@@ -1285,6 +1285,17 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           flash->nvram_template.format);
                 return false;
             }
+        } else {
+            if (loader && loader->nvram &&
+                (loader->nvram->path || loader->nvram->format)) {
+                VIR_DEBUG("Discarding non split loader (nvram configured)");
+                return false;
+            }
+            if (loader &&
+                (loader->nvramTemplate || loader->nvramTemplateFormat)) {
+                VIR_DEBUG("Discarding non split loader (nvram template configured)");
+                return false;
+            }
         }
     } else if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_MEMORY) {
         if (loader && loader->type &&
@@ -1300,6 +1311,17 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
         if (loader && loader->readonly == VIR_TRISTATE_BOOL_NO) {
             VIR_DEBUG("Discarding readonly loader");
+            return false;
+        }
+
+        if (loader && loader->nvram &&
+            (loader->nvram->path || loader->nvram->format)) {
+            VIR_DEBUG("Discarding rom loader (nvram configured)");
+            return false;
+        }
+        if (loader &&
+            (loader->nvramTemplate || loader->nvramTemplateFormat)) {
+            VIR_DEBUG("Discarding rom loader (nvram template configured)");
             return false;
         }
     }
