@@ -26,6 +26,9 @@
 
 # include "virbuffer.h"
 # include "virfirewall.h"
+# if WITH_NETWORK
+#  include "network_iptables.h"
+# endif
 
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
@@ -763,6 +766,113 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 }
 
 
+static void G_GNUC_UNUSED
+testIPtablesSetupPrivateChainsHook(const char *const *args,
+                                   const char *const *env G_GNUC_UNUSED,
+                                   const char *input G_GNUC_UNUSED,
+                                   char **output,
+                                   char **error,
+                                   int *status,
+                                   void *opaque G_GNUC_UNUSED)
+{
+    if (STREQ_NULLABLE(*args, "iptables") &&
+        STREQ_NULLABLE(*(args + 1), "-w") &&
+        STREQ_NULLABLE(*(args + 2), "--table") &&
+        STREQ_NULLABLE(*(args + 3), "filter") &&
+        STREQ_NULLABLE(*(args + 4), "--list-rules")) {
+        *output = g_strdup("-P INPUT ACCEPT\n"
+                           "-P FORWARD ACCEPT\n"
+                           "-P OUTPUT ACCEPT\n"
+                          );
+        *error = NULL;
+        *status = EXIT_SUCCESS;
+        return;
+    }
+
+    if (STREQ_NULLABLE(*args, "iptables") &&
+        STREQ_NULLABLE(*(args + 1), "-w") &&
+        STREQ_NULLABLE(*(args + 2), "--table") &&
+        STREQ_NULLABLE(*(args + 3), "nat") &&
+        STREQ_NULLABLE(*(args + 4), "--list-rules")) {
+        *output = g_strdup("-P PREROUTING ACCEPT\n"
+                           "-P INPUT ACCEPT\n"
+                           "-P OUTPUT ACCEPT\n"
+                           "-P POSTROUTING ACCEPT\n");
+        *error = NULL;
+        *status = EXIT_SUCCESS;
+        return;
+    }
+
+    /* Intentionally steering away from empty rules above. This is how the
+     * table looks AFTER we've injected our rules. The idea is to cover more
+     * lines, esp. in iptablesPrivateChainCreate(). */
+    if (STREQ_NULLABLE(*args, "iptables") &&
+        STREQ_NULLABLE(*(args + 1), "-w") &&
+        STREQ_NULLABLE(*(args + 2), "--table") &&
+        STREQ_NULLABLE(*(args + 3), "mangle") &&
+        STREQ_NULLABLE(*(args + 4), "--list-rules")) {
+        *output = g_strdup("-P PREROUTING ACCEPT\n"
+                           "-P INPUT ACCEPT\n"
+                           "-P FORWARD ACCEPT\n"
+                           "-P OUTPUT ACCEPT\n"
+                           "-P POSTROUTING ACCEPT\n"
+                           "-N LIBVIRT_PRT\n"
+                           "-A POSTROUTING -j LIBVIRT_PRT\n"
+                           "-A LIBVIRT_PRT -o virbr0 -p udp -m udp --dport 68 -j CHECKSUM --checksum-fill\n");
+        *error = NULL;
+        *status = EXIT_SUCCESS;
+        return;
+    }
+
+    *output = NULL;
+    *error = NULL;
+    *status = EXIT_SUCCESS;
+}
+
+
+static int
+testIPtablesSetupPrivateChains(const void *opaque G_GNUC_UNUSED)
+{
+# if WITH_NETWORK
+    g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+    const char *actual;
+    const char *expected =
+        IPTABLES " -w --table filter --list-rules\n"
+        IPTABLES " -w --table nat --list-rules\n"
+        IPTABLES " -w --table mangle --list-rules\n"
+        IPTABLES " -w --table filter --new-chain LIBVIRT_INP\n"
+        IPTABLES " -w --table filter --insert INPUT --jump LIBVIRT_INP\n"
+        IPTABLES " -w --table filter --new-chain LIBVIRT_OUT\n"
+        IPTABLES " -w --table filter --insert OUTPUT --jump LIBVIRT_OUT\n"
+        IPTABLES " -w --table filter --new-chain LIBVIRT_FWO\n"
+        IPTABLES " -w --table filter --insert FORWARD --jump LIBVIRT_FWO\n"
+        IPTABLES " -w --table filter --new-chain LIBVIRT_FWI\n"
+        IPTABLES " -w --table filter --insert FORWARD --jump LIBVIRT_FWI\n"
+        IPTABLES " -w --table filter --new-chain LIBVIRT_FWX\n"
+        IPTABLES " -w --table filter --insert FORWARD --jump LIBVIRT_FWX\n"
+        IPTABLES " -w --table nat --new-chain LIBVIRT_PRT\n"
+        IPTABLES " -w --table nat --insert POSTROUTING --jump LIBVIRT_PRT\n";
+
+    virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, testIPtablesSetupPrivateChainsHook, NULL);
+
+    if (iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4) < 0)
+        return -1;
+
+    actual = virBufferCurrentContent(&cmdbuf);
+
+    if (virTestCompareToString(expected, actual) < 0) {
+        fprintf(stderr, "Unexpected command execution\n");
+        return -1;
+    }
+
+    return 0;
+# else
+    return EXIT_AM_SKIP;
+# endif
+}
+
+
 static int
 mymain(void)
 {
@@ -784,6 +894,7 @@ mymain(void)
     RUN_TEST("many rollback", testFirewallManyRollback);
     RUN_TEST("chained rollback", testFirewallChainedRollback);
     RUN_TEST("query transaction", testFirewallQuery);
+    RUN_TEST("setup private chains", testIPtablesSetupPrivateChains);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

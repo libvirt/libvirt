@@ -259,6 +259,13 @@ if conf.has('WITH_QEMU')
   domaincapstest_link_whole += [ test_utils_qemu_lib ]
 endif
 
+virfirewalltest_include = []
+virfirewalltest_link_with = []
+if conf.has('WITH_NETWORK')
+  virfirewalltest_include += [ network_inc_dir ]
+  virfirewalltest_link_with += [ network_driver_impl ]
+endif
+
 tests += [
   { 'name': 'commandtest' },
   { 'name': 'cputest', 'link_with': cputest_link_with, 'link_whole': cputest_link_whole },
@@ -286,7 +293,7 @@ tests += [
   { 'name': 'virerrortest' },
   { 'name': 'virfilecachetest' },
   { 'name': 'virfiletest' },
-  { 'name': 'virfirewalltest' },
+  { 'name': 'virfirewalltest', 'include': virfirewalltest_include, 'link_with': virfirewalltest_link_with },
   { 'name': 'virhostcputest', 'link_whole': [ test_file_wrapper_lib ] },
   { 'name': 'virhostdevtest' },
   { 'name': 'viridentitytest' },

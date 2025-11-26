@@ -10,6 +10,7 @@ if host_machine.system() == 'freebsd'
   network_driver_sources += 'network_pf.c'
 endif
 
+network_inc_dir = include_directories('.')
 driver_source_files += files(network_driver_sources)
 stateful_driver_source_files += files(network_driver_sources)
 
