@@ -354,11 +354,11 @@
                 <attribute name="template">
                   <ref name="absFilePath"/>
                 </attribute>
-                <optional>
-                  <attribute name="templateFormat">
-                    <ref name="pflashFormatTypes"/>
-                  </attribute>
-                </optional>
+              </optional>
+              <optional>
+                <attribute name="templateFormat">
+                  <ref name="pflashFormatTypes"/>
+                </attribute>
               </optional>
               <optional>
                 <ref name="pflashFormat"/>
