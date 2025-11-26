@@ -3184,6 +3184,7 @@ virCommandDryRunTokenFree(virCommandDryRunToken *tok)
  * @bufArgLinebreaks: add linebreaks after command and every argument or argument pair
  * @bufCommandStripPath: strip leading paths of command
  * @callback: callback to process input/output/args
+ * @opaque: data blob to pass to @callback
  *
  * Sometimes it's desired to not actually run given command, but
  * see its string representation without having to change the
@@ -3200,13 +3201,14 @@ virCommandDryRunTokenFree(virCommandDryRunToken *tok)
  * The strings stored in @buf are escaped for a shell and
  * separated by a newline. For example:
  *
- * virBuffer buffer = VIR_BUFFER_INITIALIZER;
- * virCommandSetDryRun(&buffer);
- *
+ * g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
+ * g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
  * virCommand *echocmd = virCommandNewArgList("/bin/echo", "Hello world", NULL);
+ *
+ * virCommandSetDryRun(dryRunToken, &cmdbuf, false, false, NULL, NULL);
  * virCommandRun(echocmd, NULL);
  *
- * After this, the @buffer should contain:
+ * After this, the @cmdbuf should contain:
  *
  * /bin/echo 'Hello world'\n
  *
