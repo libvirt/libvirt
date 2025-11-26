@@ -154,9 +154,11 @@ xenParseXMDisk(char *entry, int hvm)
     src = virDomainDiskGetSource(disk);
     if (src) {
         size_t len;
+        const char *sep;
+
         /* The main type  phy:, file:, tap: ... */
-        if ((tmp = strchr(src, ':')) != NULL) {
-            len = tmp - src;
+        if ((sep = strchr(src, ':')) != NULL) {
+            len = sep - src;
             tmp = g_strndup(src, len);
 
             virDomainDiskSetDriver(disk, tmp);
@@ -173,9 +175,9 @@ xenParseXMDisk(char *entry, int hvm)
             STREQ_NULLABLE(virDomainDiskGetDriver(disk), "tap2")) {
             char *driverType;
 
-            if (!(tmp = strchr(src, ':')))
+            if (!(sep = strchr(src, ':')))
                 goto error;
-            len = tmp - src;
+            len = sep - src;
 
             driverType = g_strndup(src, len);
 

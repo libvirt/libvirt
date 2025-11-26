@@ -927,7 +927,7 @@ udevGetIfaceDef(struct udev *udev, const char *name)
     g_autoptr(virInterfaceDef) ifacedef = NULL;
     unsigned int mtu;
     const char *mtu_str;
-    char *vlan_parent_dev = NULL;
+    const char *vlan_parent_dev = NULL;
     const char *devtype;
 
     /* Allocate our interface definition structure */

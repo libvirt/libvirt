@@ -368,7 +368,8 @@ virXMLCheckIllegalChars(const char *nodeName,
                         const char *str,
                         const char *illegal)
 {
-    char *c;
+    const char *c;
+
     if ((c = strpbrk(str, illegal))) {
         virReportError(VIR_ERR_XML_DETAIL,
                        _("invalid char in %1$s: %2$c"), nodeName, *c);

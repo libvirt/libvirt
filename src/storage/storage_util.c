@@ -3773,7 +3773,7 @@ getOldStyleBlockDevice(const char *lun_path G_GNUC_UNUSED,
                        const char *block_name,
                        char **block_device)
 {
-    char *blockp = NULL;
+    const char *blockp = NULL;
 
     /* old-style; just parse out the sd */
     if (!(blockp = strrchr(block_name, ':'))) {

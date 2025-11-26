@@ -802,20 +802,20 @@ static virDomainChrDef *
 xenParseSxprChar(const char *value,
                  const char *tty)
 {
-    const char *prefix;
+    g_autofree char *prefix = NULL;
     char *tmp;
     virDomainChrDef *def;
 
     if (!(def = virDomainChrDefNew(NULL)))
         return NULL;
 
-    prefix = value;
+    prefix = g_strdup(value);
 
     if (g_path_is_absolute(value)) {
         def->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
         def->source->data.file.path = g_strdup(value);
     } else {
-        if ((tmp = strchr(value, ':')) != NULL) {
+        if ((tmp = strchr(prefix, ':')) != NULL) {
             *tmp = '\0';
             value = tmp + 1;
         }
@@ -1019,7 +1019,7 @@ xenParseCharDev(virConf *conf, virDomainDef *def, const char *nativeFormat)
 static int
 xenParseVifBridge(virDomainNetDef *net, const char *bridge)
 {
-    char *vlanstr;
+    const char *vlanstr;
     unsigned int tag;
 
     if ((vlanstr = strchr(bridge, '.'))) {
@@ -1144,7 +1144,7 @@ xenParseVif(char *entry, const char *vif_typename)
 
     for (keyval = keyvals; keyval && *keyval; keyval++) {
         const char *key = *keyval;
-        char *val = strchr(key, '=');
+        const char *val = strchr(key, '=');
 
         virSkipSpaces(&key);
 

@@ -119,8 +119,8 @@ virStorageFileGetNPIVKey(const char *path,
                          char **key)
 {
     int status;
-    const char *serial;
-    const char *port;
+    char *serial;
+    char *port;
     g_autofree char *outbuf = NULL;
     g_autoptr(virCommand) cmd = NULL;
 

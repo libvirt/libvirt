@@ -219,7 +219,7 @@ static int
 virSysinfoParsePPCSystem(const char *base, virSysinfoSystemDef **sysdef)
 {
     int ret = -1;
-    char *eol = NULL;
+    const char *eol = NULL;
     const char *cur;
     virSysinfoSystemDef *def;
 
@@ -267,7 +267,7 @@ static void
 virSysinfoParsePPCProcessor(const char *base, virSysinfoDef *ret)
 {
     const char *cur;
-    char *eol, *tmp_base;
+    const char *eol, *tmp_base;
     virSysinfoProcessorDef *processor;
 
     while ((tmp_base = strstr(base, "processor")) != NULL) {
@@ -336,7 +336,7 @@ static int
 virSysinfoParseARMSystem(const char *base, virSysinfoSystemDef **sysdef)
 {
     int ret = -1;
-    char *eol = NULL;
+    const char *eol = NULL;
     const char *cur;
     virSysinfoSystemDef *def;
 
@@ -384,7 +384,7 @@ static void
 virSysinfoParseARMProcessor(const char *base, virSysinfoDef *ret)
 {
     const char *cur;
-    char *eol, *tmp_base;
+    const char *eol, *tmp_base;
     virSysinfoProcessorDef *processor;
     char *processor_type = NULL;
 

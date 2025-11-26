@@ -241,7 +241,7 @@ qemuMonitorJSONIOProcess(qemuMonitor *mon,
     /*VIR_DEBUG("Data %d bytes [%s]", len, data);*/
 
     while (used < len) {
-        char *nl = strstr(data + used, LINE_ENDING);
+        const char *nl = strstr(data + used, LINE_ENDING);
 
         if (nl) {
             int got = nl - (data + used);

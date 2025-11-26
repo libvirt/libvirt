@@ -1187,7 +1187,7 @@ static int
 udevGetCCWAddress(const char *sysfs_path,
                   virNodeDevCapData *data)
 {
-    char *p;
+    const char *p;
     g_autofree virCCWDeviceAddress *ccw_addr = g_new0(virCCWDeviceAddress, 1);
 
     if ((p = strrchr(sysfs_path, '/')) == NULL ||

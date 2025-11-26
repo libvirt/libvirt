@@ -3359,7 +3359,7 @@ char *
 virFileSanitizePath(const char *path)
 {
     const char *cur = path;
-    char *uri;
+    const char *uri;
     char *cleanpath;
     int idx = 0;
 

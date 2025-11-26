@@ -146,7 +146,7 @@ qemuNbdkitCapsQueryBuildConfig(qemuNbdkitCaps *nbdkit)
     size_t i;
     g_autofree char *output = NULL;
     g_auto(GStrv) lines = NULL;
-    const char *line;
+    char *line;
     g_autoptr(virCommand) cmd = virCommandNewArgList(nbdkit->path,
                                                      "--dump-config",
                                                      NULL);

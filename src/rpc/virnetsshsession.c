@@ -216,13 +216,14 @@ virNetSSHKbIntCb(const char *name G_GNUC_UNUSED,
 
     /* fill data structures for auth callback */
     for (i = 0; i < num_prompts; i++) {
-        askcred[i].prompt = g_strdup((char*)prompts[i].text);
+        char *prompt = g_strdup((char*)prompts[i].text);
 
         /* remove colon and trailing spaces from prompts, as default behavior
          * of libvirt's auth callback is to add them */
-        if ((tmp = strrchr(askcred[i].prompt, ':')))
+        if ((tmp = strrchr(prompt, ':')))
             *tmp = '\0';
 
+        askcred[i].prompt = prompt;
         askcred[i].type = prompts[i].echo ? credtype_echo : credtype_noecho;
     }
 

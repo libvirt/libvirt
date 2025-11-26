@@ -413,7 +413,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         case VSH_OT_ALIAS: {
             size_t j;
             g_autofree char *name = NULL;
-            char *p;
+            const char *p;
 
             if (opt->required ||
                 opt->positional ||
@@ -502,7 +502,7 @@ vshCmdGetOption(vshControl *ctl,
                alias of option and its default value */
             alias = g_strdup(n->def->help);
             name = alias;
-            if ((value = strchr(name, '='))) {
+            if ((value = strchr(alias, '='))) {
                 *value = '\0';
                 if (*optstr) {
                     if (report)
@@ -1660,7 +1660,7 @@ vshCommandParse(vshControl *ctl,
              *   value
              *   -- (terminate accepting '--option', fill only positional args)
              */
-            const char *optionname = tkdata + 2;
+            char *optionname = tkdata + 2;
             char *sep;
 
             if (!STRPREFIX(tkdata, "--")) {

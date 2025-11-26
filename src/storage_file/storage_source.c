@@ -45,8 +45,8 @@ VIR_LOG_INIT("storage_source");
 static bool
 virStorageSourceBackinStoreStringIsFile(const char *backing)
 {
-    char *colon;
-    char *slash;
+    const char *colon;
+    const char *slash;
 
     if (!backing)
         return false;

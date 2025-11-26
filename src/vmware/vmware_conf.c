@@ -305,7 +305,7 @@ vmwareDomainConfigDisplay(vmwareDomainPtr pDomain, virDomainDef *def)
 static int
 vmwareParsePath(const char *path, char **directory, char **filename)
 {
-    char *separator;
+    const char *separator;
 
     separator = strrchr(path, '/');
 
