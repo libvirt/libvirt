@@ -1297,6 +1297,13 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           flash->nvram_template.format);
                 return false;
             }
+            if (loader && loader->nvramTemplateFormat &&
+                STRNEQ(flash->nvram_template.format, virStorageFileFormatTypeToString(loader->nvramTemplateFormat))) {
+                VIR_DEBUG("Discarding loader with mismatching nvram template format '%s' != '%s'",
+                          flash->nvram_template.format,
+                          virStorageFileFormatTypeToString(loader->nvramTemplateFormat));
+                return false;
+            }
         } else {
             if (loader && loader->nvram &&
                 (loader->nvram->path || loader->nvram->format)) {
