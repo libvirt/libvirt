@@ -85,26 +85,27 @@ iptablesPrivateChainCreate(virFirewall *fw,
     iptablesGlobalChainData *data = opaque;
     g_autoptr(GHashTable) chains = virHashNew(NULL);
     g_autoptr(GHashTable) links = virHashNew(NULL);
-    const char *const *tmp;
+    const char *const *line;
     size_t i;
 
-    tmp = lines;
-    while (tmp && *tmp) {
-        if (STRPREFIX(*tmp, "-N ")) { /* eg "-N LIBVIRT_INP" */
-            if (virHashUpdateEntry(chains, *tmp + 3, (void *)0x1) < 0)
+    line = lines;
+    while (line && *line) {
+        if (STRPREFIX(*line, "-N ")) { /* eg "-N LIBVIRT_INP" */
+            if (virHashUpdateEntry(chains, *line + 3, (void *)0x1) < 0)
                 return -1;
-        } else if (STRPREFIX(*tmp, "-A ")) { /* eg "-A INPUT -j LIBVIRT_INP" */
-            char *sep = strchr(*tmp + 3, ' ');
+        } else if (STRPREFIX(*line, "-A ")) { /* eg "-A INPUT -j LIBVIRT_INP" */
+            char *sep = strchr(*line + 3, ' ');
+
             if (sep) {
                 *sep = '\0';
                 if (STRPREFIX(sep + 1, "-j ")) {
                     if (virHashUpdateEntry(links, sep + 4,
-                                           (char *)*tmp + 3) < 0)
+                                           (char *)*line + 3) < 0)
                         return -1;
                 }
             }
         }
-        tmp++;
+        line++;
     }
 
     for (i = 0; i < data->nchains; i++) {
