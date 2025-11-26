@@ -111,6 +111,51 @@ testStringSortCompare(const void *opaque G_GNUC_UNUSED)
 }
 
 
+#define TEST_STR "This is a static string with spaces"
+#define TEST_SPACES "   "
+
+static int
+testSkipSpacesBackwards(const void *opaque G_GNUC_UNUSED)
+{
+    const char *str = TEST_STR TEST_SPACES;
+    char *eol = NULL;
+
+    virSkipSpacesBackwards(str, &eol);
+
+    if (STRNEQ(str, TEST_STR TEST_SPACES)) {
+        fprintf(stderr, "expected '" TEST_STR TEST_SPACES "' got '%s'\n", str);
+        return -1;
+    }
+
+    while (g_ascii_isspace(*eol))
+        eol++;
+
+    if (*eol != '\0') {
+        fprintf(stderr, "expected empty string, got '%s'\n", eol);
+        return -1;
+    }
+
+    eol = (char *)str + strlen(TEST_STR);
+
+    virSkipSpacesBackwards(str, &eol);
+
+    if (STRNEQ(str, TEST_STR TEST_SPACES)) {
+        fprintf(stderr, "expected '" TEST_STR TEST_SPACES "' got '%s'\n", str);
+        return -1;
+    }
+
+    if (STRNEQ(eol, TEST_SPACES)) {
+        fprintf(stderr, "expected empty string, got '%s'\n", eol);
+        return -1;
+    }
+
+    return 0;
+}
+
+#undef TEST_SPACES
+#undef TEST_STR
+
+
 struct stringSearchData {
     const char *str;
     const char *regexp;
@@ -461,6 +506,9 @@ mymain(void)
     TEST_STREQ("hello", "hello");
 
     if (virTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
+        ret = -1;
+
+    if (virTestRun("virSkipSpacesBackwards", testSkipSpacesBackwards, NULL) < 0)
         ret = -1;
 
 #define TEST_SEARCH(s, r, x, n, m, e) \
