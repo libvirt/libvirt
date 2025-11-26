@@ -90,17 +90,21 @@ iptablesPrivateChainCreate(virFirewall *fw,
 
     line = lines;
     while (line && *line) {
-        if (STRPREFIX(*line, "-N ")) { /* eg "-N LIBVIRT_INP" */
-            if (virHashUpdateEntry(chains, *line + 3, (void *)0x1) < 0)
+        const char *tmp;
+
+        if ((tmp = STRSKIP(*line, "-N "))) { /* eg "-N LIBVIRT_INP" */
+            if (virHashUpdateEntry(chains, tmp, (void *)0x1) < 0)
                 return -1;
-        } else if (STRPREFIX(*line, "-A ")) { /* eg "-A INPUT -j LIBVIRT_INP" */
-            char *sep = strchr(*line + 3, ' ');
+        } else if ((tmp = STRSKIP(*line, "-A "))) { /* eg "-A INPUT -j LIBVIRT_INP" */
+            char *sep = strchr(tmp, ' ');
 
             if (sep) {
+                char *target;
+
                 *sep = '\0';
-                if (STRPREFIX(sep + 1, "-j ")) {
-                    if (virHashUpdateEntry(links, sep + 4,
-                                           (char *)*line + 3) < 0)
+                if ((target = STRSKIP(sep + 1, "-j "))) {
+                    if (virHashUpdateEntry(links, target,
+                                           (char *)tmp) < 0)
                         return -1;
                 }
             }
