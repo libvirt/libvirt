@@ -92,12 +92,6 @@ struct _qemuFirmwareMappingFlash {
 };
 
 
-typedef struct _qemuFirmwareMappingKernel qemuFirmwareMappingKernel;
-struct _qemuFirmwareMappingKernel {
-    char *filename;
-};
-
-
 typedef struct _qemuFirmwareMappingMemory qemuFirmwareMappingMemory;
 struct _qemuFirmwareMappingMemory {
     char *filename;
@@ -107,7 +101,6 @@ struct _qemuFirmwareMappingMemory {
 typedef enum {
     QEMU_FIRMWARE_DEVICE_NONE = 0,
     QEMU_FIRMWARE_DEVICE_FLASH,
-    QEMU_FIRMWARE_DEVICE_KERNEL,
     QEMU_FIRMWARE_DEVICE_MEMORY,
 
     QEMU_FIRMWARE_DEVICE_LAST
@@ -118,7 +111,6 @@ VIR_ENUM_IMPL(qemuFirmwareDevice,
               QEMU_FIRMWARE_DEVICE_LAST,
               "",
               "flash",
-              "kernel",
               "memory",
 );
 
@@ -129,7 +121,6 @@ struct _qemuFirmwareMapping {
 
     union {
         qemuFirmwareMappingFlash flash;
-        qemuFirmwareMappingKernel kernel;
         qemuFirmwareMappingMemory memory;
     } data;
 };
@@ -223,13 +214,6 @@ qemuFirmwareMappingFlashFreeContent(qemuFirmwareMappingFlash *flash)
 
 
 static void
-qemuFirmwareMappingKernelFreeContent(qemuFirmwareMappingKernel *kernel)
-{
-    g_free(kernel->filename);
-}
-
-
-static void
 qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemory *memory)
 {
     g_free(memory->filename);
@@ -242,9 +226,6 @@ qemuFirmwareMappingFreeContent(qemuFirmwareMapping *mapping)
     switch (mapping->device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         qemuFirmwareMappingFlashFreeContent(&mapping->data.flash);
-        break;
-    case QEMU_FIRMWARE_DEVICE_KERNEL:
-        qemuFirmwareMappingKernelFreeContent(&mapping->data.kernel);
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         qemuFirmwareMappingMemoryFreeContent(&mapping->data.memory);
@@ -419,24 +400,6 @@ qemuFirmwareMappingFlashParse(const char *path,
 
 
 static int
-qemuFirmwareMappingKernelParse(const char *path,
-                               virJSONValue *doc,
-                               qemuFirmwareMappingKernel *kernel)
-{
-    const char *filename;
-
-    if (!(filename = virJSONValueObjectGetString(doc, "filename"))) {
-        VIR_DEBUG("missing 'filename' in '%s'", path);
-        return -1;
-    }
-
-    kernel->filename = g_strdup(filename);
-
-    return 0;
-}
-
-
-static int
 qemuFirmwareMappingMemoryParse(const char *path,
                                virJSONValue *doc,
                                qemuFirmwareMappingMemory *memory)
@@ -483,10 +446,6 @@ qemuFirmwareMappingParse(const char *path,
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         if (qemuFirmwareMappingFlashParse(path, mapping, &fw->mapping.data.flash) < 0)
-            return -1;
-        break;
-    case QEMU_FIRMWARE_DEVICE_KERNEL:
-        if (qemuFirmwareMappingKernelParse(path, mapping, &fw->mapping.data.kernel) < 0)
             return -1;
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
@@ -733,19 +692,6 @@ qemuFirmwareMappingFlashFormat(virJSONValue *mapping,
 
 
 static int
-qemuFirmwareMappingKernelFormat(virJSONValue *mapping,
-                                qemuFirmwareMappingKernel *kernel)
-{
-    if (virJSONValueObjectAppendString(mapping,
-                                       "filename",
-                                       kernel->filename) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 qemuFirmwareMappingMemoryFormat(virJSONValue *mapping,
                                 qemuFirmwareMappingMemory *memory)
 {
@@ -772,10 +718,6 @@ qemuFirmwareMappingFormat(virJSONValue *doc,
     switch (fw->mapping.device) {
     case QEMU_FIRMWARE_DEVICE_FLASH:
         if (qemuFirmwareMappingFlashFormat(mapping, &fw->mapping.data.flash) < 0)
-            return -1;
-        break;
-    case QEMU_FIRMWARE_DEVICE_KERNEL:
-        if (qemuFirmwareMappingKernelFormat(mapping, &fw->mapping.data.kernel) < 0)
             return -1;
         break;
     case QEMU_FIRMWARE_DEVICE_MEMORY:
@@ -920,21 +862,17 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
  * qemuFirmwareMatchesPaths:
  * @fw: firmware definition
  * @loader: loader definition
- * @kernelPath: path to kernel image
  *
  * Checks whether @fw is compatible with the information provided as
  * part of the domain definition.
  *
- * Returns: true if @fw is compatible with @loader and @kernelPath,
- *          false otherwise
+ * Returns: true if @fw is compatible with @loader, false otherwise
  */
 static bool
 qemuFirmwareMatchesPaths(const qemuFirmware *fw,
-                         const virDomainLoaderDef *loader,
-                         const char *kernelPath)
+                         const virDomainLoaderDef *loader)
 {
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
-    const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
 
     switch (fw->mapping.device) {
@@ -952,11 +890,6 @@ qemuFirmwareMatchesPaths(const qemuFirmware *fw,
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (loader && loader->path &&
             !virFileComparePaths(loader->path, memory->filename))
-            return false;
-        break;
-    case QEMU_FIRMWARE_DEVICE_KERNEL:
-        if (kernelPath &&
-            !virFileComparePaths(kernelPath, kernel->filename))
             return false;
         break;
     case QEMU_FIRMWARE_DEVICE_NONE:
@@ -1183,7 +1116,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         return false;
     }
 
-    if (!qemuFirmwareMatchesPaths(fw, def->os.loader, def->os.kernel)) {
+    if (!qemuFirmwareMatchesPaths(fw, def->os.loader)) {
         VIR_DEBUG("No matching path in '%s'", path);
         return false;
     }
@@ -1424,7 +1357,6 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
                                  const qemuFirmware *fw)
 {
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
-    const qemuFirmwareMappingKernel *kernel = &fw->mapping.data.kernel;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
     virDomainLoaderDef *loader = NULL;
     virStorageFileFormat format;
@@ -1480,14 +1412,6 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
 
         VIR_DEBUG("decided on firmware '%s' template '%s'",
                   loader->path, NULLSTR(loader->nvramTemplate));
-        break;
-
-    case QEMU_FIRMWARE_DEVICE_KERNEL:
-        VIR_FREE(def->os.kernel);
-        def->os.kernel = g_strdup(kernel->filename);
-
-        VIR_DEBUG("decided on kernel '%s'",
-                  def->os.kernel);
         break;
 
     case QEMU_FIRMWARE_DEVICE_MEMORY:
@@ -2056,7 +1980,6 @@ qemuFirmwareGetSupported(const char *machine,
             fwpath = memory->filename;
             break;
 
-        case QEMU_FIRMWARE_DEVICE_KERNEL:
         case QEMU_FIRMWARE_DEVICE_NONE:
         case QEMU_FIRMWARE_DEVICE_LAST:
             break;
