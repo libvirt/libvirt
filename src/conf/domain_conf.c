@@ -17826,24 +17826,8 @@ virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
 {
     unsigned int format = 0;
 
-    if (!loaderNode) {
-        /* If there is no <loader> element but the <nvram> element
-         * was present, copy the format from the latter to the
-         * former.
-         *
-         * This ensures that a configuration such as
-         *
-         *   <os>
-         *     <nvram format='foo'/>
-         *   </os>
-         *
-         * behaves as expected, that is, results in a firmware build
-         * with format 'foo' being selected */
-        if (loader->nvram)
-            loader->format = loader->nvram->format;
-
+    if (!loaderNode)
         return 0;
-    }
 
     if (virXMLPropTristateBool(loaderNode, "readonly", VIR_XML_PROP_NONE,
                                &loader->readonly) < 0)
