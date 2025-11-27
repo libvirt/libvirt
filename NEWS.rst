@@ -32,6 +32,17 @@ v11.10.0 (unreleased)
 
 * **Bug fixes**
 
+  * ch: Use correct domain definition in chDomainGetXMLDesc()
+
+    Cloud-Hypervisor driver claims to support ``VIR_DOMAIN_XML_INACTIVE`` but
+    in fact it never formatted the inactive XML. This is now fixed.
+
+  * esx: Allow disk images in subdirectories
+
+    If a domain has a disk image that's not in a datastore path but in a
+    subdirectory, the ESX driver would have failed to parse that and an error
+    was reported when obtaining domain XML. This is now fixed.
+
 
 v11.9.0 (2025-11-03)
 ====================
