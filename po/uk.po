@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-10-30 20:54+0000\n"
+"PO-Revision-Date: 2025-11-27 06:58+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 5.14.3\n"
 
 msgid ""
 "\n"
@@ -1434,7 +1434,7 @@ msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "пропущено «disk» або відповідь guest-get-fsinfo не є масивом"
 
 msgid "'dpofua' option is available only for SCSI disks"
-msgstr ""
+msgstr "варіантом «dpofua» можна скористатися лише для дисків SCSI"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -2556,7 +2556,7 @@ msgstr "Зайнятий"
 
 #, c-format
 msgid "CA certificate '%1$s' does not exist"
-msgstr ""
+msgstr "Сертифіката служби сертифікації «%1$s» не існує"
 
 msgid "CA certificate:"
 msgstr "Сертифікат CA:"
@@ -3930,11 +3930,11 @@ msgstr ""
 
 #, c-format
 msgid "Certificate '%1$s' does not exist"
-msgstr ""
+msgstr "Сертифіката «%1$s» не існує"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
-msgstr ""
+msgstr "Сертифіата «%1$s» не існує, але існує ключ «%2$s»"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -4730,7 +4730,7 @@ msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Не вдалося знайти PhysicalNic з назвою «%1$s»"
 
 msgid "Could not find a suitable controller for smmuv3"
-msgstr ""
+msgstr "Не вдалося знайти відповідний контролер для smmuv3"
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Не вдалося знайти жодного елемента «network» у файлі стану"
@@ -6213,7 +6213,7 @@ msgstr "Домен %1$s не показано"
 
 #, c-format
 msgid "Domain %1$s didn't show up in /dev/vmm"
-msgstr ""
+msgstr "Домену %1$s немає у /dev/vmm"
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -8568,7 +8568,7 @@ msgstr "Не вдалося обробити MAC-адресу з «%1$s»"
 
 #, c-format
 msgid "Failed to parse PCI address %1$s"
-msgstr ""
+msgstr "Не вдалося обробити PCI-адресу %1$s"
 
 #, c-format
 msgid "Failed to parse PCI config address '%1$s'"
@@ -10260,6 +10260,8 @@ msgstr ""
 
 msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
 msgstr ""
+"Для використання декілької визначень IOMMU має бути вказано модель smmuv3 "
+"IOMMU"
 
 msgid "IORT table header ended early"
 msgstr "Передчасне завершення заголовка таблиці IORT"
@@ -11621,7 +11623,7 @@ msgstr "Шлях до образу ядра не визначено. З sev_snp=
 
 #, c-format
 msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
-msgstr ""
+msgstr "Ключа «'%1$s» не існує, але існує сертифікат «%2$s»"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -13360,6 +13362,8 @@ msgstr "Підтримка Nicdev недоступна"
 
 msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
+"Не встановлено шляху до сертифіката служби сертифікації відповідного ключам "
+"і сертифікатам сервера"
 
 msgid "No DRM render nodes available"
 msgstr "Немає доступних вузлів обробки DRM"
@@ -13379,7 +13383,7 @@ msgid "No JSON parser implementation is available"
 msgstr "Реалізація обробника JSON недоступна"
 
 msgid "No PCI address provided"
-msgstr ""
+msgstr "Не надано адреси PCI"
 
 msgid "No PCI buses available"
 msgstr "Немає доступних каналів PCI"
@@ -13647,9 +13651,11 @@ msgstr "Не вказано runstatedir"
 
 msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
+"Не встановлено шляхів до сертифікатів сервера, що відповідають ключам сервера"
 
 msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
+"Не встановлено шляхів до ключів сервера, що відповідають сертифікатам сервера"
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13879,7 +13885,7 @@ msgstr ""
 
 #, c-format
 msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
-msgstr ""
+msgstr "Кількість сертифікатів (%1$zu) має збігатися з кількістю ключів (%2$zu)"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -17264,10 +17270,12 @@ msgstr "Диск призначення, %1$s, не збігається з ди
 #, c-format
 msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
 msgstr ""
+"Властивість «dpofua» диска призначення %1$s не збігається з джерелом %2$s"
 
 #, c-format
 msgid "Target disk 'removable' property %1$s does not match source %2$s"
 msgstr ""
+"Властивість «removable» диска призначення %1$s не збігається з джерелом, %2$s"
 
 msgid "Target disk access mode does not match source"
 msgstr ""
@@ -17344,6 +17352,8 @@ msgstr ""
 #, c-format
 msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
+"Кількість пристроїв IOMMU домену призначення %1$zu не збігається з джерелом, "
+"%2$zu"
 
 #, c-format
 msgid ""
@@ -17383,6 +17393,8 @@ msgstr ""
 msgid ""
 "Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
 msgstr ""
+"Значення pci_bus пристрою IOMMU домену призначення «%1$d» не збігається з "
+"джерелом, «%2$d»"
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -19089,7 +19101,7 @@ msgid "Unable to add hardware machine"
 msgstr "Не вдалося додати апаратну частину машини"
 
 msgid "Unable to add keepalive timer"
-msgstr ""
+msgstr "Не вдалося додати таймер підтримання зв'язку"
 
 #, c-format
 msgid "Unable to add lockspace %1$s"
@@ -19100,7 +19112,7 @@ msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "Не вдалося додати простір блокування %1$s: %2$s"
 
 msgid "Unable to add log cleanup timer"
-msgstr ""
+msgstr "Не вдалося додати таймер чищення журналу"
 
 msgid "Unable to add media registry other media"
 msgstr "Не вдалося додати інші носії до реєстру носіїв даних"
@@ -19110,13 +19122,13 @@ msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "Не вдалося додати порт %1$s до містка OVS %2$s: %3$s"
 
 msgid "Unable to add service timer"
-msgstr ""
+msgstr "Не вдалося додати таймер служби"
 
 msgid "Unable to add shutdown timer"
-msgstr ""
+msgstr "Не вдалося додати таймер вимикання"
 
 msgid "Unable to add socket timer"
-msgstr ""
+msgstr "Не вдалося додати таймер сокета"
 
 msgid "Unable to add storage controller"
 msgstr "Не вдалося додати контролер сховища даних"
@@ -19136,21 +19148,21 @@ msgid ""
 msgstr "Неможливо додати цей знімок: з цією машиною вже пов'язано знімок"
 
 msgid "Unable to add timer to event loop"
-msgstr ""
+msgstr "Не вдалося додати таймер до циклу подій"
 
 #, c-format
 msgid "Unable to add watch on log FD %1$d"
-msgstr ""
+msgstr "Не вдалося додати спостереження за дескриптором файла журналу %1$d"
 
 msgid "Unable to add watch on stdin"
-msgstr ""
+msgstr "Не вдалося додати спостереження за стандартним введенням"
 
 msgid "Unable to add watch on stdout"
-msgstr ""
+msgstr "Не вдалося додати спостереження за стандартним виведенням"
 
 #, c-format
 msgid "Unable to add watch on udev FD %1$d"
-msgstr ""
+msgstr "Не вдалося додати спостереження за дескриптором файла udev %1$d"
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "Неможливо додавати або вилучати записи fdb на цій платформі"
@@ -23326,7 +23338,7 @@ msgid "avoid file system cache when saving"
 msgstr "уникати кешування файлової системи під час збереження"
 
 msgid "avoid shutdown of the domain while the backup is running"
-msgstr ""
+msgstr "уникати вимикання домену, доки виконується резервне копіювання"
 
 msgid "await a domain event"
 msgstr "очікувати на подію домену"
@@ -25489,7 +25501,7 @@ msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "cellNum у %1$s приймає %2$d лише як від'ємне значення"
 
 msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
-msgstr ""
+msgstr "cert_file/key_file не можна поєднувати з cert_files/key_files"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -27048,6 +27060,8 @@ msgid ""
 "device-pluggable IOMMU with pciBus attribute must be specified for multiple "
 "IOMMU definitions"
 msgstr ""
+"для декількох визначень IOMMU має бути вказано з'єднуваний з пристроєм IOMMU "
+"з атрибутом pciBus"
 
 msgid "devices cgroup isn't mounted"
 msgstr "cgroup пристроїв не змонтовано"
@@ -30558,7 +30572,7 @@ msgid "guest is missing vCPUs '%1$s'"
 msgstr "у гостьовій системі немає віртуальних процесорів «%1$s»"
 
 msgid "guest shutdown"
-msgstr ""
+msgstr "вимикання гостьової системи"
 
 msgid "guest unexpectedly quit"
 msgstr "гостьова система несподівано завершила роботу"
@@ -37195,7 +37209,7 @@ msgstr ""
 "допомогою агента)"
 
 msgid "query-accelerators was missing 'enabled'"
-msgstr ""
+msgstr "у query-accelerators пропущено «enabled»"
 
 msgid "query-block device entry was not in expected format"
 msgstr "запис пристрою query-block зберігається у неочікуваному форматі"
@@ -37370,7 +37384,7 @@ msgstr ""
 "швидкості перенесення із посткопіюванням"
 
 msgid "queue configuration is only valid for NVMe bus"
-msgstr ""
+msgstr "налаштування черги коректні лише для шини NVMe"
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
@@ -38864,10 +38878,11 @@ msgstr "статистичне значення є надто великим"
 
 #, c-format
 msgid "statistics collection is not supported by disks on bus '%1$s'"
-msgstr ""
+msgstr "дисками на шині «%1$s» не передбачено збирання статистики"
 
 msgid "statistics collection is not supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки збирання статистики"
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -42177,6 +42192,8 @@ msgstr ""
 
 msgid "using passthrough devices requires locking guest memory"
 msgstr ""
+"використання пропускних пристроїв потребує блокування пам'яті гостьової "
+"системи"
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
