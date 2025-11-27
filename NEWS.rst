@@ -59,6 +59,13 @@ v11.10.0 (unreleased)
     subdirectory, the ESX driver would have failed to parse that and an error
     was reported when obtaining domain XML. This is now fixed.
 
+ * qemu: Fix incoming migration to QEMU 10.0.0 and newer
+
+    Due to a change in the way QEMU 10.0.0 reports the state of "ht" CPU
+    feature, incoming migration of a domain with multiple CPU threads would
+    fail with "guest CPU doesn't match specification: extra features: ht"
+    error.
+
 
 v11.9.0 (2025-11-03)
 ====================
