@@ -1783,6 +1783,26 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
     int ret;
 
+    /* If we're loading an existing configuration from disk, we
+     * should try as hard as possible to preserve historical
+     * behavior. In particular, firmware autoselection being enabled
+     * could never have resulted, before libvirt 9.2.0, in anything
+     * but a raw firmware image being selected.
+     *
+     * In order to ensure that existing domains keep working even if
+     * a firmware descriptor for a build with a different format is
+     * given higher priority, explicitly add this requirement to the
+     * definition before performing firmware selection */
+    if (!abiUpdate && autoSelection) {
+        if (!loader) {
+            def->os.loader = virDomainLoaderDefNew();
+            loader = def->os.loader;
+        }
+        if (!loader->format) {
+            loader->format = VIR_STORAGE_FILE_RAW;
+        }
+    }
+
     /* Start by performing a thorough validation of the input.
      *
      * We need to do this here because the firmware selection logic
