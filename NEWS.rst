@@ -46,6 +46,17 @@ v11.10.0 (unreleased)
     Bhyve guests can now be configured to wait for a VNC connection before
     booting.
 
+  * remote: multiple certificate support
+
+    The remote daemon and client can be configured to load multiple x509
+    certificate identities. This facilitates a transition to certificates
+    supporting Post-Quantum Crytographic algorithms.
+
+  * tools: improved virt-host-validate output
+
+    The virt-host-validate tool will now report extra details when certain
+    checks pass.
+
 * **Bug fixes**
 
   * ch: Use correct domain definition in chDomainGetXMLDesc()
@@ -65,6 +76,12 @@ v11.10.0 (unreleased)
     feature, incoming migration of a domain with multiple CPU threads would
     fail with "guest CPU doesn't match specification: extra features: ht"
     error.
+
+  * qemu: fix incorrect reporting of the TDX launch security type
+
+    The TDX launch security type was incorrectly reported on all platforms
+    if the QEMU binary had it built-in. It is now limited to only platforms
+    with the TDX kernel feature available for use.
 
 
 v11.9.0 (2025-11-03)
