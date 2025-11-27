@@ -31,7 +31,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-11-17 17:48+0000\n"
+"PO-Revision-Date: 2025-11-27 06:58+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
@@ -17516,10 +17516,10 @@ msgstr "USB 设备 %1$s 在被驱动程序 %2$s ，域 %3$s 使用"
 msgid ""
 "USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
 "'usb-bot'."
-msgstr ""
+msgstr "未选择 USB 磁盘型号。此 QEMU 不支持 'usb-storage' 或 'usb-bot'。"
 
 msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
-msgstr ""
+msgstr "USB 盘仅支持以下型号：'usb-storage'、'usb-bot'"
 
 msgid "USB host device is missing bus/device information"
 msgstr "USB 主机失败缺少 bus/device 信息"
@@ -17555,7 +17555,7 @@ msgid "UUID is not supported for NVDIMM device"
 msgstr "NVDIMM 设备不支持 UUID"
 
 msgid "UUID mismatch between <hwuuid> and <sysinfo>"
-msgstr ""
+msgstr "UUID 在 <hwuuid> 和 <sysinfo> 之间不匹配"
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid> 和 <sysinfo> 的 UUID 不匹配"
@@ -17627,7 +17627,7 @@ msgid "Unable to add hardware machine"
 msgstr "无法添加硬件机器"
 
 msgid "Unable to add keepalive timer"
-msgstr ""
+msgstr "无法添加keepalive定时器"
 
 #, c-format
 msgid "Unable to add lockspace %1$s"
@@ -17638,7 +17638,7 @@ msgid "Unable to add lockspace %1$s: %2$s"
 msgstr "无法添加锁空间 %1$s: %2$s"
 
 msgid "Unable to add log cleanup timer"
-msgstr ""
+msgstr "无法添加日志清理定时器"
 
 msgid "Unable to add media registry other media"
 msgstr "无法将其他介质添加到介质注册表"
@@ -17648,13 +17648,13 @@ msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "无法将端口 %1$s 添加到 OVS 桥 %2$s：%3$s"
 
 msgid "Unable to add service timer"
-msgstr ""
+msgstr "无法添加服务计时器"
 
 msgid "Unable to add shutdown timer"
-msgstr ""
+msgstr "无法添加关机定时器"
 
 msgid "Unable to add socket timer"
-msgstr ""
+msgstr "无法添加套接字定时器"
 
 msgid "Unable to add storage controller"
 msgstr "无法添加存储控制器"
@@ -17674,21 +17674,21 @@ msgid ""
 msgstr "无法添加此快照，已有一个连接到机器的快照"
 
 msgid "Unable to add timer to event loop"
-msgstr ""
+msgstr "无法向事件循环添加计时器"
 
 #, c-format
 msgid "Unable to add watch on log FD %1$d"
-msgstr ""
+msgstr "无法在日志 FD %1$d 上添加监视"
 
 msgid "Unable to add watch on stdin"
-msgstr ""
+msgstr "无法在标准输入上添加监视"
 
 msgid "Unable to add watch on stdout"
-msgstr ""
+msgstr "无法在标准输出上添加监视"
 
 #, c-format
 msgid "Unable to add watch on udev FD %1$d"
-msgstr ""
+msgstr "无法在 udev FD %1$d 上添加监视"
 
 msgid "Unable to add/delete fdb entries on this platform"
 msgstr "无法在此平台上添加/删除 fdb 条目"
@@ -18084,7 +18084,7 @@ msgstr "无法确定 SCSI 控制器 idx=%1$d 的型号"
 
 #, c-format
 msgid "Unable to determine model for USB controller idx=%1$d"
-msgstr ""
+msgstr "无法确定 USB 控制器 idx=%1$d的型号"
 
 msgid "Unable to determine mount table on this platform"
 msgstr "无法确定此平台上的挂载表"
@@ -18375,7 +18375,7 @@ msgid "Unable to get daemon logging outputs information"
 msgstr "无法查询守护进程输出日志的规则"
 
 msgid "Unable to get default interface name"
-msgstr ""
+msgstr "无法获取默认接口名称"
 
 msgid "Unable to get device master from netlink on this platform"
 msgstr "无法在此平台上获取 netlink 的主设备"
@@ -18559,7 +18559,7 @@ msgstr "无法在这个平台中获取虚拟功能"
 
 #, c-format
 msgid "Unable to import certificate list %1$s"
-msgstr ""
+msgstr "无法导入证书列表 %1$s"
 
 #, c-format
 msgid "Unable to import client certificate %1$s"
@@ -18600,10 +18600,10 @@ msgid "Unable to initialize lease %1$s: %2$s"
 msgstr "无法初始化租期 %1$s: %2$s"
 
 msgid "Unable to initialize libxml2 RelaxNG data"
-msgstr ""
+msgstr "无法初始化 libxml2 RelaxNG 数据"
 
 msgid "Unable to initialize libxml2 schema types"
-msgstr ""
+msgstr "无法初始化 libxml2 模式类型"
 
 #, c-format
 msgid "Unable to initialize lockspace %1$s"
@@ -21676,7 +21676,7 @@ msgid "avoid file system cache when saving"
 msgstr "保存时避免文件系统缓存"
 
 msgid "avoid shutdown of the domain while the backup is running"
-msgstr ""
+msgstr "在备份运行时避免关闭域"
 
 msgid "await a domain event"
 msgstr "等待域事件"
@@ -23667,7 +23667,7 @@ msgid "cellNum in %1$s only accepts %2$d as a negative value"
 msgstr "%1$s 中的 cellNum 只接受负数 %2$d"
 
 msgid "cert_file/key_file are mutually exclusive with cert_files/key_files"
-msgstr ""
+msgstr "cert_file/key_file 与 cert_files/key_files 互斥"
 
 #, c-format
 msgid "cfs_period '%1$llu' must be in range (%2$llu, %3$llu)"
@@ -25118,7 +25118,7 @@ msgstr "无法热插拔设备类型 '%1$s'。"
 msgid ""
 "device-pluggable IOMMU with pciBus attribute must be specified for multiple "
 "IOMMU definitions"
-msgstr ""
+msgstr "必须为多个 IOMMU 定义指定带有 pciBus 属性的设备可插拔 IOMMU"
 
 msgid "devices cgroup isn't mounted"
 msgstr "为挂载设备 cgroup"
@@ -28440,7 +28440,7 @@ msgid "guest is missing vCPUs '%1$s'"
 msgstr "客户机缺少 vCPU '%1$s'"
 
 msgid "guest shutdown"
-msgstr ""
+msgstr "客户机关机"
 
 msgid "guest unexpectedly quit"
 msgstr "虚拟机意外退出"
@@ -30567,7 +30567,7 @@ msgid "malformed QMP schema"
 msgstr "格式错误的 QMP 模式"
 
 msgid "malformed TDX panic data"
-msgstr ""
+msgstr "格式错误的 TDX 崩溃数据"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
@@ -30604,7 +30604,7 @@ msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr "在后备存储定义 '%1$s' 中格式错误的 http cookie '%2$s'"
 
 msgid "malformed hwuuid element"
-msgstr ""
+msgstr "格式错误的 hwuuid 元素"
 
 msgid "malformed hyperv panic data"
 msgstr "格式错误的 hyperv panic 数据"
@@ -30638,7 +30638,7 @@ msgstr "格式错误的八进制模式"
 
 #, c-format
 msgid "malformed output of 'iscsiadm': %1$s"
-msgstr ""
+msgstr "'iscsiadm' 的输出格式错误：%1$s"
 
 msgid "malformed owner element"
 msgstr "格式错误的 owner 元素"
@@ -34537,7 +34537,7 @@ msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "查询或修改客户机中 vcpu 的状态（通过代理）"
 
 msgid "query-accelerators was missing 'enabled'"
-msgstr ""
+msgstr "query-accelerators 缺少“enabled”"
 
 msgid "query-block device entry was not in expected format"
 msgstr "query-block 设备条目不是期望的格式"
@@ -34697,7 +34697,7 @@ msgid ""
 msgstr "QEMU 二进制文件不支持查询最大 post-copy 迁移速度"
 
 msgid "queue configuration is only valid for NVMe bus"
-msgstr ""
+msgstr "队列配置仅适用于 NVMe 总线"
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr "此 QEMU 二进制文件不支持 queue-size 属性"
@@ -36053,10 +36053,10 @@ msgstr "统计值太大"
 
 #, c-format
 msgid "statistics collection is not supported by disks on bus '%1$s'"
-msgstr ""
+msgstr "总线 '%1$s' 上的磁盘不支持统计数据收集"
 
 msgid "statistics collection is not supported by this QEMU binary"
-msgstr ""
+msgstr "此 QEMU 二进制文件不支持统计信息收集"
 
 #, c-format
 msgid "status mismatch in event (actual 0x%1$x, expected 0x%2$x)"
@@ -39218,7 +39218,7 @@ msgid "using host CPU definition as input may provide incorrect results"
 msgstr "使用主机 CPU 定义作为输入可能会提供不正确的结果"
 
 msgid "using passthrough devices requires locking guest memory"
-msgstr ""
+msgstr "使用直通设备需要锁定虚拟机内存"
 
 #, c-format
 msgid "using unix socket and remote server '%1$s' is not supported."
