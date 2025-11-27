@@ -32,11 +32,21 @@
 %define arches_ch               x86_64 aarch64
 
 # The hypervisor drivers that run in libvirtd
-%define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
 %define with_ch            0%{!?_without_ch:1}
+
+%ifarch %{arches_64bit}
+    %define with_qemu      0%{!?_without_qemu:1}
+%else
+    # QEMU drops 32-bit in Fedora 44
+    %if %{?fedora} > 43
+        %define with_qemu  0
+    %else
+        %define with_qemu  0%{!?_without_qemu:1}
+    %endif
+%endif
 
 %ifarch %{arches_qemu_kvm}
     %define with_qemu_kvm      %{with_qemu}
