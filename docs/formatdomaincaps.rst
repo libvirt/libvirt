@@ -871,7 +871,7 @@ are supported. The ``features`` enum corresponds to the ``<hyperv/>`` element
 (well, its children) as documented in `Hypervisor features
 <formatdomain.html#hypervisor-features>`__. The ``defaults`` element then
 contains child elements describing default values as reported by hypervisor,
-e.h. whether direct or extended TLB flushes are available. :since:`(since
+e.g. whether direct or extended TLB flushes are available. :since:`(since
 11.9.0)`
 
 Launch security
