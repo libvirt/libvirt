@@ -991,7 +991,10 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
          * NVRAM format if that's missing though */
         if (!virStorageSourceIsEmpty(loader->nvram)) {
             if (!loader->nvram->format) {
-                loader->nvram->format = loader->format;
+                if (loader->nvramTemplateFormat)
+                    loader->nvram->format = loader->nvramTemplateFormat;
+                else
+                    loader->nvram->format = loader->format;
             }
             return;
         }
