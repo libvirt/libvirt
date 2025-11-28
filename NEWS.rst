@@ -13,6 +13,22 @@ v11.10.0 (unreleased)
 
 * **Security**
 
+  * CVE-2025-12748: Denial of service by some ACL-limited accounts
+
+    Parsing of user provided XMLs in APIs which needed the identification
+    information from those XML definitions was done in full before ACL checks
+    were performed.  Some valid, but useless, definitions could cause allocation
+    of too much memory, leading to denial of service. APIs which do equate to
+    full root access (such as ``domain:write``), and were parsing XML
+    definitions in full before performing ACL checks could, potentially, be
+    exploited in a way that would allow users (which were about to be denied the
+    API call) to cause aforementioned overallocation even before the ACL checks
+    were performed.
+
+    A change was made so that parsing before ACL checks are done only for the
+    identification parts of the XML definition (which is needed to perform the
+    checks) and full parsing is done only after checking all ACLs.
+
 * **Removed features**
 
 * **New features**
