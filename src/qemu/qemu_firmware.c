@@ -1859,21 +1859,6 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
     int ret;
 
-    /* If there is no <loader> element but the <nvram> element
-     * was present, copy the format from the latter to the
-     * former.
-     *
-     * This ensures that a configuration such as
-     *
-     *   <os>
-     *     <nvram format='foo'/>
-     *   </os>
-     *
-     * behaves as expected, that is, results in a firmware build
-     * with format 'foo' being selected */
-    if (loader && loader->nvram && !loader->format)
-        loader->format = loader->nvram->format;
-
     /* If we're loading an existing configuration from disk, we
      * should try as hard as possible to preserve historical
      * behavior. In particular, firmware autoselection being enabled
@@ -1889,7 +1874,9 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
             def->os.loader = virDomainLoaderDefNew();
             loader = def->os.loader;
         }
-        if (!loader->format) {
+        if (!loader->format &&
+            !loader->nvramTemplateFormat &&
+            (!loader->nvram || !loader->nvram->format)) {
             loader->format = VIR_STORAGE_FILE_RAW;
         }
     }
