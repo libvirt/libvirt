@@ -29,6 +29,14 @@ v11.10.0 (unreleased)
     identification parts of the XML definition (which is needed to perform the
     checks) and full parsing is done only after checking all ACLs.
 
+  * CVE-2025-13193: Incorrect permissions on images after external snapshot of an inactive VM
+
+    The overlay ``qcow2`` images which are created as part of creation of an
+    external snapshot of an inactive VM had world-readable (644) permissions
+    which would allow unauthorized users to see contents of blocks written by
+    the VM after snapshot was taken. Libvirt now sets proper umask so that
+    the images are created with 600 mode.
+
 * **Removed features**
 
 * **New features**
@@ -38,6 +46,11 @@ v11.10.0 (unreleased)
     Libvirt now supports Hyper-V virttype while lauching QEMU domains. This
     feature requires Qemu version 10.2.0 or later and is available on Linux
     hosts where the /dev/mshv is present.
+
+  * Add more statistics for block devices on QEMU domains
+
+    The block devices now report optimal access request sizes as well as
+    statistics such as the queue depth.
 
 * **Improvements**
 
@@ -56,6 +69,12 @@ v11.10.0 (unreleased)
 
     The virt-host-validate tool will now report extra details when certain
     checks pass.
+
+  * qemu: Allow backup jobs to continue if guest OS shuts down
+
+    When starting a backup job users can now use a flag which prevents the VM
+    to be completely cleaned up if the guest OS shuts down while the backup is
+    running so that the backup can be finalized.
 
 * **Bug fixes**
 
@@ -82,6 +101,13 @@ v11.10.0 (unreleased)
     The TDX launch security type was incorrectly reported on all platforms
     if the QEMU binary had it built-in. It is now limited to only platforms
     with the TDX kernel feature available for use.
+
+  * qemu: set ``detect_zeroes`` for all backing chain layers
+
+    Some block jobs (snapshots, block commit) could modify the backing chain in
+    a way where ``detect_zeroes`` would no longer be honoured. We now set
+    it for all images in the backing chain, so that it will behave correctly
+    even after those operations.
 
 
 v11.9.0 (2025-11-03)
