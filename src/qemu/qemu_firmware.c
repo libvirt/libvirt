@@ -1304,6 +1304,21 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                           virStorageFileFormatTypeToString(loader->nvramTemplateFormat));
                 return false;
             }
+            /* If nvram.format was specified and no other information
+             * that can influence firmware selection was, then treat it
+             * the same as if nvram.templateFormat had been specified.
+             * This ensures that <nvram format='foo'/> continues to work
+             * as a shorthand while not getting in the way otherwise */
+            if (loader && loader->nvram && loader->nvram->format &&
+                !loader->readonly && !loader->type && !loader->secure &&
+                !loader->stateless && !loader->format && !loader->path &&
+                !loader->nvramTemplateFormat && !loader->nvramTemplate &&
+                STRNEQ(flash->nvram_template.format, virStorageFileFormatTypeToString(loader->nvram->format))) {
+                VIR_DEBUG("Discarding loader with mismatching nvram template format '%s' != '%s'",
+                          flash->nvram_template.format,
+                          virStorageFileFormatTypeToString(loader->nvram->format));
+                return false;
+            }
         } else {
             if (loader && loader->nvram &&
                 (loader->nvram->path || loader->nvram->format)) {
