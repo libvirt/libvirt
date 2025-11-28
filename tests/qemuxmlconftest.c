@@ -1616,6 +1616,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("firmware-auto-efi-format-loader-raw", "aarch64");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-nvramtemplate-qcow2");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-format-mismatch");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-format-mismatch-nvramtemplate");
 
     /* This test passes, but the outcome is not the desired one: the
      * generic edk2 build gets selected instead of the AMD SEV one */
