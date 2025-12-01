@@ -971,6 +971,7 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
+    virStorageFileFormat nvramFormat = VIR_STORAGE_FILE_NONE;
     const char *ext = NULL;
 
     if (!loader)
@@ -999,19 +1000,26 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
             return;
         }
 
-        /* otherwise we want to reset and re-populate the definition */
+        /* Otherwise we want to reset and re-populate the definition.
+         * In this case we still retain a single piece of information:
+         * the user-provided NVRAM format */
+        nvramFormat = loader->nvram->format;
+
         virObjectUnref(loader->nvram);
     }
 
     loader->nvram = virStorageSourceNew();
     loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+    loader->nvram->format = nvramFormat;
 
     /* The nvram template format should be always present but as a failsafe,
      * duplicate the loader format if it is not available. */
-    if (loader->nvramTemplateFormat > VIR_STORAGE_FILE_NONE)
-        loader->nvram->format = loader->nvramTemplateFormat;
-    else
-        loader->nvram->format = loader->format;
+    if (!loader->nvram->format) {
+        if (loader->nvramTemplateFormat)
+            loader->nvram->format = loader->nvramTemplateFormat;
+        else
+            loader->nvram->format = loader->format;
+    }
 
     if (loader->nvram->format == VIR_STORAGE_FILE_RAW) {
         /* The extension used by raw edk2 builds has historically
