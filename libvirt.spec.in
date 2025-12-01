@@ -41,7 +41,7 @@
     %define with_qemu      0%{!?_without_qemu:1}
 %else
     # QEMU drops 32-bit in Fedora 44
-    %if %{?fedora} > 43
+    %if 0%{?fedora} > 43
         %define with_qemu  0
     %else
         %define with_qemu  0%{!?_without_qemu:1}
