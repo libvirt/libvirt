@@ -1707,10 +1707,6 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         }
     }
 
-    if (has_manual &&
-        qemuSnapshotCreateActiveExternalDisksManual(vm, snap, VIR_ASYNC_JOB_SNAPSHOT) < 0)
-        goto cleanup;
-
     /* We need to collect reply from 'query-named-block-nodes' prior to the
      * migration step as qemu deactivates bitmaps after migration so the result
      * would be wrong */
@@ -1768,6 +1764,10 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     }
 
     /* the domain is now paused if a memory snapshot was requested */
+
+    if (has_manual &&
+        qemuSnapshotCreateActiveExternalDisksManual(vm, snap, VIR_ASYNC_JOB_SNAPSHOT) < 0)
+        goto cleanup;
 
     if ((ret = qemuSnapshotCreateActiveExternalDisks(vm, snap,
                                                      blockNamedNodeData, flags,
