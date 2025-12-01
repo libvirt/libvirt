@@ -1075,6 +1075,12 @@ qemuSnapshotPrepare(virDomainObj *vm,
         }
     }
 
+    if (*has_manual && (*flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("'manual' disk snapshot mode requires explicit quiescing (VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"));
+            return -1;
+    }
+
     /* Alter flags to let later users know what we learned.  */
     if (external && !active)
         *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
