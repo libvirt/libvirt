@@ -3136,7 +3136,7 @@ doCoreDump(virQEMUDriver *driver,
         if (!(dump_params = qemuMigrationParamsNew()))
             goto cleanup;
 
-        if (qemuMigrationSrcToFile(driver, vm, path, &fd, compressor,
+        if (qemuMigrationSrcToFile(vm, path, &fd, compressor,
                                    dump_params,
                                    (dump_flags & VIR_DUMP_BYPASS_CACHE),
                                    VIR_ASYNC_JOB_DUMP) < 0)

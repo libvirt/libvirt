@@ -238,15 +238,14 @@ qemuMigrationSrcIsAllowed(virDomainObj *vm,
                           unsigned int flags);
 
 int
-qemuMigrationSrcToFile(virQEMUDriver *driver,
-                       virDomainObj *vm,
+qemuMigrationSrcToFile(virDomainObj *vm,
                        const char *path,
                        int *fd,
                        virCommand *compressor,
                        qemuMigrationParams *migParams,
                        bool bypassCache,
                        virDomainAsyncJob asyncJob)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
 int
 qemuMigrationSrcCancelUnattended(virDomainObj *vm,

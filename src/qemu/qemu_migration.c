@@ -7257,8 +7257,7 @@ qemuMigrationSrcToSparseFile(virDomainObj *vm,
 
 /* Helper function called while vm is active.  */
 int
-qemuMigrationSrcToFile(virQEMUDriver *driver G_GNUC_UNUSED,
-                       virDomainObj *vm,
+qemuMigrationSrcToFile(virDomainObj *vm,
                        const char *path,
                        int *fd,
                        virCommand *compressor,
