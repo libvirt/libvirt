@@ -119,8 +119,7 @@ qemuSaveImageDecompressionStop(virCommand *cmd,
                                const char *path);
 
 int
-qemuSaveImageCreate(virQEMUDriver *driver,
-                    virDomainObj *vm,
+qemuSaveImageCreate(virDomainObj *vm,
                     const char *path,
                     virQEMUSaveData *data,
                     virCommand *compressor,

@@ -1760,7 +1760,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         if (!(snap_params = qemuMigrationParamsNew()))
             goto cleanup;
 
-        if (qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
+        if (qemuSaveImageCreate(vm, snapdef->memorysnapshotfile,
                                 data, compressor, snap_params, 0,
                                 VIR_ASYNC_JOB_SNAPSHOT) < 0)
             goto cleanup;

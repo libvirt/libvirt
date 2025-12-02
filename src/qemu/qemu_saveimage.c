@@ -475,8 +475,7 @@ qemuSaveImageCreateFd(virDomainObj *vm,
  * the caller needs to make sure that the processors are stopped and do all other
  * actions besides saving memory */
 int
-qemuSaveImageCreate(virQEMUDriver *driver,
-                    virDomainObj *vm,
+qemuSaveImageCreate(virDomainObj *vm,
                     const char *path,
                     virQEMUSaveData *data,
                     virCommand *compressor,
@@ -484,7 +483,8 @@ qemuSaveImageCreate(virQEMUDriver *driver,
                     unsigned int flags,
                     virDomainAsyncJob asyncJob)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     bool needUnlink = false;
     int ret = -1;
     int fd = -1;

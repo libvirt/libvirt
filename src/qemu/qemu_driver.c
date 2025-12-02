@@ -2682,7 +2682,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
                                                   (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE))))
         goto endjob;
 
-    ret = qemuSaveImageCreate(driver, vm, path, data, compressor,
+    ret = qemuSaveImageCreate(vm, path, data, compressor,
                               saveParams, flags, VIR_ASYNC_JOB_SAVE);
     if (ret < 0)
         goto endjob;
