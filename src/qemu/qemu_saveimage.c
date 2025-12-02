@@ -427,15 +427,15 @@ qemuSaveImageDecompressionStop(virCommand *cmd,
 
 
 static int
-qemuSaveImageCreateFd(virQEMUDriver *driver,
-                      virDomainObj *vm,
+qemuSaveImageCreateFd(virDomainObj *vm,
                       const char *path,
                       virFileWrapperFd **wrapperFd,
                       bool sparse,
                       bool *needUnlink,
                       unsigned int flags)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     int ret = -1;
     VIR_AUTOCLOSE fd = -1;
     int directFlag = 0;
@@ -458,7 +458,7 @@ qemuSaveImageCreateFd(virQEMUDriver *driver,
     if (fd < 0)
         return -1;
 
-    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, fd) < 0)
         return -1;
 
     if (!sparse && !(*wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
@@ -492,7 +492,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
     bool sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
 
     /* Obtain the file handle.  */
-    fd = qemuSaveImageCreateFd(driver, vm, path, &wrapperFd, sparse, &needUnlink, flags);
+    fd = qemuSaveImageCreateFd(vm, path, &wrapperFd, sparse, &needUnlink, flags);
 
     if (fd < 0)
         goto cleanup;
