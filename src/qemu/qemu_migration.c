@@ -7207,14 +7207,14 @@ qemuMigrationSrcToLegacyFile(virDomainObj *vm,
 
 
 static int
-qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
-                             virDomainObj *vm,
+qemuMigrationSrcToSparseFile(virDomainObj *vm,
                              const char *path,
                              int *fd,
                              bool bypassCache,
                              virDomainAsyncJob asyncJob)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     VIR_AUTOCLOSE directFd = -1;
     int directFlag = 0;
     bool needUnlink = false;
@@ -7236,12 +7236,14 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
         if (directFd < 0)
             return -1;
 
-        if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, directFd) < 0)
+        if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def,
+                                        directFd) < 0)
             return -1;
 
     }
 
-    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, *fd) < 0)
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def,
+                                    *fd) < 0)
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
@@ -7255,7 +7257,8 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
 
 /* Helper function called while vm is active.  */
 int
-qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
+qemuMigrationSrcToFile(virQEMUDriver *driver G_GNUC_UNUSED,
+                       virDomainObj *vm,
                        const char *path,
                        int *fd,
                        virCommand *compressor,
@@ -7294,7 +7297,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     if (migParams &&
         qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
-        rc = qemuMigrationSrcToSparseFile(driver, vm, path, fd, bypassCache, asyncJob);
+        rc = qemuMigrationSrcToSparseFile(vm, path, fd, bypassCache, asyncJob);
     else
         rc = qemuMigrationSrcToLegacyFile(vm, *fd, compressor, asyncJob);
 
