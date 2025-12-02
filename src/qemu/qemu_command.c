@@ -3497,6 +3497,12 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         if (!virNumaNodesetIsAvailable(nodemask))
             return -1;
 
+        /* Treat source nodes as strict mode, regardless of the target guest
+         * NUMA node mode. */
+        if (hasSourceNodes) {
+            mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+        }
+
         /* If mode is "restrictive", we should only use cgroups setting allowed memory
          * nodes, and skip passing the host-nodes and policy parameters to QEMU command
          * line which means we will use system default memory policy. */

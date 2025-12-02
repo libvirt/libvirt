@@ -34,7 +34,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"pcie-root-port","port":10,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x2"}' \
 -device '{"driver":"qemu-xhci","id":"usb","bus":"pci.1","addr":"0x0"}' \
 -object '{"qom-type":"thread-context","id":"tc-memdimm0","node-affinity":[0]}' \
--object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":1073741824,"host-nodes":[0],"policy":"preferred","prealloc-context":"tc-memdimm0"}' \
+-object '{"qom-type":"memory-backend-file","id":"memdimm0","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1","prealloc":true,"size":1073741824,"host-nodes":[0],"policy":"bind","prealloc-context":"tc-memdimm0"}' \
 -device '{"driver":"pc-dimm","node":0,"memdev":"memdimm0","id":"dimm0","slot":0}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global ICH9-LPC.noreboot=off \
