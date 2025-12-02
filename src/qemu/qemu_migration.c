@@ -7145,8 +7145,7 @@ qemuMigrationProcessUnattended(virQEMUDriver *driver,
 
 
 static int
-qemuMigrationSrcToLegacyFile(virQEMUDriver *driver,
-                             virDomainObj *vm,
+qemuMigrationSrcToLegacyFile(virDomainObj *vm,
                              int fd,
                              virCommand *compressor,
                              virDomainAsyncJob asyncJob)
@@ -7163,7 +7162,7 @@ qemuMigrationSrcToLegacyFile(virQEMUDriver *driver,
      * doesn't have to open() the file, so while we still have to
      * grant SELinux access, we can do it on fd and avoid cleanup
      * later, as well as skip futzing with cgroup.  */
-    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def,
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def,
                                     compressor ? pipeFD[1] : fd) < 0)
         goto cleanup;
 
@@ -7297,7 +7296,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
         rc = qemuMigrationSrcToSparseFile(driver, vm, path, fd, bypassCache, asyncJob);
     else
-        rc = qemuMigrationSrcToLegacyFile(driver, vm, *fd, compressor, asyncJob);
+        rc = qemuMigrationSrcToLegacyFile(vm, *fd, compressor, asyncJob);
 
     if (rc < 0)
         goto cleanup;
