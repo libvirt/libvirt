@@ -2962,6 +2962,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("memory-hotplug-nvdimm-readonly");
     DO_TEST_CAPS_ARCH_LATEST("memory-hotplug-nvdimm-ppc64", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE("memory-hotplug-nvdimm-ppc64", "ppc64");
+    DO_TEST_CAPS_LATEST("memory-hotplug-numa-preferred");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-pmem");
     DO_TEST_CAPS_LATEST("memory-hotplug-virtio-mem");
     DO_TEST_CAPS_LATEST("memory-hotplug-multiple");
