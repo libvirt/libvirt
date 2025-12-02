@@ -120,8 +120,7 @@ unsigned long long
 qemuDomainGetUnplugTimeout(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
 
 int
-qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
-                             virDomainObj *vm,
+qemuHotplugAttachDBusVMState(virDomainObj *vm,
                              virDomainAsyncJob asyncJob);
 
 int

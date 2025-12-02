@@ -4605,15 +4605,14 @@ qemuMigrationSrcContinue(virDomainObj *vm,
 
 
 static int
-qemuMigrationSetDBusVMState(virQEMUDriver *driver,
-                            virDomainObj *vm)
+qemuMigrationSetDBusVMState(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
     if (priv->dbusVMStateIds) {
         int rv;
 
-        if (qemuHotplugAttachDBusVMState(driver, vm, VIR_ASYNC_JOB_NONE) < 0)
+        if (qemuHotplugAttachDBusVMState(vm, VIR_ASYNC_JOB_NONE) < 0)
             return -1;
 
         if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_NONE) < 0)
@@ -5100,7 +5099,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         }
     }
 
-    if (qemuMigrationSetDBusVMState(driver, vm) < 0)
+    if (qemuMigrationSetDBusVMState(vm) < 0)
         goto error;
 
     /* Before EnterMonitor, since already qemuProcessStopCPUs does that */
@@ -7271,7 +7270,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
     unsigned long saveMigBandwidth = priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
 
-    if (qemuMigrationSetDBusVMState(driver, vm) < 0)
+    if (qemuMigrationSetDBusVMState(vm) < 0)
         return -1;
 
     /* Increase migration bandwidth to unlimited since target is a file.

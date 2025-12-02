@@ -330,7 +330,6 @@ qemuHotplugWaitForTrayEject(virDomainObj *vm,
 
 /**
  * qemuHotplugAttachDBusVMState:
- * @driver: QEMU driver object
  * @vm: domain object
  * @asyncJob: asynchronous job identifier
  *
@@ -339,8 +338,7 @@ qemuHotplugWaitForTrayEject(virDomainObj *vm,
  * Returns: 0 on success, -1 on error.
  */
 int
-qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
-                             virDomainObj *vm,
+qemuHotplugAttachDBusVMState(virDomainObj *vm,
                              virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -355,7 +353,7 @@ qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
         return 0;
     }
 
-    if (!(props = qemuBuildDBusVMStateInfoProps(driver, vm)))
+    if (!(props = qemuBuildDBusVMStateInfoProps(priv->driver, vm)))
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
