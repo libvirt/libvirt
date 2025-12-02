@@ -7192,7 +7192,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     if (qemuAppendDomainFeaturesMachineParam(&buf, def, qemuCaps) < 0)
         return -1;
 
-    if (def->niommus == 1) {
+    if (def->iommus && def->iommus[0]->pci_bus < 0) {
         switch (def->iommus[0]->model) {
         case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
             virBufferAddLit(&buf, ",iommu=smmuv3");

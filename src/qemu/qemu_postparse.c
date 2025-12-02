@@ -1559,7 +1559,7 @@ qemuDomainDefEnableDefaultFeatures(virDomainDef *def,
      * domain already has IOMMU without inremap. This will be fixed in
      * qemuDomainIOMMUDefPostParse() but there domain definition can't be
      * modified so change it now. */
-    if (def->iommus && def->niommus == 1 &&
+    if (def->iommus && def->iommus[0]->pci_bus < 0 &&
         (def->iommus[0]->intremap == VIR_TRISTATE_SWITCH_ON ||
          qemuDomainNeedsIOMMUWithEIM(def)) &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_NONE) {
