@@ -95,9 +95,9 @@ qemuDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
 
 
 void
-qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
-                                virDomainObj *vm)
+qemuDomainEventEmitJobCompleted(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     virObjectEvent *event;
     virTypedParameterPtr params = NULL;
     int nparams = 0;
@@ -113,7 +113,7 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
     }
 
     event = virDomainEventJobCompletedNewFromObj(vm, params, nparams);
-    virObjectEventStateQueue(driver->domainEventState, event);
+    virObjectEventStateQueue(priv->driver->domainEventState, event);
 }
 
 

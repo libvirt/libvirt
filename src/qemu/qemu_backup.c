@@ -619,7 +619,7 @@ qemuBackupJobTerminate(virDomainObj *vm,
         vm->job->completed->status = jobstatus;
         vm->job->completed->errmsg = g_strdup(priv->backup->errmsg);
 
-        qemuDomainEventEmitJobCompleted(priv->driver, vm);
+        qemuDomainEventEmitJobCompleted(vm);
     }
 
     g_clear_pointer(&priv->backup, virDomainBackupDefFree);

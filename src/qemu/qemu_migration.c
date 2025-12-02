@@ -4125,7 +4125,7 @@ qemuMigrationSrcComplete(virQEMUDriver *driver,
                                               VIR_DOMAIN_EVENT_STOPPED,
                                               VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     virObjectEventStateQueue(driver->domainEventState, event);
-    qemuDomainEventEmitJobCompleted(driver, vm);
+    qemuDomainEventEmitJobCompleted(vm);
     priv->preMigrationMemlock = 0;
 }
 
@@ -7316,7 +7316,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
     if (compressor && virCommandWait(compressor, NULL) < 0)
         goto cleanup;
 
-    qemuDomainEventEmitJobCompleted(driver, vm);
+    qemuDomainEventEmitJobCompleted(vm);
     ret = 0;
 
  cleanup:

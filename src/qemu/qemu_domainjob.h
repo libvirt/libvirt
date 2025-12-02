@@ -66,8 +66,7 @@ const char *qemuDomainAsyncJobPhaseToString(virDomainAsyncJob job,
 int qemuDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
                                       const char *phase);
 
-void qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
-                                     virDomainObj *vm);
+void qemuDomainEventEmitJobCompleted(virDomainObj *vm);
 
 void qemuDomainObjAbortAsyncJob(virDomainObj *obj);
 void qemuDomainObjSetJobPhase(virDomainObj *obj,
