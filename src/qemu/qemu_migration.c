@@ -7325,11 +7325,13 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
     /* Remove fdset passed to qemu and restore max migration bandwidth */
     if (qemuDomainObjIsActive(vm)) {
         if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
-            qemuFDPass *fdPass =
-                qemuFDPassNewFromMonitor("libvirt-outgoing-migrate", priv->mon);
+            g_autoptr(qemuFDPass) fdPass = NULL;
+
+            fdPass = qemuFDPassNewFromMonitor("libvirt-outgoing-migrate", priv->mon);
 
             if (fdPass)
                 qemuFDPassTransferMonitorRollback(fdPass, priv->mon);
+
             qemuDomainObjExitMonitor(vm);
         }
 
