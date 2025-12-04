@@ -79,7 +79,7 @@ virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
                    qemuDomainSaveCookie *cookieObj,
                    bool running,
-                   int format,
+                   virQEMUSaveFormat format,
                    virDomainXMLOption *xmlopt)
 {
     virQEMUSaveData *data = NULL;
@@ -551,7 +551,7 @@ qemuSaveImageCreate(virQEMUDriver *driver,
  * Returns -1 on failure, 0 on success.
  */
 int
-qemuSaveImageGetCompressionProgram(int format,
+qemuSaveImageGetCompressionProgram(virQEMUSaveFormat format,
                                    virCommand **compressor,
                                    const char *styleFormat)
 {

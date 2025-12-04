@@ -2583,7 +2583,7 @@ static int
 qemuDomainSaveInternal(virQEMUDriver *driver,
                        virDomainObj *vm,
                        const char *path,
-                       int format,
+                       virQEMUSaveFormat format,
                        virCommand *compressor,
                        const char *xmlin,
                        virTypedParameterPtr params,
@@ -2823,7 +2823,7 @@ qemuDomainSaveParams(virDomainPtr dom,
     const char *to = NULL;
     const char *dxml = NULL;
     const char *formatstr = NULL;
-    int format = cfg->saveImageFormat;
+    virQEMUSaveFormat format = cfg->saveImageFormat;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -2863,10 +2863,16 @@ qemuDomainSaveParams(virDomainPtr dom,
         return qemuDomainManagedSaveHelper(driver, vm, dxml, flags);
     }
 
-    if (formatstr && (format = qemuSaveFormatTypeFromString(formatstr)) < 0) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Invalid image_format '%1$s'"), formatstr);
-        goto cleanup;
+    if (formatstr) {
+        int formatVal;
+
+        if ((formatVal = qemuSaveFormatTypeFromString(formatstr)) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Invalid image_format '%1$s'"), formatstr);
+            goto cleanup;
+        }
+
+        format = formatVal;
     }
 
     if (qemuSaveImageGetCompressionProgram(format, &compressor, "save") < 0)

@@ -114,7 +114,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
-qemuSaveImageGetCompressionProgram(int format,
+qemuSaveImageGetCompressionProgram(virQEMUSaveFormat format,
                                    virCommand **compressor,
                                    const char *styleFormat)
     ATTRIBUTE_NONNULL(2);
@@ -153,7 +153,7 @@ virQEMUSaveData *
 virQEMUSaveDataNew(char *domXML,
                    qemuDomainSaveCookie *cookieObj,
                    bool running,
-                   int format,
+                   virQEMUSaveFormat format,
                    virDomainXMLOption *xmlopt);
 
 void
