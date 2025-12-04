@@ -92,7 +92,7 @@ qemuMigrationParams *
 qemuMigrationParamsForSave(virTypedParameterPtr params,
                            int nparams,
                            bool sparse,
-                           unsigned int flags);
+                           bool bypassCache);
 
 int
 qemuMigrationParamsDump(qemuMigrationParams *migParams,

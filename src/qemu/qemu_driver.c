@@ -2679,7 +2679,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
 
     if (!(saveParams = qemuMigrationParamsForSave(params, nparams,
                                                   format == QEMU_SAVE_FORMAT_SPARSE,
-                                                  flags)))
+                                                  (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE))))
         goto endjob;
 
     ret = qemuSaveImageCreate(driver, vm, path, data, compressor,
@@ -5798,7 +5798,8 @@ qemuDomainRestoreInternal(virConnectPtr conn,
         goto cleanup;
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
-    if (!(restoreParams = qemuMigrationParamsForSave(params, nparams, sparse, flags)))
+    if (!(restoreParams = qemuMigrationParamsForSave(params, nparams, sparse,
+                                                     (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE))))
         goto cleanup;
 
     fd = qemuSaveImageOpen(driver, path,
@@ -6130,7 +6131,7 @@ qemuDomainObjRestore(virConnectPtr conn,
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
     if (!(restoreParams = qemuMigrationParamsForSave(NULL, 0, sparse,
-                                                     bypass_cache ? VIR_DOMAIN_SAVE_BYPASS_CACHE : 0)))
+                                                     bypass_cache)))
         return -1;
 
     fd = qemuSaveImageOpen(driver, path, bypass_cache, sparse, &wrapperFd, false);

@@ -800,7 +800,7 @@ qemuMigrationParams *
 qemuMigrationParamsForSave(virTypedParameterPtr params,
                            int nparams,
                            bool sparse,
-                           unsigned int flags)
+                           bool bypassCache)
 {
     g_autoptr(qemuMigrationParams) saveParams = NULL;
     int nchannels = 0;
@@ -837,7 +837,7 @@ qemuMigrationParamsForSave(virTypedParameterPtr params,
         saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].value.i = nchannels;
         saveParams->params[QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS].set = true;
 
-        if (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) {
+        if (bypassCache) {
             saveParams->params[QEMU_MIGRATION_PARAM_DIRECT_IO].value.b = true;
             saveParams->params[QEMU_MIGRATION_PARAM_DIRECT_IO].set = true;
         }
