@@ -39,13 +39,13 @@ VIR_LOG_INIT("qemu.qemu_saveimage");
 
 VIR_ENUM_IMPL(qemuSaveFormat,
               QEMU_SAVE_FORMAT_LAST,
-              "raw",
-              "gzip",
-              "bzip2",
-              "xz",
-              "lzop",
-              "zstd",
-              "sparse",
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_GZIP,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_BZIP2,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_XZ,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_LZOP,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_ZSTD,
+              VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_SPARSE,
 );
 
 static void

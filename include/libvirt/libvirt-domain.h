@@ -1702,13 +1702,94 @@ int                     virDomainRestoreParams  (virConnectPtr conn,
  * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT:
  *
  * an optional parameter used to specify the format of the save image.
- * Valid formats are raw, zstd, lzop, gzip, bzip2, and xz. If not
- * specified, the save_image_format setting in qemu.conf is used, which
- * defaults to raw. As VIR_TYPED_PARAM_STRING.
+ * Valid format strings are represented by constants:
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_GZIP
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_BZIP2
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_XZ
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_LZOP
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_ZSTD
+ *  - VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_SPARSE
+ *
+ * In the qemu driver, if not specified, the save_image_format setting in
+ * qemu.conf is used, which defaults to VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW.
+ *
+ * As VIR_TYPED_PARAM_STRING.
  *
  * Since: 11.2.0
  */
 # define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT     "image_format"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW:
+ *
+ * raw uncompressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW "raw"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_GZIP:
+ *
+ * gzip compressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_GZIP "gzip"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_BZIP2:
+ *
+ * bzip2 compressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_BZIP2 "bzip2"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_XZ:
+ *
+ * xz compressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_XZ "xz"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_LZOP:
+ *
+ * lzop compressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_LZOP "lzop"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_ZSTD:
+ *
+ * zstd compressed format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_ZSTD "zstd"
+
+
+/**
+ * VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_SPARSE:
+ *
+ * uncompressed sparse file format for the save image
+ *
+ * Since: 12.0.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_SPARSE "sparse"
+
 
 /*
  * VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS:
