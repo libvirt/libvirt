@@ -82,7 +82,7 @@ virQEMUSaveDataNew(char *domXML,
                    virQEMUSaveFormat format,
                    virDomainXMLOption *xmlopt)
 {
-    virQEMUSaveData *data = NULL;
+    g_autoptr(virQEMUSaveData) data = NULL;
     virQEMUSaveHeader *header;
 
     data = g_new0(virQEMUSaveData, 1);
@@ -90,7 +90,7 @@ virQEMUSaveDataNew(char *domXML,
     if (cookieObj &&
         !(data->cookie = virSaveCookieFormat((virObject *) cookieObj,
                                              virDomainXMLOptionGetSaveCookie(xmlopt))))
-        goto error;
+        return NULL;
 
     header = &data->header;
     memcpy(header->magic, QEMU_SAVE_PARTIAL, sizeof(header->magic));
@@ -99,11 +99,8 @@ virQEMUSaveDataNew(char *domXML,
     header->format = format;
 
     data->xml = domXML;
-    return data;
 
- error:
-    virQEMUSaveDataFree(data);
-    return NULL;
+    return g_steal_pointer(&data);
 }
 
 
