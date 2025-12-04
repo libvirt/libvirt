@@ -244,7 +244,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver,
                        int *fd,
                        virCommand *compressor,
                        qemuMigrationParams *migParams,
-                       unsigned int flags,
+                       bool bypassCache,
                        virDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 

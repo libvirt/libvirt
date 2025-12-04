@@ -7210,7 +7210,7 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
                              virDomainObj *vm,
                              const char *path,
                              int *fd,
-                             unsigned int flags,
+                             bool bypassCache,
                              virDomainAsyncJob asyncJob)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -7222,7 +7222,7 @@ qemuMigrationSrcToSparseFile(virQEMUDriver *driver,
     /* When using directio with mapped-ram, qemu needs two fds. One with
      * O_DIRECT set writing the memory, and another without it set for
      * writing small bits of unaligned state. */
-    if ((flags & VIR_DOMAIN_SAVE_BYPASS_CACHE)) {
+    if (bypassCache) {
         directFlag = virFileDirectFdFlag();
         if (directFlag < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -7259,7 +7259,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
                        int *fd,
                        virCommand *compressor,
                        qemuMigrationParams *migParams,
-                       unsigned int flags,
+                       bool bypassCache,
                        virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -7293,7 +7293,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     if (migParams &&
         qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
-        rc = qemuMigrationSrcToSparseFile(driver, vm, path, fd, flags, asyncJob);
+        rc = qemuMigrationSrcToSparseFile(driver, vm, path, fd, bypassCache, asyncJob);
     else
         rc = qemuMigrationSrcToLegacyFile(driver, vm, *fd, compressor, asyncJob);
 

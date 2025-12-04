@@ -501,7 +501,9 @@ qemuSaveImageCreate(virQEMUDriver *driver,
         goto cleanup;
 
     /* Perform the migration */
-    if (qemuMigrationSrcToFile(driver, vm, path, &fd, compressor, saveParams, flags, asyncJob) < 0)
+    if (qemuMigrationSrcToFile(driver, vm, path, &fd, compressor, saveParams,
+                               (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE),
+                               asyncJob) < 0)
         goto cleanup;
 
     /* Touch up file header to mark image complete. */
