@@ -4528,6 +4528,26 @@ static const vshCmdInfo info_save = {
     .desc = N_("Save the RAM state of a running domain."),
 };
 
+
+static char **
+virshCompleteSaveImageFormat(vshControl *ctl G_GNUC_UNUSED,
+                             const vshCmd *cmd G_GNUC_UNUSED,
+                             unsigned int completerflags G_GNUC_UNUSED)
+{
+    const char *formats[] = {
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_RAW,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_GZIP,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_BZIP2,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_XZ,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_LZOP,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_ZSTD,
+        VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT_SPARSE,
+        NULL
+    };
+
+    return g_strdupv((char **) formats);
+}
+
 static const vshCmdOptDef opts_save[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "file",
@@ -4546,6 +4566,7 @@ static const vshCmdOptDef opts_save[] = {
     },
     {.name = "image-format",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteSaveImageFormat,
      .help = N_("format of the save image file")
     },
     {.name = "xml",
