@@ -37,6 +37,7 @@
 #include "locking/lock_manager.h"
 #include "qemu_capabilities.h"
 #include "qemu_nbdkit.h"
+#include "qemu_saveimage_format.h"
 #include "virclosecallbacks.h"
 #include "virhostdev.h"
 #include "virfile.h"
@@ -216,9 +217,9 @@ struct _virQEMUDriverConfig {
     bool securityDefaultConfined;
     bool securityRequireConfined;
 
-    int saveImageFormat;
-    int dumpImageFormat;
-    int snapshotImageFormat;
+    virQEMUSaveFormat saveImageFormat;
+    virQEMUSaveFormat dumpImageFormat;
+    virQEMUSaveFormat snapshotImageFormat;
 
     char *autoDumpPath;
     bool autoDumpBypassCache;

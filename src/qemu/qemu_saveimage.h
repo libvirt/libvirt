@@ -21,6 +21,7 @@
 #include "virconftypes.h"
 
 #include "qemu_domain.h"
+#include "qemu_saveimage_format.h"
 
 /* It would be nice to replace 'Qemud' with 'Qemu' but
  * this magic string is ABI, so it can't be changed
@@ -31,24 +32,7 @@
 
 G_STATIC_ASSERT(sizeof(QEMU_SAVE_MAGIC) == sizeof(QEMU_SAVE_PARTIAL));
 
-typedef enum {
-    QEMU_SAVE_FORMAT_RAW = 0,
-    QEMU_SAVE_FORMAT_GZIP = 1,
-    QEMU_SAVE_FORMAT_BZIP2 = 2,
-    /*
-     * Deprecated by xz and never used as part of a release
-     * QEMU_SAVE_FORMAT_LZMA
-     */
-    QEMU_SAVE_FORMAT_XZ = 3,
-    QEMU_SAVE_FORMAT_LZOP = 4,
-    QEMU_SAVE_FORMAT_ZSTD = 5,
-    QEMU_SAVE_FORMAT_SPARSE = 6,
-    /* Note: add new members only at the end.
-       These values are used in the on-disk format.
-       Do not change or re-use numbers. */
-
-    QEMU_SAVE_FORMAT_LAST
-} virQEMUSaveFormat;
+/* enum virQEMUSaveFormat is declared in qemu_saveimage_format.h */
 VIR_ENUM_DECL(qemuSaveFormat);
 
 typedef struct _virQEMUSaveHeader virQEMUSaveHeader;

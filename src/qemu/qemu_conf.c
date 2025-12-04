@@ -686,29 +686,47 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
 
     if (virConfGetValueString(conf, "save_image_format", &savestr) < 0)
         return -1;
-    if (savestr && (cfg->saveImageFormat = qemuSaveFormatTypeFromString(savestr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid save_image_format '%1$s'"),
-                       savestr);
-        return -1;
+    if (savestr) {
+        int formatVal;
+
+        if ((formatVal = qemuSaveFormatTypeFromString(savestr)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid save_image_format '%1$s'"),
+                           savestr);
+            return -1;
+        }
+
+        cfg->saveImageFormat = formatVal;
     }
 
     if (virConfGetValueString(conf, "dump_image_format", &dumpstr) < 0)
         return -1;
-    if (dumpstr && (cfg->dumpImageFormat = qemuSaveFormatTypeFromString(dumpstr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid dump_image_format '%1$s'"),
-                       dumpstr);
-        return -1;
+    if (dumpstr) {
+        int formatVal;
+
+        if ((formatVal = qemuSaveFormatTypeFromString(dumpstr)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid dump_image_format '%1$s'"),
+                           dumpstr);
+            return -1;
+        }
+
+        cfg->dumpImageFormat = formatVal;
     }
 
     if (virConfGetValueString(conf, "snapshot_image_format", &snapstr) < 0)
         return -1;
-    if (snapstr && (cfg->snapshotImageFormat = qemuSaveFormatTypeFromString(snapstr)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid snapshot_image_format '%1$s'"),
-                       snapstr);
-        return -1;
+    if (snapstr) {
+        int formatVal;
+
+        if ((formatVal = qemuSaveFormatTypeFromString(snapstr)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Invalid snapshot_image_format '%1$s'"),
+                           snapstr);
+            return -1;
+        }
+
+        cfg->snapshotImageFormat = formatVal;
     }
 
     if (virConfGetValueString(conf, "auto_dump_path", &cfg->autoDumpPath) < 0)
