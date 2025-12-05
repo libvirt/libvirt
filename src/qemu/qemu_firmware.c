@@ -1653,6 +1653,7 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
+    virFirmware *theone = NULL;
     size_t i;
 
     if (!loader)
@@ -1681,6 +1682,13 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
         return 1;
     }
 
+    if (loader->nvramTemplateFormat &&
+        loader->nvramTemplateFormat != VIR_STORAGE_FILE_RAW) {
+        VIR_DEBUG("Ignoring legacy entries for loader with nvram template format '%s'",
+                  virStorageFileFormatTypeToString(loader->nvramTemplateFormat));
+        return 1;
+    }
+
     for (i = 0; i < cfg->nfirmwares; i++) {
         virFirmware *fw = cfg->firmwares[i];
 
@@ -1690,47 +1698,34 @@ qemuFirmwareFillDomainLegacy(virQEMUDriver *driver,
             continue;
         }
 
-        loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
-        loader->readonly = VIR_TRISTATE_BOOL_YES;
-        loader->format = VIR_STORAGE_FILE_RAW;
-
-        /* Only use the default template path if one hasn't been
-         * provided by the user. Assume that the template is in 'raw' format.
-         *
-         * In addition to fully-custom templates, which are a valid
-         * use case, we could simply be in a situation where
-         * qemu.conf contains
-         *
-         *   nvram = [
-         *     "/path/to/OVMF_CODE.secboot.fd:/path/to/OVMF_VARS.fd",
-         *     "/path/to/OVMF_CODE.secboot.fd:/path/to/OVMF_VARS.secboot.fd"
-         *   ]
-         *
-         * and the domain has been configured as
-         *
-         *   <os>
-         *     <loader readonly='yes' type='pflash'>/path/to/OVMF_CODE.secboot.fd</loader>
-         *     <nvram template='/path/to/OVMF/OVMF_VARS.secboot.fd'>
-         *   </os>
-         *
-         * In this case, the global default is to have Secure Boot
-         * disabled, but the domain configuration explicitly enables
-         * it, and we shouldn't overrule this choice */
-        if (!loader->nvramTemplate) {
-            loader->nvramTemplate = g_strdup(cfg->firmwares[i]->nvram);
-            loader->nvramTemplateFormat = VIR_STORAGE_FILE_RAW;
+        if (loader->nvramTemplate &&
+            !virFileComparePaths(fw->nvram, loader->nvramTemplate)) {
+            VIR_DEBUG("Not matching nvram template path '%s' for user provided path '%s'",
+                      fw->nvram, loader->nvramTemplate);
+            continue;
         }
 
-        if (loader->nvramTemplateFormat == VIR_STORAGE_FILE_NONE)
-            loader->nvramTemplateFormat = VIR_STORAGE_FILE_RAW;
-
-        VIR_DEBUG("decided on firmware '%s' template '%s'",
-                  loader->path, NULLSTR(loader->nvramTemplate));
-
-        return 0;
+        theone = fw;
+        break;
     }
 
-    return 1;
+    if (!theone)
+        return 1;
+
+    loader->type = VIR_DOMAIN_LOADER_TYPE_PFLASH;
+    loader->readonly = VIR_TRISTATE_BOOL_YES;
+
+    loader->format = VIR_STORAGE_FILE_RAW;
+    loader->nvramTemplateFormat = VIR_STORAGE_FILE_RAW;
+
+    if (!loader->nvramTemplate) {
+        loader->nvramTemplate = g_strdup(theone->nvram);
+    }
+
+    VIR_DEBUG("decided on firmware '%s' template '%s'",
+              loader->path, loader->nvramTemplate);
+
+    return 0;
 }
 
 
