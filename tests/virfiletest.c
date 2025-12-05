@@ -329,6 +329,55 @@ testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
 }
 
 
+static const char *shared_filesystems[] = {
+    "/run/user/501/gvfs",
+    "/nfs",
+    "/gluster",
+    "/ceph/multi",
+    "/gpfs/data/blaf",
+    "/quobyte",
+    NULL,
+};
+
+static int
+testFileIsSharedFSOverride(const void *opaque G_GNUC_UNUSED)
+{
+#ifndef __linux__
+    return EXIT_AM_SKIP;
+#else
+    const struct testFileIsSharedFSType *data = opaque;
+    g_autofree char *mtabFile = NULL;
+    bool actual;
+    int ret = -1;
+
+    /* mtab is used by mocked realpath to decide whether a given path exists */
+    mtabFile = g_strdup_printf(abs_srcdir "/virfiledata/%s", data->mtabFile);
+
+    if (!g_setenv("LIBVIRT_MTAB", mtabFile, true)) {
+        fprintf(stderr, "Unable to set env variable\n");
+        goto cleanup;
+    }
+
+    actual = virFileIsSharedFSOverride(data->filename,
+                                       (char * const *) shared_filesystems);
+
+    if (actual != data->expected) {
+        fprintf(stderr, "FS of '%s' is %s. Expected: %s\n",
+                data->filename,
+                actual ? "shared" : "not shared",
+                data->expected ? "shared" : "not shared");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    g_unsetenv("LIBVIRT_MTAB");
+    return ret;
+#endif
+}
+
+
 static int
 mymain(void)
 {
@@ -438,6 +487,26 @@ mymain(void)
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/ceph/multi/file", true);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/gpfs/data", true);
     DO_TEST_FILE_IS_SHARED_FS_TYPE("mounts3.txt", "/quobyte", true);
+
+#define DO_TEST_FILE_IS_SHARED_FS_OVERRIDE(mtab, file, exp) \
+    do { \
+        struct testFileIsSharedFSType data = { \
+            .mtabFile = mtab, .filename = file, .expected = exp \
+        }; \
+        if (virTestRun(virTestCounterNext(), testFileIsSharedFSOverride, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    virTestCounterReset("testFileIsSharedFSOverride ");
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts2.txt", "/boot/vmlinuz", false);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts2.txt", "/run/user/501/gvfs/some/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/nfs/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/gluster/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/some/symlink/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/ceph/file", false);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/ceph/multi/file", true);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/gpfs/data", false);
+    DO_TEST_FILE_IS_SHARED_FS_OVERRIDE("mounts3.txt", "/quobyte", true);
 
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
