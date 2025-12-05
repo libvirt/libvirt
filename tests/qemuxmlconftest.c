@@ -1534,6 +1534,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-legacy-paths");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-modern-paths");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-implicit");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-rw-nvram");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-secure");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-loader-no-path");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-loader-path-nonstandard");
