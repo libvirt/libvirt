@@ -1765,6 +1765,20 @@ virDomainDefOSValidate(const virDomainDef *def,
         }
     }
 
+    if (loader->readonly == VIR_TRISTATE_BOOL_NO) {
+        if (loader->nvramTemplate) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("NVRAM template is not permitted when loader is read/write"));
+            return -1;
+        }
+
+        if (loader->nvram) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("NVRAM is not permitted when loader is read/write"));
+            return -1;
+        }
+    }
+
     if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
         if (loader->nvramTemplate) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
