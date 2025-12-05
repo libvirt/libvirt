@@ -630,12 +630,12 @@
 #   "/dev/infiniband/uverbs0"
 
 
-# The libvirt QEMU driver supports serveral different save image formats.
+# The libvirt QEMU driver supports several different save image formats.
 # The term "format" is used loosely to describe how the save image data is
-# represented on disk. It could be a continguous stream of guest memory blocks,
+# represented on disk. It could be a contiguous stream of guest memory blocks,
 # or a stream of compressed memory blocks.
 #
-# A continguous stream of guest memory blocks is the default format for QEMU/KVM
+# A contiguous stream of guest memory blocks is the default format for QEMU/KVM
 # guest save images and is termed "raw". The raw format can consume considerable
 # disk space when saving large memory guests. Various compression formats are
 # available for specifying a save image compressed by the named algorithm.
@@ -873,7 +873,7 @@
 
 # Determine if guest RAM is included in QEMU core dumps. By
 # default guest RAM will be excluded on Linux platforms,
-# and included on all other patforms. Setting this to '1' will
+# and included on all other platforms. Setting this to '1' will
 # force guest RAM to always be included in QEMU core dumps.
 #
 # This setting will be ignored if the guest XML has set the
@@ -1102,7 +1102,7 @@
 
 # For debugging and testing purposes it's sometimes useful to be able to disable
 # libvirt behaviour based on the capabilities of the qemu process. This option
-# allows to do so. DO _NOT_ use in production and beaware that the behaviour
+# allows to do so. DO _NOT_ use in production and be aware that the behaviour
 # may change across versions.
 #
 #capability_filters = [ "capname" ]
