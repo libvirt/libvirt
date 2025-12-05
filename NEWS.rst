@@ -217,6 +217,11 @@ v11.8.0 (2025-10-01)
     On the XML side, the existing ``<acpi>`` element has been extended with a
     ``nodeset`` attribute to specify the NUMA node affinity of a PCI device.
 
+  * qemu: Add support for hostname and FQDN configration of passt backend
+
+    The attributes ``hostname`` and ``fqdn`` for passt backend configure
+    the guest interface with hostname and FQDN.
+
 * **Improvements**
 
   * ch: Events emitting
