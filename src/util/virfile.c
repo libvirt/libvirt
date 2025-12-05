@@ -3859,6 +3859,14 @@ virFileCheckParentsCanonicalize(const char *path,
 }
 
 
+static bool
+virFileCheckParentsInOverrides(const char *path,
+                               void *opaque)
+{
+    return g_strv_contains((const char *const *) opaque, path);
+}
+
+
 /**
  * virFileIsSharedFSOverride:
  * @path: Path to check
@@ -3872,7 +3880,6 @@ virFileIsSharedFSOverride(const char *path,
                           char *const *overrides)
 {
     g_autofree char *dirpath = NULL;
-    char *p = NULL;
     int rc;
 
     if (!path || path[0] != '/' || !overrides)
@@ -3894,29 +3901,11 @@ virFileIsSharedFSOverride(const char *path,
         return false;
     }
 
-    if (g_strv_contains((const char *const *) overrides, dirpath))
-        return true;
+    if (virFileCheckParents(dirpath, NULL, virFileCheckParentsInOverrides,
+                            (void *) overrides) < 0)
+        return false;
 
-    /* Continue until we've scanned the entire path */
-    while (p != dirpath) {
-
-        /* Find the last slash */
-        if ((p = strrchr(dirpath, '/')) == NULL)
-            break;
-
-        /* Truncate the path by overwriting the slash that we've just
-         * found with a null byte. If it is the very first slash in
-         * the path, we need to handle things slightly differently */
-        if (p == dirpath)
-            *(p+1) = '\0';
-        else
-            *p = '\0';
-
-        if (g_strv_contains((const char *const *) overrides, dirpath))
-            return true;
-    }
-
-    return false;
+    return true;
 }
 
 
