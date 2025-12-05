@@ -3445,6 +3445,63 @@ virFileRemoveLastComponent(char *path)
 }
 
 
+/* Check callback for virFileCheckParents */
+typedef bool (*virFileCheckParentsCallback)(const char *dirpath,
+                                            void *opaque);
+
+/**
+ * virFileCheckParents:
+ * @path: path to check
+ * @parent: where to store the closest parent satisfying the check
+ * @check: callback called on parent paths
+ * @opaque: data for the @check callback
+ *
+ * Calls @check on the @path and its parent paths until it returns true or a
+ * root directory is reached. When @check returns true, the @parent (if
+ * non-NULL) will be set to a copy of the corresponding path. The caller is
+ * responsible for freeing it.
+ *
+ * Returns  0 on success (@parent set),
+ *         -1 on invalid input,
+ *         -2 when no path (including "/") satisfies the @check.
+ */
+static int
+virFileCheckParents(const char *path,
+                    char **parent,
+                    virFileCheckParentsCallback check,
+                    void *opaque)
+{
+    g_autofree char *dirpath = g_strdup(path);
+    char *p = NULL;
+    bool checkOK;
+
+    checkOK = check(dirpath, opaque);
+
+    while (!checkOK && p != dirpath) {
+        if (!(p = strrchr(dirpath, G_DIR_SEPARATOR))) {
+            virReportSystemError(EINVAL,
+                                 _("Invalid absolute path '%1$s'"), path);
+            return -1;
+        }
+
+        if (p == dirpath)
+            *(p + 1) = '\0';
+        else
+            *p = '\0';
+
+        checkOK = check(dirpath, opaque);
+    }
+
+    if (!checkOK)
+        return -2;
+
+    if (parent)
+        *parent = g_steal_pointer(&dirpath);
+
+    return 0;
+}
+
+
 static char *
 virFileGetExistingParent(const char *path)
 {
@@ -3599,6 +3656,14 @@ static const struct virFileSharedFsData virFileSharedFs[] = {
 };
 
 
+static bool
+virFileCheckParentsStatFS(const char *path,
+                          void *opaque)
+{
+    return statfs(path, (struct statfs *) opaque) == 0;
+}
+
+
 int
 virFileIsSharedFSType(const char *path,
                       unsigned int fstypes)
@@ -3607,11 +3672,13 @@ virFileIsSharedFSType(const char *path,
     struct statfs sb;
     long long f_type = 0;
     size_t i;
+    int rc;
 
-    if (!(dirpath = virFileGetExistingParent(path)))
+    if ((rc = virFileCheckParents(path, &dirpath,
+                                  virFileCheckParentsStatFS, &sb)) == -1)
         return -1;
 
-    if (statfs(dirpath, &sb) < 0) {
+    if (rc != 0) {
         virReportSystemError(errno,
                              _("cannot determine filesystem for '%1$s'"),
                              path);
