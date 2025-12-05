@@ -3502,33 +3502,6 @@ virFileCheckParents(const char *path,
 }
 
 
-static char *
-virFileGetExistingParent(const char *path)
-{
-    g_autofree char *dirpath = g_strdup(path);
-    char *p = NULL;
-
-    /* Try less and less of the path until we get to a directory we can access.
-     * Even if we don't have 'x' permission on any directory in the path on the
-     * NFS server (assuming it's NFS), we will be able to stat the mount point.
-     */
-    while (!virFileExists(dirpath) && p != dirpath) {
-        if (!(p = strrchr(dirpath, '/'))) {
-            virReportSystemError(EINVAL,
-                                 _("Invalid relative path '%1$s'"), path);
-            return NULL;
-        }
-
-        if (p == dirpath)
-            *(p + 1) = '\0';
-        else
-            *p = '\0';
-    }
-
-    return g_steal_pointer(&dirpath);
-}
-
-
 #ifdef __linux__
 
 # ifndef NFS_SUPER_MAGIC
@@ -3875,6 +3848,17 @@ virFileGetDefaultHugepage(virHugeTLBFS *fs,
 }
 
 
+static bool
+virFileCheckParentsCanonicalize(const char *path,
+                                void *opaque)
+{
+    char **canonical = opaque;
+
+    *canonical = virFileCanonicalizePath(path);
+    return !!*canonical;
+}
+
+
 /**
  * virFileIsSharedFSOverride:
  * @path: Path to check
@@ -3888,24 +3872,25 @@ virFileIsSharedFSOverride(const char *path,
                           char *const *overrides)
 {
     g_autofree char *dirpath = NULL;
-    g_autofree char *existing = NULL;
     char *p = NULL;
+    int rc;
 
     if (!path || path[0] != '/' || !overrides)
         return false;
 
     /* We only care about the longest existing sub-path. Further components
-     * may will later be created by libvirt will not magically become a shared
-     * filesystem. */
-    if (!(existing = virFileGetExistingParent(path)))
+     * that may later be created by libvirt will not magically become a shared
+     * filesystem. Overrides have been canonicalized ahead of time, so we need
+     * to do the same for the provided path or we'll never be able to find a
+     * match if symlinks are involved.
+     */
+    rc = virFileCheckParents(path, NULL,
+                             virFileCheckParentsCanonicalize, &dirpath);
+    if (rc == -1)
         return false;
 
-    /* Overrides have been canonicalized ahead of time, so we need to
-     * do the same for the provided path or we'll never be able to
-     * find a match if symlinks are involved */
-    if (!(dirpath = virFileCanonicalizePath(existing))) {
-        VIR_DEBUG("Cannot canonicalize parent '%s' of path '%s'",
-                  existing, path);
+    if (rc != 0) {
+        VIR_DEBUG("Cannot canonicalize path '%s'", path);
         return false;
     }
 
