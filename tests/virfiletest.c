@@ -329,6 +329,7 @@ testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
 }
 
 
+#ifdef __linux__
 static const char *shared_filesystems[] = {
     "/run/user/501/gvfs",
     "/nfs",
@@ -338,6 +339,7 @@ static const char *shared_filesystems[] = {
     "/quobyte",
     NULL,
 };
+#endif
 
 static int
 testFileIsSharedFSOverride(const void *opaque G_GNUC_UNUSED)
