@@ -779,6 +779,20 @@ virTestSetEnvPath(void)
 
 #define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
+static int
+virTestFakeEnvSubDirInit(const char *envName, const char *fakeRootName, const char *fakeSubDirName)
+{
+    g_autofree char *envVal = g_build_filename(fakeRootName, fakeSubDirName, NULL);
+
+    if (g_mkdir(envVal, 0777) < 0) {
+        fprintf(stderr, "Cannot create fake %s directory at %s", envName, envVal);
+        return -1;
+    }
+
+    g_setenv(envName, envVal, TRUE);
+    return 0;
+}
+
 char*
 virTestFakeRootDirInit(void)
 {
@@ -790,6 +804,22 @@ virTestFakeRootDirInit(void)
     }
 
     g_setenv("LIBVIRT_FAKE_ROOT_DIR", fakerootdir, TRUE);
+
+    /* the glib g_get_user_*_dir() functions use these environment variables to
+     * determine locations for various data/log/config files. Setting them here
+     * will assure that code under test that is using those directories won't pollute
+     * the system under test.
+     */
+    if (virTestFakeEnvSubDirInit("HOME", fakerootdir, "home") < 0)
+        return NULL;
+    if (virTestFakeEnvSubDirInit("XDG_RUNTIME_DIR", fakerootdir, "user-runtime-dir") < 0)
+        return NULL;
+    if (virTestFakeEnvSubDirInit("XDG_DATA_HOME", fakerootdir, "user-data-home") < 0)
+        return NULL;
+    if (virTestFakeEnvSubDirInit("XDG_CACHE_HOME", fakerootdir, "user-cache-home") < 0)
+        return NULL;
+    if (virTestFakeEnvSubDirInit("XDG_CONFIG_HOME", fakerootdir, "user-config-home") < 0)
+        return NULL;
 
     return g_steal_pointer(&fakerootdir);
 }
@@ -829,11 +859,8 @@ int virTestMain(int argc,
         preloads[npreloads] = NULL;
     }
 
-    g_setenv("HOME", "/bad-test-used-env-home", TRUE);
-    g_setenv("XDG_RUNTIME_DIR", "/bad-test-used-env-xdg-runtime-dir", TRUE);
-    g_setenv("XDG_DATA_HOME", "/bad-test-used-env-xdg-data-home", TRUE);
-    g_setenv("XDG_CACHE_HOME", "/bad-test-used-env-xdg-cache-home", TRUE);
-    g_setenv("XDG_CONFIG_HOME", "/bad-test-used-env-xdg-config-home", TRUE);
+    if (!(fakerootdir = virTestFakeRootDirInit()))
+        return EXIT_FAILURE;
 
     va_start(ap, func);
     while ((lib = va_arg(ap, const char *))) {
@@ -906,9 +933,6 @@ int virTestMain(int argc,
     }
 
     failedTests = virBitmapNew(1);
-
-    if (!(fakerootdir = virTestFakeRootDirInit()))
-        return EXIT_FAILURE;
 
     ret = (func)();
 
