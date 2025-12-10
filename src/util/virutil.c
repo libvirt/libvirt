@@ -588,41 +588,62 @@ virGetHostnameQuiet(void)
 }
 
 
+
+#ifdef WIN32
+
+
 char *
 virGetUserHomeDirectory(void)
 {
     return g_strdup(g_get_home_dir());
 }
 
-
 char *virGetUserConfigDirectory(void)
 {
-#ifdef WIN32
     return g_strdup(g_get_user_config_dir());
-#else
-    return g_build_filename(g_get_user_config_dir(), "libvirt", NULL);
-#endif
 }
 
 
 char *virGetUserCacheDirectory(void)
 {
-#ifdef WIN32
     return g_strdup(g_get_user_cache_dir());
-#else
-    return g_build_filename(g_get_user_cache_dir(), "libvirt", NULL);
-#endif
 }
 
 
 char *virGetUserRuntimeDirectory(void)
 {
-#ifdef WIN32
     return g_strdup(g_get_user_runtime_dir());
-#else
-    return g_build_filename(g_get_user_runtime_dir(), "libvirt", NULL);
-#endif
 }
+
+
+#else /* !WIN32 */
+
+
+char *
+virGetUserHomeDirectory(void)
+{
+    return g_strdup(g_get_home_dir());
+}
+
+char *virGetUserConfigDirectory(void)
+{
+    return g_build_filename(g_get_user_config_dir(), "libvirt", NULL);
+}
+
+
+char *virGetUserCacheDirectory(void)
+{
+    return g_build_filename(g_get_user_cache_dir(), "libvirt", NULL);
+}
+
+
+char *virGetUserRuntimeDirectory(void)
+{
+    return g_build_filename(g_get_user_runtime_dir(), "libvirt", NULL);
+}
+
+
+#endif /* !WIN32 */
 
 
 #ifdef WITH_GETPWUID_R
