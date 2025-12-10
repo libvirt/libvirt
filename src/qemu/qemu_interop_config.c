@@ -105,7 +105,7 @@ qemuInteropFetchConfigs(const char *name,
         xdgConfig = g_strdup(getenv("XDG_CONFIG_HOME"));
 
         if (!xdgConfig) {
-            g_autofree char *home = virGetUserDirectory();
+            g_autofree char *home = virGetUserHomeDirectory();
 
             xdgConfig = g_strdup_printf("%s/.config", home);
         }

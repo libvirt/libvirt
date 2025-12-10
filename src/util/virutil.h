@@ -95,8 +95,8 @@ static inline int pthread_sigmask(int how,
 char *virGetHostname(void) ATTRIBUTE_MOCKABLE;
 char *virGetHostnameQuiet(void);
 
-char *virGetUserDirectory(void);
-char *virGetUserDirectoryByUID(uid_t uid);
+char *virGetUserHomeDirectory(void);
+char *virGetUserHomeDirectoryByUID(uid_t uid);
 char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void) ATTRIBUTE_MOCKABLE;

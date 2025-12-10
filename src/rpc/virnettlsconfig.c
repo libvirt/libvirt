@@ -36,7 +36,7 @@ VIR_LOG_INIT("rpc.nettlsconfig");
 
 char *virNetTLSConfigUserPKIBaseDir(void)
 {
-    g_autofree char *userdir = virGetUserDirectory();
+    g_autofree char *userdir = virGetUserHomeDirectory();
 
     return g_strdup_printf("%s/.pki/libvirt", userdir);
 }

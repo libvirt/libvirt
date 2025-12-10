@@ -253,7 +253,7 @@ main(int argc, char **argv)
     if (!name)
         goto cleanup;
 
-    homedir = virGetUserDirectoryByUID(uid);
+    homedir = virGetUserHomeDirectoryByUID(uid);
     if (!homedir)
         goto cleanup;
 

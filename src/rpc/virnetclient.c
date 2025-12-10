@@ -539,7 +539,7 @@ virNetClient *virNetClientNewLibSSH2(const char *host,
     if (privkeyPath) {
         privkey = g_strdup(privkeyPath);
     } else {
-        homedir = virGetUserDirectory();
+        homedir = virGetUserHomeDirectory();
         if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
             return NULL;
     }
@@ -604,7 +604,7 @@ virNetClient *virNetClientNewLibssh(const char *host,
     if (privkeyPath) {
         privkey = g_strdup(privkeyPath);
     } else {
-        homedir = virGetUserDirectory();
+        homedir = virGetUserHomeDirectory();
         if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
             return NULL;
     }

@@ -3333,7 +3333,7 @@ cmdCd(vshControl *ctl, const vshCmd *cmd)
     g_autofree char *dir_malloced = NULL;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "dir", &dir) <= 0)
-        dir = dir_malloced = virGetUserDirectory();
+        dir = dir_malloced = virGetUserHomeDirectory();
     if (!dir)
         dir = "/";
 

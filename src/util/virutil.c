@@ -589,7 +589,7 @@ virGetHostnameQuiet(void)
 
 
 char *
-virGetUserDirectory(void)
+virGetUserHomeDirectory(void)
 {
     return g_strdup(g_get_home_dir());
 }
@@ -753,7 +753,7 @@ static char *virGetGroupEnt(gid_t gid)
 
 
 char *
-virGetUserDirectoryByUID(uid_t uid)
+virGetUserHomeDirectoryByUID(uid_t uid)
 {
     char *ret;
     virGetUserEnt(uid, NULL, NULL, &ret, NULL, false);
@@ -1091,7 +1091,7 @@ virDoesGroupExist(const char *name G_GNUC_UNUSED)
 
 # ifdef WIN32
 char *
-virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
+virGetUserHomeDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
     /* Since Windows lacks setuid binaries, and since we already fake
      * geteuid(), we can safely assume that this is only called when
@@ -1111,10 +1111,10 @@ virGetUserShell(uid_t uid G_GNUC_UNUSED)
 
 # else /* !WITH_GETPWUID_R && !WIN32 */
 char *
-virGetUserDirectoryByUID(uid_t uid G_GNUC_UNUSED)
+virGetUserHomeDirectoryByUID(uid_t uid G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
-                   "%s", _("virGetUserDirectory is not available"));
+                   "%s", _("virGetUserHomeDirectoryByUID is not available"));
 
     return NULL;
 }
