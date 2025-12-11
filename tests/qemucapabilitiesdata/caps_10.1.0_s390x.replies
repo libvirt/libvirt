@@ -31484,11 +31484,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-34"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-34"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -31578,7 +31610,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -31586,7 +31618,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
@@ -31665,12 +31697,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -31875,7 +31907,7 @@
       "default-ram-id": "s390.ram"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -31883,7 +31915,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -32007,12 +32039,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -32750,12 +32782,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -34033,7 +34065,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -34044,7 +34076,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
@@ -34125,7 +34157,7 @@
       }
     }
   },
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
@@ -34136,7 +34168,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
@@ -34292,7 +34324,7 @@
       }
     }
   },
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {

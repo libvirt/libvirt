@@ -26821,11 +26821,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-33"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-34"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-34"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -26904,7 +26936,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -26912,7 +26944,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
@@ -26986,12 +27018,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -27372,7 +27404,7 @@
       "default-ram-id": "ppc_spapr.ram"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -27380,7 +27412,7 @@
   "arguments": {
     "typename": "pseries-7.1-machine"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -27622,7 +27654,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -27630,7 +27662,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -27743,12 +27775,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -30262,12 +30294,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
@@ -31454,7 +31486,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {

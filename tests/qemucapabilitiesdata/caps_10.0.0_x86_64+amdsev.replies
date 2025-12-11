@@ -32203,11 +32203,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-38"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-38"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -32297,7 +32329,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -32305,7 +32337,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -32384,7 +32416,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -32392,7 +32424,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
@@ -34565,12 +34597,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
@@ -35226,7 +35258,7 @@
       "default-ram-id": "pc.ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
@@ -35234,7 +35266,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-41"
+  "id": "libvirt-43"
 }
 
 {
@@ -35353,7 +35385,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-43"
 }
 
 {
@@ -35361,7 +35393,7 @@
   "arguments": {
     "typename": "generic-pc-machine"
   },
-  "id": "libvirt-42"
+  "id": "libvirt-44"
 }
 
 {
@@ -35568,12 +35600,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-43"
+  "id": "libvirt-45"
 }
 
 {
@@ -37350,12 +37382,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-46"
 }
 
 {
@@ -38878,12 +38910,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-47"
 }
 
 {
@@ -38894,16 +38926,16 @@
     "pdh": "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",
     "cpu0-id": "BlAwmcr4Ruya3YvEGe2EBxuWjMAfIYolslNNM92RsIKxLkWDDRqivqSBOD+qQRCYS9joBYSHMD1g+rmjY+MmVw=="
   },
-  "id": "libvirt-45"
+  "id": "libvirt-47"
 }
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-46"
+  "id": "libvirt-48"
 }
 
 {
-  "id": "libvirt-46",
+  "id": "libvirt-48",
   "error": {
     "class": "GenericError",
     "desc": "Could not open '/dev/sgx_vepc': No such file or directory"
@@ -38918,7 +38950,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-49"
 }
 
 {
@@ -39319,7 +39351,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-49"
 }
 
 {
@@ -39333,7 +39365,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-50"
 }
 
 {
@@ -39734,7 +39766,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-50"
 }
 
 {
@@ -39749,7 +39781,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-51"
 }
 
 {
@@ -40261,7 +40293,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-51"
 }
 
 {

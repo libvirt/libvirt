@@ -29381,11 +29381,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-30"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-30"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-31"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-31"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-30"
+  "id": "libvirt-32"
 }
 
 {
@@ -29479,7 +29511,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-32"
 }
 
 {
@@ -29487,7 +29519,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-33"
 }
 
 {
@@ -29566,12 +29598,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-33"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-32"
+  "id": "libvirt-34"
 }
 
 {
@@ -29646,7 +29678,7 @@
       "default-ram-id": "riscv_virt_board.ram"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-34"
 }
 
 {
@@ -29654,7 +29686,7 @@
   "arguments": {
     "typename": "virt-machine"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -29810,7 +29842,7 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -29818,7 +29850,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
@@ -29931,12 +29963,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -30020,12 +30052,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -31439,7 +31471,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -31450,11 +31482,11 @@
       "name": "host"
     }
   },
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-39",
   "error": {
     "class": "GenericError",
     "desc": "The requested expansion type is not supported"

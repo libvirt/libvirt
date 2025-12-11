@@ -1535,6 +1535,12 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIBlock[] = {
+};
+
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIGeneric[] = {
+};
+
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
     { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
 };
@@ -1779,6 +1785,12 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "amd-iommu", virQEMUCapsDevicePropsAMDIOMMU,
       G_N_ELEMENTS(virQEMUCapsDevicePropsAMDIOMMU),
       QEMU_CAPS_AMD_IOMMU },
+    { "scsi-block", virQEMUCapsDevicePropsSCSIBlock,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsSCSIBlock),
+      -1 },
+    { "scsi-generic", virQEMUCapsDevicePropsSCSIGeneric,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsSCSIGeneric),
+      -1 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

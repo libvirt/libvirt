@@ -27427,11 +27427,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-31"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-31"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-32"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-32"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-33"
 }
 
 {
@@ -27515,7 +27547,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-33"
 }
 
 {
@@ -27523,7 +27555,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-34"
 }
 
 {
@@ -27602,12 +27634,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -27710,7 +27742,7 @@
       "default-ram-id": "mpc8544ds.ram"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-35"
 }
 
 {
@@ -27718,7 +27750,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
@@ -27831,12 +27863,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
@@ -30146,12 +30178,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }
 
 {
@@ -31467,5 +31499,5 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-38"
 }

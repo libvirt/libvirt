@@ -24333,11 +24333,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-17"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-17"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-18"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-18"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-17"
+  "id": "libvirt-19"
 }
 
 {
@@ -24431,7 +24463,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-17"
+  "id": "libvirt-19"
 }
 
 {
@@ -24439,7 +24471,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-18"
+  "id": "libvirt-20"
 }
 
 {
@@ -24518,12 +24550,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-18"
+  "id": "libvirt-20"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-19"
+  "id": "libvirt-21"
 }
 
 {
@@ -24639,7 +24671,7 @@
       "default-ram-id": "ram"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-21"
 }
 
 {
@@ -24647,7 +24679,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-20"
+  "id": "libvirt-22"
 }
 
 {
@@ -24760,12 +24792,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-22"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-21"
+  "id": "libvirt-23"
 }
 
 {
@@ -26098,5 +26130,5 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-23"
 }

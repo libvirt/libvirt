@@ -29356,11 +29356,43 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-37"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-generic"
+  },
+  "id": "libvirt-38"
+}
+
+{
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "The libvirt device dump was not collected for this version+device tuple"
+  },
+  "id": "libvirt-38"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -29444,7 +29476,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-39"
 }
 
 {
@@ -29452,7 +29484,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -29531,7 +29563,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-40"
 }
 
 {
@@ -29539,7 +29571,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
@@ -31356,12 +31388,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
@@ -31977,7 +32009,7 @@
       "default-ram-id": "pc.ram"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-42"
 }
 
 {
@@ -31985,7 +32017,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-41"
+  "id": "libvirt-43"
 }
 
 {
@@ -32098,7 +32130,7 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-43"
 }
 
 {
@@ -32106,7 +32138,7 @@
   "arguments": {
     "typename": "generic-pc-machine"
   },
-  "id": "libvirt-42"
+  "id": "libvirt-44"
 }
 
 {
@@ -32298,12 +32330,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-43"
+  "id": "libvirt-45"
 }
 
 {
@@ -34349,12 +34381,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-46"
 }
 
 {
@@ -35795,16 +35827,16 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-sev-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-47"
 }
 
 {
-  "id": "libvirt-45",
+  "id": "libvirt-47",
   "error": {
     "class": "GenericError",
     "desc": "SEV: Failed to open /dev/sev: No such file or directory"
@@ -35813,11 +35845,11 @@
 
 {
   "execute": "query-sgx-capabilities",
-  "id": "libvirt-46"
+  "id": "libvirt-48"
 }
 
 {
-  "id": "libvirt-46",
+  "id": "libvirt-48",
   "error": {
     "class": "GenericError",
     "desc": "SGX is not enabled in KVM"
@@ -35832,7 +35864,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-49"
 }
 
 {
@@ -36175,7 +36207,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-49"
 }
 
 {
@@ -36189,7 +36221,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-50"
 }
 
 {
@@ -36532,7 +36564,7 @@
       }
     }
   },
-  "id": "libvirt-48"
+  "id": "libvirt-50"
 }
 
 {
@@ -36547,7 +36579,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-51"
 }
 
 {
@@ -36996,7 +37028,7 @@
       }
     }
   },
-  "id": "libvirt-49"
+  "id": "libvirt-51"
 }
 
 {
