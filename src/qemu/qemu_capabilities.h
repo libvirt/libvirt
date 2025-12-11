@@ -732,6 +732,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MSHV, /* -accel mshv */
     QEMU_CAPS_VIRTIO_IOMMU_AW_BITS, /* virtio-iommu.aw-bits */
 
+    /* 490 */
+    QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR, /* persistent reservation migration support */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

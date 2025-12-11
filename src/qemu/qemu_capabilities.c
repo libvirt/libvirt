@@ -756,6 +756,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-accelerators", /* QEMU_CAPS_QUERY_ACCELERATORS */
               "mshv", /* QEMU_CAPS_MSHV */
               "virtio-iommu.aw-bits", /* QEMU_CAPS_VIRTIO_IOMMU_AW_BITS */
+
+              /* 490 */
+              "scsi-block.migrate-pr", /* QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR */
     );
 
 
@@ -1537,6 +1540,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIBlock[] = {
+    { "migrate-pr", QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIGeneric[] = {
