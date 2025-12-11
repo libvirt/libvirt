@@ -219,6 +219,7 @@
   <flag name='scsi-block.migrate-pr'/>
   <flag name='iommufd'/>
   <flag name='uefi-vars'/>
+  <flag name='query-block-flat'/>
   <version>10002050</version>
   <microcodeVersion>43100286</microcodeVersion>
   <package>v10.2.0-2062-g084a6c6e73</package>

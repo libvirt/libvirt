@@ -762,6 +762,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "scsi-block.migrate-pr", /* QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR */
               "iommufd", /* QEMU_CAPS_OBJECT_IOMMUFD */
               "uefi-vars", /* QEMU_CAPS_DEVICE_UEFI_VARS */
+              "query-block-flat", /* QEMU_CAPS_QUERY_BLOCK_FLAT */
     );
 
 
@@ -1659,6 +1660,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "netdev_add/arg-type/+stream/reconnect-ms", QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS },
     { "object-add/arg-type/+sev-guest/kernel-hashes", QEMU_CAPS_SEV_GUEST_KERNEL_HASHES },
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },
+    { "query-block/arg-type/flat", QEMU_CAPS_QUERY_BLOCK_FLAT },
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
     { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },
     { "query-display-options/ret-type/+egl-headless", QEMU_CAPS_EGL_HEADLESS },
