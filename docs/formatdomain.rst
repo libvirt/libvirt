@@ -3186,6 +3186,9 @@ paravirtualized driver is specified via the ``disk`` element.
       the socket, and finally ``mode`` which accepts one value ``client``
       specifying the role of hypervisor. It's recommended to allow libvirt
       manage the persistent reservations.
+      :since:`Since 12.1.0` the ``migration`` (values ``yes``, ``no``) controls
+      whether the hypervisor should attempt to migrate persistent reservations
+      during migration.
    ``initiator``
       :since:`Since 4.7.0`, the ``initiator`` element is supported for
       a disk ``type`` "network" that is using a ``source`` element with the

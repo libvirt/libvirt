@@ -3226,6 +3226,22 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
     }
 
+    if (disk->src->pr &&
+        disk->src->pr->migration != VIR_TRISTATE_BOOL_ABSENT) {
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
+            disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("persistent reservation migration supported only with 'lun' disks on 'scsi' bus"));
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("persistent reservation migration not supported by this qemu"));
+            return -1;
+        }
+    }
+
     if (disk->rotation_rate) {
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI &&
             disk->bus != VIR_DOMAIN_DISK_BUS_IDE &&

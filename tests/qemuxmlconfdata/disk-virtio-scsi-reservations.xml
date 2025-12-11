@@ -28,7 +28,7 @@
     <disk type='block' device='lun'>
       <driver name='qemu' type='raw'/>
       <source dev='/dev/HostVG/QEMUGuest2'>
-        <reservations managed='no'>
+        <reservations managed='no' migration='yes'>
           <source type='unix' path='/path/to/qemu-pr-helper.sock' mode='client'/>
         </reservations>
       </source>

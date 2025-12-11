@@ -331,6 +331,11 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
                                &prd->managed) < 0)
         goto cleanup;
 
+    if (virXMLPropTristateBool(ctxt->node, "migration",
+                               VIR_XML_PROP_NONZERO,
+                               &prd->migration) < 0)
+        goto cleanup;
+
     type = virXPathString("string(./source[1]/@type)", ctxt);
     path = virXPathString("string(./source[1]/@path)", ctxt);
     mode = virXPathString("string(./source[1]/@mode)", ctxt);
@@ -385,6 +390,11 @@ virStoragePRDefFormat(virBuffer *buf,
 {
     virBufferAsprintf(buf, "<reservations managed='%s'",
                       virTristateBoolTypeToString(prd->managed));
+
+    if (prd->migration != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(buf, " migration='%s'",
+                          virTristateBoolTypeToString(prd->migration));
+
     if (prd->path &&
         (prd->managed == VIR_TRISTATE_BOOL_NO || !migratable)) {
         virBufferAddLit(buf, ">\n");

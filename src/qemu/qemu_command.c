@@ -1692,6 +1692,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     g_autofree char *usbdiskalias = NULL;
     const virDomainDeviceInfo *deviceinfo = &disk->info;
     g_autoptr(virJSONValue) statistics = NULL;
+    virTristateBool migrate_pr = VIR_TRISTATE_BOOL_ABSENT;
     virDomainDeviceInfo usbSCSIinfo = {
         .type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
         .addr.drive = { .diskbus = VIR_DOMAIN_DISK_BUS_USB },
@@ -1717,6 +1718,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_SCSI:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
             driver = "scsi-block";
+            if (disk->src->pr)
+                migrate_pr = disk->src->pr->migration;
         } else {
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
                 driver = "scsi-cd";
@@ -1938,6 +1941,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:rerror", rpolicy,
                               "A:stats-intervals", &statistics,
                               "T:dpofua", disk->dpofua, /* SCSI-only, ensured by validation */
+                              "T:migrate-pr", migrate_pr, /* 'scsi-block' only, ensured by validation */
                               NULL) < 0)
         return NULL;
 

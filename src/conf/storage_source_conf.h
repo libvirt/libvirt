@@ -236,6 +236,8 @@ struct _virStoragePRDef {
     virTristateBool managed;
     char *path;
 
+    virTristateBool migration;
+
     /* manager object alias */
     char *mgralias;
 };

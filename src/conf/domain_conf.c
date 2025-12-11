@@ -21040,6 +21040,27 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
     }
 
+    /* While not guest visible it influences the qemu migration stream so
+     * we need to keep it identical */
+    if (src->src->pr || dst->src->pr) {
+        virTristateBool srcmig = VIR_TRISTATE_BOOL_ABSENT;
+        virTristateBool dstmig = VIR_TRISTATE_BOOL_ABSENT;
+
+        if (src->src->pr)
+            srcmig = src->src->pr->migration;
+
+        if (dst->src->pr)
+            dstmig = dst->src->pr->migration;
+
+        if (srcmig != dstmig) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Target disk reservations 'migration' property %1$s does not match source %2$s"),
+                           virTristateBoolTypeToString(dstmig),
+                           virTristateBoolTypeToString(srcmig));
+            return false;
+        }
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 

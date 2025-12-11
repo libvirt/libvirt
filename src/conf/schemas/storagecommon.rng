@@ -105,6 +105,11 @@
         </attribute>
       </optional>
       <optional>
+        <attribute name="migration">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="unixSocketSource"/>
       </optional>
     </element>
