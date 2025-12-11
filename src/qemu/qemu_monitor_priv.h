@@ -90,6 +90,9 @@ struct _qemuMonitor {
 
     /* use the backing-mask-protocol flag of block-commit/stream */
     bool blockjobMaskProtocol;
+
+    /* 'query-block' supports flat mode */
+    bool queryBlockFlat;
 };
 
 
