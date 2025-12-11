@@ -78,7 +78,6 @@ mock_libs = [
   { 'name': 'virfilecachemock' },
   { 'name': 'virfirewallmock' },
   { 'name': 'virhostcpumock' },
-  { 'name': 'virhostdevmock' },
   { 'name': 'virnetdaemonmock' },
   { 'name': 'virnetdevmock' },
   { 'name': 'virnetserverclientmock' },
