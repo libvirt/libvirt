@@ -1466,7 +1466,15 @@ virJSONValueFromString(const char *jsonstring)
 
     VIR_DEBUG("string=%s", jsonstring);
 
-    tok = json_tokener_new();
+    /* When creating the tokener we need to specify the limit of the nesting
+     * depth of JSON objects. The default in json-c is 32. Since we need to
+     * support at least 200 layers of snapshots (the limit is based on a
+     * conservative take on the 256 layer nesting limit for XML in libxml), for
+     * which we have internal checks, we also need to set the JSON limit to
+     * be able to parse qemu responses for such a deeply nested snapshot list.
+     * '300' is picked a sa conservative buffer on top of the 200 layers plus
+     * some of the extra wrappers that qemu adds*/
+    tok = json_tokener_new_ex(300);
     if (!tok) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to create JSON tokener"));
