@@ -1947,7 +1947,6 @@ qemuDomainDiskInfoFree(void *value)
 {
     struct qemuDomainDiskInfo *info = value;
 
-    g_free(info->nodename);
     g_free(info);
 }
 

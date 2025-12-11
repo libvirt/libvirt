@@ -2304,7 +2304,6 @@ qemuMonitorJSONBlockInfoAdd(GHashTable *table,
     tmp = g_new0(struct qemuDomainDiskInfo, 1);
 
     *tmp = *info;
-    tmp->nodename = g_strdup(info->nodename);
 
     g_hash_table_insert(table, g_strdup(entryname), tmp);
 
@@ -2360,9 +2359,7 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
             info.tray = true;
 
         /* presence of 'inserted' notifies that a medium is in the device */
-        if ((image = virJSONValueObjectGetObject(dev, "inserted"))) {
-            info.nodename = (char *) virJSONValueObjectGetString(image, "node-name");
-        } else {
+        if (!(image = virJSONValueObjectGetObject(dev, "inserted"))) {
             info.empty = true;
         }
 

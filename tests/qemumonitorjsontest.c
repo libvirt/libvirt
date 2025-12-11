@@ -1354,9 +1354,9 @@ static void
 testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
 {
     VIR_TEST_VERBOSE("removable: %d, tray: %d, tray_open: %d, empty: %d, "
-                     "io_status: %d, nodename: '%s'",
+                     "io_status: %d",
                      d->removable, d->tray, d->tray_open, d->empty,
-                     d->io_status, NULLSTR(d->nodename));
+                     d->io_status);
 }
 
 

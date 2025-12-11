@@ -364,7 +364,6 @@ struct qemuDomainDiskInfo {
     bool tray_open;
     bool empty;
     int io_status;
-    char *nodename;
 };
 
 #define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev) \
