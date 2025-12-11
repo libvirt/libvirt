@@ -1985,3 +1985,12 @@ int
 qemuMonitorBlockdevSetActive(qemuMonitor *mon,
                              const char *nodename,
                              bool active);
+
+int
+qemuMonitorBlockLatencyHistogramSet(qemuMonitor *mon,
+                                    const char *id,
+                                    unsigned int *boundaries,
+                                    unsigned int *boundaries_read,
+                                    unsigned int *boundaries_write,
+                                    unsigned int *boundaries_zone,
+                                    unsigned int *boundaries_flush);

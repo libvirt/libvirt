@@ -4569,3 +4569,24 @@ qemuMonitorBlockdevSetActive(qemuMonitor *mon,
 
     return qemuMonitorJSONBlockdevSetActive(mon, nodename, active);
 }
+
+
+int
+qemuMonitorBlockLatencyHistogramSet(qemuMonitor *mon,
+                                    const char *id,
+                                    unsigned int *boundaries,
+                                    unsigned int *boundaries_read,
+                                    unsigned int *boundaries_write,
+                                    unsigned int *boundaries_zone,
+                                    unsigned int *boundaries_flush)
+{
+    QEMU_CHECK_MONITOR(mon);
+    VIR_DEBUG("id='%s'", id);
+
+    return qemuMonitorJSONBlockLatencyHistogramSet(mon, id,
+                                                   boundaries,
+                                                   boundaries_read,
+                                                   boundaries_write,
+                                                   boundaries_zone,
+                                                   boundaries_flush);
+}

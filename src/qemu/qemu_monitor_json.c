@@ -9167,3 +9167,63 @@ qemuMonitorJSONBlockdevSetActive(qemuMonitor *mon,
 
     return qemuMonitorJSONCheckError(cmd, reply);
 }
+
+
+static virJSONValue *
+qemuMonitorJSONBlockLatencyHistogramBoundary(unsigned int *bound)
+{
+    g_autoptr(virJSONValue) ret = virJSONValueNewArray();
+
+    if (!bound)
+        return NULL;
+
+    for (; *bound > 0; bound++) {
+        g_autoptr(virJSONValue) val = virJSONValueNewNumberUint(*bound);
+
+        /* the only error is if the first argument is not an array */
+        ignore_value(virJSONValueArrayAppend(ret, &val));
+    }
+
+    return g_steal_pointer(&ret);
+}
+
+
+int
+qemuMonitorJSONBlockLatencyHistogramSet(qemuMonitor *mon,
+                                        const char *id,
+                                        unsigned int *boundaries,
+                                        unsigned int *boundaries_read,
+                                        unsigned int *boundaries_write,
+                                        unsigned int *boundaries_zone,
+                                        unsigned int *boundaries_flush)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    g_autoptr(virJSONValue) bound = NULL;
+    g_autoptr(virJSONValue) bound_read = NULL;
+    g_autoptr(virJSONValue) bound_write = NULL;
+    g_autoptr(virJSONValue) bound_zone = NULL;
+    g_autoptr(virJSONValue) bound_flush = NULL;
+
+    bound = qemuMonitorJSONBlockLatencyHistogramBoundary(boundaries);
+    bound_read = qemuMonitorJSONBlockLatencyHistogramBoundary(boundaries_read);
+    bound_write = qemuMonitorJSONBlockLatencyHistogramBoundary(boundaries_write);
+    bound_zone = qemuMonitorJSONBlockLatencyHistogramBoundary(boundaries_zone);
+    bound_flush = qemuMonitorJSONBlockLatencyHistogramBoundary(boundaries_flush);
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("block-latency-histogram-set",
+                                           "s:id", id,
+                                           "A:boundaries", &bound,
+                                           "A:boundaries-read", &bound_read,
+                                           "A:boundaries-write", &bound_write,
+                                           "A:boundaries-zap", &bound_zone,
+                                           "A:boundaries-flush", &bound_flush,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    return qemuMonitorJSONCheckError(cmd, reply);
+}

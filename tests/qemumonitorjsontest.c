@@ -1130,6 +1130,14 @@ GEN_TEST_FUNC(qemuMonitorJSONSetAction,
 GEN_TEST_FUNC(qemuMonitorJSONSetLaunchSecurityState, "sev_secret_header",
               "sev_secret", 0, true)
 
+unsigned int testHistogramBoundaries[] = {10, 30, 50, 0};
+GEN_TEST_FUNC(qemuMonitorJSONBlockLatencyHistogramSet, "devid",
+              testHistogramBoundaries,
+              testHistogramBoundaries,
+              testHistogramBoundaries,
+              testHistogramBoundaries,
+              testHistogramBoundaries)
+
 static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)
 {
@@ -2971,6 +2979,7 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONBlockJobCancel);
     DO_TEST_GEN(qemuMonitorJSONSetAction);
     DO_TEST_GEN(qemuMonitorJSONSetLaunchSecurityState);
+    DO_TEST_GEN(qemuMonitorJSONBlockLatencyHistogramSet);
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);
