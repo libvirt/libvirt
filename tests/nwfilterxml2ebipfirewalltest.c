@@ -1,5 +1,5 @@
 /*
- * nwfilterxml2firewalltest.c: Test iptables rule generation
+ * nwfilterxml2ebipfirewalltest.c: Test iptables rule generation
  *
  * Copyright (C) 2014 Red Hat, Inc.
  *
@@ -418,7 +418,7 @@ testCompareXMLToIPTablesHelper(const void *data)
 
     xml = g_strdup_printf("%s/nwfilterxml2firewalldata/%s.xml",
                           abs_srcdir, info->name);
-    args = g_strdup_printf("%s/nwfilterxml2firewalldata/%s-%s.args",
+    args = g_strdup_printf("%s/nwfilterxml2firewalldata/%s-%s.ebiptables.args",
                            abs_srcdir, info->name, RULESTYPE);
 
     result = testCompareXMLToArgvFiles(xml, args);

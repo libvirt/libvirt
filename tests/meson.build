@@ -443,7 +443,7 @@ endif
 if conf.has('WITH_NWFILTER')
   tests += [
     { 'name': 'nwfilterebiptablestest', 'link_with': [ nwfilter_driver_impl ] },
-    { 'name': 'nwfilterxml2firewalltest', 'link_with': [ nwfilter_driver_impl ] },
+    { 'name': 'nwfilterxml2ebipfirewalltest', 'link_with': [ nwfilter_driver_impl ] },
   ]
 endif
 
