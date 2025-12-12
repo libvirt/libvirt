@@ -1766,6 +1766,12 @@ virDomainDefOSValidate(const virDomainDef *def,
     }
 
     if (loader->readonly == VIR_TRISTATE_BOOL_NO) {
+        if (loader->type == VIR_DOMAIN_LOADER_TYPE_ROM) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("ROM loader type cannot be used as read/write"));
+            return -1;
+        }
+
         if (loader->nvramTemplate) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("NVRAM template is not permitted when loader is read/write"));
