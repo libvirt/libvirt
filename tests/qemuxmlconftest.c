@@ -1568,6 +1568,7 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-bios-rw");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
