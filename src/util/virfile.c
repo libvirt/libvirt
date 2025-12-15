@@ -1912,7 +1912,7 @@ virFileFindResourceFull(const char *filename,
                         const char *envname)
 {
     char *ret = NULL;
-    const char *envval = envname ? getenv(envname) : NULL;
+    const char *envval = envname ? g_getenv(envname) : NULL;
     const char *path;
     g_autofree char *fullFilename = NULL;
 
@@ -1977,7 +1977,7 @@ virFileActivateDirOverrideForProg(const char *argv0)
 void
 virFileActivateDirOverrideForLib(void)
 {
-    if (getenv("LIBVIRT_DIR_OVERRIDE") != NULL)
+    if (g_getenv("LIBVIRT_DIR_OVERRIDE") != NULL)
         useDirOverride = true;
 }
 

@@ -129,7 +129,7 @@ virSecretDaemonConfigNew(bool privileged)
     if (virSecretLoadDaemonConfig(cfg, configfile) < 0)
         return NULL;
 
-    credentialsDirectory = getenv("CREDENTIALS_DIRECTORY");
+    credentialsDirectory = g_getenv("CREDENTIALS_DIRECTORY");
 
     if (!cfg->secretsEncryptionKeyPath && credentialsDirectory) {
         cfg->secretsEncryptionKeyPath = g_strdup_printf("%s/secrets-encryption-key",

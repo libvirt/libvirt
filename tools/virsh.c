@@ -894,7 +894,7 @@ main(int argc, char **argv)
     }
 
     if (!ctl->connname)
-        ctl->connname = g_strdup(getenv("VIRSH_DEFAULT_CONNECT_URI"));
+        ctl->connname = g_strdup(g_getenv("VIRSH_DEFAULT_CONNECT_URI"));
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);

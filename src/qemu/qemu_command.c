@@ -8229,7 +8229,7 @@ qemuBuildAudioPipewireAudioEnv(virCommand *cmd,
         virCommandAddEnvPair(cmd, "PIPEWIRE_RUNTIME_DIR", runtimeDir);
     } else {
         for (i = 0; i < G_N_ELEMENTS(envVars); i++) {
-            const char *value = getenv(envVars[i]);
+            const char *value = g_getenv(envVars[i]);
 
             if (!value)
                 continue;

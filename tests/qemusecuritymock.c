@@ -231,7 +231,7 @@ int virFileRemoveXAttr(const char *path,
 
 #define VIR_MOCK_STAT_HOOK \
     do { \
-        if (getenv(ENVVAR)) { \
+        if (g_getenv(ENVVAR)) { \
             uint32_t *val; \
 \
             virMutexLock(&m); \
@@ -303,7 +303,7 @@ chown(const char *path, uid_t uid, gid_t gid)
 
     init_syms();
 
-    if (getenv(ENVVAR))
+    if (g_getenv(ENVVAR))
         ret = mock_chown(path, uid, gid);
     else
         ret = real_chown(path, uid, gid);
@@ -319,7 +319,7 @@ open(const char *path, int flags, ...)
 
     init_syms();
 
-    if (getenv(ENVVAR)) {
+    if (g_getenv(ENVVAR)) {
         ret = 42; /* Some dummy FD */
     } else if (flags & O_CREAT) {
         va_list ap;
@@ -344,7 +344,7 @@ __open_2(const char *path, int flags)
 
     init_syms();
 
-    if (getenv(ENVVAR)) {
+    if (g_getenv(ENVVAR)) {
         ret = 42; /* Some dummy FD */
     } else {
         ret = real___open_2(path, flags);
@@ -361,7 +361,7 @@ close(int fd)
 
     init_syms();
 
-    if (fd == 42 && getenv(ENVVAR))
+    if (fd == 42 && g_getenv(ENVVAR))
         ret = 0;
     else
         ret = real_close(fd);
@@ -392,7 +392,7 @@ bool virFileExists(const char *path)
 {
     VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    if (getenv(ENVVAR) == NULL) {
+    if (g_getenv(ENVVAR) == NULL) {
         init_syms();
 
         return real_virFileExists(path);
@@ -640,7 +640,7 @@ setfilecon_raw(const char *path,
 
     init_syms();
 
-    if (getenv(ENVVAR))
+    if (g_getenv(ENVVAR))
         ret = mock_setfilecon_raw(path, context);
     else
         ret = real_setfilecon_raw(path, context);
@@ -657,7 +657,7 @@ getfilecon_raw(const char *path,
 
     init_syms();
 
-    if (getenv(ENVVAR))
+    if (g_getenv(ENVVAR))
         ret = mock_getfilecon_raw(path, context);
     else
         ret = real_getfilecon_raw(path, context);

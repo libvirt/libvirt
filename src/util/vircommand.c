@@ -1429,7 +1429,7 @@ virCommandAddEnvPass(virCommand *cmd, const char *name)
     if (virCommandHasError(cmd))
         return;
 
-    value = getenv(name);
+    value = g_getenv(name);
     if (value)
         virCommandAddEnvPair(cmd, name, value);
 }

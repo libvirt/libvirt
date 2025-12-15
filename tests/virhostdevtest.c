@@ -104,7 +104,7 @@ myCleanup(void)
         virDomainDiskDefFree(disks[i]);
 
     if (mgr) {
-        if (!getenv("LIBVIRT_SKIP_CLEANUP"))
+        if (!g_getenv("LIBVIRT_SKIP_CLEANUP"))
             virFileDeleteTree(mgr->stateDir);
 
         virObjectUnref(mgr->activePCIHostdevs);

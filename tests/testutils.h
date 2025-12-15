@@ -137,7 +137,7 @@ int virTestMain(int argc,
 
 #define VIR_TEST_PRELOAD(libs) \
     do { \
-        const char *preload = getenv(PRELOAD_VAR); \
+        const char *preload = g_getenv(PRELOAD_VAR); \
         if (preload == NULL || strstr(preload, libs) == NULL) { \
             char *newenv; \
             char *new_library_path; \

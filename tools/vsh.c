@@ -2567,7 +2567,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     const char *tmpdir;
     VIR_AUTOCLOSE fd = -1;
 
-    tmpdir = getenv("TMPDIR");
+    tmpdir = g_getenv("TMPDIR");
     if (!tmpdir)
         tmpdir = "/tmp";
     filename = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
@@ -2611,9 +2611,9 @@ vshEditFile(vshControl *ctl, const char *filename)
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
-    editor = getenv("VISUAL");
+    editor = g_getenv("VISUAL");
     if (!editor)
-        editor = getenv("EDITOR");
+        editor = g_getenv("EDITOR");
     if (!editor)
         editor = DEFAULT_EDITOR;
 
@@ -3044,7 +3044,7 @@ vshReadlineInit(vshControl *ctl)
     histsize_env = g_strdup_printf("%s_HISTSIZE", ctl->env_prefix);
 
     /* Limit the total size of the history buffer */
-    if ((histsize_str = getenv(histsize_env))) {
+    if ((histsize_str = g_getenv(histsize_env))) {
         if (virStrToLong_i(histsize_str, NULL, 10, &max_history) < 0) {
             vshError(ctl, _("Bad $%1$s value."), histsize_env);
             return -1;
@@ -3157,7 +3157,7 @@ vshInitDebug(vshControl *ctl)
         g_autofree char *env = g_strdup_printf("%s_DEBUG", ctl->env_prefix);
 
         /* log level not set from commandline, check env variable */
-        debugEnv = getenv(env);
+        debugEnv = g_getenv(env);
         if (debugEnv) {
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
@@ -3174,7 +3174,7 @@ vshInitDebug(vshControl *ctl)
         g_autofree char *env = g_strdup_printf("%s_LOG_FILE", ctl->env_prefix);
 
         /* log file not set from cmdline */
-        debugEnv = getenv(env);
+        debugEnv = g_getenv(env);
         if (debugEnv && *debugEnv) {
             ctl->logfile = g_strdup(debugEnv);
             vshOpenLogFile(ctl);

@@ -61,7 +61,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
     VIR_MOCK_REAL_INIT(g_dbus_connection_call_sync);
 
     if (STREQ(bus_name, "org.freedesktop.machine1")) {
-        if (getenv("FAIL_BAD_SERVICE")) {
+        if (g_getenv("FAIL_BAD_SERVICE")) {
             *error = g_dbus_error_new_for_dbus_error(
                     "org.freedesktop.systemd.badthing",
                      "Something went wrong creating the machine");
@@ -90,11 +90,11 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
     } else if (STREQ(bus_name, "org.freedesktop.resolve1")) {
         g_autofree char *actual = NULL;
 
-        if (getenv("FAIL_BAD_SERVICE")) {
+        if (g_getenv("FAIL_BAD_SERVICE")) {
             *error = g_dbus_error_new_for_dbus_error("org.freedesktop.systemd.badthing",
                                                      "Contacting resolved failed");
         } else if (STREQ(method_name, "SetLinkDomains")) {
-            const char *expected = getenv("TEST_RESOLVED_LINK_DOMAINS");
+            const char *expected = g_getenv("TEST_RESOLVED_LINK_DOMAINS");
             actual = g_variant_print(params, FALSE);
 
             if (virTestCompareToString(expected, actual) < 0)
@@ -103,7 +103,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
             else
                 reply = g_variant_new("()");
         } else if (STREQ(method_name, "SetLinkDNS")) {
-            const char *expected = getenv("TEST_RESOLVED_LINK_DNS");
+            const char *expected = g_getenv("TEST_RESOLVED_LINK_DNS");
             actual = g_variant_print(params, FALSE);
 
             if (virTestCompareToString(expected, actual) < 0)
@@ -116,7 +116,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
                                                      "Unknown resolved method");
         }
     } else if (STREQ(bus_name, "org.freedesktop.login1")) {
-        reply = g_variant_new("(s)", getenv("RESULT_SUPPORT"));
+        reply = g_variant_new("(s)", g_getenv("RESULT_SUPPORT"));
     } else if (STREQ(bus_name, "org.freedesktop.DBus") &&
                STREQ(method_name, "ListActivatableNames")) {
         GVariantBuilder builder;
@@ -125,7 +125,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
 
         g_variant_builder_add(&builder, "s", "org.foo.bar.wizz");
 
-        if (!getenv("FAIL_NO_SERVICE")) {
+        if (!g_getenv("FAIL_NO_SERVICE")) {
             g_variant_builder_add(&builder, "s", "org.freedesktop.machine1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.resolve1");
@@ -140,7 +140,7 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
 
         g_variant_builder_add(&builder, "s", "org.foo.bar.wizz");
 
-        if (!getenv("FAIL_NO_SERVICE") && !getenv("FAIL_NOT_REGISTERED")) {
+        if (!g_getenv("FAIL_NO_SERVICE") && !g_getenv("FAIL_NOT_REGISTERED")) {
             g_variant_builder_add(&builder, "s", "org.freedesktop.systemd1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.login1");
             g_variant_builder_add(&builder, "s", "org.freedesktop.resolve1");

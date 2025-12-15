@@ -63,7 +63,7 @@ bool qemuRdpAvailable(const char *helper G_GNUC_UNUSED)
 bool
 virTPMSwtpmSetupCapsGet(virTPMSwtpmSetupFeature cap)
 {
-    const char *tpmver = getenv(TEST_TPM_ENV_VAR);
+    const char *tpmver = g_getenv(TEST_TPM_ENV_VAR);
 
     switch (cap) {
     case VIR_TPM_SWTPM_SETUP_FEATURE_TPM_1_2:

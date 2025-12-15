@@ -171,7 +171,7 @@ static void virMockStatInit(void)
         return;
 
     init = true;
-    debug = getenv("VIR_MOCK_STAT_DEBUG");
+    debug = g_getenv("VIR_MOCK_STAT_DEBUG");
 
 #ifdef MOCK_STAT
 # if defined(__APPLE__) && defined(__x86_64__)

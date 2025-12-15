@@ -64,15 +64,15 @@ printFile(const char *file,
           const char *func)
 {
     FILE *fp;
-    const char *testname = getenv("VIR_TEST_MOCK_TESTNAME");
+    const char *testname = g_getenv("VIR_TEST_MOCK_TESTNAME");
 
     if (!progname) {
-        progname = getenv("VIR_TEST_MOCK_PROGNAME");
+        progname = g_getenv("VIR_TEST_MOCK_PROGNAME");
 
         if (!progname)
             return;
 
-        output = getenv("VIR_TEST_FILE_ACCESS_OUTPUT");
+        output = g_getenv("VIR_TEST_FILE_ACCESS_OUTPUT");
         if (!output)
             output = VIR_FILE_ACCESS_DEFAULT;
     }

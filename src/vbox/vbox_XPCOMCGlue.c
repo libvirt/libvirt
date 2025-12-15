@@ -181,7 +181,7 @@ VBoxCGlueInit(unsigned int *version)
         "/usr/local/lib/VirtualBox",
         "/Applications/VirtualBox.app/Contents/MacOS"
     };
-    const char *home = getenv("VBOX_APP_HOME");
+    const char *home = g_getenv("VBOX_APP_HOME");
 
     /* If the user specifies the location, try only that. */
     if (home != NULL) {

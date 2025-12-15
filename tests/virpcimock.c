@@ -981,7 +981,7 @@ init_env(void)
         .vpd_len = G_N_ELEMENTS(fullVPDExampleData),
     };
 
-    if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+    if (!(fakerootdir = g_strdup(g_getenv("LIBVIRT_FAKE_ROOT_DIR")))) {
         GError *err = NULL;
 
         fakerootdir = g_dir_make_tmp(NULL, &err);

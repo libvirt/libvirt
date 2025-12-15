@@ -319,7 +319,7 @@ mymain(void)
     if (virTestRun("Stream write non-blocking ", testFDStreamWriteNonblock, scratchdir) < 0)
         ret = -1;
 
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+    if (g_getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(scratchdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

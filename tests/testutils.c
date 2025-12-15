@@ -73,10 +73,10 @@ static int virTestUseTerminalColors(void)
 static unsigned int
 virTestGetFlag(const char *name)
 {
-    char *flagStr;
+    const char *flagStr;
     unsigned int flag;
 
-    if ((flagStr = getenv(name)) == NULL)
+    if ((flagStr = g_getenv(name)) == NULL)
         return 0;
 
     if (virStrToLong_ui(flagStr, NULL, 10, &flag) < 0)
@@ -123,7 +123,7 @@ virTestRun(const char *title,
 
     /* Some test are fragile about environ settings.  If that's
      * the case, don't poison it. */
-    if (getenv("VIR_TEST_MOCK_PROGNAME"))
+    if (g_getenv("VIR_TEST_MOCK_PROGNAME"))
         g_setenv("VIR_TEST_MOCK_TESTNAME", title, TRUE);
 
     if (testCounter == 0 && !virTestGetVerbose())
@@ -760,7 +760,7 @@ virTestHasRangeBitmap(void)
 static int
 virTestSetEnvPath(void)
 {
-    const char *path = getenv("PATH");
+    const char *path = g_getenv("PATH");
     g_autofree char *new_path = NULL;
 
     if (path) {
@@ -813,7 +813,7 @@ int virTestMain(int argc,
     const char *lib;
     va_list ap;
     int ret;
-    char *testRange = NULL;
+    const char *testRange = NULL;
     size_t noutputs = 0;
     virLogOutput *output = NULL;
     virLogOutput **outputs = NULL;
@@ -823,7 +823,7 @@ int virTestMain(int argc,
     g_autofree char *mock = NULL;
     g_autofree char *fakerootdir = NULL;
 
-    if (getenv("VIR_TEST_FILE_ACCESS")) {
+    if (g_getenv("VIR_TEST_FILE_ACCESS")) {
         preloads = g_renew(const char *, preloads, npreloads + 2);
         preloads[npreloads++] = VIR_TEST_MOCK("virtest");
         preloads[npreloads] = NULL;
@@ -884,7 +884,7 @@ int virTestMain(int argc,
     if (virLogSetFromEnv() < 0)
         return EXIT_FAILURE;
 
-    if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
+    if (!g_getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (!(output = virLogOutputNew(virtTestLogOutput, virtTestLogClose,
                                        &testLog, VIR_LOG_DEBUG,
                                        VIR_LOG_TO_STDERR, NULL)))
@@ -898,7 +898,7 @@ int virTestMain(int argc,
         }
     }
 
-    if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
+    if ((testRange = g_getenv("VIR_TEST_RANGE")) != NULL) {
         if (!(testBitmap = virBitmapParseUnlimited(testRange))) {
             fprintf(stderr, "Cannot parse range %s\n", testRange);
             return EXIT_FAILURE;

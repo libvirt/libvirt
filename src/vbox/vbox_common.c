@@ -3578,7 +3578,7 @@ vboxDumpDisplay(virDomainDef *def, struct _vboxDriver *data, IMachine *machine)
         graphics = g_new0(virDomainGraphicsDef, 1);
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP;
-        graphics->data.desktop.display = g_strdup(getenv("DISPLAY"));
+        graphics->data.desktop.display = g_strdup(g_getenv("DISPLAY"));
     }
 
     if (graphics)

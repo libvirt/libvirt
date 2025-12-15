@@ -57,7 +57,7 @@ int socket(int domain,
 {
     init_syms();
 
-    if (getenv("LIBVIRT_TEST_IPV4ONLY") && domain == AF_INET6) {
+    if (g_getenv("LIBVIRT_TEST_IPV4ONLY") && domain == AF_INET6) {
         errno = EAFNOSUPPORT;
         return -1;
     }
@@ -73,7 +73,7 @@ int bind(int sockfd G_GNUC_UNUSED,
 
     memcpy(&saddr, addr, sizeof(saddr));
 
-    if (host_has_ipv6 && !getenv("LIBVIRT_TEST_IPV4ONLY")) {
+    if (host_has_ipv6 && !g_getenv("LIBVIRT_TEST_IPV4ONLY")) {
         if (saddr.sin_port == htons(5900) ||
             (saddr.sin_family == AF_INET &&
              saddr.sin_port == htons(5904)) ||

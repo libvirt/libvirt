@@ -161,7 +161,7 @@ virNetLibsshSessionOnceInit(void)
     ssh_set_log_level(TRACE_LIBSSH);
 #endif
 
-    dbgLevelStr = getenv("LIBVIRT_LIBSSH_DEBUG");
+    dbgLevelStr = g_getenv("LIBVIRT_LIBSSH_DEBUG");
     if (dbgLevelStr &&
         virStrToLong_i(dbgLevelStr, NULL, 10, &dbgLevel) >= 0)
         ssh_set_log_level(dbgLevel);

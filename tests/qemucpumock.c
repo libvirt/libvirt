@@ -29,7 +29,7 @@ virCPUDef *
 virQEMUCapsProbeHostCPU(virArch hostArch G_GNUC_UNUSED,
                         virDomainCapsCPUModels *models G_GNUC_UNUSED)
 {
-    const char *model = getenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
+    const char *model = g_getenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
 
     return testUtilsHostCpusGetDefForModel(model);
 }

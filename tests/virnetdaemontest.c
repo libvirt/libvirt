@@ -377,7 +377,7 @@ mymain(void)
      * the generated JSON, and replace the file descriptor
      * numbers with 100, 101, 102, 103.
      */
-    if (getenv("VIR_GENERATE_JSON")) {
+    if (g_getenv("VIR_GENERATE_JSON")) {
         char *json = testGenerateJSON(server_names[0]);
         if (!json)
             return EXIT_FAILURE;

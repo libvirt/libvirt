@@ -357,7 +357,7 @@ main(int argc, char **argv)
     /* We're duping the string because the clearenv()
      * call will shortly release the pointer we get
      * back from getenv() right here */
-    term = g_strdup(getenv("TERM"));
+    term = g_strdup(g_getenv("TERM"));
 
     /* A fork is required to create new process in correct pid namespace.  */
     if ((cpid = virFork()) < 0)

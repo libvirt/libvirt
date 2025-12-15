@@ -321,7 +321,7 @@ static int make_controller(const char *path, mode_t mode)
     bool unified = false;
     bool hybrid = false;
 
-    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    mock = g_getenv("VIR_CGROUP_MOCK_MODE");
     if (mock) {
         if (STREQ(mock, "unified")) {
             unified = true;
@@ -344,11 +344,11 @@ static int make_controller(const char *path, mode_t mode)
 static void init_sysfs(void)
 {
     const char *mock;
-    char *newfakerootdir;
+    const char *newfakerootdir;
     bool unified = false;
     bool hybrid = false;
 
-    if (!(newfakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
+    if (!(newfakerootdir = g_getenv("LIBVIRT_FAKE_ROOT_DIR"))) {
         fprintf(stderr, "Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
         abort();
     }
@@ -359,7 +359,7 @@ static void init_sysfs(void)
     VIR_FREE(fakerootdir);
     fakerootdir = g_strdup(newfakerootdir);
 
-    mock = getenv("VIR_CGROUP_MOCK_MODE");
+    mock = g_getenv("VIR_CGROUP_MOCK_MODE");
     if (mock) {
         if (STREQ(mock, "unified")) {
             unified = true;
@@ -421,7 +421,7 @@ FILE *fopen(const char *path, const char *mode)
     char *filepath = NULL;
     const char *type = NULL;
     FILE *rc = NULL;
-    const char *filename = getenv("VIR_CGROUP_MOCK_FILENAME");
+    const char *filename = g_getenv("VIR_CGROUP_MOCK_FILENAME");
 
     init_syms();
 

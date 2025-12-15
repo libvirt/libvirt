@@ -211,7 +211,7 @@ mymain(void)
         ret = -1;
 
  cleanup:
-    if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
+    if (g_getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(tmpdir);
     VIR_FREE(virscsi_prefix);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

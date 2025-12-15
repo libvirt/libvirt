@@ -163,7 +163,7 @@ getSocketPath(virURI *uri)
 static int
 virAdmGetDefaultURI(virConf *conf, char **uristr)
 {
-    const char *defname = getenv("LIBVIRT_ADMIN_DEFAULT_URI");
+    const char *defname = g_getenv("LIBVIRT_ADMIN_DEFAULT_URI");
     if (defname && *defname) {
         *uristr = g_strdup(defname);
         VIR_DEBUG("Using LIBVIRT_ADMIN_DEFAULT_URI '%s'", *uristr);

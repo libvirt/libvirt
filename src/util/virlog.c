@@ -1214,18 +1214,18 @@ virLogSetFromEnv(void)
     if (virLogInitialize() < 0)
         return -1;
 
-    debugEnv = getenv("LIBVIRT_DEBUG");
+    debugEnv = g_getenv("LIBVIRT_DEBUG");
     if (debugEnv && *debugEnv) {
         int priority = virLogParseDefaultPriority(debugEnv);
         if (priority < 0 ||
             virLogSetDefaultPriority(priority) < 0)
             return -1;
     }
-    debugEnv = getenv("LIBVIRT_LOG_FILTERS");
+    debugEnv = g_getenv("LIBVIRT_LOG_FILTERS");
     if (debugEnv && *debugEnv &&
         virLogSetFilters(debugEnv))
         return -1;
-    debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
+    debugEnv = g_getenv("LIBVIRT_LOG_OUTPUTS");
     if (debugEnv && *debugEnv &&
         virLogSetOutputs(debugEnv))
         return -1;

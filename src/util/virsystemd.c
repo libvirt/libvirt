@@ -666,7 +666,7 @@ virSystemdNotify(const char *msg)
 
     VIR_DEBUG("Notify '%s'", msg);
 
-    if (!(path = getenv("NOTIFY_SOCKET"))) {
+    if (!(path = g_getenv("NOTIFY_SOCKET"))) {
         VIR_DEBUG("Skipping systemd notify, not requested");
         return;
     }
@@ -891,7 +891,7 @@ virSystemdGetListenFDs(void)
 
     VIR_DEBUG("Setting up networking from caller");
 
-    if (!(pidstr = getenv("LISTEN_PID"))) {
+    if (!(pidstr = g_getenv("LISTEN_PID"))) {
         VIR_DEBUG("No LISTEN_PID from caller");
         return 0;
     }
@@ -907,7 +907,7 @@ virSystemdGetListenFDs(void)
         return 0;
     }
 
-    if (!(fdstr = getenv("LISTEN_FDS"))) {
+    if (!(fdstr = g_getenv("LISTEN_FDS"))) {
         VIR_DEBUG("No LISTEN_FDS from caller");
         return 0;
     }
@@ -954,7 +954,7 @@ virSystemdActivationNew(int nfds)
 
     act->fds = virHashNew(virSystemdActivationEntryFree);
 
-    fdnames = getenv("LISTEN_FDNAMES");
+    fdnames = g_getenv("LISTEN_FDNAMES");
     if (!fdnames) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing LISTEN_FDNAMES env from systemd socket activation"));

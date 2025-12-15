@@ -84,10 +84,10 @@ main(int argc, char **argv)
     const char *ip = NULL;
     const char *mac = NULL;
     g_autofree char *leases_str = NULL;
-    const char *iaid = getenv("DNSMASQ_IAID");
-    const char *clientid = getenv("DNSMASQ_CLIENT_ID");
-    const char *interface = getenv("DNSMASQ_INTERFACE");
-    const char *hostname = getenv("DNSMASQ_SUPPLIED_HOSTNAME");
+    const char *iaid = g_getenv("DNSMASQ_IAID");
+    const char *clientid = g_getenv("DNSMASQ_CLIENT_ID");
+    const char *interface = g_getenv("DNSMASQ_INTERFACE");
+    const char *hostname = g_getenv("DNSMASQ_SUPPLIED_HOSTNAME");
     g_autofree char *server_duid = NULL;
     int action = -1;
     int pid_file_fd = -1;
@@ -128,7 +128,7 @@ main(int argc, char **argv)
      * events for expired leases. So, libvirtd sets another env var for this
      * purpose */
     if (!interface &&
-        !(interface = getenv("VIR_BRIDGE_NAME"))) {
+        !(interface = g_getenv("VIR_BRIDGE_NAME"))) {
         fprintf(stderr, _("interface not set\n"));
         exit(EXIT_FAILURE);
     }
@@ -147,11 +147,11 @@ main(int argc, char **argv)
 
     /* Check if it is an IPv6 lease */
     if (iaid) {
-        mac = getenv("DNSMASQ_MAC");
+        mac = g_getenv("DNSMASQ_MAC");
         clientid = argv[2];
     }
 
-    server_duid = g_strdup(getenv("DNSMASQ_SERVER_DUID"));
+    server_duid = g_strdup(g_getenv("DNSMASQ_SERVER_DUID"));
 
     custom_lease_file = g_strdup_printf(LOCALSTATEDIR "/lib/libvirt/dnsmasq/%s.status",
                                         interface);

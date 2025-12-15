@@ -56,7 +56,7 @@ setmntent(const char *filename, const char *type)
 
     init_syms();
 
-    if ((mtab = getenv("LIBVIRT_MTAB")))
+    if ((mtab = g_getenv("LIBVIRT_MTAB")))
         filename = mtab;
 
     return real_setmntent(filename, type);
@@ -170,7 +170,7 @@ statfs(const char *path, struct statfs *buf)
 
     init_syms();
 
-    if ((mtab = getenv("LIBVIRT_MTAB")))
+    if ((mtab = g_getenv("LIBVIRT_MTAB")))
         return statfs_mock(mtab, path, buf);
 
     return real_statfs(path, buf);
@@ -183,7 +183,7 @@ realpath(const char *path, char *resolved)
 
     init_syms();
 
-    if (getenv("LIBVIRT_MTAB")) {
+    if (g_getenv("LIBVIRT_MTAB")) {
         const char *p;
 
         if ((p = STRSKIP(path, "/some/symlink"))) {
@@ -208,7 +208,7 @@ realpath(const char *path, char *resolved)
 int
 access(const char *path, int mode)
 {
-    const char *mtab = getenv("LIBVIRT_MTAB");
+    const char *mtab = g_getenv("LIBVIRT_MTAB");
 
     init_syms();
 

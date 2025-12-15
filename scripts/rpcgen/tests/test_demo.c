@@ -41,7 +41,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
 
     actlen = xdr_getpos(&xdr);
 
-    if (getenv("VIR_TEST_REGENERATE_OUTPUT")) {
+    if (g_getenv("VIR_TEST_REGENERATE_OUTPUT")) {
         g_file_set_contents(expfile, buf, actlen, NULL);
     }
 

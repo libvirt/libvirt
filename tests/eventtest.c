@@ -323,7 +323,7 @@ mymain(void)
     size_t i;
     pthread_t eventThread;
     char one = '1';
-    char *debugEnv = getenv("LIBVIRT_DEBUG");
+    const char *debugEnv = g_getenv("LIBVIRT_DEBUG");
 
     for (i = 0; i < NUM_FDS; i++) {
         if (virPipeQuiet(handles[i].pipeFD) < 0) {

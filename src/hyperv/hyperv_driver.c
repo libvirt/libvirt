@@ -2461,7 +2461,7 @@ hypervDomainScreenshot(virDomainPtr domain,
         ppmBuffer[i * 3 + 2] = (blueFive * 527 + 23) >> 6;
     }
 
-    temporaryDirectory = getenv("TMPDIR");
+    temporaryDirectory = g_getenv("TMPDIR");
     if (!temporaryDirectory)
         temporaryDirectory = "/tmp";
     temporaryFile = g_strdup_printf("%s/libvirt.hyperv.screendump.XXXXXX", temporaryDirectory);
