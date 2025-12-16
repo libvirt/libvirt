@@ -328,6 +328,63 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 }
 
 static int
+bhyveBuildSCSIControllerArgStr(const virDomainDef *def,
+                               virDomainControllerDef *controller,
+                               struct _bhyveConn *driver G_GNUC_UNUSED,
+                               virCommand *cmd)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *disk_source;
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        g_auto(virBuffer) device = VIR_BUFFER_INITIALIZER;
+        virDomainDiskDef *disk = def->disks[i];
+
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)
+            continue;
+
+        if (disk->info.addr.drive.controller != controller->idx)
+            continue;
+
+        VIR_DEBUG("disk %zu controller %d", i, controller->idx);
+
+        if (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_CTL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported disk type"));
+            return -1;
+        }
+
+        if (virDomainDiskTranslateSourcePool(disk) < 0)
+            return -1;
+
+        disk_source = virDomainDiskGetSource(disk);
+
+        if ((disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+            (disk_source == NULL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("cdrom device without source path not supported"));
+            return -1;
+        }
+
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("unsupported disk device"));
+            return -1;
+        }
+
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:0,virtio-scsi,%s",
+                               controller->info.addr.pci.slot,
+                               virDomainDiskGetSource(disk));
+
+        return 0;
+    }
+
+    return 0;
+}
+
+static int
 bhyveBuildUSBControllerArgStr(const virDomainDef *def,
                               virDomainControllerDef *controller,
                               virCommand *cmd)
@@ -458,6 +515,9 @@ bhyveBuildDiskArgStr(const virDomainDef *def,
     case VIR_DOMAIN_DISK_BUS_SATA:
         /* Handled by bhyveBuildAHCIControllerArgStr() */
         break;
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        /* Handled by bhyveBuildSCSIControllerArgStr() */
+        break;
     case VIR_DOMAIN_DISK_BUS_NVME:
         /* Handled by bhyveBuildNVMeControllerArgStr() */
         break;
@@ -465,7 +525,6 @@ bhyveBuildDiskArgStr(const virDomainDef *def,
         if (bhyveBuildVirtIODiskArgStr(def, disk, cmd) < 0)
             return -1;
         break;
-    case VIR_DOMAIN_DISK_BUS_SCSI:
     case VIR_DOMAIN_DISK_BUS_IDE:
     case VIR_DOMAIN_DISK_BUS_FDC:
     case VIR_DOMAIN_DISK_BUS_NONE:
@@ -502,6 +561,10 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
         if (bhyveBuildAHCIControllerArgStr(def, controller, driver, cmd) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+        if (bhyveBuildSCSIControllerArgStr(def, controller, driver, cmd) < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         if (++*nusbcontrollers > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -528,7 +591,6 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
-    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
@@ -1087,6 +1149,8 @@ virBhyveProcessBuildCustomLoaderCmd(virDomainDef *def)
 static bool
 virBhyveUsableDisk(virDomainDiskDef *disk)
 {
+    virStorageType disk_type = virDomainDiskGetType(disk);
+
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         return false;
 
@@ -1097,8 +1161,9 @@ virBhyveUsableDisk(virDomainDiskDef *disk)
         return false;
     }
 
-    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
-        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
+    if ((disk_type != VIR_STORAGE_TYPE_FILE) &&
+        (disk_type != VIR_STORAGE_TYPE_VOLUME) &&
+        (disk_type != VIR_STORAGE_TYPE_CTL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
         return false;

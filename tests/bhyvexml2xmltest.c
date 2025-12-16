@@ -123,6 +123,7 @@ mymain(void)
     DO_TEST_DIFFERENT("2-nvme-2-controllers");
     DO_TEST_DIFFERENT("passthru-multiple-devs");
     DO_TEST_DIFFERENT("slirp");
+    DO_TEST_DIFFERENT("virtio-scsi");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");
