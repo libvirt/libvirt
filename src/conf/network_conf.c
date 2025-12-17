@@ -901,12 +901,32 @@ virNetworkDNSDefParseXML(const char *networkName,
         for (i = 0; i < nfwds; i++) {
             g_autofree char *addr = virXMLPropString(fwdNodes[i], "addr");
 
-            if (addr && virSocketAddrParse(&def->forwarders[i].addr,
-                                           addr, AF_UNSPEC) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("Invalid forwarder IP address '%1$s' in network '%2$s'"),
-                               addr, networkName);
-                return -1;
+            if (addr) {
+                int port = -1;
+                int rc;
+
+                if (virSocketAddrParse(&def->forwarders[i].addr,
+                                       addr, AF_UNSPEC) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Invalid forwarder IP address '%1$s' in network '%2$s'"),
+                                   addr, networkName);
+                    return -1;
+                }
+
+                if ((rc = virXMLPropInt(fwdNodes[i], "port", 10,
+                                        VIR_XML_PROP_NONZERO |
+                                        VIR_XML_PROP_NONNEGATIVE,
+                                        &port, -1)) < 0) {
+                    return -1;
+                } else if (rc > 0) {
+                    if (port > 65535) {
+                        virReportError(VIR_ERR_INVALID_ARG,
+                                       _("port '%1$d' out of range"), port);
+                        return -1;
+                    }
+
+                    virSocketAddrSetPort(&def->forwarders[i].addr, port);
+                }
             }
             def->forwarders[i].domain = virXMLPropString(fwdNodes[i], "domain");
             if (!(addr || def->forwarders[i].domain)) {
@@ -1986,11 +2006,15 @@ virNetworkDNSDefFormat(virBuffer *buf,
         }
         if (VIR_SOCKET_ADDR_VALID(&def->forwarders[i].addr)) {
             g_autofree char *addr = virSocketAddrFormat(&def->forwarders[i].addr);
+            int port = virSocketAddrGetPort(&def->forwarders[i].addr);
 
             if (!addr)
                 return -1;
 
             virBufferAsprintf(buf, " addr='%s'", addr);
+
+            if (port > 0)
+                virBufferAsprintf(buf, " port='%d'", port);
         }
         virBufferAddLit(buf, "/>\n");
     }

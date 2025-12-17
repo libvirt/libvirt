@@ -287,6 +287,11 @@
                   <optional>
                     <attribute name="domain"><ref name="dnsName"/></attribute>
                   </optional>
+                  <optional>
+                    <attribute name="port">
+                      <ref name="port"/>
+                    </attribute>
+                  </optional>
                   <empty/>
                 </element>
               </zeroOrMore>

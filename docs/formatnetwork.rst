@@ -695,7 +695,7 @@ of 'route' or 'nat'.
    <dns>
      <txt name="example" value="example value"/>
      <forwarder addr="8.8.8.8"/>
-     <forwarder domain='example.com' addr="8.8.4.4"/>
+     <forwarder domain='example.com' addr='8.8.4.4' port='1234'/>
      <forwarder domain='www.example.com'/>
      <srv service='name' protocol='tcp' domain='test-domain-name' target='.'
        port='1024' priority='10' weight='10'/>
@@ -762,8 +762,10 @@ of 'route' or 'nat'.
       will be resolved locally (or via the host's standard DNS forwarding if
       they can't be resolved locally). If an ``addr`` is specified by itself,
       then all DNS requests to the network's DNS server will be forwarded to the
-      DNS server at that address with no exceptions. ``addr`` :since:`Since
-      1.1.3` , ``domain`` :since:`Since 2.2.0`.
+      DNS server at that address with no exceptions. Optionally, the ``port``
+      attribute can be given among with ``addr`` to specify a nonstandard
+      port of the DNS server.  ``addr`` :since:`Since 1.1.3`, ``domain``
+      :since:`Since 2.2.0`, ``port`` :since:`Since 12.0.0`.
    ``txt``
       A ``dns`` element can have 0 or more ``txt`` elements. Each txt element
       defines a DNS TXT record and has two attributes, both required: a name
