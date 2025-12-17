@@ -27,6 +27,7 @@ struct _testInfo {
     unsigned int flags;
     testCompareNetXML2XMLResult expectResult;
     virNetworkXMLOption *xmlopt; /* borrowed, immutable */
+    virNetworkDef *def;
     char *inxml;
     char *outxml;
 };
@@ -40,6 +41,7 @@ void testInfoFree(testInfo *info)
     if (!info)
         return;
 
+    virNetworkDefFree(info->def);
     VIR_FREE(info->inxml);
     VIR_FREE(info->outxml);
     VIR_FREE(info);
@@ -52,23 +54,23 @@ testCompareXMLToXMLFiles(const void *data)
     g_autofree char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
-    g_autoptr(virNetworkDef) dev = NULL;
+    g_autoptr(virNetworkDef) def = NULL;
 
-    if (!(dev = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false))) {
+    if (!(def = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
     }
     if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
         goto cleanup;
 
-    if (networkValidateTests(dev) < 0) {
+    if (networkValidateTests(def) < 0) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE;
         goto cleanup;
     }
     if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
         goto cleanup;
 
-    if (!(actual = virNetworkDefFormat(dev, info->xmlopt, info->flags))) {
+    if (!(actual = virNetworkDefFormat(def, info->xmlopt, info->flags))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT;
         goto cleanup;
     }
@@ -88,6 +90,8 @@ testCompareXMLToXMLFiles(const void *data)
         if (info->expectResult != TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS) {
             VIR_TEST_DEBUG("Got expected failure code=%d msg=%s",
                            result, virGetLastErrorMessage());
+        } else {
+            info->def = g_steal_pointer(&def);
         }
     } else {
         ret = -1;
