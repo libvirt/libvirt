@@ -11,6 +11,8 @@
 #include "bridge_driver.h"
 #define LIBVIRT_BRIDGE_DRIVER_PRIV_H_ALLOW
 #include "bridge_driver_priv.h"
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
+#include "vircommandpriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -27,9 +29,12 @@ struct _testInfo {
     unsigned int flags;
     testCompareNetXML2XMLResult expectResult;
     virNetworkXMLOption *xmlopt; /* borrowed, immutable */
+    dnsmasqCaps *caps;
     virNetworkDef *def;
     char *inxml;
     char *outxml;
+    char *outconf;
+    char *outhostsfile;
 };
 
 typedef struct _testInfo testInfo;
@@ -44,6 +49,8 @@ void testInfoFree(testInfo *info)
     virNetworkDefFree(info->def);
     VIR_FREE(info->inxml);
     VIR_FREE(info->outxml);
+    VIR_FREE(info->outconf);
+    VIR_FREE(info->outhostsfile);
     VIR_FREE(info);
 }
 
@@ -104,37 +111,165 @@ testCompareXMLToXMLFiles(const void *data)
 }
 
 
+static int
+testCompareXMLToConfFiles(const void *data)
+{
+    testInfo *info = (void *) data;
+    char *confactual = NULL;
+    g_autofree char *hostsfileactual = NULL;
+    int ret = -1;
+    virNetworkDef *def = NULL;
+    virNetworkObj *obj = NULL;
+    g_autofree char *pidfile = NULL;
+    g_autoptr(dnsmasqContext) dctx = NULL;
+    bool compareFailed = false;
+
+    if (!(obj = virNetworkObjNew()))
+        goto fail;
+
+    if (!(def = g_steal_pointer(&info->def))) {
+        /* Previous test wasn't executed. */
+        if (!(def = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false)))
+            goto fail;
+
+        if (networkValidateTests(def) < 0) {
+            virNetworkDefFree(def);
+            goto fail;
+        }
+    }
+
+    virNetworkObjSetDef(obj, def);
+
+    if (!networkNeedsDnsmasq(def)) {
+        ret = EXIT_AM_SKIP;
+        goto fail;
+    }
+
+    dctx = dnsmasqContextNew(def->name, "/var/lib/libvirt/dnsmasq");
+
+    if (dctx == NULL)
+        goto fail;
+
+    if (networkDnsmasqConfContents(obj, pidfile, &confactual,
+                                   &hostsfileactual, dctx, info->caps) < 0)
+        goto fail;
+
+    /* Any changes to this function ^^ should be reflected here too. */
+#ifndef __linux__
+    {
+        char * tmp;
+
+        if (!(tmp = virStringReplace(confactual,
+                                     "except-interface=lo0\n",
+                                     "except-interface=lo\n")))
+            goto fail;
+        VIR_FREE(confactual);
+        confactual = g_steal_pointer(&tmp);
+    }
+#endif
+
+    if (virTestCompareToFile(confactual, info->outconf) < 0)
+        compareFailed = true;
+
+    if (hostsfileactual) {
+        if (virTestCompareToFile(hostsfileactual, info->outhostsfile) < 0) {
+            compareFailed = true;
+        }
+    } else {
+        if (virFileExists(info->outhostsfile)) {
+            VIR_TEST_DEBUG("%s: hostsfile exists but the configuration did not specify any host",
+                           info->outhostsfile);
+            compareFailed = true;
+        }
+    }
+
+    if (compareFailed)
+        goto fail;
+
+    ret = 0;
+
+ fail:
+    VIR_FREE(confactual);
+    virNetworkObjEndAPI(&obj);
+    return ret;
+}
+
+static void
+buildCapsCallback(const char *const*args,
+                  const char *const*env G_GNUC_UNUSED,
+                  const char *input G_GNUC_UNUSED,
+                  char **output,
+                  char **error G_GNUC_UNUSED,
+                  int *status,
+                  void *opaque G_GNUC_UNUSED)
+{
+    if (STREQ(args[0], "/usr/sbin/dnsmasq") && STREQ(args[1], "--version")) {
+        *output = g_strdup("Dnsmasq version 2.67\n");
+        *status = EXIT_SUCCESS;
+    } else {
+        *status = EXIT_FAILURE;
+    }
+}
+
+
+static dnsmasqCaps *
+buildCaps(void)
+{
+    g_autoptr(dnsmasqCaps) caps = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+
+    virCommandSetDryRun(dryRunToken, NULL, true, true, buildCapsCallback, NULL);
+
+    caps = dnsmasqCapsNewFromBinary();
+
+    return g_steal_pointer(&caps);
+}
+
+
 static void
 testRun(const char *name,
         int *ret,
         virNetworkXMLOption *xmlopt,
+        dnsmasqCaps *caps,
         testCompareNetXML2XMLResult expectResult,
         unsigned int flags)
 {
     g_autofree char *name_xml2xml = g_strdup_printf("Network XML-2-XML %s", name);
+    g_autofree char *name_xml2conf = g_strdup_printf("Network XML-2-Conf %s", name);
     g_autoptr(testInfo) info = g_new0(testInfo, 1);
 
     info->name = name;
     info->flags = flags;
     info->expectResult = expectResult;
     info->xmlopt = xmlopt;
+    info->caps = caps;
     info->inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, name);
     info->outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, name);
+    /* Temporarily use conf files from networkxml2confdata/ */
+    info->outconf = g_strdup_printf("%s/networkxml2confdata/%s.conf", abs_srcdir, name);
+    info->outhostsfile = g_strdup_printf("%s/networkxml2confdata/%s.hostsfile", abs_srcdir, name);
 
     virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, info);
+
+    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
+        virTestRunLog(ret, name_xml2conf, testCompareXMLToConfFiles, info);
 }
 
 static int
 mymain(void)
 {
     g_autoptr(virNetworkXMLOption) xmlopt = NULL;
+    g_autoptr(dnsmasqCaps) caps = NULL;
     int ret = 0;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         return -1;
 
+    if (!(caps = buildCaps()))
+        return -1;
+
 #define DO_TEST_FULL(name, flags, expectResult) \
-    testRun(name, &ret, xmlopt, expectResult, flags)
+    testRun(name, &ret, xmlopt, caps, expectResult, flags)
 #define DO_TEST(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
 #define DO_TEST_FLAGS(name, flags) \
@@ -202,4 +337,5 @@ mymain(void)
 
 VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virdnsmasq"),
                       VIR_TEST_MOCK("virrandom"))
