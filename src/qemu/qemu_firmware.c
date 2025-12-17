@@ -985,15 +985,16 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
     if (loader->stateless == VIR_TRISTATE_BOOL_YES)
         return;
 
-    /* If the NVRAM format hasn't been set yet, inherit the same as
-     * the loader */
-    if (loader->nvram && !loader->nvram->format)
-        loader->nvram->format = loader->format;
-
     if (loader->nvram) {
-        /* Nothing to do if a proper NVRAM backend is already configured */
-        if (!virStorageSourceIsEmpty(loader->nvram))
+        /* If a proper NVRAM backend is already configured, we are
+         * done for the most part. We might still need to set the
+         * NVRAM format if that's missing though */
+        if (!virStorageSourceIsEmpty(loader->nvram)) {
+            if (!loader->nvram->format) {
+                loader->nvram->format = loader->format;
+            }
             return;
+        }
 
         /* otherwise we want to reset and re-populate the definition */
         virObjectUnref(loader->nvram);
