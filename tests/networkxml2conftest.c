@@ -29,6 +29,7 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     g_autofree char *pidfile = NULL;
     g_autoptr(dnsmasqContext) dctx = NULL;
     g_autoptr(virNetworkXMLOption) xmlopt = NULL;
+    bool compareFailed = false;
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto fail;
@@ -73,19 +74,22 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
 #endif
 
     if (virTestCompareToFile(confactual, outconf) < 0)
-        goto fail;
+        compareFailed = true;
 
     if (hostsfileactual) {
         if (virTestCompareToFile(hostsfileactual, outhostsfile) < 0) {
-            goto fail;
+            compareFailed = true;
         }
     } else {
         if (virFileExists(outhostsfile)) {
             VIR_TEST_DEBUG("%s: hostsfile exists but the configuration did not specify any host",
                            outhostsfile);
-            goto fail;
+            compareFailed = true;
         }
     }
+
+    if (compareFailed)
+        goto fail;
 
     ret = 0;
 
