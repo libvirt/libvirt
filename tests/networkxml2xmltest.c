@@ -22,19 +22,33 @@ typedef enum {
     TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE,
 } testCompareNetXML2XMLResult;
 
-struct testInfo {
+struct _testInfo {
     const char *name;
     unsigned int flags;
     testCompareNetXML2XMLResult expectResult;
-    virNetworkXMLOption *xmlopt;
-    const char *inxml;
-    const char *outxml;
+    virNetworkXMLOption *xmlopt; /* borrowed, immutable */
+    char *inxml;
+    char *outxml;
 };
+
+typedef struct _testInfo testInfo;
+void testInfoFree(testInfo *info);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(testInfo, testInfoFree);
+
+void testInfoFree(testInfo *info)
+{
+    if (!info)
+        return;
+
+    VIR_FREE(info->inxml);
+    VIR_FREE(info->outxml);
+    VIR_FREE(info);
+}
 
 static int
 testCompareXMLToXMLFiles(const void *data)
 {
-    struct testInfo *info = (void *) data;
+    testInfo *info = (void *) data;
     g_autofree char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
@@ -94,17 +108,16 @@ testRun(const char *name,
         unsigned int flags)
 {
     g_autofree char *name_xml2xml = g_strdup_printf("Network XML-2-XML %s", name);
-    struct testInfo info = { .name = name, .flags = flags, .expectResult = expectResult, .xmlopt = xmlopt };
-    g_autofree char *inxml = NULL;
-    g_autofree char *outxml = NULL;
+    g_autoptr(testInfo) info = g_new0(testInfo, 1);
 
-    inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, name);
-    outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, name);
+    info->name = name;
+    info->flags = flags;
+    info->expectResult = expectResult;
+    info->xmlopt = xmlopt;
+    info->inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, name);
+    info->outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, name);
 
-    info.inxml = inxml;
-    info.outxml = outxml;
-
-    virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, &info);
+    virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, info);
 }
 
 static int
