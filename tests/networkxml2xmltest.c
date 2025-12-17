@@ -22,86 +22,69 @@ typedef enum {
     TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE,
 } testCompareNetXML2XMLResult;
 
+struct testInfo {
+    const char *name;
+    unsigned int flags;
+    testCompareNetXML2XMLResult expectResult;
+    virNetworkXMLOption *xmlopt;
+    const char *inxml;
+    const char *outxml;
+};
+
 static int
-testCompareXMLToXMLFiles(const char *inxml,
-                         const char *outxml,
-                         unsigned int flags,
-                         testCompareNetXML2XMLResult expectResult,
-                         virNetworkXMLOption *xmlopt)
+testCompareXMLToXMLFiles(const void *data)
 {
+    struct testInfo *info = (void *) data;
     g_autofree char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     g_autoptr(virNetworkDef) dev = NULL;
 
-    if (!(dev = virNetworkDefParse(NULL, inxml, xmlopt, false))) {
+    if (!(dev = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
     }
-    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
+    if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
         goto cleanup;
 
     if (networkValidateTests(dev) < 0) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE;
         goto cleanup;
     }
-    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
+    if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
         goto cleanup;
 
-    if (!(actual = virNetworkDefFormat(dev, xmlopt, flags))) {
+    if (!(actual = virNetworkDefFormat(dev, info->xmlopt, info->flags))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT;
         goto cleanup;
     }
-    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT)
+    if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT)
         goto cleanup;
 
-    if (virTestCompareToFile(actual, outxml) < 0) {
+    if (virTestCompareToFile(actual, info->outxml) < 0) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE;
         goto cleanup;
     }
-    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE)
+    if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE)
         goto cleanup;
 
  cleanup:
-    if (result == expectResult) {
+    if (result == info->expectResult) {
         ret = 0;
-        if (expectResult != TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS) {
+        if (info->expectResult != TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS) {
             VIR_TEST_DEBUG("Got expected failure code=%d msg=%s",
                            result, virGetLastErrorMessage());
         }
     } else {
         ret = -1;
         VIR_TEST_DEBUG("Expected result code=%d but received code=%d",
-                       expectResult, result);
+                       info->expectResult, result);
     }
     virResetLastError();
 
     return ret;
 }
 
-struct testInfo {
-    const char *name;
-    unsigned int flags;
-    testCompareNetXML2XMLResult expectResult;
-    virNetworkXMLOption *xmlopt;
-};
-
-static int
-testCompareXMLToXMLHelper(const void *data)
-{
-    const struct testInfo *info = data;
-    int result = -1;
-    g_autofree char *inxml = NULL;
-    g_autofree char *outxml = NULL;
-
-    inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, info->name);
-    outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, info->name);
-
-    result = testCompareXMLToXMLFiles(inxml, outxml, info->flags,
-                                      info->expectResult, info->xmlopt);
-
-    return result;
-}
 
 static void
 testRun(const char *name,
@@ -112,8 +95,16 @@ testRun(const char *name,
 {
     g_autofree char *name_xml2xml = g_strdup_printf("Network XML-2-XML %s", name);
     struct testInfo info = { .name = name, .flags = flags, .expectResult = expectResult, .xmlopt = xmlopt };
+    g_autofree char *inxml = NULL;
+    g_autofree char *outxml = NULL;
 
-    virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLHelper, &info);
+    inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, name);
+    outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, name);
+
+    info.inxml = inxml;
+    info.outxml = outxml;
+
+    virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, &info);
 }
 
 static int
