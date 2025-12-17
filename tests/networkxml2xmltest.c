@@ -23,18 +23,16 @@ typedef enum {
 } testCompareNetXML2XMLResult;
 
 static int
-testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
+testCompareXMLToXMLFiles(const char *inxml,
+                         const char *outxml,
                          unsigned int flags,
-                         testCompareNetXML2XMLResult expectResult)
+                         testCompareNetXML2XMLResult expectResult,
+                         virNetworkXMLOption *xmlopt)
 {
     g_autofree char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     g_autoptr(virNetworkDef) dev = NULL;
-    g_autoptr(virNetworkXMLOption) xmlopt = NULL;
-
-    if (!(xmlopt = networkDnsmasqCreateXMLConf()))
-        goto cleanup;
 
     if (!(dev = virNetworkDefParse(NULL, inxml, xmlopt, false))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
@@ -85,6 +83,7 @@ struct testInfo {
     const char *name;
     unsigned int flags;
     testCompareNetXML2XMLResult expectResult;
+    virNetworkXMLOption *xmlopt;
 };
 
 static int
@@ -99,7 +98,7 @@ testCompareXMLToXMLHelper(const void *data)
     outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, info->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml, info->flags,
-                                      info->expectResult);
+                                      info->expectResult, info->xmlopt);
 
     return result;
 }
@@ -107,11 +106,15 @@ testCompareXMLToXMLHelper(const void *data)
 static int
 mymain(void)
 {
+    g_autoptr(virNetworkXMLOption) xmlopt = NULL;
     int ret = 0;
+
+    if (!(xmlopt = networkDnsmasqCreateXMLConf()))
+        return -1;
 
 #define DO_TEST_FULL(name, flags, expectResult) \
     do { \
-        const struct testInfo info = {name, flags, expectResult}; \
+        const struct testInfo info = {name, flags, expectResult, xmlopt}; \
         if (virTestRun("Network XML-2-XML " name, \
                        testCompareXMLToXMLHelper, &info) < 0) \
             ret = -1; \
