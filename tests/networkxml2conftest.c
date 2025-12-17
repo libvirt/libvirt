@@ -33,16 +33,16 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         goto fail;
 
-    if (!(def = virNetworkDefParse(NULL, inxml, xmlopt, false)))
-        goto fail;
-
-    if (networkValidateTests(def) < 0)
-        goto fail;
-
     if (!(obj = virNetworkObjNew()))
         goto fail;
 
+    if (!(def = virNetworkDefParse(NULL, inxml, xmlopt, false)))
+        goto fail;
+
     virNetworkObjSetDef(obj, def);
+
+    if (networkValidateTests(def) < 0)
+        goto fail;
 
     if (!networkNeedsDnsmasq(def)) {
         VIR_TEST_VERBOSE("spurious request to generate conf files. Would not start dnsmasq in real life scenario");
