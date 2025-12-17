@@ -103,6 +103,19 @@ testCompareXMLToXMLHelper(const void *data)
     return result;
 }
 
+static void
+testRun(const char *name,
+        int *ret,
+        virNetworkXMLOption *xmlopt,
+        testCompareNetXML2XMLResult expectResult,
+        unsigned int flags)
+{
+    g_autofree char *name_xml2xml = g_strdup_printf("Network XML-2-XML %s", name);
+    struct testInfo info = { .name = name, .flags = flags, .expectResult = expectResult, .xmlopt = xmlopt };
+
+    virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLHelper, &info);
+}
+
 static int
 mymain(void)
 {
@@ -113,12 +126,7 @@ mymain(void)
         return -1;
 
 #define DO_TEST_FULL(name, flags, expectResult) \
-    do { \
-        const struct testInfo info = {name, flags, expectResult, xmlopt}; \
-        if (virTestRun("Network XML-2-XML " name, \
-                       testCompareXMLToXMLHelper, &info) < 0) \
-            ret = -1; \
-    } while (0)
+    testRun(name, &ret, xmlopt, expectResult, flags)
 #define DO_TEST(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
 #define DO_TEST_FLAGS(name, flags) \
