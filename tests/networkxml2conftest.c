@@ -75,18 +75,16 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     if (virTestCompareToFile(confactual, outconf) < 0)
         goto fail;
 
-    if (virFileExists(outhostsfile)) {
-        if (!hostsfileactual) {
-            VIR_TEST_DEBUG("%s: hostsfile exists but the configuration did "
-                           "not specify any host", outhostsfile);
-            goto fail;
-        } else if (virTestCompareToFile(hostsfileactual, outhostsfile) < 0) {
+    if (hostsfileactual) {
+        if (virTestCompareToFile(hostsfileactual, outhostsfile) < 0) {
             goto fail;
         }
-    } else if (hostsfileactual) {
-        VIR_TEST_DEBUG("%s: file does not exist but actual data was expected",
-                       outhostsfile);
-        goto fail;
+    } else {
+        if (virFileExists(outhostsfile)) {
+            VIR_TEST_DEBUG("%s: hostsfile exists but the configuration did not specify any host",
+                           outhostsfile);
+            goto fail;
+        }
     }
 
     ret = 0;
