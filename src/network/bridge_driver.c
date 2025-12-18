@@ -1212,10 +1212,14 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                 virBufferAsprintf(&configbuf, "/%s/", fwd->domain);
             if (VIR_SOCKET_ADDR_VALID(&fwd->addr)) {
                 g_autofree char *addr = virSocketAddrFormat(&fwd->addr);
+                int port = virSocketAddrGetPort(&fwd->addr);
 
                 if (!addr)
                     return -1;
-                virBufferAsprintf(&configbuf, "%s\n", addr);
+                virBufferAddStr(&configbuf, addr);
+                if (port > 0)
+                    virBufferAsprintf(&configbuf, "#%d", port);
+                virBufferAddChar(&configbuf, '\n');
                 if (!fwd->domain)
                     addNoResolv = true;
             } else {
