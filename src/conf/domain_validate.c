@@ -1811,6 +1811,16 @@ virDomainDefOSValidate(const virDomainDef *def,
         }
     }
 
+    if (loader->type == VIR_DOMAIN_LOADER_TYPE_ROM) {
+        if (loader->format &&
+            loader->format != VIR_STORAGE_FILE_RAW) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Invalid format '%1$s' for ROM loader type"),
+                           virStorageFileFormatTypeToString(loader->format));
+            return -1;
+        }
+    }
+
     if (def->os.shim && !def->os.kernel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("shim only allowed with kernel option"));
