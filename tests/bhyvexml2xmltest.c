@@ -31,7 +31,7 @@ testCompareXMLToXMLHelper(const void *data)
     bool is_different = info->flags & FLAG_IS_DIFFERENT;
     int ret = -1;
 
-    xml_in = g_strdup_printf("%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
+    xml_in = g_strdup_printf("%s/bhyvexml2argvdata/x86_64/bhyvexml2argv-%s.xml",
                              abs_srcdir, info->name);
     xml_out = g_strdup_printf("%s/bhyvexml2xmloutdata/bhyvexml2xmlout-%s.xml",
                               abs_srcdir, info->name);
