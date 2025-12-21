@@ -46,13 +46,14 @@ virBhyveCapsBuild(void)
 {
     virCaps *caps;
     virCapsGuest *guest;
+    virArch hostarch = virArchFromHost();
 
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
+    if ((caps = virCapabilitiesNew(hostarch,
                                    false, false)) == NULL)
         return NULL;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                    VIR_ARCH_X86_64, "bhyve",
+                                    hostarch, "bhyve",
                                     NULL, 0, NULL);
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_BHYVE,
