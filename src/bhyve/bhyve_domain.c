@@ -62,6 +62,9 @@ virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks = {
 static bool
 bhyveDomainDefNeedsISAController(virDomainDef *def)
 {
+    if (!ARCH_IS_X86(def->os.arch))
+        return false;
+
     if (def->os.bootloader == NULL && def->os.loader)
         return true;
 
