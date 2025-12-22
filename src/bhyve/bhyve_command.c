@@ -990,9 +990,13 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
      *
      * The PAUSE exit is most useful when there are large numbers of guest VMs running,
      * since it forces the guest to exit when it spins on a lock acquisition.
+     *
+     * These flags are currently supported on amd64 only.
      */
-    virCommandAddArg(cmd, "-H"); /* vmexit from guest on hlt */
-    virCommandAddArg(cmd, "-P"); /* vmexit from guest on pause */
+    if (ARCH_IS_X86(def->os.arch)) {
+        virCommandAddArg(cmd, "-H"); /* vmexit from guest on hlt */
+        virCommandAddArg(cmd, "-P"); /* vmexit from guest on pause */
+    }
 
     virCommandAddArgList(cmd, "-s", "0:0,hostbridge", NULL);
 
