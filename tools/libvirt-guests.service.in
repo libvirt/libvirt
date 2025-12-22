@@ -19,7 +19,7 @@ EnvironmentFile=-@initconfdir@/libvirt-guests
 # out the code
 ExecStart=@libexecdir@/libvirt-guests.sh start
 ExecStop=@libexecdir@/libvirt-guests.sh stop
-Type=oneshot
+Type=exec
 RemainAfterExit=yes
 StandardOutput=journal+console
 TimeoutStopSec=0
