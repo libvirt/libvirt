@@ -147,6 +147,10 @@ mymain(void)
     virTestSetHostArch(VIR_ARCH_AARCH64);
     driver.caps = virBhyveCapsBuild();
 
+    DO_TEST_DIFFERENT("base");
+    DO_TEST_DIFFERENT("console");
+    DO_TEST_DIFFERENT("bootloader");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 
