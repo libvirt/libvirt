@@ -1002,17 +1002,24 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     if (def->os.bootloader == NULL &&
         def->os.loader) {
-        if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_BOOTROM)) {
+        virArch arch = def->os.arch;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-            virBufferAsprintf(&buf, "bootrom,%s", def->os.loader->path);
-            if (def->os.loader->nvram && def->os.loader->nvram->path)
-                virBufferAsprintf(&buf, ",%s", def->os.loader->nvram->path);
 
-            virCommandAddArgList(cmd, "-l", virBufferContentAndReset(&buf), NULL);
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Installed bhyve binary does not support UEFI loader"));
-            return NULL;
+        if (ARCH_IS_X86(arch)) {
+            if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_BOOTROM)) {
+                virBufferAsprintf(&buf, "bootrom,%s", def->os.loader->path);
+                if (def->os.loader->nvram && def->os.loader->nvram->path)
+                    virBufferAsprintf(&buf, ",%s", def->os.loader->nvram->path);
+
+                virCommandAddArgList(cmd, "-l", virBufferContentAndReset(&buf), NULL);
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Installed bhyve binary does not support UEFI loader"));
+                return NULL;
+            }
+        } else if (ARCH_IS_ARM(arch)) {
+            virBufferAsprintf(&buf, "bootrom=%s", def->os.loader->path);
+            virCommandAddArgList(cmd, "-o", virBufferContentAndReset(&buf), NULL);
         }
     }
 

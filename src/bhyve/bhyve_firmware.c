@@ -125,6 +125,9 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
 
     virCheckFlags(0, -1);
 
+    if (!ARCH_IS_X86(def->os.arch))
+        return 0;
+
     if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE)
         goto out;
 

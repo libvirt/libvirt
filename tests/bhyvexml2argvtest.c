@@ -336,6 +336,7 @@ mymain(void)
 
     DO_TEST("base");
     DO_TEST("console");
+    DO_TEST("bootloader");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
