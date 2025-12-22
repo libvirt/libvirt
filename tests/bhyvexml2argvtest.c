@@ -335,6 +335,7 @@ mymain(void)
     driver.caps = virBhyveCapsBuild();
 
     DO_TEST("base");
+    DO_TEST("console");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

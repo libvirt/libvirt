@@ -172,34 +172,53 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommand *cmd)
     if (!def->nserials)
         return 0;
 
-    for (i = 0; i < def->nserials; i++) {
-        chr = def->serials[i];
+    if (ARCH_IS_X86(def->os.arch)) {
+        for (i = 0; i < def->nserials; i++) {
+            chr = def->serials[i];
 
-        /* bhyve supports 4 ports: com1, com2, com3, com4 */
-        if (chr->target.port > 3) {
+            /* bhyve supports 4 ports: com1, com2, com3, com4 */
+            if (chr->target.port > 3) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only four serial ports are supported"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-l");
+
+            switch (chr->source->type) {
+            case VIR_DOMAIN_CHR_TYPE_NMDM:
+                virCommandAddArgFormat(cmd, "com%d,%s",
+                                       chr->target.port + 1, chr->source->data.file.path);
+                break;
+            case VIR_DOMAIN_CHR_TYPE_TCP:
+                virCommandAddArgFormat(cmd, "com%d,tcp=%s:%s",
+                                       chr->target.port + 1,
+                                       chr->source->data.tcp.host,
+                                       chr->source->data.tcp.service);
+                break;
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only 'nmdm' and 'tcp' console types are supported"));
+                return -1;
+            }
+        }
+    } else if (ARCH_IS_ARM(def->os.arch)) {
+        if (def->nserials > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only four serial ports are supported"));
+                           _("Only one console is supported on arm64"));
             return -1;
         }
 
-        virCommandAddArg(cmd, "-l");
-
-        switch (chr->source->type) {
-        case VIR_DOMAIN_CHR_TYPE_NMDM:
-            virCommandAddArgFormat(cmd, "com%d,%s",
-                                   chr->target.port + 1, chr->source->data.file.path);
-            break;
-        case VIR_DOMAIN_CHR_TYPE_TCP:
-            virCommandAddArgFormat(cmd, "com%d,tcp=%s:%s",
-                                   chr->target.port + 1,
-                                   chr->source->data.tcp.host,
-                                   chr->source->data.tcp.service);
-            break;
-        default:
+        chr = def->serials[0];
+        if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only 'nmdm' and 'tcp' console types are supported"));
+                           _("Only 'nmdm' console type is supported on arm64"));
             return -1;
         }
+
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgFormat(cmd, "console=%s",
+                               chr->source->data.file.path);
     }
 
     return 0;
