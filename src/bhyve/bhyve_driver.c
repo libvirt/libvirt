@@ -1621,7 +1621,7 @@ bhyveConnectGetDomainCapabilities(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!ARCH_IS_X86(arch)) {
+    if (!ARCH_IS_X86(arch) && !ARCH_IS_ARM(arch)) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("unsupported architecture: %1$s"),
                        virArchToString(arch));
