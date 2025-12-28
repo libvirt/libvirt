@@ -1780,7 +1780,6 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
                        bool abiUpdate)
 {
     virDomainLoaderDef *loader = def->os.loader;
-    virStorageSource *nvram = loader ? loader->nvram : NULL;
     bool autoSelection = (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE);
     int ret;
 
@@ -1804,13 +1803,14 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
                        virStorageFileFormatTypeToString(loader->format));
         return -1;
     }
-    if (nvram &&
-        nvram->format &&
-        nvram->format != VIR_STORAGE_FILE_RAW &&
-        nvram->format != VIR_STORAGE_FILE_QCOW2) {
+    if (loader &&
+        loader->nvram &&
+        loader->nvram->format &&
+        loader->nvram->format != VIR_STORAGE_FILE_RAW &&
+        loader->nvram->format != VIR_STORAGE_FILE_QCOW2) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported nvram format '%1$s'"),
-                       virStorageFileFormatTypeToString(nvram->format));
+                       virStorageFileFormatTypeToString(loader->nvram->format));
         return -1;
     }
 
