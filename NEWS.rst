@@ -19,6 +19,14 @@ v12.0.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Improvements and fixes to firmware selection
+
+    Firmware selection now works more reliably and predictably in many
+    scenarios.
+
+    Notably, issues that were preventing the use of firmware designed for
+    confidential VMs on aarch64 have been addressed.
+
 * **Bug fixes**
 
 
