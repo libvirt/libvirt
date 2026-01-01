@@ -258,24 +258,51 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
 }
 
 static int
-bhyveProbeCapsAHCI32Slot(unsigned int *caps, char *binary)
+bhyveFillCapForDevice(unsigned int *caps, const char *device)
 {
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,ahci",
-                                      "pci slot 0:0: unknown device \"ahci\"",
-                                      BHYVE_CAP_AHCI32SLOT);
+   if (STREQ(device, "ahci"))
+       *caps |= BHYVE_CAP_AHCI32SLOT;
+   else if (STREQ(device, "e1000"))
+       *caps |= BHYVE_CAP_NET_E1000;
+   else if (STREQ(device, "fbuf"))
+       *caps |= BHYVE_CAP_FBUF;
+   else if (STREQ(device, "hda"))
+       *caps |= BHYVE_CAP_SOUND_HDA;
+   else if (STREQ(device, "nvme"))
+       *caps |= BHYVE_CAP_NVME;
+   else if (STREQ(device, "virtio-9p"))
+       *caps |= BHYVE_CAP_VIRTIO_9P;
+   else if (STREQ(device, "virtio-rnd"))
+       *caps |= BHYVE_CAP_VIRTIO_RND;
+   else if (STREQ(device, "xhci"))
+       *caps |= BHYVE_CAP_XHCI;
+
+   return 0;
 }
 
 
 static int
-bhyveProbeCapsNetE1000(unsigned int *caps, char *binary)
+bhyveProbeCapsFromSHelp(unsigned int *caps, char *binary)
 {
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,e1000",
-                                      "pci slot 0:0: unknown device \"e1000\"",
-                                      BHYVE_CAP_NET_E1000);
+    g_autofree char *help = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    int exit;
+    char *cur = NULL;
+    char *saveptr = NULL;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArgList(cmd, "-s", "help", NULL);
+    virCommandSetOutputBuffer(cmd, &help);
+    if (virCommandRun(cmd, &exit) < 0)
+        return -1;
+
+    cur = strtok_r(help, "\n", &saveptr);
+    while (cur != NULL) {
+        bhyveFillCapForDevice(caps, cur);
+        cur = strtok_r(NULL, "\n", &saveptr);
+    }
+
+    return 0;
 }
 
 static int
@@ -290,39 +317,6 @@ bhyveProbeCapsLPC_Bootrom(unsigned int *caps, char *binary)
 
 
 static int
-bhyveProbeCapsFramebuffer(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,fbuf",
-                                      "pci slot 0:0: unknown device \"fbuf\"",
-                                      BHYVE_CAP_FBUF);
-}
-
-
-static int
-bhyveProbeCapsXHCIController(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,xhci",
-                                      "pci slot 0:0: unknown device \"xhci\"",
-                                      BHYVE_CAP_FBUF);
-}
-
-
-static int
-bhyveProbeCapsSoundHda(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,hda",
-                                      "pci slot 0:0: unknown device \"hda\"",
-                                      BHYVE_CAP_SOUND_HDA);
-}
-
-
-static int
 bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
 {
     return bhyveProbeCapsDeviceHelper(caps, binary,
@@ -330,39 +324,6 @@ bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
                                       "0,fbuf,password=",
                                       "Invalid fbuf emulation \"password\"",
                                       BHYVE_CAP_VNC_PASSWORD);
-}
-
-
-static int
-bhyveProbeCapsVirtio9p(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,virtio-9p",
-                                      "pci slot 0:0: unknown device \"hda\"",
-                                      BHYVE_CAP_VIRTIO_9P);
-}
-
-
-static int
-bhyveProbeCapsVirtioRnd(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,virtio-rnd",
-                                      "pci slot 0:0: unknown device \"virtio-rnd\"",
-                                      BHYVE_CAP_VIRTIO_RND);
-}
-
-
-static int
-bhyveProbeCapsNvme(unsigned int *caps, char *binary)
-{
-    return bhyveProbeCapsDeviceHelper(caps, binary,
-                                      "-s",
-                                      "0,nvme",
-                                      "pci slot 0:0: unknown device \"nvme\"",
-                                      BHYVE_CAP_NVME);
 }
 
 
@@ -379,35 +340,15 @@ virBhyveProbeCaps(unsigned int *caps)
     if ((ret = bhyveProbeCapsFromHelp(caps, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsAHCI32Slot(caps, binary)))
-        goto out;
-
-    if ((ret = bhyveProbeCapsNetE1000(caps, binary)))
+    if ((ret = bhyveProbeCapsFromSHelp(caps, binary)))
         goto out;
 
     if ((ret = bhyveProbeCapsLPC_Bootrom(caps, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsFramebuffer(caps, binary)))
-        goto out;
-
-    if ((ret = bhyveProbeCapsXHCIController(caps, binary)))
-        goto out;
-
-    if ((ret = bhyveProbeCapsSoundHda(caps, binary)))
-        goto out;
-
     if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsVirtio9p(caps, binary)))
-        goto out;
-
-    if ((ret = bhyveProbeCapsVirtioRnd(caps, binary)))
-        goto out;
-
-    if ((ret = bhyveProbeCapsNvme(caps, binary)))
-        goto out;
 
  out:
     VIR_FREE(binary);
