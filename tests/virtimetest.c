@@ -190,27 +190,20 @@ mymain(void)
         /* test DST processing with timezones that always
          * have DST in effect; what's more, cover a zone with
          * with an unusual DST different than a usual one hour
-         *
-         * These tests originally used '0' as the first day,
-         * but changed to '1' due to GLib GTimeZone parsing bug:
-         *  https://gitlab.gnome.org/GNOME/glib/issues/1999
-         *
-         * Once we depend on a new enough GLib (>= 2.63.4), we
-         * can put them back to 0 again.
          */
-        TEST_LOCALOFFSET("VIR-00:30VID,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR-00:30VID,0/00:00:00,364/23:59:59",
                 ((1 * 60) + 30) * 60);
-        TEST_LOCALOFFSET("VIR-02:30VID,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR-02:30VID,0/00:00:00,364/23:59:59",
                 ((3 * 60) + 30) * 60);
-        TEST_LOCALOFFSET("VIR-02:30VID-04:30,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR-02:30VID-04:30,0/00:00:00,364/23:59:59",
                 ((4 * 60) + 30) * 60);
-        TEST_LOCALOFFSET("VIR-12:00VID-13:00,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR-12:00VID-13:00,0/00:00:00,364/23:59:59",
                 ((13 * 60) +  0) * 60);
-        TEST_LOCALOFFSET("VIR02:45VID00:45,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR02:45VID00:45,0/00:00:00,364/23:59:59",
                          -45 * 60);
-        TEST_LOCALOFFSET("VIR05:00VID04:00,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR05:00VID04:00,0/00:00:00,364/23:59:59",
                          ((-4 * 60) +  0) * 60);
-        TEST_LOCALOFFSET("VIR11:00VID10:00,1/00:00:00,364/23:59:59",
+        TEST_LOCALOFFSET("VIR11:00VID10:00,0/00:00:00,364/23:59:59",
                          ((-10 * 60) +  0) * 60);
     }
 
