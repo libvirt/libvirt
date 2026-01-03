@@ -718,6 +718,25 @@ any configuration on the host.
    Unfortunately, there is no (easy) way to probe its support in libvirt,
    so please consult the ``bhyve(8)`` manual page to make sure it is available.
 
+virtio-scsi
+~~~~~~~~~~~
+:since:`Since 12:0.0`, it is possible to use ``virtio-scsi`` devices.
+It uses CAM Target layer (CTL) as a source.
+
+Example:
+
+::
+
+  ...
+    <disk type='ctl'>
+      <source dev='/dev/cam/ctl'/>
+      <target dev='sda' bus='scsi'/>
+    </disk>
+  ...
+
+Please refer to ``cam(4)``, ``ctl(4)``, and ``ctld(8)`` manual pages
+for more details on CAM and CTL.
+
 Guest-specific considerations
 -----------------------------
 
