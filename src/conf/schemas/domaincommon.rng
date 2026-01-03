@@ -1905,6 +1905,7 @@
       <ref name="diskSourceNvme"/>
       <ref name="diskSourceVhostUser"/>
       <ref name="diskSourceVhostVdpa"/>
+      <ref name="diskSourceCtl"/>
     </choice>
   </define>
 
@@ -2535,6 +2536,18 @@
   <define name="diskSourceVhostVdpa">
     <attribute name="type">
       <value>vhostvdpa</value>
+    </attribute>
+    <element name="source">
+      <attribute name="dev">
+        <ref name="absFilePath"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <define name="diskSourceCtl">
+    <attribute name="type">
+      <value>ctl</value>
     </attribute>
     <element name="source">
       <attribute name="dev">

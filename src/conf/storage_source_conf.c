@@ -48,7 +48,8 @@ VIR_ENUM_IMPL(virStorage,
               "volume",
               "nvme",
               "vhostuser",
-              "vhostvdpa"
+              "vhostvdpa",
+              "ctl",
 );
 
 
@@ -976,6 +977,7 @@ virStorageSourceIsSameLocation(virStorageSource *a,
     case VIR_STORAGE_TYPE_DIR:
     case VIR_STORAGE_TYPE_LAST:
     case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_CTL:
         /* nothing to do */
         break;
     }
@@ -1058,6 +1060,7 @@ virStorageSourceIsLocalStorage(const virStorageSource *src)
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_CTL:
         return true;
 
     case VIR_STORAGE_TYPE_NETWORK:
@@ -1263,6 +1266,7 @@ virStorageSourceIsRelative(virStorageSource *src)
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_CTL:
         return !g_path_is_absolute(src->path);
 
     case VIR_STORAGE_TYPE_NETWORK:

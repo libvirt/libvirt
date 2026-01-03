@@ -2826,6 +2826,10 @@ paravirtualized driver is specified via the ``disk`` element.
        <source dev='/dev/vhost-vdpa-0' />
        <target dev='vdg' bus='virtio'/>
      </disk>
+     <disk type='ctl' device='disk'>
+       <source dev='/dev/cam/ctl'/>
+       <target dev='sda' bus='scsi'/>
+     </disk>
      <disk type='file' device='disk'>
        <driver name='qemu' type='qcow2'/>
        <source file='/path/to/datastore.qcow2'>
@@ -2865,8 +2869,9 @@ paravirtualized driver is specified via the ``disk`` element.
       Valid values are "file", "block", "dir" ( :since:`since 0.7.5` ),
       "network" ( :since:`since 0.8.7` ), or "volume" ( :since:`since 1.0.5` ),
       or "nvme" ( :since:`since 6.0.0` ), or "vhostuser" ( :since:`since 7.1.0` ),
-      or "vhostvdpa" ( :since:`since 9.8.0 (QEMU 8.1.0)`) and refer to the
-      underlying source for the disk. :since:`Since 0.0.3`
+      or "vhostvdpa" ( :since:`since 9.8.0 (QEMU 8.1.0)`), or "ctl" (
+      :since:`since 12.0.0` ) and refer to the underlying source for the disk.
+      :since:`Since 0.0.3`
    ``device``
       Indicates how the disk is to be exposed to the guest OS. Possible values
       for this attribute are "floppy", "disk", "cdrom", and "lun", defaulting to
@@ -3084,6 +3089,14 @@ paravirtualized driver is specified via the ``disk`` element.
       The ``source`` element has a mandatory attribute ``dev`` that specifies
       the fully-qualified path to the vhost-vdpa character device (e.g.
       ``/dev/vhost-vdpa-0``).
+
+   ``ctl``
+      Enables the hypervisor to connect to the FreeBSD CAM Target Layer (CTL),
+      where CAM is a Common Access Method Storage subsystem.
+      :since:`Since 12.0.0, bhyve`.
+
+      The ``source`` element has a mandatory attribute ``dev`` that specifies
+      the fully-qualified path to the CTL device (e.g. ``/dev/cam/ctl``).
 
    With "file", "block", and "volume", one or more optional sub-elements
    ``seclabel`` (See `Security label`_) can be used to override the domain

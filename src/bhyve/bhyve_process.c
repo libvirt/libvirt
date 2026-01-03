@@ -405,6 +405,7 @@ bhyvePrepareNVRAM(bhyveConn *driver,
     case VIR_STORAGE_TYPE_NVME:
     case VIR_STORAGE_TYPE_VHOST_USER:
     case VIR_STORAGE_TYPE_VHOST_VDPA:
+    case VIR_STORAGE_TYPE_CTL:
     case VIR_STORAGE_TYPE_LAST:
     case VIR_STORAGE_TYPE_NONE:
         break;
