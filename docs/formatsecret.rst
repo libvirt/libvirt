@@ -73,14 +73,14 @@ passphrase to decrypt the volume, :since:`since 2.1.0`. An example follows:
    # cat luks-secret.xml
    <secret ephemeral='no' private='yes'>
       <description>LUKS Sample Secret</description>
-      <uuid>f52a81b2-424e-490c-823d-6bd4235bc57</uuid>
+      <uuid>f52a81b2-424e-490c-823d-6bd4235bc572</uuid>
       <usage type='volume'>
          <volume>/var/lib/libvirt/images/luks-sample.img</volume>
       </usage>
    </secret>
 
    # virsh secret-define luks-secret.xml
-   Secret f52a81b2-424e-490c-823d-6bd4235bc57 created
+   Secret f52a81b2-424e-490c-823d-6bd4235bc572 created
 
 See `Setting secret values in virsh`_ on how to set the value of the secret
 using ``virsh secret-set-value``.
@@ -91,7 +91,7 @@ The volume type secret can be supplied in domain XML for a luks storage volume
 ::
 
    <encryption format='luks'>
-     <secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc57'/>
+     <secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/>
    </encryption>
 
 Usage type "ceph"
