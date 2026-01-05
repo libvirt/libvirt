@@ -267,6 +267,11 @@ cmdSecretSetValue(vshControl *ctl, const vshCmd *cmd)
 
         secret_val = (char *) g_base64_decode(tmp, &secret_len);
         virSecureErase(tmp, tmp_len);
+
+        if (!secret_len) {
+            vshError(ctl, "%s", _("Secret value is not valid base64"));
+            return false;
+        }
     }
 
     res = virSecretSetValue(secret, (unsigned char *) secret_val, secret_len, 0);
