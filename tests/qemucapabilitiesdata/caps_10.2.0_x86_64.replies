@@ -16,11 +16,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 10
     },
-    "package": "v10.2.0-rc1-38-gfb241d0a1f"
+    "package": "v10.2.0"
   },
   "id": "libvirt-2"
 }
@@ -35957,6 +35957,7 @@
     },
     {
       "name": "aux-ram-share",
+      "description": "Use anonymous shared memory for auxiliary guest RAMs",
       "type": "bool"
     },
     {
@@ -36089,6 +36090,7 @@
     },
     {
       "name": "aux-ram-share",
+      "description": "Use anonymous shared memory for auxiliary guest RAMs",
       "type": "bool"
     },
     {
@@ -38518,6 +38520,7 @@
         },
         {
           "name": "aux-ram-share",
+          "help": "Use anonymous shared memory for auxiliary guest RAMs",
           "type": "boolean"
         },
         {
