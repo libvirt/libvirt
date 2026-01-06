@@ -2567,9 +2567,9 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                       domain->conn->uri->server, domain->conn->uri->port);
     virBufferURIEncodeString(&buffer, directoryAndFileName);
     virBufferAddLit(&buffer, "?dcPath=");
-    virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
+    esxUtil_EscapeInventoryObject(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
-    virBufferURIEncodeString(&buffer, datastoreName);
+    esxUtil_EscapeInventoryObject(&buffer, datastoreName);
 
     url = virBufferContentAndReset(&buffer);
 
@@ -3002,9 +3002,9 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     virBufferURIEncodeString(&buffer, escapedName);
     virBufferAddLit(&buffer, ".vmx?dcPath=");
-    virBufferURIEncodeString(&buffer, priv->primary->datacenterPath);
+    esxUtil_EscapeInventoryObject(&buffer, priv->primary->datacenterPath);
     virBufferAddLit(&buffer, "&dsName=");
-    virBufferURIEncodeString(&buffer, datastoreName);
+    esxUtil_EscapeInventoryObject(&buffer, datastoreName);
 
     url = virBufferContentAndReset(&buffer);
 
