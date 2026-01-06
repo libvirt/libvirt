@@ -331,6 +331,8 @@ virHostCPUParseNode(const char *node,
     int siblings;
     unsigned int cpu;
     int direrr;
+    g_autoptr(GHashTable) st = g_hash_table_new(g_direct_hash, g_direct_equal);
+    gpointer sock_resolved;
 
     *threads = 0;
     *cores = 0;
@@ -356,14 +358,28 @@ virHostCPUParseNode(const char *node,
         if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
 
-        virBitmapSetBitExpand(sockets_map, sock);
+        if (!g_hash_table_lookup_extended(st,
+                                          GUINT_TO_POINTER(sock),
+                                          NULL,
+                                          &sock_resolved)) {
+            g_hash_table_insert(st,
+                                GUINT_TO_POINTER(sock),
+                                GUINT_TO_POINTER(sock_max));
+            sock = sock_max;
+            sock_max++;
+        } else {
+            sock = GPOINTER_TO_UINT(sock_resolved);
+        }
 
-        if (sock > sock_max)
-            sock_max = sock;
+        virBitmapSetBitExpand(sockets_map, sock);
     }
 
     if (direrr < 0)
         goto cleanup;
+
+    if (sock_max == 0) {
+        g_hash_table_insert(st, GUINT_TO_POINTER(0), GUINT_TO_POINTER(sock_max));
+    }
 
     sock_max++;
 
@@ -400,6 +416,16 @@ virHostCPUParseNode(const char *node,
 
         if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
+
+        if (!g_hash_table_lookup_extended(st,
+                                          GUINT_TO_POINTER(sock),
+                                          NULL,
+                                          &sock_resolved)) {
+            goto cleanup;
+        }
+
+        sock = GPOINTER_TO_UINT(sock_resolved);
+
         if (!virBitmapIsBitSet(sockets_map, sock)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("CPU socket topology has changed"));
