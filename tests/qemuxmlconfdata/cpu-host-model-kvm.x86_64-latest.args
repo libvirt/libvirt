@@ -12,7 +12,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine q35,usb=off,dump-guest-core=off,memory-backend=pc.ram,acpi=off \
 -accel kvm \
--cpu EPYC-Turin,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,spec-ctrl=on,stibp=on,flush-l1d=on,ssbd=on,cmp-legacy=on,virt-ssbd=on,tsa-sq-no=on,tsa-l1-no=on,pcid=off,la57=off \
+-cpu EPYC-Turin,x2apic=on,tsc-deadline=on,hypervisor=on,tsc-adjust=on,spec-ctrl=on,stibp=on,flush-l1d=on,ssbd=on,cmp-legacy=on,virt-ssbd=on,tsa-sq-no=on,tsa-l1-no=on,pcid=off,rdseed=off,la57=off \
 -m size=219136k \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \

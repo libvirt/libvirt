@@ -36523,6 +36523,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "xstore",
         "xstore-en",
         "xcrypt",
@@ -36544,6 +36545,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "xstore",
         "xstore-en",
         "xcrypt",
@@ -36565,6 +36567,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "xstore",
         "xstore-en",
         "xcrypt",
@@ -36586,6 +36589,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "xstore",
         "xstore-en",
         "xcrypt",
@@ -36640,6 +36644,7 @@
       "name": "Snowridge-v4",
       "typename": "Snowridge-v4-x86_64-cpu",
       "unavailable-features": [
+        "rdseed",
         "cldemote"
       ],
       "static": false,
@@ -36650,6 +36655,7 @@
       "name": "Snowridge-v3",
       "typename": "Snowridge-v3-x86_64-cpu",
       "unavailable-features": [
+        "rdseed",
         "cldemote",
         "core-capability",
         "split-lock-detect"
@@ -36662,6 +36668,7 @@
       "name": "Snowridge-v2",
       "typename": "Snowridge-v2-x86_64-cpu",
       "unavailable-features": [
+        "rdseed",
         "cldemote",
         "core-capability",
         "split-lock-detect"
@@ -36675,6 +36682,7 @@
       "typename": "Snowridge-v1-x86_64-cpu",
       "unavailable-features": [
         "mpx",
+        "rdseed",
         "cldemote",
         "core-capability",
         "split-lock-detect"
@@ -36688,6 +36696,7 @@
       "typename": "Snowridge-x86_64-cpu",
       "unavailable-features": [
         "mpx",
+        "rdseed",
         "cldemote",
         "core-capability",
         "split-lock-detect"
@@ -36701,7 +36710,8 @@
       "name": "Skylake-Server-v5",
       "typename": "Skylake-Server-v5-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36711,7 +36721,8 @@
       "name": "Skylake-Server-v4",
       "typename": "Skylake-Server-v4-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36721,7 +36732,8 @@
       "name": "Skylake-Server-v3",
       "typename": "Skylake-Server-v3-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36733,7 +36745,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36745,7 +36758,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36755,7 +36769,8 @@
       "name": "Skylake-Server-noTSX-IBRS",
       "typename": "Skylake-Server-noTSX-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "alias-of": "Skylake-Server-v3",
       "static": false,
@@ -36768,7 +36783,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Skylake-Server-v2",
       "static": false,
@@ -36781,7 +36797,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Skylake-Server-v1",
       "static": false,
@@ -36792,7 +36809,8 @@
       "name": "Skylake-Client-v4",
       "typename": "Skylake-Client-v4-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36802,7 +36820,8 @@
       "name": "Skylake-Client-v3",
       "typename": "Skylake-Client-v3-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36814,7 +36833,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36826,7 +36846,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -36836,7 +36857,8 @@
       "name": "Skylake-Client-noTSX-IBRS",
       "typename": "Skylake-Client-noTSX-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "alias-of": "Skylake-Client-v3",
       "static": false,
@@ -36849,7 +36871,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Skylake-Client-v2",
       "static": false,
@@ -36862,7 +36885,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Skylake-Client-v1",
       "static": false,
@@ -36875,6 +36899,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "cldemote",
         "serialize",
@@ -36905,6 +36930,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "cldemote",
         "serialize",
@@ -36934,6 +36960,7 @@
       "typename": "SierraForest-v1-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "serialize",
         "cmpccxadd",
@@ -36957,6 +36984,7 @@
       "typename": "SierraForest-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "serialize",
         "cmpccxadd",
@@ -36984,6 +37012,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "cldemote",
@@ -37015,6 +37044,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "cldemote",
@@ -37045,6 +37075,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "serialize",
@@ -37074,6 +37105,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "serialize",
@@ -37100,6 +37132,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "serialize",
@@ -37309,6 +37342,7 @@
       "typename": "KnightsMill-v1-x86_64-cpu",
       "unavailable-features": [
         "ss",
+        "rdseed",
         "avx512pf",
         "avx512er",
         "avx512-4vnniw",
@@ -37323,6 +37357,7 @@
       "typename": "KnightsMill-x86_64-cpu",
       "unavailable-features": [
         "ss",
+        "rdseed",
         "avx512pf",
         "avx512er",
         "avx512-4vnniw",
@@ -37374,6 +37409,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "ibrs-all",
         "taa-no"
@@ -37387,6 +37423,7 @@
       "typename": "Icelake-Server-v6-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57",
         "ibrs-all",
         "taa-no"
@@ -37400,6 +37437,7 @@
       "typename": "Icelake-Server-v5-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57",
         "ibrs-all",
         "taa-no"
@@ -37413,6 +37451,7 @@
       "typename": "Icelake-Server-v4-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57",
         "ibrs-all",
         "taa-no"
@@ -37426,6 +37465,7 @@
       "typename": "Icelake-Server-v3-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57",
         "ibrs-all",
         "taa-no"
@@ -37439,6 +37479,7 @@
       "typename": "Icelake-Server-v2-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "static": false,
@@ -37452,6 +37493,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57"
       ],
       "static": false,
@@ -37463,6 +37505,7 @@
       "typename": "Icelake-Server-noTSX-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "alias-of": "Icelake-Server-v2",
@@ -37477,6 +37520,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57"
       ],
       "alias-of": "Icelake-Server-v1",
@@ -37584,6 +37628,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "cldemote",
@@ -37623,6 +37668,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "cldemote",
@@ -37661,6 +37707,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "serialize",
@@ -37694,6 +37741,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "la57",
         "bus-lock-detect",
         "serialize",
@@ -37724,7 +37772,9 @@
     {
       "name": "EPYC-v5",
       "typename": "EPYC-v5-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37732,7 +37782,9 @@
     {
       "name": "EPYC-v4",
       "typename": "EPYC-v4-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37740,7 +37792,9 @@
     {
       "name": "EPYC-v3",
       "typename": "EPYC-v3-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37748,7 +37802,9 @@
     {
       "name": "EPYC-v2",
       "typename": "EPYC-v2-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37756,7 +37812,9 @@
     {
       "name": "EPYC-v1",
       "typename": "EPYC-v1-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37766,6 +37824,7 @@
       "typename": "EPYC-Turin-v1-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "static": false,
@@ -37777,6 +37836,7 @@
       "typename": "EPYC-Turin-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "alias-of": "EPYC-Turin-v1",
@@ -37787,7 +37847,9 @@
     {
       "name": "EPYC-Rome-v5",
       "typename": "EPYC-Rome-v5-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37795,7 +37857,9 @@
     {
       "name": "EPYC-Rome-v4",
       "typename": "EPYC-Rome-v4-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37803,7 +37867,9 @@
     {
       "name": "EPYC-Rome-v3",
       "typename": "EPYC-Rome-v3-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37811,7 +37877,9 @@
     {
       "name": "EPYC-Rome-v2",
       "typename": "EPYC-Rome-v2-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37819,7 +37887,9 @@
     {
       "name": "EPYC-Rome-v1",
       "typename": "EPYC-Rome-v1-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37827,7 +37897,9 @@
     {
       "name": "EPYC-Rome",
       "typename": "EPYC-Rome-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "alias-of": "EPYC-Rome-v1",
       "static": false,
       "migration-safe": true,
@@ -37837,7 +37909,8 @@
       "name": "EPYC-Milan-v3",
       "typename": "EPYC-Milan-v3-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -37847,7 +37920,8 @@
       "name": "EPYC-Milan-v2",
       "typename": "EPYC-Milan-v2-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -37857,7 +37931,8 @@
       "name": "EPYC-Milan-v1",
       "typename": "EPYC-Milan-v1-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -37867,7 +37942,8 @@
       "name": "EPYC-Milan",
       "typename": "EPYC-Milan-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "alias-of": "EPYC-Milan-v1",
       "static": false,
@@ -37877,7 +37953,9 @@
     {
       "name": "EPYC-IBPB",
       "typename": "EPYC-IBPB-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "alias-of": "EPYC-v2",
       "static": false,
       "migration-safe": true,
@@ -37888,6 +37966,7 @@
       "typename": "EPYC-Genoa-v2-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "static": false,
@@ -37899,6 +37978,7 @@
       "typename": "EPYC-Genoa-v1-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "static": false,
@@ -37910,6 +37990,7 @@
       "typename": "EPYC-Genoa-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "la57"
       ],
       "alias-of": "EPYC-Genoa-v1",
@@ -37920,7 +38001,9 @@
     {
       "name": "EPYC",
       "typename": "EPYC-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "alias-of": "EPYC-v1",
       "static": false,
       "migration-safe": true,
@@ -37929,7 +38012,9 @@
     {
       "name": "Dhyana-v2",
       "typename": "Dhyana-v2-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37937,7 +38022,9 @@
     {
       "name": "Dhyana-v1",
       "typename": "Dhyana-v1-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37945,7 +38032,9 @@
     {
       "name": "Dhyana",
       "typename": "Dhyana-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "alias-of": "Dhyana-v1",
       "static": false,
       "migration-safe": true,
@@ -37954,7 +38043,9 @@
     {
       "name": "Denverton-v3",
       "typename": "Denverton-v3-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37962,7 +38053,9 @@
     {
       "name": "Denverton-v2",
       "typename": "Denverton-v2-x86_64-cpu",
-      "unavailable-features": [],
+      "unavailable-features": [
+        "rdseed"
+      ],
       "static": false,
       "migration-safe": true,
       "deprecated": false
@@ -37971,7 +38064,8 @@
       "name": "Denverton-v1",
       "typename": "Denverton-v1-x86_64-cpu",
       "unavailable-features": [
-        "mpx"
+        "mpx",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -37981,7 +38075,8 @@
       "name": "Denverton",
       "typename": "Denverton-x86_64-cpu",
       "unavailable-features": [
-        "mpx"
+        "mpx",
+        "rdseed"
       ],
       "alias-of": "Denverton-v1",
       "static": false,
@@ -37995,6 +38090,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "ibrs-all",
         "taa-no"
       ],
@@ -38009,6 +38105,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "ibrs-all",
         "taa-no"
       ],
@@ -38023,6 +38120,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "ibrs-all",
         "taa-no"
       ],
@@ -38054,6 +38152,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "cldemote",
         "serialize",
@@ -38091,6 +38190,7 @@
       "unavailable-features": [
         "ss",
         "pcid",
+        "rdseed",
         "bus-lock-detect",
         "cldemote",
         "serialize",
@@ -38128,6 +38228,7 @@
       "typename": "Cascadelake-Server-v5-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "ibrs-all"
       ],
       "static": false,
@@ -38139,6 +38240,7 @@
       "typename": "Cascadelake-Server-v4-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "ibrs-all"
       ],
       "static": false,
@@ -38150,6 +38252,7 @@
       "typename": "Cascadelake-Server-v3-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "ibrs-all"
       ],
       "static": false,
@@ -38163,6 +38266,7 @@
         "pcid",
         "hle",
         "rtm",
+        "rdseed",
         "ibrs-all"
       ],
       "static": false,
@@ -38175,7 +38279,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -38186,6 +38291,7 @@
       "typename": "Cascadelake-Server-noTSX-x86_64-cpu",
       "unavailable-features": [
         "pcid",
+        "rdseed",
         "ibrs-all"
       ],
       "alias-of": "Cascadelake-Server-v3",
@@ -38199,7 +38305,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Cascadelake-Server-v1",
       "static": false,
@@ -38210,7 +38317,8 @@
       "name": "Broadwell-v4",
       "typename": "Broadwell-v4-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -38222,7 +38330,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -38232,7 +38341,8 @@
       "name": "Broadwell-v2",
       "typename": "Broadwell-v2-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -38244,7 +38354,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "static": false,
       "migration-safe": true,
@@ -38254,7 +38365,8 @@
       "name": "Broadwell-noTSX-IBRS",
       "typename": "Broadwell-noTSX-IBRS-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "alias-of": "Broadwell-v4",
       "static": false,
@@ -38265,7 +38377,8 @@
       "name": "Broadwell-noTSX",
       "typename": "Broadwell-noTSX-x86_64-cpu",
       "unavailable-features": [
-        "pcid"
+        "pcid",
+        "rdseed"
       ],
       "alias-of": "Broadwell-v2",
       "static": false,
@@ -38278,7 +38391,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Broadwell-v3",
       "static": false,
@@ -38291,7 +38405,8 @@
       "unavailable-features": [
         "pcid",
         "hle",
-        "rtm"
+        "rtm",
+        "rdseed"
       ],
       "alias-of": "Broadwell-v1",
       "static": false,
@@ -40262,7 +40377,7 @@
         "lmce": false,
         "perfctr-nb": false,
         "rdrand": true,
-        "rdseed": true,
+        "rdseed": false,
         "cmpccxadd": false,
         "bhi-no": false,
         "avx512-4vnniw": false,
@@ -40684,7 +40799,7 @@
         "lmce": false,
         "perfctr-nb": false,
         "rdrand": true,
-        "rdseed": true,
+        "rdseed": false,
         "cmpccxadd": false,
         "bhi-no": false,
         "avx512-4vnniw": false,
@@ -41215,7 +41330,7 @@
         "hv-tlbflush": false,
         "ffxsr": true,
         "rdrand": true,
-        "rdseed": true,
+        "rdseed": false,
         "bhi-no": false,
         "cmpccxadd": false,
         "avx512-4vnniw": false,
@@ -41754,7 +41869,7 @@
         "hv-tlbflush": true,
         "ffxsr": true,
         "rdrand": true,
-        "rdseed": true,
+        "rdseed": false,
         "bhi-no": false,
         "cmpccxadd": false,
         "avx512-4vnniw": false,

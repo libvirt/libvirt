@@ -58,6 +58,7 @@
       <feature policy='require' name='tsa-sq-no'/>
       <feature policy='require' name='tsa-l1-no'/>
       <feature policy='disable' name='pcid'/>
+      <feature policy='disable' name='rdseed'/>
       <feature policy='disable' name='la57'/>
     </mode>
     <mode name='custom' supported='yes'>
@@ -67,57 +68,68 @@
       <blockers model='Broadwell'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Broadwell-v3'>Broadwell-IBRS</model>
       <blockers model='Broadwell-IBRS'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Broadwell-v2'>Broadwell-noTSX</model>
       <blockers model='Broadwell-noTSX'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Broadwell-v4'>Broadwell-noTSX-IBRS</model>
       <blockers model='Broadwell-noTSX-IBRS'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Broadwell-v1</model>
       <blockers model='Broadwell-v1'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Broadwell-v2</model>
       <blockers model='Broadwell-v2'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Broadwell-v3</model>
       <blockers model='Broadwell-v3'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Broadwell-v4</model>
       <blockers model='Broadwell-v4'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v1'>Cascadelake-Server</model>
       <blockers model='Cascadelake-Server'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Cascadelake-Server-v3'>Cascadelake-Server-noTSX</model>
       <blockers model='Cascadelake-Server-noTSX'>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v1</model>
       <blockers model='Cascadelake-Server-v1'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v2</model>
@@ -125,22 +137,26 @@
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v3</model>
       <blockers model='Cascadelake-Server-v3'>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v4</model>
       <blockers model='Cascadelake-Server-v4'>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Cascadelake-Server-v5</model>
       <blockers model='Cascadelake-Server-v5'>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='ClearwaterForest-v1'>ClearwaterForest</model>
       <blockers model='ClearwaterForest'>
@@ -165,6 +181,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rrsba-ctrl'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -196,6 +213,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rrsba-ctrl'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -211,6 +229,7 @@
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='taa-no'/>
       </blockers>
@@ -219,6 +238,7 @@
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='taa-no'/>
       </blockers>
@@ -227,76 +247,142 @@
         <feature name='hle'/>
         <feature name='ibrs-all'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='taa-no'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Denverton-v1'>Denverton</model>
       <blockers model='Denverton'>
         <feature name='mpx'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Denverton-v1</model>
       <blockers model='Denverton-v1'>
         <feature name='mpx'/>
+        <feature name='rdseed'/>
       </blockers>
-      <model usable='yes' vendor='Intel'>Denverton-v2</model>
-      <model usable='yes' vendor='Intel'>Denverton-v3</model>
-      <model usable='yes' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
-      <model usable='yes' vendor='Hygon'>Dhyana-v1</model>
-      <model usable='yes' vendor='Hygon'>Dhyana-v2</model>
-      <model usable='yes' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
+      <model usable='no' vendor='Intel'>Denverton-v2</model>
+      <blockers model='Denverton-v2'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>Denverton-v3</model>
+      <blockers model='Denverton-v3'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='Hygon' canonical='Dhyana-v1'>Dhyana</model>
+      <blockers model='Dhyana'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='Hygon'>Dhyana-v1</model>
+      <blockers model='Dhyana-v1'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='Hygon'>Dhyana-v2</model>
+      <blockers model='Dhyana-v2'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD' canonical='EPYC-v1'>EPYC</model>
+      <blockers model='EPYC'>
+        <feature name='rdseed'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-Genoa-v1'>EPYC-Genoa</model>
       <blockers model='EPYC-Genoa'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Genoa-v1</model>
       <blockers model='EPYC-Genoa-v1'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Genoa-v2</model>
       <blockers model='EPYC-Genoa-v2'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
-      <model usable='yes' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-v2'>EPYC-IBPB</model>
+      <blockers model='EPYC-IBPB'>
+        <feature name='rdseed'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-Milan-v1'>EPYC-Milan</model>
       <blockers model='EPYC-Milan'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Milan-v1</model>
       <blockers model='EPYC-Milan-v1'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Milan-v2</model>
       <blockers model='EPYC-Milan-v2'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Milan-v3</model>
       <blockers model='EPYC-Milan-v3'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
-      <model usable='yes' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome-v1</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome-v2</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome-v3</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome-v4</model>
-      <model usable='yes' vendor='AMD'>EPYC-Rome-v5</model>
+      <model usable='no' vendor='AMD' canonical='EPYC-Rome-v1'>EPYC-Rome</model>
+      <blockers model='EPYC-Rome'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v1</model>
+      <blockers model='EPYC-Rome-v1'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v2</model>
+      <blockers model='EPYC-Rome-v2'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v3</model>
+      <blockers model='EPYC-Rome-v3'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v4</model>
+      <blockers model='EPYC-Rome-v4'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-Rome-v5</model>
+      <blockers model='EPYC-Rome-v5'>
+        <feature name='rdseed'/>
+      </blockers>
       <model usable='no' vendor='AMD' canonical='EPYC-Turin-v1'>EPYC-Turin</model>
       <blockers model='EPYC-Turin'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='AMD'>EPYC-Turin-v1</model>
       <blockers model='EPYC-Turin-v1'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
-      <model usable='yes' vendor='AMD'>EPYC-v1</model>
-      <model usable='yes' vendor='AMD'>EPYC-v2</model>
-      <model usable='yes' vendor='AMD'>EPYC-v3</model>
-      <model usable='yes' vendor='AMD'>EPYC-v4</model>
-      <model usable='yes' vendor='AMD'>EPYC-v5</model>
+      <model usable='no' vendor='AMD'>EPYC-v1</model>
+      <blockers model='EPYC-v1'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v2</model>
+      <blockers model='EPYC-v2'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v3</model>
+      <blockers model='EPYC-v3'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v4</model>
+      <blockers model='EPYC-v4'>
+        <feature name='rdseed'/>
+      </blockers>
+      <model usable='no' vendor='AMD'>EPYC-v5</model>
+      <blockers model='EPYC-v5'>
+        <feature name='rdseed'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='GraniteRapids-v1'>GraniteRapids</model>
       <blockers model='GraniteRapids'>
         <feature name='amx-bf16'/>
@@ -317,6 +403,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -344,6 +431,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -376,6 +464,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -409,6 +498,7 @@
         <feature name='pcid'/>
         <feature name='prefetchiti'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -462,30 +552,35 @@
         <feature name='hle'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Icelake-Server-v2'>Icelake-Server-noTSX</model>
       <blockers model='Icelake-Server-noTSX'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v1</model>
       <blockers model='Icelake-Server-v1'>
         <feature name='hle'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v2</model>
       <blockers model='Icelake-Server-v2'>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v3</model>
       <blockers model='Icelake-Server-v3'>
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='taa-no'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v4</model>
@@ -493,6 +588,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='taa-no'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v5</model>
@@ -500,6 +596,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='taa-no'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v6</model>
@@ -507,6 +604,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='taa-no'/>
       </blockers>
       <model usable='no' vendor='Intel'>Icelake-Server-v7</model>
@@ -515,6 +613,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='taa-no'/>
       </blockers>
@@ -528,6 +627,7 @@
         <feature name='avx512-4vnniw'/>
         <feature name='avx512er'/>
         <feature name='avx512pf'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
       </blockers>
       <model usable='no' vendor='Intel'>KnightsMill-v1</model>
@@ -536,6 +636,7 @@
         <feature name='avx512-4vnniw'/>
         <feature name='avx512er'/>
         <feature name='avx512pf'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
       </blockers>
       <model usable='yes' vendor='Intel' canonical='Nehalem-v1'>Nehalem</model>
@@ -590,6 +691,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='serialize'/>
         <feature name='taa-no'/>
@@ -610,6 +712,7 @@
         <feature name='ibrs-all'/>
         <feature name='la57'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='serialize'/>
         <feature name='taa-no'/>
@@ -632,6 +735,7 @@
         <feature name='la57'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -656,6 +760,7 @@
         <feature name='la57'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -681,6 +786,7 @@
         <feature name='la57'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -703,6 +809,7 @@
         <feature name='pbrsb-no'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
       </blockers>
@@ -720,6 +827,7 @@
         <feature name='pbrsb-no'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
       </blockers>
@@ -742,6 +850,7 @@
         <feature name='pbrsb-no'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rrsba-ctrl'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -766,6 +875,7 @@
         <feature name='pbrsb-no'/>
         <feature name='pcid'/>
         <feature name='psdp-no'/>
+        <feature name='rdseed'/>
         <feature name='rrsba-ctrl'/>
         <feature name='sbdr-ssdp-no'/>
         <feature name='serialize'/>
@@ -775,83 +885,99 @@
       <blockers model='Skylake-Client'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Client-v2'>Skylake-Client-IBRS</model>
       <blockers model='Skylake-Client-IBRS'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Client-v3'>Skylake-Client-noTSX-IBRS</model>
       <blockers model='Skylake-Client-noTSX-IBRS'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-v1</model>
       <blockers model='Skylake-Client-v1'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-v2</model>
       <blockers model='Skylake-Client-v2'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-v3</model>
       <blockers model='Skylake-Client-v3'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Client-v4</model>
       <blockers model='Skylake-Client-v4'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Server-v1'>Skylake-Server</model>
       <blockers model='Skylake-Server'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Server-v2'>Skylake-Server-IBRS</model>
       <blockers model='Skylake-Server-IBRS'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Server-v3'>Skylake-Server-noTSX-IBRS</model>
       <blockers model='Skylake-Server-noTSX-IBRS'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-v1</model>
       <blockers model='Skylake-Server-v1'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-v2</model>
       <blockers model='Skylake-Server-v2'>
         <feature name='hle'/>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
         <feature name='rtm'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-v3</model>
       <blockers model='Skylake-Server-v3'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-v4</model>
       <blockers model='Skylake-Server-v4'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel'>Skylake-Server-v5</model>
       <blockers model='Skylake-Server-v5'>
         <feature name='pcid'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='no' vendor='Intel' canonical='Snowridge-v1'>Snowridge</model>
       <blockers model='Snowridge'>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='mpx'/>
+        <feature name='rdseed'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v1</model>
@@ -859,23 +985,27 @@
         <feature name='cldemote'/>
         <feature name='core-capability'/>
         <feature name='mpx'/>
+        <feature name='rdseed'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v2</model>
       <blockers model='Snowridge-v2'>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
+        <feature name='rdseed'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v3</model>
       <blockers model='Snowridge-v3'>
         <feature name='cldemote'/>
         <feature name='core-capability'/>
+        <feature name='rdseed'/>
         <feature name='split-lock-detect'/>
       </blockers>
       <model usable='no' vendor='Intel'>Snowridge-v4</model>
       <blockers model='Snowridge-v4'>
         <feature name='cldemote'/>
+        <feature name='rdseed'/>
       </blockers>
       <model usable='yes' vendor='Intel' canonical='Westmere-v1'>Westmere</model>
       <model usable='yes' vendor='Intel' canonical='Westmere-v2'>Westmere-IBRS</model>
@@ -889,6 +1019,7 @@
         <feature name='phe-en'/>
         <feature name='pmm'/>
         <feature name='pmm-en'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
         <feature name='ssb-no'/>
         <feature name='xcrypt'/>
@@ -904,6 +1035,7 @@
         <feature name='phe-en'/>
         <feature name='pmm'/>
         <feature name='pmm-en'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
         <feature name='ssb-no'/>
         <feature name='xcrypt'/>
@@ -919,6 +1051,7 @@
         <feature name='phe-en'/>
         <feature name='pmm'/>
         <feature name='pmm-en'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
         <feature name='ssb-no'/>
         <feature name='xcrypt'/>
@@ -934,6 +1067,7 @@
         <feature name='phe-en'/>
         <feature name='pmm'/>
         <feature name='pmm-en'/>
+        <feature name='rdseed'/>
         <feature name='ss'/>
         <feature name='ssb-no'/>
         <feature name='xcrypt'/>

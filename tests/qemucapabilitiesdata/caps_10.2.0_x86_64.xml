@@ -585,7 +585,7 @@
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
-    <property name='rdseed' type='boolean' value='true' migratable='yes'/>
+    <property name='rdseed' type='boolean' value='false'/>
     <property name='cmpccxadd' type='boolean' value='false'/>
     <property name='bhi-no' type='boolean' value='false'/>
     <property name='avx512-4vnniw' type='boolean' value='false'/>
@@ -672,6 +672,7 @@
   <cpu type='kvm' name='YongFeng-v3' typename='YongFeng-v3-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -686,6 +687,7 @@
   <cpu type='kvm' name='YongFeng-v2' typename='YongFeng-v2-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -700,6 +702,7 @@
   <cpu type='kvm' name='YongFeng-v1' typename='YongFeng-v1-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -714,6 +717,7 @@
   <cpu type='kvm' name='YongFeng' typename='YongFeng-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='xstore'/>
     <blocker name='xstore-en'/>
     <blocker name='xcrypt'/>
@@ -730,94 +734,115 @@
   <cpu type='kvm' name='Westmere-IBRS' typename='Westmere-IBRS-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Westmere' typename='Westmere-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='Snowridge-v4' typename='Snowridge-v4-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
     <blocker name='cldemote'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v3' typename='Snowridge-v3-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
     <blocker name='cldemote'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v2' typename='Snowridge-v2-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
     <blocker name='cldemote'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v1' typename='Snowridge-v1-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
+    <blocker name='rdseed'/>
     <blocker name='cldemote'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Snowridge' typename='Snowridge-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
+    <blocker name='rdseed'/>
     <blocker name='cldemote'/>
     <blocker name='core-capability'/>
     <blocker name='split-lock-detect'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v5' typename='Skylake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v4' typename='Skylake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v3' typename='Skylake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v2' typename='Skylake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-v1' typename='Skylake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-noTSX-IBRS' typename='Skylake-Server-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server-IBRS' typename='Skylake-Server-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Server' typename='Skylake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-v4' typename='Skylake-Client-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-v3' typename='Skylake-Client-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-v2' typename='Skylake-Client-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-v1' typename='Skylake-Client-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-noTSX-IBRS' typename='Skylake-Client-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client-IBRS' typename='Skylake-Client-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Skylake-Client' typename='Skylake-Client-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='SierraForest-v3' typename='SierraForest-v3-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
@@ -841,6 +866,7 @@
   <cpu type='kvm' name='SierraForest-v2' typename='SierraForest-v2-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
@@ -863,6 +889,7 @@
   </cpu>
   <cpu type='kvm' name='SierraForest-v1' typename='SierraForest-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
     <blocker name='cmpccxadd'/>
@@ -879,6 +906,7 @@
   </cpu>
   <cpu type='kvm' name='SierraForest' typename='SierraForest-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
     <blocker name='cmpccxadd'/>
@@ -898,6 +926,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -922,6 +951,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -945,6 +975,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
@@ -967,6 +998,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
@@ -986,6 +1018,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
@@ -1037,6 +1070,7 @@
   <cpu type='kvm' name='Nehalem' typename='Nehalem-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='KnightsMill-v1' typename='KnightsMill-v1-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
+    <blocker name='rdseed'/>
     <blocker name='avx512pf'/>
     <blocker name='avx512er'/>
     <blocker name='avx512-4vnniw'/>
@@ -1044,6 +1078,7 @@
   </cpu>
   <cpu type='kvm' name='KnightsMill' typename='KnightsMill-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
+    <blocker name='rdseed'/>
     <blocker name='avx512pf'/>
     <blocker name='avx512er'/>
     <blocker name='avx512-4vnniw'/>
@@ -1057,52 +1092,61 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v6' typename='Icelake-Server-v6-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v5' typename='Icelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v4' typename='Icelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v3' typename='Icelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v2' typename='Icelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v1' typename='Icelake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-noTSX' typename='Icelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server' typename='Icelake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='Haswell-v4' typename='Haswell-v4-x86_64-cpu' usable='no'>
@@ -1142,6 +1186,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1174,6 +1219,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1205,6 +1251,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
@@ -1231,6 +1278,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='serialize'/>
@@ -1253,66 +1301,114 @@
     <blocker name='prefetchiti'/>
     <blocker name='mcdt-no'/>
   </cpu>
-  <cpu type='kvm' name='EPYC-v5' typename='EPYC-v5-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-v4' typename='EPYC-v4-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-v3' typename='EPYC-v3-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-v2' typename='EPYC-v2-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-v1' typename='EPYC-v1-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-v5' typename='EPYC-v5-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-v4' typename='EPYC-v4-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-v3' typename='EPYC-v3-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-v2' typename='EPYC-v2-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-v1' typename='EPYC-v1-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-Turin-v1' typename='EPYC-Turin-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Turin' typename='EPYC-Turin-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
-  <cpu type='kvm' name='EPYC-Rome-v5' typename='EPYC-Rome-v5-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-Rome-v4' typename='EPYC-Rome-v4-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-Rome-v3' typename='EPYC-Rome-v3-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-Rome-v2' typename='EPYC-Rome-v2-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-Rome-v5' typename='EPYC-Rome-v5-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome-v4' typename='EPYC-Rome-v4-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome-v3' typename='EPYC-Rome-v3-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome-v2' typename='EPYC-Rome-v2-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome-v1' typename='EPYC-Rome-v1-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='EPYC-Rome' typename='EPYC-Rome-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-Milan-v3' typename='EPYC-Milan-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Milan-v2' typename='EPYC-Milan-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Milan-v1' typename='EPYC-Milan-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Milan' typename='EPYC-Milan-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
-  <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC-IBPB' typename='EPYC-IBPB-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
   <cpu type='kvm' name='EPYC-Genoa-v2' typename='EPYC-Genoa-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Genoa-v1' typename='EPYC-Genoa-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
   <cpu type='kvm' name='EPYC-Genoa' typename='EPYC-Genoa-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='la57'/>
   </cpu>
-  <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Dhyana-v2' typename='Dhyana-v2-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Dhyana-v1' typename='Dhyana-v1-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Dhyana' typename='Dhyana-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Denverton-v3' typename='Denverton-v3-x86_64-cpu' usable='yes'/>
-  <cpu type='kvm' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='yes'/>
+  <cpu type='kvm' name='EPYC' typename='EPYC-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='Dhyana-v2' typename='Dhyana-v2-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='Dhyana-v1' typename='Dhyana-v1-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='Dhyana' typename='Dhyana-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='Denverton-v3' typename='Denverton-v3-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
+  <cpu type='kvm' name='Denverton-v2' typename='Denverton-v2-x86_64-cpu' usable='no'>
+    <blocker name='rdseed'/>
+  </cpu>
   <cpu type='kvm' name='Denverton-v1' typename='Denverton-v1-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Denverton' typename='Denverton-x86_64-cpu' usable='no'>
     <blocker name='mpx'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Cooperlake-v2' typename='Cooperlake-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1320,6 +1416,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1327,6 +1424,7 @@
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
     <blocker name='taa-no'/>
   </cpu>
@@ -1335,6 +1433,7 @@
   <cpu type='kvm' name='ClearwaterForest-v1' typename='ClearwaterForest-v1-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
@@ -1365,6 +1464,7 @@
   <cpu type='kvm' name='ClearwaterForest' typename='ClearwaterForest-x86_64-cpu' usable='no'>
     <blocker name='ss'/>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
@@ -1394,67 +1494,82 @@
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v5' typename='Cascadelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v4' typename='Cascadelake-Server-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v3' typename='Cascadelake-Server-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v2' typename='Cascadelake-Server-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-v1' typename='Cascadelake-Server-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server-noTSX' typename='Cascadelake-Server-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
     <blocker name='ibrs-all'/>
   </cpu>
   <cpu type='kvm' name='Cascadelake-Server' typename='Cascadelake-Server-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-v4' typename='Broadwell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-v3' typename='Broadwell-v3-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-v2' typename='Broadwell-v2-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-v1' typename='Broadwell-v1-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-noTSX-IBRS' typename='Broadwell-noTSX-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-noTSX' typename='Broadwell-noTSX-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell-IBRS' typename='Broadwell-IBRS-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='Broadwell' typename='Broadwell-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='hle'/>
     <blocker name='rtm'/>
+    <blocker name='rdseed'/>
   </cpu>
   <cpu type='kvm' name='486-v1' typename='486-v1-x86_64-cpu' usable='yes'/>
   <cpu type='kvm' name='486' typename='486-x86_64-cpu' usable='yes'/>
