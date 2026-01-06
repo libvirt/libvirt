@@ -112,8 +112,6 @@ qemuValidateDomainDefHypervFeatures(const virDomainDef *def)
         return -1;
     }
 
-    CHECK_HV_FEAT(VIR_DOMAIN_HYPERV_SYNIC, VIR_DOMAIN_HYPERV_VPINDEX);
-
     if (def->hyperv.features[VIR_DOMAIN_HYPERV_STIMER] == VIR_TRISTATE_SWITCH_ON) {
         if (!virDomainDefHasTimer(def, VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
