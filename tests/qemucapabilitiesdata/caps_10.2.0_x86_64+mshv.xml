@@ -199,11 +199,12 @@
   <flag name='tdx-guest'/>
   <flag name='qom-list-get'/>
   <flag name='acpi-generic-initiator'/>
+  <flag name='disk-timed-stats'/>
   <flag name='query-accelerators'/>
   <flag name='mshv'/>
-  <version>10001050</version>
+  <version>10002000</version>
   <microcodeVersion>43100287</microcodeVersion>
-  <package>v10.1.0-1778-ge090e0312d</package>
+  <package>v10.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='mshv' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='true' migratable='yes'/>
