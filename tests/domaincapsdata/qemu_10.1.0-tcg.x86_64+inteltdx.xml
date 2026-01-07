@@ -1084,6 +1084,53 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='Intel'>GraniteRapids-v3</model>
+      <blockers model='GraniteRapids-v3'>
+        <feature name='amx-bf16'/>
+        <feature name='amx-fp16'/>
+        <feature name='amx-int8'/>
+        <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx10'/>
+        <feature name='avx10-128'/>
+        <feature name='avx10-256'/>
+        <feature name='avx10-512'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-fp16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cldemote'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='mcdt-no'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='pcid'/>
+        <feature name='prefetchiti'/>
+        <feature name='rtm'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='tsc_adjust'/>
+        <feature name='tsx-ldtrk'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xfd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <blockers model='Haswell'>
         <feature name='hle'/>
@@ -1611,6 +1658,46 @@
         <feature name='xsavec'/>
         <feature name='xsaves'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SapphireRapids-v4</model>
+      <blockers model='SapphireRapids-v4'>
+        <feature name='amx-bf16'/>
+        <feature name='amx-int8'/>
+        <feature name='amx-tile'/>
+        <feature name='arch-capabilities'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx512-bf16'/>
+        <feature name='avx512-fp16'/>
+        <feature name='avx512-vpopcntdq'/>
+        <feature name='avx512bitalg'/>
+        <feature name='avx512bw'/>
+        <feature name='avx512cd'/>
+        <feature name='avx512dq'/>
+        <feature name='avx512f'/>
+        <feature name='avx512ifma'/>
+        <feature name='avx512vbmi'/>
+        <feature name='avx512vbmi2'/>
+        <feature name='avx512vl'/>
+        <feature name='avx512vnni'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cldemote'/>
+        <feature name='gfni'/>
+        <feature name='hle'/>
+        <feature name='invpcid'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='pcid'/>
+        <feature name='rtm'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='tsc_adjust'/>
+        <feature name='tsx-ldtrk'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xfd'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
         <feature name='arch-capabilities'/>
@@ -1653,6 +1740,35 @@
       </blockers>
       <model usable='no' vendor='Intel'>SierraForest-v2</model>
       <blockers model='SierraForest-v2'>
+        <feature name='arch-capabilities'/>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cldemote'/>
+        <feature name='gfni'/>
+        <feature name='intel-psfd'/>
+        <feature name='invpcid'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='movdir64b'/>
+        <feature name='movdiri'/>
+        <feature name='pcid'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='serialize'/>
+        <feature name='spec-ctrl'/>
+        <feature name='ssbd'/>
+        <feature name='tsc-deadline'/>
+        <feature name='tsc_adjust'/>
+        <feature name='vpclmulqdq'/>
+        <feature name='xsavec'/>
+        <feature name='xsaves'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v3</model>
+      <blockers model='SierraForest-v3'>
         <feature name='arch-capabilities'/>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
@@ -1972,6 +2088,24 @@
       </blockers>
       <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v2</model>
       <blockers model='YongFeng-v2'>
+        <feature name='ace2'/>
+        <feature name='arch-capabilities'/>
+        <feature name='invpcid'/>
+        <feature name='invtsc'/>
+        <feature name='pcid'/>
+        <feature name='phe'/>
+        <feature name='phe-en'/>
+        <feature name='pmm'/>
+        <feature name='pmm-en'/>
+        <feature name='spec-ctrl'/>
+        <feature name='tsc-deadline'/>
+        <feature name='xcrypt'/>
+        <feature name='xcrypt-en'/>
+        <feature name='xstore'/>
+        <feature name='xstore-en'/>
+      </blockers>
+      <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v3</model>
+      <blockers model='YongFeng-v3'>
         <feature name='ace2'/>
         <feature name='arch-capabilities'/>
         <feature name='invpcid'/>

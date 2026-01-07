@@ -68,6 +68,8 @@
       <feature policy='require' name='tsx-ctrl'/>
       <feature policy='require' name='gds-no'/>
       <feature policy='require' name='rfds-no'/>
+      <feature policy='require' name='its-no'/>
+      <feature policy='require' name='vmx-any-errcode'/>
       <feature policy='require' name='vmx-activity-wait-sipi'/>
       <feature policy='require' name='vmx-encls-exit'/>
       <feature policy='require' name='vmx-tsc-scaling'/>
@@ -518,6 +520,18 @@
         <feature name='psdp-no'/>
         <feature name='sbdr-ssdp-no'/>
       </blockers>
+      <model usable='no' vendor='Intel'>GraniteRapids-v3</model>
+      <blockers model='GraniteRapids-v3'>
+        <feature name='avx10'/>
+        <feature name='avx10-128'/>
+        <feature name='avx10-256'/>
+        <feature name='avx10-512'/>
+        <feature name='fbsdp-no'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='psdp-no'/>
+        <feature name='sbdr-ssdp-no'/>
+      </blockers>
       <model usable='yes' vendor='Intel' canonical='Haswell-v1'>Haswell</model>
       <model usable='yes' vendor='Intel' canonical='Haswell-v3'>Haswell-IBRS</model>
       <model usable='yes' vendor='Intel' canonical='Haswell-v2'>Haswell-noTSX</model>
@@ -621,6 +635,12 @@
         <feature name='psdp-no'/>
         <feature name='sbdr-ssdp-no'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SapphireRapids-v4</model>
+      <blockers model='SapphireRapids-v4'>
+        <feature name='fbsdp-no'/>
+        <feature name='psdp-no'/>
+        <feature name='sbdr-ssdp-no'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='SierraForest-v1'>SierraForest</model>
       <blockers model='SierraForest'>
         <feature name='avx-ifma'/>
@@ -647,6 +667,22 @@
       </blockers>
       <model usable='no' vendor='Intel'>SierraForest-v2</model>
       <blockers model='SierraForest-v2'>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='cmpccxadd'/>
+        <feature name='fbsdp-no'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='psdp-no'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='sbdr-ssdp-no'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v3</model>
+      <blockers model='SierraForest-v3'>
         <feature name='avx-ifma'/>
         <feature name='avx-ne-convert'/>
         <feature name='avx-vnni-int8'/>
@@ -731,6 +767,19 @@
       </blockers>
       <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v2</model>
       <blockers model='YongFeng-v2'>
+        <feature name='ace2'/>
+        <feature name='phe'/>
+        <feature name='phe-en'/>
+        <feature name='pmm'/>
+        <feature name='pmm-en'/>
+        <feature name='ssb-no'/>
+        <feature name='xcrypt'/>
+        <feature name='xcrypt-en'/>
+        <feature name='xstore'/>
+        <feature name='xstore-en'/>
+      </blockers>
+      <model usable='no' vendor='Zhaoxin CentaurHauls'>YongFeng-v3</model>
+      <blockers model='YongFeng-v3'>
         <feature name='ace2'/>
         <feature name='phe'/>
         <feature name='phe-en'/>
