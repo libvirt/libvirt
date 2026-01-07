@@ -83,7 +83,7 @@ main(int argc, char **argv)
     g_autofree char *custom_lease_file = NULL;
     const char *ip = NULL;
     const char *mac = NULL;
-    const char *leases_str = NULL;
+    g_autofree char *leases_str = NULL;
     const char *iaid = getenv("DNSMASQ_IAID");
     const char *clientid = getenv("DNSMASQ_CLIENT_ID");
     const char *interface = getenv("DNSMASQ_INTERFACE");
