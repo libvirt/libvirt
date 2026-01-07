@@ -1939,8 +1939,8 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
     virDomainMemoryFailureRecipientType recipient;
     virDomainMemoryFailureActionType action;
     unsigned int flags = 0;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
 
-    virObjectLock(vm);
     driver = QEMU_DOMAIN_PRIVATE(vm)->driver;
 
     switch (mfp->recipient) {
@@ -1979,8 +1979,6 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
         flags |= VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE;
 
     event = virDomainEventMemoryFailureNewFromObj(vm, recipient, action, flags);
-
-    virObjectUnlock(vm);
 
     virObjectEventStateQueue(driver->domainEventState, event);
 }
