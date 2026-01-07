@@ -448,3 +448,21 @@ esxUtil_EscapeForXml(const char *string)
 
     return virBufferContentAndReset(&buffer);
 }
+
+
+/* esxUtil_EscapeInventoryObject:
+ * @buf: the buffer to append to
+ * @string: the string argument which will be URI-encoded
+ *
+ * URI-encode given @string TWICE and append the result to the @buf. This is
+ * to be used with inventory objects (like 'dcPath' and 'dsName') to work
+ * around a VMware bug in which once round of URI-encoding is not enough.
+ */
+void
+esxUtil_EscapeInventoryObject(virBuffer *buf, const char *string)
+{
+    g_autoptr(GString) escaped = g_string_new(NULL);
+
+    g_string_append_uri_escaped(escaped, string, NULL, false);
+    virBufferURIEncodeString(buf, escaped->str);
+}
