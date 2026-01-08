@@ -159,8 +159,6 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
 }
 
 
-
-
 void
 esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
 {
@@ -175,7 +173,6 @@ esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
 
     g_free(*parsedUri);
 }
-
 
 
 int
@@ -196,7 +193,6 @@ esxUtil_ParseVirtualMachineIDString(const char *id_string, int *id)
 
     return -1;
 }
-
 
 
 int
@@ -271,7 +267,6 @@ esxUtil_ParseDatastorePath(const char *datastorePath, char **datastoreName,
 }
 
 
-
 int
 esxUtil_ResolveHostname(const char *hostname, char **ipAddress)
 {
@@ -319,7 +314,6 @@ esxUtil_ResolveHostname(const char *hostname, char **ipAddress)
 }
 
 
-
 int
 esxUtil_ReformatUuid(const char *input, char *output)
 {
@@ -336,7 +330,6 @@ esxUtil_ReformatUuid(const char *input, char *output)
 
     return 0;
 }
-
 
 
 char *
@@ -394,7 +387,6 @@ esxUtil_EscapeBase64(const char *string)
 }
 
 
-
 void
 esxUtil_ReplaceSpecialWindowsPathChars(char *string)
 {
@@ -418,7 +410,6 @@ esxUtil_ReplaceSpecialWindowsPathChars(char *string)
 }
 
 
-
 char *
 esxUtil_EscapeDatastoreItem(const char *string)
 {
@@ -436,7 +427,6 @@ esxUtil_EscapeDatastoreItem(const char *string)
 
     return esxUtil_EscapeBase64(escaped1);
 }
-
 
 
 char *
