@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-12-26 22:58+0000\n"
-"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
+"PO-Revision-Date: 2025-12-30 10:58+0000\n"
+"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -22542,7 +22542,7 @@ msgid "Wrong XML element type %1$d"
 msgstr "Elemento XML erróneo tipo %1$d"
 
 msgid "Wrong address type for USB hub"
-msgstr "Tipo equivocado de dirección para centro de actividad USB"
+msgstr "Tipo de dirección incorrecto para el concentrador USB"
 
 msgid "Wrong length MAC address"
 msgstr "Longitud de la dirección MAC errónea"
@@ -22875,7 +22875,7 @@ msgid "allow the resize to shrink the volume"
 msgstr "concede el redimensionado para reducir el volumen"
 
 msgid "allow_disk_format_probing is no longer supported"
-msgstr "allow_disk_format_probing no está ya mantenido"
+msgstr "allow_disk_format_probing ya no es compatible"
 
 msgid "already active"
 msgstr "ya activo"
@@ -26349,18 +26349,18 @@ msgstr ""
 "supera conteo de ranuras '%2$u'"
 
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
-msgstr ""
-"característica cow (¿vaca, hembra??) solo es utilizado para agrupaciones "
-"'fs' y 'dir'"
+msgstr "La función cow solo puede usarse con los grupos 'fs' y 'dir'"
 
 msgid "cpu affinity is not supported"
-msgstr "no hay soporte para afinidad cpu"
+msgstr "cpu affinity no es compatible"
 
+#, fuzzy
 msgid "cpu count too large"
-msgstr "contador de cpu demasiado grande"
+msgstr "recuento de cpus demasiado grande"
 
+#, fuzzy
 msgid "cpu hotplug is not supported"
-msgstr "enchufado caliente de cpu no admitida"
+msgstr "enchufado en caliente de cpu no admitido"
 
 msgid "cpu parameter is missing a model name"
 msgstr "al parámetro de cpu le falta un nombre de modelo"
