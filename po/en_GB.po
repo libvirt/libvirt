@@ -7,13 +7,13 @@
 # Bastien Nocera <hadess@hadess.net>, 2007
 # Daniel <veillard@redhat.com>, 2011
 # readmanr <robert_readman@hotmail.com>, 2013
-# Andi Chandler <andi@gowling.com>, 2024, 2025.
+# Andi Chandler <andi@gowling.com>, 2024, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-03-29 02:07+0000\n"
+"PO-Revision-Date: 2026-01-08 15:33+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.4\n"
+"X-Generator: Weblate 5.15.1\n"
 
 msgid ""
 "\n"
@@ -231,6 +231,29 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s [options]... [<command_string>]\n"
+"%2$s [options]... <command> [args...]\n"
+"\n"
+"  options:\n"
+"    -c | --connect=URI      hypervisor connection URI\n"
+"    -d | --debug=NUM        debug level [0-4]\n"
+"    -e | --escape <char>    set escape sequence for console\n"
+"    -h | --help             this help\n"
+"    -k | --keepalive-interval=NUM\n"
+"                            keepalive interval in seconds, 0 for disable\n"
+"    -K | --keepalive-count=NUM\n"
+"                            number of possible missed keepalive messages\n"
+"    -l | --log=FILE         output logging to file\n"
+"    -q | --quiet            quiet mode\n"
+"    -r | --readonly         connect readonly\n"
+"    -t | --timing           print timing information\n"
+"         --no-pkttyagent    suppress registration of pkttyagent\n"
+"    -v                      short version\n"
+"    -V                      long version\n"
+"         --version[=TYPE]   version, TYPE is short or long (default short)\n"
+"  commands (non interactive mode):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -1206,11 +1229,11 @@ msgstr "'%1$s' file does not fit in memory"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "'%1$s' hyperv feature requires '%2$s' feature"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "'%1$s' hyperv feature requires '%2$s' timer"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -1352,7 +1375,7 @@ msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "'disk' missing or not an array in reply of guest-get-fsinfo"
 
 msgid "'dpofua' option is available only for SCSI disks"
-msgstr ""
+msgstr "'dpofua' option is available only for SCSI disks"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -1376,7 +1399,7 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "'initiator' refers to a non-existent NUMA node"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "'iothread' attribute only supported for virtio scsi controllers"
@@ -1386,7 +1409,7 @@ msgstr "'iothread' is only supported for virtio-scsi controller"
 
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
-msgstr ""
+msgstr "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr "'legacy KVM' device assignment is no longer supported on this system"
@@ -1467,14 +1490,14 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "'pool' and 'volume' must be specified together for 'pool' type source"
 
 msgid "'qom-list-get' returned unexpected number of paths"
-msgstr ""
+msgstr "'qom-list-get' returned unexpected number of paths"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
 "'queue' count must be configured for explicit iothread to queue mapping"
 
 msgid "'queues' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'queues' is only supported by virtio-scsi and NVMe controllers"
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1900,7 +1923,7 @@ msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI index is only supported for PCI devices"
 
 msgid "ACPI nodeset is not supported with this QEMU"
-msgstr ""
+msgstr "ACPI nodeset is not supported with this QEMU"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI requires UEFI on this architecture"
@@ -2037,7 +2060,7 @@ msgid "Added"
 msgstr "Added"
 
 msgid "Adding disk to domain failed"
-msgstr ""
+msgstr "Adding disk to domain failed"
 
 msgid "Address"
 msgstr "Address"
@@ -2128,7 +2151,7 @@ msgstr ""
 "cell"
 
 msgid "Assigning disk alias failed"
-msgstr ""
+msgstr "Assigning disk alias failed"
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "At least one NUMA node has to have CPUs"
@@ -2310,7 +2333,7 @@ msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 
 msgid "Bhyve version does not support NVMe"
-msgstr ""
+msgstr "Bhyve version does not support NVMe"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "Bhyve version does not support framebuffer"
@@ -2422,7 +2445,7 @@ msgstr "Busy"
 
 #, c-format
 msgid "CA certificate '%1$s' does not exist"
-msgstr ""
+msgstr "CA certificate '%1$s' does not exist"
 
 msgid "CA certificate:"
 msgstr "CA certificate:"
@@ -2776,7 +2799,7 @@ msgid "Can't define NWFilter bindings in session mode"
 msgstr "Can't define NWFilter bindings in session mode"
 
 msgid "Can't define NWFilters in session mode"
-msgstr ""
+msgstr "Can't define NWFilters in session mode"
 
 msgid "Can't determine config path"
 msgstr "Can't determine config path"
@@ -2795,11 +2818,11 @@ msgstr "Can't determine socket paths"
 
 #, c-format
 msgid "Can't find boot device of type: %1$d, device index: %2$d"
-msgstr ""
+msgstr "Can't find boot device of type: %1$d, device index: %2$d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find boot device of type: %1$s, index: %2$d"
-msgstr "unexpected boot device type %d"
+msgstr "Can't find boot device of type: %1$s, index: %2$d"
 
 #, c-format
 msgid "Can't find disk '%1$s' in domain definition"
