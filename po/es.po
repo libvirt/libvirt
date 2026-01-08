@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-11-30 17:58+0000\n"
-"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
+"PO-Revision-Date: 2025-12-08 11:24+0000\n"
+"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -11405,8 +11405,8 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%1$s' in element '%2$s': '%3$s'. Expected UUID"
 msgstr ""
-"Valor para atributo «%1$s» no válido interno a elemento «%2$s»: «%3$s»: "
-"Esperaba UUID"
+"Valor para atributo '%1$s' incorrecto en elemento '%2$s': '%3$s': Se "
+"esperaba UUID"
 
 #, c-format
 msgid ""
@@ -17287,6 +17287,8 @@ msgstr ""
 #, c-format
 msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
+"El recuento de dispositivos IOMMU del dominio de destino %1$zu no coincide "
+"con el de origen: %2$zu"
 
 #, c-format
 msgid ""
@@ -17327,6 +17329,8 @@ msgstr ""
 msgid ""
 "Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
 msgstr ""
+"El valor pci_bus '%1$d' del dispositivo IOMMU del dominio de destino no "
+"coincide con el de origen: '%2$d'"
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -23458,13 +23462,13 @@ msgstr "bloqueo de informe no está admitido para disco vhostuser"
 msgid "block job '%1$s' failed while pivoting"
 msgstr "tarea de bloque '%1$s' ha fallado mientras pivotaba"
 
-#, c-format
+#, c-format, fuzzy
 msgid "block job '%1$s' failed while pivoting: %2$s"
-msgstr ""
+msgstr "el trabajo de bloque '%1$s ' falló al pivotar: %2$s"
 
-#, c-format
+#, c-format, fuzzy
 msgid "block job '%1$s' not ready for pivot yet"
-msgstr ""
+msgstr "el trabajo de bloque '%1$s ' aún no está listo para pivotar"
 
 #, fuzzy, c-format
 msgid "block job on disk '%1$s' is still being ended"
@@ -23473,14 +23477,17 @@ msgstr "la tarea de bloqueo en el disco '%1$s' todavía está siendo terminanda"
 #, c-format
 msgid "block jobs are not supported on disk '%1$s' using bus 'sd'"
 msgstr ""
+"los trabajos de bloque no son compatibles con el disco '%1$s' usando el bus "
+"'sd'"
 
 #, c-format
 msgid "block jobs are not supported on transient disk '%1$s'"
 msgstr ""
+"los trabajos de bloque no son compatibles con el disco transitorio '%1$s'"
 
 #, c-format
 msgid "block jobs are not supported on vhostuser disk '%1$s'"
-msgstr ""
+msgstr "los trabajos de bloque no son compatibles con el disco vhostuser '%1$s'"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %1$zi > %2$d"
@@ -23488,23 +23495,27 @@ msgstr ""
 "petición de bloqueo de examen demasiado extensa para el protocolo remoto, "
 "%1$zi > %2$d"
 
+#, fuzzy
 msgid "block resize is not supported for vhostuser disk"
-msgstr ""
+msgstr "el cambio de tamaño de bloque no es compatible con el disco vhostuser"
 
+#, fuzzy
 msgid ""
 "block resize to full capacity supported only with 'raw' local block-based "
 "disks"
 msgstr ""
+"cambiar el tamaño de bloque a capacidad plena solo es compatible con discos "
+"locales 'raw' basados en bloques"
 
 msgid "block size must be a power of two"
-msgstr ""
+msgstr "el tamaño de bloque debe ser una potencia de dos"
 
 #, c-format
 msgid "block size too small, must be at least %1$lluKiB"
-msgstr ""
+msgstr "tamaño de bloque demasiado pequeño, debería ser de al menos %1$lluKiB"
 
 msgid "block stats are not supported for vhostuser disk"
-msgstr ""
+msgstr "las estadísticas del bloque no son compatibles con el disco vhostuser"
 
 msgid "block_io_throttle device entry was not in expected format"
 msgstr ""
@@ -23517,13 +23528,16 @@ msgstr "Falta block_io_throttle field '%1$s' en salida de QEMU"
 msgid "block_io_throttle inserted entry was not in expected format"
 msgstr "Entrada block_io_throttle insertada no estaba en el formato esperado"
 
-#, c-format
+#, c-format, fuzzy
 msgid ""
 "blockdev flag requested for disk %1$s, but file '%2$s' is not a block device"
 msgstr ""
+"indicador blockdev solicitado para el disco %1$s, pero el archivo '%2$s ' no "
+"es un dispositivo de bloque"
 
+#, fuzzy
 msgid "blockdev-create job was cancelled"
-msgstr ""
+msgstr "tarea blockdev-create cancelada"
 
 msgid "blocked"
 msgstr "bloqueado"
