@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-11-19 10:34+0000\n"
+"PO-Revision-Date: 2025-12-05 10:06+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -19890,7 +19890,7 @@ msgstr ""
 msgid "Unable to run command to get OVS port data for interface %1$s"
 msgstr "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to run command to get OVS port data for interface %1$s: %2$s"
 msgstr ""
 "Nedaří se spustit příkaz pro získání dat OVS portu pro rozhraní %1$s: %2$s"
@@ -19899,7 +19899,7 @@ msgstr ""
 msgid "Unable to run command to set OVS port data for interface %1$s"
 msgstr "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to run command to set OVS port data for interface %1$s: %2$s"
 msgstr ""
 "Nedaří se spustit příkaz pro nastavení dat OVS portu pro rozhraní %1$s: %2$s"
