@@ -23,14 +23,14 @@
 # Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
 # Nicolás Gal <nialegal@yandex.com>, 2025.
 # "Fco. Javier F. Serrador" <fserrador@gmail.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2025-12-30 10:58+0000\n"
-"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
+"PO-Revision-Date: 2026-01-03 23:58+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -28502,7 +28502,7 @@ msgstr "incorrecto al interrumpir tarea para disco «%1$s»"
 
 #, c-format
 msgid "failed to access '%1$s'"
-msgstr "ha fallado al acceder ‘%1$s’"
+msgstr "Incorrecto al acceder a '%1$s'"
 
 msgid "failed to acquire guest cid"
 msgstr "incorrecto al adquirir cid invitado"
