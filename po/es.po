@@ -21,7 +21,7 @@
 # Emilio Herrera <ehespinosa57@gmail.com>, 2022, 2025.
 # Nicolas Gal <nialegal@yandex.com>, 2024, 2025.
 # Nicolas Gal <snowcrash79@users.noreply.translate.fedoraproject.org>, 2025.
-# Nicolás Gal <nialegal@yandex.com>, 2025.
+# Nicolás Gal <nialegal@yandex.com>, 2025, 2026.
 # "Fco. Javier F. Serrador" <fserrador@gmail.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2025-11-25 09:28+0000\n"
-"PO-Revision-Date: 2026-01-05 14:33+0000\n"
-"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
+"PO-Revision-Date: 2026-01-06 10:59+0000\n"
+"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -1059,19 +1059,19 @@ msgstr "%1$s: se esperaba un entero sin signo para el parámetro '%2$s'"
 
 #, c-format
 msgid "%1$s: failed to communicate with bridge helper: %2$s"
-msgstr "%1$s: es incorrecto al comunicar con asistente de puente: %2$s"
+msgstr "%1$s: es error al comunicar con asistente de puente: %2$s"
 
 #, c-format
 msgid "%1$s: failed to generate UNIX socket path"
-msgstr "%1$s: incorrecto al generar ruta de socket UNIX"
+msgstr "%1$s: error al generar ruta de socket UNIX"
 
 #, c-format
 msgid "%1$s: failed to read temporary file: %2$s"
-msgstr "%1$s: incorrecto al leer archivo temporal: %2$s"
+msgstr "%1$s: error al leer archivo temporal: %2$s"
 
 #, c-format
 msgid "%1$s: failed to write log file: %2$s"
-msgstr "%1$s: incorrecto al escribir en el archivo de registro: %2$s"
+msgstr "%1$s: error al escribir en el archivo de registro: %2$s"
 
 #, c-format
 msgid "%1$s: failure with %2$s: %3$s"
@@ -6749,8 +6749,8 @@ msgstr "Error leyendo ruta para %1$s"
 
 msgid "Error checking for disk label, failed to get disk partition information"
 msgstr ""
-"Error de comprobación de etiqueta de disco, incorrecto al obtener "
-"información de partición de disco"
+"Error de comprobación de etiqueta de disco, error al obtener información de "
+"partición de disco"
 
 msgid "Error creating initial configuration"
 msgstr "Error al crear configuración inicial"
@@ -22572,7 +22572,7 @@ msgid "XML description is invalid or not well formed"
 msgstr "Descripción XML no válida o no bien formada"
 
 msgid "XML document failed to validate against schema"
-msgstr "Documento XML incorrecto al validar frente a esquema"
+msgstr "Documento XML error al validar frente a esquema"
 
 #, c-format
 msgid "XML document failed to validate against schema: %1$s"
@@ -28457,18 +28457,18 @@ msgid "failed"
 msgstr "incorrecto"
 
 msgid "failed Xen syscall"
-msgstr "incorrecto al invocación al sistema en Xen"
+msgstr "error al invocación al sistema en Xen"
 
 #, c-format
 msgid "failed Xen syscall %1$s"
 msgstr "incorrecto en invocación de sistema Xen %1$s"
 
 msgid "failed probing capabilities"
-msgstr "incorrecto al probar capacidades"
+msgstr "error al probar capacidades"
 
 #, c-format
 msgid "failed reading from file '%1$s'"
-msgstr "incorrecto al leer desde archivo '%1$s'"
+msgstr "error al leer desde archivo '%1$s'"
 
 #, c-format
 msgid "failed recvfd for child creating '%1$s'"
@@ -28476,52 +28476,52 @@ msgstr "incorrecto en recvfd para heredar creación de «%1$s»"
 
 #, c-format
 msgid "failed to abort job for disk '%1$s'"
-msgstr "incorrecto al interrumpir tarea para disco «%1$s»"
+msgstr "error al interrumpir tarea para disco «%1$s»"
 
 #, c-format
 msgid "failed to access '%1$s'"
-msgstr "incorrecto al acceder a '%1$s'"
+msgstr "error al acceder a '%1$s'"
 
 msgid "failed to acquire guest cid"
-msgstr "incorrecto al adquirir cid invitado"
+msgstr "error al adquirir cid invitado"
 
 #, c-format
 msgid "failed to add chardev '%1$s' info"
-msgstr "incorrecto al añadir informe de chardev «%1$s»"
+msgstr "error al añadir informe de chardev «%1$s»"
 
 msgid "failed to add device into new map"
-msgstr "incorrecto al añadir dispositivo dentro de relación"
+msgstr "error al añadir dispositivo dentro de relación"
 
 msgid "failed to add metadata to XML document"
-msgstr "incorrecto al añadir metadatos al documento XML"
+msgstr "error al añadir metadatos al documento XML"
 
 #, c-format
 msgid ""
 "failed to add new filter rules to '%1$s' - attempting to restore old rules"
 msgstr ""
-"incorrecto al añadir reglas de filtro nuevas a '%1$s'; intentando restaurar "
+"error al añadir reglas de filtro nuevas a '%1$s'; intentando restaurar "
 "reglas anteriores"
 
 msgid "failed to add subsystem filter"
-msgstr "incorrecto al añadir filtro de subsistema"
+msgstr "error al añadir filtro de subsistema"
 
 #, c-format
 msgid "failed to apply capabilities: %1$d"
-msgstr "incorrecto al aplicar capacidades: %1$d"
+msgstr "error al aplicar capacidades: %1$d"
 
 msgid "failed to attach cgroup BPF prog"
-msgstr "incorrecto al adjuntar cgroup BPF prog"
+msgstr "error al adjuntar cgroup BPF prog"
 
 msgid "failed to attach the namespace"
-msgstr "incorrecto al adjuntar el espacio de nombres"
+msgstr "error al adjuntar el espacio de nombres"
 
 #, c-format
 msgid "failed to authenticate using SSH agent: %1$s"
-msgstr "incorrecto al autenticar mediante el agente SSH: %1$s"
+msgstr "error al autenticar mediante el agente SSH: %1$s"
 
 #, c-format
 msgid "failed to authenticate using agent: %1$s"
-msgstr "incorrecto al autenticar utilizando agente: %1$s"
+msgstr "error al autenticar utilizando agente: %1$s"
 
 #, c-format
 msgid "failed to authenticate: %1$s"
@@ -28529,196 +28529,196 @@ msgstr "incorrecto autenticar: %1$s"
 
 #, c-format
 msgid "failed to begin transaction: %1$s%2$s%3$s"
-msgstr "incorrecto al iniciar transacción: %1$s%2$s%3$s"
+msgstr "error al iniciar transacción: %1$s%2$s%3$s"
 
 msgid "failed to boot guest VM"
-msgstr "incorrecto al arrancar la MV invitada"
+msgstr "error al arrancar la MV invitada"
 
 msgid "failed to calculate ssh host key hash"
 msgstr "incorrecto en el cálculo hash de clave de host ssh"
 
 #, c-format
 msgid "failed to change to directory '%1$s' in '%2$s'"
-msgstr "incorrecto al cambiar al directorio «%1$s» en «%2$s»"
+msgstr "error al cambiar al directorio «%1$s» en «%2$s»"
 
 msgid "failed to chown secret file"
-msgstr "incorrecto al ejecutar chown en un archivo secreto"
+msgstr "error al ejecutar chown en un archivo secreto"
 
 #, c-format
 msgid "failed to clone RBD volume %1$s to %2$s"
-msgstr "incorrecto al clonar volumen RBD %1$s a %2$s"
+msgstr "error al clonar volumen RBD %1$s a %2$s"
 
 #, c-format
 msgid "failed to clone files from '%1$s'"
-msgstr "incorrecto al clonar archivos desde «%1$s»"
+msgstr "error al clonar archivos desde «%1$s»"
 
 msgid "failed to close file"
-msgstr "incorrecto al cerrar el archivo"
+msgstr "error al cerrar el archivo"
 
 msgid "failed to close or write to profile"
-msgstr "incorrecto al cierre o escritura al perfil"
+msgstr "error al cierre o escritura al perfil"
 
 msgid "failed to close screenshot file"
-msgstr "incorrecto al cerrar archivo de captura"
+msgstr "error al cerrar archivo de captura"
 
 msgid "failed to collect snapshot list"
-msgstr "incorrecto al recolectar listado de instantánea"
+msgstr "error al recolectar listado de instantánea"
 
 #, c-format
 msgid "failed to commit transaction: %1$s%2$s%3$s"
-msgstr "incorrecto al confirmar transacción: %1$s%2$s%3$s"
+msgstr "error al confirmar transacción: %1$s%2$s%3$s"
 
 #, c-format
 msgid "failed to compile regex '%1$s': %2$s"
-msgstr "incorrecto al compilar la expreg '%1$s': %2$s"
+msgstr "error al compilar la expreg '%1$s': %2$s"
 
 #, c-format
 msgid "failed to connect to %1$s"
-msgstr "incorrecto al conectar a %1$s"
+msgstr "error al conectar a %1$s"
 
 msgid "failed to connect to agent socket"
-msgstr "incorrecto al conectar al zócalo agente"
+msgstr "error al conectar al zócalo agente"
 
 msgid "failed to connect to monitor socket"
-msgstr "incorrecto al conectar con el zócalo del monitor"
+msgstr "error al conectar con el zócalo del monitor"
 
 #, c-format
 msgid "failed to connect to the RADOS monitor on: %1$s"
-msgstr "incorrecto al conectar al monitor RADOS en: %1$s"
+msgstr "error al conectar al monitor RADOS en: %1$s"
 
 msgid "failed to connect to the hypervisor"
-msgstr "incorrecto al conectar con el hipervisor"
+msgstr "error al conectar con el hipervisor"
 
 #, c-format
 msgid "failed to construct broadcast or network address for network %1$s/%2$d"
-msgstr "incorrecto al construir broadcast o dirección de red para red %1$s/%2$d"
+msgstr "error al construir broadcast o dirección de red para red %1$s/%2$d"
 
 #, c-format
 msgid "failed to convert size: '%1$s'"
-msgstr "incorrecto al convertir tamaño: «%1$s»"
+msgstr "error al convertir tamaño: «%1$s»"
 
 msgid "failed to convert the XML node tree"
-msgstr "incorrecto al convertir el árbol de nodo XML"
+msgstr "error al convertir el árbol de nodo XML"
 
 msgid "failed to copy all device rules"
-msgstr "incorrecto al copiar todas las reglas del dispositivo"
+msgstr "error al copiar todas las reglas del dispositivo"
 
 msgid "failed to count cgroup BPF map items"
-msgstr "incorrecto al enumerar elementos del mapa BPF de cgroup"
+msgstr "error al enumerar elementos del mapa BPF de cgroup"
 
 #, c-format
 msgid "failed to create %1$s"
-msgstr "incorrecto al crear %1$s"
+msgstr "error al crear %1$s"
 
 #, c-format
 msgid "failed to create (start) interface %1$s: %2$s%3$s%4$s"
-msgstr "incorrecto al crear (iniciar) interfaz %1$s: %2$s%3$s%4$s"
+msgstr "error al crear (iniciar) interfaz %1$s: %2$s%3$s%4$s"
 
 msgid "failed to create JSON tokener"
 msgstr "incorrecto al crear valedor JSON"
 
 #, c-format
 msgid "failed to create RBD snapshot %1$s@%2$s"
-msgstr "incorrecto al crear instantánea RBD %1$s@%2$s"
+msgstr "error al crear instantánea RBD %1$s@%2$s"
 
 msgid "failed to create XML node"
-msgstr "incorrecto al crear nodo XML"
+msgstr "error al crear nodo XML"
 
 msgid "failed to create a new XML namespace"
-msgstr "incorrecto al crear un espacio de nombre XML nuevo"
+msgstr "error al crear un espacio de nombre XML nuevo"
 
 #, c-format
 msgid "failed to create channel dir '%1$s'"
-msgstr "incorrecto al crear canal dir '%1$s'"
+msgstr "error al crear canal dir '%1$s'"
 
 msgid "failed to create connection to CH socket"
-msgstr "incorrecto al crear conexión a zócalo CH"
+msgstr "error al crear conexión a zócalo CH"
 
 msgid "failed to create copy target"
-msgstr "incorrecto al crear copia de destino"
+msgstr "error al crear copia de destino"
 
 #, c-format
 msgid "failed to create directory '%1$s'"
-msgstr "incorrecto al crear directorio «%1$s»"
+msgstr "error al crear directorio «%1$s»"
 
 #, c-format
 msgid "failed to create dump dir '%1$s'"
-msgstr "incorrecto al crear dir de volcado ‘%1$s’"
+msgstr "error al crear dir de volcado ‘%1$s’"
 
 #, c-format
 msgid "failed to create glfs object for '%1$s'"
-msgstr "incorrecto al crear objeto glfs para '%1$s'"
+msgstr "error al crear objeto glfs para '%1$s'"
 
 msgid "failed to create guest VM"
-msgstr "incorrecto al crear MV invitada"
+msgstr "error al crear MV invitada"
 
 #, c-format
 msgid "failed to create image file '%1$s'"
-msgstr "incorrecto al crear archivo de imagen '%1$s'"
+msgstr "error al crear archivo de imagen '%1$s'"
 
 msgid "failed to create include file"
-msgstr "incorrecto al crear archivo de inclusión"
+msgstr "error al crear archivo de inclusión"
 
 msgid "failed to create json"
-msgstr "incorrecto al crear json"
+msgstr "error al crear json"
 
 #, c-format
 msgid "failed to create lib dir '%1$s'"
-msgstr "incorrecto al crear lib dir ‘%1$s’"
+msgstr "error al crear lib dir ‘%1$s’"
 
 #, c-format
 msgid "failed to create libssh channel: %1$s"
-msgstr "incorrecto al crear canal libssh: %1$s"
+msgstr "error al crear canal libssh: %1$s"
 
 #, c-format
 msgid "failed to create log dir '%1$s'"
-msgstr "incorrecto al crear dir bitácora ‘%1$s’"
+msgstr "error al crear dir bitácora ‘%1$s’"
 
 #, c-format
 msgid "failed to create logfile %1$s"
-msgstr "incorrecto al crear el archivo de registro %1$s"
+msgstr "error al crear el archivo de registro %1$s"
 
 msgid "failed to create profile"
-msgstr "incorrecto al crear perfil"
+msgstr "error al crear perfil"
 
 #, c-format
 msgid "failed to create save dir '%1$s'"
-msgstr "incorrecto al crear dir guardado ‘%1$s’"
+msgstr "error al crear dir guardado ‘%1$s’"
 
 msgid "failed to create socket"
-msgstr "incorrecto al crear socket"
+msgstr "error al crear socket"
 
 #, c-format
 msgid "failed to create socket needed for '%1$s'"
-msgstr "incorrecto al crear socket necesario para '%1$s'"
+msgstr "error al crear socket necesario para '%1$s'"
 
 msgid "failed to create socketpair"
-msgstr "incorrecto al crear pareja de zócalo"
+msgstr "error al crear pareja de zócalo"
 
 #, c-format
 msgid "failed to create state dir '%1$s'"
-msgstr "incorrecto al crear dir de estadística '%1$s'"
+msgstr "error al crear dir de estadística '%1$s'"
 
 msgid "failed to create the RADOS cluster"
-msgstr "incorrecto al crear el clúster RADOS"
+msgstr "error al crear el clúster RADOS"
 
 #, c-format
 msgid "failed to create the RBD IoCTX. Does the pool '%1$s' exist?"
-msgstr "incorrecto al crear RBD IoCTX. ¿Existe el grupo '%1$s'?"
+msgstr "error al crear RBD IoCTX. ¿Existe el grupo '%1$s'?"
 
 msgid "failed to create udev context"
-msgstr "incorrecto al crear contexto udev"
+msgstr "error al crear contexto udev"
 
 msgid "failed to create udev handler thread"
-msgstr "incorrecto al crear un hilo del manipulador udev"
+msgstr "error al crear un hilo del manipulador udev"
 
 #, c-format
 msgid "failed to create volume '%1$s/%2$s'"
-msgstr "incorrecto al crear volumen '%1$s/%2$s'"
+msgstr "error al crear volumen '%1$s/%2$s'"
 
 #, c-format
 msgid "failed to decode SASL data: %1$d (%2$s)"
-msgstr "incorrecto al descifrar datos SASL:%1$d (%2$s)"
+msgstr "error al descifrar datos SASL:%1$d (%2$s)"
 
 #, c-format
 msgid "failed to delete root.hds of volume '%1$s'"
@@ -28726,48 +28726,48 @@ msgstr "incorrecto borrar root.hds del volumen '%1$s'"
 
 #, c-format
 msgid "failed to destroy (stop) interface %1$s: %2$s%3$s%4$s"
-msgstr "incorrecto al destruir (detener) interfaz %1$s: %2$s%3$s%4$s"
+msgstr "error al destruir (detener) interfaz %1$s: %2$s%3$s%4$s"
 
 msgid "failed to determine host name"
-msgstr "incorrecto al determinar nombre de host"
+msgstr "error al determinar nombre de host"
 
 #, c-format
 msgid "failed to determine loop exit status: %1$s"
-msgstr "incorrecto al determinar estado de salida del bucle: %1$s"
+msgstr "error al determinar estado de salida del bucle: %1$s"
 
 #, c-format
 msgid "failed to duplicate file descriptor for fd group '%1$s'"
-msgstr "incorrecto al duplicar descriptor de archivo para grupo fd '%1$s'"
+msgstr "error al duplicar descriptor de archivo para grupo fd '%1$s'"
 
 #, c-format
 msgid "failed to duplicate passed fd with index '%1$zu'"
-msgstr "incorrecto al duplicar fd pasado con índice '%1$zu'"
+msgstr "error al duplicar fd pasado con índice '%1$zu'"
 
 msgid "failed to enable IP forwarding"
-msgstr "incorrecto al habilitar el reenvío de IP"
+msgstr "error al habilitar el reenvío de IP"
 
 #, c-format
 msgid "failed to enable mac filter in '%1$s'"
-msgstr "incorrecto al habilitar filtro mac en '%1$s'"
+msgstr "error al habilitar filtro mac en '%1$s'"
 
 #, c-format
 msgid "failed to encode SASL data: %1$d (%2$s)"
-msgstr "incorrecto al cifrar datos SASL:%1$d (%2$s)"
+msgstr "error al cifrar datos SASL:%1$d (%2$s)"
 
 #, c-format
 msgid "failed to encrypt the data: '%1$s'"
-msgstr "incorrecto al cifrar los datos: '%1$s'"
+msgstr "error al cifrar los datos: '%1$s'"
 
 #, c-format
 msgid "failed to execute command '%1$s': %2$s"
-msgstr "incorrecto al ejecutar orden «%1$s»: %2$s"
+msgstr "error al ejecutar orden «%1$s»: %2$s"
 
 msgid "failed to extract gluster volume name"
-msgstr "incorrecto al extraer nombre del volumen gluster"
+msgstr "error al extraer nombre del volumen gluster"
 
 #, c-format
 msgid "failed to find USB device busnum:devnum for %1$x:%2$x"
-msgstr "incorrecto al encontrar un dispositivo USB busnum:devnum para %1$x:%2$x"
+msgstr "error al encontrar un dispositivo USB busnum:devnum para %1$x:%2$x"
 
 #, c-format
 msgid "failed to find a supported CCW group capability type '%1$s'"
@@ -28775,141 +28775,139 @@ msgstr ""
 "incorrecto al encontrar una tipo '%1$s' de capacidad de grupo CCW mantenido"
 
 msgid "failed to find an empty memory slot"
-msgstr "incorrecto al encontrar una ranura de memoria vacía"
+msgstr "error al encontrar una ranura de memoria vacía"
 
 msgid ""
 "failed to find appropriate hotpluggable vcpus to reach the desired target "
 "vcpu count"
 msgstr ""
-"incorrecto al encontrar vcpus de conexión en caliente apropiada para "
-"alcanzar el contador de vcpu deseado"
+"error al encontrar vcpus de conexión en caliente apropiada para alcanzar el "
+"contador de vcpu deseado"
 
 #, c-format
 msgid "failed to find data for block node '%1$s'"
-msgstr "incorrecto al encontrar datos para nodo de bloque '%1$s'"
+msgstr "error al encontrar datos para nodo de bloque '%1$s'"
 
 #, c-format
 msgid "failed to find disk '%1$s'"
-msgstr "incorrecto al encontrar disco «%1$s»"
+msgstr "error al encontrar disco «%1$s»"
 
 #, c-format
 msgid "failed to find disk '%1$s' in snapshot VM XML"
-msgstr "incorrecto al encontrar disco '%1$s' en captura de MV en XML"
+msgstr "error al encontrar disco '%1$s' en captura de MV en XML"
 
 #, c-format
 msgid "failed to find iothread id for '%1$s'"
-msgstr "incorrecto al encontrar id de iothread para «%1$s»"
+msgstr "error al encontrar id de iothread para «%1$s»"
 
 msgid "failed to find parent disk source in backing chain"
-msgstr "incorrecto al encontrar origen de disco antecesor en cadena de respaldo"
+msgstr "error al encontrar origen de disco antecesor en cadena de respaldo"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%1$s'"
-msgstr "incorrecto al encontrar VID para el dispositivo VLAN '%1$s'"
+msgstr "error al encontrar VID para el dispositivo VLAN '%1$s'"
 
 #, c-format
 msgid "failed to find the real device for the VLAN device '%1$s'"
-msgstr ""
-"incorrecto al encontrar el dispositivo real para el dispositivo VLAN «%1$s»"
+msgstr "error al encontrar el dispositivo real para el dispositivo VLAN «%1$s»"
 
 #, c-format
 msgid "failed to finish job for disk %1$s"
-msgstr "incorrecto al finalizar tarea para el disco '%1$s'"
+msgstr "error al finalizar tarea para el disco '%1$s'"
 
 #, c-format
 msgid "failed to format image: '%1$s'"
-msgstr "incorrecto al formatear imagen: '%1$s'"
+msgstr "error al formatear imagen: '%1$s'"
 
 msgid "failed to generate XML"
-msgstr "incorrecto al generar XML"
+msgstr "error al generar XML"
 
 #, c-format
 msgid "failed to generate byte stream: %1$s"
-msgstr "incorrecto al generar flujo de byte: %1$s"
+msgstr "error al generar flujo de byte: %1$s"
 
 msgid "failed to generate uuid"
-msgstr "incorrecto al generar UUID"
+msgstr "error al generar UUID"
 
 msgid "failed to get CPU model names"
-msgstr "incorrecto al obtener nombres de modelo de CPU"
+msgstr "error al obtener nombres de modelo de CPU"
 
 #, c-format
 msgid "failed to get IPv4 address for start or end of range %1$s - %2$s"
 msgstr ""
-"incorrecto al obtener dirección IPv4 para el inicio o el final del intervalo "
+"error al obtener dirección IPv4 para el inicio o el final del intervalo "
 "%1$s - %2$s"
 
 #, c-format
 msgid "failed to get IPv6 address for start or end of range %1$s - %2$s"
 msgstr ""
-"incorrecto al obtener dirección IPv6 para el inicio o el final del intervalo "
+"error al obtener dirección IPv6 para el inicio o el final del intervalo "
 "%1$s - %2$s"
 
 msgid "failed to get URI"
-msgstr "incorrecto al obtener URI"
+msgstr "error al obtener URI"
 
 msgid "failed to get capabilities"
-msgstr "incorrecto al obtener capacidades"
+msgstr "error al obtener capacidades"
 
 msgid "failed to get cgroup BPF map FD"
-msgstr "incorrecto al obtener cgroup BPF mapa FD"
+msgstr "error al obtener cgroup BPF mapa FD"
 
 msgid "failed to get cgroup BPF map info"
-msgstr "incorrecto al obtener informe de mapa cgroup BPF"
+msgstr "error al obtener informe de mapa cgroup BPF"
 
 msgid "failed to get cgroup BPF prog FD"
-msgstr "incorrecto al obtener cgroup BPF prog FD"
+msgstr "error al obtener cgroup BPF prog FD"
 
 msgid "failed to get cgroup BPF prog info"
-msgstr "incorrecto al obtener cgroup de info de prog BPF"
+msgstr "error al obtener cgroup de info de prog BPF"
 
 #, c-format
 msgid "failed to get cgroup backend for '%1$s' controller '%2$u'"
-msgstr ""
-"incorrecto al obtener segundo plano de cgroup para '%1$s' controlador '%2$u'"
+msgstr "error al obtener segundo plano de cgroup para '%1$s' controlador '%2$u'"
 
 msgid "failed to get cmt scaling factor"
-msgstr "incorrecto al obtener factor de escala cmt"
+msgstr "error al obtener factor de escala cmt"
 
 msgid "failed to get current time"
-msgstr "incorrecto al obtener hora y día actual"
+msgstr "error al obtener hora y día actual"
 
 #, c-format
 msgid "failed to get domain '%1$s'"
-msgstr "incorrecto al obtener dominio '%1$s'"
+msgstr "error al obtener dominio '%1$s'"
 
 msgid "failed to get domain UUID"
-msgstr "incorrecto al obtener UUID de dominio"
+msgstr "error al obtener UUID de dominio"
 
 msgid "failed to get domain xml"
-msgstr "incorrecto al obtener XML de dominio"
+msgstr "error al obtener XML de dominio"
 
 msgid "failed to get emulator capabilities"
-msgstr "incorrecto al obtener capacidades del emulador"
+msgstr "error al obtener capacidades del emulador"
 
 #, c-format
 msgid "failed to get features from '%1$s'"
-msgstr "incorrecto al obtener capacidades desde «%1$s»"
+msgstr "error al obtener capacidades desde «%1$s»"
 
 #, c-format
 msgid "failed to get free memory for NUMA node number: %1$lu"
-msgstr "incorrecto al obtener memoria libre para número de nodos NUMA: %1$lu"
+msgstr "error al obtener memoria libre para número de nodos NUMA: %1$lu"
 
 msgid "failed to get hostname"
-msgstr "incorrecto al obtener nombre de host"
+msgstr "error al obtener nombre de host"
 
 msgid "failed to get hypervisor CPU model names"
 msgstr "incorrecto al obtener hipervisor de nombres de modelo de CPU"
 
 msgid "failed to get hypervisor type"
-msgstr "incorrecto al obtener tipo de hipervisor"
+msgstr "error al obtener tipo de hipervisor"
 
 #, c-format
 msgid "failed to get interface '%1$s'"
-msgstr "incorrecto al obtener interfaz '%1$s'"
+msgstr "error al obtener interfaz '%1$s'"
 
 msgid "failed to get launch security policy"
-msgstr "incorrecto al obtener lanzamiento de directiva de seguridad"
+msgstr "error al obtener lanzamiento de directiva de seguridad"
 
 msgid "failed to get launch security policy for launch security type TDX"
 msgstr ""
@@ -28918,166 +28916,166 @@ msgstr ""
 
 #, c-format
 msgid "failed to get list of %1$s interfaces on host"
-msgstr "incorrecto al obtener el listado de interfaces %1$s en el host"
+msgstr "error al obtener el listado de interfaces %1$s en el host"
 
 #, c-format
 msgid "failed to get network '%1$s'"
-msgstr "incorrecto al obtener red '%1$s'"
+msgstr "error al obtener red '%1$s'"
 
 msgid "failed to get network UUID"
-msgstr "incorrecto al obtener UUID de red"
+msgstr "error al obtener UUID de red"
 
 #, c-format
 msgid "failed to get network port '%1$s'"
-msgstr "incorrecto al obtener puerto de red '%1$s'"
+msgstr "error al obtener puerto de red '%1$s'"
 
 msgid "failed to get node information"
-msgstr "incorrecto al obtener información de nodo"
+msgstr "error al obtener información de nodo"
 
 #, c-format
 msgid "failed to get number of host interfaces: %1$s%2$s%3$s"
-msgstr "incorrecto al obtener número de interfaces de host: %1$s%2$s%3$s"
+msgstr "error al obtener número de interfaces de host: %1$s%2$s%3$s"
 
 #, c-format
 msgid "failed to get nwfilter '%1$s'"
-msgstr "incorrecto al intentar obtener el filtro nwfilter '%1$s'"
+msgstr "error al intentar obtener el filtro nwfilter '%1$s'"
 
 #, c-format
 msgid "failed to get nwfilter binding '%1$s'"
-msgstr "incorrecto al obtener filtro nwfilter vinculando a «%1$s»"
+msgstr "error al obtener filtro nwfilter vinculando a «%1$s»"
 
 msgid "failed to get parent pool"
-msgstr "incorrecto al obtener grupo antecesor"
+msgstr "error al obtener grupo antecesor"
 
 msgid "failed to get persistent definition object"
-msgstr "incorrecto al obtener objeto de definición persistente"
+msgstr "error al obtener objeto de definición persistente"
 
 #, c-format
 msgid "failed to get pool '%1$s'"
-msgstr "incorrecto al obtener consorcio '%1$s'"
+msgstr "error al obtener consorcio '%1$s'"
 
 msgid "failed to get pool UUID"
-msgstr "incorrecto al obtener UUID de consorcio"
+msgstr "error al obtener UUID de consorcio"
 
 msgid "failed to get rdt event type"
-msgstr "incorrecto al obtener tipo de suceso rdt"
+msgstr "error al obtener tipo de suceso rdt"
 
 #, c-format
 msgid "failed to get secret '%1$s'"
-msgstr "incorrecto al obtener secreto '%1$s'"
+msgstr "error al obtener secreto '%1$s'"
 
 msgid "failed to get source from sourceList"
-msgstr "incorrecto al obtener origen desde el listado sourceList"
+msgstr "error al obtener origen desde el listado sourceList"
 
 #, c-format
 msgid "failed to get stat for '%1$s'"
-msgstr "incorrecto al obtener estado para '%1$s'"
+msgstr "error al obtener estado para '%1$s'"
 
 #, c-format
 msgid "failed to get status of interface %1$s: %2$s%3$s%4$s"
-msgstr "incorrecto al obtener estado de interfaz %1$s: %2$s%3$s%4$s"
+msgstr "error al obtener estado de interfaz %1$s: %2$s%3$s%4$s"
 
 msgid "failed to get storage pool capabilities"
-msgstr "incorrecto al obtener capacidades de consorcio de almacenaje"
+msgstr "error al obtener capacidades de consorcio de almacenaje"
 
 #, c-format
 msgid "failed to get stripe count of RBD image %1$s"
-msgstr "incorrecto al obtener conteo de banda de imagen RBD %1$s"
+msgstr "error al obtener conteo de banda de imagen RBD %1$s"
 
 msgid "failed to get sysinfo"
-msgstr "incorrecto al obtener sysinfo"
+msgstr "error al obtener sysinfo"
 
 msgid "failed to get the daemon version"
-msgstr "incorrecto al obtener versión de demonio"
+msgstr "error al obtener versión de demonio"
 
 #, c-format
 msgid "failed to get the features of RBD image %1$s"
-msgstr "incorrecto al obtener características de la imagen RBD '%1$s'"
+msgstr "error al obtener características de la imagen RBD '%1$s'"
 
 #, c-format
 msgid "failed to get the flags of RBD image %1$s"
-msgstr "incorrecto al obtener indicadores de imagen RBD %1$s"
+msgstr "error al obtener indicadores de imagen RBD %1$s"
 
 #, c-format
 msgid "failed to get the format of RBD image %1$s"
-msgstr "incorrecto al obtener el formato de la imagen RBD '%1$s'"
+msgstr "error al obtener el formato de la imagen RBD '%1$s'"
 
 msgid "failed to get the hypervisor version"
-msgstr "incorrecto al obtener la versión del hipervisor"
+msgstr "error al obtener la versión del hipervisor"
 
 msgid "failed to get the key of the current session"
-msgstr "incorrecto al obtener la clave de la sesión actual"
+msgstr "error al obtener la clave de la sesión actual"
 
 msgid "failed to get the library version"
-msgstr "incorrecto al obtener la versión de la biblioteca"
+msgstr "error al obtener la versión de la biblioteca"
 
 #, c-format
 msgid "failed to get the stripe count of RBD image %1$s"
-msgstr "incorrecto al obtener el contador de banda de imagen RBD %1$s"
+msgstr "error al obtener el contador de banda de imagen RBD %1$s"
 
 #, c-format
 msgid "failed to get the stripe unit of RBD image %1$s"
-msgstr "incorrecto al obtener la unidad de banda de la imagen RBD %1$s"
+msgstr "error al obtener la unidad de banda de la imagen RBD %1$s"
 
 #, c-format
 msgid "failed to get vol '%1$s'"
-msgstr "incorrecto al obtener vol '%1$s'"
+msgstr "error al obtener vol '%1$s'"
 
 #, c-format
 msgid "failed to get vol '%1$s', specifying --%2$s might help"
-msgstr "incorrecto al obtener vol '%1$s', especificando --%2$s podría ayudar"
+msgstr "error al obtener vol '%1$s', especificando --%2$s podría ayudar"
 
 msgid "failed to initialize RADOS"
-msgstr "incorrecto al inicializar RADOS"
+msgstr "error al inicializar RADOS"
 
 #, c-format
 msgid "failed to initialize SASL library: %1$d (%2$s)"
-msgstr "incorrecto al inicializar biblioteca SASL: %1$d (%2$s)"
+msgstr "error al inicializar biblioteca SASL: %1$d (%2$s)"
 
 #, c-format
 msgid "failed to initialize cipher: '%1$s'"
-msgstr "incorrecto al inicializar cifrador: '%1$s'"
+msgstr "error al inicializar cifrador: '%1$s'"
 
 msgid "failed to initialize device BPF map"
-msgstr "incorrecto al inicializar asignación de dispositivo BPF"
+msgstr "error al inicializar asignación de dispositivo BPF"
 
 msgid ""
 "failed to initialize device BPF map; locked memory limit for libvirtd "
 "probably needs to be raised"
 msgstr ""
-"incorrecto al inicializar asignación de dispositivo BPF; límite de memoria "
+"error al inicializar asignación de dispositivo BPF; límite de memoria "
 "bloqueada probablemente necesita ser aumentado"
 
 msgid "failed to initialize domain condition"
-msgstr "incorrecto al inicializar condición de dominio"
+msgstr "error al inicializar condición de dominio"
 
 #, c-format
 msgid "failed to initialize gluster connection (src=%1$p priv=%2$p)"
-msgstr "incorrecto al inicializar conexión gluster (src=%1$p priv=%2$p)"
+msgstr "error al inicializar conexión gluster (src=%1$p priv=%2$p)"
 
 msgid "failed to initialize libssh"
-msgstr "incorrecto al inicializar libssh"
+msgstr "error al inicializar libssh"
 
 msgid "failed to initialize netcf"
-msgstr "incorrecto al inicializar netcf"
+msgstr "error al inicializar netcf"
 
 #, c-format
 msgid "failed to iterate RBD image '%1$s'"
-msgstr "incorrecto al iterar imagen RBD «%1$s»"
+msgstr "error al iterar imagen RBD «%1$s»"
 
 #, c-format
 msgid "failed to iterate RBD snapshot %1$s@%2$s"
-msgstr "incorrecto al iterar instantánea RBD %1$s@%2$s"
+msgstr "error al iterar instantánea RBD %1$s@%2$s"
 
 #, c-format
 msgid "failed to list host interfaces: %1$s%2$s%3$s"
-msgstr "incorrecto al hospedar listado de interfaces: %1$s%2$s%3$s"
+msgstr "error al hospedar listado de interfaces: %1$s%2$s%3$s"
 
 msgid "failed to load cgroup BPF prog"
-msgstr "incorrecto al cargar programa cgroup BPF"
+msgstr "error al cargar programa cgroup BPF"
 
 msgid "failed to lookup device in old map"
-msgstr "incorrecto al buscar dispositivo dentro de distribución antigua"
+msgstr "error al buscar dispositivo dentro de distribución antigua"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%1$s'"
@@ -29085,15 +29083,15 @@ msgstr "incorrecto en búsqueda de interfaz con dirección MAC '%1$s'"
 
 #, c-format
 msgid "failed to mark device %1$s as autostarted"
-msgstr "incorrecto al marcar grupo %1$s como auto-iniciado"
+msgstr "error al marcar grupo %1$s como auto-iniciado"
 
 #, c-format
 msgid "failed to mark network %1$s as autostarted"
-msgstr "incorrecto al marcar red %1$s como auto-iniciado"
+msgstr "error al marcar red %1$s como auto-iniciado"
 
 #, c-format
 msgid "failed to mark pool %1$s as autostarted"
-msgstr "incorrecto al marcar consorcio %1$s como auto-inicialdo"
+msgstr "error al marcar consorcio %1$s como auto-inicialdo"
 
 #, c-format
 msgid "failed to monitor nbdkit process %1$i"
@@ -29105,74 +29103,74 @@ msgstr "incorrecto al monitor qemu en proceso de apagado %1$i"
 
 #, c-format
 msgid "failed to move file to %1$s "
-msgstr "incorrecto al mover el archivo a %1$s "
+msgstr "error al mover el archivo a %1$s "
 
 #, c-format
 msgid "failed to obtain list of available servers from %1$s"
-msgstr "incorrecto al obtener el listado de servidores disponibles desde %1$s"
+msgstr "error al obtener el listado de servidores disponibles desde %1$s"
 
 #, c-format
 msgid "failed to obtain list of connected clients from server '%1$s'"
 msgstr ""
-"incorrecto al obtener listado de clientes conectados desde el servidor '%1$s'"
+"error al obtener listado de clientes conectados desde el servidor '%1$s'"
 
 #, c-format
 msgid "failed to open %1$s"
-msgstr "incorrecto al abrir %1$s"
+msgstr "error al abrir %1$s"
 
 msgid "failed to open configuration file"
-msgstr "incorrecto al abrir archivo de configuración"
+msgstr "error al abrir archivo de configuración"
 
 #, c-format
 msgid "failed to open configuration file %1$s"
-msgstr "incorrecto al abrir archivo de configuración %1$s"
+msgstr "error al abrir archivo de configuración %1$s"
 
 msgid "failed to open domain master key file for read"
-msgstr "incorrecto al abrir archivo de clave maestra de dominio para lectura"
+msgstr "error al abrir archivo de clave maestra de dominio para lectura"
 
 msgid "failed to open domain master key file for write"
-msgstr "incorrecto al abrir archivo de clave maestra de dominio para escritura"
+msgstr "error al abrir archivo de clave maestra de dominio para escritura"
 
 msgid "failed to open file"
-msgstr "incorrecto al abrir archivo"
+msgstr "error al abrir archivo"
 
 #, c-format
 msgid "failed to open logfile %1$s"
-msgstr "incorrecto al abrir archivo bitácora %1$s"
+msgstr "error al abrir archivo bitácora %1$s"
 
 #, c-format
 msgid "failed to open netns %1$s"
-msgstr "incorrecto al abrir red netns %1$s"
+msgstr "error al abrir red netns %1$s"
 
 #, c-format
 msgid "failed to open ns %1$s"
-msgstr "incorrecto al abrir ns %1$s"
+msgstr "error al abrir ns %1$s"
 
 msgid "failed to open secret file for write"
-msgstr "incorrecto al abrir archivo secreto para escritura"
+msgstr "error al abrir archivo secreto para escritura"
 
 #, c-format
 msgid "failed to open ssh channel: %1$s"
-msgstr "incorrecto al abrir canal ssh: %1$s"
+msgstr "error al abrir canal ssh: %1$s"
 
 #, c-format
 msgid "failed to open the RBD image %1$s"
-msgstr "incorrecto al abrir la imagen %1$s RBD"
+msgstr "error al abrir la imagen %1$s RBD"
 
 #, c-format
 msgid "failed to open the RBD image '%1$s'"
-msgstr "incorrecto al abrir la imagen '%1$s' RBD"
+msgstr "error al abrir la imagen '%1$s' RBD"
 
 msgid "failed to open the log file. check the log file path"
-msgstr "incorrecto al abrir la bitácora. Verifique la ruta de la bitácora"
+msgstr "error al abrir la bitácora. Verifique la ruta de la bitácora"
 
 #, c-format
 msgid "failed to parse %1$s"
-msgstr "incorrecto al interpretar %1$s"
+msgstr "error al interpretar %1$s"
 
 #, c-format
 msgid "failed to parse %1$sversion"
-msgstr "incorrecto al interpretar versión %1$s"
+msgstr "error al interpretar versión %1$s"
 
 msgid "failed to parse JSON returned by qemu"
 msgstr "incorrecto al interpretar JSON devuelto por qemu"
@@ -29183,60 +29181,60 @@ msgstr "incorrecto al interpretar JSON: %1$s"
 
 #, c-format
 msgid "failed to parse SCSI host '%1$s'"
-msgstr "incorrecto al interpretar host SCSI '%1$s'"
+msgstr "error al interpretar host SCSI '%1$s'"
 
 msgid "failed to parse agent timeout"
-msgstr "incorrecto al interpretar vencimiento de agente"
+msgstr "error al interpretar vencimiento de agente"
 
 #, c-format
 msgid "failed to parse backing file location '%1$s'"
-msgstr "incorrecto al interpretar lugar del archivo de respaldo '%1$s'"
+msgstr "error al interpretar lugar del archivo de respaldo '%1$s'"
 
 #, c-format
 msgid "failed to parse block device '%1$s'"
-msgstr "incorrecto al interpretar dispositivo de bloque '%1$s'"
+msgstr "error al interpretar dispositivo de bloque '%1$s'"
 
 msgid "failed to parse configuration file"
-msgstr "incorrecto al interpretar archivo de configuración"
+msgstr "error al interpretar archivo de configuración"
 
 #, c-format
 msgid "failed to parse configuration file %1$s"
-msgstr "incorrecto al interpretar archivo de configuración %1$s"
+msgstr "error al interpretar archivo de configuración %1$s"
 
 #, c-format
 msgid "failed to parse device weight: '%1$s'"
-msgstr "incorrecto al interpretar ponderación del dispositivo: '%1$s'"
+msgstr "error al interpretar ponderación del dispositivo: '%1$s'"
 
 #, c-format
 msgid "failed to parse int: '%1$s'"
-msgstr "incorrecto al interpretar entero: '%1$s'"
+msgstr "error al interpretar entero: '%1$s'"
 
 #, c-format
 msgid "failed to parse integer: '%1$s'"
 msgstr "incorrecto al interpretar entero: '%1$s'"
 
 msgid "failed to parse json"
-msgstr "incorrecto al interpretar json"
+msgstr "error al interpretar json"
 
 #, c-format
 msgid "failed to parse multicast address from '%1$s'"
 msgstr "incorrecto al interpretar dirección multicast desde '%1$s'"
 
 msgid "failed to parse node name index"
-msgstr "incorrecto al interpretar índice de nombre del nodo"
+msgstr "error al interpretar índice de nombre del nodo"
 
 msgid "failed to parse original memlock size"
-msgstr "incorrecto al interpretar tamaño de bloqueo de memoria original"
+msgstr "error al interpretar tamaño de bloqueo de memoria original"
 
 #, c-format
 msgid "failed to parse port number '%1$s'"
 msgstr "incorrecto al interpretar número de puerto '%1$s'"
 
 msgid "failed to parse pre-migration memlock limit"
-msgstr "incorrecto al interpretar límite de bloqueo de memoria de pre-migración"
+msgstr "error al interpretar límite de bloqueo de memoria de pre-migración"
 
 msgid "failed to parse qemu device list"
-msgstr "incorrecto al interpretar listado de dispositivo qemu"
+msgstr "error al interpretar listado de dispositivo qemu"
 
 #, c-format
 msgid "failed to parse read_bps_device: '%1$s'"
@@ -29310,63 +29308,63 @@ msgid "failed to query mdevs from mdevctl: %1$s"
 msgstr "incorrecto para solicitar mdevs desde mdevctl: %1$s"
 
 msgid "failed to re-init netcf"
-msgstr "incorrecto al re-inicio de red netcf"
+msgstr "error al re-inicio de red netcf"
 
 #, c-format
 msgid "failed to read '%1$s'"
 msgstr "incorrecto al leer '%1$s'"
 
 msgid "failed to read AppArmor template"
-msgstr "incorrecto al leer plantilla AppArmor"
+msgstr "error al leer plantilla AppArmor"
 
 msgid "failed to read CHSaveXMLHeader header"
 msgstr "incorrecto al leer cabecera de CHSaveXML"
 
 msgid "failed to read XML"
-msgstr "incorrecto al leer XML"
+msgstr "error al leer XML"
 
 msgid "failed to read configuration file"
-msgstr "incorrecto al leer archivo de configuración"
+msgstr "error al leer archivo de configuración"
 
 #, c-format
 msgid "failed to read configuration file %1$s"
 msgstr "incorrecto al leer archivo de configuración %1$s"
 
 msgid "failed to read cookie"
-msgstr "incorrecto al leer cookie"
+msgstr "error al leer cookie"
 
 #, c-format
 msgid "failed to read directory '%1$s' in '%2$s'"
 msgstr "incorrecto al leer el directorio '%1$s' en '%2$s'"
 
 msgid "failed to read domain XML"
-msgstr "incorrecto al leer dominio XML"
+msgstr "error al leer dominio XML"
 
 msgid "failed to read from wakeup fd"
-msgstr "incorrecto al leer desde FD de despertador"
+msgstr "error al leer desde FD de despertador"
 
 msgid "failed to read libxl header"
-msgstr "incorrecto al leer encabezado libxl"
+msgstr "error al leer encabezado libxl"
 
 #, c-format
 msgid "failed to read metadata length in '%1$s'"
 msgstr "incorrecto al leer longitud de metadatos en '%1$s'"
 
 msgid "failed to read qemu header"
-msgstr "incorrecto al leer encabezado QEMU"
+msgstr "error al leer encabezado QEMU"
 
 #, c-format
 msgid "failed to read temporary file created with template %1$s"
 msgstr "incorrecto al leer el archivo temporal creado con plantilla %1$s"
 
 msgid "failed to reboot domain"
-msgstr "incorrecto al reiniciar dominio"
+msgstr "error al reiniciar dominio"
 
 msgid "failed to receive device from udev monitor"
-msgstr "incorrecto al recibir dispositivo desde monitor udev"
+msgstr "error al recibir dispositivo desde monitor udev"
 
 msgid "failed to regenerate genid"
-msgstr "incorrecto al regenerar genid"
+msgstr "error al regenerar genid"
 
 msgid "failed to register name server"
 msgstr "incorrecto al registrar servidor de nombre"
@@ -29377,10 +29375,10 @@ msgstr ""
 "resolved"
 
 msgid "failed to register udev interface driver"
-msgstr "incorrecto al registrar unidad de interfaz udev"
+msgstr "error al registrar unidad de interfaz udev"
 
 msgid "failed to remove device from BPF cgroup map"
-msgstr "incorrecto al retirar dispositivo desde distribución cgroup de BPF"
+msgstr "error al retirar dispositivo desde distribución cgroup de BPF"
 
 #, c-format
 msgid "failed to remove nvram: %1$s"
@@ -29409,8 +29407,8 @@ msgstr "incorrecto al resolver '%1$s'"
 msgid ""
 "failed to resolve relative backing name: base image is not in backing chain"
 msgstr ""
-"incorrecto al resolver nombre respaldado relativo: imagen base no está "
-"dentro de la cadena respaldada"
+"error al resolver el nombre de respaldado relativo: la imagen base no está "
+"en la cadena de respaldado"
 
 #, c-format
 msgid "failed to resolve symlink %1$s: %2$s"
@@ -29423,7 +29421,7 @@ msgid "failed to restore domain from managed save"
 msgstr "incorrecto al restaurar dominio desde guardado gestionado"
 
 msgid "failed to resume domain"
-msgstr "incorrecto al reanudar dominio"
+msgstr "error al reanudar dominio"
 
 msgid "failed to resume domain after restore"
 msgstr "incorrecto al reanudar dominio tras restaurar"
@@ -29432,7 +29430,7 @@ msgid "failed to resume domain after restore from managed save"
 msgstr "incorrecto al reanudar dominio tras restaurar desde ahorro gestionado"
 
 msgid "failed to retrieve XML"
-msgstr "incorrecto al obtener XML"
+msgstr "error al obtener XML"
 
 #, c-format
 msgid ""
@@ -29443,18 +29441,17 @@ msgstr ""
 "conectado para servidor '%2$s'"
 
 msgid "failed to retrieve credentials"
-msgstr "incorrecto al recuperar credenciales"
+msgstr "error al recuperar credenciales"
 
 msgid "failed to retrieve decision to accept host key"
-msgstr "incorrecto al recuperar decisión para aceptar clave de host"
+msgstr "error al recuperar decisión para aceptar clave de host"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
-msgstr ""
-"incorrecto al obtener clave de frase contraseña privada: callback ha fallado"
+msgstr "error al obtener clave de frase contraseña privada: callback ha fallado"
 
 msgid "failed to retrieve user response for authentication callback"
 msgstr ""
-"incorrecto al obtener respuesta de usuario para autenticación de invocación "
+"error al obtener respuesta de usuario para autenticación de invocación "
 "trasera"
 
 #, c-format
@@ -29462,10 +29459,10 @@ msgid "failed to rollback transaction: %1$s%2$s%3$s"
 msgstr "incorrecto al restablecer transacción: %1$s%2$s%3$s"
 
 msgid "failed to run apparmor_parser"
-msgstr "incorrecto al ejecutar apparmor_parser"
+msgstr "error al ejecutar apparmor_parser"
 
 msgid "failed to save content"
-msgstr "incorrecto al guardar contenido"
+msgstr "error al guardar contenido"
 
 #, c-format
 msgid "failed to seek in log file %1$s"
@@ -29479,7 +29476,7 @@ msgid "failed to seek to end of %1$s"
 msgstr "incorrecto al buscar al final de %1$s"
 
 msgid "failed to serialize S-Expr"
-msgstr "incorrecto al serializar S-Expr"
+msgstr "error al serializar S-Expr"
 
 #, c-format
 msgid "failed to serialize S-Expr: %1$s"
@@ -29502,7 +29499,7 @@ msgid "failed to set close-on-exec flag on %1$s"
 msgstr "incorrecto al establecer indicador close-on-exec en %1$s"
 
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
-msgstr "incorrecto al establecer cpuset.cpus en cgroup para hilos del emulador"
+msgstr "error al establecer cpuset.cpus en cgroup para hilos del emulador"
 
 #, c-format
 msgid "failed to set cpuset.cpus in cgroup for iothread %1$d"
@@ -29513,19 +29510,19 @@ msgid "failed to set gluster volfile server '%1$s'"
 msgstr "incorrecto al establecer servidor volfile gluster '%1$s'"
 
 msgid "failed to set guest cid"
-msgstr "incorrecto al establecer el cid del invitado"
+msgstr "error al establecer el cid del invitado"
 
 msgid "failed to setup stderr file handle"
-msgstr "incorrecto al configurar manipulador de archivo stderr"
+msgstr "error al configurar manipulador de archivo stderr"
 
 msgid "failed to setup stdin file handle"
-msgstr "incorrecto al configurar manipulador de archivo stdin"
+msgstr "error al configurar manipulador de archivo stdin"
 
 msgid "failed to setup stdout file handle"
-msgstr "incorrecto al configurar manipulador de archivo stdout"
+msgstr "error al configurar manipulador de archivo stdout"
 
 msgid "failed to shutdown guest VM"
-msgstr "incorrecto al apagar invitado de MV"
+msgstr "error al apagar invitado de MV"
 
 #, c-format
 msgid ""
@@ -29540,7 +29537,7 @@ msgid "failed to stat remote file '%1$s'"
 msgstr "incorrecto al establecer archivo '%1$s' remoto"
 
 msgid "failed to stat the RADOS cluster"
-msgstr "incorrecto al declarar el clúster de RADOS"
+msgstr "error al declarar el clúster de RADOS"
 
 #, c-format
 msgid "failed to stat the RADOS pool '%1$s'"
@@ -29559,20 +29556,20 @@ msgid "failed to store %1$lld to %2$s"
 msgstr "incorrecto al almacenar %1$lld para %2$s"
 
 msgid "failed to suspend domain"
-msgstr "incorrecto al suspender dominio"
+msgstr "error al suspender dominio"
 
 msgid "failed to suspend domain before saving"
 msgstr "incorrecto al suspender dominio antes de guardar"
 
 msgid "failed to take screenshot"
-msgstr "incorrecto al tomar instantánea"
+msgstr "error al tomar instantánea"
 
 #, c-format
 msgid "failed to truncate %1$s"
 msgstr "incorrecto al truncar %1$s"
 
 msgid "failed to umount devfs on /dev"
-msgstr "incorrecto al desmontar devfs en /dev"
+msgstr "error al desmontar devfs en /dev"
 
 #, c-format
 msgid "failed to undefine interface %1$s: %2$s%3$s%4$s"
@@ -29603,7 +29600,7 @@ msgid "failed to update capacity of '%1$s'"
 msgstr "incorrecto al actualizar capacidad de '%1$s'"
 
 msgid "failed to update device in BPF cgroup map"
-msgstr "incorrecto al actualizar dispositivo en asignación cgroup BPF"
+msgstr "error al actualizar dispositivo en asignación cgroup BPF"
 
 msgid "failed to update domain state"
 msgstr "incorrecto al actualizar estado de dominio"
@@ -29613,7 +29610,7 @@ msgid "failed to validate SSH host key: %1$s"
 msgstr "incorrecto al validar clave de host SSH: %1$s"
 
 msgid "failed to validate prefix for a new XML namespace"
-msgstr "incorrecto al validar prefijo para un espacio de nombre XML nuevo"
+msgstr "error al validar prefijo para un espacio de nombre XML nuevo"
 
 #, c-format
 msgid "failed to verify if RBD snapshot %1$s@%2$s is protected"
@@ -29632,10 +29629,10 @@ msgid "failed to wait for file '%1$s' to appear"
 msgstr "incorrecto al esperar archivo '%1$s' para aparecer"
 
 msgid "failed to wait on condition"
-msgstr "incorrecto al esperar en condición"
+msgstr "error al esperar en condición"
 
 msgid "failed to wakeup migration tunnel"
-msgstr "incorrecto al despertar túnel de migración"
+msgstr "error al despertar túnel de migración"
 
 #, c-format
 msgid "failed to wipe RBD image %1$s"
@@ -29647,7 +29644,7 @@ msgstr ""
 "incorrecto al cubrir argumentos '%1$s' en una cobertura de instrucción QMP"
 
 msgid "failed to write configuration file"
-msgstr "incorrecto al escribir archivo de configuración"
+msgstr "error al escribir archivo de configuración"
 
 #, c-format
 msgid "failed to write configuration file: %1$s"
@@ -29683,7 +29680,7 @@ msgid "failed to write log file: %1$s"
 msgstr "incorrecto al escribir bitácora: %1$s"
 
 msgid "failed to write master key file for domain"
-msgstr "incorrecto al escribir cerrojo maestro para dominio"
+msgstr "error al escribir cerrojo maestro para dominio"
 
 #, c-format
 msgid "failed to write padding to '%1$s'"
@@ -29693,10 +29690,10 @@ msgid "failed to write secret"
 msgstr "incorrecto al escribir secreto"
 
 msgid "failed to write secret file"
-msgstr "incorrecto al escribir el archivo secreto"
+msgstr "error al escribir el archivo secreto"
 
 msgid "failed to write the log file"
-msgstr "incorrecto al escribir bitácora"
+msgstr "error al escribir bitácora"
 
 #, c-format
 msgid "failed to write to LUN %1$d: %2$s"
@@ -29717,7 +29714,7 @@ msgid "fatal signal %1$d"
 msgstr "señal fatal %1$d"
 
 msgid "fcntl failed to set O_NONBLOCK"
-msgstr "fcntl incorrecto al establecer O_NONBLOCK"
+msgstr "fcntl error al establecer O_NONBLOCK"
 
 #, c-format
 msgid "fd %1$d must be a socket"
@@ -30335,8 +30332,7 @@ msgstr ""
 "agente invitado no respondió a la sincronización durante '%1$d' segundos"
 
 msgid "guest agent replied with wrong id to guest-sync command"
-msgstr ""
-"agente invitado respondió con id incorrecto al comando sincronizar-huésped"
+msgstr "agente invitado respondió con id error al comando sincronizar-huésped"
 
 #, c-format
 msgid "guest agent replied with wrong id to guest-sync command: %1$s"
@@ -30787,13 +30783,13 @@ msgid "incomplete metadata in '%1$s'"
 msgstr "metadatos incompletos en '%1$s'"
 
 msgid "incomplete result, failed to get completed"
-msgstr "resultado incompleto, incorrecto al obtener completo"
+msgstr "resultado incompleto, error al obtener completo"
 
 msgid "incomplete result, failed to get status"
-msgstr "resultado incompleto, incorrecto al obtener estado"
+msgstr "resultado incompleto, error al obtener estado"
 
 msgid "incomplete result, failed to get total"
-msgstr "resultado incompleto, incorrecto al obtener total"
+msgstr "resultado incompleto, error al obtener total"
 
 #, c-format
 msgid "incomplete result, unknown status string '%1$s'"
