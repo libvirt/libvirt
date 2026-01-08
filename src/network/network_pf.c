@@ -165,7 +165,7 @@ pfAddNatFirewallRules(virNetworkDef *def,
      * block log on virbr0
      */
     int prefix = virNetworkIPDefPrefix(ipdef);
-    g_autofree const char *forwardIf = g_strdup(virNetworkDefForwardIf(def, 0));
+    g_autofree char *forwardIf = g_strdup(virNetworkDefForwardIf(def, 0));
     g_auto(virBuffer) pf_rules_buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommand) cmd = virCommandNew(PFCTL);
     g_autoptr(virCommand) flush_cmd = virCommandNew(PFCTL);
