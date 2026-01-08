@@ -389,6 +389,12 @@ sc_prohibit_unsigned_pid:
 	halt='use signed type for pid values' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_g_autofree_const:
+	@prohibit='\<g_auto(free|ptr)\>.* const.* \*[^*]' \
+	halt='‘g_autofree’ discards ‘const’ qualifier from pointer target type' \
+	  $(_sc_search_regexp)
+
+
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
 # |sed 's/.*\.c-  *//'|perl -pe 's/ ?\(.*//'|sort -u \
