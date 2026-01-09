@@ -17,6 +17,31 @@ v12.0.0 (unreleased)
 
 * **New features**
 
+  * bhyve: SLIRP networking support
+
+    Domain XMLs now can use SLIRP user-mode networking::
+
+     <interface type='user'>
+       <model type='virtio'/>
+     </interface>
+
+  * bhyve: virtio-scsi support
+
+    Domain XMLs now can use ``virtio-scsi`` devices::
+
+     <disk type='ctl'>
+       <source dev='/dev/cam/ctl'/>
+       <target dev='sda' bus='scsi'/>
+     </disk>
+
+  * bhyve: initial ARM64 support
+
+    The bhyve driver now supports booting ARM64 domains on ARM64 hosts.
+    This support is still in early stage of development and has some
+    limitations. For example, it requires using
+    ``<clock offset='localtime'/>`` in domain XMLs, and
+    bootrom autofill is not implemented.
+
 * **Improvements**
 
   * qemu: Improvements and fixes to firmware selection
