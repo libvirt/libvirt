@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-05-01 09:25+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
@@ -1446,6 +1446,11 @@ msgstr "„logical-id” lipsește în răspunsul guest-get-vcpus"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "„login-time” lipsește în răspunsul guest-get-users"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "Modul „manual” de creare a instantaneelor de memorie nu este acceptat"
@@ -10640,6 +10645,10 @@ msgid "Invalid XML response"
 msgstr "Răspuns XML nevalid"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "Nume adaptor nevalid „%1$s” pentru fondul SCSI"
 
@@ -10946,6 +10955,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Nume nevalid al dispozitivului de dischetă: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "Format nevalid pentru „bonding/arp_validate” pentru „%1$s”"
 
@@ -11208,10 +11221,6 @@ msgstr "Prioritate nevalidă „%1$s” pentru filtrul „%2$s”"
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "Rata „%1$s” specificată, nu este validă"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "Rută relativă nevalidă „%1$s”."
 
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl nevalid"
@@ -13071,8 +13080,14 @@ msgstr "Discurile NVMe nu sunt acceptate cu acest binar QEMU"
 msgid "NVMe namespace can't be zero"
 msgstr "Spațiul de nume NVMe nu poate fi zero"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM nu este permis în cazul în care încărcătorul este fără stare"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "Șablonul NVRAM nu este permis atunci când încărcătorul este fără stare"
@@ -13901,6 +13916,9 @@ msgstr "Sunt acceptate numai planificatoarele „credit” și „credit2”"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr ""
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "Numai modelul de gestionare „random” este acceptat"
 
@@ -14069,6 +14087,9 @@ msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "O singură metodă de comprimare poate fi specificată cu comprimarea paralelă"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Este acceptat un singur hostdev cu modelul vfio-ap"
@@ -14971,6 +14992,9 @@ msgstr "Dispozitivul RNG nu este acceptat"
 msgid "RNG device is missing alias"
 msgstr "Dispozitivul RNG nu are alias"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "Ajustarea ROM nu este acceptată atunci când ROM este dezactivată"
 
@@ -15744,6 +15768,9 @@ msgstr ""
 
 #, c-format
 msgid "Secret not found: %1$s"
+msgstr ""
+
+msgid "Secret value is not valid base64"
 msgstr ""
 
 msgid "Secret value set\n"
@@ -34835,6 +34862,10 @@ msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr ""
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr ""
 
@@ -36278,6 +36309,9 @@ msgid ""
 msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
+msgstr ""
+
+msgid "setting IP addresses for SLIRP networking is not supported"
 msgstr ""
 
 #, c-format
@@ -40769,6 +40803,10 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Rută relativă nevalidă „%1$s”."
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

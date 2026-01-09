@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-12-22 05:55+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1255,7 +1255,8 @@ msgstr "„%1$s“ není podporováno v této QEMU binárce"
 
 #, c-format
 msgid "'%1$s' launch security is not supported with this QEMU binary"
-msgstr "„%1$s“ zabezpečení spuštění není podpován tímto spustitelný soubor QEMU"
+msgstr ""
+"„%1$s“ zabezpečení spuštění není podpován tímto spustitelný soubor QEMU"
 
 #, c-format
 msgid "'%1$s' missing"
@@ -1408,6 +1409,11 @@ msgstr "v odpovědi guest-get-vcpus chybí 'logical-id'"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "v odpovědi quest-get-users chybí 'login-time'"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "režim 'manual' pořízení zachyceného stavu paměti není podporován"
@@ -10431,6 +10437,10 @@ msgid "Invalid XML response"
 msgstr "Neplatná XML odpověď"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "Neplatný název adaptéru „%1$s“ pro SCSI fond"
 
@@ -10730,6 +10740,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Neplatný název zařízení disketové mechaniky: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "Neplatný formát pro 'bonding/arp_validate' pro „%1$s“"
 
@@ -10990,10 +11004,6 @@ msgstr "Neplatná priorita „%1$s“ pro filtr „%2$s“"
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "Zadána neplatná rychlost „%1$s“"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "Neplatný relativní popis umístění „%1$s“"
 
 msgid "Invalid resctrl monitor"
 msgstr "Neplatný resctrl monitor"
@@ -12801,8 +12811,14 @@ msgstr "NVME disky nejsou s touto binárkou QEMU podporovány"
 msgid "NVMe namespace can't be zero"
 msgstr "Jmenný prostor NVME nemůže být nula"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "Pokud je zavaděč bezstavový, není NVRAM dovoleno"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "Pokud je zavaděč bezstavový, není NVRAM šablona povolena"
@@ -13601,6 +13617,9 @@ msgstr "Podporovány jsou pouze plánovače 'credit' a 'credit2'"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr ""
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "Podporován pouze model podpůrné vrstvy 'random'"
 
@@ -13763,6 +13782,9 @@ msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "V případě souběžného stěhování je možné zadat pouze jednu metodu komprimace"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Je podporováno pouze jedno zařízení hostitele modelu vfio-ap"
@@ -14634,6 +14656,9 @@ msgstr "Podpůrná vrstva generátoru náhodných čísel není podporována"
 msgid "RNG device is missing alias"
 msgstr "Zařízení generátoru náhodných čísel chybí alternativní název"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "ladění ROM není podporováno když je ROM vypnuto"
 
@@ -15442,6 +15467,9 @@ msgstr "Tajemství nenalezeno"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "Tajemství nenalezeno: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "Hodnota tajemství nastavena\n"
@@ -21543,7 +21571,8 @@ msgstr "Zdroj disku virt. stroje a zdroj disku zachyceného stavu nejsou stejné
 
 #, c-format
 msgid "VM doesn't have disk '%1$s' referenced by snapshot '%2$s'"
-msgstr "Virt. stroj nemá disk „%1$s“ na který se odkazuje zachycený stav „%2$s“"
+msgstr ""
+"Virt. stroj nemá disk „%1$s“ na který se odkazuje zachycený stav „%2$s“"
 
 msgid "VM is already active"
 msgstr "virt. stroj už je aktivní"
@@ -35508,6 +35537,10 @@ msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr "port %1$u mimo rozsah v adrese USB sběrnice: %2$u port: %3$s"
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr "port „%1$s“ je mimo rozsah"
 
@@ -37030,6 +37063,9 @@ msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
 msgstr "nastavení ACPI S3/S4 nepodporováno"
+
+msgid "setting IP addresses for SLIRP networking is not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -40713,8 +40749,8 @@ msgid ""
 "use of 'VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES' requires use of "
 "'VIR_MIGRATE_NON_SHARED_DISK' or 'VIR_MIGRATE_NON_SHARED_INC' flag"
 msgstr ""
-"použití „VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES“ vyžaduje příznak „"
-"VIR_MIGRATE_NON_SHARED_DISK“ nebo „VIR_MIGRATE_NON_SHARED_INC“"
+"použití „VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES“ vyžaduje příznak "
+"„VIR_MIGRATE_NON_SHARED_DISK“ nebo „VIR_MIGRATE_NON_SHARED_INC“"
 
 msgid "use of <server> requires pull mode backup"
 msgstr "použití <server> vyžaduje režim zálohy pull"
@@ -41289,7 +41325,8 @@ msgid "virtio-mem isn't supported by this QEMU binary"
 msgstr "virtio-mem není touto QEMU binárkou podporováno"
 
 msgid "virtio-mem-ccw can't use different page size than the boot memory"
-msgstr "virtio-mem-ccw nemůže použít jinou velikost stránky, než paměť zavádění"
+msgstr ""
+"virtio-mem-ccw nemůže použít jinou velikost stránky, než paměť zavádění"
 
 #, c-format
 msgid ""
@@ -41510,7 +41547,8 @@ msgstr "cílový popis umístění „%1$s“ svazku už existuje"
 
 #, c-format
 msgid "volume target path empty for source path '%1$s'"
-msgstr "prázdný cílový popis umístění svazku pro zdrojový popis umístění „%1$s“"
+msgstr ""
+"prázdný cílový popis umístění svazku pro zdrojový popis umístění „%1$s“"
 
 msgid "volume usage specified, but volume path is missing"
 msgstr "zadáno využití svazku, ale chybí popis jeho umístění"
@@ -41767,7 +41805,12 @@ msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není aktivní"
 #, c-format
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
-msgstr "zóna %1$s vyžadována pro sít %2$s, ale firewalld není na BSD podporován"
+msgstr ""
+"zóna %1$s vyžadována pro sít %2$s, ale firewalld není na BSD podporován"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Neplatný relativní popis umístění „%1$s“"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

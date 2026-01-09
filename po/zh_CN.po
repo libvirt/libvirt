@@ -30,7 +30,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-11-27 06:58+0000\n"
 "Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1385,6 +1385,11 @@ msgstr "guest-get-vcpus 的回复中缺少 'logical-id'"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-users 的回复中缺少 'login-time'"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "不支持 'manual' 内存快照模式"
@@ -10043,6 +10048,10 @@ msgid "Invalid XML response"
 msgstr "无效的 XML 响应"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "iSCSI 的磁盘的无效适配器名称 '%1$s'"
 
@@ -10324,6 +10333,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "无效软盘设备名称：%1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "为 '%1$s' 提供的无效 'bonding/arp_validate' 格式"
 
@@ -10576,10 +10589,6 @@ msgstr "过滤器 '%1$s' 的无效的优先级 '%2$s'"
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "指定的无效的速率 '%1$s'"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "无效间接路径 '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "无效的 resctrl 监控"
@@ -12306,8 +12315,14 @@ msgstr "这个 QEMU 二进制文件不支持 NVMe 磁盘"
 msgid "NVMe namespace can't be zero"
 msgstr "NVMe 命名空间不能为零"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "当加载器是无状态时，不允许 NVRAM"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "当加载器是无状态时，不允许 NVRAM 模板"
@@ -13094,6 +13109,9 @@ msgstr "仅支持 'credit' 和 'credit2' 调度程序"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "仅支持'nmdm'和'tcp'控制台类型"
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "仅支持 'random' 后端模型"
 
@@ -13251,6 +13269,9 @@ msgstr "只支持一个引导设备"
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr "只能使用并行压缩指定一种压缩方法"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "仅支持型号 vfio-ap 的一个 hostdev。"
@@ -14072,6 +14093,9 @@ msgstr "不支持 RNG 后端"
 msgid "RNG device is missing alias"
 msgstr "RNG 设备缺少别名"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "当禁用 ROM 时不支持 ROM 调优"
 
@@ -14855,6 +14879,9 @@ msgstr "未找到 secret"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "未找到 secret：%1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "secret 值设定\n"
@@ -34141,6 +34168,10 @@ msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr "端口 %1$u 超出 USB 地址总线的范围：%2$u 端口： %3$s"
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr "端口 '%1$s' 超出范围"
 
@@ -35595,6 +35626,9 @@ msgstr "设置 'qemu:property' 的 'value' 属性对于 'remove' 类型没有意
 
 msgid "setting ACPI S3/S4 not supported"
 msgstr "不支持设置 ACPI S3/S4"
+
+msgid "setting IP addresses for SLIRP networking is not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -40157,6 +40191,10 @@ msgstr "请求网络 %1$s 的区 %2$s，但 firewalld 未处于活动状态"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr "区域 %1$s 请求网络 %2$s，但 BSD 不支持 firewalld"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "无效间接路径 '%1$s'"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

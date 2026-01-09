@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-11-27 06:58+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1417,6 +1417,11 @@ msgstr "guest-get-vcpus의 응답에서 'logical-id'가 누락"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-users의 응답에서 'login-time'이 누락"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "'manual' 메모리 순간찍기 방식은 지원되지 않습니다"
@@ -10283,6 +10288,10 @@ msgid "Invalid XML response"
 msgstr "잘못된 XML 응답"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "SCSI 풀에 대한 잘못된 어댑터 이름 '%1$s'"
 
@@ -10580,6 +10589,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "잘못된 플로피 장치 이름: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "'%1$s'의 'bonding/arp_validate'에 대한 잘못된 형식"
 
@@ -10837,10 +10850,6 @@ msgstr "필터 '%1$s'에 잘못된 순위 '%2$s'"
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "잘못된 비율 '%1$s'이(가) 지정되었습니다"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "잘못된 상대 경로 '%1$s'"
 
 msgid "Invalid resctrl monitor"
 msgstr "잘못된 resctrl 모니터"
@@ -12609,8 +12618,14 @@ msgstr "NVMe 디스크는 이 QEMU 바이너리에서 지원되지 않습니다"
 msgid "NVMe namespace can't be zero"
 msgstr "NVMe 네임스페이스는 0일 수 없습니다"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM은 로더가 위치 할 수 없을 때에 허용되지 않습니다"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "NVRAM 템플릿트는 로더가 위치 할 수 없을 때에 허용되지 않습니다"
@@ -13400,6 +13415,9 @@ msgstr "'credit' 및 'credit2' 스케줄러만 지원됩니다"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "'nmdm' 및 'tcp' 콘솔 유형만 지원됩니다"
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "'random' 백엔드 모델만 지원됩니다"
 
@@ -13560,6 +13578,9 @@ msgstr "하나의 부팅 장치만 지원됩니다"
 msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr "압축 방식 하나만 병렬 압축과 함께 지정 될 수 있습니다"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "vfio-ap 모델의 hostdev는 하나만 지원됩니다"
@@ -14418,6 +14439,9 @@ msgstr "RNG 백엔드는 지원되지 않습니다"
 msgid "RNG device is missing alias"
 msgstr "RNG 장치에 별칭이 없습니다"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "ROM이 비활성화된 경우 ROM 튜닝이 지원되지 않습니다"
 
@@ -15211,6 +15235,9 @@ msgstr "비밀정보를 찾을 수 없음"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "비밀정보를 찾을 수 없음: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "비밀정보 값이 설정됨\n"
@@ -16552,7 +16579,8 @@ msgstr ""
 #, c-format
 msgid ""
 "Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
-msgstr "대상 도메인 IOMMU 장치 pci_bus 값 '%1$d' 가 원천 '%2$d' 와 일치하지 않습니다"
+msgstr ""
+"대상 도메인 IOMMU 장치 pci_bus 값 '%1$d' 가 원천 '%2$d' 와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -25706,7 +25734,8 @@ msgstr "장치 유형 '%1$s'은(는) 핫 언플러그할 수 없습니다"
 msgid ""
 "device-pluggable IOMMU with pciBus attribute must be specified for multiple "
 "IOMMU definitions"
-msgstr "pciBUS 속성인 장치-플러그 가능 IOMMU는 다중 IOMMU 정의를 위해 지정되어야 합니"
+msgstr ""
+"pciBUS 속성인 장치-플러그 가능 IOMMU는 다중 IOMMU 정의를 위해 지정되어야 합니"
 "다"
 
 msgid "devices cgroup isn't mounted"
@@ -34913,6 +34942,10 @@ msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr "USB 주소 버스의 %1$u 포트가 범위를 벗어났습니다: %2$u 포트: %3$s"
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr "포트 '%1$s'가 범위를 벗어났습니다"
 
@@ -36395,6 +36428,9 @@ msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
 msgstr "ACPI S3/S4 설정이 지원되지 않음"
+
+msgid "setting IP addresses for SLIRP networking is not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -41063,6 +41099,10 @@ msgid ""
 msgstr ""
 "영역 %1$s 는 네트워크 %2$s 를 위해 요청되었으나 firewqlld는 BSD에서 지원되지 "
 "않습니다"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "잘못된 상대 경로 '%1$s'"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

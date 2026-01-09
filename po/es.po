@@ -28,7 +28,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2026-01-06 10:59+0000\n"
 "Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1495,6 +1495,11 @@ msgstr "'logical-id' falta en respuesta de guest-get-vcpus"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "falta 'login-time' en la respuesta de guest-get-users"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "el modo de instantánea de memoria 'manual' no es compatible"
@@ -10673,6 +10678,10 @@ msgid "Invalid XML response"
 msgstr "Respuesta XML no válida"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "Nombre de adaptador '%1$s' no válido para conjunto SCSI"
 
@@ -10983,6 +10992,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Nombre no válido para el dispositivo de disquete: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "Formato no válido para 'bonding/arp_validate' para '%1$s'"
 
@@ -11244,10 +11257,6 @@ msgstr "Prioridad '%1$s' no válida para el filtro '%2$s'"
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "Proporción específica '%1$s' no válida"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "Ruta relativa '%1$s' no válida"
 
 msgid "Invalid resctrl monitor"
 msgstr "Monitor resctrl no válido"
@@ -13136,8 +13145,14 @@ msgstr "No se admiten discos NVMe con este binario de QEMU"
 msgid "NVMe namespace can't be zero"
 msgstr "El espacio de nombre en NVMe no puede ser cero"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "No está permitido NVRAM cuando el cargador está sin estado"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr ""
@@ -13345,8 +13360,8 @@ msgstr "Soporte nicdev no disponible"
 
 msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
-"Ninguna ruta de certificado AC establecida para coincidir con clave(s)"
-"/certificado(s) del servidor"
+"Ninguna ruta de certificado AC establecida para coincidir con clave(s)/"
+"certificado(s) del servidor"
 
 msgid "No DRM render nodes available"
 msgstr "Sin nodos intérprete DRM disponibles"
@@ -13967,6 +13982,9 @@ msgstr "Solamente se admiten planificadores 'credir' y 'credit2'"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "Solamente se admiten los tipos de consola 'nmdm' y 'tcp'"
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "Solo de admite el modelo backend aleatorio como 'random'"
 
@@ -14138,6 +14156,9 @@ msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "Solo pudo ser especificado un método de compresión con compresión paralela"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Solo se admite un dispositivo de host de modelo vfio-ap"
@@ -15036,6 +15057,9 @@ msgstr "No es admitido el backend RNG"
 msgid "RNG device is missing alias"
 msgstr "Falta alias del dispositivo RNG"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "Ajuste de ROM no está admitido cuando ROM está desactivado"
 
@@ -15861,6 +15885,9 @@ msgstr "Secreto no encontrado"
 msgid "Secret not found: %1$s"
 msgstr "Secreto no encontrado: %1$s"
 
+msgid "Secret value is not valid base64"
+msgstr ""
+
 msgid "Secret value set\n"
 msgstr "Valor secreto definido\n"
 
@@ -16531,12 +16558,14 @@ msgstr ""
 #, c-format
 msgid ""
 "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
-msgstr "Estado de capacidad KVM '%1$s' difiere: origen: '%2$s', destino: '%3$s'"
+msgstr ""
+"Estado de capacidad KVM '%1$s' difiere: origen: '%2$s', destino: '%3$s'"
 
 #, c-format
 msgid ""
 "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
-msgstr "Estado de capacidad Xen '%1$s' difiere: origen: '%2$s', destino: '%3$s'"
+msgstr ""
+"Estado de capacidad Xen '%1$s' difiere: origen: '%2$s', destino: '%3$s'"
 
 #, c-format
 msgid "State of feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
@@ -23465,7 +23494,8 @@ msgstr ""
 
 #, c-format
 msgid "block jobs are not supported on vhostuser disk '%1$s'"
-msgstr "los trabajos de bloque no son compatibles con el disco vhostuser '%1$s'"
+msgstr ""
+"los trabajos de bloque no son compatibles con el disco vhostuser '%1$s'"
 
 #, c-format
 msgid "block peek request too large for remote protocol, %1$zi > %2$d"
@@ -23563,7 +23593,8 @@ msgstr "el parámetro '%1$s' booleano de comando '%2$s' no debe ser posicional"
 
 #, c-format
 msgid "boot order %1$u is already used by another device"
-msgstr "el orden de arranque %1$u ya está siendo utilizado por otro dispositivo"
+msgstr ""
+"el orden de arranque %1$u ya está siendo utilizado por otro dispositivo"
 
 #, c-format
 msgid "boot order '%1$s' used for more than one device"
@@ -23817,7 +23848,8 @@ msgid "can't query rx filters: device alias not found"
 msgstr "no puede solicitar filtros rx: alias de dispositivo no encontrada"
 
 msgid "can't reopen image with unknown presence of backing store"
-msgstr "no puede reabrir imagen con presencia desconocida de almacén respaldado"
+msgstr ""
+"no puede reabrir imagen con presencia desconocida de almacén respaldado"
 
 #, c-format
 msgid "can't resize empty or readonly disk '%1$s'"
@@ -24523,8 +24555,8 @@ msgstr ""
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %1$04x:%2$02x:%3$02x.%4$d"
 msgstr ""
-"no se puede desenchufar dispositivo PCI multi-función en caliente: "
-"%1$04x:%2$02x:%3$02x.%4$d"
+"no se puede desenchufar dispositivo PCI multi-función en caliente: %1$04x:"
+"%2$02x:%3$02x.%4$d"
 
 msgid "cannot initialize agent condition"
 msgstr "no se puede inicializar condición de agente"
@@ -25678,7 +25710,8 @@ msgstr "el comando 'domblkindo' requiere la opción <dispositivo>"
 
 #, c-format
 msgid "command alias '%1$s' is pointing to a non-existent command '%2$s'"
-msgstr "el comando alias '%1$s' está apuntando a un comando '%2$s' no existente"
+msgstr ""
+"el comando alias '%1$s' está apuntando a un comando '%2$s' no existente"
 
 #, c-format
 msgid "command alias '%1$s' is pointing to another command alias '%2$s'"
@@ -27080,8 +27113,8 @@ msgstr "los atributos del disco: disco[,punto de control=tipo][,bitmap=nombre]"
 msgid ""
 "disk attributes: disk[,snapshot=type][,driver=type][,stype=type][,file=name]"
 msgstr ""
-"atributos del disco: "
-"disco[,snapshot=tipo][,driver=tipo][,stype=tipo][,file=nombre]"
+"atributos del disco: disco[,snapshot=tipo][,driver=tipo][,stype=tipo]"
+"[,file=nombre]"
 
 #, c-format
 msgid "disk backend not supported: %1$s"
@@ -28294,7 +28327,8 @@ msgid "events received: %1$d\n"
 msgstr "sucesos recibidos: %1$d\n"
 
 msgid "exactly one of 'device' and 'nodename' need to be specified"
-msgstr "exactamente uno de 'dispositivo' y 'nodename' necesita ser especificado"
+msgstr ""
+"exactamente uno de 'dispositivo' y 'nodename' necesita ser especificado"
 
 msgid "exclude <domain> from XML"
 msgstr "excluye <dominio> desde XML"
@@ -28835,14 +28869,14 @@ msgstr "error al obtener nombres de modelo de CPU"
 #, c-format
 msgid "failed to get IPv4 address for start or end of range %1$s - %2$s"
 msgstr ""
-"error al obtener dirección IPv4 para el inicio o el final del intervalo "
-"%1$s - %2$s"
+"error al obtener dirección IPv4 para el inicio o el final del intervalo %1$s "
+"- %2$s"
 
 #, c-format
 msgid "failed to get IPv6 address for start or end of range %1$s - %2$s"
 msgstr ""
-"error al obtener dirección IPv6 para el inicio o el final del intervalo "
-"%1$s - %2$s"
+"error al obtener dirección IPv6 para el inicio o el final del intervalo %1$s "
+"- %2$s"
 
 msgid "failed to get URI"
 msgstr "error al obtener URI"
@@ -28864,7 +28898,8 @@ msgstr "error al obtener cgroup de info de prog BPF"
 
 #, c-format
 msgid "failed to get cgroup backend for '%1$s' controller '%2$u'"
-msgstr "error al obtener segundo plano de cgroup para '%1$s' controlador '%2$u'"
+msgstr ""
+"error al obtener segundo plano de cgroup para '%1$s' controlador '%2$u'"
 
 msgid "failed to get cmt scaling factor"
 msgstr "error al obtener factor de escala cmt"
@@ -29447,7 +29482,8 @@ msgid "failed to retrieve decision to accept host key"
 msgstr "error al recuperar decisión para aceptar clave de host"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
-msgstr "error al obtener clave de frase contraseña privada: callback ha fallado"
+msgstr ""
+"error al obtener clave de frase contraseña privada: callback ha fallado"
 
 msgid "failed to retrieve user response for authentication callback"
 msgstr ""
@@ -29828,7 +29864,8 @@ msgstr ""
 "nombre de archivo conteniendo XML persistente actualizado para el destino"
 
 msgid "filesystem is not of type 'template' or 'mount'"
-msgstr "el sistema de archivo no es ni del tipo 'template', ni del tipo 'mount'"
+msgstr ""
+"el sistema de archivo no es ni del tipo 'template', ni del tipo 'mount'"
 
 #, c-format
 msgid "filesystem target '%1$s' specified twice"
@@ -36455,6 +36492,10 @@ msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr ""
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr "puerto '%1$s' fuera de intervalo"
 
@@ -38006,6 +38047,9 @@ msgid ""
 msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
+msgstr ""
+
+msgid "setting IP addresses for SLIRP networking is not supported"
 msgstr ""
 
 #, c-format
@@ -42733,6 +42777,10 @@ msgid ""
 msgstr ""
 "zona %1$s solicitada para red %2$s pero cortafuegos firewalld no está "
 "admitido en BSD"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Ruta relativa '%1$s' no válida"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -1263,6 +1263,11 @@ msgstr "guest-get-vcpus ৰ উত্তৰত 'logical-id' নাই"
 #, fuzzy
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-vcpus ৰ উত্তৰত 'logical-id' নাই"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr ""
@@ -10193,6 +10198,10 @@ msgid "Invalid XML response"
 msgstr ""
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "SCSI পুলৰ বাবে অবৈধ এডাপ্টাৰ নাম '%1$s'"
 
@@ -10475,6 +10484,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "ফ্ল'পি ডিভাইচৰ নাম বৈধ নহয়: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "'%1$s' ৰ বাবে 'bonding/arp_validate' ৰ বাবে অবৈধ বিন্যাস"
 
@@ -10733,10 +10746,6 @@ msgstr "'%s' ৰ বাবে অবৈধ উপসৰ্গ অথবা ন�
 
 #, fuzzy, c-format
 msgid "Invalid rate '%1$s' specified"
-msgstr "অবৈধ প্ৰাসংগিক পথ '%1$s'"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
 msgstr "অবৈধ প্ৰাসংগিক পথ '%1$s'"
 
 #, fuzzy
@@ -12549,7 +12558,13 @@ msgstr "এই QEMU বাইনাৰি দ্বাৰা SATA সমৰ্�
 msgid "NVMe namespace can't be zero"
 msgstr "hugepage আকাৰ শূন্য হব নোৱাৰিব"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is read/write"
 msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
@@ -13363,6 +13378,9 @@ msgstr ""
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr ""
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr ""
 
@@ -13531,6 +13549,9 @@ msgstr "কেৱল এটা প্ৰাথমিক ভিডিঅ' ডি�
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
+msgstr ""
+
+msgid "Only one console is supported on arm64"
 msgstr ""
 
 #, fuzzy
@@ -14392,6 +14413,9 @@ msgstr ""
 msgid "RNG device is missing alias"
 msgstr "TPM ডিভাইচ পথ %s অবৈধ"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 #, fuzzy
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "SR-IOV নেটৱৰ্ক ডিভাইচসমূহ দ্বাৰা vlan ট্টাঙ্কিং সমৰ্থিত নহয়"
@@ -15196,6 +15220,9 @@ msgstr "গোপনীয় তথ্য পোৱা নাযায়পোৱা
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "গোপনীয় তথ্য পোৱা নাযায়: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "গোপনীয় মান নিৰ্ধাৰণ কৰা হৈছে\n"
@@ -35223,6 +35250,10 @@ msgstr " '%1$s' ধৰণৰ পুল দ্বাৰা উৎস অনুস
 msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr ""
 
+#, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "port '%1$s' out of range"
 msgstr "চলনঅৱস্থা '%d' বিস্তাৰৰ বাহিৰ"
@@ -36753,6 +36784,9 @@ msgid ""
 msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
+msgstr ""
+
+msgid "setting IP addresses for SLIRP networking is not supported"
 msgstr ""
 
 #, fuzzy, c-format
@@ -41410,6 +41444,10 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "অবৈধ প্ৰাসংগিক পথ '%1$s'"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

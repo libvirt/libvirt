@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hindi <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1251,6 +1251,11 @@ msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
 msgid "'login-time' missing in reply of guest-get-users"
+msgstr ""
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
@@ -10198,6 +10203,10 @@ msgstr "अमान्य UUID"
 msgid "Invalid XML response"
 msgstr ""
 
+#, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "अवैध गुलाम अंतरफलक नाम '%s' बॉन्ड '%s' के लिए देखा"
@@ -10483,6 +10492,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "अवैध फ्लॉपी युक्ति नाम: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "'%1$s' के लिए 'बॉन्डिंग / arp_validate' के लिए अमान्य प्रारूप"
 
@@ -10741,10 +10754,6 @@ msgstr "अवैध उपसर्ग या '%s' के लिए  netmask"
 #, fuzzy, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "डिस्क के लिए '%1$s' अवैध बस प्रकार"
-
-#, fuzzy, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "पथ '%1$s' नहीं बना सकता है"
 
 #, fuzzy
 msgid "Invalid resctrl monitor"
@@ -12580,7 +12589,13 @@ msgstr "SATA इस QEMU द्विपदीय के साथ समर्�
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is read/write"
 msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
@@ -13399,6 +13414,9 @@ msgstr ""
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr ""
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr ""
 
@@ -13564,6 +13582,9 @@ msgstr "केवल एक प्राथमिक वीडियो यु�
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
+msgstr ""
+
+msgid "Only one console is supported on arm64"
 msgstr ""
 
 #, fuzzy
@@ -14418,6 +14439,9 @@ msgstr ""
 msgid "RNG device is missing alias"
 msgstr ""
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr ""
 
@@ -15219,6 +15243,9 @@ msgstr "गुप्त नहीं मिला"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "गुप्त नहीं मिला: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "गुप्त मान सेट\n"
@@ -35394,6 +35421,10 @@ msgstr "पुल क़िस्म '%1$s' स्रोत खोज का स
 msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr ""
 
+#, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "port '%1$s' out of range"
 msgstr "मान '%s' %s सीमा के बाहर है "
@@ -36928,6 +36959,9 @@ msgid ""
 msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
+msgstr ""
+
+msgid "setting IP addresses for SLIRP networking is not supported"
 msgstr ""
 
 #, fuzzy, c-format
@@ -41609,6 +41643,10 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, fuzzy, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "पथ '%1$s' नहीं बना सकता है"
 
 #, fuzzy, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-02-19 18:38+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Dutch <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1195,6 +1195,11 @@ msgid "'logical-id' missing in reply of guest-get-vcpus"
 msgstr ""
 
 msgid "'login-time' missing in reply of guest-get-users"
+msgstr ""
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
@@ -10242,6 +10247,10 @@ msgid "Invalid XML response"
 msgstr ""
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr ""
 
@@ -10532,6 +10541,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Ongeldige floppy apparaat naam: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr ""
 
@@ -10787,10 +10800,6 @@ msgstr "Ongeldige prefix of netmasker voor '%s'"
 
 #, fuzzy, c-format
 msgid "Invalid rate '%1$s' specified"
-msgstr "Ongeldig relatief pad: '%1$s'"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
 msgstr "Ongeldig relatief pad: '%1$s'"
 
 #, fuzzy
@@ -12595,7 +12604,13 @@ msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
+msgstr ""
+
+msgid "NVRAM template is not permitted when loader is read/write"
 msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
@@ -13410,6 +13425,9 @@ msgstr ""
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr ""
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr ""
 
@@ -13572,6 +13590,9 @@ msgstr "slechts een enkel bewaker apparaat wordt ondersteund"
 
 msgid ""
 "Only one compression method could be specified with parallel compression"
+msgstr ""
+
+msgid "Only one console is supported on arm64"
 msgstr ""
 
 #, fuzzy
@@ -14438,6 +14459,9 @@ msgstr ""
 msgid "RNG device is missing alias"
 msgstr ""
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 #, fuzzy
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "deze functie wordt niet ondersteund door de verbinding driver"
@@ -15237,6 +15261,9 @@ msgstr "Geheim niet gevonden"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "Geheim niet gevonden: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "Geheim waarde set\n"
@@ -35518,6 +35545,10 @@ msgstr "pool type '%1$s' ondersteund geen bron ontdekking"
 msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr ""
 
+#, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "port '%1$s' out of range"
 msgstr "Waarde '%s' is buiten de %s reeks"
@@ -37048,6 +37079,9 @@ msgid ""
 msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
+msgstr ""
+
+msgid "setting IP addresses for SLIRP networking is not supported"
 msgstr ""
 
 #, fuzzy, c-format
@@ -41700,6 +41734,10 @@ msgstr ""
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr ""
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Ongeldig relatief pad: '%1$s'"
 
 #, fuzzy, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

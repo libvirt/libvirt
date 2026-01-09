@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-11-21 12:17+0000\n"
 "Last-Translator: Salvatore Cocuzza <info@salvatorecocuzza.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1478,6 +1478,11 @@ msgstr "'logical-id' mancante nella risposta di guest-get-vcpus"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "'login-time' mancante nella risposta di guest-get-users"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "modalità snapshot memoria 'manual' non supportata"
@@ -10866,6 +10871,10 @@ msgid "Invalid XML response"
 msgstr "Risposta XML non valida"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "Nome adattatore '%1$s' non valido per pool SCSI"
 
@@ -11175,6 +11184,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Nome del dispositivo floppy non valido: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "Formato non valido per 'bonding/arp_validate' per '%1$s'"
 
@@ -11437,10 +11450,6 @@ msgstr "Priorità '%1$s' non valida per il filtro '%2$s'"
 #, fuzzy, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "Tipo di bus '%1$s' non valido per il disco"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "Percorso relativo '%1$s' non valido"
 
 #, fuzzy
 msgid "Invalid resctrl monitor"
@@ -13335,8 +13344,14 @@ msgstr "I dischi NVMe non sono supportati con questo binario di QEMU"
 msgid "NVMe namespace can't be zero"
 msgstr "Il namespace NVMe non può essere zero"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM non permessa quando il loader è stateless"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "Template NVRAM non permesso quando il loader è stateless"
@@ -14161,6 +14176,9 @@ msgstr "Solo scheduler 'credit' e 'credit2' sono supportati"
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "Solo tipi console 'nmdm' e 'tcp' sono supportati"
 
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
+
 msgid "Only 'random' backend model is supported"
 msgstr "Solo modello backend 'random' è supportato"
 
@@ -14332,6 +14350,9 @@ msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "Solo un metodo compressione può essere specificato con compressione parallela"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 #, fuzzy
 msgid "Only one hostdev of model vfio-ap is supported"
@@ -15226,6 +15247,9 @@ msgstr "Backend RNG non supportato"
 msgid "RNG device is missing alias"
 msgstr "Dispositivo RNG manca alias"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "Tuning ROM non supportato quando ROM disabilitata"
 
@@ -16066,6 +16090,9 @@ msgstr "Rete non trovata"
 #, fuzzy, c-format
 msgid "Secret not found: %1$s"
 msgstr "Rete non trovata: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "Valore segreto impostato\n"
@@ -37201,6 +37228,10 @@ msgstr "il bus ps2 non supporta il dispositivo di input %1$s"
 msgid "port %1$u out of range in USB address bus: %2$u port: %3$s"
 msgstr "porta %1$u fuori intervallo in indirizzo USB bus: %2$u porta: %3$s"
 
+#, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "port '%1$s' out of range"
 msgstr "Il valore '%s' è fuori dall'intervallo %s"
@@ -38774,6 +38805,9 @@ msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
 msgstr "impostazione ACPI S3/S4 non supportata"
+
+msgid "setting IP addresses for SLIRP networking is not supported"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -43617,6 +43651,10 @@ msgstr "zona %1$s richiesta per rete %2$s ma firewalld non attivo"
 msgid ""
 "zone %1$s requested for network %2$s but firewalld is not supported on BSD"
 msgstr "zona %1$s richiesta per rete %2$s ma firewalld non supportato su BSD"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Percorso relativo '%1$s' non valido"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"

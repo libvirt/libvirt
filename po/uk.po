@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2025-11-25 09:28+0000\n"
+"POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2025-11-27 06:58+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1483,6 +1483,11 @@ msgstr "у відповіді guest-get-vcpus пропущено «logical-id»"
 
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «login-time»"
+
+msgid ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
+msgstr ""
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "підтримки створення знімків пам'яті у режимі «manual» не передбачено"
@@ -10706,6 +10711,10 @@ msgid "Invalid XML response"
 msgstr "Некоректна відповідь XML"
 
 #, c-format
+msgid "Invalid absolute path '%1$s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
 msgstr "Некоректна назва адаптера «%1$s» для буфера SCSI"
 
@@ -11012,6 +11021,10 @@ msgid "Invalid floppy device name: %1$s"
 msgstr "Неприпустима назва дисководу: %1$s"
 
 #, c-format
+msgid "Invalid format '%1$s' for ROM loader type"
+msgstr ""
+
+#, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
 msgstr "Некоректний формат запису «bonding/arp_validate» для «%1$s»"
 
@@ -11276,10 +11289,6 @@ msgstr "Некоректна пріоритетність «%1$s» для філ
 #, c-format
 msgid "Invalid rate '%1$s' specified"
 msgstr "Вказано некоректну швидкість, «%1$s»"
-
-#, c-format
-msgid "Invalid relative path '%1$s'"
-msgstr "Некоректний відносний шлях «%1$s»"
 
 msgid "Invalid resctrl monitor"
 msgstr "Некоректний засіб спостереження resctrl"
@@ -13155,9 +13164,15 @@ msgstr "Підтримки дисків NVMe не передбачено у ць
 msgid "NVMe namespace can't be zero"
 msgstr "Простір назв NVMe не може бути нульовим"
 
+msgid "NVRAM is not permitted when loader is read/write"
+msgstr ""
+
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr ""
 "NVRAM не можна використовувати, якщо для завантажувача не визначено станів"
+
+msgid "NVRAM template is not permitted when loader is read/write"
+msgstr ""
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr ""
@@ -13885,7 +13900,8 @@ msgstr ""
 
 #, c-format
 msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
-msgstr "Кількість сертифікатів (%1$zu) має збігатися з кількістю ключів (%2$zu)"
+msgstr ""
+"Кількість сертифікатів (%1$zu) має збігатися з кількістю ключів (%2$zu)"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -13982,6 +13998,9 @@ msgstr "Передбачено підтримку лише планувальн�
 
 msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "Передбачено підтримку лише типів консолей «nmdm» і «tcp»"
+
+msgid "Only 'nmdm' console type is supported on arm64"
+msgstr ""
 
 msgid "Only 'random' backend model is supported"
 msgstr "Передбачено підтримку лише обробника «random»"
@@ -14157,6 +14176,9 @@ msgid ""
 "Only one compression method could be specified with parallel compression"
 msgstr ""
 "Для паралельного перенесення може бути вказано лише один метод стискання"
+
+msgid "Only one console is supported on arm64"
+msgstr ""
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Передбачено підтримку пристроїв основної системи лише моделі vfio-ap"
@@ -15063,6 +15085,9 @@ msgstr "Підтримки модуля породжувача випадков�
 msgid "RNG device is missing alias"
 msgstr "у пристрою RNG немає псевдоніма"
 
+msgid "ROM loader type cannot be used as read/write"
+msgstr ""
+
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "підтримки коригування ROM не передбачено, якщо вимкнено ROM"
 
@@ -15885,6 +15910,9 @@ msgstr "Не знайдено ключа"
 #, c-format
 msgid "Secret not found: %1$s"
 msgstr "Не знайдено ключа: %1$s"
+
+msgid "Secret value is not valid base64"
+msgstr ""
 
 msgid "Secret value set\n"
 msgstr "Значення ключа встановлено\n"
@@ -36773,6 +36801,10 @@ msgstr ""
 "порт: %3$s"
 
 #, c-format
+msgid "port '%1$d' out of range"
+msgstr ""
+
+#, c-format
 msgid "port '%1$s' out of range"
 msgstr "порт «%1$s» не належить до припустимого діапазону"
 
@@ -38369,6 +38401,9 @@ msgstr ""
 
 msgid "setting ACPI S3/S4 not supported"
 msgstr "підтримки встановлення ACPI S3/S4 не передбачено"
+
+msgid "setting IP addresses for SLIRP networking is not supported"
+msgstr ""
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -43240,6 +43275,10 @@ msgid ""
 msgstr ""
 "потрібна зона %1$s для мережі %2$s, але підтримки firewalld у BSD не "
 "передбачено"
+
+#, c-format
+#~ msgid "Invalid relative path '%1$s'"
+#~ msgstr "Некоректний відносний шлях «%1$s»"
 
 #, c-format
 #~ msgid "Cannot read %1$s '%2$s'"
