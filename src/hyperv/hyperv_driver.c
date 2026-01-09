@@ -974,7 +974,7 @@ hypervDomainAttachSerial(virDomainPtr domain, virDomainChrDef *serial)
     Msvm_ResourceAllocationSettingData *entry = NULL;
     g_autoptr(GHashTable) serialResource = NULL;
     const char *connectionValue = NULL;
-    g_autofree const char *resourceType = NULL;
+    g_autofree char *resourceType = NULL;
 
     virUUIDFormat(domain->uuid, uuid_string);
 
