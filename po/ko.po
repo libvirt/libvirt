@@ -10,7 +10,7 @@
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
-# 김인수 <simmon@nplob.com>, 2022, 2023, 2024, 2025.
+# 김인수 <simmon@nplob.com>, 2022, 2023, 2024, 2025, 2026.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024, 2025.
 msgid ""
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-11-27 06:58+0000\n"
+"PO-Revision-Date: 2026-01-11 00:58+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 5.15.1\n"
 
 msgid ""
 "\n"
@@ -1422,6 +1422,8 @@ msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
+"'manual' 디스크 순간찍기 방식은 명시적인 정지가 필요합니다 "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE는 지원하지 않습니다)"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "'manual' 메모리 순간찍기 방식은 지원되지 않습니다"
@@ -10289,7 +10291,7 @@ msgstr "잘못된 XML 응답"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "잘못된 절대 경로 '%1$s'"
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10590,7 +10592,7 @@ msgstr "잘못된 플로피 장치 이름: %1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "ROM 적재기 유형에 잘못된 형식 '%1$s'"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
@@ -12619,16 +12621,16 @@ msgid "NVMe namespace can't be zero"
 msgstr "NVMe 네임스페이스는 0일 수 없습니다"
 
 msgid "NVRAM is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM은 적재기가 읽고/쓰기 일 때에 허용되지 않습니다"
 
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM은 로더가 위치 할 수 없을 때에 허용되지 않습니다"
 
 msgid "NVRAM template is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM 템플릿트는 적재기가 읽고/쓰기 일 때에 허용되지 않습니다"
 
 msgid "NVRAM template is not permitted when loader is stateless"
-msgstr "NVRAM 템플릿트는 로더가 위치 할 수 없을 때에 허용되지 않습니다"
+msgstr "NVRAM 템플릿트는 적재기가 위치 할 수 없을 때에 허용되지 않습니다"
 
 msgid "Name"
 msgstr "이름"
@@ -13416,7 +13418,7 @@ msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "'nmdm' 및 'tcp' 콘솔 유형만 지원됩니다"
 
 msgid "Only 'nmdm' console type is supported on arm64"
-msgstr ""
+msgstr "'nmdm' 콘솔 유형만 arm64에서 지원됩니다"
 
 msgid "Only 'random' backend model is supported"
 msgstr "'random' 백엔드 모델만 지원됩니다"
@@ -13580,7 +13582,7 @@ msgid ""
 msgstr "압축 방식 하나만 병렬 압축과 함께 지정 될 수 있습니다"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "하나의 콘솔만 arm64에서 지원됩니다"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "vfio-ap 모델의 hostdev는 하나만 지원됩니다"
@@ -14440,7 +14442,7 @@ msgid "RNG device is missing alias"
 msgstr "RNG 장치에 별칭이 없습니다"
 
 msgid "ROM loader type cannot be used as read/write"
-msgstr ""
+msgstr "ROM 적재기 유형은 읽기/쓰기로 사용 될 수 없습니다"
 
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "ROM이 비활성화된 경우 ROM 튜닝이 지원되지 않습니다"
@@ -15237,7 +15239,7 @@ msgid "Secret not found: %1$s"
 msgstr "비밀정보를 찾을 수 없음: %1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "비밀 값이 유효한 base64가 아닙니다"
 
 msgid "Secret value set\n"
 msgstr "비밀정보 값이 설정됨\n"
@@ -34943,7 +34945,7 @@ msgstr "USB 주소 버스의 %1$u 포트가 범위를 벗어났습니다: %2$u �
 
 #, c-format
 msgid "port '%1$d' out of range"
-msgstr ""
+msgstr "포트 '%1$d' 가 범위 밖에 있습니다"
 
 #, c-format
 msgid "port '%1$s' out of range"
@@ -36430,7 +36432,7 @@ msgid "setting ACPI S3/S4 not supported"
 msgstr "ACPI S3/S4 설정이 지원되지 않음"
 
 msgid "setting IP addresses for SLIRP networking is not supported"
-msgstr ""
+msgstr "SLIRP 네트워킹에서 설정된 IP 주소들은 지원되지 않습니다"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
