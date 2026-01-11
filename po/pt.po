@@ -5,14 +5,14 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # pmdaniel <danielthpro@gmail.com>, 2013
-# Américo Monteiro <a_monteiro@gmx.com>, 2025.
+# Américo Monteiro <a_monteiro@gmx.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-11-27 06:58+0000\n"
+"PO-Revision-Date: 2026-01-11 00:58+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 5.15.1\n"
 
 msgid ""
 "\n"
@@ -1450,6 +1450,8 @@ msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
+"modo de instantâneo de disco 'manual' requer quiescência explícita "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE não é suportado)"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "modo de instantâneo de memória 'manual' não suportado"
@@ -10479,7 +10481,7 @@ msgstr "Resposta XML inválida"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "Caminho absoluto inválido '%1$s'"
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10788,7 +10790,7 @@ msgstr "Nome de dispositivo de disquete inválido: %1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "Formato inválido '%1$s' para tipo de carregador ROM"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
@@ -12867,13 +12869,13 @@ msgid "NVMe namespace can't be zero"
 msgstr "Espaço de nome NVMe não pode ser zero"
 
 msgid "NVRAM is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM não e permitido quando o carregador é leitura/escrita"
 
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM não é permitido quando o carregador está sem estado"
 
 msgid "NVRAM template is not permitted when loader is read/write"
-msgstr ""
+msgstr "modelo de NVRAM não é permitido quando o carregador é leitura/escrita"
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "Modelo NVRAM não é permitido quando o carregador está sem estado"
@@ -13687,7 +13689,7 @@ msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "Apenas tipos de consola 'nmdm' e 'tcp' são suportados"
 
 msgid "Only 'nmdm' console type is supported on arm64"
-msgstr ""
+msgstr "Apenas tipo de consola 'nmdm' é suportado em arm64"
 
 msgid "Only 'random' backend model is supported"
 msgstr "Apenas modelo de backend 'random' é suportado"
@@ -13862,7 +13864,7 @@ msgstr ""
 "Apenas um método de compressão pode ser especificado com compressão paralela"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "Apenas uma consola é suportada em arm64"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Apenas um hostdev do modelo vfio-ap é suportado"
@@ -14741,7 +14743,7 @@ msgid "RNG device is missing alias"
 msgstr "Dispositivo RNG tem em falta alias"
 
 msgid "ROM loader type cannot be used as read/write"
-msgstr ""
+msgstr "Tipo de carregador ROM não pode ser usado como leitura/escrita"
 
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "Afinação de ROM não é suportada quando ROM está desativado"
@@ -15557,7 +15559,7 @@ msgid "Secret not found: %1$s"
 msgstr "Segredo não encontrado: %1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "Valor secreto não é base64 válido"
 
 msgid "Secret value set\n"
 msgstr "Valor secreto definido\n"
@@ -35897,7 +35899,7 @@ msgstr ""
 
 #, c-format
 msgid "port '%1$d' out of range"
-msgstr ""
+msgstr "porto '%1$d' está fora de alcance"
 
 #, c-format
 msgid "port '%1$s' out of range"
@@ -37427,7 +37429,7 @@ msgid "setting ACPI S3/S4 not supported"
 msgstr "definir ACPI S3/S4 não é suportado"
 
 msgid "setting IP addresses for SLIRP networking is not supported"
-msgstr ""
+msgstr "definir endereços IP para rede SLIRP não é suportado"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
