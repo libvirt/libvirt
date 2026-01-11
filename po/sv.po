@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-05 09:21+0000\n"
+"PO-Revision-Date: 2026-01-11 00:58+0000\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1448,6 +1448,8 @@ msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
+"diskläget \"manual\" för ögonblicksbilder kräver explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE stöds inte)"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "”manuellt” läge för minnesögonblicksbilder stöds inte"
@@ -10436,7 +10438,7 @@ msgstr "Felaktigt XML-svar"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "Ogiltig absolut sökväg \"%1$s\""
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10740,7 +10742,7 @@ msgstr "Ogiltigt diskettenhetsnamn: %1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "Ogiltigt format '%1$s' för ROM-laddartyp"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
