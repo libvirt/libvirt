@@ -4099,6 +4099,9 @@ void virDomainNetInsert(virDomainDef *def, virDomainNetDef *net);
 void virDomainNetUpdate(virDomainDef *def, size_t netidx, virDomainNetDef *newnet);
 bool virDomainNetBackendIsEqual(virDomainNetBackend *src,
                                 virDomainNetBackend *dst);
+bool virDomainNetPortForwardsIsEqual(virDomainNetPortForward **pfs1,
+                                     virDomainNetPortForward **pfs2,
+                                     size_t npfs);
 int virDomainNetDHCPInterfaces(virDomainDef *def, virDomainInterfacePtr **ifaces);
 int virDomainNetARPInterfaces(virDomainDef *def, virDomainInterfacePtr **ifaces);
 virDomainNetDef *virDomainNetRemove(virDomainDef *def, size_t i);

@@ -577,6 +577,7 @@ virDomainNetModelTypeFromString;
 virDomainNetModelTypeToString;
 virDomainNetNotifyActualDevice;
 virDomainNetPortForwardFree;
+virDomainNetPortForwardsIsEqual;
 virDomainNetReleaseActualDevice;
 virDomainNetRemove;
 virDomainNetRemoveByObj;

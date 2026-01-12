@@ -21037,6 +21037,59 @@ virDomainNetBackendIsEqual(virDomainNetBackend *src,
     return true;
 }
 
+static bool
+virDomainNetPortForwardRangeIsEqual(virDomainNetPortForwardRange *r1,
+                                    virDomainNetPortForwardRange *r2)
+{
+    if (!r1 && !r2)
+        return true;
+    if (!(r1 && r2))
+        return false;
+
+    return (r1->start == r2->start &&
+            r1->end == r2->end &&
+            r1->to == r2->to &&
+            r1->exclude == r2->exclude);
+}
+
+
+bool
+virDomainNetPortForwardsIsEqual(virDomainNetPortForward **pfs1,
+                                virDomainNetPortForward **pfs2,
+                                size_t npfs)
+{
+    size_t i;
+
+    if (!pfs1 && !pfs2)
+        return true;
+    if (!(pfs1 && pfs2))
+        return false;
+
+    for (i = 0; i < npfs; i++) {
+        virDomainNetPortForward *pf1 = pfs1[0];
+        virDomainNetPortForward *pf2 = pfs2[0];
+
+        if (!pf1 && !pf2)
+            continue;
+        if (!(pf1 && pf2))
+            return false;
+
+        if (STRNEQ_NULLABLE(pf1->dev, pf2->dev) ||
+            pf1->proto != pf2->proto ||
+            !virSocketAddrEqual(&pf1->address, &pf2->address) ||
+            pf1->nRanges != pf2->nRanges) {
+            return false;
+        }
+
+        for (i = 0; i < pf1->nRanges; i++) {
+            if (!virDomainNetPortForwardRangeIsEqual(pf1->ranges[i], pf2->ranges[i]))
+                return false;
+        }
+    }
+
+    return true;
+}
+
 
 static bool
 virDomainNetDefCheckABIStability(virDomainNetDef *src,
