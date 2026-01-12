@@ -7180,6 +7180,11 @@
           <optional>
             <ref name="aia"/>
           </optional>
+          <optional>
+            <element name="virtualization">
+              <empty/>
+            </element>
+          </optional>
         </interleave>
       </element>
     </optional>

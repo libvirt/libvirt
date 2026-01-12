@@ -3326,6 +3326,8 @@ mymain(void)
     /* MSHV guests should not work on Linux with KVM */
     DO_TEST_CAPS_LATEST_PARSE_ERROR("mshv-x86_64-q35-headless");
 
+    DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-virtualization", "aarch64");
+
     /* check that all input files were actually used here */
     if (testConfXMLCheck(existingTestCases) < 0)
         ret = -1;

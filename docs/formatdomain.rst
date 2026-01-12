@@ -2378,6 +2378,10 @@ are:
    one IMSIC device present per core), or ``none`` (no support for AIA).
    If the attribute is not defined, the hypervisor default
    will be used. :since:`Since 11.1.0` (QEMU/KVM and RISC-V guests only)
+``virtualization``
+   Enable emulating a guest CPU which implements the Arm Virtualization Extensions.
+   If the attribute is not defined, the hypervisor default will be used.
+   :since:`Since 12.1.0` (QEMU/KVM and ARM virt guests only)
 
 Time keeping
 ------------

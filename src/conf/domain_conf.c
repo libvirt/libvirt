@@ -188,6 +188,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "ras",
               "ps2",
               "aia",
+              "virtualization",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -17492,6 +17493,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_VIRTUALIZATION:
             def->features[val] = VIR_TRISTATE_SWITCH_ON;
             break;
 
@@ -21701,6 +21703,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
         case VIR_DOMAIN_FEATURE_RAS:
         case VIR_DOMAIN_FEATURE_PS2:
+        case VIR_DOMAIN_FEATURE_VIRTUALIZATION:
             if (src->features[i] != dst->features[i]) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%1$s' differs: source: '%2$s', destination: '%3$s'"),
@@ -28932,6 +28935,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
         case VIR_DOMAIN_FEATURE_PAE:
         case VIR_DOMAIN_FEATURE_VIRIDIAN:
         case VIR_DOMAIN_FEATURE_PRIVNET:
+        case VIR_DOMAIN_FEATURE_VIRTUALIZATION:
             /* NOTE: This is for old style <opt/> booleans. New XML
              * should use the explicit state=on|off output below */
             switch ((virTristateSwitch) def->features[i]) {

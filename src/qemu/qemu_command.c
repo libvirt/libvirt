@@ -7011,6 +7011,15 @@ qemuAppendDomainFeaturesMachineParam(virBuffer *buf,
         }
     }
 
+    if (def->features[VIR_DOMAIN_FEATURE_VIRTUALIZATION] == VIR_TRISTATE_SWITCH_ON) {
+        if (virQEMUCapsGetArch(qemuCaps) != VIR_ARCH_AARCH64) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtualization option is not available with this QEMU binary"));
+            return -1;
+        }
+        virBufferAddLit(buf, ",virtualization=on");
+    }
+
     if (def->features[VIR_DOMAIN_FEATURE_HTM] != VIR_TRISTATE_SWITCH_ABSENT) {
         const char *str;
         str = virTristateSwitchTypeToString(def->features[VIR_DOMAIN_FEATURE_HTM]);

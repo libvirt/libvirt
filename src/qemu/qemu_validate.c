@@ -182,6 +182,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_GIC:
+        case VIR_DOMAIN_FEATURE_VIRTUALIZATION:
             if (def->features[i] == VIR_TRISTATE_SWITCH_ON &&
                 !qemuDomainIsARMVirt(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
