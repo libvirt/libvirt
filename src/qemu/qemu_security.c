@@ -201,6 +201,16 @@ qemuSecurityMoveImageMetadata(virQEMUDriver *driver,
     if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         pid = vm->pid;
 
+    /* Moving seclabel metadata makes sense only when 'src' and 'dst' are of
+     * the same type. Otherwise 'dst' could end up with a seclabel that doesn't
+     * make sense for it (e.g. a seclabel originating from a block device /dev
+     * node moved to a file), once the seclabels are restored for it */
+    if (src && dst && src->type != dst->type) {
+        VIR_DEBUG("dropping security label metadata instead of moving it from '%s' to '%s' due to type mismatch",
+                  NULLSTR(src->path), NULLSTR(dst->path));
+        dst = NULL;
+    }
+
     return virSecurityManagerMoveImageMetadata(driver->securityManager,
                                                cfg->sharedFilesystems,
                                                pid, src, dst);
