@@ -105,7 +105,7 @@ vah_usage(void)
             "    -R | --remove                  unload profile\n"
             "  Options:\n"
             "    -d | --dryrun                  dry run\n"
-            "    -u | --uuid <uuid>             uuid (profile name)\n"
+            "    -u | --uuid libvirt-<uuid>     AppArmor profile name\n"
             "    -h | --help                    this help\n"
             "  Extra File:\n"
             "    -f | --add-file <file>         add file to a profile generated from XML\n"
