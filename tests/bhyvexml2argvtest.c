@@ -333,6 +333,8 @@ mymain(void)
     /* arm64 tests */
     virTestSetHostArch(VIR_ARCH_AARCH64);
     driver.caps = virBhyveCapsBuild();
+    /* bhyve does not support UTC clock on ARM */
+    driver.bhyvecaps ^= BHYVE_CAP_RTC_UTC;
 
     DO_TEST("base");
     DO_TEST("console");

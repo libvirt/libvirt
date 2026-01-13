@@ -1,7 +1,6 @@
 bhyve \
 -c 1 \
 -m 214 \
--u \
 -s 0:0,hostbridge \
 -s 3:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 \
 -s 2:0,virtio-blk,/tmp/freebsd.img \

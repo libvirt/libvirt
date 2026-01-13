@@ -8,7 +8,7 @@
     <type arch='aarch64'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <clock offset='utc'/>
+  <clock offset='localtime'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>

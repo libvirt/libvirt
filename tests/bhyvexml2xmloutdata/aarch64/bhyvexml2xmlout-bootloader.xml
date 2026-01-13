@@ -9,7 +9,7 @@
     <loader readonly='yes' type='rom'>/usr/local/share/u-boot/u-boot-bhyve-arm64/u-boot.bin</loader>
     <boot dev='hd'/>
   </os>
-  <clock offset='utc'/>
+  <clock offset='localtime'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>

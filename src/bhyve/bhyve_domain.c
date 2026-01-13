@@ -106,6 +106,12 @@ bhyveDomainDefPostParse(virDomainDef *def,
                                        VIR_DOMAIN_CONTROLLER_MODEL_ISA_DEFAULT);
     }
 
+    /* When not specified in the domain XML, clock.offset defaults to UTC which is
+     * not supported by bhyve on ARM64. So force it to LOCALTIME. */
+    if ((def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) &&
+        !(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RTC_UTC))
+        def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
+
     return 0;
 }
 
