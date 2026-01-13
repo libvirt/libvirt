@@ -369,6 +369,8 @@ virSocketAddrEqual(const virSocketAddr *s1, const virSocketAddr *s2)
         return false;
 
     switch (s1->data.stor.ss_family) {
+    case AF_UNSPEC:
+        return true;
     case AF_INET:
         return (memcmp(&s1->data.inet4.sin_addr.s_addr,
                        &s2->data.inet4.sin_addr.s_addr,
