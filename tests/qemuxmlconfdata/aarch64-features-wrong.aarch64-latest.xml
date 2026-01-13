@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <gic version='3'/>
+    <gic version='2'/>
   </features>
   <cpu mode='host-passthrough' check='none'>
     <feature policy='disable' name='vmx'/>

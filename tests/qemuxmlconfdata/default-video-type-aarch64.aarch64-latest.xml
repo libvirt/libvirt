@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <gic version='3'/>
+    <gic version='2'/>
   </features>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

@@ -11,8 +11,7 @@
   <features>
     <gic version='2'/>
   </features>
-  <cpu mode='custom' match='exact' check='none'>
-    <model fallback='forbid'>cortex-a15</model>
+  <cpu>
     <topology sockets='1' dies='1' clusters='2' cores='2' threads='2'/>
   </cpu>
   <clock offset='utc'/>

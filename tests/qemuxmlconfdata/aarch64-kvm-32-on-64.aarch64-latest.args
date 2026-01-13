@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-armtest/.config \
 -name guest=armtest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-armtest/master-key.aes"}' \
--machine virt,usb=off,gic-version=3,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=on \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,memory-backend=mach-virt.ram,acpi=on \
 -accel kvm \
 -cpu host,aarch64=off \
 -m size=1048576k \
