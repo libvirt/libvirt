@@ -33081,10 +33081,75 @@
 }
 
 {
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "The libvirt device dump was not collected for this version+device tuple"
-  },
+  "return": [
+    {
+      "default-value": 4294967295,
+      "name": "scsi-id",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "default-value": "auto",
+      "name": "rerror",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
+      "type": "BlockdevOnError"
+    },
+    {
+      "default-value": 2147483647,
+      "name": "max_io_size",
+      "type": "uint64"
+    },
+    {
+      "default-value": false,
+      "name": "share-rw",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": "auto",
+      "name": "werror",
+      "description": "Error handling policy (report/ignore/enospc/stop/auto)",
+      "type": "BlockdevOnError"
+    },
+    {
+      "default-value": 1073741824,
+      "name": "max_unmap_size",
+      "type": "uint64"
+    },
+    {
+      "default-value": -1,
+      "name": "scsi_version",
+      "type": "int32"
+    },
+    {
+      "default-value": 0,
+      "name": "rotation_rate",
+      "type": "uint16"
+    },
+    {
+      "name": "drive",
+      "description": "Node name or ID of a block device to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 30,
+      "name": "io_timeout",
+      "type": "uint32"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    }
+  ],
   "id": "libvirt-37"
 }
 
@@ -33097,10 +33162,43 @@
 }
 
 {
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "The libvirt device dump was not collected for this version+device tuple"
-  },
+  "return": [
+    {
+      "default-value": 4294967295,
+      "name": "scsi-id",
+      "type": "uint32"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "share-rw",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "drive",
+      "description": "Node name or ID of a block device to use as a backend",
+      "type": "str"
+    },
+    {
+      "default-value": 30,
+      "name": "io_timeout",
+      "type": "uint32"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    }
+  ],
   "id": "libvirt-38"
 }
 
