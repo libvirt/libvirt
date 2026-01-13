@@ -3966,6 +3966,15 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
+    if (olddev->nPortForwards != newdev->nPortForwards ||
+        !virDomainNetPortForwardsIsEqual(olddev->portForwards,
+                                         newdev->portForwards,
+                                         olddev->nPortForwards)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot modify network device portForward settings"));
+        goto cleanup;
+    }
+
     /* allocate new actual device to compare to old - we will need to
      * free it if we fail for any reason
      */
