@@ -54,6 +54,18 @@ v12.0.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix startup of VMs with more than ~25 external snapshots
+
+    After switch to json-c VMs with too deeply nested image chains would fail
+    to start due to nesting depth limit in json-c, which is now increased to once
+    again support backing chains up to 200 images deep.
+
+  * qemu: TPM: Properly handle migration when storage resides on NFS
+
+    The VM now can be properly migrated in scenarios where TPM data is stored
+    on a shared filesystem on the destination but on the source it's either
+    on a different NFS or unshared completely.
+
 
 v11.10.0 (2025-12-01)
 =====================
