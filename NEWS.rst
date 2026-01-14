@@ -52,6 +52,14 @@ v12.0.0 (unreleased)
     Notably, issues that were preventing the use of firmware designed for
     confidential VMs on aarch64 have been addressed.
 
+  * network: Introduce port for DNS forwarder
+
+    In the ``<dns/>`` section of network configuration users can set up
+    forwarding of DNS requests to custom DNS servers. These are specified using
+    ``addr`` attribute. But configuring port wasn't possible, until now. New
+    ``port`` attribute is introduced, which allows overriding the default DNS
+    port for given address.
+
 * **Bug fixes**
 
   * qemu: Fix startup of VMs with more than ~25 external snapshots
@@ -65,6 +73,28 @@ v12.0.0 (unreleased)
     The VM now can be properly migrated in scenarios where TPM data is stored
     on a shared filesystem on the destination but on the source it's either
     on a different NFS or unshared completely.
+
+  * qemu: Treat memory device source nodemask as strict NUMA policy
+
+    Until now, the NUMA policy for ``<memory/>`` devices was taken either from
+    the guest NUMA node or ``<numatune/>``. But this may lead to discrepancies,
+    where the memory device is configured to bind to a set of host NUMA nodes,
+    but the guest NUMA node is to bind to a disjoint set of host NUMA nodes. To
+    resolve this, specifying ``<nodemask/>`` for a memory device implies
+    ``strict`` policy.
+
+  * qemu: Relax validation of some hyperv features
+
+    Since 11.9.0 release, libvirt performs dependency checks for hyperv
+    features, for instance ``stimer`` requires ``synic``. But as it turned out,
+    for some ancient machine types (e.g. 'pc-i440fx-3.0' or 'pc-q35-3.0') some
+    dependencies are not true. Corresponding checks were removed.
+
+  * esx: URI encode inventory objects twice
+
+    Formatting domain XML for domains on an ESX server might fail if
+    corresponding datacenter or datastore contained special characters (e.g.
+    '+'). This is now fixed.
 
 
 v11.10.0 (2025-12-01)
