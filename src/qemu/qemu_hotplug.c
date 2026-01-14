@@ -4274,11 +4274,21 @@ qemuDomainChangeNet(virQEMUDriver *driver,
              */
             if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, &newdev->vlan) < 0)
                 goto cleanup;
-        } else {
+        } else if (newType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+                   virDomainNetGetActualDirectMode(newdev) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
+            if (virNetDevSetNetConfig(virDomainNetGetActualDirectDev(newdev),
+                                      -1, NULL, virDomainNetGetActualVlan(newdev), NULL, true) < 0) {
+                goto cleanup;
+            }
+        } else if (newBridgeName) {
              /* vlan setup is done as a part of reconnecting the tap
               * device to a new bridge (either OVS or Linux host bridge).
               */
             needBridgeChange = true;
+        } else {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("unable to change vlan on '%1$s' network type"),
+                           virDomainNetTypeToString(newType));
         }
         needReplaceDevDef = true;
     }
