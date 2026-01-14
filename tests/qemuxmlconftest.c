@@ -3104,6 +3104,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology2");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology3");
+    /* qemu-10.2 is the last one supporting pc-i440fx-5.0 machine which uses the
+     * old NUMA topology setup and thus the only way to test the old style of
+     * formatting --mem-prealloc */
+    DO_TEST_CAPS_VER("fd-memory-numa-topology4-old-machine", "10.2.0");
     DO_TEST_CAPS_LATEST("fd-memory-numa-topology4");
 
     DO_TEST_CAPS_LATEST("fd-memory-no-numa-topology");
