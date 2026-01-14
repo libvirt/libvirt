@@ -4272,7 +4272,7 @@ qemuDomainChangeNet(virQEMUDriver *driver,
              * will redo vlan setup without needing to re-attach the
              * tap device to the bridge
              */
-            if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, &newdev->vlan) < 0)
+            if (virNetDevOpenvswitchUpdateVlan(newdev->ifname, virDomainNetGetActualVlan(newdev)) < 0)
                 goto cleanup;
         } else if (newType == VIR_DOMAIN_NET_TYPE_DIRECT &&
                    virDomainNetGetActualDirectMode(newdev) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
