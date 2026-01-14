@@ -96,6 +96,16 @@ v12.0.0 (unreleased)
     corresponding datacenter or datastore contained special characters (e.g.
     '+'). This is now fixed.
 
+  * Fix race when checking whether a path is on a shared file system
+
+    Finding an existing parent of a given path and checking whether it's on a
+    shared file system was not atomic and thus the path could have been
+    misinterpreted as non-shared if it was removed between these two
+    operations. This could cause migration with an emulated TPM device stored
+    on a shared file system to fail with the following bogus error::
+
+     Operation not supported: the running swtpm does not support migration with shared storage
+
 
 v11.10.0 (2025-12-01)
 =====================
