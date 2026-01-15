@@ -2377,6 +2377,47 @@ virDomainNetDefValidate(const virDomainNetDef *net)
         return -1;
     }
 
+    if (net->vlan.nTags > 0) {
+        /* vlan configuration via libvirt is only supported for PCI
+         * Passthrough SR-IOV devices (hostdev or macvtap passthru
+         * mode) and openvswitch/linux host bridges. (Also allow it in
+         * the case where we don't yet know what the exact connection
+         * type will be, i.e. NET_TYPE_NETWORK).
+         */
+        bool vlanAllowed = false;
+
+        switch (net->type) {
+        case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_BRIDGE:
+            vlanAllowed = true;
+            break;
+        case VIR_DOMAIN_NET_TYPE_DIRECT:
+            if (net->data.direct.mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU)
+                vlanAllowed = true;
+            break;
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        case VIR_DOMAIN_NET_TYPE_USER:
+        case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        case VIR_DOMAIN_NET_TYPE_SERVER:
+        case VIR_DOMAIN_NET_TYPE_CLIENT:
+        case VIR_DOMAIN_NET_TYPE_MCAST:
+        case VIR_DOMAIN_NET_TYPE_INTERNAL:
+        case VIR_DOMAIN_NET_TYPE_UDP:
+        case VIR_DOMAIN_NET_TYPE_VDPA:
+        case VIR_DOMAIN_NET_TYPE_NULL:
+        case VIR_DOMAIN_NET_TYPE_VDS:
+        case VIR_DOMAIN_NET_TYPE_LAST:
+            break;
+        }
+        if (!vlanAllowed) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("interface %1$s - vlan tag not supported for this connection type"),
+                           macstr);
+            return -1;
+        }
+    }
+
     return 0;
 }
 
