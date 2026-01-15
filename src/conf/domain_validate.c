@@ -2229,15 +2229,12 @@ virDomainActualNetDefValidate(const virDomainNetDef *net)
     if (virDomainNetGetActualVlan(net)) {
         /* vlan configuration via libvirt is only supported for PCI
          * Passthrough SR-IOV devices (hostdev or macvtap passthru
-         * mode) and openvswitch bridges. Otherwise log an error and
-         * fail
+         * mode) and openvswitch/linux host bridges.
          */
-        if (!(actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
+        if (!(virDomainNetGetActualBridgeName(net) ||
+              actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
               (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
-               virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
-              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
-               vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) ||
-              (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE && !vport))) {
+               virDomainNetGetActualDirectMode(net) == VIR_NETDEV_MACVLAN_MODE_PASSTHRU))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("interface %1$s - vlan tag not supported for this connection type"),
                            macstr);
