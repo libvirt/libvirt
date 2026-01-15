@@ -3,6 +3,13 @@
 #
 
 
+# hypervisor/domain_logcontext.h
+domainLogContextGetWriteFD;
+domainLogContextMarkPosition;
+domainLogContextNew;
+domainLogContextReadFiltered;
+domainLogContextWrite;
+
 # logging/log_manager.h
 virLogManagerDomainAppendMessage;
 virLogManagerDomainGetLogFilePosition;

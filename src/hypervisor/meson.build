@@ -2,10 +2,15 @@ hypervisor_sources = [
   'domain_cgroup.c',
   'domain_driver.c',
   'domain_interface.c',
-  'domain_logcontext.c',
   'virclosecallbacks.c',
   'virhostdev.c',
 ]
+
+if conf.has('WITH_REMOTE')
+  hypervisor_sources += [
+    'domain_logcontext.c'
+  ]
+endif
 
 stateful_driver_source_files += files(hypervisor_sources)
 
