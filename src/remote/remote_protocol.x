@@ -34,6 +34,7 @@
  * 'REMOTE_'.  This makes names quite long.
  */
 
+%#define IN_LIBVIRT
 %#include <libvirt/libvirt.h>
 %#include "internal.h"
 %#include "virxdrdefs.h"

@@ -1,11 +1,7 @@
 src_inc_dir = include_directories('.')
 
 src_dep = declare_dependency(
-  compile_args: [
-    '-DIN_LIBVIRT',
-    '-Dabs_top_builddir="@0@"'.format(meson.project_build_root()),
-    '-Dabs_top_srcdir="@0@"'.format(meson.project_source_root()),
-  ] + coverage_flags + win32_flags,
+  compile_args: coverage_flags + win32_flags,
   dependencies: [
     glib_dep,
     libxml_dep,

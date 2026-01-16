@@ -29,6 +29,8 @@
 #include <stdlib.h>
 #include "glibcompat.h"
 
+#define IN_LIBVIRT
+
 #if defined __clang_analyzer__ || defined __COVERITY__
 # define STATIC_ANALYSIS 1
 #endif
