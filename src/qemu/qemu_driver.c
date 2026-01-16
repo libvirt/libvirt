@@ -20354,6 +20354,12 @@ qemuDomainSetThrottleGroup(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
+    if (strlen(groupname) == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("'groupname' parameter string must have non-zero length"));
+        return -1;
+    }
+
     if (qemuDomainValidateBlockIoTune(params, nparams) < 0)
         return -1;
 
