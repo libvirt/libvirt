@@ -232,6 +232,59 @@ libvirt_revision = arr_version[2].to_int()
 libvirt_lib_version = '@0@.@1@.@2@'.format(libvirt_so_version, libvirt_age, libvirt_revision)
 
 
+# Where we look for daemons and admin binaries during configure
+
+libvirt_sbin_path = []
+
+if host_machine.system() != 'windows'
+  libvirt_sbin_path += [
+    '/sbin',
+    '/usr/sbin',
+    '/usr/local/sbin',
+  ]
+endif
+
+
+# required programs check
+
+required_programs = [
+  'perl',
+  'python3',
+  'xmllint',
+  'xsltproc',
+]
+
+foreach name : required_programs
+  prog = find_program(name, dirs: libvirt_sbin_path)
+  varname = name.underscorify()
+  set_variable('@0@_prog'.format(varname), prog)
+endforeach
+
+# optional programs
+
+optional_programs = [
+  'augparse',
+  'black',
+  'flake8',
+  'pdwtags',
+  'pytest',
+]
+
+missing_optional_programs = []
+foreach name : optional_programs
+  prog = find_program(name, required: false, dirs: libvirt_sbin_path)
+  varname = name.underscorify()
+  if prog.found()
+    prog_path = prog.full_path()
+  else
+    prog_path = name
+    missing_optional_programs += [ name ]
+  endif
+
+  set_variable('@0@_prog'.format(varname), prog)
+endforeach
+
+
 # check compile flags
 
 cc = meson.get_compiler('c')
@@ -534,7 +587,13 @@ if get_option('warning_level') == '2'
   endif
 
 endif
-add_project_arguments(supported_cc_flags, language: 'c')
+
+run_command([python3_prog,
+             'scripts' / 'meson-warnings.py',
+             meson.current_build_dir() / 'c-warnings.txt'] + supported_cc_flags,
+            check: true)
+
+add_project_arguments('@' + meson.current_build_dir() / 'c-warnings.txt', language: 'c')
 
 if cc.has_argument('-Wsuggest-attribute=format')
   conf.set('WITH_SUGGEST_ATTRIBUTE_FORMAT', 1)
@@ -807,59 +866,6 @@ endforeach
 # check various types sizeof
 
 conf.set('SIZEOF_LONG', cc.sizeof('long'))
-
-
-# Where we look for daemons and admin binaries during configure
-
-libvirt_sbin_path = []
-
-if host_machine.system() != 'windows'
-  libvirt_sbin_path += [
-    '/sbin',
-    '/usr/sbin',
-    '/usr/local/sbin',
-  ]
-endif
-
-
-# required programs check
-
-required_programs = [
-  'perl',
-  'python3',
-  'xmllint',
-  'xsltproc',
-]
-
-foreach name : required_programs
-  prog = find_program(name, dirs: libvirt_sbin_path)
-  varname = name.underscorify()
-  set_variable('@0@_prog'.format(varname), prog)
-endforeach
-
-# optional programs
-
-optional_programs = [
-  'augparse',
-  'black',
-  'flake8',
-  'pdwtags',
-  'pytest',
-]
-
-missing_optional_programs = []
-foreach name : optional_programs
-  prog = find_program(name, required: false, dirs: libvirt_sbin_path)
-  varname = name.underscorify()
-  if prog.found()
-    prog_path = prog.full_path()
-  else
-    prog_path = name
-    missing_optional_programs += [ name ]
-  endif
-
-  set_variable('@0@_prog'.format(varname), prog)
-endforeach
 
 
 # early checks where lot of other packages depend on the result
