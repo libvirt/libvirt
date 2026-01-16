@@ -15177,6 +15177,7 @@ static int
 qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
                                virTypedParameterPtr params,
                                int nparams,
+                               const char *group_name,
                                qemuBlockIoTuneSetFlags *set_fields,
                                virTypedParameterPtr *eventParams,
                                int *eventNparams,
@@ -15246,6 +15247,10 @@ qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
         SET_IOTUNE_FIELD(write_iops_sec_max_length, IOPS_MAX_LENGTH,
                          WRITE_IOPS_SEC_MAX_LENGTH);
     }
+
+    /* The name of the throttle group passed via API always takes precedence */
+    if (group_name)
+        param_group_name = group_name;
 
     if (param_group_name) {
         info->group_name = g_strdup(param_group_name);
@@ -15394,6 +15399,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     if (qemuDomainSetBlockIoTuneFields(&info,
                                        params,
                                        nparams,
+                                       NULL,
                                        &set_fields,
                                        &eventParams,
                                        &eventNparams,
@@ -20388,6 +20394,7 @@ qemuDomainSetThrottleGroup(virDomainPtr dom,
     if (qemuDomainSetBlockIoTuneFields(&info,
                                        params,
                                        nparams,
+                                       groupname,
                                        &set_fields,
                                        &eventParams,
                                        &eventNparams,
