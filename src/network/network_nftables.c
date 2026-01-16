@@ -61,6 +61,10 @@ VIR_LOG_INIT("network.nftables");
 
 #define VIR_NFTABLES_PRIVATE_TABLE "libvirt_network"
 
+#define VIR_NFTABLES_COMMENT \
+    "{ comment \"Managed by libvirt for virtual networks: " \
+    "https://libvirt.org/firewall.html#the-virtual-network-driver\"; }"
+
 /* nftables backend uses the same binary (nft) for all layers, but
  * IPv4 and IPv6 have their rules in separate classes of tables,
  * either "ip" or "ip6". (there is also an "inet" class of tables that
@@ -165,7 +169,9 @@ nftablesPrivateChainCreate(virFirewall *fw,
 
     if (!tableMatch) {
         virFirewallAddCmd(fw, layer, "add", "table",
-                          layerStr, VIR_NFTABLES_PRIVATE_TABLE, NULL);
+                          layerStr, VIR_NFTABLES_PRIVATE_TABLE,
+                          VIR_NFTABLES_COMMENT,
+                          NULL);
     }
 
     for (i = 0; i < data->nchains; i++) {
