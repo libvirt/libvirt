@@ -20387,10 +20387,6 @@ qemuDomainSetThrottleGroup(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
-                                VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME, groupname) < 0)
-        goto endjob;
-
     if (qemuDomainSetBlockIoTuneFields(&info,
                                        params,
                                        nparams,
