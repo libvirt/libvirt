@@ -394,6 +394,17 @@ sc_prohibit_g_autofree_const:
 	halt='‘g_autofree’ discards ‘const’ qualifier from pointer target type' \
 	  $(_sc_search_regexp)
 
+sc_prohibit_local_with_subshell:
+	@err=0; for f in $$($(VC_LIST_EXCEPT) | $(GREP) -E '\.sh(\.in)?$$'); do \
+	  lines=$$( $(AWK) \
+	  '/^\s*(local|export|declare|readonly)\s+.*=/ { nr=NR; c=1; next } \
+	  /^\s*$$/ { if (c) next } \
+	  /\$$\?/ { if (c) { print nr; c=0; } next } \
+	  { c=0 }' $$f ) ; \
+	  for l in $$lines; do echo $$f:$$l 1>&2; err=1; done ; \
+	done; \
+	test $$err -eq 0 || { msg="Declare and assign separately to avoid masking return values" $(_sc_say_and_exit) }
+
 
 # Many of the function names below came from this filter:
 # git grep -B2 '\<_('|grep -E '\.c- *[[:alpha:]_][[:alnum:]_]* ?\(.*[,;]$' \
