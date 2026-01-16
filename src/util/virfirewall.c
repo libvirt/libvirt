@@ -571,7 +571,6 @@ virFirewallCmdIptablesApply(virFirewall *firewall,
                           VIR_FIREWALL_TRANSACTION_AUTO_ROLLBACK);
     bool needRollback = false;
     g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *cmdStr = NULL;
     g_autofree char *error = NULL;
     size_t i;
     int status;
@@ -607,9 +606,6 @@ virFirewallCmdIptablesApply(virFirewall *firewall,
         virCommandAddArg(cmd, fwCmd->args[i]);
     }
 
-    cmdStr = virCommandToString(cmd, false);
-    VIR_INFO("Running firewall command '%s'", NULLSTR(cmdStr));
-
     virCommandSetOutputBuffer(cmd, output);
     virCommandSetErrorBuffer(cmd, &error);
 
@@ -622,6 +618,7 @@ virFirewallCmdIptablesApply(virFirewall *firewall,
             VIR_DEBUG("Ignoring error running command");
             return 0;
         } else {
+            g_autofree char *cmdStr = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to run firewall command %1$s: %2$s"),
                            NULLSTR(cmdStr), NULLSTR(error));
@@ -671,7 +668,6 @@ virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
     size_t cmdIdx = 0;
     const char *objectType = NULL;
     g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *cmdStr = NULL;
     g_autofree char *error = NULL;
     size_t i;
     int status;
@@ -727,9 +723,6 @@ virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
     for (i = 0; i < fwCmd->argsLen; i++)
         virCommandAddArg(cmd, fwCmd->args[i]);
 
-    cmdStr = virCommandToString(cmd, false);
-    VIR_INFO("Applying '%s'", NULLSTR(cmdStr));
-
     virCommandSetOutputBuffer(cmd, output);
     virCommandSetErrorBuffer(cmd, &error);
 
@@ -745,6 +738,7 @@ virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
         } else if (fwCmd->ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
+            g_autofree char *cmdStr = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to apply firewall command '%1$s': %2$s"),
                            NULLSTR(cmdStr), NULLSTR(error));
@@ -776,6 +770,7 @@ virFirewallCmdNftablesApply(virFirewall *firewall G_GNUC_UNUSED,
         }
 
         if (!handleLen) {
+            g_autofree char *cmdStr = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("couldn't register rollback command - command '%1$s' had no valid handle in output ('%2$s')"),
                            NULLSTR(cmdStr), NULLSTR(*output));
