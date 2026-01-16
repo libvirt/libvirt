@@ -32,8 +32,9 @@
       then
         source ci/buildenv/$NAME.sh ;
         install_buildenv ;
+      else
+        cat /packages.txt ;
       fi
-    - cat /packages.txt
   variables:
     IMAGE: $CI_REGISTRY/$CONTAINER_UPSTREAM_NAMESPACE/libvirt/ci-$NAME:latest
   rules:
@@ -176,8 +177,9 @@
       then
         source ci/buildenv/$NAME-cross-$CROSS.sh ;
         install_buildenv ;
+      else
+        cat /packages.txt ;
       fi
-    - cat /packages.txt
   variables:
     IMAGE: $CI_REGISTRY/$CONTAINER_UPSTREAM_NAMESPACE/libvirt/ci-$NAME-cross-$CROSS:latest
   rules:
