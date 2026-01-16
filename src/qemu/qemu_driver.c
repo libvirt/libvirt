@@ -15182,6 +15182,7 @@ qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
                                int *eventNparams,
                                int *eventMaxparams)
 {
+    const char *param_group_name = NULL;
     size_t i;
 
 #define SET_IOTUNE_FIELD(FIELD, BOOL, CONST) \
@@ -15227,15 +15228,8 @@ qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
                          WRITE_IOPS_SEC_MAX);
         SET_IOTUNE_FIELD(size_iops_sec, SIZE_IOPS, SIZE_IOPS_SEC);
 
-        /* NB: Cannot use macro since this is a value.s not a value.ul */
         if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME)) {
-            info->group_name = g_strdup(param->value.s);
-            *set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
-            if (virTypedParamsAddString(eventParams, eventNparams,
-                                        eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME,
-                                        param->value.s) < 0)
-                return -1;
+            param_group_name = param->value.s;
             continue;
         }
 
@@ -15251,6 +15245,16 @@ qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
                          READ_IOPS_SEC_MAX_LENGTH);
         SET_IOTUNE_FIELD(write_iops_sec_max_length, IOPS_MAX_LENGTH,
                          WRITE_IOPS_SEC_MAX_LENGTH);
+    }
+
+    if (param_group_name) {
+        info->group_name = g_strdup(param_group_name);
+        *set_fields |= QEMU_BLOCK_IOTUNE_SET_GROUP_NAME;
+        if (virTypedParamsAddString(eventParams, eventNparams,
+                                    eventMaxparams,
+                                    VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME,
+                                    param_group_name) < 0)
+            return -1;
     }
 
 #undef SET_IOTUNE_FIELD
