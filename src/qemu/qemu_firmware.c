@@ -893,15 +893,18 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
  * qemuFirmwareMatchesPaths:
  * @fw: firmware definition
  * @loader: loader definition
+ * @varstore: varstore definition
  *
  * Checks whether @fw is compatible with the information provided as
  * part of the domain definition.
  *
- * Returns: true if @fw is compatible with @loader, false otherwise
+ * Returns: true if @fw is compatible with @loader and @varstore,
+ *          false otherwise
  */
 static bool
 qemuFirmwareMatchesPaths(const qemuFirmware *fw,
-                         const virDomainLoaderDef *loader)
+                         const virDomainLoaderDef *loader,
+                         const virDomainVarstoreDef *varstore)
 {
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
@@ -921,6 +924,9 @@ qemuFirmwareMatchesPaths(const qemuFirmware *fw,
     case QEMU_FIRMWARE_DEVICE_MEMORY:
         if (loader && loader->path &&
             !virFileComparePaths(loader->path, memory->filename))
+            return false;
+        if (varstore && varstore->template &&
+            !virFileComparePaths(varstore->template, memory->template))
             return false;
         break;
     case QEMU_FIRMWARE_DEVICE_NONE:
@@ -1112,6 +1118,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
                         const char *path)
 {
     const virDomainLoaderDef *loader = def->os.loader;
+    const virDomainVarstoreDef *varstore = def->os.varstore;
     size_t i;
     qemuFirmwareOSInterface want;
     bool wantUEFI = false;
@@ -1166,7 +1173,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         return false;
     }
 
-    if (!qemuFirmwareMatchesPaths(fw, def->os.loader)) {
+    if (!qemuFirmwareMatchesPaths(fw, def->os.loader, def->os.varstore)) {
         VIR_DEBUG("No matching path in '%s'", path);
         return false;
     }
@@ -1279,6 +1286,9 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
     if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH) {
         const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
 
+        if (varstore)
+            return false;
+
         if (loader && loader->type &&
             loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
             VIR_DEBUG("Discarding flash loader");
@@ -1377,14 +1387,36 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
             }
         }
     } else if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_MEMORY) {
+        const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
+
+        if (loader && loader->nvram)
+            return false;
+
         if (loader && loader->type &&
             loader->type != VIR_DOMAIN_LOADER_TYPE_ROM) {
             VIR_DEBUG("Discarding rom loader");
             return false;
         }
 
-        if (loader && loader->stateless == VIR_TRISTATE_BOOL_NO) {
+        /* Explicit requests for either a stateless or stateful
+         * firmware should be fulfilled, but if no preference is
+         * provided either one is fine as long as the other match
+         * criteria are satisfied. varstore implies stateful */
+        if (loader &&
+            loader->stateless == VIR_TRISTATE_BOOL_NO &&
+            !memory->template) {
             VIR_DEBUG("Discarding stateless loader");
+            return false;
+        }
+        if (varstore &&
+            !memory->template) {
+            VIR_DEBUG("Discarding stateless loader");
+            return false;
+        }
+        if (loader &&
+            loader->stateless == VIR_TRISTATE_BOOL_YES &&
+            memory->template) {
+            VIR_DEBUG("Discarding non-stateless loader");
             return false;
         }
 

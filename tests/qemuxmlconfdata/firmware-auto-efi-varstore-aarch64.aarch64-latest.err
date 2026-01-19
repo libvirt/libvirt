@@ -1,1 +1,1 @@
-Only one of NVRAM/varstore can be used
+operation failed: Unable to find 'efi' firmware that is compatible with the current configuration
