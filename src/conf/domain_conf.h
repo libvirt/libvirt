@@ -2423,6 +2423,14 @@ struct _virDomainLoaderDef {
 virDomainLoaderDef *virDomainLoaderDefNew(void);
 void virDomainLoaderDefFree(virDomainLoaderDef *loader);
 
+struct _virDomainVarstoreDef {
+    char *path;
+    char *template;
+};
+
+virDomainVarstoreDef *virDomainVarstoreDefNew(void);
+void virDomainVarstoreDefFree(virDomainVarstoreDef *varstore);
+
 typedef enum {
     VIR_DOMAIN_IOAPIC_NONE = 0,
     VIR_DOMAIN_IOAPIC_QEMU,
@@ -2576,6 +2584,7 @@ struct _virDomainOSDef {
     size_t nacpiTables;
     virDomainOSACPITableDef **acpiTables;
     virDomainLoaderDef *loader;
+    virDomainVarstoreDef *varstore;
     char *bootloader;
     char *bootloaderArgs;
     int smbios_mode;

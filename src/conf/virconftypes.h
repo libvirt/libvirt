@@ -164,6 +164,8 @@ typedef struct _virDomainLeaseDef virDomainLeaseDef;
 
 typedef struct _virDomainLoaderDef virDomainLoaderDef;
 
+typedef struct _virDomainVarstoreDef virDomainVarstoreDef;
+
 typedef struct _virDomainMemballoonDef virDomainMemballoonDef;
 
 typedef struct _virDomainMemoryDef virDomainMemoryDef;

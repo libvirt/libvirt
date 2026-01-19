@@ -349,7 +349,10 @@
             </element>
           </optional>
           <optional>
-            <ref name="osnvram"/>
+            <choice>
+              <ref name="osnvram"/>
+              <ref name="osvarstore"/>
+            </choice>
           </optional>
           <optional>
             <ref name="osbootkernel"/>
@@ -453,6 +456,23 @@
           </group>
         </choice>
       </optional>
+    </element>
+  </define>
+
+  <define name="osvarstore">
+    <element name="varstore">
+      <interleave>
+        <optional>
+          <attribute name="template">
+            <ref name="absFilePath"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="path">
+            <ref name="absFilePath"/>
+          </attribute>
+        </optional>
+      </interleave>
     </element>
   </define>
 

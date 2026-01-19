@@ -74,8 +74,8 @@ Changing an existing VM
 
 When a VM is defined, libvirt will pick the firmware that best
 satisfies the provided criteria and record this information for use
-on subsequent boots. The resulting XML configuration will look like
-this:
+on subsequent boots. The resulting XML configuration will look either
+like this:
 
 ::
 
@@ -88,14 +88,28 @@ this:
     <nvram template='/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd'>/var/lib/libvirt/qemu/nvram/vm_VARS.fd</nvram>
   </os>
 
+or like this:
+
+::
+
+  <os firmware='efi'>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader type='rom' format='raw'>/usr/share/edk2/aarch64/QEMU_EFI.qemuvars.fd</loader>
+    <varstore template='/usr/share/edk2/aarch64/vars.secboot.json' path='/var/lib/libvirt/qemu/varstore/vm.json'/>
+  </os>
+
 In order to force libvirt to repeat the firmware autoselection
-process, it's necessary to remove the ``<loader>`` and ``<nvram>``
-elements. Failure to do so will likely result in an error.
+process, it's necessary to remove the ``<loader>`` as well as the
+``<nvram>`` or ``<varstore>`` elements, depending on what's
+applicable. Failure to do so will likely result in an error.
 
 Note that updating the XML configuration as described above is
-**not** enough to change the Secure Boot status: the NVRAM file
-associated with the VM has to be regenerated from its template as
-well.
+**not** enough to change the Secure Boot status: the NVRAM/varstore
+file associated with the VM has to be regenerated from its template
+as well.
 
 In order to do that, update the XML and then start the VM with
 
@@ -107,9 +121,9 @@ This option is only available starting with libvirt 8.1.0, so if your
 version of libvirt is older than that you will have to delete the
 NVRAM file manually before starting the VM.
 
-Most guest operating systems will be able to cope with the NVRAM file
-being reinitialized, but in some cases the VM will be unable to boot
-after the change.
+Most guest operating systems will be able to cope with the
+NVRAM/varstore file being reinitialized, but in some cases the VM
+will be unable to boot after the change.
 
 
 Additional information
@@ -126,15 +140,15 @@ can be used to validate the operating system signature need to be
 provided as well.
 
 Asking for the ``enrolled-keys`` firmware feature to be enabled will
-cause libvirt to initialize the NVRAM file associated with the VM
-from a template that contains a suitable set of keys. These keys
-being present will cause the firmware to enforce the Secure Boot
+cause libvirt to initialize the NVRAM/varstore file associated with
+the VM from a template that contains a suitable set of keys. These
+keys being present will cause the firmware to enforce the Secure Boot
 signing requirements.
 
 The opposite configuration, where the feature is explicitly disabled,
-will result in no keys being present in the NVRAM file. Unable to
-verify signatures, the firmware will allow even unsigned operating
-systems to run.
+will result in no keys being present in the NVRAM/varstore file.
+Unable to verify signatures, the firmware will allow even unsigned
+operating systems to run.
 
 If running unsigned code is desired, it's also possible to ask for
 the ``secure-boot`` feature to be disabled, which will cause libvirt

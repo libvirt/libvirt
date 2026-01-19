@@ -719,6 +719,8 @@ virDomainTPMProfileRemoveDisabledTypeToString;
 virDomainTPMVersionTypeFromString;
 virDomainTPMVersionTypeToString;
 virDomainUSBDeviceDefForeach;
+virDomainVarstoreDefFree;
+virDomainVarstoreDefNew;
 virDomainVideoDefaultRAM;
 virDomainVideoDefClear;
 virDomainVideoDefFree;

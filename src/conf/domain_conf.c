@@ -3960,6 +3960,27 @@ virDomainLoaderDefFree(virDomainLoaderDef *loader)
     g_free(loader);
 }
 
+virDomainVarstoreDef *
+virDomainVarstoreDefNew(void)
+{
+    virDomainVarstoreDef *def = NULL;
+
+    def = g_new0(virDomainVarstoreDef, 1);
+
+    return def;
+}
+
+void
+virDomainVarstoreDefFree(virDomainVarstoreDef *varstore)
+{
+    if (!varstore)
+        return;
+
+    g_free(varstore->path);
+    g_free(varstore->template);
+    g_free(varstore);
+}
+
 
 static void
 virDomainResctrlMonDefFree(virDomainResctrlMonDef *domresmon)
@@ -4062,6 +4083,7 @@ virDomainOSDefClear(virDomainOSDef *os)
         virDomainOSACPITableDefFree(os->acpiTables[i]);
     g_free(os->acpiTables);
     virDomainLoaderDefFree(os->loader);
+    virDomainVarstoreDefFree(os->varstore);
     g_free(os->bootloader);
     g_free(os->bootloaderArgs);
 }
@@ -18091,6 +18113,17 @@ virDomainLoaderDefParseXMLLoader(virDomainLoaderDef *loader,
 
 
 static int
+virDomainVarstoreDefParseXML(virDomainVarstoreDef *varstore,
+                             xmlNodePtr varstoreNode)
+{
+    varstore->path = virXMLPropString(varstoreNode, "path");
+    varstore->template = virXMLPropString(varstoreNode, "template");
+
+    return 0;
+}
+
+
+static int
 virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                            xmlNodePtr loaderNode,
                            xmlNodePtr nvramNode,
@@ -18537,16 +18570,29 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
     xmlNodePtr loaderNode = virXPathNode("./os/loader[1]", ctxt);
     xmlNodePtr nvramNode = virXPathNode("./os/nvram[1]", ctxt);
     xmlNodePtr nvramSourceNode = virXPathNode("./os/nvram/source[1]", ctxt);
+    xmlNodePtr varstoreNode = virXPathNode("./os/varstore[1]", ctxt);
 
-    if (!loaderNode && !nvramNode)
-        return 0;
-
-    def->os.loader = virDomainLoaderDefNew();
-
-    if (virDomainLoaderDefParseXML(def->os.loader,
-                                   loaderNode, nvramNode, nvramSourceNode,
-                                   ctxt, xmlopt, flags) < 0)
+    if (nvramNode && varstoreNode) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot have both <nvram> and <varstore>"));
         return -1;
+    }
+
+    if (loaderNode || nvramNode) {
+        def->os.loader = virDomainLoaderDefNew();
+
+        if (virDomainLoaderDefParseXML(def->os.loader,
+                                       loaderNode, nvramNode, nvramSourceNode,
+                                       ctxt, xmlopt, flags) < 0)
+            return -1;
+    }
+
+    if (varstoreNode) {
+        def->os.varstore = virDomainVarstoreDefNew();
+
+        if (virDomainVarstoreDefParseXML(def->os.varstore, varstoreNode) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -28250,6 +28296,20 @@ virDomainLoaderDefFormat(virBuffer *buf,
     return 0;
 }
 
+static int
+virDomainVarstoreDefFormat(virBuffer *buf,
+                           virDomainVarstoreDef *varstore)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferEscapeString(&attrBuf, " template='%s'", varstore->template);
+    virBufferEscapeString(&attrBuf, " path='%s'", varstore->path);
+
+    virXMLFormatElementEmpty(buf, "varstore", &attrBuf, NULL);
+
+    return 0;
+}
+
 static void
 virDomainKeyWrapDefFormat(virBuffer *buf, virDomainKeyWrapDef *keywrap)
 {
@@ -29722,6 +29782,11 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (def->os.loader &&
         virDomainLoaderDefFormat(buf, def->os.loader, xmlopt, flags) < 0)
         return -1;
+
+    if (def->os.varstore &&
+        virDomainVarstoreDefFormat(buf, def->os.varstore) < 0)
+        return -1;
+
     virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
                           def->os.kernel);
     virBufferEscapeString(buf, "<initrd>%s</initrd>\n",

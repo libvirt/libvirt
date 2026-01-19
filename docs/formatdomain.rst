@@ -196,9 +196,9 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 
 ``firmware``
    The ``firmware`` attribute allows management applications to automatically
-   fill ``<loader/>`` and ``<nvram/>`` elements and possibly enable some
-   features required by selected firmware. Accepted values are ``bios`` and
-   ``efi``.
+   fill ``<loader/>`` and ``<nvram/>`` or ``<varstore/>`` elements and possibly
+   enable some features required by selected firmware. Accepted values are
+   ``bios`` and ``efi``.
    The selection process scans for files describing installed firmware images in
    specified location and uses the most specific one which fulfills domain
    requirements. The locations in order of preference (from generic to most
@@ -310,6 +310,23 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 
    It is not valid to provide this element if the loader is marked as
    stateless.
+
+``varstore``
+   This works much the same way as the ``<nvram/>`` element described above,
+   except that variable storage is handled by the ``uefi-vars`` QEMU device
+   instead of being backed by a pflash device. :since:`Since 12.1.0 (QEMU only)`
+
+   The ``path`` attribute contains the path of the domain-specific file where
+   variables are stored, while the ``template`` attribute points to a template
+   that the domain-specific file can be (re)generated from. Assuming that the
+   necessary JSON firmware descriptor files are present, both attributes will
+   be filled in automatically by libvirt.
+
+   Using ``<varstore/>`` instead of ``<nvram/>`` is particularly useful on
+   non-x86 architectures such as aarch64, where it represents the only way to
+   get Secure Boot working. It can be used on x86 too, and doing so will make
+   it possible to keep UEFI authenticated variables safe from tampering without
+   requiring the use of SMM emulation.
 
 ``boot``
    The ``dev`` attribute takes one of the values "fd", "hd", "cdrom" or
