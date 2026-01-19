@@ -132,9 +132,10 @@ guest_name() {
 guest_is_on() {
     local uri="$1"
     local uuid="$2"
-    local id="$(run_virsh "$uri" domid "$uuid")"
+    local id
 
     guest_running="false"
+    id="$(run_virsh "$uri" domid "$uuid")"
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
