@@ -95,6 +95,7 @@ struct _qemuFirmwareMappingFlash {
 typedef struct _qemuFirmwareMappingMemory qemuFirmwareMappingMemory;
 struct _qemuFirmwareMappingMemory {
     char *filename;
+    char *template;
 };
 
 
@@ -219,6 +220,7 @@ static void
 qemuFirmwareMappingMemoryFreeContent(qemuFirmwareMappingMemory *memory)
 {
     g_free(memory->filename);
+    g_free(memory->template);
 }
 
 
@@ -406,7 +408,11 @@ qemuFirmwareMappingMemoryParse(const char *path,
                                virJSONValue *doc,
                                qemuFirmwareMappingMemory *memory)
 {
+    virJSONValue *uefi_vars;
     const char *filename;
+    const char *template;
+
+    uefi_vars = virJSONValueObjectGet(doc, "uefi-vars");
 
     if (!(filename = virJSONValueObjectGetString(doc, "filename"))) {
         VIR_DEBUG("missing 'filename' in '%s'", path);
@@ -414,6 +420,15 @@ qemuFirmwareMappingMemoryParse(const char *path,
     }
 
     memory->filename = g_strdup(filename);
+
+    if (uefi_vars) {
+        if (!(template = virJSONValueObjectGetString(uefi_vars, "template"))) {
+            VIR_DEBUG("missing 'template' for 'uefi-vars' in '%s'", path);
+            return -1;
+        }
+
+        memory->template = g_strdup(template);
+    }
 
     return 0;
 }
@@ -701,6 +716,20 @@ qemuFirmwareMappingMemoryFormat(virJSONValue *mapping,
                                        "filename",
                                        memory->filename) < 0)
         return -1;
+
+    if (memory->template) {
+        g_autoptr(virJSONValue) uefi_vars = virJSONValueNewObject();
+
+        if (virJSONValueObjectAppendString(uefi_vars,
+                                           "template",
+                                           memory->template) < 0)
+            return -1;
+
+        if (virJSONValueObjectAppend(mapping,
+                                     "uefi-vars",
+                                     &uefi_vars) < 0)
+            return -1;
+    }
 
     return 0;
 }
