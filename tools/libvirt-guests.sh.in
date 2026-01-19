@@ -106,8 +106,9 @@ test_connect()
 list_guests() {
     local uri="$1"
     local persistent="$2"
-    local list="$(run_virsh_c "$uri" list --uuid $persistent)"
+    local list
 
+    list="$(run_virsh_c "$uri" list --uuid $persistent)"
     if [ $? -ne 0 ]; then
         RETVAL=1
         return 1
@@ -482,7 +483,8 @@ stop() {
 
         eval_gettext "Running guests on \$uri URI: "
 
-        local list="$(list_guests "$uri")"
+        local list
+        list="$(list_guests "$uri")"
         if [ $? -eq 0 ]; then
             local empty=true
             for uuid in $list; do
@@ -498,7 +500,8 @@ stop() {
         fi
 
         if "$persistent_only"; then
-            local transient="$(list_guests "$uri" "--transient")"
+            local transient
+            transient="$(list_guests "$uri" "--transient")"
             if [ $? -eq 0 ]; then
                 local empty="true"
                 local uuid=
