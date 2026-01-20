@@ -12880,6 +12880,8 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  * Note that for some @source values some pieces of returned @ifaces
  * might be unset (e.g. VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP does not
  * set IP address prefix as ARP table does not have any notion of that).
+ * Moreover, it may happen that the interface doesn't have a name. In
+ * that case, @ifaces->name is set to the interface's device alias.
  *
  * @ifaces->name is never NULL, and @ifaces->hwaddr may be NULL.
  *

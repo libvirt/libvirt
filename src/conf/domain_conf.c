@@ -15598,6 +15598,12 @@ virDomainNetDHCPInterfaces(virDomainDef *def,
             goto error;
 
         if (n_leases) {
+            const char *ifname = def->nets[i]->ifname;
+
+            if (!ifname) {
+                ifname = def->nets[i]->info.alias;
+            }
+
             ifaces_ret = g_renew(virDomainInterfacePtr, ifaces_ret, ifaces_count + 1);
             ifaces_ret[ifaces_count] = g_new0(virDomainInterface, 1);
             iface = ifaces_ret[ifaces_count];
@@ -15606,7 +15612,7 @@ virDomainNetDHCPInterfaces(virDomainDef *def,
             /* Assuming each lease corresponds to a separate IP */
             iface->naddrs = n_leases;
             iface->addrs = g_new0(virDomainIPAddress, iface->naddrs);
-            iface->name = g_strdup(def->nets[i]->ifname);
+            iface->name = g_strdup(ifname);
             iface->hwaddr = g_strdup(macaddr);
         }
 
@@ -15660,9 +15666,15 @@ virDomainNetARPInterfaces(virDomainDef *def,
             virArpTableEntry entry = table->t[j];
 
             if (STREQ(entry.mac, macaddr)) {
+                const char *ifname = def->nets[i]->ifname;
+
+                if (!ifname) {
+                    ifname = def->nets[i]->info.alias;
+                }
+
                 iface = g_new0(virDomainInterface, 1);
 
-                iface->name = g_strdup(def->nets[i]->ifname);
+                iface->name = g_strdup(ifname);
 
                 iface->hwaddr = g_strdup(macaddr);
 
