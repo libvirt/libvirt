@@ -1,1 +1,1 @@
-operation failed: Unable to find 'efi' firmware that is compatible with the current configuration
+unsupported configuration: The uefi-vars device is not supported by this QEMU binary

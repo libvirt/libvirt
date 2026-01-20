@@ -1,1 +1,1 @@
-unsupported configuration: ACPI requires UEFI on this architecture
+unsupported configuration: The uefi-vars device is not supported by this QEMU binary

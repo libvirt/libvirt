@@ -6,8 +6,12 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='aarch64' machine='virt-8.2'>hvm</type>
-    <loader format='raw'/>
-    <varstore/>
+    <firmware>
+      <feature enabled='yes' name='enrolled-keys'/>
+      <feature enabled='yes' name='secure-boot'/>
+    </firmware>
+    <loader type='rom' format='raw'>/usr/share/edk2/aarch64/QEMU_EFI.qemuvars.fd</loader>
+    <varstore template='/usr/share/edk2/aarch64/vars.secboot.json' path='/var/lib/libvirt/qemu/varstore/guest.json'/>
     <boot dev='hd'/>
   </os>
   <features>

@@ -11,9 +11,11 @@
     </enum>
     <firmwareFeatures supported='yes'>
       <enum name='secureBoot'>
+        <value>yes</value>
         <value>no</value>
       </enum>
       <enum name='enrolledKeys'>
+        <value>yes</value>
         <value>no</value>
       </enum>
     </firmwareFeatures>
@@ -32,7 +34,7 @@
         <value>no</value>
       </enum>
     </loader>
-    <varstore supported='no'/>
+    <varstore supported='yes'/>
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'>
