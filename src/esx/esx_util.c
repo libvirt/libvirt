@@ -275,8 +275,8 @@ esxUtil_ResolveHostname(const char *hostname, char **ipAddress)
     int errcode;
     g_autofree char *address = NULL;
 
-    hints.ai_flags = AI_ADDRCONFIG;
-    hints.ai_family = AF_INET;
+    hints.ai_flags = AI_ADDRCONFIG | AI_V4MAPPED;
+    hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = 0;
 
