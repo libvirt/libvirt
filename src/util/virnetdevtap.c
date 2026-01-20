@@ -230,11 +230,16 @@ int virNetDevTapCreate(char **ifname,
         }
 
         if (ioctl(fd, TUNSETIFF, &ifr) < 0) {
-            if (flags & VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING &&
-                tapfdSize > 1) {
-                virReportSystemError(errno,
-                                     _("Unable to create multiple fds for tap device %1$s (maybe existing device was created without multi_queue flag)"),
-                                     *ifname);
+            if (flags & VIR_NETDEV_TAP_CREATE_ALLOW_EXISTING) {
+                if (tapfdSize > 1) {
+                    virReportSystemError(errno,
+                                         _("Unable to create multiple fds for tap device %1$s (maybe existing device was created without multi_queue flag)"),
+                                         *ifname);
+                } else {
+                    virReportSystemError(errno,
+                                         _("Unable to set tap device %1$s (maybe existing device was created with multi_queue flag but device XML lacks 'queues' greater than one)"),
+                                         *ifname);
+                }
             } else {
                 virReportSystemError(errno,
                                      _("Unable to create tap device %1$s"),
