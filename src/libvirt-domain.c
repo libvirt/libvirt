@@ -12881,7 +12881,7 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  * might be unset (e.g. VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP does not
  * set IP address prefix as ARP table does not have any notion of that).
  *
- * @ifaces->name and @ifaces->hwaddr are never NULL.
+ * @ifaces->name is never NULL, and @ifaces->hwaddr may be NULL.
  *
  * The caller *must* free @ifaces when no longer needed. Usual use case
  * looks like this:
