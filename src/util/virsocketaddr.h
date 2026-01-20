@@ -89,8 +89,7 @@ char *virSocketAddrFormatFull(const virSocketAddr *addr,
                               bool withService,
                               const char *separator);
 char *virSocketAddrFormatWithPrefix(virSocketAddr *addr,
-                                    unsigned int prefix,
-                                    bool masked);
+                                    unsigned int prefix);
 
 char *virSocketAddrGetPath(virSocketAddr *addr);
 

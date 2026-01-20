@@ -354,7 +354,7 @@ nftablesAddForwardAllowOut(virFirewall *fw,
     const char *layerStr = nftablesLayerTypeToString(layer);
     virFirewallCmd *fwCmd;
 
-    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix)))
         return -1;
 
     fwCmd = virFirewallAddCmd(fw, layer, "insert", "rule",
@@ -392,7 +392,7 @@ nftablesAddForwardAllowRelatedIn(virFirewall *fw,
     g_autofree char *networkstr = NULL;
     virFirewallCmd *fwCmd;
 
-    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix)))
         return -1;
 
     fwCmd = virFirewallAddCmd(fw, layer, "insert", "rule",
@@ -430,7 +430,7 @@ nftablesAddForwardAllowIn(virFirewall *fw,
     g_autofree char *networkstr = NULL;
     virFirewallCmd *fwCmd;
 
-    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix)))
         return -1;
 
     fwCmd = virFirewallAddCmd(fw, layer, "insert", "rule",
@@ -544,7 +544,7 @@ nftablesAddForwardMasquerade(virFirewall *fw,
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
     const char *layerStr =  nftablesLayerTypeToString(layer);
 
-    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix)))
         return -1;
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, af)) {
@@ -628,7 +628,7 @@ nftablesAddDontMasquerade(virFirewall *fw,
     const char *layerStr =  nftablesLayerTypeToString(layer);
     virFirewallCmd *fwCmd;
 
-    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix)))
         return -1;
 
     fwCmd = virFirewallAddCmd(fw, layer, "insert", "rule",

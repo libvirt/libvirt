@@ -529,17 +529,15 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
  * @masked: true to mask off the host bits of the address
  *
  * Returns a string representation of the IP network described by
- * @netaddr/@prefix. If @masked is true, the address is masked to
- * remove the host bits according to prefix. So, for example, sending
- * f(1.2.3.4, 24, true) would return "1.2.3.0/24", but f(1.2.3.4, 24,
- * false) would return "1.2.3.4/24".
+ * @addr/@prefix. The address is masked to remove the host bits
+ * according to prefix. So, for example, sending
+ * f(1.2.3.4, 24) would return "1.2.3.0/24".
  *
- * returns false on failure (and logs an error message)
+ * Returns NULL on failure (and logs an error message)
  */
 char *
 virSocketAddrFormatWithPrefix(virSocketAddr *addr,
-                              unsigned int prefix,
-                              bool masked)
+                              unsigned int prefix)
 {
     virSocketAddr network;
     g_autofree char *netstr = NULL;
@@ -551,7 +549,7 @@ virSocketAddrFormatWithPrefix(virSocketAddr *addr,
         return NULL;
     }
 
-    if (masked && virSocketAddrMaskByPrefix(addr, prefix, &network) < 0) {
+    if (virSocketAddrMaskByPrefix(addr, prefix, &network) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failure to mask address"));
         return NULL;
