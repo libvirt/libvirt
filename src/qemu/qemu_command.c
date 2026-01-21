@@ -6382,6 +6382,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
             if (virJSONValueObjectAdd(&props,
                                       "s:driver", "virtio-iommu",
                                       "s:id", iommu->info.alias,
+                                      "p:aw-bits", iommu->aw_bits,
                                       NULL) < 0) {
                 return -1;
             }
