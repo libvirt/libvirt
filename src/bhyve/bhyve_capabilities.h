@@ -55,6 +55,7 @@ typedef enum {
     BHYVE_CAP_VIRTIO_9P = 1 << 9,
     BHYVE_CAP_VIRTIO_RND = 1 << 10,
     BHYVE_CAP_NVME = 1 << 11,
+    BHYVE_CAP_ACPI = 1 << 12,
 } virBhyveCapsFlags;
 
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);

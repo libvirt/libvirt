@@ -949,7 +949,12 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         virCommandAddArg(cmd, "-S"); /* Wire guest memory */
 
     /* Options */
-    if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON)
+    if ((def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON) &&
+        (bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_ACPI))
+        /* As of FreeBSD commit
+         * https://cgit.freebsd.org/src/commit/?id=6a0e7f908802b86ca5d1c0b3c404b8391d0f626e
+         * bhyve(8) generates ACPI tables unconditionally, so nothing needs to be done
+         * if the capability is missing. */
         virCommandAddArg(cmd, "-A"); /* Create an ACPI table */
     if (def->features[VIR_DOMAIN_FEATURE_MSRS] == VIR_TRISTATE_SWITCH_ON) {
         if (def->msrs_features[VIR_DOMAIN_MSRS_UNKNOWN] == VIR_DOMAIN_MSRS_UNKNOWN_IGNORE)

@@ -204,6 +204,8 @@ mymain(void)
     DO_TEST("base");
     DO_TEST("wired");
     DO_TEST("acpiapic");
+    driver.bhyvecaps &= ~BHYVE_CAP_ACPI;
+    DO_TEST_FAILURE("acpiapic");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
     DO_TEST("macaddr");

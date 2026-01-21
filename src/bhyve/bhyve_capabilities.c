@@ -255,6 +255,9 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
     if (strstr(help, "-c vcpus") == NULL)
         *caps |= BHYVE_CAP_CPUTOPOLOGY;
 
+    if (strstr(help, "-A:") != NULL)
+        *caps |= BHYVE_CAP_ACPI;
+
     return 0;
 }
 
