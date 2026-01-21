@@ -1492,6 +1492,7 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
     const qemuFirmwareMappingFlash *flash = &fw->mapping.data.flash;
     const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
     virDomainLoaderDef *loader = NULL;
+    virDomainVarstoreDef *varstore = NULL;
     virStorageFileFormat format;
     bool hasSecureBoot = false;
     bool hasEnrolledKeys = false;
@@ -1552,8 +1553,17 @@ qemuFirmwareEnableFeaturesModern(virDomainDef *def,
         VIR_FREE(loader->path);
         loader->path = g_strdup(memory->filename);
 
-        VIR_DEBUG("decided on loader '%s'",
-                  loader->path);
+        if (memory->template) {
+            if (!def->os.varstore)
+                def->os.varstore = virDomainVarstoreDefNew();
+            varstore = def->os.varstore;
+
+            VIR_FREE(varstore->template);
+            varstore->template = g_strdup(memory->template);
+        }
+
+        VIR_DEBUG("decided on loader '%s' template '%s'",
+                  loader->path, NULLSTR(varstore ? varstore->template : NULL));
         break;
 
     case QEMU_FIRMWARE_DEVICE_NONE:
