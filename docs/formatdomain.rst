@@ -9204,7 +9204,7 @@ IOMMU devices
 
 The ``iommu`` element can be used to add an IOMMU device. :since:`Since 2.1.0`
 
-Example:
+Examples:
 
 ::
 
@@ -9212,6 +9212,17 @@ Example:
    <devices>
      <iommu model='intel'>
        <driver intremap='on'/>
+     </iommu>
+   </devices>
+   ...
+
+
+   ...
+   <devices>
+     <iommu model='virtio'>
+       <driver aw_bits='48'>
+         <granule size='64' unit='KiB'/>
+       </driver>
      </iommu>
    </devices>
    ...
@@ -9273,6 +9284,31 @@ Example:
    ``pciBus``
       The ``pciBus`` attribute notes the index of the controller that an
       IOMMU device is attached to. (QEMU/KVM and ``smmuv3`` model only)
+
+In case of ``virtio`` IOMMU device, the ``driver`` element can optionally
+contain ``granule`` subelement that allows to choose which granule will be
+used by default. It is useful when running guests with different page size
+than the host. :since:`Since 12.1.0` (QEMU/KVM and ``virtio`` model only).
+There are two possible options:
+
+::
+
+  <iommu model='virtio'>
+    <driver>
+      <granule mode='host'/>
+    </driver>
+  </iommu>
+
+  <iommu model='virtio'>
+    <driver>
+      <granule size='64' unit='KiB'/>
+    </driver>
+  </iommu>
+
+The ``mode='host'`` case matches the host page size, the other sets desired
+granule size. Please note that hypervisor might support only some selected
+values. For instance, QEMU supports only 4KiB, 8KiB, 16KiB and 64KiB large
+granules.
 
 The ``virtio`` IOMMU devices can further have ``address`` element as described
 in `Device addresses`_ (address has to by type of ``pci``).

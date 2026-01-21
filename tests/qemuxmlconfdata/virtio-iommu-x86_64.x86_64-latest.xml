@@ -31,6 +31,9 @@
     <watchdog model='itco' action='reset'/>
     <memballoon model='none'/>
     <iommu model='virtio'>
+      <driver>
+        <granule mode='host'/>
+      </driver>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </iommu>
   </devices>

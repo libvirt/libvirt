@@ -6329,6 +6329,28 @@
                 <data type="unsignedInt"/>
               </attribute>
             </optional>
+            <optional>
+              <element name="granule">
+                <choice>
+                  <group>
+                    <attribute name="mode">
+                      <value>host</value>
+                    </attribute>
+                  </group>
+                  <group>
+                    <attribute name="size">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                    <optional>
+                      <attribute name="unit">
+                        <ref name="unit"/>
+                      </attribute>
+                    </optional>
+                  </group>
+                </choice>
+                <empty/>
+              </element>
+            </optional>
           </element>
         </optional>
         <optional>

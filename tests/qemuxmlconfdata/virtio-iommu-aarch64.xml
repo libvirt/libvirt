@@ -14,7 +14,9 @@
     <controller type='usb' model='none'/>
     <memballoon model='none'/>
     <iommu model='virtio'>
-      <driver aw_bits='48'/>
+      <driver aw_bits='48'>
+        <granule size='64' unit='KiB'/>
+      </driver>
     </iommu>
   </devices>
 </domain>

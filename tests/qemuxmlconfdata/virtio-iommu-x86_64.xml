@@ -13,6 +13,10 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='usb' model='none'/>
     <memballoon model='none'/>
-    <iommu model='virtio'/>
+    <iommu model='virtio'>
+      <driver>
+        <granule mode='host'/>
+      </driver>
+    </iommu>
   </devices>
 </domain>

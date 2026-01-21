@@ -1593,6 +1593,21 @@ VIR_ENUM_IMPL(virDomainChrSourceMode,
 );
 
 
+/*virDomainIOMMUGranuleModeTypeToString:
+ * @val: value to format
+ *
+ * Reuturns: an allocated string. Caller must free it.
+ */
+static char *
+virDomainIOMMUGranuleModeTypeToString(int val)
+{
+    if (val == -1)
+        return g_strdup("host");
+
+    return g_strdup_printf("%dKiB", val);
+}
+
+
 static virClass *virDomainObjClass;
 static virClass *virDomainXMLOptionClass;
 static void virDomainObjDispose(void *obj);
@@ -14497,6 +14512,8 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
         return NULL;
 
     if ((driver = virXPathNode("./driver", ctxt))) {
+        xmlNodePtr granule;
+
         if (virXMLPropTristateSwitch(driver, "intremap", VIR_XML_PROP_NONE,
                                      &iommu->intremap) < 0)
             return NULL;
@@ -14532,6 +14549,39 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropInt(driver, "pciBus", 10, VIR_XML_PROP_NONE,
                           &iommu->pci_bus, -1) < 0)
             return NULL;
+
+        if ((granule = virXPathNode("./driver/granule", ctxt))) {
+            g_autofree char *mode = virXMLPropString(granule, "mode");
+            unsigned long long size;
+            int rc;
+
+            rc = virDomainParseMemory("./driver/granule/@size",
+                                      "./driver/granule/@unit",
+                                      ctxt, &size, false, false);
+            if (rc < 0) {
+                return NULL;
+            } else if (rc > 0) {
+                if (mode) {
+                    virReportError(VIR_ERR_XML_ERROR, "%s",
+                                   _("'mode' and 'size' can't be specified at the same time for 'granule'"));
+                    return NULL;
+                }
+
+                if (VIR_ASSIGN_IS_OVERFLOW(iommu->granule, size)) {
+                    virReportError(VIR_ERR_OVERFLOW, "%s", _("size value too large"));
+                    return NULL;
+                }
+            } else {
+                if (STREQ_NULLABLE(mode, "host")) {
+                    iommu->granule = -1;
+                } else if (mode) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Invalid value for attribute '%1$s' in element '%2$s': '%3$s'."),
+                                   "mode", "granule", mode);
+                    return NULL;
+                }
+            }
+        }
     }
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt,
@@ -16595,7 +16645,8 @@ virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
         a->eim != b->eim ||
         a->iotlb != b->iotlb ||
         a->aw_bits != b->aw_bits ||
-        a->dma_translation != b->dma_translation)
+        a->dma_translation != b->dma_translation ||
+        a->granule != b->granule)
         return false;
 
     if (a->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -22350,6 +22401,16 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
                        _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->xtsup),
                        virTristateSwitchTypeToString(src->xtsup));
+        return false;
+    }
+    if (src->granule != dst->granule) {
+        g_autofree char *src_granule = virDomainIOMMUGranuleModeTypeToString(src->granule);
+        g_autofree char *dst_granule = virDomainIOMMUGranuleModeTypeToString(dst->granule);
+
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device granule '%1$s' does not match source '%2$s'"),
+                       dst_granule,
+                       src_granule);
         return false;
     }
 
@@ -28640,6 +28701,7 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) driverAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) driverChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
 
     if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " intremap='%s'",
@@ -28677,8 +28739,17 @@ virDomainIOMMUDefFormat(virBuffer *buf,
         virBufferAsprintf(&driverAttrBuf, " pciBus='%d'",
                           iommu->pci_bus);
     }
+    if (iommu->granule != 0) {
+        if (iommu->granule == -1) {
+            virBufferAddLit(&driverChildBuf, "<granule mode='host'/>\n");
+        } else {
+            virBufferAsprintf(&driverChildBuf,
+                              "<granule size='%d' unit='KiB'/>\n",
+                              iommu->granule);
+        }
+    }
 
-    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
+    virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, &driverChildBuf);
 
     virDomainDeviceInfoFormat(&childBuf, &iommu->info, 0);
 

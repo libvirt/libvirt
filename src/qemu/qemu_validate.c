@@ -5686,6 +5686,18 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         return -1;
     }
 
+    if (iommu->granule > 0) {
+        /* QEMU supports only 4KiB, 8KiB, 16KiB and 64KiB granule size */
+        if (!(iommu->granule == 4 ||
+              iommu->granule == 8 ||
+              iommu->granule == 16 ||
+              iommu->granule == 64)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: unsupported granule size. Supported values are 4, 8, 16 and 64 KiB"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

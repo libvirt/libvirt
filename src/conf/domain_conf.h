@@ -3065,6 +3065,7 @@ struct _virDomainIOMMUDef {
     virTristateSwitch dma_translation;
     virTristateSwitch xtsup;
     virTristateSwitch pt;
+    int granule; /* -1 means 'host', 0 unset, page size in KiB otherwise */
 };
 
 typedef enum {

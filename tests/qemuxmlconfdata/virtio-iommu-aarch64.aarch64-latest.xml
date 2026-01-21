@@ -29,7 +29,9 @@
     <audio id='1' type='none'/>
     <memballoon model='none'/>
     <iommu model='virtio'>
-      <driver aw_bits='48'/>
+      <driver aw_bits='48'>
+        <granule size='64' unit='KiB'/>
+      </driver>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </iommu>
   </devices>
