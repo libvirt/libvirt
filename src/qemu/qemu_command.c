@@ -6358,6 +6358,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
         virDomainIOMMUDef *iommu = def->iommus[i];
         g_autoptr(virJSONValue) props = NULL;
         g_autoptr(virJSONValue) wrapperProps = NULL;
+        g_autofree char *granule_mode = NULL;
 
         switch (iommu->model) {
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
@@ -6379,10 +6380,19 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+            if (iommu->granule != 0) {
+                if (iommu->granule == -1) {
+                    granule_mode = g_strdup("host");
+                } else {
+                    granule_mode = g_strdup_printf("%dk", iommu->granule);
+                }
+            }
+
             if (virJSONValueObjectAdd(&props,
                                       "s:driver", "virtio-iommu",
                                       "s:id", iommu->info.alias,
                                       "p:aw-bits", iommu->aw_bits,
+                                      "S:granule", granule_mode,
                                       NULL) < 0) {
                 return -1;
             }
