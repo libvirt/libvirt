@@ -5552,6 +5552,8 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                                  const virDomainDef *def,
                                  virQEMUCaps *qemuCaps)
 {
+    bool aw_bits_supported = false;
+
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         if (!qemuDomainIsQ35(def)) {
@@ -5566,6 +5568,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
+        aw_bits_supported = virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_AW_BITS);
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
@@ -5611,6 +5614,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
+        aw_bits_supported = virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOMMU_AW_BITS);
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_AMD:
@@ -5670,8 +5674,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                        _("iommu: device IOTLB is not supported with this QEMU binary"));
         return -1;
     }
-    if (iommu->aw_bits > 0 &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_AW_BITS)) {
+    if (iommu->aw_bits > 0 && !aw_bits_supported) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("iommu: aw_bits is not supported with this QEMU binary"));
         return -1;

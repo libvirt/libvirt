@@ -3206,12 +3206,20 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->eim != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
-            iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("iommu model '%1$s' doesn't support additional attributes"),
+                           _("iommu model '%1$s' doesn't support some additional attributes"),
                            virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+
+        /* QEMU mandates address width of the IOVA address space to be inside
+         * [32,64] range, but since it stems from virtio specification it can
+         * be assumed to be hypervisor agnostic and thus can live here. */
+        if (iommu->aw_bits != 0 && (iommu->aw_bits < 32 || iommu->aw_bits > 64)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("aw-bits must be within [32,64]"));
             return -1;
         }
         break;

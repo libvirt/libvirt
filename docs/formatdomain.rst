@@ -9253,7 +9253,7 @@ Example:
    ``aw_bits``
       The ``aw_bits`` attribute can be used to set the address width to allow
       mapping larger iova addresses in the guest. :since:`Since 6.5.0` (QEMU/KVM
-      and ``intel`` model only)
+      and ``intel`` or ``virtio`` models only)
 
    ``dma_translation``
       The ``dma_translation`` attribute with possible values ``on`` and ``off`` can
