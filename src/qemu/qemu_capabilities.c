@@ -755,6 +755,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "disk-timed-stats", /* QEMU_CAPS_DISK_TIMED_STATS */
               "query-accelerators", /* QEMU_CAPS_QUERY_ACCELERATORS */
               "mshv", /* QEMU_CAPS_MSHV */
+              "virtio-iommu.aw-bits", /* QEMU_CAPS_VIRTIO_IOMMU_AW_BITS */
     );
 
 
@@ -1612,6 +1613,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioMemPCI[] =
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = {
     { "boot-bypass", QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS, NULL },
+    { "aw-bits", QEMU_CAPS_VIRTIO_IOMMU_AW_BITS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlkCCW[] = {

@@ -162,6 +162,7 @@
   <flag name='nvme-ns'/>
   <flag name='usb-bot'/>
   <flag name='acpi-generic-initiator'/>
+  <flag name='virtio-iommu.aw-bits'/>
   <version>9001000</version>
   <microcodeVersion>0</microcodeVersion>
   <package>v9.1.0</package>

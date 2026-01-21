@@ -182,6 +182,7 @@
   <flag name='acpi-generic-initiator'/>
   <flag name='disk-timed-stats'/>
   <flag name='query-accelerators'/>
+  <flag name='virtio-iommu.aw-bits'/>
   <version>10002050</version>
   <microcodeVersion>61700286</microcodeVersion>
   <package>v10.2.0-476-gcf3e71d8fc</package>

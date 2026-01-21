@@ -140,6 +140,7 @@
   <flag name='nvme-ns'/>
   <flag name='usb-bot'/>
   <flag name='qom-list-get'/>
+  <flag name='virtio-iommu.aw-bits'/>
   <version>10001000</version>
   <microcodeVersion>39100286</microcodeVersion>
   <package>v10.1.0</package>

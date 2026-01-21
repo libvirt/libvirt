@@ -202,6 +202,7 @@
   <flag name='disk-timed-stats'/>
   <flag name='query-accelerators'/>
   <flag name='mshv'/>
+  <flag name='virtio-iommu.aw-bits'/>
   <version>10002000</version>
   <microcodeVersion>43100287</microcodeVersion>
   <package>v10.2.0</package>
