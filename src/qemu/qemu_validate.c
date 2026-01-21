@@ -5696,6 +5696,17 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                            _("iommu: unsupported granule size. Supported values are 4, 8, 16 and 64 KiB"));
             return -1;
         }
+
+        /* While the QEMU_CAPS_VIRTIO_IOMMU_AW_BITS tracks .aw-bits attribute of
+         * virtio-iommu it is also a good indicator of .granule attribute as both
+         * attributes were introduced in neighboring commits, in the same release,
+         * neither can be disabled at compile time and backporting one without the
+         * other makes no sense. */
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOMMU_AW_BITS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("iommu: page granule is not supported with this QEMU binary"));
+            return -1;
+        }
     }
 
     return 0;
