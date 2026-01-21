@@ -1069,6 +1069,38 @@ qemuFirmwareEnsureNVRAM(virDomainDef *def,
 }
 
 
+/**
+ * qemuFirmwareEnsureVarstore:
+ * @def: domain definition
+ * @driver: QEMU driver
+ *
+ * Make sure that information for the varstore is present. This might
+ * involve automatically generating the corresponding path.
+ */
+static void
+qemuFirmwareEnsureVarstore(virDomainDef *def,
+                           virQEMUDriver *driver)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    virDomainLoaderDef *loader = def->os.loader;
+    virDomainVarstoreDef *varstore = def->os.varstore;
+
+    if (!loader)
+        return;
+
+    if (loader->type != VIR_DOMAIN_LOADER_TYPE_ROM)
+        return;
+
+    if (!varstore)
+        return;
+
+    if (varstore->path)
+        return;
+
+    varstore->path = g_strdup_printf("%s/%s.json",
+                                     cfg->varstoreDir, def->name);
+}
+
 
 /**
  * qemuFirmwareSetOsFeatures:
@@ -2063,10 +2095,11 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
         }
     }
 
-    /* Always ensure that the NVRAM path is present, even if we
-     * haven't found a match: the configuration might simply be
-     * referring to a custom firmware build */
+    /* Always ensure that the NVRAM/varstore is configured where
+     * appropriate, even if we haven't found a match: the configuration
+     * might simply be referring to a custom firmware build */
     qemuFirmwareEnsureNVRAM(def, driver, abiUpdate);
+    qemuFirmwareEnsureVarstore(def, driver);
 
     return 0;
 }
