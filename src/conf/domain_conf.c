@@ -22301,7 +22301,7 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
     }
     if (src->aw_bits != dst->aw_bits) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device aw_bits value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device aw_bits value '%1$u' does not match source '%2$u'"),
                        dst->aw_bits, src->aw_bits);
         return false;
     }
@@ -28638,7 +28638,7 @@ virDomainIOMMUDefFormat(virBuffer *buf,
                           virTristateSwitchTypeToString(iommu->iotlb));
     }
     if (iommu->aw_bits > 0) {
-        virBufferAsprintf(&driverAttrBuf, " aw_bits='%d'",
+        virBufferAsprintf(&driverAttrBuf, " aw_bits='%u'",
                           iommu->aw_bits);
     }
     if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT) {
