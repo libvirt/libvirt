@@ -1,1 +1,1 @@
-NVRAM template is not permitted when loader is stateless
+Variable storage (NVRAM/varstore) is not permitted when loader is stateless

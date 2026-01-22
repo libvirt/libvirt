@@ -1581,7 +1581,10 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("firmware-manual-bios");
     DO_TEST_CAPS_LATEST("firmware-manual-bios-stateless");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-bios-not-stateless");
+    /* This combination doesn't make sense (BIOS is stateless by definition)
+     * but unfortunately there's no way for libvirt to report an error in this
+     * scenario. The stateless=no attribute will effectively be ignored */
+    DO_TEST_CAPS_LATEST("firmware-manual-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-bios-rw");
     DO_TEST_CAPS_LATEST("firmware-manual-efi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-features");
@@ -1634,7 +1637,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
     DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
     DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-bios-rw");
-    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
+    DO_TEST_CAPS_LATEST_FAILURE("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("firmware-auto-efi");

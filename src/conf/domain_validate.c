@@ -1723,100 +1723,78 @@ virDomainDefOSValidate(const virDomainDef *def,
                        virDomainXMLOption *xmlopt)
 {
     virDomainLoaderDef *loader = def->os.loader;
+    virDomainVarstoreDef *varstore = def->os.varstore;
+    virDomainOsDefFirmware firmware = def->os.firmware;
+    int *firmwareFeatures = def->os.firmwareFeatures;
+    bool usesNvram = loader && (loader->nvram || loader->nvramTemplate || loader->nvramTemplateFormat);
 
-    if (def->os.firmware) {
+    if (firmware) {
         if (xmlopt && !(xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT)) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("firmware auto selection not implemented for this driver"));
             return -1;
         }
 
-        if (def->os.firmwareFeatures &&
-            def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] == VIR_TRISTATE_BOOL_YES &&
-            def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] == VIR_TRISTATE_BOOL_NO) {
+        if (firmwareFeatures &&
+            firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] == VIR_TRISTATE_BOOL_YES &&
+            firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("firmware feature 'enrolled-keys' cannot be enabled when firmware feature 'secure-boot' is disabled"));
             return -1;
         }
-
-        if (!loader)
-            return 0;
-
-        if (loader->nvram && def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("firmware type '%1$s' does not support nvram"),
-                           virDomainOsDefFirmwareTypeToString(def->os.firmware));
-            return -1;
-        }
     } else {
-        if (def->os.firmwareFeatures) {
+        if (firmwareFeatures) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("cannot use feature-based firmware autoselection when firmware autoselection is disabled"));
             return -1;
         }
 
-        if (!loader)
-            return 0;
-
-        if (!loader->path) {
+        if (loader && !loader->path) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("no loader path specified and firmware auto selection disabled"));
             return -1;
         }
     }
 
-    if (loader->readonly == VIR_TRISTATE_BOOL_NO) {
-        if (loader->type == VIR_DOMAIN_LOADER_TYPE_ROM) {
+    if (loader && loader->type == VIR_DOMAIN_LOADER_TYPE_ROM) {
+        if (loader->readonly == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
                            _("ROM loader type cannot be used as read/write"));
             return -1;
         }
 
-        if (loader->nvramTemplate) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("NVRAM template is not permitted when loader is read/write"));
-            return -1;
-        }
-
-        if (loader->nvram) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("NVRAM is not permitted when loader is read/write"));
-            return -1;
-        }
-    }
-
-    if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
-        if (loader->nvramTemplate) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("NVRAM template is not permitted when loader is stateless"));
-            return -1;
-        }
-
-        if (loader->nvram) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("NVRAM is not permitted when loader is stateless"));
-            return -1;
-        }
-    } else if (loader->stateless == VIR_TRISTATE_BOOL_NO) {
-        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
-            if (def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
-                virReportError(VIR_ERR_XML_DETAIL, "%s",
-                               _("Only pflash loader type permits NVRAM"));
-                return -1;
-            }
-        } else if (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("Only EFI firmware permits NVRAM"));
-            return -1;
-        }
-    }
-
-    if (loader->type == VIR_DOMAIN_LOADER_TYPE_ROM) {
         if (loader->format &&
             loader->format != VIR_STORAGE_FILE_RAW) {
             virReportError(VIR_ERR_XML_DETAIL,
                            _("Invalid format '%1$s' for ROM loader type"),
                            virStorageFileFormatTypeToString(loader->format));
+            return -1;
+        }
+    }
+
+    if (usesNvram && varstore) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Only one of NVRAM/varstore can be used"));
+            return -1;
+    }
+
+    if (usesNvram || varstore) {
+        if (firmware && firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("Firmware type '%1$s' does not support variable storage (NVRAM/varstore)"),
+                           virDomainOsDefFirmwareTypeToString(firmware));
+            return -1;
+        }
+
+        if (loader && loader->stateless == VIR_TRISTATE_BOOL_YES) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Variable storage (NVRAM/varstore) is not permitted when loader is stateless"));
+            return -1;
+        }
+
+        if (loader && loader->readonly == VIR_TRISTATE_BOOL_NO) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Variable storage (NVRAM/varstore) is not permitted when loader is read/write"));
             return -1;
         }
     }

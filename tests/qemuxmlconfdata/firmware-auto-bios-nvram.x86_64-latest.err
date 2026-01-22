@@ -1,1 +1,1 @@
-firmware type 'bios' does not support nvram
+Firmware type 'bios' does not support variable storage (NVRAM/varstore)
