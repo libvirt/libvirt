@@ -6644,22 +6644,26 @@ qemuDomainUndefineFlags(virDomainPtr dom,
         }
     }
 
-    if (vm->def->os.loader && vm->def->os.loader->nvram &&
-        virStorageSourceIsLocalStorage(vm->def->os.loader->nvram)) {
-        nvram_path = g_strdup(vm->def->os.loader->nvram->path);
+    if (vm->def->os.loader) {
+        if (vm->def->os.loader->nvram &&
+            virStorageSourceIsLocalStorage(vm->def->os.loader->nvram)) {
+            nvram_path = g_strdup(vm->def->os.loader->nvram->path);
+        } else if (vm->def->os.varstore && vm->def->os.varstore->path) {
+            nvram_path = g_strdup(vm->def->os.varstore->path);
+        }
     }
 
     if (nvram_path && virFileExists(nvram_path)) {
         if ((flags & VIR_DOMAIN_UNDEFINE_NVRAM)) {
             if (unlink(nvram_path) < 0) {
                 virReportSystemError(errno,
-                                     _("failed to remove nvram: %1$s"),
+                                     _("Failed to remove NVRAM/varstore: %1$s"),
                                      nvram_path);
                 goto endjob;
             }
         } else if (!(flags & VIR_DOMAIN_UNDEFINE_KEEP_NVRAM)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot undefine domain with nvram"));
+                           _("Cannot undefine domain with NVRAM/varstore"));
             goto endjob;
         }
     }

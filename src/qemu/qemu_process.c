@@ -5029,6 +5029,27 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
 }
 
 
+static int
+qemuPrepareVarstore(virQEMUDriver *driver,
+                    virDomainDef *def,
+                    bool reset_nvram)
+{
+    virDomainLoaderDef *loader = def->os.loader;
+    virDomainVarstoreDef *varstore = def->os.varstore;
+
+    if (!loader || !varstore)
+        return 0;
+
+    VIR_DEBUG("varstore='%s'", NULLSTR(varstore->path));
+
+    if (qemuPrepareNVRAMFileCommon(driver, varstore->path,
+                                   varstore->template, reset_nvram) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static void
 qemuLogOperation(virDomainObj *vm,
                  const char *msg,
@@ -7799,6 +7820,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     unsigned int hostdev_flags = 0;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    bool reset_nvram = !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM);
 
     /*
      * Create all per-domain directories in order to make sure domain
@@ -7808,8 +7830,10 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         return -1;
 
-    if (qemuPrepareNVRAM(driver, vm->def,
-                         !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
+    if (qemuPrepareNVRAM(driver, vm->def, reset_nvram) < 0)
+        return -1;
+
+    if (qemuPrepareVarstore(driver, vm->def, reset_nvram) < 0)
         return -1;
 
     if (vm->def->vsock) {
