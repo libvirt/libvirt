@@ -8729,7 +8729,9 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
  * if @capped is true, the value must fit within an unsigned long
  * (only matters on 32-bit platforms).
  *
- * Return 0 on success, -1 on failure after issuing error.
+ * Returns: 1 if value was parsed successfully,
+ *          0 if value wasn't present and @required is false,
+ *         -1 on failure after issuing error.
  */
 int
 virDomainParseMemory(const char *xpath,
@@ -8740,21 +8742,27 @@ virDomainParseMemory(const char *xpath,
                      bool capped)
 {
     unsigned long long bytes, max;
+    int rc;
 
     max = virMemoryMaxValue(capped);
 
-    if (virParseScaledValue(xpath, units_xpath, ctxt,
-                            &bytes, 1024, max, required) < 0)
+    rc = virParseScaledValue(xpath, units_xpath, ctxt,
+                             &bytes, 1024, max, required);
+    if (rc < 0) {
         return -1;
+    } else if (rc == 0) {
+        *mem = 0;
+        return 0;
+    }
 
-    /* Yes, we really do use kibibytes for our internal sizing.  */
+    /* Yes, we really do use kibibytes for our internal sizing. */
     *mem = VIR_DIV_UP(bytes, 1024);
 
     if (*mem >= VIR_DIV_UP(max, 1024)) {
         virReportError(VIR_ERR_OVERFLOW, "%s", _("size value too large"));
         return -1;
     }
-    return 0;
+    return 1;
 }
 
 
