@@ -657,7 +657,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
             break;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_NVME:
-            return pciFlags;
+            return pcieFlags;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
