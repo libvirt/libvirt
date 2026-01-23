@@ -151,6 +151,7 @@ mymain(void)
     g_autofree char *fakefirmwaredir = g_strdup("fakefirmwaredir");
     g_autofree char *fakenvramdir = g_strdup("fakenvramdir");
     g_autofree char *fakefirmwareemptydir = g_strdup("fakefirmwareemptydir");
+    g_autofree char *fakeubootpath = g_strdup("fakeubootpath/u-boot.bin");
 
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
@@ -166,8 +167,10 @@ mymain(void)
 
     VIR_FREE(driver.config->firmwareDir);
     VIR_FREE(driver.config->nvramDir);
+    VIR_FREE(driver.config->ubootPath);
     driver.config->firmwareDir = g_steal_pointer(&fakefirmwaredir);
     driver.config->nvramDir = g_steal_pointer(&fakenvramdir);
+    driver.config->ubootPath = g_steal_pointer(&fakeubootpath);
     driver.config->bhyveloadTimeout = 0;
     driver.config->bhyveloadTimeoutKill = 0;
 

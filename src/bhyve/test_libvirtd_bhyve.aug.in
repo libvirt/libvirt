@@ -3,5 +3,6 @@ module Test_libvirtd_bhyve =
 
   test Libvirtd_bhyve.lns get conf =
 { "firmware_dir" = "/usr/local/share/uefi-firmware" }
+{ "uboot_path" = "/usr/local/share/u-boot/u-boot-bhyve-arm64/u-boot.bin" }
 { "bhyveload_timeout" = "300" }
 { "bhyveload_timeout_kill" = "15" }

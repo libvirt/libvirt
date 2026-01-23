@@ -42,6 +42,8 @@ struct _virBhyveDriverConfig {
     char *libDir;
     char *nvramDir;
 
+    char *ubootPath;
+
     int bhyveloadTimeout;
     int bhyveloadTimeoutKill;
 };

@@ -2,6 +2,7 @@ bhyve \
 -c 1 \
 -m 214 \
 -s 0:0,hostbridge \
+-o bootrom=fakeubootpath/u-boot.bin \
 -s 3:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 \
 -s 2:0,virtio-blk,/tmp/freebsd.img \
 -o console=/dev/nmdm0A \
