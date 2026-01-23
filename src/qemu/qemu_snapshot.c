@@ -3147,7 +3147,8 @@ qemuSnapshotDiskHasBackingDisk(void *payload,
         if (!disk->src->backingStore)
             ignore_value(virStorageSourceGetMetadata(disk->src, uid, gid, 1, false));
 
-        if (virStorageSourceIsSameLocation(disk->src->backingStore, iterdata->diskSrc)) {
+        if (disk->src->backingStore &&
+            virStorageSourceIsSameLocation(disk->src->backingStore, iterdata->diskSrc)) {
             struct _qemuSnapshotDisksWithBackingStoreData *data =
                 g_new0(struct _qemuSnapshotDisksWithBackingStoreData, 1);
 
