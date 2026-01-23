@@ -84,7 +84,7 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
     g_autofree char *fakehome = NULL;
     g_auto(GStrv) fwList = NULL;
     const char *expected[] = {
-        SYSCONFDIR "/qemu/firmware/20-bios.json",
+        SYSCONFDIR "/qemu/firmware/20-libvirt-bios.json",
         PREFIX "/share/qemu/firmware/30-edk2-ovmf-4m-qcow2-x64-sb-enrolled.json",
         PREFIX "/share/qemu/firmware/31-edk2-ovmf-2m-raw-x64-sb-enrolled.json",
         PREFIX "/share/qemu/firmware/40-edk2-ovmf-4m-qcow2-x64-sb.json",
@@ -98,12 +98,12 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
         PREFIX "/share/qemu/firmware/51-edk2-ovmf-2m-raw-x64-nosb.json",
         PREFIX "/share/qemu/firmware/52-edk2-aarch64-verbose-qcow2.json",
         PREFIX "/share/qemu/firmware/53-edk2-aarch64-verbose-raw.json",
-        SYSCONFDIR "/qemu/firmware/59-combined.json",
+        SYSCONFDIR "/qemu/firmware/59-libvirt-combined.json",
         PREFIX "/share/qemu/firmware/60-edk2-ovmf-x64-amdsev.json",
         PREFIX "/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json",
-        PREFIX "/share/qemu/firmware/90-combined.json",
-        PREFIX "/share/qemu/firmware/91-bios.json",
-        PREFIX "/share/qemu/firmware/93-invalid.json",
+        PREFIX "/share/qemu/firmware/90-libvirt-combined.json",
+        PREFIX "/share/qemu/firmware/91-libvirt-bios.json",
+        PREFIX "/share/qemu/firmware/93-libvirt-invalid.json",
         NULL
     };
     const char **e;
@@ -285,9 +285,9 @@ mymain(void)
     DO_PARSE_TEST("usr/share/qemu/firmware/53-edk2-aarch64-verbose-raw.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/60-edk2-ovmf-x64-amdsev.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/60-edk2-ovmf-x64-inteltdx.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/90-combined.json");
-    DO_PARSE_TEST("usr/share/qemu/firmware/91-bios.json");
-    DO_PARSE_FAILURE_TEST("usr/share/qemu/firmware/93-invalid.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/90-libvirt-combined.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/91-libvirt-bios.json");
+    DO_PARSE_FAILURE_TEST("usr/share/qemu/firmware/93-libvirt-invalid.json");
 
     if (virTestRun("QEMU FW precedence test", testFWPrecedence, NULL) < 0)
         ret = -1;
