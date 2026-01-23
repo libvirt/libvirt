@@ -2741,13 +2741,36 @@
         </optional>
         <optional>
           <element name="statistics">
-            <zeroOrMore>
-              <element name="statistic">
-                <attribute name="interval">
-                  <ref name="unsignedInt"/>
-                </attribute>
-              </element>
-            </zeroOrMore>
+            <interleave>
+              <zeroOrMore>
+                <element name="statistic">
+                  <attribute name="interval">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </element>
+              </zeroOrMore>
+              <zeroOrMore>
+                <element name="latency-histogram">
+                  <optional>
+                    <attribute name='type'>
+                      <choice>
+                        <value>read</value>
+                        <value>write</value>
+                        <value>zone</value>
+                        <value>flush</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <oneOrMore>
+                    <element name='bin'>
+                      <attribute name='start'>
+                        <ref name="unsignedInt"/>
+                      </attribute>
+                    </element>
+                  </oneOrMore>
+                </element>
+              </zeroOrMore>
+            </interleave>
           </element>
         </optional>
       </interleave>

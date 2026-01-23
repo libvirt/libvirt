@@ -19,6 +19,11 @@
         <statistics>
           <statistic interval='3'/>
           <statistic interval='10'/>
+          <latency-histogram>
+            <bin start='0'/>
+            <bin start='20'/>
+            <bin start='30'/>
+          </latency-histogram>
         </statistics>
       </driver>
       <source file='/var/lib/libvirt/images/iothrtest1.img'/>
@@ -29,6 +34,26 @@
         <statistics>
           <statistic interval='5'/>
           <statistic interval='15'/>
+          <latency-histogram type='read'>
+            <bin start='10'/>
+            <bin start='20'/>
+            <bin start='30'/>
+          </latency-histogram>
+          <latency-histogram type='write'>
+            <bin start='10'/>
+            <bin start='20'/>
+            <bin start='30'/>
+          </latency-histogram>
+          <latency-histogram type='zone'>
+            <bin start='10'/>
+            <bin start='20'/>
+            <bin start='30'/>
+          </latency-histogram>
+          <latency-histogram type='flush'>
+            <bin start='10'/>
+            <bin start='20'/>
+            <bin start='30'/>
+          </latency-histogram>
         </statistics>
       </driver>
       <source file='/var/lib/libvirt/images/iothrtest2.img'/>

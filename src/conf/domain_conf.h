@@ -598,6 +598,13 @@ struct _virDomainDiskDef {
     GSList *iothreads; /* List of virDomainIothreadMappingDef */
     unsigned int *statistics; /* Optional, zero terminated list of intervals to
                                 collect statistics for */
+    /* optional zero terminated lists of bin boundaries for latency histograms */
+    unsigned int *histogram_boundaries;
+    unsigned int *histogram_boundaries_read;
+    unsigned int *histogram_boundaries_write;
+    unsigned int *histogram_boundaries_zone;
+    unsigned int *histogram_boundaries_flush;
+
     virDomainDiskDetectZeroes detect_zeroes;
     virTristateSwitch discard_no_unref;
     char *domain_name; /* backend domain name */

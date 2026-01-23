@@ -2462,6 +2462,11 @@ virDomainDiskDefFree(virDomainDiskDef *def)
     virObjectUnref(def->privateData);
     g_slist_free_full(def->iothreads, (GDestroyNotify) virDomainIothreadMappingDefFree);
     g_free(def->statistics);
+    g_free(def->histogram_boundaries);
+    g_free(def->histogram_boundaries_read);
+    g_free(def->histogram_boundaries_write);
+    g_free(def->histogram_boundaries_zone);
+    g_free(def->histogram_boundaries_flush);
 
     if (def->throttlefilters) {
         size_t i;
@@ -8364,6 +8369,91 @@ virDomainIothreadMappingDefParse(xmlNodePtr driverNode,
 
 
 static int
+virDomainDiskDefDriverParseXMLHistogramOne(virDomainDiskDef *def,
+                                           xmlNodePtr cur)
+{
+    g_autofree char *histogram_type = NULL;
+    unsigned int **histogram_config = NULL;
+    g_autoptr(GPtrArray) binNodes = virXMLNodeGetSubelementList(cur, "bin");
+    size_t nbins = 0;
+    size_t i;
+
+    if ((histogram_type = virXMLPropString(cur, "type"))) {
+        if (STREQ(histogram_type, "read")) {
+            histogram_config = &def->histogram_boundaries_read;
+        } else if (STREQ(histogram_type, "write")) {
+            histogram_config = &def->histogram_boundaries_write;
+        } else if (STREQ(histogram_type, "zone")) {
+            histogram_config = &def->histogram_boundaries_zone;
+        } else if (STREQ(histogram_type, "flush")) {
+            histogram_config = &def->histogram_boundaries_flush;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown latency_histogram type '%1$s'"),
+                           histogram_type);
+            return -1;
+        }
+    } else {
+        histogram_config = &def->histogram_boundaries;
+    }
+
+    if (*histogram_config) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only one latency-histogram of a given type is supported"));
+        return -1;
+    }
+
+    if (binNodes->len == 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing 'bin' elements for 'latency-histogram'"));
+        return -1;
+    }
+
+    *histogram_config = g_new0(unsigned int, binNodes->len + 1);
+
+    for (i = 0; i < binNodes->len; i++) {
+        unsigned int val;
+
+        if (virXMLPropUInt(g_ptr_array_index(binNodes, i),
+                           "start", 10,
+                           VIR_XML_PROP_REQUIRED,
+                           &val) < 0)
+            return -1;
+
+        if (nbins > 0 &&
+            (val == 0 ||
+             val <= (*histogram_config)[nbins-1])) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the values of 'start' attribute of a 'latency-histogram' 'bin' configuration must be sorted and non-overlapping"));
+            return -1;
+        }
+
+        if (val > 0)
+            (*histogram_config)[nbins++] = val;
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainDiskDefDriverParseXMLHistograms(virDomainDiskDef *def,
+                                         xmlNodePtr cur)
+{
+    g_autoptr(GPtrArray) histogramNodes = virXMLNodeGetSubelementList(cur, "latency-histogram");
+    size_t i;
+
+    for (i = 0; i < histogramNodes->len; i++) {
+        if (virDomainDiskDefDriverParseXMLHistogramOne(def,
+                                                       g_ptr_array_index(histogramNodes, i)) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                                xmlNodePtr cur)
 {
@@ -8436,6 +8526,9 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
                     return -1;
             }
         }
+
+        if (virDomainDiskDefDriverParseXMLHistograms(def, statisticsNode) < 0)
+            return -1;
     }
 
     if (virXMLPropEnum(cur, "detect_zeroes",
@@ -24119,11 +24212,36 @@ virDomainDiskDefFormatThrottleFilters(virBuffer *buf,
 
 
 static void
+virDomainDiskDefFormatDriverHistogram(virBuffer *buf,
+                                      const char *type,
+                                      unsigned int *bins)
+{
+    g_auto(virBuffer) histogramAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) histogramChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!bins || bins[0] == 0)
+        return;
+
+    if (type)
+        virBufferAsprintf(&histogramAttrBuf, " type='%s'", type);
+
+    /* we dont store the start boundary of the first bin but it's always there */
+    virBufferAddLit(&histogramChildBuf, "<bin start='0'/>\n");
+
+    for (; *bins > 0; bins++)
+        virBufferAsprintf(&histogramChildBuf, "<bin start='%u'/>\n", *bins);
+
+    virXMLFormatElement(buf, "latency-histogram", &histogramAttrBuf, &histogramChildBuf);
+}
+
+
+static void
 virDomainDiskDefFormatDriver(virBuffer *buf,
                              virDomainDiskDef *disk)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) statisticsChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
 
     virBufferEscapeString(&attrBuf, " name='%s'", virDomainDiskGetDriver(disk));
 
@@ -24195,16 +24313,25 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
     virDomainIothreadMappingDefFormat(&childBuf, disk->iothreads);
 
     if (disk->statistics) {
-        g_auto(virBuffer) statisticsChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
         size_t i;
 
         for (i = 0; disk->statistics[i] > 0; i++)
             virBufferAsprintf(&statisticsChildBuf, "<statistic interval='%u'/>\n",
                               disk->statistics[i]);
-
-        virXMLFormatElement(&childBuf, "statistics", NULL, &statisticsChildBuf);
     }
 
+    virDomainDiskDefFormatDriverHistogram(&statisticsChildBuf, NULL,
+                                          disk->histogram_boundaries);
+    virDomainDiskDefFormatDriverHistogram(&statisticsChildBuf, "read",
+                                          disk->histogram_boundaries_read);
+    virDomainDiskDefFormatDriverHistogram(&statisticsChildBuf, "write",
+                                          disk->histogram_boundaries_write);
+    virDomainDiskDefFormatDriverHistogram(&statisticsChildBuf, "zone",
+                                          disk->histogram_boundaries_zone);
+    virDomainDiskDefFormatDriverHistogram(&statisticsChildBuf, "flush",
+                                          disk->histogram_boundaries_flush);
+
+    virXMLFormatElement(&childBuf, "statistics", NULL, &statisticsChildBuf);
 
     virXMLFormatElement(buf, "driver", &attrBuf, &childBuf);
 }

@@ -3648,6 +3648,47 @@ paravirtualized driver is specified via the ``disk`` element.
 
       :since:`Since 11.9.0 (QEMU 10.2, virtio, ide, scsi disks only)`.
 
+      Block operation latency histogram collection can be configured using
+      ``<latency-histogram>`` sub-element. The histogram is collected for
+      the whole runtime of the VM, but can be re-started or reconfigured using
+      the `virDomainUpdateDeviceFlags <html/libvirt-libvirt-domain.html#virDomainUpdateDeviceFlags>`__
+      API. Using the same config re-starts histogram collection.
+
+      The optional ``type`` attribute configures specific operation to collect
+      the histogram for. Supported types are ``read``, ``write``, ``zone``, and
+      ``flush``. If the ``type`` attribute is omitted the histogram collection
+      bins bins apply to all of the aforementioned types, which can be overriden
+      with specific config.
+
+      The ``<latency-histogram>`` has multiple mandatory ``<bin>`` sub-elements
+      with mandatory ``start`` attribute configuring the starting boundary of
+      the histogram bin configured in nanosecods of the operation duration and
+      the intervals must be properly ordered and non-duplicate.
+
+      Example::
+
+        <driver name='qemu'>
+          <statistics>
+
+            <latency-histogram>
+              <bin start='0'/>
+              <bin start='1000'/>
+              <bin start='100000'/>
+            </latency-histogram>
+
+         [or for specific operation types]
+
+            <latency-histogram type='read'>
+              <bin start='0'/>
+              <bin start='1000'/>
+              <bin start='100000'/>
+            </latency-histogram>
+
+          </statistics>
+        </driver>
+
+      :since:`Since 12.1.0`.
+
    -  The optional ``queues`` attribute specifies the number of virt queues for
       virtio-blk ( :since:`Since 3.9.0` ) or vhost-user-blk
       ( :since:`Since 7.1.0` )
