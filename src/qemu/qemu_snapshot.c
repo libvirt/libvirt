@@ -3710,7 +3710,6 @@ qemuSnapshotUpdateBackingStore(qemuSnapshotDeleteExternalData *data)
         struct _qemuSnapshotDisksWithBackingStoreData *backingData = cur->data;
         g_autoptr(virCommand) cmd = NULL;
 
-        /* creates cmd line args: qemu-img create -f qcow2 -o */
         if (!(cmd = virCommandNewArgList("qemu-img",
                                          "rebase",
                                          "-u",
