@@ -7963,6 +7963,16 @@ qemuProcessSetupDiskPropsRuntime(qemuMonitor *mon,
                                       &disk->blkdeviotune) < 0)
         return -1;
 
+    if (qemuDomainDiskHasLatencyHistogram(disk) &&
+        qemuMonitorBlockLatencyHistogramSet(mon,
+                                            QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName,
+                                            disk->histogram_boundaries,
+                                            disk->histogram_boundaries_read,
+                                            disk->histogram_boundaries_write,
+                                            disk->histogram_boundaries_zone,
+                                            disk->histogram_boundaries_flush) < 0)
+        return -1;
+
     return 0;
 }
 

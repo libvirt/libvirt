@@ -1071,6 +1071,9 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
                                         virQEMUDriverConfig *cfg);
 
 bool
+qemuDomainDiskHasLatencyHistogram(virDomainDiskDef *disk);
+
+bool
 qemuDomainDiskBlockJobIsSupported(virDomainDiskDef *disk);
 
 int

@@ -7321,6 +7321,35 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
         dev->data.disk->src = NULL;
     }
 
+    if (qemuDomainDiskHasLatencyHistogram(disk) ||
+        qemuDomainDiskHasLatencyHistogram(orig_disk)) {
+        int rc;
+
+        qemuDomainObjEnterMonitor(vm);
+        rc = qemuMonitorBlockLatencyHistogramSet(qemuDomainGetMonitor(vm),
+                                                 QEMU_DOMAIN_DISK_PRIVATE(orig_disk)->qomName,
+                                                 disk->histogram_boundaries,
+                                                 disk->histogram_boundaries_read,
+                                                 disk->histogram_boundaries_write,
+                                                 disk->histogram_boundaries_zone,
+                                                 disk->histogram_boundaries_flush);
+        qemuDomainObjExitMonitor(vm);
+
+        if (rc < 0)
+            return -1;
+
+        g_clear_pointer(&orig_disk->histogram_boundaries, g_free);
+        g_clear_pointer(&orig_disk->histogram_boundaries_read, g_free);
+        g_clear_pointer(&orig_disk->histogram_boundaries_write, g_free);
+        g_clear_pointer(&orig_disk->histogram_boundaries_zone, g_free);
+        g_clear_pointer(&orig_disk->histogram_boundaries_flush, g_free);
+        orig_disk->histogram_boundaries = g_steal_pointer(&disk->histogram_boundaries);
+        orig_disk->histogram_boundaries_read = g_steal_pointer(&disk->histogram_boundaries_read);
+        orig_disk->histogram_boundaries_write = g_steal_pointer(&disk->histogram_boundaries_write);
+        orig_disk->histogram_boundaries_zone = g_steal_pointer(&disk->histogram_boundaries_zone);
+        orig_disk->histogram_boundaries_flush = g_steal_pointer(&disk->histogram_boundaries_flush);
+    }
+
     /* in case when we aren't updating disk source we update startup policy here */
     orig_disk->startupPolicy = dev->data.disk->startupPolicy;
     orig_disk->snapshot = dev->data.disk->snapshot;

@@ -10464,6 +10464,23 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
 
 
 /**
+ * qemuDomainDiskHasLatencyHistogram:
+ * @disk: disk definition
+ *
+ * Returns whether @disk has any latency histogram settings configured.
+ */
+bool
+qemuDomainDiskHasLatencyHistogram(virDomainDiskDef *disk)
+{
+    return disk->histogram_boundaries ||
+           disk->histogram_boundaries_read ||
+           disk->histogram_boundaries_write ||
+           disk->histogram_boundaries_zone ||
+           disk->histogram_boundaries_flush;
+}
+
+
+/**
  * qemuDomainDiskBlockJobIsSupported:
  *
  * Returns true if block jobs are supported on @disk or false and reports
