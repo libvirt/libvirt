@@ -588,14 +588,14 @@ esxCreateURL(const char *transport,
              int port,
              const char *path)
 {
-    char *url;
+    virURI uri = {
+        .scheme = (char*)transport,
+        .server = (char*)server,
+        .port = port,
+        .path = (char*)path,
+    };
 
-    url = g_strdup_printf("%s://%s:%d%s",
-                          transport,
-                          server,
-                          port,
-                          path);
-    return url;
+    return virURIFormat(&uri);
 }
 
 /*
