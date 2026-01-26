@@ -706,6 +706,7 @@ int qemuDomainCheckDiskStartupPolicy(virQEMUDriver *driver,
                                      size_t diskIndex,
                                      bool cold_boot);
 
+#define QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH 200
 int qemuDomainStorageSourceValidateDepth(virStorageSource *src,
                                          int add,
                                          const char *diskdst);

@@ -3145,7 +3145,9 @@ qemuSnapshotDiskHasBackingDisk(void *payload,
                               NULL, &uid, &gid);
 
         if (!disk->src->backingStore)
-            ignore_value(virStorageSourceGetMetadata(disk->src, uid, gid, 1, false));
+            ignore_value(virStorageSourceGetMetadata(disk->src, uid, gid,
+                                                     QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH,
+                                                     false));
 
         if (disk->src->backingStore &&
             virStorageSourceIsSameLocation(disk->src->backingStore, iterdata->diskSrc)) {

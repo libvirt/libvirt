@@ -6297,8 +6297,6 @@ qemuDomainStorageAlias(const char *device, int depth)
 }
 
 
-#define QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH 200
-
 /**
  * qemuDomainStorageSourceValidateDepth:
  * @src: storage source chain to validate
