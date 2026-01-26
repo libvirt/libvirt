@@ -541,8 +541,8 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def,
 
         if (stat(origpath, &sb) < 0 || !S_ISREG(sb.st_mode)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("source for disk '%1$s' is not a regular file; refusing to generate external snapshot name"),
-                           disk->name);
+                           _("source for disk '%1$s' (%2$s) doesn't exist or is not a regular file; refusing to generate external snapshot name"),
+                           disk->name, origpath);
             return -1;
         }
 
