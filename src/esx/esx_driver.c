@@ -582,7 +582,37 @@ esxCapsInit(esxPrivate *priv)
     return NULL;
 }
 
+static char *
+esxCreateURL(const char *transport,
+             const char *server,
+             int port,
+             const char *path)
+{
+    char *url;
 
+    url = g_strdup_printf("%s://%s:%d%s",
+                          transport,
+                          server,
+                          port,
+                          path);
+    return url;
+}
+
+/*
+ * Same as above, but add it to a buffer because the calling code will
+ * append query strings etc.
+ */
+static void
+esxCreateURLBuffer(virBuffer *buffer,
+                   const char *transport,
+                   const char *server,
+                   int port,
+                   const char *path)
+{
+    g_autofree char *url = esxCreateURL(transport, server, port, path);
+
+    virBufferAdd(buffer, url, -1);
+}
 
 static int
 esxConnectToHost(esxPrivate *priv,
@@ -619,8 +649,8 @@ esxConnectToHost(esxPrivate *priv,
                                         conn->uri->server)))
         goto cleanup;
 
-    url = g_strdup_printf("%s://%s:%d/sdk", priv->parsedUri->transport,
-                          conn->uri->server, conn->uri->port);
+    url = esxCreateURL(priv->parsedUri->transport,
+                       conn->uri->server, conn->uri->port, "/sdk");
 
     if (esxVI_Context_Alloc(&priv->host) < 0 ||
         esxVI_Context_Connect(priv->host, url, ipAddress, username, password,
@@ -706,8 +736,8 @@ esxConnectToVCenter(esxPrivate *priv,
     if (!(password = virAuthGetPassword(conn, auth, "esx", username, hostname)))
         return -1;
 
-    url = g_strdup_printf("%s://%s:%d/sdk", priv->parsedUri->transport, hostname,
-                          conn->uri->port);
+    url = esxCreateURL(priv->parsedUri->transport, hostname,
+                       conn->uri->port, "/sdk");
 
     if (esxVI_Context_Alloc(&priv->vCenter) < 0 ||
         esxVI_Context_Connect(priv->vCenter, url, ipAddress, username,
@@ -2357,8 +2387,9 @@ esxDomainScreenshot(virDomainPtr domain, virStreamPtr stream,
     }
 
     /* Build URL */
-    virBufferAsprintf(&buffer, "%s://%s:%d/screen?id=", priv->parsedUri->transport,
-                      domain->conn->uri->server, domain->conn->uri->port);
+    esxCreateURLBuffer(&buffer, priv->parsedUri->transport,
+                       domain->conn->uri->server, domain->conn->uri->port,
+                       "/screen?id=");
     virBufferURIEncodeString(&buffer, virtualMachine->obj->value);
 
     url = virBufferContentAndReset(&buffer);
@@ -2563,8 +2594,9 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
         goto cleanup;
     }
 
-    virBufferAsprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
-                      domain->conn->uri->server, domain->conn->uri->port);
+    esxCreateURLBuffer(&buffer, priv->parsedUri->transport,
+                       domain->conn->uri->server, domain->conn->uri->port,
+                       "/folder/");
     virBufferURIEncodeString(&buffer, directoryAndFileName);
     virBufferAddLit(&buffer, "?dcPath=");
     esxUtil_EscapeInventoryObject(&buffer, priv->primary->datacenterPath);
@@ -2987,8 +3019,9 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         goto cleanup;
     }
 
-    virBufferAsprintf(&buffer, "%s://%s:%d/folder/", priv->parsedUri->transport,
-                      conn->uri->server, conn->uri->port);
+    esxCreateURLBuffer(&buffer, priv->parsedUri->transport,
+                       conn->uri->server, conn->uri->port,
+                       "/folder/");
 
     if (directoryName) {
         virBufferURIEncodeString(&buffer, directoryName);
