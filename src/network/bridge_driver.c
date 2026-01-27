@@ -2827,6 +2827,17 @@ networkBridgeNameValidate(virNetworkObjList *nets,
 }
 
 
+/**
+ * networkValidate:
+ * @driver: network driver
+ * @def: network definition
+ *
+ * Validates network definition and fills up blanks.
+ * Callers, but tests, must provide valid @driver to ensure
+ * unique bridge name.
+ *
+ * Returns: 0 on success, -1 otherwise (with error reported).
+ */
 static int
 networkValidate(virNetworkDriverState *driver,
                 virNetworkDef *def)
@@ -2852,8 +2863,10 @@ networkValidate(virNetworkDriverState *driver,
     case VIR_NETWORK_FORWARD_OPEN:
         /* if no bridge name was given in the config, find a name
          * unused by any other libvirt networks and assign it.
+         * All callers MUST provide valid @driver, except for tests.
          */
-        if (networkBridgeNameValidate(driver->networks, def) < 0)
+        if (driver &&
+            networkBridgeNameValidate(driver->networks, def) < 0)
             return -1;
 
         virNetworkSetBridgeMacAddr(def);
@@ -3101,6 +3114,13 @@ networkValidate(virNetworkDriverState *driver,
         }
     }
     return 0;
+}
+
+
+int
+networkValidateTests(virNetworkDef *def)
+{
+    return networkValidate(NULL, def);
 }
 
 

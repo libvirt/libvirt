@@ -26,3 +26,6 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 
 bool
 networkNeedsDnsmasq(const virNetworkDef* def);
+
+int
+networkValidateTests(virNetworkDef *def);
