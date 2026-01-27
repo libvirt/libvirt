@@ -2583,16 +2583,13 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
  * qemuMigrationSrcBeginPhaseBlockDirtyBitmaps:
  * @mig: migration cookie struct
  * @vm: domain object
- * @migrate_disks: disks which are being migrated
- * @nmigrage_disks: number of @migrate_disks
  *
  * Enumerates block dirty bitmaps on disks which will undergo storage migration
  * and fills them into @mig to be offered to the destination.
  */
 static int
 qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookie *mig,
-                                            virDomainObj *vm,
-                                            const char **migrate_disks)
+                                            virDomainObj *vm)
 
 {
     GSList *disks = NULL;
@@ -2612,9 +2609,6 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookie *mig,
         size_t j;
 
         if (!nodedata)
-            continue;
-
-        if (!qemuMigrationAnyCopyDisk(diskdef, migrate_disks))
             continue;
 
         for (j = 0; j < nodedata->nbitmaps; j++) {
@@ -2683,7 +2677,6 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
                          char **cookieout,
                          int *cookieoutlen,
                          unsigned int cookieFlags,
-                         const char **migrate_disks,
                          unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2699,8 +2692,7 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
     if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
         return NULL;
 
-    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
-        qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm, migrate_disks) < 0)
+    if (qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm) < 0)
         return NULL;
 
     if (qemuMigrationCookieFormat(mig, driver, vm,
@@ -2882,8 +2874,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         return NULL;
 
     return qemuMigrationSrcBeginXML(vm, xmlin,
-                                    cookieout, cookieoutlen, cookieFlags,
-                                    migrate_disks, flags);
+                                    cookieout, cookieoutlen, cookieFlags, flags);
 }
 
 
@@ -2972,8 +2963,7 @@ qemuMigrationSrcBeginResume(virDomainObj *vm,
         return NULL;
     }
 
-    return qemuMigrationSrcBeginXML(vm, xmlin,
-                                    cookieout, cookieoutlen, 0, NULL, flags);
+    return qemuMigrationSrcBeginXML(vm, xmlin, cookieout, cookieoutlen, 0, flags);
 }
 
 
@@ -4754,7 +4744,6 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObj *vm,
 
     /* For VIR_MIGRATE_NON_SHARED_INC we can migrate the bitmaps directly,
      * otherwise we must create merged bitmaps from the whole chain */
-
     if (!(flags & VIR_MIGRATE_NON_SHARED_INC) &&
         qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(vm, mig) < 0)
         return -1;
@@ -4945,7 +4934,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     VIR_AUTOCLOSE fd = -1;
     unsigned long restore_max_bandwidth = priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
-    unsigned int cookieFlags = 0;
+    unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
     bool storageMigration = flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC);
     bool cancel = false;
@@ -4969,10 +4958,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         storageMigration = qemuMigrationHasAnyStorageMigrationDisks(vm->def,
                                                                     migrate_disks);
 
-    if (storageMigration) {
+    if (storageMigration)
         cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-        cookieFlags |= QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS;
-    }
 
     if (virLockManagerPluginUsesState(driver->lockManager) &&
         !cookieout) {
@@ -5006,8 +4993,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                    cookiein, cookieinlen,
                                    cookieFlags |
                                    QEMU_MIGRATION_COOKIE_GRAPHICS |
-                                   QEMU_MIGRATION_COOKIE_CAPS |
-                                   QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS);
+                                   QEMU_MIGRATION_COOKIE_CAPS);
     if (!mig)
         goto error;
 
