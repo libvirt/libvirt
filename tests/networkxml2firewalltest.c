@@ -27,6 +27,8 @@
 
 # include <gio/gio.h>
 
+# define LIBVIRT_BRIDGE_DRIVER_PRIV_H_ALLOW
+# include "bridge_driver_priv.h"
 # include "bridge_driver_platform.h"
 # include "virbuffer.h"
 # include "virmock.h"
@@ -104,6 +106,9 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandSetDryRun(dryRunToken, &buf, true, true, testCommandDryRun, NULL);
 
     if (!(def = virNetworkDefParse(NULL, xml, NULL, false)))
+        return -1;
+
+    if (networkValidateTests(def) < 0)
         return -1;
 
     if (networkAddFirewallRules(def, backend, NULL) < 0)
@@ -213,7 +218,10 @@ mymain(void)
  * virGDBusIsServiceRegistered().
  */
 
-VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"),
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virrandom"),
+                      VIR_TEST_MOCK("virgdbus"),
                       VIR_TEST_MOCK("virfirewall"))
 
 #else /* ! defined (__linux__) */

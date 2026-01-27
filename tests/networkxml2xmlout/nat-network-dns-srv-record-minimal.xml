@@ -5,6 +5,7 @@
     <interface dev='eth1'/>
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:00:00:00'/>
   <dns>
     <srv service='name' protocol='tcp'/>
   </dns>

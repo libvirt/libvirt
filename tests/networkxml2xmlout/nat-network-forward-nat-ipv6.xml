@@ -5,6 +5,7 @@
     <nat ipv6='yes'/>
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:00:00:00'/>
   <ip family='ipv6' address='2001:db8:ac10:fe01::1' prefix='64'>
   </ip>
 </network>

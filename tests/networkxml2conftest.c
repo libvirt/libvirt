@@ -36,6 +36,9 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
     if (!(def = virNetworkDefParse(NULL, inxml, xmlopt, false)))
         goto fail;
 
+    if (networkValidateTests(def) < 0)
+        goto fail;
+
     if (!(obj = virNetworkObjNew()))
         goto fail;
 
@@ -203,4 +206,6 @@ mymain(void)
 }
 
 VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virrandom"),
                       VIR_TEST_MOCK("virdnsmasq"))

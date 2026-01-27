@@ -17,6 +17,7 @@
 typedef enum {
     TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS,
     TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE,
+    TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE,
     TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT,
     TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE,
 } testCompareNetXML2XMLResult;
@@ -40,6 +41,13 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
         goto cleanup;
     }
     if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
+        goto cleanup;
+
+    if (networkValidateTests(dev) < 0) {
+        result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE;
+        goto cleanup;
+    }
+    if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
         goto cleanup;
 
     if (!(actual = virNetworkDefFormat(dev, xmlopt, flags))) {
@@ -114,6 +122,8 @@ mymain(void)
     DO_TEST_FULL(name, flags, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
 #define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE)
+#define DO_TEST_VALIDATE_ERROR(name) \
+    DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
 
     DO_TEST("dhcp6host-routed-network");
     DO_TEST("empty-allow-ipv6");
@@ -145,12 +155,12 @@ mymain(void)
     DO_TEST("vepa-net");
     DO_TEST("bandwidth-network");
     DO_TEST("openvswitch-net");
-    DO_TEST_FLAGS("passthrough-pf", VIR_NETWORK_XML_INACTIVE);
+    DO_TEST_VALIDATE_ERROR("passthrough-pf");
     DO_TEST("hostdev");
     DO_TEST_FLAGS("hostdev-pf", VIR_NETWORK_XML_INACTIVE);
     DO_TEST_FLAGS("hostdev-pf-driver-model", VIR_NETWORK_XML_INACTIVE);
 
-    DO_TEST("passthrough-address-crash");
+    DO_TEST_VALIDATE_ERROR("passthrough-address-crash");
     DO_TEST("nat-network-explicit-flood");
     DO_TEST("host-bridge-no-flood");
     DO_TEST_PARSE_ERROR("hostdev-duplicate");
@@ -167,4 +177,6 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIR_TEST_MAIN(mymain)
+VIR_TEST_MAIN_PRELOAD(mymain,
+                      VIR_TEST_MOCK("virpci"),
+                      VIR_TEST_MOCK("virrandom"))
