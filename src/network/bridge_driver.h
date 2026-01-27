@@ -21,20 +21,5 @@
 
 #pragma once
 
-#include "internal.h"
-#include "virdnsmasq.h"
-#include "virnetworkobj.h"
-
-virNetworkXMLOption *
-networkDnsmasqCreateXMLConf(void);
-
 int
 networkRegister(void);
-
-int
-networkDnsmasqConfContents(virNetworkObj *obj,
-                           const char *pidfile,
-                           char **configstr,
-                           char **hostsfilestr,
-                           dnsmasqContext *dctx,
-                           dnsmasqCaps *caps);

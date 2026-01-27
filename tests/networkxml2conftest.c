@@ -10,6 +10,8 @@
 #include "network_conf.h"
 #include "viralloc.h"
 #include "bridge_driver.h"
+#define LIBVIRT_BRIDGE_DRIVER_PRIV_H_ALLOW
+#include "bridge_driver_priv.h"
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 

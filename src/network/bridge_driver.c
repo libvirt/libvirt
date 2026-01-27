@@ -39,6 +39,8 @@
 #include "virerror.h"
 #include "datatypes.h"
 #include "bridge_driver.h"
+#define LIBVIRT_BRIDGE_DRIVER_PRIV_H_ALLOW
+#include "bridge_driver_priv.h"
 #include "bridge_driver_platform.h"
 #include "driver.h"
 #include "virbuffer.h"
