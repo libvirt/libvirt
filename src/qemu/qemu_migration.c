@@ -3186,7 +3186,6 @@ qemuMigrationDstPrepare(virQEMUDriver *driver,
  * @vm: domain object
  * @mig: migration cookie
  * @migParams: migration parameters
- * @flags: migration flags
  *
  * Checks whether block dirty bitmaps offered by the migration source are
  * to be migrated (e.g. they don't exist, the destination is compatible etc)
@@ -3197,16 +3196,13 @@ qemuMigrationDstPrepare(virQEMUDriver *driver,
 static int
 qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
                                             qemuMigrationCookie *mig,
-                                            qemuMigrationParams *migParams,
-                                            unsigned int flags)
+                                            qemuMigrationParams *migParams)
 {
     g_autoptr(virJSONValue) mapping = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     GSList *nextdisk;
 
-    if (!mig->nbd ||
-        !mig->blockDirtyBitmaps ||
-        !(flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)))
+    if (!mig->blockDirtyBitmaps)
         return 0;
 
     if (qemuMigrationCookieBlockDirtyBitmapsMatchDisks(vm->def, mig->blockDirtyBitmaps) < 0)
@@ -3353,7 +3349,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
         goto error;
     }
 
-    if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
+    if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams) < 0)
         goto error;
 
     if (qemuMigrationParamsCheck(vm, VIR_ASYNC_JOB_MIGRATION_IN, migParams,
