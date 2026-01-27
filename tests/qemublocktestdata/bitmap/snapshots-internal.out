@@ -1,2 +1,9 @@
 libvirt-1-format:
  internal snapshots: '1727868651'(*) '1727872064'(*)
+libvirt-1-storage:
+libvirt-2-storage:
+libvirt-pflash0-format:
+libvirt-pflash0-storage:
+libvirt-pflash1-format:
+ internal snapshots: '1727868651' '1727872064'
+libvirt-pflash1-storage:

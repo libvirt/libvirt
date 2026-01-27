@@ -575,16 +575,14 @@ testQemuImageCreate(const void *opaque)
 
 static const char *bitmapDetectPrefix = "qemublocktestdata/bitmap/";
 
-static void
-testQemuDetectBitmapsWorker(GHashTable *nodedata,
+static int
+testQemuDetectBitmapsWorker(void *payload,
                             const char *nodename,
-                            virBuffer *buf)
+                            void *opaque)
 {
-    qemuBlockNamedNodeData *data;
+    qemuBlockNamedNodeData *data = payload;
+    virBuffer *buf = opaque;
     size_t i;
-
-    if (!(data = virHashLookup(nodedata, nodename)))
-        return;
 
     virBufferAsprintf(buf, "%s:\n", nodename);
     if (data->qcow2v2)
@@ -617,9 +615,12 @@ testQemuDetectBitmapsWorker(GHashTable *nodedata,
 
             virBufferAsprintf(buf, " '%s'%s", (const char *) n->key, vms);
         }
+
+        virBufferAddLit(buf, "\n");
     }
 
     virBufferAdjustIndent(buf, -1);
+    return 0;
 }
 
 
@@ -632,7 +633,6 @@ testQemuDetectBitmaps(const void *opaque)
     g_autofree char *actual = NULL;
     g_autofree char *expectpath = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    size_t i;
 
     expectpath = g_strdup_printf("%s/%s%s.out", abs_srcdir,
                                  bitmapDetectPrefix, name);
@@ -646,13 +646,7 @@ testQemuDetectBitmaps(const void *opaque)
         return -1;
     }
 
-    /* we detect for the first 30 nodenames for simplicity */
-    for (i = 0; i < 30; i++) {
-        g_autofree char *nodename = g_strdup_printf("libvirt-%zu-format", i);
-
-        testQemuDetectBitmapsWorker(nodedata, nodename, &buf);
-    }
-
+    virHashForEachSorted(nodedata, testQemuDetectBitmapsWorker, &buf);
     actual = virBufferContentAndReset(&buf);
 
     return virTestCompareToFile(actual, expectpath);

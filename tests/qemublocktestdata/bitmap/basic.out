@@ -4,3 +4,4 @@ libvirt-1-format:
         c: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
         b: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
         a: record:1 busy:0 persist:1 inconsist:0 gran:65536 dirty:0
+libvirt-1-storage:
