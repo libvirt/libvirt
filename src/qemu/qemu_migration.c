@@ -3230,6 +3230,8 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
         qemuBlockNamedNodeData *nodedata;
         GSList *nextbitmap;
 
+        VIR_DEBUG("offer migrate bitmaps for '%s'", disk->target);
+
         if (!(nodedata = virHashLookup(blockNamedNodeData, disk->nodename))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to find data for block node '%1$s'"),
@@ -3246,18 +3248,14 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
 
         for (nextbitmap = disk->bitmaps; nextbitmap; nextbitmap = nextbitmap->next) {
             qemuMigrationBlockDirtyBitmapsDiskBitmap *bitmap = nextbitmap->data;
-            size_t k;
 
             /* don't migrate into existing bitmaps */
-            for (k = 0; k < nodedata->nbitmaps; k++) {
-                if (STREQ(bitmap->bitmapname, nodedata->bitmaps[k]->name)) {
-                    bitmap->skip = true;
-                    break;
-                }
-            }
+            if (nodedata->qcow2bitmaps)
+                bitmap->skip = g_strv_contains((const char **) nodedata->qcow2bitmaps, bitmap->bitmapname);
 
-            if (bitmap->skip)
-                continue;
+            VIR_DEBUG("offer migrate bitmap '%s' disk '%s' -> skip: '%d'",
+                      bitmap->bitmapname, disk->target, bitmap->skip);
+
         }
     }
 
