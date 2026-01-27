@@ -41,6 +41,11 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
 
     virNetworkObjSetDef(obj, def);
 
+    if (!networkNeedsDnsmasq(def)) {
+        VIR_TEST_VERBOSE("spurious request to generate conf files. Would not start dnsmasq in real life scenario");
+        goto fail;
+    }
+
     dctx = dnsmasqContextNew(def->name, "/var/lib/libvirt/dnsmasq");
 
     if (dctx == NULL)
