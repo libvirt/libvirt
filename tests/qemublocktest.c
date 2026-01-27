@@ -600,6 +600,17 @@ testQemuDetectBitmapsWorker(void *payload,
                           bitmap->granularity, bitmap->dirtybytes);
     }
 
+    if (data->qcow2bitmaps) {
+        char **b;
+
+        virBufferAddLit(buf, "qcow2 bitmaps:");
+
+        for (b = data->qcow2bitmaps; *b; b++)
+            virBufferAsprintf(buf, " %s", *b);
+
+        virBufferAddLit(buf, "\n");
+    }
+
     if (data->snapshots) {
         g_autofree virHashKeyValuePair *snaps = virHashGetItems(data->snapshots, NULL, true);
         virHashKeyValuePair *n;

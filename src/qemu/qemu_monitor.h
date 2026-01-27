@@ -893,8 +893,12 @@ struct _qemuBlockNamedNodeData {
     unsigned long long capacity;
     unsigned long long physical;
 
+    /* Information about change block tracking bitmaps which are active and loaded */
     qemuBlockNamedNodeDataBitmap **bitmaps;
     size_t nbitmaps;
+    /* With qcow2 we have also a separate list of bitmaps present in the image
+     * but not yet activated, which happens when starting qemu during migration */
+    char **qcow2bitmaps;
 
     /* hash table indexed by snapshot name containing data about snapshots
      * (qemuBlockNamedNodeDataSnapshot) */

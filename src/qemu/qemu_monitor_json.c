@@ -2730,6 +2730,7 @@ qemuMonitorJSONBlockNamedNodeDataFree(qemuBlockNamedNodeData *data)
         qemuMonitorJSONBlockNamedNodeDataBitmapFree(data->bitmaps[i]);
     g_clear_pointer(&data->snapshots, g_hash_table_unref);
     g_free(data->bitmaps);
+    g_strfreev(data->qcow2bitmaps);
     g_free(data);
 }
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockNamedNodeData, qemuMonitorJSONBlockNamedNodeDataFree);
@@ -2854,6 +2855,9 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
         virJSONValue *qcow2props = virJSONValueObjectGetObject(format_specific, "data");
 
         if (qcow2props) {
+            virJSONValue *bmp;
+            size_t nbmp;
+
             if (STREQ_NULLABLE(virJSONValueObjectGetString(qcow2props, "compat"), "0.10"))
                 ent->qcow2v2 = true;
 
@@ -2862,6 +2866,19 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
 
             ignore_value(virJSONValueObjectGetBoolean(qcow2props, "data-file-raw",
                                                       &ent->qcow2dataFileRaw));
+
+            if ((bmp = virJSONValueObjectGetArray(qcow2props, "bitmaps")) &&
+                ((nbmp = virJSONValueArraySize(bmp)) > 0)) {
+                size_t i;
+
+                ent->qcow2bitmaps = g_new0(char *, nbmp + 1);
+
+                for (i = 0; i < nbmp; i++) {
+                    virJSONValue *b = virJSONValueArrayGet(bmp, i);
+
+                    ent->qcow2bitmaps[i] = g_strdup(virJSONValueObjectGetString(b, "name"));
+                }
+            }
         }
     }
 
