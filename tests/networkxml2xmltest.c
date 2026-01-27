@@ -8,7 +8,7 @@
 #include "internal.h"
 #include "testutils.h"
 #include "network_conf.h"
-#include "network/bridge_driver.h"
+#include "bridge_driver.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

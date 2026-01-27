@@ -9,7 +9,7 @@
 #include "testutils.h"
 #include "network_conf.h"
 #include "viralloc.h"
-#include "network/bridge_driver.h"
+#include "bridge_driver.h"
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 

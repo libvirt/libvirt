@@ -407,9 +407,9 @@ endif
 
 if conf.has('WITH_NETWORK')
   tests += [
-    { 'name': 'networkxml2conftest', 'link_with': [ network_driver_impl ] },
-    { 'name': 'networkxml2firewalltest', 'link_with': [ network_driver_impl ] },
-    { 'name': 'networkxml2xmltest', 'link_with': [ network_driver_impl ] },
+    { 'name': 'networkxml2conftest', 'include': [ network_inc_dir ], 'link_with': [ network_driver_impl ] },
+    { 'name': 'networkxml2firewalltest', 'include': [ network_inc_dir ], 'link_with': [ network_driver_impl ] },
+    { 'name': 'networkxml2xmltest', 'include': [ network_inc_dir ], 'link_with': [ network_driver_impl ],  },
   ]
 endif
 

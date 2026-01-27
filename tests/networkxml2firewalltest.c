@@ -27,7 +27,7 @@
 
 # include <gio/gio.h>
 
-# include "network/bridge_driver_platform.h"
+# include "bridge_driver_platform.h"
 # include "virbuffer.h"
 # include "virmock.h"
 
