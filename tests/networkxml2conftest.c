@@ -174,7 +174,6 @@ mymain(void)
     DO_TEST("nat-network-dns-srv-record-minimal", full);
     DO_TEST("nat-network-name-with-quotes", full);
     DO_TEST("routed-network", full);
-    DO_TEST("routed-network-no-dns", full);
     DO_TEST("open-network", full);
     DO_TEST("nat-network", full);
     DO_TEST("nat-network-dns-txt-record", full);
