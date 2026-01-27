@@ -1,1 +1,1 @@
-<srv protocol='tcp'/>
+<srv protocol='tcp' target='test7.example.com'/>

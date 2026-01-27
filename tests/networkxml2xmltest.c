@@ -144,6 +144,8 @@ mymain(void)
 #define DO_TEST_VALIDATE_ERROR(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_FAIL_VALIDATE)
 
+    DO_TEST("dhcp6-network");
+    DO_TEST("dhcp6-nat-network");
     DO_TEST("dhcp6host-routed-network");
     DO_TEST("empty-allow-ipv6");
     DO_TEST("isolated-network");
@@ -164,9 +166,11 @@ mymain(void)
     DO_TEST("nat-network-dns-forward-plain");
     DO_TEST("nat-network-dns-forwarders");
     DO_TEST("nat-network-dns-forwarder-no-resolv");
+    DO_TEST("nat-network-dns-local-domain");
     DO_TEST("nat-network-forward-nat-ipv6");
     DO_TEST("nat-network-forward-nat-address");
     DO_TEST("nat-network-forward-nat-no-address");
+    DO_TEST("nat-network-name-with-quotes");
     DO_TEST("nat-network-mtu");
     DO_TEST("8021Qbh-net");
     DO_TEST("direct-net");
@@ -178,7 +182,7 @@ mymain(void)
     DO_TEST("hostdev");
     DO_TEST_FLAGS("hostdev-pf", VIR_NETWORK_XML_INACTIVE);
     DO_TEST_FLAGS("hostdev-pf-driver-model", VIR_NETWORK_XML_INACTIVE);
-
+    DO_TEST("ptr-domains-auto");
     DO_TEST_VALIDATE_ERROR("passthrough-address-crash");
     DO_TEST("nat-network-explicit-flood");
     DO_TEST("host-bridge-no-flood");

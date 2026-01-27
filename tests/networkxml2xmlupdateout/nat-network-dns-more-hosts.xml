@@ -5,6 +5,7 @@
     <interface dev='eth0'/>
   </forward>
   <bridge name='virbr0' stp='on' delay='0'/>
+  <domain name='example.com'/>
   <dns forwardPlainNames='no'>
     <host ip='f0:d::f0:d'>
       <hostname>pudding</hostname>

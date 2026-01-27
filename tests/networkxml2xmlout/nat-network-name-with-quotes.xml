@@ -1,5 +1,5 @@
 <network>
-  <name>default</name>
+  <name>default&quot;with&quot;quotes&quot;</name>
   <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
   <forward dev='eth1' mode='nat'>
     <interface dev='eth1'/>
@@ -18,7 +18,7 @@
   </ip>
   <ip family='ipv4' address='192.168.123.1' netmask='255.255.255.0'>
   </ip>
-  <ip family='ipv6' address='2001:db8:ac10:fe01::1' prefix='64'>
+  <ip family='ipv6' address='fc00:db8:ac10:fe01::1' prefix='64'>
   </ip>
   <ip family='ipv6' address='fc00:db8:ac10:fd01::1' prefix='64'>
   </ip>
