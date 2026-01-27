@@ -1516,34 +1516,44 @@ networkBuildDhcpDaemonCommandLine(virNetworkDriverState *driver,
 }
 
 
-static int
-networkStartDhcpDaemon(virNetworkDriverState *driver,
-                       virNetworkObj *obj)
+bool
+networkNeedsDnsmasq(const virNetworkDef* def)
 {
-    g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(driver);
-    virNetworkDef *def = virNetworkObjGetDef(obj);
     virNetworkIPDef *ipdef;
     size_t i;
-    bool needDnsmasq = false;
-    g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *pidfile = NULL;
-    pid_t dnsmasqPid;
-    g_autoptr(dnsmasqContext) dctx = NULL;
 
     /* see if there are any IP addresses that need a dhcp server */
     i = 0;
     while ((ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i))) {
         i++;
         if (ipdef->nranges || ipdef->nhosts || ipdef->tftproot)
-            needDnsmasq = true;
+            return true;
     }
 
     /* no IP addresses at all, so we don't need to run */
     if (i == 0)
-        return 0;
+        return false;
 
     /* no DHCP services needed, and user disabled DNS service */
-    if (!needDnsmasq && def->dns.enable == VIR_TRISTATE_BOOL_NO)
+    if (def->dns.enable == VIR_TRISTATE_BOOL_NO)
+        return false;
+
+    return true;
+}
+
+
+static int
+networkStartDhcpDaemon(virNetworkDriverState *driver,
+                       virNetworkObj *obj)
+{
+    g_autoptr(virNetworkDriverConfig) cfg = virNetworkDriverGetConfig(driver);
+    virNetworkDef *def = virNetworkObjGetDef(obj);
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *pidfile = NULL;
+    pid_t dnsmasqPid;
+    g_autoptr(dnsmasqContext) dctx = NULL;
+
+    if (!networkNeedsDnsmasq(def))
         return 0;
 
     if (g_mkdir_with_parents(cfg->pidDir, 0777) < 0) {

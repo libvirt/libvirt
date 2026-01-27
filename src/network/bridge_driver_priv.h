@@ -23,3 +23,6 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                            char **hostsfilestr,
                            dnsmasqContext *dctx,
                            dnsmasqCaps *caps);
+
+bool
+networkNeedsDnsmasq(const virNetworkDef* def);
