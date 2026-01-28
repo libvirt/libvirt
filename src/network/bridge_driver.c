@@ -1178,7 +1178,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 
     /* create dnsmasq config file appropriate for this network */
 
-    /* Don't forget to update networkxml2conftest and networkxml2xmltest :-) */
+    /* Don't forget to update networkxml2xmltest :-) */
     virBufferAsprintf(&configbuf,
                       "##WARNING:  THIS IS AN AUTO-GENERATED FILE. "
                       "CHANGES TO IT ARE LIKELY TO BE\n"
