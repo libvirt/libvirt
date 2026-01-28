@@ -2993,10 +2993,17 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
             rc = -1;
     }
 
-    if (def->os.loader && def->os.loader->nvram) {
-        if (virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
+    if (def->os.loader) {
+        if (def->os.loader->nvram &&
+            virSecuritySELinuxRestoreImageLabelInt(mgr, sharedFilesystems,
                                                    def, def->os.loader->nvram,
                                                    migrated) < 0)
+            rc = -1;
+
+        if (def->os.varstore &&
+            def->os.varstore->path &&
+            virSecuritySELinuxRestoreFileLabel(mgr, def->os.varstore->path,
+                                               true, false) < 0)
             rc = -1;
     }
 
@@ -3342,6 +3349,22 @@ virSecuritySELinuxSetSysinfoLabel(virSecurityManager *mgr,
 
 
 static int
+virSecuritySELinuxDomainSetPathLabel(virSecurityManager *mgr,
+                                     virDomainDef *def,
+                                     const char *path,
+                                     bool allowSubtree G_GNUC_UNUSED)
+{
+    virSecurityLabelDef *seclabel;
+
+    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
+    if (!seclabel || !seclabel->relabel)
+        return 0;
+
+    return virSecuritySELinuxSetFilecon(mgr, path, seclabel->imagelabel, true);
+}
+
+
+static int
 virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
                               char *const *sharedFilesystems,
                               virDomainDef *def,
@@ -3421,11 +3444,18 @@ virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
             return -1;
     }
 
-    if (def->os.loader && def->os.loader->nvram) {
-        if (virSecuritySELinuxSetImageLabel(mgr, sharedFilesystems,
+    if (def->os.loader) {
+        if (def->os.loader->nvram &&
+            virSecuritySELinuxSetImageLabel(mgr, sharedFilesystems,
                                             def, def->os.loader->nvram,
                                             VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
                                             VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
+            return -1;
+
+        if (def->os.varstore &&
+            def->os.varstore->path &&
+            virSecuritySELinuxDomainSetPathLabel(mgr, def,
+                                                 def->os.varstore->path, true) < 0)
             return -1;
     }
 
@@ -3591,21 +3621,6 @@ virSecuritySELinuxGetSecurityMountOptions(virSecurityManager *mgr,
 
     VIR_DEBUG("imageLabel=%s opts=%s", NULLSTR(imagelabel), opts);
     return opts;
-}
-
-static int
-virSecuritySELinuxDomainSetPathLabel(virSecurityManager *mgr,
-                                     virDomainDef *def,
-                                     const char *path,
-                                     bool allowSubtree G_GNUC_UNUSED)
-{
-    virSecurityLabelDef *seclabel;
-
-    seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_SELINUX_NAME);
-    if (!seclabel || !seclabel->relabel)
-        return 0;
-
-    return virSecuritySELinuxSetFilecon(mgr, path, seclabel->imagelabel, true);
 }
 
 static int

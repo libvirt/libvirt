@@ -1019,27 +1019,35 @@ get_files(vahControl * ctl)
         return -1;
     }
 
-    if (ctl->def->os.loader && ctl->def->os.loader->path) {
-        bool readonly = false;
+    if (ctl->def->os.loader) {
+        if (ctl->def->os.loader->path) {
+            bool readonly = false;
 
-        /* Look at the readonly attribute, but also keep in mind that ROMs
-         * are always loaded read-only regardless of whether the attribute
-         * is present. Validation ensures that nonsensical configurations
-         * (type=rom readonly=no) are rejected long before we get here */
-        virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
-        if (ctl->def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_ROM)
-            readonly = true;
+            /* Look at the readonly attribute, but also keep in mind that ROMs
+             * are always loaded read-only regardless of whether the attribute
+             * is present. Validation ensures that nonsensical configurations
+             * (type=rom readonly=no) are rejected long before we get here */
+            virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
+            if (ctl->def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_ROM)
+                readonly = true;
 
-        if (vah_add_file(&buf,
-                         ctl->def->os.loader->path,
-                         readonly ? "rk" : "rwk") != 0) {
+            if (vah_add_file(&buf,
+                             ctl->def->os.loader->path,
+                             readonly ? "rk" : "rwk") != 0) {
+                return -1;
+            }
+        }
+
+        if (ctl->def->os.loader->nvram &&
+            storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0) {
             return -1;
         }
-    }
 
-    if (ctl->def->os.loader && ctl->def->os.loader->nvram &&
-        storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0) {
-        return -1;
+        if (ctl->def->os.varstore &&
+            ctl->def->os.varstore->path &&
+            vah_add_file(&buf, ctl->def->os.varstore->path, "rw") != 0) {
+            return -1;
+        }
     }
 
     for (i = 0; i < ctl->def->ngraphics; i++) {

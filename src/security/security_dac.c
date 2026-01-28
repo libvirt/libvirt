@@ -2061,10 +2061,16 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
             rc = -1;
     }
 
-    if (def->os.loader && def->os.loader->nvram) {
-        if (virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
+    if (def->os.loader) {
+        if (def->os.loader->nvram &&
+            virSecurityDACRestoreImageLabelInt(mgr, sharedFilesystems,
                                                def, def->os.loader->nvram,
                                                migrated) < 0)
+            rc = -1;
+
+        if (def->os.varstore &&
+            def->os.varstore->path &&
+            virSecurityDACRestoreFileLabel(mgr, def->os.varstore->path) < 0)
             rc = -1;
     }
 
@@ -2310,11 +2316,19 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
             return -1;
     }
 
-    if (def->os.loader && def->os.loader->nvram) {
-        if (virSecurityDACSetImageLabel(mgr, sharedFilesystems,
+    if (def->os.loader) {
+        if (def->os.loader->nvram &&
+            virSecurityDACSetImageLabel(mgr, sharedFilesystems,
                                         def, def->os.loader->nvram,
                                         VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
                                         VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
+            return -1;
+
+        if (def->os.varstore &&
+            def->os.varstore->path &&
+            virSecurityDACSetOwnership(mgr, NULL,
+                                       def->os.varstore->path,
+                                       user, group, true) < 0)
             return -1;
     }
 
