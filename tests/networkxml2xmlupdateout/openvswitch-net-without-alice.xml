@@ -7,7 +7,7 @@
     <vlan trunk='yes'>
       <tag id='666'/>
     </vlan>
-    <virtualport>
+    <virtualport type='openvswitch'>
       <parameters profileid='bob-profile'/>
     </virtualport>
   </portgroup>
@@ -16,7 +16,7 @@
       <tag id='123' nativeMode='tagged'/>
       <tag id='444'/>
     </vlan>
-    <virtualport>
+    <virtualport type='openvswitch'>
       <parameters profileid='native-profile'/>
     </virtualport>
   </portgroup>
