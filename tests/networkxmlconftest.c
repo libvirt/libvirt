@@ -243,11 +243,10 @@ testRun(const char *name,
     info->expectResult = expectResult;
     info->xmlopt = xmlopt;
     info->caps = caps;
-    info->inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, name);
-    info->outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, name);
-    /* Temporarily use conf files from networkxml2confdata/ */
-    info->outconf = g_strdup_printf("%s/networkxml2confdata/%s.conf", abs_srcdir, name);
-    info->outhostsfile = g_strdup_printf("%s/networkxml2confdata/%s.hostsfile", abs_srcdir, name);
+    info->inxml = g_strdup_printf("%s/networkxmlconfdata/%s.xml", abs_srcdir, name);
+    info->outxml = g_strdup_printf("%s/networkxmlconfdata/%s.expect.xml", abs_srcdir, name);
+    info->outconf = g_strdup_printf("%s/networkxmlconfdata/%s.conf", abs_srcdir, name);
+    info->outhostsfile = g_strdup_printf("%s/networkxmlconfdata/%s.hostsfile", abs_srcdir, name);
 
     virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, info);
 

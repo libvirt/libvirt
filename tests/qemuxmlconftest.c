@@ -263,7 +263,7 @@ static virNWFilterDriver fakeNWFilterDriver = {
 /* name of the fake network shall be constructed as:
  *  NETWORKXMLNAME;NETWORKPORTXMLNAME
  *  where:
- *  NETWORKXMLNAME resolves to abs_srcdir/networkxml2xmlin/NETWORKXMLNAME.xml
+ *  NETWORKXMLNAME resolves to abs_srcdir/networkxmlconfdata/NETWORKXMLNAME.xml
  *  NETWORKPORTXMLNAME resolves to abs_srcdir/virnetworkportxml2xmldata/NETWORKPORTXMLNAME.xml
  */
 static virNetworkPtr
@@ -286,7 +286,7 @@ fakeNetworkLookupByName(virConnectPtr conn,
         return NULL;
     }
 
-    path = g_strdup_printf(abs_srcdir "/networkxml2xmlin/%s.xml", netname);
+    path = g_strdup_printf(abs_srcdir "/networkxmlconfdata/%s.xml", netname);
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_NO_NETWORK, "fake network '%s' not found", path);
@@ -307,7 +307,7 @@ fakeNetworkGetXMLDesc(virNetworkPtr network,
 
     *(strchr(netname, ';')) = '\0';
 
-    path = g_strdup_printf(abs_srcdir "/networkxml2xmlin/%s.xml", netname);
+    path = g_strdup_printf(abs_srcdir "/networkxmlconfdata/%s.xml", netname);
 
     if (virFileReadAll(path, 4 * 1024, &xml) < 0)
         return NULL;

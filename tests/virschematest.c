@@ -303,9 +303,7 @@ static const struct testSchemaEntry schemaInterface[] = {
 
 static const struct testSchemaEntry schemaNetwork[] = {
     { .dir = "src/network" },
-    { .dir = "tests/networkxml2xmlin" },
-    { .dir = "tests/networkxml2xmlout" },
-    { .dir = "tests/networkxml2confdata" },
+    { .dir = "tests/networkxmlconfdata" },
     { .dir = "examples/xml/test/",
       .dirRegex = "testnet.*" },
     { .dir = "tests/networkxml2xmlupdateout" },

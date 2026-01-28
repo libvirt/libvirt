@@ -76,7 +76,7 @@ testCompareXMLToXMLHelper(const void *data)
     g_autofree char *updatexml = NULL;
     g_autofree char *outxml = NULL;
 
-    netxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml",
+    netxml = g_strdup_printf("%s/networkxmlconfdata/%s.xml",
                              abs_srcdir, info->netxml);
     updatexml = g_strdup_printf("%s/networkxml2xmlupdatein/%s.xml",
                                 abs_srcdir, info->updatexml);
