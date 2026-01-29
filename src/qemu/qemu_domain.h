@@ -288,9 +288,7 @@ struct _qemuDomainDiskPrivate {
     virStorageSource *migrSource; /* disk source object used for NBD migration */
     bool migrationslice; /* storage slice was added for migration purposes */
 
-    /* information about the device */
     bool tray; /* device has tray */
-    bool removable; /* device media can be removed/changed */
 
     char *qomName; /* QOM path of the disk (also refers to the block backend) */
     char *nodeCopyOnRead; /* nodename of the disk-wide copy-on-read blockdev layer */

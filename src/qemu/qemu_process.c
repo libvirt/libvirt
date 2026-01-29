@@ -9555,7 +9555,6 @@ qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
         }
     }
 
-    diskpriv->removable = info->removable;
     diskpriv->tray = info->tray;
 }
 
