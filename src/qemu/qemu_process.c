@@ -7968,21 +7968,19 @@ qemuProcessSetupDiskPropsRuntime(qemuMonitor *mon,
 
 
 /**
- * qemuProcessSetupDiskThrottling:
+ * qemuProcessSetupDisks:
  *
- * Sets up disk trottling for -blockdev via block_set_io_throttle monitor
- * command. This hack should be replaced by proper use of the 'throttle'
- * blockdev driver in qemu once it will support changing of the throttle group.
- * Same hack is done in qemuDomainAttachDiskGeneric.
+ * Sets up disk settings available only at runtime:
+ *  - trottling for -blockdev via block_set_io_throttle QMP command
  */
 static int
-qemuProcessSetupDiskThrottling(virDomainObj *vm,
-                               virDomainAsyncJob asyncJob)
+qemuProcessSetupDisks(virDomainObj *vm,
+                      virDomainAsyncJob asyncJob)
 {
     size_t i;
     int ret = -1;
 
-    VIR_DEBUG("Setting up disk throttling for -blockdev via block_set_io_throttle");
+    VIR_DEBUG("Setting up disk config via runtime commands");
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
@@ -8579,7 +8577,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessSetupBalloon(vm, asyncJob) < 0)
         goto cleanup;
 
-    if (qemuProcessSetupDiskThrottling(vm, asyncJob) < 0)
+    if (qemuProcessSetupDisks(vm, asyncJob) < 0)
         goto cleanup;
 
     /* Since CPUs were not started yet, the balloon could not return the memory
