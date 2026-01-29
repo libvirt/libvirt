@@ -21,11 +21,11 @@ x86_64-almalinux-10-container:
     NAME: almalinux-10
 
 
-x86_64-alpine-322-container:
+x86_64-alpine-323-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: alpine-322
+    NAME: alpine-323
 
 
 x86_64-alpine-edge-container:

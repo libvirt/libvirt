@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/alpine:3.22
+FROM docker.io/library/alpine:3.23
 
 RUN apk update && \
     apk upgrade && \
