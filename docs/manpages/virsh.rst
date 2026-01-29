@@ -2811,6 +2811,13 @@ Information listed includes:
   pending write operations in the defined interval
 * ``block.<num>.timed_group.<num>.zone_append_queue_depth_avg`` - average number
   of pending zone append operations in the defined interval
+* ``block.<num>.latency_histogram.<type>.bin.count`` - number of bins in
+  latency histogram. <type> is one of ``read``, ``write``, ``zone_append``, or
+  ``flush``
+* ``block.<num>.latency_histogram.<type>.bin.<num>.start`` start boundary of
+  a latency histogram bin in nanoseconds of given operation duration
+* ``block.<num>.latency_histogram.<type>.bin.<num>.value`` current number of
+  events corresponding to the given bin and type
 
 
 *--iothread* returns information about IOThreads on the running guest

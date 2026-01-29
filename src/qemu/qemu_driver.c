@@ -17605,6 +17605,36 @@ qemuDomainGetStatsBlockExportBackendStorage(const char *entryname,
 
 
 static void
+qemuDomainGetStatsBlockExportFrontendLatencyHistogram(struct qemuBlockStatsLatencyHistogram *h,
+                                                      size_t disk_idx,
+                                                      const char *prefix_hist,
+                                                      virTypedParamList *par)
+{
+    size_t i;
+
+    if (!h)
+        return;
+
+    virTypedParamListAddULLong(par, h->nbins,
+                               VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu%s" VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT,
+                               disk_idx, prefix_hist);
+
+    for (i = 0; i < h->nbins; i++) {
+        virTypedParamListAddULLong(par, h->bins[i].start,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu%s"
+                                   VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX "%zu"
+                                   VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_START,
+                                   disk_idx, prefix_hist, i);
+        virTypedParamListAddULLong(par, h->bins[i].value,
+                                   VIR_DOMAIN_STATS_BLOCK_PREFIX "%zu%s"
+                                   VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX "%zu"
+                                   VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_VALUE,
+                                   disk_idx, prefix_hist, i);
+    }
+}
+
+
+static void
 qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                       GHashTable *stats,
                                       size_t idx,
@@ -17728,6 +17758,19 @@ qemuDomainGetStatsBlockExportFrontend(const char *frontendname,
                                        idx, i);
         }
     }
+
+    qemuDomainGetStatsBlockExportFrontendLatencyHistogram(en->histogram_read, idx,
+                                                          VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_READ_PREFIX,
+                                                          par);
+    qemuDomainGetStatsBlockExportFrontendLatencyHistogram(en->histogram_write, idx,
+                                                          VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_WRITE_PREFIX,
+                                                          par);
+    qemuDomainGetStatsBlockExportFrontendLatencyHistogram(en->histogram_zone, idx,
+                                                          VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_ZONE_APPEND_PREFIX,
+                                                          par);
+    qemuDomainGetStatsBlockExportFrontendLatencyHistogram(en->histogram_flush, idx,
+                                                          VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_FLUSH_PREFIX,
+                                                          par);
 }
 
 

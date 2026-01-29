@@ -3897,6 +3897,119 @@ struct _virDomainStatsRecord {
 # define VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_SUFFIX_ZONE_APPEND_QUEUE_DEPTH_AVG ".zone_append_queue_depth_avg"
 
 /**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_READ_PREFIX:
+ *
+ * The parameter name prefix to access 'read' latency histograms. Concatenate
+ * the prefix with either:
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT
+ *    to get the number of bins in given histogram
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX and
+ *    entry number formatted as an unsigned integer and one of the latency
+ *    histogram suffix parameters to compelte a full bin parameter name
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_READ_PREFIX ".latency_histogram.read."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_WRITE_PREFIX:
+ *
+ * The parameter name prefix to access 'write' latency histograms. Concatenate
+ * the prefix with either:
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT
+ *    to get the number of bins in given histogram
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX and
+ *    entry number formatted as an unsigned integer and one of the latency
+ *    histogram suffix parameters to compelte a full bin parameter name
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_WRITE_PREFIX ".latency_histogram.write."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_ZONE_APPEND_PREFIX:
+ *
+ * The parameter name prefix to access 'zone_append' latency histograms. Concatenate
+ * the prefix with either:
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT
+ *    to get the number of bins in given histogram
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX and
+ *    entry number formatted as an unsigned integer and one of the latency
+ *    histogram suffix parameters to compelte a full bin parameter name
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_ZONE_APPEND_PREFIX ".latency_histogram.zone_append."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_FLUSH_PREFIX:
+ *
+ * The parameter name prefix to access 'flush' latency histograms. Concatenate
+ * the prefix with either:
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT
+ *    to get the number of bins in given histogram
+ *  - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX and
+ *    entry number formatted as an unsigned integer and one of the latency
+ *    histogram suffix parameters to compelte a full bin parameter name
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_FLUSH_PREFIX ".latency_histogram.flush."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT:
+ *
+ * The parameter name suffix to access number of bins in one of the following
+ * latency histogram types:
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_READ_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_WRITE_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_ZONE_APPEND_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_FLUSH_PREFIX
+ *
+ * Number of bins in latency histogram as unsigned long long.
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_COUNT "bin.count"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX:
+ *
+ * The parameter name suffix to access a latency histogram bin in one of the
+ * following latency histogram types:
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_READ_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_WRITE_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_ZONE_APPEND_PREFIX
+ *   - VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_FLUSH_PREFIX
+ *
+ * Concatenate with a bin number as unsigned int and one of the other field
+ * suffixes to access bin parameters.
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_PREFIX "bin."
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_START:
+ *
+ * Start of the current latency histogram bin in nanoseconds as unsigned long long.
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_START ".start"
+
+/**
+ * VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_VALUE:
+ *
+ * Current value of the number of occurences of the latency within this bin
+ * as unsigned long long.
+ *
+ * Since: 12.1.0
+ */
+# define VIR_DOMAIN_STATS_BLOCK_SUFFIX_LATENCY_HISTOGRAM_SUFFIX_BIN_SUFFIX_VALUE ".value"
+
+
+/**
  * VIR_DOMAIN_STATS_PERF_CMT:
  *
  * The usage of l3 cache (bytes) by applications running on the platform as
