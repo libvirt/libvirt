@@ -567,13 +567,8 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
     }
 
     /* set throttling for the new image */
-    if (rc == 0 &&
-        !virStorageSourceIsEmpty(newsrc) &&
-        qemuDiskConfigBlkdeviotuneEnabled(disk)) {
-        rc = qemuMonitorSetBlockIoThrottle(priv->mon,
-                                           diskPriv->qomName,
-                                           &disk->blkdeviotune);
-    }
+    if (rc == 0)
+        rc = qemuProcessSetupDiskPropsRuntime(priv->mon, disk);
 
     /* Close any device with a tray since we've opened it before (regardless
      * of the current state if it e.g. wasn't updated) */
@@ -798,20 +793,10 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
     if (rc == 0)
         rc = qemuMonitorAddDeviceProps(priv->mon, &devprops);
 
-    /* Setup throttling of disk via block_set_io_throttle QMP command. This
-     * is a hack until the 'throttle' blockdev driver will support modification
-     * of the trhottle group. See also qemuProcessSetupDiskThrottlingBlockdev.
-     * As there isn't anything sane to do if this fails, let's just return
-     * success.
-     */
     if (rc == 0) {
-        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-
-        if (qemuDiskConfigBlkdeviotuneEnabled(disk)) {
-            if (qemuMonitorSetBlockIoThrottle(priv->mon, diskPriv->qomName,
-                                              &disk->blkdeviotune) < 0)
-                VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
-        }
+        /* There isn't anything sane to do if this fails (rollback would
+         * require hot-unplug), let's just return success. */
+        ignore_value(qemuProcessSetupDiskPropsRuntime(priv->mon, disk));
     }
 
     if (rc == 0 &&

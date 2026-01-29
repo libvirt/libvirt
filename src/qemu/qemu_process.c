@@ -7942,6 +7942,32 @@ qemuProcessGenID(virDomainObj *vm,
 
 
 /**
+ * qemuProcessSetupDiskPropsRuntime:
+ * @mon: qemu monitor object
+ * @disk: disk definition
+ *
+ * This function expects that caller already entered 'monitor' context.
+ *
+ * Sets up disk properties which are only possible to be set in runtime.
+ */
+int
+qemuProcessSetupDiskPropsRuntime(qemuMonitor *mon,
+                                 virDomainDiskDef *disk)
+{
+    if (virStorageSourceIsEmpty(disk->src))
+        return 0;
+
+    if (qemuDiskConfigBlkdeviotuneEnabled(disk) &&
+        qemuMonitorSetBlockIoThrottle(mon,
+                                      QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName,
+                                      &disk->blkdeviotune) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuProcessSetupDiskThrottling:
  *
  * Sets up disk trottling for -blockdev via block_set_io_throttle monitor
@@ -7964,16 +7990,7 @@ qemuProcessSetupDiskThrottling(virDomainObj *vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
 
-        /* Setting throttling for empty drives fails */
-        if (virStorageSourceIsEmpty(disk->src))
-            continue;
-
-        if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
-            continue;
-
-        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm),
-                                          QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName,
-                                          &disk->blkdeviotune) < 0)
+        if (qemuProcessSetupDiskPropsRuntime(qemuDomainGetMonitor(vm), disk) < 0)
             goto cleanup;
     }
 

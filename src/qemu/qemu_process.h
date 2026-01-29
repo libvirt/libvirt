@@ -146,6 +146,9 @@ int qemuProcessPrepareHostStorageSourceChain(virDomainObj *vm,
 int qemuProcessPrepareHostStorageDisk(virDomainObj *vm,
                                   virDomainDiskDef *disk);
 
+int qemuProcessSetupDiskPropsRuntime(qemuMonitor *mon,
+                                     virDomainDiskDef *disk);
+
 int qemuProcessDeleteThreadContext(virDomainObj *vm);
 
 int qemuProcessLaunch(virConnectPtr conn,
