@@ -4,6 +4,5 @@
   <forward mode='open'/>
   <bridge name='virbr1' stp='on' delay='0'/>
   <mac address='12:34:56:78:9a:bc'/>
-  <ip address='192.168.122.1' netmask='255.255.255.0'>
-  </ip>
+  <ip address='192.168.122.1' netmask='255.255.255.0'/>
 </network>

@@ -13,8 +13,7 @@
       <host mac='00:16:3e:3e:a9:1a' name='b.example.com' ip='192.168.122.11'/>
     </dhcp>
   </ip>
-  <ip family='ipv4' address='192.168.123.1' netmask='255.255.255.0'>
-  </ip>
+  <ip family='ipv4' address='192.168.123.1' netmask='255.255.255.0'/>
   <ip family='ipv6' address='2001:db8:ac10:fd01::1' prefix='64'>
     <dhcp>
       <range start='2001:db8:ac10:fd01::1:10' end='2001:db8:ac10:fd01::1:ff'/>
@@ -25,6 +24,5 @@
       <host id='0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66' name='badbob' ip='2001:db8:ac10:fd01::1:24'/>
     </dhcp>
   </ip>
-  <ip family='ipv4' address='10.24.10.1'>
-  </ip>
+  <ip family='ipv4' address='10.24.10.1'/>
 </network>

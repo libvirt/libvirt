@@ -2065,40 +2065,40 @@ static int
 virNetworkIPDefFormat(virBuffer *buf,
                       const virNetworkIPDef *def)
 {
-    virBufferAddLit(buf, "<ip");
+    virBuffer ipAttrBuf = VIR_BUFFER_INITIALIZER;
+    virBuffer ipChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (def->family)
-        virBufferAsprintf(buf, " family='%s'", def->family);
+        virBufferAsprintf(&ipAttrBuf, " family='%s'", def->family);
     if (VIR_SOCKET_ADDR_VALID(&def->address)) {
         g_autofree char *addr = virSocketAddrFormat(&def->address);
         if (!addr)
             return -1;
-        virBufferAsprintf(buf, " address='%s'", addr);
+        virBufferAsprintf(&ipAttrBuf, " address='%s'", addr);
     }
     if (VIR_SOCKET_ADDR_VALID(&def->netmask)) {
         g_autofree char *addr = virSocketAddrFormat(&def->netmask);
         if (!addr)
             return -1;
-        virBufferAsprintf(buf, " netmask='%s'", addr);
+        virBufferAsprintf(&ipAttrBuf, " netmask='%s'", addr);
     }
     if (def->prefix > 0)
-        virBufferAsprintf(buf, " prefix='%u'", def->prefix);
+        virBufferAsprintf(&ipAttrBuf, " prefix='%u'", def->prefix);
 
     if (def->localPTR) {
-        virBufferAsprintf(buf, " localPtr='%s'",
+        virBufferAsprintf(&ipAttrBuf, " localPtr='%s'",
                           virTristateBoolTypeToString(def->localPTR));
     }
 
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
-    virBufferEscapeString(buf, "<tftp root='%s'/>\n",
+    virBufferEscapeString(&ipChildBuf, "<tftp root='%s'/>\n",
                           def->tftproot);
     if ((def->nranges || def->nhosts)) {
+        virBuffer dhcpChildBuf = VIR_BUFFER_INIT_CHILD(&ipChildBuf);
         size_t i;
-        virBufferAddLit(buf, "<dhcp>\n");
-        virBufferAdjustIndent(buf, 2);
 
         for (i = 0; i < def->nranges; i++) {
+            virBuffer rangeAttrBuf = VIR_BUFFER_INITIALIZER;
+            virBuffer rangeChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
             virSocketAddrRange addr = def->ranges[i].addr;
             virNetworkDHCPLeaseTimeDef *lease = def->ranges[i].lease;
             g_autofree char *saddr = NULL;
@@ -2110,75 +2110,69 @@ virNetworkIPDefFormat(virBuffer *buf,
             if (!(eaddr = virSocketAddrFormat(&addr.end)))
                 return -1;
 
-            virBufferAsprintf(buf, "<range start='%s' end='%s'",
+            virBufferAsprintf(&rangeAttrBuf, " start='%s' end='%s'",
                               saddr, eaddr);
             if (lease) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
                 if (!lease->expiry) {
-                    virBufferAddLit(buf, "<lease expiry='0'/>\n");
+                    virBufferAddLit(&rangeChildBuf, "<lease expiry='0'/>\n");
                 } else {
-                    virBufferAsprintf(buf, "<lease expiry='%llu' unit='%s'/>\n",
+                    virBufferAsprintf(&rangeChildBuf, "<lease expiry='%llu' unit='%s'/>\n",
                                       lease->expiry,
                                       virNetworkDHCPLeaseTimeUnitTypeToString(lease->unit));
                 }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</range>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
             }
+
+            virXMLFormatElement(&dhcpChildBuf, "range", &rangeAttrBuf, &rangeChildBuf);
         }
         for (i = 0; i < def->nhosts; i++) {
+            virBuffer hostAttrBuf = VIR_BUFFER_INITIALIZER;
+            virBuffer hostChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
             virNetworkDHCPLeaseTimeDef *lease = def->hosts[i].lease;
-            virBufferAddLit(buf, "<host");
+
             if (def->hosts[i].mac)
-                virBufferAsprintf(buf, " mac='%s'", def->hosts[i].mac);
+                virBufferAsprintf(&hostAttrBuf, " mac='%s'", def->hosts[i].mac);
             if (def->hosts[i].id)
-                virBufferAsprintf(buf, " id='%s'", def->hosts[i].id);
+                virBufferAsprintf(&hostAttrBuf, " id='%s'", def->hosts[i].id);
             if (def->hosts[i].name)
-                virBufferAsprintf(buf, " name='%s'", def->hosts[i].name);
+                virBufferAsprintf(&hostAttrBuf, " name='%s'", def->hosts[i].name);
             if (VIR_SOCKET_ADDR_VALID(&def->hosts[i].ip)) {
                 g_autofree char *ipaddr = virSocketAddrFormat(&def->hosts[i].ip);
                 if (!ipaddr)
                     return -1;
 
-                virBufferAsprintf(buf, " ip='%s'", ipaddr);
+                virBufferAsprintf(&hostAttrBuf, " ip='%s'", ipaddr);
             }
             if (lease) {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
                 if (!lease->expiry) {
-                    virBufferAddLit(buf, "<lease expiry='0'/>\n");
+                    virBufferAddLit(&hostChildBuf, "<lease expiry='0'/>\n");
                 } else {
-                    virBufferAsprintf(buf, "<lease expiry='%llu' unit='%s'/>\n",
+                    virBufferAsprintf(&hostChildBuf, "<lease expiry='%llu' unit='%s'/>\n",
                                       lease->expiry,
                                       virNetworkDHCPLeaseTimeUnitTypeToString(lease->unit));
                 }
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</host>\n");
-            } else {
-                virBufferAddLit(buf, "/>\n");
             }
+
+            virXMLFormatElement(&dhcpChildBuf, "host", &hostAttrBuf, &hostChildBuf);
         }
         if (def->bootfile) {
-            virBufferEscapeString(buf, "<bootp file='%s'",
-                                  def->bootfile);
+            virBuffer bootpAttrBuf = VIR_BUFFER_INITIALIZER;
+
+            virBufferEscapeString(&bootpAttrBuf, " file='%s'", def->bootfile);
             if (VIR_SOCKET_ADDR_VALID(&def->bootserver)) {
                 g_autofree char *ipaddr = virSocketAddrFormat(&def->bootserver);
                 if (!ipaddr)
                     return -1;
 
-                virBufferEscapeString(buf, " server='%s'", ipaddr);
+                virBufferEscapeString(&bootpAttrBuf, " server='%s'", ipaddr);
             }
-            virBufferAddLit(buf, "/>\n");
 
+            virXMLFormatElement(&dhcpChildBuf, "bootp", &bootpAttrBuf, NULL);
         }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</dhcp>\n");
+
+        virXMLFormatElement(&ipChildBuf, "dhcp", NULL, &dhcpChildBuf);
     }
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</ip>\n");
+    virXMLFormatElement(buf, "ip", &ipAttrBuf, &ipChildBuf);
 
     return 0;
 }
