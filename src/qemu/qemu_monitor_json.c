@@ -2462,6 +2462,52 @@ qemuMonitorJSONBlockStatsCollectDataTimed(virJSONValue *timed_stats,
 }
 
 
+static void
+qemuMonitorJSONBlockStatsCollectDataLatencyHistogram(virJSONValue *stats,
+                                                     const char *histogram_field,
+                                                     struct qemuBlockStatsLatencyHistogram **histogram_data)
+{
+    virJSONValue *hist;
+    virJSONValue *hist_bins;
+    virJSONValue *hist_bounds;
+    g_autofree struct qemuBlockStatsLatencyHistogramBin *bins = NULL;
+    size_t nbins = 0;
+    size_t i;
+
+    if (!(hist = virJSONValueObjectGetObject(stats, histogram_field)))
+        return;
+
+    if (!(hist_bins = virJSONValueObjectGetArray(hist, "bins")) ||
+        !(hist_bounds = virJSONValueObjectGetArray(hist, "boundaries")) ||
+        virJSONValueArraySize(hist_bins) != (virJSONValueArraySize(hist_bounds) + 1)) {
+        VIR_DEBUG("malformed latency histogram container");
+        return;
+    }
+
+    nbins = virJSONValueArraySize(hist_bins);
+    bins = g_new0(struct qemuBlockStatsLatencyHistogramBin, nbins);
+
+    for (i = 0; i < nbins; i++) {
+        virJSONValue *bin = virJSONValueArrayGet(hist_bins, i);
+        virJSONValue *bound = NULL;
+
+        if (i > 0)
+            bound = virJSONValueArrayGet(hist_bounds, i - 1);
+
+        if (!bin ||
+            virJSONValueGetNumberUlong(bin, &(bins[i].value)) < 0 ||
+            (bound && virJSONValueGetNumberUlong(bound, &(bins[i].start)) < 0)) {
+            VIR_DEBUG("malformed latency histogram container");
+            return;
+        }
+    }
+
+    *histogram_data = g_new0(struct qemuBlockStatsLatencyHistogram, 1);
+    (*histogram_data)->bins = g_steal_pointer(&bins);
+    (*histogram_data)->nbins = nbins;
+}
+
+
 static qemuBlockStats *
 qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
                                      int *nstats)
@@ -2505,6 +2551,15 @@ qemuMonitorJSONBlockStatsCollectData(virJSONValue *dev,
                                              &bstats->wr_highest_offset) == 0)
             bstats->wr_highest_offset_valid = true;
     }
+
+    qemuMonitorJSONBlockStatsCollectDataLatencyHistogram(stats, "rd_latency_histogram",
+                                                         &bstats->histogram_read);
+    qemuMonitorJSONBlockStatsCollectDataLatencyHistogram(stats, "wr_latency_histogram",
+                                                         &bstats->histogram_write);
+    qemuMonitorJSONBlockStatsCollectDataLatencyHistogram(stats, "zone_append_latency_histogram",
+                                                         &bstats->histogram_zone);
+    qemuMonitorJSONBlockStatsCollectDataLatencyHistogram(stats, "flush_latency_histogram",
+                                                         &bstats->histogram_flush);
 
     if ((timed_stats = virJSONValueObjectGetArray(stats, "timed_stats")) &&
         virJSONValueArraySize(timed_stats) > 0)

@@ -1943,6 +1943,26 @@ qemuBlockStatsFinalize(GObject *object)
     g_free(stats->limits);
     g_free(stats->timed_stats);
 
+    if (stats->histogram_read) {
+        g_free(stats->histogram_read->bins);
+        g_free(stats->histogram_read);
+    }
+
+    if (stats->histogram_write) {
+        g_free(stats->histogram_write->bins);
+        g_free(stats->histogram_write);
+    }
+
+    if (stats->histogram_zone) {
+        g_free(stats->histogram_zone->bins);
+        g_free(stats->histogram_zone);
+    }
+
+    if (stats->histogram_flush) {
+        g_free(stats->histogram_flush->bins);
+        g_free(stats->histogram_flush);
+    }
+
     G_OBJECT_CLASS(qemu_block_stats_parent_class)->finalize(object);
 }
 

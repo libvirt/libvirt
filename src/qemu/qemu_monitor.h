@@ -803,6 +803,18 @@ struct qemuBlockStatsLimits {
 };
 
 
+struct qemuBlockStatsLatencyHistogramBin {
+    unsigned long long start;
+    unsigned long long value;
+};
+
+
+struct qemuBlockStatsLatencyHistogram {
+    struct qemuBlockStatsLatencyHistogramBin *bins;
+    size_t nbins;
+};
+
+
 struct qemuBlockStatsTimed {
     unsigned long long interval_length;
 
@@ -855,6 +867,12 @@ struct _qemuBlockStats {
     /* block accounting/timed stats from qemu - one entry per interval configured */
     size_t n_timed_stats;
     struct qemuBlockStatsTimed *timed_stats;
+
+    /* latency histograms */
+    struct qemuBlockStatsLatencyHistogram *histogram_read;
+    struct qemuBlockStatsLatencyHistogram *histogram_write;
+    struct qemuBlockStatsLatencyHistogram *histogram_zone;
+    struct qemuBlockStatsLatencyHistogram *histogram_flush;
 };
 G_DECLARE_FINAL_TYPE(qemuBlockStats, qemu_block_stats, QEMU, BLOCK_STATS, GObject);
 
