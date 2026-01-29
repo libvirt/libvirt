@@ -125,16 +125,16 @@ testCompareXMLToConfFiles(const void *data)
     bool compareFailed = false;
 
     if (!(obj = virNetworkObjNew()))
-        goto fail;
+        goto cleanup;
 
     if (!(def = g_steal_pointer(&info->def))) {
         /* Previous test wasn't executed. */
         if (!(def = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false)))
-            goto fail;
+            goto cleanup;
 
         if (networkValidateTests(def) < 0) {
             virNetworkDefFree(def);
-            goto fail;
+            goto cleanup;
         }
     }
 
@@ -142,17 +142,17 @@ testCompareXMLToConfFiles(const void *data)
 
     if (!networkNeedsDnsmasq(def)) {
         ret = EXIT_AM_SKIP;
-        goto fail;
+        goto cleanup;
     }
 
     dctx = dnsmasqContextNew(def->name, "/var/lib/libvirt/dnsmasq");
 
     if (dctx == NULL)
-        goto fail;
+        goto cleanup;
 
     if (networkDnsmasqConfContents(obj, pidfile, &confactual,
                                    &hostsfileactual, dctx, info->caps) < 0)
-        goto fail;
+        goto cleanup;
 
     /* Any changes to this function ^^ should be reflected here too. */
 #ifndef __linux__
@@ -162,7 +162,7 @@ testCompareXMLToConfFiles(const void *data)
         if (!(tmp = virStringReplace(confactual,
                                      "except-interface=lo0\n",
                                      "except-interface=lo\n")))
-            goto fail;
+            goto cleanup;
         VIR_FREE(confactual);
         confactual = g_steal_pointer(&tmp);
     }
@@ -184,11 +184,11 @@ testCompareXMLToConfFiles(const void *data)
     }
 
     if (compareFailed)
-        goto fail;
+        goto cleanup;
 
     ret = 0;
 
- fail:
+ cleanup:
     VIR_FREE(confactual);
     virNetworkObjEndAPI(&obj);
     return ret;
