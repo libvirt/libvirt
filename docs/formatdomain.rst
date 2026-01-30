@@ -3625,11 +3625,17 @@ paravirtualized driver is specified via the ``disk`` element.
           </iothreads>
         </driver>
 
-   -  The optional ``statistics`` sub-element allows configuring statistics
-      collection in configurable intervals for the given disk. Intervals are
-      configured by ``<statistic>`` sub-elements with ``interval`` attribute
-      configuring the collection window duration in seconds. The statistics
-      are available via the bulk statistics API.
+   -  The optional ``statistics`` sub-element allows configuring various optional
+      statistics collection.
+
+      Statistic values returned under
+      `VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX <html/libvirt-libvirt-domain.html#VIR_DOMAIN_STATS_BLOCK_SUFFIX_TIMED_GROUP_PREFIX>`__
+      typed parameter prefix returned by the
+      `virConnectGetAllDomainStats <html/libvirt-libvirt-domain.html#virConnectGetAllDomainStats>`__
+      API are collected based on one or more configurable intervals. An interval
+      of collection is configured by ``<statistic>`` sub-elements with
+      ``interval`` attribute configuring the collection window duration in
+      seconds.
 
       Example::
 
