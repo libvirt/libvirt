@@ -141,6 +141,7 @@ domains.
            <value>no</value>
          </enum>
        </loader>
+       <varstore supported='yes'/>
      </os>
      ...
    <domainCapabilities>
@@ -226,6 +227,12 @@ are the following:
    Secure Boot certificates enrolled. To figure out whether it's actually
    possible to enforce Secure Boot, look at the ``enrolledKeys`` enum inside
    the ``<firmwareFeatures/>`` element instead.
+
+The ``<varstore/>`` element :since:`(since 12.1.0)` indicates whether UEFI
+variable storage backed by the ``uefi-vars`` QEMU device can be used as an
+alternative to pflash-based NVRAM storage. This is the only type of variable
+storage compatible with Secure Boot on non-x86 architectures, but it can be
+used on x86 too.
 
 CPU configuration
 ~~~~~~~~~~~~~~~~~

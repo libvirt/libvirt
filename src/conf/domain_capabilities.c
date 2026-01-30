@@ -450,11 +450,20 @@ virDomainCapsLoaderFormat(virBuffer *buf,
 }
 
 static void
+virDomainCapsVarstoreFormat(virBuffer *buf,
+                            const virDomainCapsVarstore *varstore)
+{
+    FORMAT_PROLOGUE(varstore);
+    FORMAT_EPILOGUE(varstore);
+}
+
+static void
 virDomainCapsOSFormat(virBuffer *buf,
                       const virDomainCapsOS *os)
 {
     const virDomainCapsFirmwareFeatures *firmwareFeatures = &os->firmwareFeatures;
     const virDomainCapsLoader *loader = &os->loader;
+    const virDomainCapsVarstore *varstore = &os->varstore;
 
     FORMAT_PROLOGUE(os);
 
@@ -462,6 +471,7 @@ virDomainCapsOSFormat(virBuffer *buf,
 
     virDomainCapsFirmwareFeaturesFormat(&childBuf, firmwareFeatures);
     virDomainCapsLoaderFormat(&childBuf, loader);
+    virDomainCapsVarstoreFormat(&childBuf, varstore);
 
     FORMAT_EPILOGUE(os);
 }

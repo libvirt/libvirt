@@ -87,6 +87,12 @@
     </element>
   </define>
 
+  <define name="varstore">
+    <element name="varstore">
+      <ref name="supported"/>
+    </element>
+  </define>
+
   <define name="os">
     <element name="os">
       <interleave>
@@ -97,6 +103,9 @@
         </optional>
         <optional>
           <ref name="loader"/>
+        </optional>
+        <optional>
+          <ref name="varstore"/>
         </optional>
       </interleave>
     </element>

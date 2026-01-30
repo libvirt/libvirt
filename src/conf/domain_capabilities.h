@@ -61,6 +61,11 @@ struct _virDomainCapsLoader {
     virDomainCapsEnum secure;   /* Info about secure:virTristateBool */
 };
 
+typedef struct _virDomainCapsVarstore virDomainCapsVarstore;
+struct _virDomainCapsVarstore {
+    virTristateBool supported;
+};
+
 STATIC_ASSERT_ENUM(VIR_DOMAIN_OS_DEF_FIRMWARE_LAST);
 typedef struct _virDomainCapsOS virDomainCapsOS;
 struct _virDomainCapsOS {
@@ -68,6 +73,7 @@ struct _virDomainCapsOS {
     virDomainCapsEnum firmware;     /* Info about virDomainOsDefFirmware */
     virDomainCapsFirmwareFeatures firmwareFeatures;
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
+    virDomainCapsVarstore varstore;
 };
 
 STATIC_ASSERT_ENUM(VIR_DOMAIN_MEMORY_SOURCE_LAST);
