@@ -143,6 +143,7 @@ struct supportedData {
     const char *machine;
     virArch arch;
     bool secure;
+    bool varstore;
     const char *fwlist;
     unsigned int *interfaces;
     size_t ninterfaces;
@@ -158,6 +159,7 @@ testSupportedFW(const void *opaque)
     uint64_t actualFeatureSecureBoot;
     uint64_t actualFeatureEnrolledKeys;
     bool actualSecure;
+    bool actualVarstore;
     virFirmware **expFWs = NULL;
     size_t nexpFWs = 0;
     virFirmware **actFWs = NULL;
@@ -187,7 +189,8 @@ testSupportedFW(const void *opaque)
                                  &actualInterfaces,
                                  &actualFeatureSecureBoot,
                                  &actualFeatureEnrolledKeys,
-                                 &actualSecure, &actFWs, &nactFWs) < 0) {
+                                 &actualSecure, &actualVarstore,
+                                 &actFWs, &nactFWs) < 0) {
         fprintf(stderr, "Unable to get list of supported interfaces\n");
         goto cleanup;
     }
@@ -205,6 +208,14 @@ testSupportedFW(const void *opaque)
                 "Mismatch in SMM requirement/support. "
                 "Expected %d got %d\n",
                 data->secure, actualSecure);
+        goto cleanup;
+    }
+
+    if (actualVarstore != data->varstore) {
+        fprintf(stderr,
+                "Mismatch in varstore support. "
+                "Expected %d got %d\n",
+                data->varstore, actualVarstore);
         goto cleanup;
     }
 
@@ -295,26 +306,26 @@ mymain(void)
     /* The @fwlist contains pairs of ${FW}:${NVRAM}. If there's
      * no NVRAM expected pass literal "NULL" and test fixes that
      * later. */
-#define DO_SUPPORTED_TEST(machine, arch, secure, fwlist, ...) \
+#define DO_SUPPORTED_TEST(machine, arch, secure, varstore, fwlist, ...) \
     do { \
         unsigned int interfaces[] = {__VA_ARGS__}; \
-        struct supportedData data = {machine, arch, secure, fwlist, \
+        struct supportedData data = {machine, arch, secure, varstore, fwlist, \
                                      interfaces, G_N_ELEMENTS(interfaces)}; \
         if (virTestRun("QEMU FW SUPPORTED " machine " " #arch, \
                        testSupportedFW, &data) < 0) \
             ret = -1; \
     } while (0)
 
-    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false,
+    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_X86_64, false, false,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
                       "/usr/share/edk2/ovmf/OVMF_CODE_4M.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.qcow2:"
                       "/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
-    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false,
+    DO_SUPPORTED_TEST("pc-i440fx-3.1", VIR_ARCH_I686, false, false,
                       "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
-    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true,
+    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true, false,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
                       "/usr/share/edk2/ovmf/OVMF_CODE_4M.secboot.qcow2:/usr/share/edk2/ovmf/OVMF_VARS_4M.secboot.qcow2:"
                       "/usr/share/edk2/ovmf/OVMF_CODE.secboot.fd:/usr/share/edk2/ovmf/OVMF_VARS.secboot.fd:"
@@ -327,19 +338,19 @@ mymain(void)
                       "/usr/share/edk2/ovmf/OVMF.inteltdx.secboot.fd:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
-    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false,
+    DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_I686, false, false,
                       "/usr/share/seabios/bios-256k.bin:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
-    DO_SUPPORTED_TEST("microvm", VIR_ARCH_X86_64, false,
+    DO_SUPPORTED_TEST("microvm", VIR_ARCH_X86_64, false, false,
                       "/usr/share/edk2/ovmf/MICROVM.fd:NULL",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
-    DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false,
+    DO_SUPPORTED_TEST("virt-3.1", VIR_ARCH_AARCH64, false, false,
                       "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-pflash.qcow2:/usr/share/edk2/aarch64/vars-template-pflash.qcow2:"
                       "/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
-    DO_SUPPORTED_TEST("virt", VIR_ARCH_RISCV64, false,
+    DO_SUPPORTED_TEST("virt", VIR_ARCH_RISCV64, false, false,
                       "/usr/share/edk2/riscv/RISCV_VIRT_CODE.qcow2:/usr/share/edk2/riscv/RISCV_VIRT_VARS.qcow2",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
 

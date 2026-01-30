@@ -31,6 +31,7 @@
         <value>no</value>
       </enum>
     </loader>
+    <varstore supported='no'/>
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'>

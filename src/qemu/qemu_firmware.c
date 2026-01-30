@@ -2033,6 +2033,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
  * @featureSecureBoot: bitmap of virTristateBool values for secure-boot feature
  * @featureEnrolledKeys: bitmap of virTristateBool values for enrolled-keys feature
  * @secure: true if at least one secure boot enabled FW was found
+ * @varstore: true if at least one FW using varstore was found
  * @fws: (optional) list of found firmwares
  * @nfws: (optional) number of members in @fws
  *
@@ -2064,6 +2065,7 @@ qemuFirmwareGetSupported(const char *machine,
                          uint64_t *featureSecureBoot,
                          uint64_t *featureEnrolledKeys,
                          bool *secure,
+                         bool *varstore,
                          virFirmware ***fws,
                          size_t *nfws)
 {
@@ -2075,6 +2077,7 @@ qemuFirmwareGetSupported(const char *machine,
     *featureSecureBoot = VIR_TRISTATE_BOOL_ABSENT;
     *featureEnrolledKeys = VIR_TRISTATE_BOOL_ABSENT;
     *secure = false;
+    *varstore = false;
 
     if (fws) {
         *fws = NULL;
@@ -2162,6 +2165,9 @@ qemuFirmwareGetSupported(const char *machine,
         case QEMU_FIRMWARE_DEVICE_MEMORY:
             fwpath = memory->filename;
             nvrampath = memory->template;
+
+            if (memory->template)
+                *varstore = true;
             break;
 
         case QEMU_FIRMWARE_DEVICE_NONE:

@@ -6519,7 +6519,25 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoader *capsLoader,
 
 
 static int
+virQEMUCapsFillDomainVarstoreCaps(virDomainCapsVarstore *capsVarstore,
+                                  bool varstore,
+                                  virQEMUCaps *qemuCaps)
+{
+    /* varstore is advertised as supported only if firmware
+     * descriptors that use it exist and the QEMU binary has the
+     * necessary device compiled in */
+    if (varstore && virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_UEFI_VARS))
+        capsVarstore->supported = VIR_TRISTATE_BOOL_YES;
+    else
+        capsVarstore->supported = VIR_TRISTATE_BOOL_NO;
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
+                            virQEMUCaps *qemuCaps,
                             const char *machine,
                             virArch arch,
                             bool privileged,
@@ -6528,10 +6546,12 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
 {
     virDomainCapsFirmwareFeatures *firmwareFeatures = &os->firmwareFeatures;
     virDomainCapsLoader *capsLoader = &os->loader;
+    virDomainCapsVarstore *capsVarstore = &os->varstore;
     uint64_t autoFirmwares = 0;
     uint64_t featureSecureBoot = 0;
     uint64_t featureEnrolledKeys = 0;
     bool secure = false;
+    bool varstore = false;
     virFirmware **firmwaresAlt = NULL;
     size_t nfirmwaresAlt = 0;
     int ret = -1;
@@ -6541,7 +6561,7 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
 
     if (qemuFirmwareGetSupported(machine, arch, privileged, &autoFirmwares,
                                  &featureSecureBoot, &featureEnrolledKeys,
-                                 &secure,
+                                 &secure, &varstore,
                                  &firmwaresAlt, &nfirmwaresAlt) < 0)
         return -1;
 
@@ -6566,6 +6586,9 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
     if (virQEMUCapsFillDomainLoaderCaps(capsLoader, secure,
                                         firmwaresAlt ? firmwaresAlt : firmwares,
                                         firmwaresAlt ? nfirmwaresAlt : nfirmwares) < 0)
+        goto cleanup;
+
+    if (virQEMUCapsFillDomainVarstoreCaps(capsVarstore, varstore, qemuCaps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -7289,6 +7312,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
     }
 
     if (virQEMUCapsFillDomainOSCaps(os,
+                                    qemuCaps,
                                     domCaps->machine,
                                     domCaps->arch,
                                     privileged,
