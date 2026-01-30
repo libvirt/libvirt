@@ -46,6 +46,7 @@ util_sources = [
   'viridentity.c',
   'virinhibitor.c',
   'virinitctl.c',
+  'viriommufd.c',
   'viriscsi.c',
   'virjson.c',
   'virkeycode.c',

@@ -303,6 +303,7 @@ src/util/virhostuptime.c
 src/util/viridentity.c
 src/util/virinhibitor.c
 src/util/virinitctl.c
+src/util/viriommufd.c
 src/util/viriscsi.c
 src/util/virjson.c
 src/util/virlease.c
