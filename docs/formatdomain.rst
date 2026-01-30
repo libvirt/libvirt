@@ -4924,6 +4924,12 @@ or:
    found is "problematic" in some way, the generic vfio-pci driver
    similarly be forced.
 
+   :since:`Since 12.1.0 (QEMU and KVM only)`, the ``iommufd`` element
+   can be used to enable IOMMUFD backend for VFIO device. This
+   provides an interface to propagate DMA mappings to kernel for
+   assigned devices. Libvirt will open the /dev/iommu and VFIO device
+   cdev and pass associated file descriptors to QEMU.
+
    (Note: :since:`Since 1.0.5`, the ``name`` attribute has been
    described to be used to select the type of PCI device assignment
    ("vfio", "kvm", or "xen"), but those values have been mostly

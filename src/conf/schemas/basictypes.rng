@@ -673,6 +673,11 @@
           <ref name="genericName"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="iommufd">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <empty/>
     </element>
   </define>

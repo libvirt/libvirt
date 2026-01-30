@@ -47,6 +47,7 @@ VIR_ENUM_DECL(virDeviceHostdevPCIDriverName);
 struct _virDeviceHostdevPCIDriverInfo {
     virDeviceHostdevPCIDriverName name;
     char *model;
+    virTristateBool iommufd;
 };
 
 typedef enum {

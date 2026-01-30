@@ -4761,6 +4761,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
     const char *failover_pair_id = NULL;
     const char *driver = NULL;
+    const char *iommufdId = NULL;
     /* 'ramfb' property must be omitted unless it's to be enabled */
     bool ramfb = pcisrc->ramfb == VIR_TRISTATE_SWITCH_ON;
 
@@ -4794,6 +4795,9 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
         teaming->persistent)
         failover_pair_id = teaming->persistent;
 
+    if (pcisrc->driver.iommufd == VIR_TRISTATE_BOOL_YES)
+        iommufdId = "iommufd0";
+
     if (virJSONValueObjectAdd(&props,
                               "s:driver", driver,
                               "s:host", host,
@@ -4802,6 +4806,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
                               "S:failover_pair_id", failover_pair_id,
                               "S:display", qemuOnOffAuto(pcisrc->display),
                               "B:ramfb", ramfb,
+                              "S:iommufd", iommufdId,
                               NULL) < 0)
         return NULL;
 
@@ -5315,6 +5320,44 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
         }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuBuildIOMMUFDCommandLine(virCommand *cmd,
+                            const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+        virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
+        g_autoptr(virJSONValue) props = NULL;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+
+        if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            continue;
+
+        if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
+            continue;
+
+        if (subsys->u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES)
+            continue;
+
+        if (qemuMonitorCreateObjectProps(&props, "iommufd",
+                                         "iommufd0",
+                                         NULL) < 0)
+            return -1;
+
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
+            return -1;
+
+        break;
     }
 
     return 0;
@@ -10940,6 +10983,9 @@ qemuBuildCommandLine(virDomainObj *vm,
         return NULL;
 
     if (qemuBuildRedirdevCommandLine(cmd, def, qemuCaps) < 0)
+        return NULL;
+
+    if (qemuBuildIOMMUFDCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps) < 0)
