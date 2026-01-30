@@ -351,6 +351,33 @@ fakeNetworkPortGetXMLDesc(virNetworkPortPtr port,
 }
 
 
+static void
+testSetupHostdevPrivateData(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = def->hostdevs[i];
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
+            hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
+
+            qemuDomainHostdevPrivate *priv;
+
+            if (!hostdev->privateData) {
+                hostdev->privateData = qemuDomainHostdevPrivateNew();
+            }
+
+            priv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
+            /* Use a placeholder FD value for tests */
+            priv->vfioDeviceFd = 0;
+        }
+    }
+}
+
+
 static virNetworkDriver fakeNetworkDriver = {
     .networkLookupByName = fakeNetworkLookupByName,
     .networkGetXMLDesc = fakeNetworkGetXMLDesc,
@@ -403,6 +430,8 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 
     if (testQemuPrepareHostBackendChardevOne(NULL, priv->monConfig, vm) < 0)
         return NULL;
+
+    testSetupHostdevPrivateData(vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
@@ -3068,6 +3097,11 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-dma-translation");
     DO_TEST_CAPS_LATEST("acpi-generic-initiator");
+
+    DO_TEST_CAPS_LATEST("iommufd");
+    DO_TEST_CAPS_LATEST("iommufd-q35");
+    DO_TEST_CAPS_ARCH_LATEST("iommufd-virt", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("iommufd-virt-pci-bus-single", "aarch64");
 
     DO_TEST_CAPS_LATEST("cpu-hotplug-startup");
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR("cpu-hotplug-granularity", "ppc64");
