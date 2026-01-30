@@ -313,7 +313,16 @@ mymain(void)
     DO_TEST("bandwidth-network");
     DO_TEST("openvswitch-net");
     DO_TEST_VALIDATE_ERROR("passthrough-pf");
+#ifdef __linux__
     DO_TEST("hostdev");
+#else
+    /* Our test runners call networkValidateTests() which for
+     * <forward mode='hostdev'/> means validating that PCI
+     * devices are VFs. It's done so by querying sysfs which
+     * obviously works on Linux only. Thus, expect a validation
+     * error elsewhere. */
+    DO_TEST_VALIDATE_ERROR("hostdev");
+#endif
     DO_TEST_FLAGS("hostdev-pf", VIR_NETWORK_XML_INACTIVE);
     DO_TEST_FLAGS("hostdev-pf-driver-model", VIR_NETWORK_XML_INACTIVE);
     DO_TEST("ptr-domains-auto");
