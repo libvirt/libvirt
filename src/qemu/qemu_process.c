@@ -104,6 +104,7 @@
 #include "backup_conf.h"
 #include "storage_file_probe.h"
 #include "virpci.h"
+#include "viriommufd.h"
 
 #include "logging/log_manager.h"
 #include "logging/log_protocol.h"
@@ -7672,6 +7673,42 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
 }
 
 /**
+ * qemuProcessOpenIommuFd:
+ * @vm: domain object
+ * @iommuFd: returned file descriptor
+ *
+ * Opens /dev/iommu file descriptor for the VM.
+ *
+ * Returns: FD on success, -1 on failure
+ */
+static int
+qemuProcessOpenIommuFd(virDomainObj *vm)
+{
+    int fd = -1;
+
+    VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
+
+    if ((fd = open(VIR_IOMMU_DEV_PATH, O_RDWR | O_CLOEXEC)) < 0) {
+        if (errno == ENOENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("IOMMU FD support requires /dev/iommu device"));
+        } else {
+            virReportSystemError(errno, "%s",
+                                 _("cannot open /dev/iommu"));
+        }
+        return -1;
+    }
+
+    if (virIOMMUFDSetRLimitMode(fd, true) < 0) {
+        VIR_FORCE_CLOSE(fd);
+        return -1;
+    }
+
+    VIR_DEBUG("Opened IOMMU FD %d for domain %s", fd, vm->def->name);
+    return fd;
+}
+
+/**
  * qemuProcessOpenVfioDeviceFd:
  * @hostdev: host device definition
  * @vfioFd: returned file descriptor
@@ -7725,6 +7762,7 @@ qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 static int
 qemuProcessOpenVfioFds(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
 
     /* Check if we have any hostdevs that need VFIO FDs */
@@ -7740,6 +7778,11 @@ qemuProcessOpenVfioFds(virDomainObj *vm)
             hostdevPriv->vfioDeviceFd = qemuProcessOpenVfioDeviceFd(hostdev);
             if (hostdevPriv->vfioDeviceFd == -1)
                  return -1;
+
+            /* Open IOMMU FD */
+            priv->iommufd = qemuProcessOpenIommuFd(vm);
+            if (priv->iommufd == -1)
+                return -1;
         }
     }
 

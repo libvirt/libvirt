@@ -5349,9 +5349,13 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
 
 static int
 qemuBuildIOMMUFDCommandLine(virCommand *cmd,
-                            const virDomainDef *def)
+                            const virDomainDef *def,
+                            virDomainObj *vm)
 {
     size_t i;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autofree char *fdstr = g_strdup_printf("%d", priv->iommufd);
+
 
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = def->hostdevs[i];
@@ -5370,8 +5374,13 @@ qemuBuildIOMMUFDCommandLine(virCommand *cmd,
         if (subsys->u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES)
             continue;
 
+        virCommandPassFD(cmd, priv->iommufd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+
+        priv->iommufd = -1;
+
         if (qemuMonitorCreateObjectProps(&props, "iommufd",
                                          "iommufd0",
+                                         "S:fd", fdstr,
                                          NULL) < 0)
             return -1;
 
@@ -11006,7 +11015,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildRedirdevCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildIOMMUFDCommandLine(cmd, def) < 0)
+    if (qemuBuildIOMMUFDCommandLine(cmd, def, vm) < 0)
         return NULL;
 
     if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps) < 0)

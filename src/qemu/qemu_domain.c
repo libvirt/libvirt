@@ -2042,6 +2042,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     priv->blockjobs = virHashNew(virObjectUnref);
     priv->fds = virHashNew(g_object_unref);
 
+    priv->iommufd = -1;
     priv->pidMonitored = -1;
 
     /* agent commands block by default, user can choose different behavior */
