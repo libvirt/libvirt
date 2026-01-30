@@ -103,6 +103,7 @@
 #include "storage_source.h"
 #include "backup_conf.h"
 #include "storage_file_probe.h"
+#include "virpci.h"
 
 #include "logging/log_manager.h"
 #include "logging/log_protocol.h"
@@ -7671,6 +7672,81 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
 }
 
 /**
+ * qemuProcessOpenVfioDeviceFd:
+ * @hostdev: host device definition
+ * @vfioFd: returned file descriptor
+ *
+ * Opens the VFIO device file descriptor for a hostdev.
+ *
+ * Returns: FD on success, -1 on failure
+ */
+static int
+qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
+{
+    g_autofree char *vfioPath = NULL;
+    int fd = -1;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("VFIO FD only supported for PCI hostdevs"));
+        return -1;
+    }
+
+    if (virPCIDeviceGetVfioPath(&hostdev->source.subsys.u.pci.addr, &vfioPath) < 0)
+        return -1;
+
+    VIR_DEBUG("Opening VFIO device %s", vfioPath);
+
+    if ((fd = open(vfioPath, O_RDWR | O_CLOEXEC)) < 0) {
+        if (errno == ENOENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("VFIO device %1$s not found - ensure device is bound to vfio-pci driver"),
+                           vfioPath);
+        } else {
+            virReportSystemError(errno,
+                                 _("cannot open VFIO device %1$s"), vfioPath);
+        }
+        return -1;
+    }
+
+    VIR_DEBUG("Opened VFIO device FD %d for %s", fd, vfioPath);
+    return fd;
+}
+
+/**
+ * qemuProcessOpenVfioFds:
+ * @vm: domain object
+ *
+ * Opens all necessary VFIO file descriptors for the domain.
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+static int
+qemuProcessOpenVfioFds(virDomainObj *vm)
+{
+    size_t i;
+
+    /* Check if we have any hostdevs that need VFIO FDs */
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
+        qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
+
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+            hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
+            hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
+            /* Open VFIO device FD */
+            hostdevPriv->vfioDeviceFd = qemuProcessOpenVfioDeviceFd(hostdev);
+            if (hostdevPriv->vfioDeviceFd == -1)
+                 return -1;
+        }
+    }
+
+    return 0;
+}
+
+/**
  * qemuProcessPrepareHost:
  * @driver: qemu driver
  * @vm: domain object
@@ -7724,6 +7800,8 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     if (flags & VIR_QEMU_PROCESS_START_NEW)
         hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
     if (qemuHostdevPrepareDomainDevices(driver, vm->def, hostdev_flags) < 0)
+        return -1;
+    if (qemuProcessOpenVfioFds(vm) < 0)
         return -1;
 
     VIR_DEBUG("Preparing chr device backends");
