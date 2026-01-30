@@ -345,6 +345,9 @@ qemuDomainSetupHostdev(virDomainObj *vm,
 {
     g_autofree char *path = NULL;
 
+    if (hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES)
+        return 0;
+
     if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
         return -1;
 

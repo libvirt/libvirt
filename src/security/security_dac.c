@@ -41,6 +41,7 @@
 #include "virscsivhost.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "viriommufd.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -1282,14 +1283,27 @@ virSecurityDACSetHostdevLabel(virSecurityManager *mgr,
             return -1;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
-            g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
+            if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+                g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
-            if (!vfioGroupDev)
-                return -1;
+                if (!vfioGroupDev)
+                    return -1;
 
-            ret = virSecurityDACSetHostdevLabelHelper(vfioGroupDev,
-                                                      false,
-                                                      &cbdata);
+                ret = virSecurityDACSetHostdevLabelHelper(vfioGroupDev,
+                                                          false,
+                                                          &cbdata);
+            } else {
+                g_autofree char *vfiofdDev = NULL;
+
+                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                    return -1;
+
+                ret = virSecurityDACSetHostdevLabelHelper(vfiofdDev, false, &cbdata);
+                if (ret < 0)
+                    break;
+
+                ret = virSecurityDACSetHostdevLabelHelper(VIR_IOMMU_DEV_PATH, false, &cbdata);
+            }
         } else {
             ret = virPCIDeviceFileIterate(pci,
                                           virSecurityDACSetPCILabel,
@@ -1443,13 +1457,28 @@ virSecurityDACRestoreHostdevLabel(virSecurityManager *mgr,
             return -1;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
-            g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
+            if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+                g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
-            if (!vfioGroupDev)
-                return -1;
+                if (!vfioGroupDev)
+                    return -1;
 
-            ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
                                                          vfioGroupDev, false);
+            } else {
+                g_autofree char *vfiofdDev = NULL;
+
+                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                    return -1;
+
+                ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                             vfiofdDev, false);
+                if (ret < 0)
+                    break;
+
+                ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,
+                                                             VIR_IOMMU_DEV_PATH, false);
+            }
         } else {
             ret = virPCIDeviceFileIterate(pci, virSecurityDACRestorePCILabel, mgr);
         }

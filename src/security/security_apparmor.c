@@ -45,6 +45,7 @@
 #include "virstring.h"
 #include "virscsi.h"
 #include "virmdev.h"
+#include "viriommufd.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -841,25 +842,36 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI: {
-        virPCIDevice *pci =
+        g_autoptr(virPCIDevice) pci =
             virPCIDeviceNew(&pcisrc->addr);
 
         if (!pci)
             goto done;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
-            char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
+            if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+                char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
-            if (!vfioGroupDev) {
-                virPCIDeviceFree(pci);
-                goto done;
+                if (!vfioGroupDev) {
+                    goto done;
+                }
+                ret = AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr);
+                VIR_FREE(vfioGroupDev);
+            } else {
+                g_autofree char *vfiofdDev = NULL;
+
+                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                    goto done;
+
+                ret = AppArmorSetSecurityPCILabel(pci, vfiofdDev, ptr);
+                if (ret < 0)
+                    goto done;
+
+                ret = AppArmorSetSecurityPCILabel(pci, VIR_IOMMU_DEV_PATH, ptr);
             }
-            ret = AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr);
-            VIR_FREE(vfioGroupDev);
         } else {
             ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
         }
-        virPCIDeviceFree(pci);
         break;
     }
 
