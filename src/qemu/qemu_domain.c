@@ -2335,18 +2335,18 @@ qemuDomainDiskPrivateFormat(virDomainDiskDef *disk,
     if (priv->nodeCopyOnRead || disk->nthrottlefilters > 0) {
         virBufferAddLit(buf, "<nodenames>\n");
         virBufferAdjustIndent(buf, 2);
-        if (priv->nodeCopyOnRead)
-            virBufferEscapeString(buf, "<nodename type='copyOnRead' name='%s'/>\n",
-                                  priv->nodeCopyOnRead);
+        virBufferEscapeString(buf,
+                              "<nodename type='copyOnRead' name='%s'/>\n",
+                              priv->nodeCopyOnRead);
         if (disk->nthrottlefilters > 0) {
             for (i = 0; i < disk->nthrottlefilters; i++) {
 
-                if (disk->throttlefilters[i]->nodename)
-                    virBufferEscapeString(buf, "<nodename type='throttle-filter' name='%s' ",
-                                          disk->throttlefilters[i]->nodename);
+                virBufferEscapeString(buf,
+                                      "<nodename type='throttle-filter' name='%s' ",
+                                      disk->throttlefilters[i]->nodename);
 
-                if (disk->throttlefilters[i]->group_name)
-                    virBufferEscapeString(buf, "group='%s'/>\n", disk->throttlefilters[i]->group_name);
+                virBufferEscapeString(buf, "group='%s'/>\n",
+                                      disk->throttlefilters[i]->group_name);
             }
         }
         virBufferAdjustIndent(buf, -2);

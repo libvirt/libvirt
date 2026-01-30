@@ -432,9 +432,7 @@ virNodeDeviceCapUSBDevDefFormat(virBuffer *buf,
     virBufferAsprintf(buf, "<bus>%d</bus>\n", data->usb_dev.bus);
     virBufferAsprintf(buf, "<device>%d</device>\n",
                       data->usb_dev.device);
-    if (data->usb_dev.port)
-        virBufferEscapeString(buf, "<port>%s</port>\n",
-                              data->usb_dev.port);
+    virBufferEscapeString(buf, "<port>%s</port>\n", data->usb_dev.port);
     virBufferAsprintf(buf, "<product id='0x%04x'",
                       data->usb_dev.product);
     if (data->usb_dev.product_name)

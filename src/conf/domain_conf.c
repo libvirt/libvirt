@@ -24215,11 +24215,8 @@ virDomainDiskDefFormatIotune(virBuffer *buf,
         virBufferAsprintf(&childBuf, "<size_iops_sec>%llu</size_iops_sec>\n",
                           disk->blkdeviotune.size_iops_sec);
     }
-
-    if (disk->blkdeviotune.group_name) {
-        virBufferEscapeString(&childBuf, "<group_name>%s</group_name>\n",
-                              disk->blkdeviotune.group_name);
-    }
+    virBufferEscapeString(&childBuf, "<group_name>%s</group_name>\n",
+                          disk->blkdeviotune.group_name);
 
     FORMAT_IOTUNE(total_bytes_sec_max_length);
     FORMAT_IOTUNE(read_bytes_sec_max_length);
@@ -27491,9 +27488,7 @@ virDomainGraphicsAuthDefFormatAttr(virBuffer *buf,
     if (!def->passwd)
         return;
 
-    if (def->username)
-        virBufferEscapeString(buf, " username='%s'",
-                              def->username);
+    virBufferEscapeString(buf, " username='%s'", def->username);
 
     if (flags & VIR_DOMAIN_DEF_FORMAT_SECURE)
         virBufferEscapeString(buf, " passwd='%s'",
@@ -27623,8 +27618,7 @@ virDomainGraphicsListenDefFormatAddr(virBuffer *buf,
                  VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
         return;
 
-    if (glisten->address)
-        virBufferEscapeString(buf, " listen='%s'", glisten->address);
+    virBufferEscapeString(buf, " listen='%s'", glisten->address);
 }
 
 static void
@@ -27637,8 +27631,7 @@ virDomainGraphicsDefFormatGL(virBuffer *buf,
     if (gl != VIR_TRISTATE_BOOL_ABSENT)
         virBufferAsprintf(&attrBuf, " enable='%s'", virTristateBoolTypeToString(gl));
 
-    if (rendernode)
-        virBufferEscapeString(&attrBuf, " rendernode='%s'", rendernode);
+    virBufferEscapeString(&attrBuf, " rendernode='%s'", rendernode);
 
     virXMLFormatElement(buf, "gl", &attrBuf, NULL);
 }

@@ -2000,10 +2000,8 @@ virNetworkDNSDefFormat(virBuffer *buf,
     for (i = 0; i < def->nfwds; i++) {
 
         virBufferAddLit(buf, "<forwarder");
-        if (def->forwarders[i].domain) {
-            virBufferEscapeString(buf, " domain='%s'",
-                                  def->forwarders[i].domain);
-        }
+        virBufferEscapeString(buf, " domain='%s'",
+                              def->forwarders[i].domain);
         if (VIR_SOCKET_ADDR_VALID(&def->forwarders[i].addr)) {
             g_autofree char *addr = virSocketAddrFormat(&def->forwarders[i].addr);
             int port = virSocketAddrGetPort(&def->forwarders[i].addr);
@@ -2093,11 +2091,8 @@ virNetworkIPDefFormat(virBuffer *buf,
 
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
-
-    if (def->tftproot) {
-        virBufferEscapeString(buf, "<tftp root='%s'/>\n",
-                              def->tftproot);
-    }
+    virBufferEscapeString(buf, "<tftp root='%s'/>\n",
+                          def->tftproot);
     if ((def->nranges || def->nhosts)) {
         size_t i;
         virBufferAddLit(buf, "<dhcp>\n");
