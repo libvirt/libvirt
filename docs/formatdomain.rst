@@ -3625,22 +3625,22 @@ paravirtualized driver is specified via the ``disk`` element.
           </iothreads>
         </driver>
 
-   - The optional ``statistics`` sub-element allows configuring statistics
-     collection in configurable intervals for the given disk. Intervals are
-     configured by ``<statistic>`` sub-elements with ``interval`` attribute
-     configuring the collection window duration in seconds. The statistics
-     are available via the bulk statistics API.
+   -  The optional ``statistics`` sub-element allows configuring statistics
+      collection in configurable intervals for the given disk. Intervals are
+      configured by ``<statistic>`` sub-elements with ``interval`` attribute
+      configuring the collection window duration in seconds. The statistics
+      are available via the bulk statistics API.
 
-     Example::
+      Example::
 
-       <driver name='qemu'>
-         <statistics>
-           <statistic interval='1'/>
-           <statistic interval='10'/>
-         </statistics>
-       </driver>
+        <driver name='qemu'>
+          <statistics>
+            <statistic interval='1'/>
+            <statistic interval='10'/>
+          </statistics>
+        </driver>
 
-    :since:`Since 11.9.0 (QEMU 10.2, virtio, ide, scsi disks only)`.
+      :since:`Since 11.9.0 (QEMU 10.2, virtio, ide, scsi disks only)`.
 
    -  The optional ``queues`` attribute specifies the number of virt queues for
       virtio-blk ( :since:`Since 3.9.0` ) or vhost-user-blk
