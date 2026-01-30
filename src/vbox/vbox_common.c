@@ -3090,7 +3090,7 @@ vboxHostDeviceGetXMLDesc(struct _vboxDriver *data, virDomainDef *def, IMachine *
     def->hostdevs = g_new0(virDomainHostdevDef *, def->nhostdevs);
 
     for (i = 0; i < def->nhostdevs; i++)
-        def->hostdevs[i] = virDomainHostdevDefNew();
+        def->hostdevs[i] = virDomainHostdevDefNew(NULL);
 
     for (i = 0; i < deviceFilters.count; i++) {
         PRBool active = PR_FALSE;

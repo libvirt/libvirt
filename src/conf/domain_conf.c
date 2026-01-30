@@ -2734,6 +2734,8 @@ virDomainHostdevDefClear(virDomainHostdevDef *def)
     case VIR_DOMAIN_HOSTDEV_MODE_LAST:
         break;
     }
+
+    g_clear_pointer(&def->privateData, virObjectUnref);
 }
 
 
@@ -3484,13 +3486,20 @@ void virDomainVideoDefFree(virDomainVideoDef *def)
 
 
 virDomainHostdevDef *
-virDomainHostdevDefNew(void)
+virDomainHostdevDefNew(virDomainXMLOption *xmlopt)
 {
     virDomainHostdevDef *def;
 
     def = g_new0(virDomainHostdevDef, 1);
 
     def->info = g_new0(virDomainDeviceInfo, 1);
+
+    if (xmlopt && xmlopt->privateData.hostdevNew &&
+        !(def->privateData = xmlopt->privateData.hostdevNew())) {
+        VIR_FREE(def->info);
+        VIR_FREE(def);
+        return NULL;
+    }
 
     return def;
 }
@@ -13682,7 +13691,7 @@ virDomainHostdevDefParseXML(virDomainXMLOption *xmlopt,
 
     ctxt->node = node;
 
-    def = virDomainHostdevDefNew();
+    def = virDomainHostdevDefNew(xmlopt);
 
     if (virXMLPropEnumDefault(node, "mode", virDomainHostdevModeTypeFromString,
                               VIR_XML_PROP_NONE,

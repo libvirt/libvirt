@@ -461,6 +461,18 @@ struct _qemuDomainTPMPrivate {
 };
 
 
+#define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev) \
+    ((qemuDomainHostdevPrivate *) (hostdev)->privateData)
+
+typedef struct _qemuDomainHostdevPrivate qemuDomainHostdevPrivate;
+struct _qemuDomainHostdevPrivate {
+    virObject parent;
+
+    /* VFIO device file descriptor for iommufd passthrough */
+    int vfioDeviceFd;
+};
+
+
 void
 qemuDomainNetworkPrivateClearFDs(qemuDomainNetworkPrivate *priv);
 
@@ -1175,3 +1187,6 @@ qemuDomainCheckCPU(virArch arch,
 bool
 qemuDomainMachineSupportsFloppy(const char *machine,
                                 virQEMUCaps *qemuCaps);
+
+virObject *
+qemuDomainHostdevPrivateNew(void);

@@ -1238,6 +1238,45 @@ qemuDomainNetworkPrivateFormat(const virDomainNetDef *net,
 }
 
 
+static virClass *qemuDomainHostdevPrivateClass;
+
+static void
+qemuDomainHostdevPrivateDispose(void *obj)
+{
+    qemuDomainHostdevPrivate *priv = obj;
+
+    VIR_FORCE_CLOSE(priv->vfioDeviceFd);
+}
+
+
+static int
+qemuDomainHostdevPrivateOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(qemuDomainHostdevPrivate, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainHostdevPrivate);
+
+virObject *
+qemuDomainHostdevPrivateNew(void)
+{
+    qemuDomainHostdevPrivate *priv;
+
+    if (qemuDomainHostdevPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(qemuDomainHostdevPrivateClass)))
+        return NULL;
+
+    priv->vfioDeviceFd = -1;
+
+    return (virObject *) priv;
+}
+
+
 /* qemuDomainSecretInfoSetup:
  * @priv: pointer to domain private object
  * @alias: alias of the secret
@@ -3563,6 +3602,7 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .vsockNew = qemuDomainVsockPrivateNew,
     .graphicsNew = qemuDomainGraphicsPrivateNew,
+    .hostdevNew = qemuDomainHostdevPrivateNew,
     .networkNew = qemuDomainNetworkPrivateNew,
     .networkParse = qemuDomainNetworkPrivateParse,
     .networkFormat = qemuDomainNetworkPrivateFormat,

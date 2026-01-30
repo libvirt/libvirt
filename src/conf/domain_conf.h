@@ -364,6 +364,8 @@ struct _virDomainHostdevDef {
      */
     virDomainNetDef *parentnet;
 
+    virObject *privateData;
+
     virDomainHostdevMode mode;
     virDomainStartupPolicy startupPolicy;
     bool managed;
@@ -3589,6 +3591,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    vsockNew;
     virDomainXMLPrivateDataNewFunc    cryptoNew;
     virDomainXMLPrivateDataNewFunc    graphicsNew;
+    virDomainXMLPrivateDataNewFunc    hostdevNew;
     virDomainXMLPrivateDataNewFunc    networkNew;
     virDomainXMLPrivateDataNetParseFunc networkParse;
     virDomainXMLPrivateDataNetFormatFunc networkFormat;
@@ -3798,7 +3801,7 @@ virDomainVideoDef *virDomainVideoDefNew(virDomainXMLOption *xmlopt);
 void virDomainVideoDefFree(virDomainVideoDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainVideoDef, virDomainVideoDefFree);
 void virDomainVideoDefClear(virDomainVideoDef *def);
-virDomainHostdevDef *virDomainHostdevDefNew(void);
+virDomainHostdevDef *virDomainHostdevDefNew(virDomainXMLOption *xmlopt);
 void virDomainHostdevDefFree(virDomainHostdevDef *def);
 void virDomainHubDefFree(virDomainHubDef *def);
 void virDomainRedirdevDefFree(virDomainRedirdevDef *def);

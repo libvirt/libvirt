@@ -687,7 +687,7 @@ bhyveParsePassthru(virDomainDef *def G_GNUC_UNUSED,
         return -1;
     }
 
-    hostdev = virDomainHostdevDefNew();
+    hostdev = virDomainHostdevDefNew(NULL);
     hostdev->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;
     hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
 

@@ -124,7 +124,7 @@ myInit(void)
 
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevSubsys *subsys;
-        hostdevs[i] = virDomainHostdevDefNew();
+        hostdevs[i] = virDomainHostdevDefNew(NULL);
         if (!hostdevs[i])
             goto cleanup;
         hostdevs[i]->mode = VIR_DOMAIN_HOSTDEV_MODE_SUBSYS;

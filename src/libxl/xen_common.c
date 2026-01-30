@@ -445,7 +445,7 @@ xenParsePCI(char *entry)
         }
     }
 
-    hostdev = virDomainHostdevDefNew();
+    hostdev = virDomainHostdevDefNew(NULL);
     hostdev->managed = false;
     hostdev->writeFiltering = filtered;
     hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;

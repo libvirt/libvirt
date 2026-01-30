@@ -930,7 +930,7 @@ xenParseXLUSB(virConf *conf, virDomainDef *def)
                 key = nextkey;
             }
 
-            hostdev = virDomainHostdevDefNew();
+            hostdev = virDomainHostdevDefNew(NULL);
             hostdev->managed = false;
             hostdev->source.subsys.type = VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB;
             hostdev->source.subsys.u.usb.bus = busNum;
