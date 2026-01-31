@@ -8,6 +8,12 @@
 # define xdr_uint64_t xdr_u_int64_t
 #endif
 
+#if defined(XDRPROC_T_3ARGS)
+# define XDRPROC(proc, xdr, data) (proc(&xdr, data, 0))
+#else
+# define XDRPROC(proc, xdr, data) (proc(&xdr, data))
+#endif
+
 #include "demo.h"
 #include "demo.c"
 
@@ -27,7 +33,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     /* Step 1:  serialize the vorig and compare to the data in test .bin files */
     xdrmem_create(&xdr, buf, buflen, XDR_ENCODE);
 
-    ret = !!proc(&xdr, vorig, 0);
+    ret = !!XDRPROC(proc, xdr, vorig);
     g_assert_cmpint(ret, ==, !fail);
 
     if (fail)
@@ -54,7 +60,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
     /* Step 2: de-serialize the state to create a new object */
     xdrmem_create(&xdr, buf, buflen, XDR_DECODE);
 
-    ret = !!proc(&xdr, vnew, 0);
+    ret = !!XDRPROC(proc, xdr, vnew);
     g_assert_cmpint(ret, ==, true);
 
     actlen = xdr_getpos(&xdr);
@@ -68,7 +74,7 @@ static void test_xdr(xdrproc_t proc, void *vorig, void *vnew, const char *testna
 
     xdrmem_create(&xdr, buf, buflen, XDR_ENCODE);
 
-    ret = !!proc(&xdr, vnew, 0);
+    ret = !!XDRPROC(proc, xdr, vnew);
     g_assert_cmpint(ret, ==, true);
 
     actlen = xdr_getpos(&xdr);

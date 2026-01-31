@@ -894,6 +894,25 @@ else
   xdr_dep = dependency('', required: false)
 endif
 
+if xdr_dep.found()
+  xdrproc_3arg_code = '''
+  #include <rpc/xdr.h>
+
+  bool_t test_filter(XDR *xdr, void *data, unsigned int opaque_flags) {
+      return TRUE;
+  }
+
+  int main() {
+      XDR xdr;
+      xdrproc_t filter = (xdrproc_t)&test_filter;
+      (*filter)(&xdr, NULL, 0);
+      return 0;
+  }
+  '''
+  if cc.compiles(xdrproc_3arg_code, dependencies: xdr_dep)
+    conf.set('XDRPROC_T_3ARGS', 1)
+  endif
+endif
 
 # generic build dependencies
 
