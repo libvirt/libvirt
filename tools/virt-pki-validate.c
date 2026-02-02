@@ -79,7 +79,7 @@ virPKIValidateTrust(bool system, const char *path)
                             LIBVIRT_PKI_DIR,
                             _("Checking system PKI dir access"),
                             0, 0, 0755,
-                            _("The system PKI dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            _("The system PKI dir %1$s must be accessible to all users. As root, run: chown root:root; chmod 0755 %2$s"),
                             LIBVIRT_PKI_DIR, LIBVIRT_PKI_DIR);
 
 
@@ -93,7 +93,7 @@ virPKIValidateTrust(bool system, const char *path)
                             LIBVIRT_CACERT_DIR,
                             _("Checking system CA dir access"),
                             0, 0, 0755,
-                            _("The system CA dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            _("The system CA dir %1$s must be accessible to all users. As root, run: chown root:root; chmod 0755 %2$s"),
                             LIBVIRT_CACERT_DIR, LIBVIRT_CACERT_DIR);
     } else if (path) {
         virNetTLSConfigCustomTrust(path,
@@ -110,7 +110,7 @@ virPKIValidateTrust(bool system, const char *path)
                             path,
                             _("Checking custom PKI base dir access"),
                             getuid(), getgid(), 0700,
-                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d.%3$d %4$s; chmod 0700 %5$s"),
+                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d:%3$d %4$s; chmod 0700 %5$s"),
                             path, getuid(), getgid(), path, path);
     } else {
         g_autofree char *pkipath = virNetTLSConfigUserPKIBaseDir();
@@ -128,7 +128,7 @@ virPKIValidateTrust(bool system, const char *path)
                             pkipath,
                             _("Checking user PKI base dir access"),
                             getuid(), getgid(), 0700,
-                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d.%3$d %4$s; chmod 0700 %5$s"),
+                            _("The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d:%3$d %4$s; chmod 0700 %5$s"),
                             pkipath, getuid(), getgid(), pkipath, pkipath);
     }
 
@@ -143,14 +143,14 @@ virPKIValidateTrust(bool system, const char *path)
                             cacert,
                             _("Checking CA cert access"),
                             0, 0, 0644,
-                            _("The CA certificate %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            _("The CA certificate %1$s must be accessible to all users. As root run: chown root:root %2$s; chmod 0644 %3$s"),
                             cacert, cacert, cacert);
     } else {
         FILE_REQUIRE_ACCESS("TRUST",
                             cacert,
                             _("Checking CA cert access"),
                             getuid(), getgid(), 0600,
-                            _("The CA certificate %1$s must not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            _("The CA certificate %1$s must not be accessible to other users. As this user, run: chown %2$d:%3$d %4$s; chmod 0600 %5$s"),
                             cacert, getuid(), getgid(), cacert, cacert);
     }
 
@@ -184,7 +184,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             LIBVIRT_CERT_DIR,
                             _("Checking system cert dir access"),
                             0, 0, 0755,
-                            _("The system cert dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            _("The system cert dir %1$s must be accessible to all users. As root, run: chown root:root; chmod 0755 %2$s"),
                             LIBVIRT_CERT_DIR, LIBVIRT_CERT_DIR);
 
         FILE_REQUIRE_EXISTS(scope,
@@ -197,7 +197,7 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             LIBVIRT_KEY_DIR,
                             _("Checking system key dir access"),
                             0, 0, 0755,
-                            _("The system key dir %1$s must be accessible to all users. As root, run: chown root.root; chmod 0755 %2$s"),
+                            _("The system key dir %1$s must be accessible to all users. As root, run: chown root:root; chmod 0755 %2$s"),
                             LIBVIRT_KEY_DIR, LIBVIRT_KEY_DIR);
     } else if (path) {
         virNetTLSConfigCustomTrust(path,
@@ -229,8 +229,8 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking key access"),
                             0, 0, isServer ? 0600 : 0644,
                             isServer ?
-                            _("The server key %1$s must not be accessible to unprivileged users. As root run: chown root.root %2$s; chmod 0600 %3$s") :
-                            _("The client key %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            _("The server key %1$s must not be accessible to unprivileged users. As root run: chown root:root %2$s; chmod 0600 %3$s") :
+                            _("The client key %1$s must be accessible to all users. As root run: chown root:root %2$s; chmod 0644 %3$s"),
                             key, key, key);
     } else {
         FILE_REQUIRE_ACCESS(scope,
@@ -238,8 +238,8 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking key access"),
                             getuid(), getgid(), 0600,
                             isServer ?
-                            _("The server key %1$s must be not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s") :
-                            _("The client key %1$s must be not be accessible to other users. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            _("The server key %1$s must be not be accessible to other users. As this user, run: chown %2$d:%3$d %4$s; chmod 0600 %5$s") :
+                            _("The client key %1$s must be not be accessible to other users. As this user, run: chown %2$d:%3$d %4$s; chmod 0600 %5$s"),
                             key, getuid(), getgid(), key, key);
     }
 
@@ -257,8 +257,8 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking cert access"),
                             0, 0, 0644,
                             isServer ?
-                            _("The server cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s") :
-                            _("The client cert %1$s must be accessible to all users. As root run: chown root.root %2$s; chmod 0644 %3$s"),
+                            _("The server cert %1$s must be accessible to all users. As root run: chown root:root %2$s; chmod 0644 %3$s") :
+                            _("The client cert %1$s must be accessible to all users. As root run: chown root:root %2$s; chmod 0644 %3$s"),
                             cert, cert, cert);
     } else {
         FILE_REQUIRE_ACCESS(scope,
@@ -266,8 +266,8 @@ virPKIValidateIdentity(bool isServer, bool system, const char *path)
                             _("Checking cert access"),
                             getuid(), getgid(), 0600,
                             isServer ?
-                            _("The server cert %1$s must be restricted to this user. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s") :
-                            _("The client cert %1$s must be restricted to this user. As this user, run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"),
+                            _("The server cert %1$s must be restricted to this user. As this user, run: chown %2$d:%3$d %4$s; chmod 0600 %5$s") :
+                            _("The client cert %1$s must be restricted to this user. As this user, run: chown %2$d:%3$d %4$s; chmod 0600 %5$s"),
                             cert, getuid(), getgid(), cert, cert);
     }
 
