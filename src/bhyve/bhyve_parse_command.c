@@ -701,7 +701,7 @@ bhyveParsePassthru(virDomainDef *def G_GNUC_UNUSED,
         goto error;
     }
     if (g_str_equal(addr, *params)) {
-        g_free(params);
+        g_strfreev(params);
         if (!(params = g_strsplit(addr, "/", -1))) {
             virReportError(VIR_ERR_OPERATION_FAILED, _("Failed to parse PCI address %1$s"), addr);
             goto error;
