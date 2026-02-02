@@ -3981,11 +3981,11 @@ static const vshCmdOptDef opts_undefine[] = {
     },
     {.name = "nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("remove nvram file")
+     .help = N_("remove NVRAM/varstore file")
     },
     {.name = "keep-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("keep nvram file")
+     .help = N_("keep NVRAM/varstore file")
     },
     {.name = "tpm",
      .type = VSH_OT_BOOL,
@@ -4401,7 +4401,7 @@ static const vshCmdOptDef opts_start[] = {
     },
     {.name = "reset-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("re-initialize NVRAM from its pristine template")
+     .help = N_("re-initialize NVRAM/varstore from its pristine template")
     },
     {.name = NULL}
 };
@@ -5728,7 +5728,7 @@ static const vshCmdOptDef opts_restore[] = {
     },
     {.name = "reset-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("re-initialize NVRAM from its pristine template")
+     .help = N_("re-initialize NVRAM/varstore from its pristine template")
     },
     {.name = NULL}
 };
@@ -8520,7 +8520,7 @@ static const vshCmdOptDef opts_create[] = {
     },
     {.name = "reset-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("re-initialize NVRAM from its pristine template")
+     .help = N_("re-initialize NVRAM/varstore from its pristine template")
     },
     {.name = NULL}
 };

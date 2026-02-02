@@ -1714,7 +1714,7 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
     },
     {.name = "reset-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("re-initialize NVRAM from its pristine template")
+     .help = N_("re-initialize NVRAM/varstore from its pristine template")
     },
     {.name = NULL}
 };
