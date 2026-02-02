@@ -218,7 +218,7 @@
   <flag name='virtio-iommu.aw-bits'/>
   <version>10002050</version>
   <microcodeVersion>43100286</microcodeVersion>
-  <package>v10.2.0-476-gcf3e71d8fc</package>
+  <package>v10.2.0-1114-gb3abdfa486</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -518,7 +518,7 @@
     <property name='avx512bw' type='boolean' value='true' migratable='yes'/>
     <property name='ace2' type='boolean' value='false'/>
     <property name='fsgsbase' type='boolean' value='true' migratable='yes'/>
-    <property name='cet-ss' type='boolean' value='false'/>
+    <property name='cet-ss' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-ept-2mb' type='boolean' value='false'/>
     <property name='vmx-ept-1gb' type='boolean' value='false'/>
     <property name='ht' type='boolean' value='false'/>
@@ -860,7 +860,6 @@
     <blocker name='ss'/>
     <blocker name='pcid'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
@@ -970,7 +969,6 @@
     <blocker name='hle'/>
     <blocker name='rtm'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1257,7 +1255,6 @@
     <blocker name='hle'/>
     <blocker name='rtm'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1494,7 +1491,6 @@
     <blocker name='rtm'/>
     <blocker name='zero-fcs-fds'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1559,7 +1555,6 @@
     <blocker name='rtm'/>
     <blocker name='zero-fcs-fds'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='la57'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
@@ -1669,7 +1664,6 @@
     <blocker name='ss'/>
     <blocker name='pcid'/>
     <blocker name='rdseed'/>
-    <blocker name='cet-ss'/>
     <blocker name='bus-lock-detect'/>
     <blocker name='cldemote'/>
     <blocker name='serialize'/>
