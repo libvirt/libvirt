@@ -215,25 +215,29 @@ int bhyveDomainAssignPCIAddresses(virDomainDef *def,
 {
     virDomainPCIAddressSet *addrs = NULL;
     bhyveDomainObjPrivate *priv = NULL;
+    int ret = -1;
 
     if (!(addrs = bhyveDomainPCIAddressSetCreate(def, 1)))
         return -1;
 
     if (bhyveAssignDevicePCISlots(def, addrs) < 0)
-        return -1;
+        goto cleanup;
 
     if (obj && obj->privateData) {
         priv = obj->privateData;
         if (addrs) {
             virDomainPCIAddressSetFree(priv->pciaddrs);
             priv->persistentAddrs = 1;
-            priv->pciaddrs = addrs;
+            priv->pciaddrs = g_steal_pointer(&addrs);
         } else {
             priv->persistentAddrs = 0;
         }
     }
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virDomainPCIAddressSetFree(addrs);
+    return ret;
 }
 
 int bhyveDomainAssignAddresses(virDomainDef *def, virDomainObj *obj)
