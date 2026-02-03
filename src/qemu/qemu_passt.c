@@ -121,7 +121,7 @@ qemuPasstAddNetProps(virDomainObj *vm,
 
 
 static void
-qemuPasstKill(const char *pidfile, const char *passtSocketName)
+qemuPasstKill(const virDomainNetDef *net, const char *pidfile, const char *passtSocketName)
 {
     virErrorPtr orig_err;
     pid_t pid = 0;
@@ -135,6 +135,14 @@ qemuPasstKill(const char *pidfile, const char *passtSocketName)
 
     unlink(passtSocketName);
 
+    /* repair socket is (always) created by passt only for vhostuser mode */
+    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        g_autofree char *passtRepairSocketName = NULL;
+
+        passtRepairSocketName = g_strdup_printf("%s.repair", passtSocketName);
+        unlink(passtRepairSocketName);
+    }
+
     virErrorRestore(&orig_err);
 }
 
@@ -146,7 +154,7 @@ qemuPasstStop(virDomainObj *vm,
     g_autofree char *pidfile = qemuPasstCreatePidFilename(vm, net);
     g_autofree char *passtSocketName = qemuPasstCreateSocketPath(vm, net);
 
-    qemuPasstKill(pidfile, passtSocketName);
+    qemuPasstKill(net, pidfile, passtSocketName);
 }
 
 
@@ -351,6 +359,6 @@ qemuPasstStart(virDomainObj *vm,
     return 0;
 
  error:
-    qemuPasstKill(pidfile, passtSocketName);
+    qemuPasstKill(net, pidfile, passtSocketName);
     return -1;
 }
