@@ -1288,9 +1288,15 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         /* Explicit requests for either a stateless or stateful
          * firmware should be fulfilled, but if no preference is
          * provided either one is fine as long as the other match
-         * criteria are satisfied */
+         * criteria are satisfied. NVRAM implies stateful */
         if (loader &&
             loader->stateless == VIR_TRISTATE_BOOL_NO &&
+            flash->mode == QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
+            VIR_DEBUG("Discarding stateless loader");
+            return false;
+        }
+        if (loader &&
+            loader->nvram &&
             flash->mode == QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
             VIR_DEBUG("Discarding stateless loader");
             return false;
