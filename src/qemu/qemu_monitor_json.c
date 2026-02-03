@@ -2346,13 +2346,6 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
             return -1;
         }
 
-        if (virJSONValueObjectGetBoolean(dev, "removable", &info.removable) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot read %1$s value"),
-                           "removable");
-            return -1;
-        }
-
         /* 'tray_open' is present only if the device has a tray */
         if (virJSONValueObjectGetBoolean(dev, "tray_open", &info.tray_open) == 0)
             info.tray = true;
