@@ -4918,51 +4918,69 @@ qemuPrepareNVRAMBlock(virDomainLoaderDef *loader,
 
 
 static int
-qemuPrepareNVRAMFile(virQEMUDriver *driver,
-                     virDomainLoaderDef *loader,
-                     bool reset_nvram)
+qemuPrepareNVRAMFileCommon(virQEMUDriver *driver,
+                           const char *path,
+                           const char *template,
+                           bool reset_nvram)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     VIR_AUTOCLOSE srcFD = -1;
     struct qemuPrepareNVRAMHelperData data;
 
-    if (virFileExists(loader->nvram->path) && !reset_nvram)
+    if (!path)
         return 0;
 
-    if (!loader->nvramTemplate) {
+    if (virFileExists(path) && !reset_nvram)
+        return 0;
+
+    if (!template) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("unable to find any master var store for loader: %1$s"),
-                       loader->path);
+                       path);
         return -1;
     }
 
-    /* If 'nvramTemplateFormat' is empty it means that it's a user-provided
-     * template which we couldn't verify. Assume the user knows what they're doing */
-    if (loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE &&
-        loader->nvram->format != loader->nvramTemplateFormat) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("conversion of the nvram template to another target format is not supported"));
-        return -1;
-    }
-
-    if ((srcFD = virFileOpenAs(loader->nvramTemplate, O_RDONLY,
+    if ((srcFD = virFileOpenAs(template, O_RDONLY,
                                0, -1, -1, 0)) < 0) {
         virReportSystemError(-srcFD,
                              _("Failed to open file '%1$s'"),
-                             loader->nvramTemplate);
+                             template);
         return -1;
     }
 
     data.srcFD = srcFD;
-    data.srcPath = loader->nvramTemplate;
+    data.srcPath = template;
 
-    if (virFileRewrite(loader->nvram->path,
+    if (virFileRewrite(path,
                        S_IRUSR | S_IWUSR,
                        cfg->user, cfg->group,
                        qemuPrepareNVRAMHelper,
                        &data) < 0) {
         return -1;
     }
+
+    return 0;
+}
+
+
+static int
+qemuPrepareNVRAMFile(virQEMUDriver *driver,
+                     virDomainLoaderDef *loader,
+                     bool reset_nvram)
+{
+    /* If 'nvramTemplateFormat' is empty it means that it's a user-provided
+     * template which we couldn't verify. Assume the user knows what they're doing */
+    if (loader && loader->nvram &&
+        loader->nvramTemplateFormat != VIR_STORAGE_FILE_NONE &&
+        loader->nvram->format != loader->nvramTemplateFormat) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("conversion of the nvram template to another target format is not supported"));
+        return -1;
+    }
+
+    if (qemuPrepareNVRAMFileCommon(driver, loader->nvram->path,
+                                   loader->nvramTemplate, reset_nvram) < 0)
+        return -1;
 
     return 0;
 }
