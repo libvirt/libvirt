@@ -1286,6 +1286,7 @@ VIR_ENUM_IMPL(virDomainCpuPlacementMode,
 
 VIR_ENUM_IMPL(virDomainDiskTray,
               VIR_DOMAIN_DISK_TRAY_LAST,
+              "",
               "closed",
               "open",
 );
@@ -8651,7 +8652,7 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
             return NULL;
 
         if (virXMLPropEnum(targetNode, "tray", virDomainDiskTrayTypeFromString,
-                           VIR_XML_PROP_NONE, &def->tray_status) < 0)
+                           VIR_XML_PROP_NONZERO, &def->tray_status) < 0)
             return NULL;
 
         if (virXMLPropTristateSwitch(targetNode, "removable", VIR_XML_PROP_NONE,
@@ -24378,11 +24379,19 @@ virDomainDiskDefFormat(virBuffer *buf,
 
     virBufferAsprintf(&childBuf, "<target dev='%s' bus='%s'",
                       def->dst, bus);
-    if ((def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
-         def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
-        def->tray_status != VIR_DOMAIN_DISK_TRAY_CLOSED)
+
+    switch (def->tray_status) {
+    case VIR_DOMAIN_DISK_TRAY_NONE:
+    case VIR_DOMAIN_DISK_TRAY_CLOSED:
+    case VIR_DOMAIN_DISK_TRAY_LAST:
+        break;
+
+    case VIR_DOMAIN_DISK_TRAY_OPEN:
         virBufferAsprintf(&childBuf, " tray='%s'",
                           virDomainDiskTrayTypeToString(def->tray_status));
+        break;
+    }
+
     if (def->bus == VIR_DOMAIN_DISK_BUS_USB &&
         def->removable != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&childBuf, " removable='%s'",

@@ -8671,7 +8671,8 @@ qemuProcessRefreshDisks(virDomainObj *vm,
 
         qemuProcessRefreshDiskProps(disk, info);
 
-        if (diskpriv->tray &&
+        if (old_tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
+            disk->tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
             old_tray_status != disk->tray_status) {
             virDomainEventTrayChangeReason reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
             virObjectEvent *event;

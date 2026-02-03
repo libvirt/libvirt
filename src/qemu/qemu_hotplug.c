@@ -539,7 +539,7 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
             return -1;
     }
 
-    if (diskPriv->tray && disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
+    if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED) {
         qemuDomainObjEnterMonitor(vm);
         rc = qemuMonitorBlockdevTrayOpen(priv->mon, diskPriv->qomName, force);
         qemuDomainObjExitMonitor(vm);
@@ -575,7 +575,9 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
                                            &disk->blkdeviotune);
     }
 
-    if (rc == 0)
+    /* Close any device with a tray since we've opened it before (regardless
+     * of the current state if it e.g. wasn't updated) */
+    if (rc == 0 && disk->tray_status != VIR_DOMAIN_DISK_TRAY_NONE)
         rc = qemuMonitorBlockdevTrayClose(priv->mon, diskPriv->qomName);
 
     if (rc < 0 && newbackend)
