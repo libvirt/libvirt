@@ -1353,10 +1353,8 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
 static void
 testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
 {
-    VIR_TEST_VERBOSE("removable: %d, tray: %d, tray_open: %d, empty: %d, "
-                     "io_status: %d",
-                     d->removable, d->tray, d->tray_open, d->empty,
-                     d->io_status);
+    VIR_TEST_VERBOSE("removable: %d, tray: %d, tray_open: %d, io_status: %d",
+                     d->removable, d->tray, d->tray_open, d->io_status);
 }
 
 
@@ -1418,7 +1416,6 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 
     info->removable = true;
     info->tray = true;
-    info->empty = true;
 
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

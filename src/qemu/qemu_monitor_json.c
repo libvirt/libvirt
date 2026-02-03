@@ -2323,7 +2323,6 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValue *dev;
-        virJSONValue *image;
         struct qemuDomainDiskInfo info = { false };
         const char *thisdev;
         const char *status;
@@ -2357,11 +2356,6 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
         /* 'tray_open' is present only if the device has a tray */
         if (virJSONValueObjectGetBoolean(dev, "tray_open", &info.tray_open) == 0)
             info.tray = true;
-
-        /* presence of 'inserted' notifies that a medium is in the device */
-        if (!(image = virJSONValueObjectGetObject(dev, "inserted"))) {
-            info.empty = true;
-        }
 
         /* Missing io-status indicates no error */
         if ((status = virJSONValueObjectGetString(dev, "io-status"))) {

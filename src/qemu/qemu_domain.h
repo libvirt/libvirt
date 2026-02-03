@@ -360,7 +360,6 @@ struct qemuDomainDiskInfo {
     bool removable;
     bool tray;
     bool tray_open;
-    bool empty;
     int io_status;
 };
 
