@@ -8,6 +8,8 @@
 #include "virnetdevtap.h"
 #include "virmock.h"
 #include "internal.h"
+#include "cpu/cpu.h"
+#include "testutilshostcpus.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
 
@@ -88,4 +90,10 @@ int bind(int sockfd G_GNUC_UNUSED,
          socklen_t addrlen G_GNUC_UNUSED)
 {
     return 0;
+}
+
+virCPUDef *
+virCPUProbeHost(virArch arch)
+{
+    return testUtilsHostCpusGetDefForArch(arch);
 }
