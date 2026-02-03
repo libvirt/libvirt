@@ -3016,7 +3016,6 @@ qemuMigrationSrcBegin(virConnectPtr conn,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *xml = NULL;
     char *ret = NULL;
-    virDomainAsyncJob asyncJob;
 
     if (cfg->migrateTLSForce &&
         !(flags & VIR_MIGRATE_TUNNELLED) &&
@@ -3035,26 +3034,17 @@ qemuMigrationSrcBegin(virConnectPtr conn,
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         if (qemuMigrationJobStart(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags) < 0)
             goto cleanup;
-        asyncJob = VIR_ASYNC_JOB_MIGRATION_OUT;
     } else {
         if (!qemuMigrationJobIsAllowed(vm))
             goto cleanup;
 
         if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
             goto cleanup;
-        asyncJob = VIR_ASYNC_JOB_NONE;
     }
 
     qemuMigrationSrcStoreDomainState(vm);
 
     if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
-        goto endjob;
-
-    /* Check if there is any ejected media.
-     * We don't want to require them on the destination.
-     */
-    if (!(flags & VIR_MIGRATE_OFFLINE) &&
-        qemuProcessRefreshDisks(vm, asyncJob) < 0)
         goto endjob;
 
     if (!(xml = qemuMigrationSrcBeginPhase(driver, vm, xmlin, dname,
