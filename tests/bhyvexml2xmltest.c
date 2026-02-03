@@ -144,6 +144,7 @@ mymain(void)
     /* USB xhci tablet */
     DO_TEST_DIFFERENT("input-xhci-tablet");
 
+    virObjectUnref(driver.caps);
     virTestSetHostArch(VIR_ARCH_AARCH64);
     driver.caps = virBhyveCapsBuild();
     /* bhyve does not support UTC clock on ARM */
