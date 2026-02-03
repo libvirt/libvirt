@@ -164,8 +164,10 @@ mymain(void)
     if (!(driver.config = virBhyveDriverConfigNew()))
         return EXIT_FAILURE;
 
-    driver.config->firmwareDir = fakefirmwaredir;
-    driver.config->nvramDir = fakenvramdir;
+    VIR_FREE(driver.config->firmwareDir);
+    VIR_FREE(driver.config->nvramDir);
+    driver.config->firmwareDir = g_steal_pointer(&fakefirmwaredir);
+    driver.config->nvramDir = g_steal_pointer(&fakenvramdir);
     driver.config->bhyveloadTimeout = 0;
     driver.config->bhyveloadTimeoutKill = 0;
 
