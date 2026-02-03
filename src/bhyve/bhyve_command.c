@@ -51,17 +51,17 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 {
     char macaddr[VIR_MAC_STRING_BUFLEN];
     char *realifname = NULL;
-    char *brname = NULL;
-    char *nic_model = NULL;
+    const char *brname = NULL;
+    const char *nic_model = NULL;
     int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     g_autoptr(virConnect) netconn = NULL;
 
     if (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO) {
-        nic_model = g_strdup("virtio-net");
+        nic_model = "virtio-net";
     } else if (net->model == VIR_DOMAIN_NET_MODEL_E1000) {
         if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NET_E1000) != 0) {
-            nic_model = g_strdup("e1000");
+            nic_model = "e1000";
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("NIC model 'e1000' is not supported by given bhyve binary"));
@@ -75,9 +75,9 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 
     if (net->type == VIR_DOMAIN_NET_TYPE_NETWORK) {
         if (!netconn && !(netconn = virGetConnectNetwork()))
-            goto cleanup;
+            return -1;
         if (virDomainNetAllocateActualDevice(netconn, def, net) < 0)
-            goto cleanup;
+            return -1;
     }
     /* final validation now that actual type is known */
     if (virDomainActualNetDefValidate(net) < 0)
@@ -88,11 +88,11 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        brname = g_strdup(virDomainNetGetActualBridgeName(net));
+        brname = virDomainNetGetActualBridgeName(net);
         if (!brname) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("No bridge name specified"));
-            goto cleanup;
+            return -1;
         }
         break;
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -116,7 +116,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unsupported network type %1$s"),
                        virDomainNetTypeToString(actualType));
-        goto cleanup;
+        return -1;
     }
 
     if (!dryRun) {
@@ -156,9 +156,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
  cleanup:
     if (ret < 0)
         VIR_FREE(net->ifname);
-    VIR_FREE(brname);
     VIR_FREE(realifname);
-    VIR_FREE(nic_model);
 
     return ret;
 }
