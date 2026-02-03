@@ -1663,6 +1663,11 @@ qemuFirmwareFillDomainCustom(virDomainDef *def)
         return;
 
     if (loader->path &&
+        !loader->type) {
+        loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+
+    if (loader->path &&
         !loader->format) {
         loader->format = VIR_STORAGE_FILE_RAW;
     }

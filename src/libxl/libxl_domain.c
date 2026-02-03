@@ -279,6 +279,12 @@ libxlDomainDefPostParse(virDomainDef *def,
             def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
     }
 
+    if (def->os.loader &&
+        def->os.loader->path &&
+        !def->os.loader->type) {
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+
     /* add implicit balloon device */
     if (def->memballoon == NULL) {
         virDomainMemballoonDef *memballoon;
