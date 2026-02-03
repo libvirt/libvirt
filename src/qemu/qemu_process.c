@@ -8639,6 +8639,55 @@ qemuProcessRefreshRxFilters(virDomainObj *vm,
 }
 
 
+static int
+qemuProcessRefreshDisks(virDomainObj *vm,
+                        virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(GHashTable) table = NULL;
+    size_t i;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
+        table = qemuMonitorGetBlockInfo(priv->mon);
+        qemuDomainObjExitMonitor(vm);
+    }
+
+    if (!table)
+        return -1;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDef *disk = vm->def->disks[i];
+        qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        struct qemuDomainDiskInfo *info;
+        const char *entryname = disk->info.alias;
+        virDomainDiskTray old_tray_status = disk->tray_status;
+
+        if (diskpriv->qomName)
+            entryname = diskpriv->qomName;
+
+        if (!(info = virHashLookup(table, entryname)))
+            continue;
+
+        qemuProcessRefreshDiskProps(disk, info);
+
+        if (diskpriv->tray &&
+            old_tray_status != disk->tray_status) {
+            virDomainEventTrayChangeReason reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
+            virObjectEvent *event;
+
+            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED)
+                reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
+
+            event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
+            virObjectEventStateQueue(driver->domainEventState, event);
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuProcessRefreshState:
  * @driver: qemu driver data
@@ -9553,55 +9602,6 @@ qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
     }
 
     diskpriv->tray = info->tray;
-}
-
-
-int
-qemuProcessRefreshDisks(virDomainObj *vm,
-                        virDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUDriver *driver = priv->driver;
-    g_autoptr(GHashTable) table = NULL;
-    size_t i;
-
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
-        table = qemuMonitorGetBlockInfo(priv->mon);
-        qemuDomainObjExitMonitor(vm);
-    }
-
-    if (!table)
-        return -1;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDef *disk = vm->def->disks[i];
-        qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        struct qemuDomainDiskInfo *info;
-        const char *entryname = disk->info.alias;
-        virDomainDiskTray old_tray_status = disk->tray_status;
-
-        if (diskpriv->qomName)
-            entryname = diskpriv->qomName;
-
-        if (!(info = virHashLookup(table, entryname)))
-            continue;
-
-        qemuProcessRefreshDiskProps(disk, info);
-
-        if (diskpriv->tray &&
-            old_tray_status != disk->tray_status) {
-            virDomainEventTrayChangeReason reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
-            virObjectEvent *event;
-
-            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED)
-                reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
-
-            event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
-    }
-
-    return 0;
 }
 
 

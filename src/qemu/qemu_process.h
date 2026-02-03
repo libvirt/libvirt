@@ -218,9 +218,6 @@ int qemuRefreshVirtioChannelState(virQEMUDriver *driver,
 int qemuProcessRefreshBalloonState(virDomainObj *vm,
                                    int asyncJob);
 
-int qemuProcessRefreshDisks(virDomainObj *vm,
-                            virDomainAsyncJob asyncJob);
-
 int qemuProcessStartManagedPRDaemon(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
 
 void qemuProcessKillManagedPRDaemon(virDomainObj *vm) ATTRIBUTE_MOCKABLE;
