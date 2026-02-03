@@ -9544,9 +9544,6 @@ qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
     qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     if (info->removable) {
-        if (info->empty)
-            virDomainDiskEmptySource(disk);
-
         if (info->tray) {
             if (info->tray_open)
                 disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
