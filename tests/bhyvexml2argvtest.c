@@ -249,7 +249,8 @@ mymain(void)
     DO_TEST("isa-controller");
     DO_TEST_FAILURE("isa-multiple-controllers");
     DO_TEST("firmware-efi");
-    driver.config->firmwareDir = fakefirmwareemptydir;
+    fakefirmwaredir = g_steal_pointer(&driver.config->firmwareDir);
+    driver.config->firmwareDir = g_steal_pointer(&fakefirmwareemptydir);
     DO_TEST_PREPARE_ERROR("firmware-efi");
     DO_TEST("fs-9p");
     DO_TEST("fs-9p-readonly");
