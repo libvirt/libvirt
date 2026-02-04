@@ -866,6 +866,18 @@ class Msvm_SyntheticEthernetPortSettingData
 end
 
 
+class Msvm_GuestNetworkAdapterConfiguration
+    string  InstanceID
+    uint16  ProtocolIFType
+    boolean DHCPEnabled
+    string  IPAddresses[]
+    string  Subnets[]
+    string  DefaultGateways[]
+    string  DNSServers[]
+    uint16  IPAddressOrigins[]
+end
+
+
 class Msvm_EthernetPortAllocationSettingData
     string   InstanceID
     string   Caption

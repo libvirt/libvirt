@@ -3655,6 +3655,172 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
 }
 
 
+static int
+hypervDomainInterfaceAddressesParseOne(hypervPrivate *priv,
+                                       Msvm_EthernetPortAllocationSettingData *net,
+                                       virDomainInterfacePtr *oneIfaceRet)
+{
+    g_autoptr(virDomainInterface) iface = NULL;
+    g_autoptr(Msvm_SyntheticEthernetPortSettingData) sepsd = NULL;
+    g_autoptr(Msvm_GuestNetworkAdapterConfiguration) aConfig = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    virMacAddr macAddr = { 0 };
+    char macAddrStr[VIR_MAC_STRING_BUFLEN] = { 0 };
+
+    VIR_DEBUG("Parsing ethernet adapter '%s'", net->data->InstanceID);
+
+    iface = g_new0(virDomainInterface, 1);
+    iface->name = g_strdup(net->data->InstanceID);
+
+    if (hypervDomainDefParseEthernetAdapterMAC(priv, net, &macAddr) < 0)
+        return -1;
+
+    iface->hwaddr = g_strdup(virMacAddrFormat(&macAddr, macAddrStr));
+
+    virBufferAsprintf(&query,
+                      "ASSOCIATORS OF {%s} "
+                      "WHERE AssocClass=Msvm_SettingDataComponent "
+                      "ResultClass=Msvm_GuestNetworkAdapterConfiguration",
+                      net->data->Parent);
+
+    if (hypervGetWmiClass(Msvm_GuestNetworkAdapterConfiguration, &aConfig) < 0)
+        return -1;
+
+    if (aConfig) {
+        size_t nAddr = aConfig->data->IPAddresses.count;
+        size_t i;
+
+        if (aConfig->data->Subnets.count != nAddr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("the number of IP addresses (%1$zu) does not match the number of subnets (%2$d)"),
+                           nAddr, aConfig->data->Subnets.count);
+            return -1;
+        }
+
+        iface->addrs = g_new0(virDomainIPAddress, nAddr);
+        iface->naddrs = nAddr;
+        for (i = 0; i < nAddr; i++) {
+            const char *ipAddrStr = ((const char **) aConfig->data->IPAddresses.data)[i];
+            const char *subnetAddrStr = ((const char **) aConfig->data->Subnets.data)[i];
+            virDomainIPAddressPtr ip = &iface->addrs[i];
+            int family;
+            int prefix;
+
+            VIR_DEBUG("ipAddrStr='%s' subnetAddrStr='%s'",
+                      ipAddrStr, subnetAddrStr);
+
+            ip->addr = g_strdup(ipAddrStr);
+            family = virSocketAddrNumericFamily(ipAddrStr);
+            if (family == AF_INET6) {
+                ip->type = VIR_IP_ADDR_TYPE_IPV6;
+            } else if (family == AF_INET) {
+                ip->type = VIR_IP_ADDR_TYPE_IPV4;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unknown IP address family of '%1$s'"),
+                               ipAddrStr);
+                return -1;
+            }
+
+            prefix = virSocketAddrSubnetToPrefix(subnetAddrStr);
+            if (prefix < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unexpected subnet mask '%1$s'"),
+                               subnetAddrStr);
+                return -1;
+            }
+            ip->prefix = prefix;
+        }
+    }
+
+    *oneIfaceRet = g_steal_pointer(&iface);
+    return 0;
+}
+
+
+static ssize_t
+hypervDomainInterfaceAddressesParseList(hypervPrivate *priv,
+                                        Msvm_EthernetPortAllocationSettingData *nets,
+                                        virDomainInterfacePtr **ifacesRet)
+{
+    Msvm_EthernetPortAllocationSettingData *entry = nets;
+    virDomainInterfacePtr *ifaces = NULL;
+    size_t nifaces = 0;
+
+    while (entry) {
+        virDomainInterfacePtr oneIface = NULL;
+
+        if (hypervDomainInterfaceAddressesParseOne(priv, entry, &oneIface) < 0)
+            goto error;
+
+        if (oneIface)
+            VIR_APPEND_ELEMENT(ifaces, nifaces, oneIface);
+
+        entry = entry->next;
+    }
+
+    *ifacesRet = g_steal_pointer(&ifaces);
+    return nifaces;
+
+ error:
+    while (nifaces > 0) {
+        virDomainInterfaceFree(ifaces[--nifaces]);
+    }
+    VIR_FREE(ifaces);
+    return -1;
+}
+
+
+static int
+hypervDomainInterfaceAddresses(virDomainPtr dom,
+                               virDomainInterfacePtr **ifaces,
+                               unsigned int source,
+                               unsigned int flags)
+{
+    hypervPrivate *priv = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) virtualSystemSettingData = NULL;
+    g_autoptr(Msvm_EthernetPortAllocationSettingData) nets = NULL;
+    virDomainInterfacePtr *ifacesRet = NULL;
+    ssize_t ifacesRetCount = 0;
+
+    virCheckFlags(0, -1);
+
+    if (source != VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %1$d"),
+                       source);
+        return -1;
+    }
+
+    if (hypervMsvmComputerSystemFromDomain(dom, &computerSystem) < 0)
+        return -1;
+
+    priv = dom->conn->privateData;
+    virUUIDFormat(dom->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv,
+                                                      uuid_string,
+                                                      &virtualSystemSettingData) < 0) {
+        return -1;
+    }
+
+    if (hypervGetEthernetPortAllocationSD(priv,
+                                          virtualSystemSettingData->data->InstanceID,
+                                          &nets) < 0) {
+        return -1;
+    }
+
+    ifacesRetCount = hypervDomainInterfaceAddressesParseList(priv, nets, &ifacesRet);
+    if (ifacesRetCount < 0)
+        return -1;
+
+    *ifaces = g_steal_pointer(&ifacesRet);
+    return ifacesRetCount;
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -3718,6 +3884,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainManagedSaveRemove = hypervDomainManagedSaveRemove, /* 0.9.5 */
     .domainSendKey = hypervDomainSendKey, /* 3.6.0 */
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
+    .domainInterfaceAddresses = hypervDomainInterfaceAddresses, /* 12.1.0 */
 };
 
 
