@@ -1268,13 +1268,10 @@ qemuMonitorJSONHandleMigrationStatus(qemuMonitor *mon,
     const char *str;
     int status;
 
-    if (!(str = virJSONValueObjectGetString(data, "status"))) {
-        VIR_WARN("missing status in migration event");
-        return;
-    }
-
-    if ((status = qemuMonitorMigrationStatusTypeFromString(str)) == -1) {
-        VIR_WARN("unknown status '%s' in migration event", str);
+    if (!(str = virJSONValueObjectGetString(data, "status")) ||
+        (status = qemuMonitorMigrationStatusTypeFromString(str)) == -1) {
+        VIR_WARN("Missing or unknown value '%s' of 'status' in 'MIGRATION' event",
+                 NULLSTR(str));
         return;
     }
 
