@@ -1243,41 +1243,29 @@ qemuMonitorJSONHandleMemoryFailure(qemuMonitor *mon,
     const char *str;
     int recipient;
     int action;
-    bool ar = false;
-    bool recursive = false;
     qemuMonitorEventMemoryFailure mf = {0};
 
-    if (!(str = virJSONValueObjectGetString(data, "recipient"))) {
-        VIR_WARN("missing recipient in memory failure event");
+    if (!(str = virJSONValueObjectGetString(data, "recipient")) ||
+       (recipient = qemuMonitorMemoryFailureRecipientTypeFromString(str)) < 0) {
+        VIR_WARN("missing or unknown value '%s' of 'recipient' field in 'MEMORY_FAILURE' event",
+                 NULLSTR(str));
         return;
     }
 
-    recipient = qemuMonitorMemoryFailureRecipientTypeFromString(str);
-    if (recipient < 0) {
-        VIR_WARN("unknown recipient '%s' in memory_failure event", str);
-        return;
-    }
-
-    if (!(str = virJSONValueObjectGetString(data, "action"))) {
-        VIR_WARN("missing action in memory failure event");
-        return;
-    }
-
-    action = qemuMonitorMemoryFailureActionTypeFromString(str);
-    if (action < 0) {
-        VIR_WARN("unknown action '%s' in memory_failure event", str);
+    if (!(str = virJSONValueObjectGetString(data, "action")) ||
+        (action = qemuMonitorMemoryFailureActionTypeFromString(str)) < 0) {
+        VIR_WARN("missing or unknown value '%s' of 'action' field in 'MEMORY_FAILURE' event",
+                 NULLSTR(str));
         return;
     }
 
     if (flagsjson) {
-        virJSONValueObjectGetBoolean(flagsjson, "action-required", &ar);
-        virJSONValueObjectGetBoolean(flagsjson, "recursive", &recursive);
+        virJSONValueObjectGetBoolean(flagsjson, "action-required", &mf.action_required);
+        virJSONValueObjectGetBoolean(flagsjson, "recursive", &mf.recursive);
     }
 
     mf.recipient = recipient;
     mf.action = action;
-    mf.action_required = ar;
-    mf.recursive = recursive;
     qemuMonitorEmitMemoryFailure(mon, &mf);
 }
 
