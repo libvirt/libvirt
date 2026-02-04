@@ -27,6 +27,9 @@
 #include "cpu/cpu.h"
 #include "util/virgic.h"
 
+char *
+qemuMonitorJSONValidateEventHandlers(void);
+
 int
 qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
                              const char *line,

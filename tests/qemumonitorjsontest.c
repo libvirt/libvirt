@@ -2826,6 +2826,20 @@ testQemuMonitorJSONGetGuestCPU(const void *opaque)
 
 
 static int
+testEventHandlersOrdering(const void *opaque G_GNUC_UNUSED)
+{
+    g_autofree char *errmsg = NULL;
+
+    if ((errmsg = qemuMonitorJSONValidateEventHandlers())) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", errmsg);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -2847,6 +2861,10 @@ mymain(void)
     }
 
     qapiData.schema = qapischema_x86_64;
+
+    if (virTestRun("'eventHandlers' ordering check", testEventHandlersOrdering,
+                   NULL) < 0)
+        ret = -1;
 
 #define DO_TEST(name) \
     do { \

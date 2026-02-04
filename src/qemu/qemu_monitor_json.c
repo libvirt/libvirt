@@ -143,6 +143,27 @@ qemuMonitorEventCompare(const void *key, const void *elt)
 }
 
 
+/**
+ * qemuMonitorJSONValidateEventHandlers:
+ *
+ * Used by 'qemumonitorjsontest' to validate that the 'eventHandlers' array
+ * is properly sorted to use 'bsearch'.
+ */
+char *
+qemuMonitorJSONValidateEventHandlers(void)
+{
+    size_t i;
+
+    for (i = 1; i < G_N_ELEMENTS(eventHandlers); i++) {
+        if (strcmp(eventHandlers[i-1].type, eventHandlers[i].type) > -1)
+            return g_strdup_printf("mis-ordered 'eventHandlers': '%s', '%s'",
+                                   eventHandlers[i-1].type, eventHandlers[i].type);
+    }
+
+    return NULL;
+}
+
+
 static int
 qemuMonitorJSONIOProcessEvent(qemuMonitor *mon,
                               virJSONValue *obj)
