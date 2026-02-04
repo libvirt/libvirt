@@ -167,6 +167,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->checkpointDir = g_strdup_printf("%s/checkpoint", cfg->libDir);
         cfg->autoDumpPath = g_strdup_printf("%s/dump", cfg->libDir);
         cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
+        cfg->varstoreDir = g_strdup_printf("%s/varstore", cfg->libDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
     } else if (privileged) {
         cfg->logDir = g_strdup_printf("%s/log/libvirt/qemu", LOCALSTATEDIR);
@@ -188,6 +189,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->checkpointDir = g_strdup_printf("%s/checkpoint", cfg->libDir);
         cfg->autoDumpPath = g_strdup_printf("%s/dump", cfg->libDir);
         cfg->nvramDir = g_strdup_printf("%s/nvram", cfg->libDir);
+        cfg->varstoreDir = g_strdup_printf("%s/varstore", cfg->libDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/ram", cfg->libDir);
         cfg->swtpmStorageDir = g_strdup_printf("%s/lib/libvirt/swtpm",
                                                LOCALSTATEDIR);
@@ -215,6 +217,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
                                              cfg->configBaseDir);
         cfg->autoDumpPath = g_strdup_printf("%s/qemu/dump", cfg->configBaseDir);
         cfg->nvramDir = g_strdup_printf("%s/qemu/nvram", cfg->configBaseDir);
+        cfg->varstoreDir = g_strdup_printf("%s/qemu/varstore", cfg->configBaseDir);
         cfg->memoryBackingDir = g_strdup_printf("%s/qemu/ram", cfg->configBaseDir);
         cfg->swtpmStorageDir = g_strdup_printf("%s/qemu/swtpm",
                                                cfg->configBaseDir);
@@ -367,6 +370,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     g_free(cfg->checkpointDir);
     g_free(cfg->channelTargetDir);
     g_free(cfg->nvramDir);
+    g_free(cfg->varstoreDir);
 
     g_free(cfg->defaultTLSx509certdir);
     g_free(cfg->defaultTLSx509secretUUID);

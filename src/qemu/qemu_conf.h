@@ -121,6 +121,7 @@ struct _virQEMUDriverConfig {
     char *checkpointDir;
     char *channelTargetDir;
     char *nvramDir;
+    char *varstoreDir;
     char *swtpmStorageDir;
 
     char *defaultTLSx509certdir;

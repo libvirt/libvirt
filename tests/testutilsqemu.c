@@ -336,6 +336,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     cfg->memoryBackingDir = g_strdup("/var/lib/libvirt/qemu/ram");
     VIR_FREE(cfg->nvramDir);
     cfg->nvramDir = g_strdup("/var/lib/libvirt/qemu/nvram");
+    VIR_FREE(cfg->varstoreDir);
+    cfg->varstoreDir = g_strdup("/var/lib/libvirt/qemu/varstore");
     VIR_FREE(cfg->passtStateDir);
     cfg->passtStateDir = g_strdup("/var/run/libvirt/qemu/passt");
     VIR_FREE(cfg->dbusStateDir);

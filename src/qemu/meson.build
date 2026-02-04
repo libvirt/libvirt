@@ -223,6 +223,7 @@ if conf.has('WITH_QEMU')
     localstatedir / 'lib' / 'libvirt' / 'qemu' / 'ram',
     localstatedir / 'lib' / 'libvirt' / 'qemu' / 'save',
     localstatedir / 'lib' / 'libvirt' / 'qemu' / 'snapshot',
+    localstatedir / 'lib' / 'libvirt' / 'qemu' / 'varstore',
     localstatedir / 'lib' / 'libvirt' / 'swtpm',
     localstatedir / 'log' / 'libvirt' / 'qemu',
     localstatedir / 'log' / 'swtpm' / 'libvirt' / 'qemu',

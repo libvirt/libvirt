@@ -626,6 +626,11 @@ qemuStateInitialize(bool privileged,
                              cfg->nvramDir);
         goto error;
     }
+    if (g_mkdir_with_parents(cfg->varstoreDir, 0777) < 0) {
+        virReportSystemError(errno, _("Failed to create varstore dir %1$s"),
+                             cfg->varstoreDir);
+        goto error;
+    }
     if (g_mkdir_with_parents(cfg->memoryBackingDir, 0777) < 0) {
         virReportSystemError(errno, _("Failed to create memory backing dir %1$s"),
                              cfg->memoryBackingDir);
@@ -781,6 +786,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->nvramDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->varstoreDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
+                                 cfg->varstoreDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
