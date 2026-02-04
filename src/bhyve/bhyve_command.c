@@ -940,6 +940,21 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         virCommandAddArgFormat(cmd, "%d", nvcpus);
     }
 
+    /* CPU tuning */
+    for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
+        virDomainVcpuDef *vcpu = virDomainDefGetVcpu(def, i);
+
+        if (vcpu->cpumask) {
+            ssize_t j = -1;
+
+            while ((j = virBitmapNextSetBit(vcpu->cpumask, j)) >= 0) {
+                virCommandAddArg(cmd, "-p");
+                virCommandAddArgFormat(cmd, "%zu:%zu", i, j);
+            }
+
+        }
+    }
+
     /* Memory */
     virCommandAddArg(cmd, "-m");
     virCommandAddArgFormat(cmd, "%llu",

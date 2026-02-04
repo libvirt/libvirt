@@ -737,6 +737,26 @@ Example:
 Please refer to ``cam(4)``, ``ctl(4)``, and ``ctld(8)`` manual pages
 for more details on CAM and CTL.
 
+vCPU pinning
+~~~~~~~~~~~~
+
+:since:`Since 12.1.0`, it is possible to pin domain vCPUs
+to the specific host CPUs.
+
+Example:
+
+::
+
+  <domain type='bhyve'>
+    ...
+    <vcpu>2</vcpu>
+    <cputune>
+      <vcpupin vcpu="0" cpuset="1-4,^2"/>
+      <vcpupin vcpu="1" cpuset="0,4"/>
+    </cputune>
+    ...
+  </domain>
+
 Guest-specific considerations
 -----------------------------
 

@@ -283,6 +283,7 @@ mymain(void)
     DO_TEST("slirp-mac-addr");
     DO_TEST_FAILURE("slirp-ip");
     DO_TEST("virtio-scsi");
+    DO_TEST("vcpupin");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
