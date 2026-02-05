@@ -8640,6 +8640,7 @@ qemuProcessRefreshRxFilters(virDomainObj *vm,
 
 static int
 qemuProcessRefreshDisks(virDomainObj *vm,
+                        bool cold_start,
                         virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8647,19 +8648,28 @@ qemuProcessRefreshDisks(virDomainObj *vm,
     g_autoptr(GHashTable) table = NULL;
     size_t i;
 
-    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
-        table = qemuMonitorGetBlockInfo(priv->mon);
-        qemuDomainObjExitMonitor(vm);
-    }
+    if (!cold_start) {
+        if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) == 0) {
+            table = qemuMonitorGetBlockInfo(priv->mon);
+            qemuDomainObjExitMonitor(vm);
+        }
 
-    if (!table)
-        return -1;
+        if (!table)
+            return -1;
+    }
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
         qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         struct qemuDomainDiskInfo *info;
         const char *entryname = disk->info.alias;
+
+        /* At cold boot, assume cdroms have closed trays and skip the detection. */
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+
+        if (!table)
+            continue;
 
         if (diskpriv->qomName)
             entryname = diskpriv->qomName;
@@ -8690,15 +8700,17 @@ qemuProcessRefreshDisks(virDomainObj *vm,
 /**
  * qemuProcessRefreshState:
  * @vm: domain to refresh
+ * @cold_boot: starting a fresh VM
  * @asyncJob: async job type
  *
  * This function gathers calls to refresh qemu state after startup. This
  * function is called after a deferred migration finishes so that we can update
  * state influenced by the migration stream.
  */
-int
-qemuProcessRefreshState(virDomainObj *vm,
-                        virDomainAsyncJob asyncJob)
+static int
+qemuProcessRefreshStateInternal(virDomainObj *vm,
+                                bool cold_boot,
+                                virDomainAsyncJob asyncJob)
 {
     VIR_DEBUG("Fetching list of active devices");
     if (qemuDomainUpdateDeviceList(vm, asyncJob) < 0)
@@ -8713,7 +8725,7 @@ qemuProcessRefreshState(virDomainObj *vm,
         return -1;
 
     VIR_DEBUG("Updating disk data");
-    if (qemuProcessRefreshDisks(vm, asyncJob) < 0)
+    if (qemuProcessRefreshDisks(vm, cold_boot, asyncJob) < 0)
         return -1;
 
     VIR_DEBUG("Updating rx-filter data");
@@ -8721,6 +8733,14 @@ qemuProcessRefreshState(virDomainObj *vm,
         return -1;
 
     return 0;
+}
+
+
+int
+qemuProcessRefreshState(virDomainObj *vm,
+                        virDomainAsyncJob asyncJob)
+{
+    return qemuProcessRefreshStateInternal(vm, false, asyncJob);
 }
 
 
@@ -8836,7 +8856,9 @@ qemuProcessStart(virConnectPtr conn,
         /* Refresh state of devices from QEMU. During migration this happens
          * in qemuMigrationDstFinish to ensure that state information is fully
          * transferred. */
-        if (qemuProcessRefreshState(vm, asyncJob) < 0)
+        if (qemuProcessRefreshStateInternal(vm,
+                                            !!(flags & VIR_QEMU_PROCESS_START_COLD),
+                                            asyncJob) < 0)
             goto stop;
     }
 
@@ -9930,7 +9952,7 @@ qemuProcessReconnect(void *opaque)
 
     qemuProcessFiltersInstantiate(obj->def);
 
-    if (qemuProcessRefreshDisks(obj, VIR_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessRefreshDisks(obj, false, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
     /* At this point we've already checked that the startup of the VM was
