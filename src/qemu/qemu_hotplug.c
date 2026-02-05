@@ -711,6 +711,9 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
     g_autoptr(qemuSnapshotDiskContext) transientDiskSnapshotCtxt = NULL;
     bool origReadonly = disk->src->readonly;
 
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
+        disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+
     if (!virStorageSourceIsEmpty(disk->src)) {
         if (disk->transient)
             disk->src->readonly = true;
@@ -803,20 +806,11 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
      */
     if (rc == 0) {
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-        g_autoptr(GHashTable) blockinfo = NULL;
 
         if (qemuDiskConfigBlkdeviotuneEnabled(disk)) {
             if (qemuMonitorSetBlockIoThrottle(priv->mon, diskPriv->qomName,
                                               &disk->blkdeviotune) < 0)
                 VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
-        }
-
-        if ((blockinfo = qemuMonitorGetBlockInfo(priv->mon))) {
-            struct qemuDomainDiskInfo *diskinfo;
-
-            if ((diskinfo = virHashLookup(blockinfo, diskPriv->qomName))) {
-                qemuProcessRefreshDiskProps(disk, diskinfo);
-            }
         }
     }
 
