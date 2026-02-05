@@ -3786,6 +3786,7 @@ const char *ignoredFeatures[] = {
     "vmx-ept-uc", "vmx-ept-wb",      /* never supported by QEMU */
     "vmx-invvpid-single-context",    /* never supported by QEMU */
     "ht",                            /* ignored by QEMU, set according to topology */
+    "cmp_legacy",                    /* ignored by QEMU, set according to topology */
 };
 
 bool
