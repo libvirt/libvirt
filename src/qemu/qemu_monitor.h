@@ -783,9 +783,6 @@ qemuMonitorSetMemoryStatsPeriod(qemuMonitor *mon,
                                 virDomainMemballoonDef *balloon,
                                 int period);
 
-int
-qemuMonitorBlockIOStatusToError(const char *status);
-
 GHashTable *
 qemuMonitorGetBlockInfo(qemuMonitor *mon);
 

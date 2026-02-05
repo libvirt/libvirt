@@ -2317,6 +2317,24 @@ qemuMonitorJSONBlockInfoAdd(GHashTable *table,
 }
 
 
+typedef enum {
+    QEMU_MONITOR_BLOCK_IO_STATUS_OK,
+    QEMU_MONITOR_BLOCK_IO_STATUS_FAILED,
+    QEMU_MONITOR_BLOCK_IO_STATUS_NOSPACE,
+
+    QEMU_MONITOR_BLOCK_IO_STATUS_LAST
+} qemuMonitorBlockIOStatus;
+
+VIR_ENUM_DECL(qemuMonitorBlockIOStatus);
+
+VIR_ENUM_IMPL(qemuMonitorBlockIOStatus,
+              QEMU_MONITOR_BLOCK_IO_STATUS_LAST,
+              "ok",
+              "failed",
+              "nospace",
+);
+
+
 int
 qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
                             GHashTable *table)
@@ -2329,7 +2347,7 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValue *dev;
-        struct qemuDomainDiskInfo info = { false };
+        struct qemuDomainDiskInfo info = { .io_status = VIR_DOMAIN_DISK_ERROR_NONE };
         const char *thisdev;
         const char *status;
         const char *qdev;
@@ -2358,9 +2376,30 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
 
         /* Missing io-status indicates no error */
         if ((status = virJSONValueObjectGetString(dev, "io-status"))) {
-            info.io_status = qemuMonitorBlockIOStatusToError(status);
-            if (info.io_status < 0)
-                return -1;
+            int st = qemuMonitorBlockIOStatusTypeFromString(status);
+
+            if (st < 0) {
+                VIR_WARN("Unhandled value '%s' of 'io-status' field in 'query-block' reply",
+                         status);
+                info.io_status = VIR_DOMAIN_DISK_ERROR_UNSPEC;
+            } else {
+                switch ((qemuMonitorBlockIOStatus) st) {
+                case QEMU_MONITOR_BLOCK_IO_STATUS_OK:
+                    info.io_status = VIR_DOMAIN_DISK_ERROR_NONE;
+                    break;
+
+                case QEMU_MONITOR_BLOCK_IO_STATUS_FAILED:
+                    info.io_status = VIR_DOMAIN_DISK_ERROR_UNSPEC;
+                    break;
+
+                case QEMU_MONITOR_BLOCK_IO_STATUS_NOSPACE:
+                    info.io_status = VIR_DOMAIN_DISK_ERROR_NO_SPACE;
+                    break;
+
+                case QEMU_MONITOR_BLOCK_IO_STATUS_LAST:
+                    break;
+                }
+            }
         }
 
         if (thisdev &&
