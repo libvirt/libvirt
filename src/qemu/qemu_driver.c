@@ -1966,7 +1966,6 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     int ret = -1;
     qemuDomainObjPrivate *priv;
     virDomainState state;
-    virQEMUDriver *driver = dom->conn->privateData;
 
     virCheckFlags(0, -1);
 
@@ -2001,7 +2000,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     if (state == VIR_DOMAIN_CRASHED)
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_CRASHED);
 
-    qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_NONE);
+    qemuProcessRefreshState(vm, VIR_ASYNC_JOB_NONE);
 
  endjob:
     virDomainObjEndJob(vm);
@@ -4035,13 +4034,12 @@ processMemoryDeviceSizeChange(virQEMUDriver *driver,
 
 
 static void
-processResetEvent(virQEMUDriver *driver,
-                  virDomainObj *vm)
+processResetEvent(virDomainObj *vm)
 {
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return;
 
-    qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_NONE);
+    qemuProcessRefreshState(vm, VIR_ASYNC_JOB_NONE);
 
     virDomainObjEndJob(vm);
 }
@@ -4133,7 +4131,7 @@ static void qemuProcessEventHandler(void *data, void *opaque)
                                        processEvent->status);
         break;
     case QEMU_PROCESS_EVENT_RESET:
-        processResetEvent(driver, vm);
+        processResetEvent(vm);
         break;
     case QEMU_PROCESS_EVENT_NBDKIT_EXITED:
         processNbdkitExitedEvent(vm, processEvent->data);

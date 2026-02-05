@@ -163,8 +163,7 @@ int qemuProcessFinishStartup(virQEMUDriver *driver,
                              bool startCPUs,
                              virDomainPausedReason pausedReason);
 
-int qemuProcessRefreshState(virQEMUDriver *driver,
-                            virDomainObj *vm,
+int qemuProcessRefreshState(virDomainObj *vm,
                             virDomainAsyncJob asyncJob);
 
 typedef enum {

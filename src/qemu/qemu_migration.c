@@ -6805,7 +6805,7 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
 
     /* Now that the state data was transferred we can refresh the actual state
      * of the devices */
-    if (qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
+    if (qemuProcessRefreshState(vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
         /* Similarly to the case above v2 protocol will not be able to recover
          * from this. Let's ignore this and perhaps stuff will not break. */
         if (v3proto)

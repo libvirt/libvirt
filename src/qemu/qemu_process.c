@@ -3225,8 +3225,7 @@ qemuProcessCleanupChardevDevice(virDomainDef *def G_GNUC_UNUSED,
  * migration.
  */
 static int
-qemuProcessUpdateVideoRamSize(virQEMUDriver *driver,
-                              virDomainObj *vm,
+qemuProcessUpdateVideoRamSize(virDomainObj *vm,
                               int asyncJob)
 {
     int ret = -1;
@@ -3296,8 +3295,8 @@ qemuProcessUpdateVideoRamSize(virQEMUDriver *driver,
 
     qemuDomainObjExitMonitor(vm);
 
-    cfg = virQEMUDriverGetConfig(driver);
-    ret = virDomainObjSave(vm, driver->xmlopt, cfg->stateDir);
+    cfg = virQEMUDriverGetConfig(priv->driver);
+    ret = virDomainObjSave(vm, priv->driver->xmlopt, cfg->stateDir);
 
     return ret;
 
@@ -8690,7 +8689,6 @@ qemuProcessRefreshDisks(virDomainObj *vm,
 
 /**
  * qemuProcessRefreshState:
- * @driver: qemu driver data
  * @vm: domain to refresh
  * @asyncJob: async job type
  *
@@ -8699,8 +8697,7 @@ qemuProcessRefreshDisks(virDomainObj *vm,
  * state influenced by the migration stream.
  */
 int
-qemuProcessRefreshState(virQEMUDriver *driver,
-                        virDomainObj *vm,
+qemuProcessRefreshState(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
     VIR_DEBUG("Fetching list of active devices");
@@ -8712,7 +8709,7 @@ qemuProcessRefreshState(virQEMUDriver *driver,
         return -1;
 
     VIR_DEBUG("Detecting actual memory size for video device");
-    if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
+    if (qemuProcessUpdateVideoRamSize(vm, asyncJob) < 0)
         return -1;
 
     VIR_DEBUG("Updating disk data");
@@ -8839,7 +8836,7 @@ qemuProcessStart(virConnectPtr conn,
         /* Refresh state of devices from QEMU. During migration this happens
          * in qemuMigrationDstFinish to ensure that state information is fully
          * transferred. */
-        if (qemuProcessRefreshState(driver, vm, asyncJob) < 0)
+        if (qemuProcessRefreshState(vm, asyncJob) < 0)
             goto stop;
     }
 
