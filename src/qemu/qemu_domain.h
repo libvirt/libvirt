@@ -359,7 +359,7 @@ struct _qemuDomainVcpuPrivate {
 struct qemuDomainDiskInfo {
     bool tray;
     bool tray_open;
-    int io_status;
+    virDomainDiskErrorCode io_status;
 };
 
 #define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev) \
