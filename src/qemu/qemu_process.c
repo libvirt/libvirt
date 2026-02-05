@@ -8661,7 +8661,6 @@ qemuProcessRefreshDisks(virDomainObj *vm,
         qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         struct qemuDomainDiskInfo *info;
         const char *entryname = disk->info.alias;
-        virDomainDiskTray old_tray_status = disk->tray_status;
 
         if (diskpriv->qomName)
             entryname = diskpriv->qomName;
@@ -8669,20 +8668,20 @@ qemuProcessRefreshDisks(virDomainObj *vm,
         if (!(info = virHashLookup(table, entryname)))
             continue;
 
-        qemuProcessRefreshDiskProps(disk, info);
-
-        if (old_tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
-            disk->tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
-            old_tray_status != disk->tray_status) {
+        if (disk->tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
+            info->tray_status != VIR_DOMAIN_DISK_TRAY_NONE &&
+            disk->tray_status != info->tray_status) {
             virDomainEventTrayChangeReason reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN;
             virObjectEvent *event;
 
-            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED)
+            if (info->tray_status == VIR_DOMAIN_DISK_TRAY_CLOSED)
                 reason = VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE;
 
             event = virDomainEventTrayChangeNewFromObj(vm, disk->info.alias, reason);
             virObjectEventStateQueue(driver->domainEventState, event);
         }
+
+        disk->tray_status = info->tray_status;
     }
 
     return 0;
@@ -9584,19 +9583,6 @@ qemuProcessAutoDestroy(virDomainObj *dom,
     qemuProcessEndStopJob(dom);
 
     virObjectEventStateQueue(driver->domainEventState, event);
-}
-
-
-void
-qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
-                            struct qemuDomainDiskInfo *info)
-{
-    if (info->tray) {
-        if (info->tray_open)
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-        else
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
-    }
 }
 
 

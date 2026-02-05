@@ -355,8 +355,7 @@ struct _qemuDomainVcpuPrivate {
 
 
 struct qemuDomainDiskInfo {
-    bool tray;
-    bool tray_open;
+    virDomainDiskTray tray_status;
     virDomainDiskErrorCode io_status;
 };
 

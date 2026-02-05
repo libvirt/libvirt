@@ -257,9 +257,6 @@ bool qemuProcessRebootAllowed(const virDomainDef *def);
 void qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
                                     virDomainObj *vm);
 
-void qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
-                                 struct qemuDomainDiskInfo *info);
-
 int qemuProcessSetupEmulator(virDomainObj *vm);
 
 void qemuProcessHandleNbdkitExit(qemuNbdkitProcess *nbdkit,

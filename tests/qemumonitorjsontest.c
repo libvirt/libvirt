@@ -1353,8 +1353,8 @@ testQemuMonitorJSONqemuMonitorJSONGetBalloonInfo(const void *opaque)
 static void
 testQemuMonitorJSONGetBlockInfoPrint(const struct qemuDomainDiskInfo *d)
 {
-    VIR_TEST_VERBOSE("tray: %d, tray_open: %d, io_status: %d",
-                     d->tray, d->tray_open, d->io_status);
+    VIR_TEST_VERBOSE("tray_status: %d, io_status: %d",
+                     d->tray_status, d->io_status);
 }
 
 
@@ -1403,7 +1403,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
 
-    info->tray = true;
+    info->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
 
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-0", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1413,7 +1413,7 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *opaque)
 
     info = g_new0(struct qemuDomainDiskInfo, 1);
 
-    info->tray = true;
+    info->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
 
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

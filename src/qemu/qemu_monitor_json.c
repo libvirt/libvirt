@@ -2347,10 +2347,14 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValue *dev;
-        struct qemuDomainDiskInfo info = { .io_status = VIR_DOMAIN_DISK_ERROR_NONE };
+        struct qemuDomainDiskInfo info = {
+            .tray_status = VIR_DOMAIN_DISK_TRAY_NONE,
+            .io_status = VIR_DOMAIN_DISK_ERROR_NONE
+        };
         const char *thisdev;
         const char *status;
         const char *qdev;
+        bool tray_open;
 
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             return -1;
@@ -2371,8 +2375,12 @@ qemuMonitorJSONGetBlockInfo(qemuMonitor *mon,
         }
 
         /* 'tray_open' is present only if the device has a tray */
-        if (virJSONValueObjectGetBoolean(dev, "tray_open", &info.tray_open) == 0)
-            info.tray = true;
+        if (virJSONValueObjectGetBoolean(dev, "tray_open", &tray_open) == 0) {
+            if (tray_open)
+                info.tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+            else
+                info.tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+        }
 
         /* Missing io-status indicates no error */
         if ((status = virJSONValueObjectGetString(dev, "io-status"))) {
