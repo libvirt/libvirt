@@ -4953,6 +4953,8 @@ esxVI_LookupManagedObjectHelper(esxVI_Context *ctx,
                 goto cleanup;
             }
 
+            VIR_DEBUG("comparing path element '%s' with candidate name '%s'",
+                      name, name_candidate);
             if (STREQ(name_candidate, name)) {
                 /* Found item with matching name */
                 break;
