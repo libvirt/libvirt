@@ -9591,16 +9591,12 @@ void
 qemuProcessRefreshDiskProps(virDomainDiskDef *disk,
                             struct qemuDomainDiskInfo *info)
 {
-    qemuDomainDiskPrivate *diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-
     if (info->tray) {
         if (info->tray_open)
             disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
         else
             disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
     }
-
-    diskpriv->tray = info->tray;
 }
 
 
