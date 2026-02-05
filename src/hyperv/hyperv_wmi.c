@@ -1507,6 +1507,46 @@ hypervGetEthernetPortAllocationSD(hypervPrivate *priv,
 }
 
 
+int
+hypervImageManagementServiceGetVHDSD(hypervPrivate *priv,
+                                     const char *vhdPath,
+                                     WsXmlDocH *settingDataDoc)
+{
+    hypervInvokeParamsList *params = NULL;
+    g_auto(WsXmlDocH) response = NULL;
+    g_autofree char *settingDataXmlStr = NULL;
+
+    params = hypervCreateInvokeParamsList("GetVirtualHardDiskSettingData",
+                                          MSVM_IMAGEMANAGEMENTSERVICE_SELECTOR,
+                                          Msvm_ImageManagementService_WmiInfo);
+    if (hypervAddSimpleParam(params, "Path", vhdPath) < 0)
+        return -1;
+
+    if (hypervInvokeMethod(priv, &params, &response) < 0)
+        return -1;
+
+    settingDataXmlStr = ws_xml_get_xpath_value(response,
+        (char *)"/s:Envelope/s:Body/p:GetVirtualHardDiskSettingData_OUTPUT/p:SettingData");
+
+    if (!settingDataXmlStr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not extract SettingData from response for '%1$s'"), vhdPath);
+        return -1;
+    }
+
+    /* the method returns an embedded CIM-XML document as a string, so we need
+     * to parse it as xml */
+    *settingDataDoc = ws_xml_read_memory(settingDataXmlStr, strlen(settingDataXmlStr), "UTF-8", 0);
+    if (!*settingDataDoc) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not parse VHD SettingData XML for '%1$s'"), vhdPath);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService
  */

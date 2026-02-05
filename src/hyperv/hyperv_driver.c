@@ -26,6 +26,7 @@
 
 #include "internal.h"
 #include "datatypes.h"
+#include "virbuffer.h"
 #include "virdomainobjlist.h"
 #include "virauth.h"
 #include "viralloc.h"
@@ -3852,6 +3853,209 @@ hypervDomainInterfaceAddresses(virDomainPtr dom,
 }
 
 
+static int
+hypervGetFileSize(hypervPrivate *priv,
+                  const char *filePath,
+                  unsigned long long *fileSize)
+{
+    g_autoptr(CIM_DataFile) dataFile = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autofree char *escapedPath = NULL;
+
+    virBufferAddLit(&query, CIM_DATAFILE_WQL_SELECT);
+    virBufferEscapeSQL(&query, "WHERE Name='%s'", filePath);
+
+    if (hypervGetWmiClass(CIM_DataFile, &dataFile) < 0 || !dataFile) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not query file size for '%1$s'"), filePath);
+        return -1;
+    }
+
+    *fileSize = dataFile->data->FileSize;
+    return 0;
+}
+
+
+static int
+hypervGetPhysicalDiskBlockInfo(hypervPrivate *priv,
+                               unsigned int driveNumber,
+                               virDomainBlockInfoPtr info)
+{
+    g_autoptr(Win32_DiskDrive) diskDrive = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&query, WIN32_DISKDRIVE_WQL_SELECT "WHERE Index=%u", driveNumber);
+
+    if (hypervGetWmiClass(Win32_DiskDrive, &diskDrive) < 0 || !diskDrive) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Could not find physical disk with drive number %1$u"), driveNumber);
+        return -1;
+    }
+
+    info->capacity = info->allocation = info->physical = diskDrive->data->Size;
+    return 0;
+}
+
+
+static int
+hypervGetVHDCapacity(hypervPrivate *priv,
+                     const char *path,
+                     unsigned long long *capacity)
+{
+    g_auto(WsXmlDocH) settingDataDoc = NULL;
+    g_autofree char *maxInternalSizeStr = NULL;
+
+    if (hypervImageManagementServiceGetVHDSD(priv, path, &settingDataDoc) < 0)
+        return -1;
+
+    maxInternalSizeStr = ws_xml_get_xpath_value(settingDataDoc,
+        (char *)"//PROPERTY[@NAME='MaxInternalSize']/VALUE");
+
+    if (!maxInternalSizeStr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not find MaxInternalSize in VHD SettingData for '%1$s'"), path);
+        return -1;
+    }
+
+    if (virStrToLong_ull(maxInternalSizeStr, NULL, 10, capacity) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse MaxInternalSize '%1$s' for '%2$s'"),
+                       maxInternalSizeStr, path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+hypervGetVirtualDiskBlockInfo(hypervPrivate *priv,
+                              const char *diskpath,
+                              virDomainBlockInfoPtr info)
+{
+    unsigned long long capacity = 0;
+    unsigned long long allocation = 0;
+    /* This might fail if diskpath is not a vhd file, but continue anyway as it
+     * might be e.g. an ISO that is not supported by the ImageManagementService */
+    int rcapacity = hypervGetVHDCapacity(priv, diskpath, &capacity);
+
+    /* querying actual file allocation only works for local files, so may fail
+     * for files on network shares */
+    int rallocation = hypervGetFileSize(priv, diskpath, &allocation);
+
+    /* if both queries were unsuccessful, just return an error */
+    if (rcapacity < 0 && rallocation < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to get info for disk '%1$s'"),
+                       diskpath);
+        return -1;
+    }
+
+    /* if we failed to get the capacity from the ImageManagementService (i.e.
+     * the disk path wasn't a vhd file), just use the file size */
+    if (capacity == 0)
+        capacity = allocation;
+
+    info->capacity = capacity;
+    info->physical = info->allocation = allocation;
+    return 0;
+}
+
+static int
+hypervDomainGetBlockInfo(virDomainPtr domain,
+                         const char *path,
+                         virDomainBlockInfoPtr info,
+                         unsigned int flags)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    g_autoptr(Msvm_ResourceAllocationSettingData) resource_settings = NULL;
+    g_autoptr(Msvm_StorageAllocationSettingData) storage_settings = NULL;
+    g_autoptr(Msvm_VirtualSystemSettingData) system_settings = NULL;
+    g_autoptr(virDomainDef) def = NULL;
+    virDomainDiskDef *disk = NULL;
+    const char *diskpath = NULL;
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &system_settings) < 0) {
+        virReportError(VIR_ERR_NO_DOMAIN, _("No domain with UUID %1$s"), uuid_string);
+        return -1;
+    }
+
+    if (hypervGetResourceAllocationSD(priv,
+                                      system_settings->data->InstanceID,
+                                      &resource_settings) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to get resource allocation settings data"));
+        return -1;
+    }
+
+    if (hypervGetStorageAllocationSD(priv,
+                                     system_settings->data->InstanceID,
+                                     &storage_settings) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to get storage allocation settings data"));
+        return -1;
+    }
+
+    if (!(def = virDomainDefNew(priv->xmlopt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to create a new virDomainDef"));
+        return -1;
+    }
+
+    /* Process storage and resources to get disk names */
+    if (hypervDomainDefParseStorage(priv, def, resource_settings, storage_settings) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to parse storage"));
+        return -1;
+    }
+
+    disk = virDomainDiskByName(def, path, false);
+    if (!disk) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path %1$s not assigned to domain"), path);
+        return -1;
+    }
+
+    diskpath = virDomainDiskGetSource(disk);
+    if (!diskpath) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("disk '%1$s' has no source path"), path);
+        return -1;
+    }
+
+    if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_BLOCK) {
+        unsigned int driveNumber = 0;
+        g_autoptr(Msvm_DiskDrive) diskdrive = NULL;
+
+        /* BLOCK type disks have their source path set to the windows drive number */
+        if (virStrToLong_ui(diskpath, NULL, 10, &driveNumber) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid drive number '%1$s' for physical disk"), diskpath);
+            return -1;
+        }
+
+        if (hypervGetPhysicalDiskBlockInfo(priv, driveNumber, info) < 0)
+            return -1;
+    } else if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_FILE) {
+        /* first try querying the disk via the image management service which supports .vhd(x) files */
+        if (hypervGetVirtualDiskBlockInfo(priv, diskpath, info) < 0)
+            return -1;
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Unsupported disk type %1$d for disk '%2$s'"),
+                       virDomainDiskGetType(disk), path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -3916,6 +4120,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSendKey = hypervDomainSendKey, /* 3.6.0 */
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
     .domainInterfaceAddresses = hypervDomainInterfaceAddresses, /* 12.1.0 */
+    .domainGetBlockInfo = hypervDomainGetBlockInfo, /* 12.1.0 */
 };
 
 

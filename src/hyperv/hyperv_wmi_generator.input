@@ -1143,3 +1143,112 @@ class Msvm_VideoHead
     uint32   CurrentNumberOfColumns
     uint64   CurrentNumberOfColors
 end
+
+
+class Msvm_ImageManagementService
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   StartMode
+    boolean  Started
+end
+
+
+class Msvm_VirtualHardDiskSettingData
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    uint16   Type
+    uint16   Format
+    string   Path
+    string   ParentPath
+    datetime ParentTimestamp
+    string   ParentIdentifier
+    uint64   MaxInternalSize
+    uint32   BlockSize
+    uint32   LogicalSectorSize
+    uint32   PhysicalSectorSize
+    string   VirtualDiskId
+    uint64   DataAlignment
+    uint16   PmemAddressAbstractionType
+    boolean  IsPmemCompatible
+end
+
+
+class Win32_DiskDrive
+    uint16   Availability
+    uint32   BytesPerSector
+    uint16   Capabilities[]
+    string   CapabilityDescriptions[]
+    string   Caption
+    string   CompressionMethod
+    uint32   ConfigManagerErrorCode
+    boolean  ConfigManagerUserConfig
+    string   CreationClassName
+    uint64   DefaultBlockSize
+    string   Description
+    string   DeviceID
+    boolean  ErrorCleared
+    string   ErrorDescription
+    string   ErrorMethodology
+    string   FirmwareRevision
+    uint32   Index
+    datetime InstallDate
+    string   InterfaceType
+    uint32   LastErrorCode
+    string   Manufacturer
+    uint64   MaxBlockSize
+    uint64   MaxMediaSize
+    boolean  MediaLoaded
+    string   MediaType
+    uint64   MinBlockSize
+    string   Model
+    string   Name
+    boolean  NeedsCleaning
+    uint32   NumberOfMediaSupported
+    uint32   Partitions
+    string   PNPDeviceID
+    uint16   PowerManagementCapabilities[]
+    boolean  PowerManagementSupported
+    uint32   SCSIBus
+    uint16   SCSILogicalUnit
+    uint16   SCSIPort
+    uint16   SCSITargetId
+    uint32   SectorsPerTrack
+    string   SerialNumber
+    uint32   Signature
+    uint64   Size
+    string   Status
+    uint16   StatusInfo
+    string   SystemCreationClassName
+    string   SystemName
+    uint64   TotalCylinders
+    uint32   TotalHeads
+    uint64   TotalSectors
+    uint64   TotalTracks
+    uint32   TracksPerCylinder
+end

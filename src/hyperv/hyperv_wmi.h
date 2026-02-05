@@ -35,6 +35,9 @@
 #define MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR \
     "CreationClassName=Msvm_VirtualSystemManagementService"
 
+#define MSVM_IMAGEMANAGEMENTSERVICE_SELECTOR \
+    "CreationClassName=Msvm_ImageManagementService"
+
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
 
@@ -261,6 +264,10 @@ int hypervGetSyntheticEthernetPortSD(hypervPrivate *priv,
 int hypervGetEthernetPortAllocationSD(hypervPrivate *priv,
                                       const char *id,
                                       Msvm_EthernetPortAllocationSettingData **data);
+
+int hypervImageManagementServiceGetVHDSD(hypervPrivate *priv,
+                                         const char *vhdPath,
+                                         WsXmlDocH *settingDataDoc);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService
