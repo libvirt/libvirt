@@ -1775,6 +1775,77 @@ bhyveDomainBlockStats(virDomainPtr domain,
     return ret;
 }
 
+static int
+bhyveDomainGetVcpusFlags(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObj *vm;
+    virDomainDef *def;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainGetVcpusFlagsEnsureACL(domain->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = virDomainDefGetVcpusMax(def);
+    else
+        ret = virDomainDefGetVcpus(def);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+bhyveDomainGetMaxVcpus(virDomainPtr domain)
+{
+    return bhyveDomainGetVcpusFlags(domain, (VIR_DOMAIN_AFFECT_LIVE |
+                                             VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static int
+bhyveDomainGetVcpuPinInfo(virDomainPtr domain,
+                        int ncpumaps,
+                        unsigned char *cpumaps,
+                        int maplen,
+                        unsigned int flags)
+{
+    virDomainObj *vm;
+    virDomainDef *def;
+    g_autoptr(virBitmap) hostcpus = NULL;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainGetVcpuPinInfoEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(hostcpus = virHostCPUGetAvailableCPUsBitmap()))
+        goto cleanup;
+
+    ret = virDomainDefGetVcpuPinInfoHelper(def, maplen, ncpumaps, cpumaps,
+                                           hostcpus, NULL);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -1838,6 +1909,9 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainInterfaceStats = bhyveDomainInterfaceStats, /* 11.7.0 */
     .domainMemoryStats = bhyveDomainMemoryStats, /* 11.7.0 */
     .domainBlockStats = bhyveDomainBlockStats, /* 11.7.0 */
+    .domainGetVcpusFlags = bhyveDomainGetVcpusFlags, /* 12.1.0 */
+    .domainGetMaxVcpus = bhyveDomainGetMaxVcpus, /* 12.1.0 */
+    .domainGetVcpuPinInfo = bhyveDomainGetVcpuPinInfo, /* 12.1.0 */
 };
 
 
