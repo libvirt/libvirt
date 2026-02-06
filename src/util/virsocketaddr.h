@@ -135,6 +135,8 @@ bool virSocketAddrIsWildcard(const virSocketAddr *addr);
 
 int virSocketAddrNumericFamily(const char *address);
 
+int virSocketAddrSubnetToPrefix(const char *subnet);
+
 bool virSocketAddrIsNumericLocalhost(const char *addr);
 
 int virSocketAddrPTRDomain(const virSocketAddr *addr,

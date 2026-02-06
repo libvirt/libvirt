@@ -257,6 +257,25 @@ testIsLocalhostHelper(const void *opaque)
     return 0;
 }
 
+struct testSubnetToPrefixData {
+    const char *addr;
+    int prefix;
+};
+
+static int
+testSubnetToPrefixHelper(const void *opaque)
+{
+    const struct testSubnetToPrefixData *data = opaque;
+    int val = virSocketAddrSubnetToPrefix(data->addr);
+
+    if (val != data->prefix) {
+        fprintf(stderr, "actual: '%d', expected: '%d'", val, data->prefix);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int
 mymain(void)
 {
@@ -350,6 +369,14 @@ mymain(void)
         if (virTestRun("Test localhost " addr, \
                        testIsLocalhostHelper, &data) < 0) \
             ret = -1; \
+    } while (0)
+
+#define DO_TEST_SUBNET_TO_PREFIX(addr, prefix) \
+    do { \
+        struct testSubnetToPrefixData data = { addr, prefix }; \
+        if (virTestRun("Test subnet to prefix " addr, \
+                       testSubnetToPrefixHelper, &data) < 0) \
+            ret  = -1; \
     } while (0)
 
     DO_TEST_PARSE_AND_FORMAT("127.0.0.1", AF_UNSPEC, true);
@@ -475,6 +502,12 @@ mymain(void)
     DO_TEST_LOCALHOST("0.0.0.1", false);
     DO_TEST_LOCALHOST("hello", false);
     DO_TEST_LOCALHOST("fe80::1:1", false);
+
+    DO_TEST_SUBNET_TO_PREFIX("0.0.0.0", 0);
+    DO_TEST_SUBNET_TO_PREFIX("255.0.0.0", 8);
+    DO_TEST_SUBNET_TO_PREFIX("255.255.255.254", 31);
+    DO_TEST_SUBNET_TO_PREFIX("64", 64);
+    DO_TEST_SUBNET_TO_PREFIX("/64", 64);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
