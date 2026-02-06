@@ -2279,6 +2279,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     bool full = vshCommandOptBool(cmd, "full");
     const char *sourcestr = NULL;
     int source = VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE;
+    g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptString(ctl, cmd, "interface", &ifacestr) < 0)
         return false;
@@ -2299,28 +2300,30 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrintExtra(ctl, " %-10s %-20s %-8s     %s\n%s%s\n", _("Name"),
-                  _("MAC address"), _("Protocol"), _("Address"),
-                  _("-------------------------------------------------"),
-                  _("------------------------------"));
+    table = vshTableNew(_("Name"), _("MAC address"), _("Protocol"), _("Address"), NULL);
+    if (!table)
+        return false;
 
     for (i = 0; i < ifaces_count; i++) {
         virDomainInterfacePtr iface = ifaces[i];
         const char *type = NULL;
+        const char *hwaddr = "N/A";
 
         if (ifacestr && STRNEQ(ifacestr, iface->name))
             continue;
 
+        if (iface->hwaddr)
+            hwaddr = iface->hwaddr;
+
         /* When the interface has no IP address */
         if (!iface->naddrs) {
-            vshPrint(ctl, " %-10s %-17s    %-12s %s\n",
-                     iface->name,
-                     iface->hwaddr ? iface->hwaddr : "N/A", "N/A", "N/A");
+            if (vshTableRowAppend(table,
+                                  iface->name, hwaddr, "N/A", "N/A", NULL) < 0)
+                goto cleanup;
             continue;
         }
 
         for (j = 0; j < iface->naddrs; j++) {
-            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
             g_autofree char *ip_addr_str = NULL;
 
             switch (iface->addrs[j].type) {
@@ -2332,25 +2335,29 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
                 break;
             }
 
-            virBufferAsprintf(&buf, "%-12s %s/%d",
-                              type, iface->addrs[j].addr,
-                              iface->addrs[j].prefix);
-
-            ip_addr_str = virBufferContentAndReset(&buf);
-
-            if (!ip_addr_str)
-                ip_addr_str = g_strdup("");
+            ip_addr_str = g_strdup_printf("%s/%d",
+                                          iface->addrs[j].addr,
+                                          iface->addrs[j].prefix);
 
             /* Don't repeat interface name */
-            if (full || !j)
-                vshPrint(ctl, " %-10s %-17s    %s\n",
-                         iface->name,
-                         NULLSTR_EMPTY(iface->hwaddr), ip_addr_str);
-            else
-                vshPrint(ctl, " %-10s %-17s    %s\n",
-                         "-", "-", ip_addr_str);
+            if (full || !j) {
+                if (vshTableRowAppend(table,
+                                      iface->name,
+                                      NULLSTR_EMPTY(iface->hwaddr),
+                                      NULLSTR_MINUS(type), ip_addr_str, NULL) < 0) {
+                    goto cleanup;
+                }
+            } else {
+                if (vshTableRowAppend(table,
+                                      "-", "-",
+                                      NULLSTR_MINUS(type), ip_addr_str, NULL) < 0) {
+                    goto cleanup;
+                }
+            }
         }
     }
+
+    vshTablePrintToStdout(table, ctl);
 
     ret = true;
 
