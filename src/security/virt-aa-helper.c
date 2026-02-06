@@ -1021,7 +1021,15 @@ get_files(vahControl * ctl)
 
     if (ctl->def->os.loader && ctl->def->os.loader->path) {
         bool readonly = false;
+
+        /* Look at the readonly attribute, but also keep in mind that ROMs
+         * are always loaded read-only regardless of whether the attribute
+         * is present. Validation ensures that nonsensical configurations
+         * (type=rom readonly=no) are rejected long before we get here */
         virTristateBoolToBool(ctl->def->os.loader->readonly, &readonly);
+        if (ctl->def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_ROM)
+            readonly = true;
+
         if (vah_add_file(&buf,
                          ctl->def->os.loader->path,
                          readonly ? "rk" : "rwk") != 0) {
