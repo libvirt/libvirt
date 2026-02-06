@@ -804,6 +804,8 @@ struct _virNWFilterBinding {
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNWFilterBinding, virObjectUnref);
 
+/* virDomainInterface is defined in the public API - libvirt-domain.h */
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainInterface, virDomainInterfaceFree);
 
 /*
  * Helper APIs for allocating new object instances
