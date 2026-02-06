@@ -1351,6 +1351,7 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
     virDomainDiskDef *disk = NULL;
     char **hostResource = entry->data->HostResource.data;
     g_autofree char *hostEscaped = NULL;
+    g_autofree char *hostEscapedTwice = NULL;
     g_autofree char *driveNumberStr = NULL;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
     int addr = -1, ctrlr_idx = -1;
@@ -1373,12 +1374,12 @@ hypervDomainDefParsePhysicalDisk(hypervPrivate *priv,
 
     /* Query Msvm_DiskDrive for the DriveNumber */
     hostEscaped = virStringReplace(*hostResource, "\\\"", "\"");
-    hostEscaped = virStringReplace(hostEscaped, "\\", "\\\\");
+    hostEscapedTwice = virStringReplace(hostEscaped, "\\", "\\\\");
 
     /* quotes must be preserved, so virBufferEscapeSQL can't be used */
     virBufferAsprintf(&query,
                       MSVM_DISKDRIVE_WQL_SELECT "WHERE __PATH='%s'",
-                      hostEscaped);
+                      hostEscapedTwice);
 
     if (hypervGetWmiClass(Msvm_DiskDrive, &diskdrive) < 0)
         goto cleanup;
