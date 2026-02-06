@@ -1552,17 +1552,47 @@ hypervDomainDefParseSerial(virDomainDef *def, Msvm_ResourceAllocationSettingData
 
 
 static int
+hypervDomainDefParseEthernetAdapterMAC(hypervPrivate *priv,
+                                       Msvm_EthernetPortAllocationSettingData *net,
+                                       virMacAddr *mac)
+{
+    g_autoptr(Msvm_SyntheticEthernetPortSettingData) sepsd = NULL;
+    char *sepsdPATH = NULL;
+    g_autofree char *sepsdEscaped = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    sepsdPATH = net->data->Parent;
+    sepsdEscaped = virStringReplace(sepsdPATH, "\\", "\\\\");
+    virBufferAsprintf(&query,
+                      MSVM_SYNTHETICETHERNETPORTSETTINGDATA_WQL_SELECT "WHERE __PATH = '%s'",
+                      sepsdEscaped);
+
+    if (hypervGetWmiClass(Msvm_SyntheticEthernetPortSettingData, &sepsd) < 0)
+        return -1;
+
+    if (!sepsd) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not retrieve NIC settings"));
+        return -1;
+    }
+
+    /* set mac address */
+    if (virMacAddrParseHex(sepsd->data->Address, mac) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 hypervDomainDefParseEthernetAdapter(virDomainDef *def,
                                     Msvm_EthernetPortAllocationSettingData *net,
                                     hypervPrivate *priv)
 {
     g_autoptr(virDomainNetDef) ndef = g_new0(virDomainNetDef, 1);
-    g_autoptr(Msvm_SyntheticEthernetPortSettingData) sepsd = NULL;
     g_autoptr(Msvm_VirtualEthernetSwitch) vSwitch = NULL;
     char **switchConnection = NULL;
     g_autofree char *switchConnectionEscaped = NULL;
-    char *sepsdPATH = NULL;
-    g_autofree char *sepsdEscaped = NULL;
+    g_autofree char *sepsdInstanceIDEscaped = NULL;
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
 
     VIR_DEBUG("Parsing ethernet adapter '%s'", net->data->InstanceID);
@@ -1581,28 +1611,7 @@ hypervDomainDefParseEthernetAdapter(virDomainDef *def,
         return 0;
     }
 
-    /*
-     * Now we retrieve the associated Msvm_SyntheticEthernetPortSettingData and
-     * Msvm_VirtualEthernetSwitch objects and use them to build the XML definition.
-     */
-
-    /* begin by getting the Msvm_SyntheticEthernetPortSettingData object */
-    sepsdPATH = net->data->Parent;
-    sepsdEscaped = virStringReplace(sepsdPATH, "\\", "\\\\");
-    virBufferAsprintf(&query,
-                      MSVM_SYNTHETICETHERNETPORTSETTINGDATA_WQL_SELECT "WHERE __PATH = '%s'",
-                      sepsdEscaped);
-
-    if (hypervGetWmiClass(Msvm_SyntheticEthernetPortSettingData, &sepsd) < 0)
-        return -1;
-
-    if (!sepsd) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Could not retrieve NIC settings"));
-        return -1;
-    }
-
-    /* set mac address */
-    if (virMacAddrParseHex(sepsd->data->Address, &ndef->mac) < 0)
+    if (hypervDomainDefParseEthernetAdapterMAC(priv, net, &ndef->mac) < 0)
         return -1;
 
     /* now we get the Msvm_VirtualEthernetSwitch */
