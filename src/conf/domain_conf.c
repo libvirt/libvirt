@@ -15459,10 +15459,12 @@ virDomainDiskIndexByName(virDomainDef *def, const char *name,
     /* We prefer the <target dev='name'/> name (it's shorter, required
      * for all disks, and should be unambiguous), but also support
      * <source file='name'/> (if unambiguous).  Assume dst if there is
-     * no leading slash, source name otherwise.  */
+     * no leading slash (Unix path) or drive letter (Windows path like C:\),
+     * source name otherwise.  */
     for (i = 0; i < def->ndisks; i++) {
         vdisk = def->disks[i];
-        if (*name != '/') {
+        if (*name != '/' &&
+            !(g_ascii_isalpha(name[0]) && name[1] == ':')) {
             if (STREQ(vdisk->dst, name))
                 return i;
         } else if (STREQ_NULLABLE(virDomainDiskGetSource(vdisk), name)) {
