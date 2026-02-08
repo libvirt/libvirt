@@ -24,6 +24,23 @@ v12.1.0 (unreleased)
     example Secure Boot support, is available for the selected architecture and
     machine type.
 
+  * qemu: Add support for uefi-vars device and firmware builds using it
+
+    This is particularly noteworthy for people running aarch64 VMs with the
+    'virt' machine type, as it makes it finally possible to use Secure Boot
+    with that combination.
+
+    In most cases, no special steps are needed to take advantage of this:
+    assuming that you have installed a recent version of QEMU, as well as a
+    build of edk2 that includes the necessary binaries, you can just `enable
+    Secure Boot <kbase/secureboot.html>`__ as you normally would.
+
+    To explicitly request that the uefi-vars device is used even for scenarios
+    where that would normally not be the case, it's enough to add an empty
+    ``<varstore/>`` element in the domain XML. More details are available in
+    the `guest firmware configuration <formatdomain.html#guest-firmware>`__
+    section of the documentation.
+
 * **Improvements**
 
 * **Bug fixes**
