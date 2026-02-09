@@ -68,6 +68,15 @@
     </element>
   </define>
 
+  <define name="firmwareFeatures">
+    <element name="firmwareFeatures">
+      <ref name="supported"/>
+      <optional>
+        <ref name="enum"/>
+      </optional>
+    </element>
+  </define>
+
   <define name="loader">
     <element name="loader">
       <ref name="supported"/>
@@ -83,6 +92,9 @@
       <interleave>
         <ref name="supported"/>
         <ref name="enum"/>
+        <optional>
+          <ref name="firmwareFeatures"/>
+        </optional>
         <optional>
           <ref name="loader"/>
         </optional>
