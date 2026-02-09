@@ -43,6 +43,13 @@ struct _virDomainCapsStringValues {
     size_t nvalues; /* number of strings */
 };
 
+typedef struct _virDomainCapsFirmwareFeatures virDomainCapsFirmwareFeatures;
+struct _virDomainCapsFirmwareFeatures {
+    virTristateBool supported;
+    virDomainCapsEnum secureBoot;
+    virDomainCapsEnum enrolledKeys;
+};
+
 STATIC_ASSERT_ENUM(VIR_DOMAIN_LOADER_TYPE_LAST);
 STATIC_ASSERT_ENUM(VIR_TRISTATE_BOOL_LAST);
 typedef struct _virDomainCapsLoader virDomainCapsLoader;
@@ -59,6 +66,7 @@ typedef struct _virDomainCapsOS virDomainCapsOS;
 struct _virDomainCapsOS {
     virTristateBool supported;
     virDomainCapsEnum firmware;     /* Info about virDomainOsDefFirmware */
+    virDomainCapsFirmwareFeatures firmwareFeatures;
     virDomainCapsLoader loader;     /* Info about virDomainLoaderDef */
 };
 
