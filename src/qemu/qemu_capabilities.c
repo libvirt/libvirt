@@ -6523,8 +6523,11 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
                             virFirmware **firmwares,
                             size_t nfirmwares)
 {
+    virDomainCapsFirmwareFeatures *firmwareFeatures = &os->firmwareFeatures;
     virDomainCapsLoader *capsLoader = &os->loader;
     uint64_t autoFirmwares = 0;
+    uint64_t featureSecureBoot = 0;
+    uint64_t featureEnrolledKeys = 0;
     bool secure = false;
     virFirmware **firmwaresAlt = NULL;
     size_t nfirmwaresAlt = 0;
@@ -6533,8 +6536,9 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
     os->supported = VIR_TRISTATE_BOOL_YES;
     os->firmware.report = true;
 
-    if (qemuFirmwareGetSupported(machine, arch, privileged,
-                                 &autoFirmwares, &secure,
+    if (qemuFirmwareGetSupported(machine, arch, privileged, &autoFirmwares,
+                                 &featureSecureBoot, &featureEnrolledKeys,
+                                 &secure,
                                  &firmwaresAlt, &nfirmwaresAlt) < 0)
         return -1;
 
@@ -6542,6 +6546,19 @@ virQEMUCapsFillDomainOSCaps(virDomainCapsOS *os,
         VIR_DOMAIN_CAPS_ENUM_SET(os->firmware, VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS);
     if (autoFirmwares & (1ULL << VIR_DOMAIN_OS_DEF_FIRMWARE_EFI))
         VIR_DOMAIN_CAPS_ENUM_SET(os->firmware, VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);
+
+    firmwareFeatures->supported = VIR_TRISTATE_BOOL_YES;
+    firmwareFeatures->secureBoot.report = true;
+    firmwareFeatures->enrolledKeys.report = true;
+
+    if (featureSecureBoot & (1ULL << VIR_TRISTATE_BOOL_YES))
+        VIR_DOMAIN_CAPS_ENUM_SET(firmwareFeatures->secureBoot, VIR_TRISTATE_BOOL_YES);
+    if (featureSecureBoot & (1ULL << VIR_TRISTATE_BOOL_NO))
+        VIR_DOMAIN_CAPS_ENUM_SET(firmwareFeatures->secureBoot, VIR_TRISTATE_BOOL_NO);
+    if (featureEnrolledKeys & (1ULL << VIR_TRISTATE_BOOL_YES))
+        VIR_DOMAIN_CAPS_ENUM_SET(firmwareFeatures->enrolledKeys, VIR_TRISTATE_BOOL_YES);
+    if (featureEnrolledKeys & (1ULL << VIR_TRISTATE_BOOL_NO))
+        VIR_DOMAIN_CAPS_ENUM_SET(firmwareFeatures->enrolledKeys, VIR_TRISTATE_BOOL_NO);
 
     if (virQEMUCapsFillDomainLoaderCaps(capsLoader, secure,
                                         firmwaresAlt ? firmwaresAlt : firmwares,

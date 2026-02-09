@@ -1972,6 +1972,8 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
  * @arch: architecture
  * @privileged: whether running as privileged user
  * @supported: returned bitmap of supported interfaces
+ * @featureSecureBoot: bitmap of virTristateBool values for secure-boot feature
+ * @featureEnrolledKeys: bitmap of virTristateBool values for enrolled-keys feature
  * @secure: true if at least one secure boot enabled FW was found
  * @fws: (optional) list of found firmwares
  * @nfws: (optional) number of members in @fws
@@ -2001,6 +2003,8 @@ qemuFirmwareGetSupported(const char *machine,
                          virArch arch,
                          bool privileged,
                          uint64_t *supported,
+                         uint64_t *featureSecureBoot,
+                         uint64_t *featureEnrolledKeys,
                          bool *secure,
                          virFirmware ***fws,
                          size_t *nfws)
@@ -2010,6 +2014,8 @@ qemuFirmwareGetSupported(const char *machine,
     size_t i;
 
     *supported = VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+    *featureSecureBoot = VIR_TRISTATE_BOOL_ABSENT;
+    *featureEnrolledKeys = VIR_TRISTATE_BOOL_ABSENT;
     *secure = false;
 
     if (fws) {
@@ -2027,6 +2033,8 @@ qemuFirmwareGetSupported(const char *machine,
         const qemuFirmwareMappingMemory *memory = &fw->mapping.data.memory;
         const char *fwpath = NULL;
         const char *nvrampath = NULL;
+        bool secureBootFound = false;
+        bool enrolledKeysFound = false;
         size_t j;
 
         if (!qemuFirmwareMatchesMachineArch(fw, machine, arch))
@@ -2051,6 +2059,14 @@ qemuFirmwareGetSupported(const char *machine,
 
         for (j = 0; j < fw->nfeatures; j++) {
             switch (fw->features[j]) {
+            case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
+                *featureSecureBoot |= 1ULL << VIR_TRISTATE_BOOL_YES;
+                secureBootFound = true;
+                break;
+            case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+                *featureEnrolledKeys |= 1ULL << VIR_TRISTATE_BOOL_YES;
+                enrolledKeysFound = true;
+                break;
             case QEMU_FIRMWARE_FEATURE_REQUIRES_SMM:
                 *secure = true;
                 break;
@@ -2061,14 +2077,22 @@ qemuFirmwareGetSupported(const char *machine,
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
             case QEMU_FIRMWARE_FEATURE_AMD_SEV_SNP:
             case QEMU_FIRMWARE_FEATURE_INTEL_TDX:
-            case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
-            case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
             case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
             case QEMU_FIRMWARE_FEATURE_LAST:
                 break;
             }
         }
+
+        /* Do this here to ensure that we only advertise "no" as a
+         * value for each feature if we have actually found a
+         * suitable firmware that doesn't list it, as opposed to
+         * having found no matching firmware at all, which will
+         * instead result in an empty enum */
+        if (!secureBootFound)
+            *featureSecureBoot |= 1ULL << VIR_TRISTATE_BOOL_NO;
+        if (!enrolledKeysFound)
+            *featureEnrolledKeys |= 1ULL << VIR_TRISTATE_BOOL_NO;
 
         switch (fw->mapping.device) {
         case QEMU_FIRMWARE_DEVICE_FLASH:

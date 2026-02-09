@@ -6,6 +6,10 @@
   <iothreads supported='yes'/>
   <os supported='yes'>
     <enum name='firmware'/>
+    <firmwareFeatures supported='yes'>
+      <enum name='secureBoot'/>
+      <enum name='enrolledKeys'/>
+    </firmwareFeatures>
     <loader supported='yes'>
       <value>/obviously/fake/firmware1.fd</value>
       <value>/obviously/fake/firmware2.fd</value>

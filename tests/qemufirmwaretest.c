@@ -155,6 +155,8 @@ testSupportedFW(const void *opaque)
     const struct supportedData *data = opaque;
     uint64_t actualInterfaces;
     uint64_t expectedInterfaces = 0;
+    uint64_t actualFeatureSecureBoot;
+    uint64_t actualFeatureEnrolledKeys;
     bool actualSecure;
     virFirmware **expFWs = NULL;
     size_t nexpFWs = 0;
@@ -182,7 +184,10 @@ testSupportedFW(const void *opaque)
     }
 
     if (qemuFirmwareGetSupported(data->machine, data->arch, false,
-                                 &actualInterfaces, &actualSecure, &actFWs, &nactFWs) < 0) {
+                                 &actualInterfaces,
+                                 &actualFeatureSecureBoot,
+                                 &actualFeatureEnrolledKeys,
+                                 &actualSecure, &actFWs, &nactFWs) < 0) {
         fprintf(stderr, "Unable to get list of supported interfaces\n");
         goto cleanup;
     }

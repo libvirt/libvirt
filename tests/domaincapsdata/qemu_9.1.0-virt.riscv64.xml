@@ -8,6 +8,14 @@
     <enum name='firmware'>
       <value>efi</value>
     </enum>
+    <firmwareFeatures supported='yes'>
+      <enum name='secureBoot'>
+        <value>no</value>
+      </enum>
+      <enum name='enrolledKeys'>
+        <value>no</value>
+      </enum>
+    </firmwareFeatures>
     <loader supported='yes'>
       <value>/obviously/fake/firmware1.fd</value>
       <value>/obviously/fake/firmware2.fd</value>
