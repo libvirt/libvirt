@@ -111,6 +111,16 @@ be passed to its children.
          <value>bios</value>
          <value>efi</value>
        </enum>
+       <firmwareFeatures supported='yes'>
+         <enum name='secureBoot'>
+           <value>yes</value>
+           <value>no</value>
+         </enum>
+         <enum name='enrolledKeys'>
+           <value>yes</value>
+           <value>no</value>
+         </enum>
+       </firmwareFeatures>
        <loader supported='yes'>
          <value>/usr/share/OVMF/OVMF_CODE.fd</value>
          <enum name='type'>
@@ -139,6 +149,47 @@ host. Firmware descriptor file is a small JSON document that describes details
 about a given BIOS or UEFI binary on the host, e.g. the firmware binary path,
 its architecture, supported machine types, NVRAM template, etc. This ensures
 that the reported values won't cause a failure on guest boot.
+
+The ``<firmwareFeatures/>`` element :since:`(since 12.1.0)` contains one
+enum for each of the features that can be used to fine-tune the firmware
+autoselection process. For example:
+
+::
+
+    <firmwareFeatures supported='yes'>
+      <enum name='secureBoot'>
+        <value>yes</value>
+      </enum>
+      <enum name='enrolledKeys'>
+        <value>yes</value>
+        <value>no</value>
+      </enum>
+    </firmwareFeatures>
+
+indicates that a domain XML such as:
+
+::
+
+    <os firmware='efi'>
+      <firmware>
+        <feature name='secure-boot' enabled='yes'/>
+        <feature name='enrolled-keys' enabled='no'/>
+      </firmware>
+    </os>
+
+can be used to allow unsigned operating system to run, whereas a domain XML
+such as:
+
+::
+
+    <os firmware='efi'>
+      <firmware>
+        <feature name='secure-boot' enabled='no'/>
+      </firmware>
+    </os>
+
+would not work, since ``no`` is not one of the valid values advertised by
+the ``secureBoot`` enum.
 
 For the ``loader`` element, the following can occur:
 
