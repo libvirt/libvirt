@@ -61,3 +61,11 @@ int virCryptoEncryptData(virCryptoCipher algorithm,
                          uint8_t **ciphertext, size_t *ciphertextlen)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
     ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) G_GNUC_WARN_UNUSED_RESULT;
+
+int virCryptoDecryptData(virCryptoCipher algorithm,
+                         uint8_t *deckey, size_t deckeylen,
+                         uint8_t *iv, size_t ivlen,
+                         uint8_t *data, size_t datalen,
+                         uint8_t **plaintext, size_t *plaintextlen)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) G_GNUC_WARN_UNUSED_RESULT;

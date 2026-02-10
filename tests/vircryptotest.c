@@ -62,6 +62,14 @@ struct testCryptoEncryptData {
     size_t ciphertextlen;
 };
 
+struct testCryptoDecryptData {
+    virCryptoCipher algorithm;
+    uint8_t *input;
+    size_t inputlen;
+    uint8_t *plaintext;
+    size_t plaintextlen;
+};
+
 static int
 testCryptoEncrypt(const void *opaque)
 {
@@ -101,6 +109,44 @@ testCryptoEncrypt(const void *opaque)
     return 0;
 }
 
+static int
+testCryptoDecrypt(const void *opaque)
+{
+    const struct testCryptoDecryptData *data = opaque;
+    g_autofree uint8_t *deckey = NULL;
+    size_t deckeylen = 32;
+    g_autofree uint8_t *iv = NULL;
+    size_t ivlen = 16;
+    g_autofree uint8_t *plaintext = NULL;
+    size_t plaintextlen = 0;
+
+    deckey = g_new0(uint8_t, deckeylen);
+    iv = g_new0(uint8_t, ivlen);
+
+    if (virRandomBytes(deckey, deckeylen) < 0 ||
+        virRandomBytes(iv, ivlen) < 0) {
+        fprintf(stderr, "Failed to generate random bytes\n");
+        return -1;
+    }
+
+    if (virCryptoDecryptData(data->algorithm, deckey, deckeylen, iv, ivlen,
+                             data->input, data->inputlen,
+                             &plaintext, &plaintextlen) < 0)
+        return -1;
+
+    if (data->plaintextlen != plaintextlen) {
+        fprintf(stderr, "Expected plaintexlen(%zu) doesn't match (%zu)\n",
+                data->plaintextlen, plaintextlen);
+        return -1;
+    }
+
+    if (memcmp(data->plaintext, plaintext, plaintextlen)) {
+        fprintf(stderr, "Expected plaintext doesn't match\n");
+        return -1;
+    }
+
+    return 0;
+}
 
 static int
 mymain(void)
@@ -155,7 +201,26 @@ mymain(void)
 
 #undef VIR_CRYPTO_ENCRYPT
 
+#define VIR_CRYPTO_DECRYPT(a, n, i, il, c, cl) \
+    do { \
+        struct testCryptoDecryptData data = { \
+            .algorithm = a, \
+            .input = i, \
+            .inputlen = il, \
+            .plaintext = c, \
+            .plaintextlen = cl, \
+        }; \
+        if (virTestRun("Decrypt " n, testCryptoDecrypt, &data) < 0) \
+            ret = -1; \
+    } while (0)
+
+    VIR_CRYPTO_DECRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes256cbc",
+                       expected_ciphertext, 16, secretdata, 7);
+
+#undef VIR_CRYPTO_DECRYPT
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+
 }
 
 /* Forces usage of not so random virRandomBytes */

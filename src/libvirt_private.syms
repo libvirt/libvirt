@@ -2248,6 +2248,7 @@ virConfWriteMem;
 
 
 # util/vircrypto.h
+virCryptoDecryptData;
 virCryptoEncryptData;
 virCryptoHashBuf;
 virCryptoHashString;

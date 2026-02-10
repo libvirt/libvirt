@@ -98,7 +98,7 @@ virCryptoHashString(virCryptoHash hash,
 }
 
 
-/* virCryptoEncryptDataAESgntuls:
+/* virCryptoEncryptDataAESgnutls:
  *
  * Performs the AES gnutls encryption
  *
@@ -231,5 +231,129 @@ virCryptoEncryptData(virCryptoCipher algorithm,
 
     virReportError(VIR_ERR_INVALID_ARG,
                    _("algorithm=%1$d is not supported"), algorithm);
+    return -1;
+}
+
+/* virCryptoDecryptDataAESgnutls:
+ *
+ * Performs the AES gnutls decryption
+ *
+ * Same input as virCryptoDecryptData, except the algorithm is replaced
+ * by the specific gnutls algorithm.
+ *
+ * Decrypts the @data buffer using the @deckey and if available the @iv
+ *
+ * Returns 0 on success with the plaintext being filled. It is the
+ * caller's responsibility to clear and free it. Returns -1 on failure
+ * w/ error set.
+ */
+static int
+virCryptoDecryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_dec_alg,
+                              uint8_t *deckey,
+                              size_t deckeylen,
+                              uint8_t *iv,
+                              size_t ivlen,
+                              uint8_t *data,
+                              size_t datalen,
+                              uint8_t **plaintextret,
+                              size_t *plaintextlenret)
+{
+    int rc;
+    uint8_t padding_length;
+    gnutls_cipher_hd_t handle = NULL;
+    gnutls_datum_t dec_key = { .data = deckey, .size = deckeylen };
+    gnutls_datum_t iv_buf = { .data = iv, .size = ivlen };
+    g_autofree uint8_t *plaintext = NULL;
+    size_t plaintextlen;
+
+    if ((rc = gnutls_cipher_init(&handle, gnutls_dec_alg,
+                                 &dec_key, &iv_buf)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to initialize cipher: '%1$s'"),
+                       gnutls_strerror(rc));
+        return -1;
+    }
+
+    plaintext = g_memdup2(data, datalen);
+    plaintextlen = datalen;
+    if (plaintextlen == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("decrypted data has zero length"));
+        goto error;
+    }
+    rc = gnutls_cipher_decrypt(handle, plaintext, plaintextlen);
+    gnutls_cipher_deinit(handle);
+    if (rc < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to decrypt the data: '%1$s'"),
+                       gnutls_strerror(rc));
+        goto error;
+    }
+    /* Before encryption, padding is added to the data.
+     * The last byte indicates the padding length, because in PKCS#7, all
+     * padding bytes are set to the padding length value.
+     */
+    padding_length = plaintext[plaintextlen - 1];
+    if (padding_length > plaintextlen) {
+        virReportError(VIR_ERR_INVALID_SECRET, "%s",
+                       _("decrypted data has invalid padding"));
+        goto error;
+    }
+    *plaintextlenret = plaintextlen - padding_length;
+    *plaintextret = g_steal_pointer(&plaintext);
+    return 0;
+ error:
+    virSecureErase(plaintext, plaintextlen);
+    return -1;
+}
+
+/* virCryptoDecryptData:
+    * @algorithm: algorithm desired for decryption
+    * @deckey: decryption key
+    * @deckeylen: decryption key length
+    * @iv: initialization vector
+    * @ivlen: length of initialization vector
+    * @data: data to decrypt
+    * @datalen: length of data
+    * @plaintext: stream of bytes allocated to store plaintext
+    * @plaintextlen: size of the stream of bytes
+    * Returns 0 on success, -1 on failure with error set
+    */
+int
+virCryptoDecryptData(virCryptoCipher algorithm,
+                     uint8_t *deckey,
+                     size_t deckeylen,
+                     uint8_t *iv,
+                     size_t ivlen,
+                     uint8_t *data,
+                     size_t datalen,
+                     uint8_t **plaintext,
+                     size_t *plaintextlen)
+{
+    switch (algorithm) {
+    case VIR_CRYPTO_CIPHER_AES256CBC:
+        if (deckeylen != 32) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                            _("AES256CBC decryption invalid keylen=%1$zu"),
+                            deckeylen);
+            return -1;
+        }
+        if (ivlen != 16) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                            _("AES256CBC initialization vector invalid len=%1$zu"),
+                            ivlen);
+            return -1;
+        }
+        return virCryptoDecryptDataAESgnutls(GNUTLS_CIPHER_AES_256_CBC,
+                                             deckey, deckeylen, iv, ivlen,
+                                             data, datalen,
+                                             plaintext, plaintextlen);
+    case VIR_CRYPTO_CIPHER_NONE:
+    case VIR_CRYPTO_CIPHER_LAST:
+        break;
+    }
+
+    virReportError(VIR_ERR_INVALID_ARG,
+                    _("algorithm=%1$d is not supported"), algorithm);
     return -1;
 }
