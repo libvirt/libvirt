@@ -97,6 +97,7 @@ docs_rst_files = [
   'programming-languages',
   'python',
   'remote',
+  'secretencryption',
   'securityprocess',
   'ssh-proxy',
   'storage',

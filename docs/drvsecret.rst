@@ -63,3 +63,7 @@ the traditional system or session libvirt connections to QEMU. Normal practice
 would be to open the secret driver in embedded mode any time one of the other
 drivers is opened in embedded mode so that the two drivers can interact
 in-process.
+
+Further reading
+----------------------------
+- `Secret Encryption <secretencryption.html>`__
