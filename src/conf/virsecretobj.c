@@ -39,7 +39,7 @@ VIR_LOG_INIT("conf.virsecretobj");
 struct _virSecretObj {
     virObjectLockable parent;
     char *configFile;
-    char *base64File;
+    char *secretValueFile;
     virSecretDef *def;
     unsigned char *value;       /* May be NULL */
     size_t value_size;
@@ -139,7 +139,7 @@ virSecretObjDispose(void *opaque)
         g_free(obj->value);
     }
     g_free(obj->configFile);
-    g_free(obj->base64File);
+    g_free(obj->secretValueFile);
 }
 
 
@@ -378,11 +378,11 @@ virSecretObjListAdd(virSecretObjList *secrets,
         if (!(obj = virSecretObjNew()))
             goto cleanup;
 
-        /* Generate the possible configFile and base64File strings
+        /* Generate the possible configFile and secretValueFile strings
          * using the configDir, uuidstr, and appropriate suffix
          */
         if (!(obj->configFile = virFileBuildPath(configDir, uuidstr, ".xml")) ||
-            !(obj->base64File = virFileBuildPath(configDir, uuidstr, ".base64")))
+            !(obj->secretValueFile = virFileBuildPath(configDir, uuidstr, ".base64")))
             goto cleanup;
 
         if (virHashAddEntry(secrets->objs, uuidstr, obj) < 0)
@@ -656,7 +656,7 @@ virSecretObjDeleteData(virSecretObj *obj)
 {
     /* The configFile will already be removed, so secret won't be
      * loaded again if this fails */
-    unlink(obj->base64File);
+    unlink(obj->secretValueFile);
 }
 
 
@@ -691,7 +691,7 @@ virSecretObjSaveData(virSecretObj *obj)
 
     base64 = g_base64_encode(obj->value, obj->value_size);
 
-    if (virFileRewriteStr(obj->base64File, S_IRUSR | S_IWUSR, base64) < 0)
+    if (virFileRewriteStr(obj->secretValueFile, S_IRUSR | S_IWUSR, base64) < 0)
         return -1;
 
     return 0;
@@ -813,26 +813,26 @@ virSecretLoadValue(virSecretObj *obj)
     struct stat st;
     g_autofree char *contents = NULL;
 
-    if ((fd = open(obj->base64File, O_RDONLY)) == -1) {
+    if ((fd = open(obj->secretValueFile, O_RDONLY)) == -1) {
         if (errno == ENOENT) {
             ret = 0;
             goto cleanup;
         }
         virReportSystemError(errno, _("cannot open '%1$s'"),
-                             obj->base64File);
+                             obj->secretValueFile);
         goto cleanup;
     }
 
     if (fstat(fd, &st) < 0) {
         virReportSystemError(errno, _("cannot stat '%1$s'"),
-                             obj->base64File);
+                             obj->secretValueFile);
         goto cleanup;
     }
 
     if ((size_t)st.st_size != st.st_size) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("'%1$s' file does not fit in memory"),
-                       obj->base64File);
+                       obj->secretValueFile);
         goto cleanup;
     }
 
@@ -845,7 +845,7 @@ virSecretLoadValue(virSecretObj *obj)
 
     if (saferead(fd, contents, st.st_size) != st.st_size) {
         virReportSystemError(errno, _("cannot read '%1$s'"),
-                             obj->base64File);
+                             obj->secretValueFile);
         goto cleanup;
     }
     contents[st.st_size] = '\0';
