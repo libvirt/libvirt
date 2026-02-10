@@ -12,6 +12,8 @@ After=libvirtd.socket
 After=libvirtd-ro.socket
 After=libvirtd-admin.socket
 Requires=virtlogd.socket
+Requires=virt-secret-init-encryption.service
+After=virt-secret-init-encryption.service
 Wants=virtlockd.socket
 After=virtlogd.socket
 After=virtlockd.socket
@@ -29,6 +31,8 @@ Conflicts=xendomains.service
 Type=notify-reload
 Environment=LIBVIRTD_ARGS="--timeout 120"
 EnvironmentFile=-@initconfdir@/libvirtd
+Environment=SECRETS_ENCRYPTION_KEY=%d/secrets-encryption-key
+LoadCredentialEncrypted=secrets-encryption-key:@localstatedir@/lib/libvirt/secrets/secrets-encryption-key
 ExecStart=@sbindir@/libvirtd $LIBVIRTD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process

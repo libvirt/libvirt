@@ -833,6 +833,7 @@ if conf.has('WITH_LIBVIRTD')
         'sbindir': sbindir,
         'sysconfdir': sysconfdir,
         'initconfdir': initconfdir,
+        'localstatedir': localstatedir,
         'name': unit['name'],
         'service': unit['service'],
         'SERVICE': unit['service'].to_upper(),

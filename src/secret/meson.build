@@ -31,6 +31,18 @@ if conf.has('WITH_SECRETS')
     'name': 'virtsecretd',
   }
 
+  virt_secret_init_encryption_conf = configuration_data()
+
+  virt_secret_init_encryption_conf.set('localstatedir', localstatedir)
+
+  configure_file(
+    input: 'virt-secret-init-encryption.service.in',
+    output: '@0@.service'.format('virt-secret-init-encryption'),
+    configuration: virt_secret_init_encryption_conf,
+    install: true,
+    install_dir: unitdir,
+  )
+
   virt_daemon_units += {
     'service': 'virtsecretd',
     'name': 'secret',
@@ -50,5 +62,6 @@ if conf.has('WITH_SECRETS')
   virt_install_dirs += [
     confdir / 'secrets',
     runstatedir / 'libvirt' / 'secrets',
+    localstatedir / 'lib' / 'libvirt' / 'secrets',
   ]
 endif
