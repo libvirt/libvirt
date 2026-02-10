@@ -2251,6 +2251,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
 %{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
+%{_datadir}/augeas/lenses/libvirt_secrets.aug
+%{_datadir}/augeas/lenses/tests/test_libvirt_secrets.aug
+%config(noreplace) %{_sysconfdir}/libvirt/secret.conf
 %{_unitdir}/virtsecretd.service
 %{_unitdir}/virt-secret-init-encryption.service
 %{_unitdir}/virtsecretd.socket

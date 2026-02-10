@@ -1296,6 +1296,9 @@ static const virErrorMsgTuple virErrorMsgStrings[] = {
     [VIR_ERR_AGENT_COMMAND_FAILED] = {
         N_("guest agent command failed"),
         N_("guest agent command failed: %1$s") },
+    [VIR_ERR_INVALID_ENCR_KEY_SECRET] = {
+        N_("Invalid encryption key for the secret"),
+        N_("Invalid encryption key for the secret: %1$s") },
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(virErrorMsgStrings) == VIR_ERR_NUMBER_LAST);

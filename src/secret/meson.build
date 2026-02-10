@@ -1,5 +1,6 @@
 secret_driver_sources = [
   'secret_driver.c',
+  'secret_config.c',
 ]
 
 driver_source_files += files(secret_driver_sources)
@@ -25,6 +26,24 @@ if conf.has('WITH_SECRETS')
       '-DDAEMON_NAME="virtsecretd"',
       '-DMODULE_NAME="secret"',
     ],
+  }
+
+  secret_conf = configure_file(
+    input: 'secret.conf.in',
+    output: 'secret.conf',
+    copy: true
+  )
+  virt_conf_files += secret_conf
+
+  virt_aug_files += files('libvirt_secrets.aug')
+
+  virt_test_aug_files += {
+    'name': 'test_libvirt_secrets.aug',
+    'aug': files('test_libvirt_secrets.aug.in'),
+    'conf': files('secret.conf.in'),
+    'test_name': 'libvirt_secrets',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_daemon_confs += {

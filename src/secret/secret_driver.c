@@ -42,6 +42,7 @@
 #include "secret_event.h"
 #include "virutil.h"
 #include "virinhibitor.h"
+#include "secret_config.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -70,6 +71,10 @@ struct _virSecretDriverState {
 
     /* Immutable pointer, self-locking APIs */
     virInhibitor *inhibitor;
+
+    /* Require lock to get reference on 'config',
+     * then lockless thereafter */
+    virSecretDaemonConfig *config;
 };
 
 static virSecretDriverState *driver;
@@ -454,6 +459,7 @@ secretStateCleanupLocked(void)
     VIR_FREE(driver->configDir);
 
     virObjectUnref(driver->secretEventState);
+    virObjectUnref(driver->config);
     virInhibitorFree(driver->inhibitor);
 
     if (driver->lockFD != -1)
@@ -518,6 +524,8 @@ secretStateInitialize(bool privileged,
                              driver->stateDir);
         goto error;
     }
+    if (!(driver->config = virSecretDaemonConfigNew(driver->privileged)))
+        goto error;
 
     driver->inhibitor = virInhibitorNew(
         VIR_INHIBITOR_WHAT_NONE,
@@ -551,6 +559,9 @@ secretStateReload(void)
     VIR_LOCK_GUARD lock = virLockGuardLock(&mutex);
 
     if (!driver)
+        return -1;
+
+    if (!(driver->config = virSecretDaemonConfigNew(driver->privileged)))
         return -1;
 
     ignore_value(virSecretLoadAllConfigs(driver->secrets, driver->configDir));

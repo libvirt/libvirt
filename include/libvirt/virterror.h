@@ -353,6 +353,7 @@ typedef enum {
                                            command within timeout (Since: 11.2.0) */
     VIR_ERR_AGENT_COMMAND_FAILED = 113, /* guest agent responded with failure
                                            to a command (Since: 11.2.0) */
+    VIR_ERR_INVALID_ENCR_KEY_SECRET = 114, /* encryption key is invalid (Since: 12.1.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_ERR_NUMBER_LAST /* (Since: 5.0.0) */
