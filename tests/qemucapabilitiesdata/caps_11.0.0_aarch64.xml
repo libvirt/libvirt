@@ -185,7 +185,7 @@
   <flag name='virtio-iommu.aw-bits'/>
   <version>10002050</version>
   <microcodeVersion>61700286</microcodeVersion>
-  <package>v10.2.0-476-gcf3e71d8fc</package>
+  <package>v10.2.0-1114-gb3abdfa486</package>
   <arch>aarch64</arch>
   <hostCPU type='kvm' model='host' migratability='no'>
     <property name='sve768' type='boolean' value='false'/>
@@ -264,8 +264,8 @@
   <machine type='kvm' name='mps3-an547' maxCpus='1' defaultCPU='cortex-m55-arm-cpu' defaultRAMid='DDR' acpi='no'/>
   <machine type='kvm' name='realview-pbx-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' acpi='no'/>
   <machine type='kvm' name='kzm' maxCpus='1' defaultRAMid='kzm.ram' acpi='no'/>
-  <machine type='kvm' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
   <machine type='kvm' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='kvm' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
   <machine type='kvm' name='b-l475e-iot01a' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' acpi='no'/>
   <machine type='kvm' name='fby35-bmc' maxCpus='2' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='kvm' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
@@ -348,6 +348,7 @@
   <machine type='kvm' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
   <machine type='kvm' name='virt-6.2' maxCpus='512' defaultRAMid='mach-virt.ram' deprecated='yes' acpi='yes'/>
   <machine type='kvm' name='fuji-bmc' maxCpus='2' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='max78000fthr' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' acpi='no'/>
   <machine type='kvm' name='virt-8.2' maxCpus='512' defaultRAMid='mach-virt.ram' acpi='yes'/>
   <machine type='kvm' name='sonorapass-bmc' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' deprecated='yes' acpi='no'/>
   <machine type='kvm' name='ast2500-evb' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' acpi='no'/>
@@ -434,8 +435,8 @@
   <machine type='tcg' name='mps3-an547' maxCpus='1' defaultCPU='cortex-m55-arm-cpu' defaultRAMid='DDR' acpi='no'/>
   <machine type='tcg' name='realview-pbx-a9' maxCpus='4' defaultCPU='cortex-a9-arm-cpu' acpi='no'/>
   <machine type='tcg' name='kzm' maxCpus='1' defaultRAMid='kzm.ram' acpi='no'/>
-  <machine type='tcg' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
   <machine type='tcg' name='musca-b1' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
+  <machine type='tcg' name='versatileab' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='versatile.ram' acpi='no'/>
   <machine type='tcg' name='b-l475e-iot01a' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' acpi='no'/>
   <machine type='tcg' name='fby35-bmc' maxCpus='2' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='tcg' name='musca-a' maxCpus='2' defaultCPU='cortex-m33-arm-cpu' acpi='no'/>
@@ -518,6 +519,7 @@
   <machine type='tcg' name='vexpress-a15' maxCpus='4' defaultCPU='cortex-a15-arm-cpu' defaultRAMid='vexpress.highmem' acpi='no'/>
   <machine type='tcg' name='virt-6.2' maxCpus='512' defaultRAMid='mach-virt.ram' deprecated='yes' acpi='yes'/>
   <machine type='tcg' name='fuji-bmc' maxCpus='2' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='max78000fthr' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' acpi='no'/>
   <machine type='tcg' name='virt-8.2' maxCpus='512' defaultRAMid='mach-virt.ram' acpi='yes'/>
   <machine type='tcg' name='sonorapass-bmc' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' deprecated='yes' acpi='no'/>
   <machine type='tcg' name='ast2500-evb' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' acpi='no'/>
