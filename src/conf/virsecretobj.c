@@ -31,6 +31,10 @@
 #include "virhash.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "virsecret.h"
+#include "virrandom.h"
+#include "vircrypto.h"
+#include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -43,6 +47,16 @@ struct _virSecretObj {
     virSecretDef *def;
     unsigned char *value;       /* May be NULL */
     size_t value_size;
+};
+
+typedef struct _virSecretSchemeInfo {
+    const char *suffix;
+    virCryptoCipher cipher;
+} virSecretSchemeInfo;
+
+virSecretSchemeInfo schemeInfo[] = {
+    { ".aes256cbc", VIR_CRYPTO_CIPHER_AES256CBC },
+    { ".base64", -1 },
 };
 
 static virClass *virSecretObjClass;
@@ -377,12 +391,14 @@ virSecretObjListAdd(virSecretObjList *secrets,
 
         if (!(obj = virSecretObjNew()))
             goto cleanup;
-
         /* Generate the possible configFile and secretValueFile strings
-         * using the configDir, uuidstr, and appropriate suffix
+         * using the configDir, uuidstr, and appropriate suffix.
+         * Note that secretValueFile extension is not set here. It is determined
+         * based on a) existing availability of secret file (virSecretLoadValue) or
+         * b) target storage format (virSecretObjSaveData)
          */
         if (!(obj->configFile = virFileBuildPath(configDir, uuidstr, ".xml")) ||
-            !(obj->secretValueFile = virFileBuildPath(configDir, uuidstr, ".base64")))
+            !(obj->secretValueFile = virFileBuildPath(configDir, uuidstr, NULL)))
             goto cleanup;
 
         if (virHashAddEntry(secrets->objs, uuidstr, obj) < 0)
@@ -654,9 +670,15 @@ virSecretObjDeleteConfig(virSecretObj *obj)
 void
 virSecretObjDeleteData(virSecretObj *obj)
 {
+    size_t i;
+
     /* The configFile will already be removed, so secret won't be
      * loaded again if this fails */
-    unlink(obj->secretValueFile);
+    for (i = 0; i < G_N_ELEMENTS(schemeInfo); i++) {
+        g_autofree char *deleteFile = g_strconcat(obj->secretValueFile, schemeInfo[i].suffix, NULL);
+
+        ignore_value(unlink(deleteFile));
+    }
 }
 
 
@@ -682,17 +704,68 @@ virSecretObjSaveConfig(virSecretObj *obj)
 
 
 int
-virSecretObjSaveData(virSecretObj *obj)
+virSecretObjSaveData(virSecretObj *obj,
+                     bool encryptData,
+                     uint8_t *secretsEncryptionKey,
+                     size_t secretsKeyLen)
 {
     g_autofree char *base64 = NULL;
+    g_autofree char *filename = NULL;
+    size_t i;
+    g_autofree unsigned char *secretbuf = NULL;
+    const unsigned char *secret = NULL;
+    size_t secretLen = 0;
 
     if (!obj->value)
         return 0;
 
-    base64 = g_base64_encode(obj->value, obj->value_size);
+    /* Based on whether encryption is on/off, save the secret in either
+     * the latest encryption scheme or in base64 formats.
+     * Subsequently, delete the other formats of the same uuid on the disk.
+     */
+    if (encryptData && secretsEncryptionKey) {
+        g_autofree uint8_t *encryptedValue = NULL;
+        size_t encryptedValueLen = 0;
+        const size_t ivlen = 16;
+        g_autofree unsigned char *ivbuf = g_new0(unsigned char, ivlen);
 
-    if (virFileRewriteStr(obj->secretValueFile, S_IRUSR | S_IWUSR, base64) < 0)
+        filename = g_strconcat(obj->secretValueFile, schemeInfo[0].suffix, NULL);
+
+        if (virRandomBytes(ivbuf, ivlen) < 0)
+            return -1;
+
+        if (virCryptoEncryptData(schemeInfo[0].cipher,
+                                 secretsEncryptionKey, secretsKeyLen,
+                                 ivbuf, ivlen,
+                                 (uint8_t *)obj->value, obj->value_size,
+                                 &encryptedValue, &encryptedValueLen) < 0)
+            return -1;
+
+        ivbuf = g_realloc(ivbuf, ivlen + encryptedValueLen);
+        memcpy(ivbuf + ivlen, encryptedValue, encryptedValueLen);
+
+        secretbuf = g_steal_pointer(&ivbuf);
+        secret = secretbuf;
+        secretLen = ivlen + encryptedValueLen;
+    } else {
+        filename = g_strconcat(obj->secretValueFile, schemeInfo[G_N_ELEMENTS(schemeInfo) - 1].suffix, NULL);
+        secret = (unsigned char *) obj->value;
+        secretLen = obj->value_size;
+    }
+
+    base64 = g_base64_encode(secret, secretLen);
+
+    if (virFileRewriteStr(filename, S_IRUSR | S_IWUSR, base64) < 0)
         return -1;
+
+    for (i = 0; i < G_N_ELEMENTS(schemeInfo); i++) {
+        g_autofree char *deleteFile = g_strconcat(obj->secretValueFile, schemeInfo[i].suffix, NULL);
+
+        if (STREQ(filename, deleteFile))
+            continue;
+
+        ignore_value(unlink(deleteFile));
+    }
 
     return 0;
 }
@@ -737,7 +810,10 @@ virSecretObjGetValue(virSecretObj *obj)
 int
 virSecretObjSetValue(virSecretObj *obj,
                      const unsigned char *value,
-                     size_t value_size)
+                     size_t value_size,
+                     bool encryptData,
+                     uint8_t *secretsEncryptionKey,
+                     size_t secretsKeyLen)
 {
     virSecretDef *def = obj->def;
     g_autofree unsigned char *old_value = NULL;
@@ -753,7 +829,10 @@ virSecretObjSetValue(virSecretObj *obj,
     obj->value = g_steal_pointer(&new_value);
     obj->value_size = value_size;
 
-    if (!def->isephemeral && virSecretObjSaveData(obj) < 0)
+    if (!def->isephemeral && virSecretObjSaveData(obj,
+                                                  encryptData,
+                                                  secretsEncryptionKey,
+                                                  secretsKeyLen) < 0)
         goto error;
 
     /* Saved successfully - drop old value */
@@ -807,60 +886,65 @@ virSecretLoadValidateUUID(virSecretDef *def,
 
 
 static int
-virSecretLoadValue(virSecretObj *obj)
+virSecretLoadValue(virSecretObj *obj,
+                   uint8_t *secretsEncryptionKey,
+                   size_t secretsKeyLen)
 {
-    int ret = -1, fd = -1;
-    struct stat st;
-    g_autofree char *contents = NULL;
+    const size_t secretFileMaxLen = 10 * 1024 * 1024; /* more won't fit in the RPC buffer */
+    size_t i;
 
-    if ((fd = open(obj->secretValueFile, O_RDONLY)) == -1) {
-        if (errno == ENOENT) {
-            ret = 0;
-            goto cleanup;
+    /* Find the file and match the storage scheme based on suffix. */
+    for (i = 0; i < G_N_ELEMENTS(schemeInfo); i++) {
+        g_autofree char *filename = g_strconcat(obj->secretValueFile,
+                                                schemeInfo[i].suffix, NULL);
+        g_autofree char *filecontent = NULL;
+        int filelen = 0;
+        g_autofree unsigned char *decoded = NULL;
+        size_t decodedlen = 0;
+
+        if (!virFileExists(filename))
+            continue;
+
+        if ((filelen = virFileReadAll(filename, secretFileMaxLen, &filecontent)) < 0)
+            return -1;
+
+        filecontent = g_realloc(filecontent, filelen + 1);
+        filecontent[filelen] = '\0';
+
+        decoded = g_base64_decode(filecontent, &decodedlen);
+
+        virSecureErase(filecontent, filelen);
+
+        if (schemeInfo[i].cipher == -1) {
+            obj->value = g_steal_pointer(&decoded);
+            obj->value_size = decodedlen;
+        } else {
+            size_t ivlen = 16;
+            int rc;
+
+            if (decodedlen < ivlen) {
+                virReportError(VIR_ERR_INVALID_SECRET,
+                               _("Encrypted secret size '%1$zu' is invalid"),
+                               obj->value_size);
+
+                virSecureErase(decoded, decodedlen);
+                return -1;
+            }
+
+            rc = virCryptoDecryptData(schemeInfo[i].cipher,
+                                      secretsEncryptionKey, secretsKeyLen,
+                                      decoded, ivlen, /* initialization vector is stored at start of the buffer */
+                                      decoded + ivlen, decodedlen - ivlen,
+                                      &obj->value, &obj->value_size);
+
+            virSecureErase(decoded, decodedlen);
+
+            if (rc < 0)
+                return -1;
         }
-        virReportSystemError(errno, _("cannot open '%1$s'"),
-                             obj->secretValueFile);
-        goto cleanup;
     }
 
-    if (fstat(fd, &st) < 0) {
-        virReportSystemError(errno, _("cannot stat '%1$s'"),
-                             obj->secretValueFile);
-        goto cleanup;
-    }
-
-    if ((size_t)st.st_size != st.st_size) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("'%1$s' file does not fit in memory"),
-                       obj->secretValueFile);
-        goto cleanup;
-    }
-
-    if (st.st_size < 1) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    contents = g_new0(char, st.st_size + 1);
-
-    if (saferead(fd, contents, st.st_size) != st.st_size) {
-        virReportSystemError(errno, _("cannot read '%1$s'"),
-                             obj->secretValueFile);
-        goto cleanup;
-    }
-    contents[st.st_size] = '\0';
-
-    VIR_FORCE_CLOSE(fd);
-
-    obj->value = g_base64_decode(contents, &obj->value_size);
-
-    ret = 0;
-
- cleanup:
-    if (contents != NULL)
-        memset(contents, 0, st.st_size);
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 
 
@@ -868,7 +952,9 @@ static virSecretObj *
 virSecretLoad(virSecretObjList *secrets,
               const char *file,
               const char *path,
-              const char *configDir)
+              const char *configDir,
+              uint8_t *secretsEncryptionKey,
+              size_t secretsKeyLen)
 {
     g_autoptr(virSecretDef) def = NULL;
     virSecretObj *obj = NULL;
@@ -882,7 +968,7 @@ virSecretLoad(virSecretObjList *secrets,
     if (!(obj = virSecretObjListAdd(secrets, &def, configDir, NULL)))
         return NULL;
 
-    if (virSecretLoadValue(obj) < 0) {
+    if (virSecretLoadValue(obj, secretsEncryptionKey, secretsKeyLen) < 0) {
         virSecretObjListRemove(secrets, obj);
         g_clear_pointer(&obj, virObjectUnref);
         return NULL;
@@ -894,7 +980,9 @@ virSecretLoad(virSecretObjList *secrets,
 
 int
 virSecretLoadAllConfigs(virSecretObjList *secrets,
-                        const char *configDir)
+                        const char *configDir,
+                        uint8_t *secretsEncryptionKey,
+                        size_t secretsKeyLen)
 {
     g_autoptr(DIR) dir = NULL;
     struct dirent *de;
@@ -915,7 +1003,9 @@ virSecretLoadAllConfigs(virSecretObjList *secrets,
         if (!(path = virFileBuildPath(configDir, de->d_name, NULL)))
             continue;
 
-        if (!(obj = virSecretLoad(secrets, de->d_name, path, configDir))) {
+        if (!(obj = virSecretLoad(secrets, de->d_name, path, configDir,
+                                  secretsEncryptionKey,
+                                  secretsKeyLen))) {
             VIR_ERROR(_("Error reading secret: %1$s"),
                       virGetLastErrorMessage());
             continue;

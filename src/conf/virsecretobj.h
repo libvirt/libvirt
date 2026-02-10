@@ -86,7 +86,10 @@ int
 virSecretObjSaveConfig(virSecretObj *obj);
 
 int
-virSecretObjSaveData(virSecretObj *obj);
+virSecretObjSaveData(virSecretObj *obj,
+                     bool encryptData,
+                     uint8_t *secretsEncryptionKey,
+                     size_t secretsKeyLen);
 
 virSecretDef *
 virSecretObjGetDef(virSecretObj *obj);
@@ -101,7 +104,10 @@ virSecretObjGetValue(virSecretObj *obj);
 int
 virSecretObjSetValue(virSecretObj *obj,
                      const unsigned char *value,
-                     size_t value_size);
+                     size_t value_size,
+                     bool encryptData,
+                     uint8_t *secretsEncryptionKey,
+                     size_t secretsKeyLen);
 
 size_t
 virSecretObjGetValueSize(virSecretObj *obj);
@@ -112,4 +118,6 @@ virSecretObjSetValueSize(virSecretObj *obj,
 
 int
 virSecretLoadAllConfigs(virSecretObjList *secrets,
-                        const char *configDir);
+                        const char *configDir,
+                        uint8_t *secretsEncryptionKey,
+                        size_t secretsKeyLen);

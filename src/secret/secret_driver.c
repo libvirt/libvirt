@@ -229,7 +229,10 @@ secretDefineXML(virConnectPtr conn,
 
     if (!objDef->isephemeral) {
         if (backup && backup->isephemeral) {
-            if (virSecretObjSaveData(obj) < 0)
+            if (virSecretObjSaveData(obj,
+                                     driver->configDir,
+                                     driver->config->secretsEncryptionKey,
+                                     driver->config->secretsKeyLen) < 0)
                 goto restore_backup;
         }
 
@@ -333,7 +336,10 @@ secretSetValue(virSecretPtr secret,
     if (virSecretSetValueEnsureACL(secret->conn, def) < 0)
         goto cleanup;
 
-    if (virSecretObjSetValue(obj, value, value_size) < 0)
+    if (virSecretObjSetValue(obj, value, value_size,
+                             driver->configDir,
+                             driver->config->secretsEncryptionKey,
+                             driver->config->secretsKeyLen) < 0)
         goto cleanup;
 
     event = virSecretEventValueChangedNew(def->uuid,
@@ -542,7 +548,9 @@ secretStateInitialize(bool privileged,
     if (!(driver->secrets = virSecretObjListNew()))
         goto error;
 
-    if (virSecretLoadAllConfigs(driver->secrets, driver->configDir) < 0)
+    if (virSecretLoadAllConfigs(driver->secrets, driver->configDir,
+                                driver->config->secretsEncryptionKey,
+                                driver->config->secretsKeyLen) < 0)
         goto error;
 
     return VIR_DRV_STATE_INIT_COMPLETE;
@@ -564,7 +572,9 @@ secretStateReload(void)
     if (!(driver->config = virSecretDaemonConfigNew(driver->privileged)))
         return -1;
 
-    ignore_value(virSecretLoadAllConfigs(driver->secrets, driver->configDir));
+    ignore_value(virSecretLoadAllConfigs(driver->secrets, driver->configDir,
+                                         driver->config->secretsEncryptionKey,
+                                         driver->config->secretsKeyLen));
 
     return 0;
 }
