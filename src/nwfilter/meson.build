@@ -1,6 +1,7 @@
 nwfilter_driver_sources = [
   'nwfilter_driver.c',
   'nwfilter_gentech_driver.c',
+  'nwfilter_tech_driver.c',
   'nwfilter_dhcpsnoop.c',
   'nwfilter_ebiptables_driver.c',
   'nwfilter_learnipaddr.c',

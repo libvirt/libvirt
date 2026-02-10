@@ -25,9 +25,6 @@
 
 #include "virnwfilterobj.h"
 
-typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
-
-
 typedef struct _virNWFilterRuleInst virNWFilterRuleInst;
 struct _virNWFilterRuleInst {
     const char *chainSuffix;
@@ -37,6 +34,31 @@ struct _virNWFilterRuleInst {
     GHashTable *vars;
 };
 
+
+typedef struct _virNWFilterChainCreateCallbackData virNWFilterChainCreateCallbackData;
+struct _virNWFilterChainCreateCallbackData {
+    const char *ifname;
+    int nrules;
+    virNWFilterRuleInst **rules;
+};
+
+struct virNWFilterUShortMap {
+    unsigned short attr;
+    const char *val;
+};
+
+enum virNWFilterProtoIdx {
+    VIR_NWFILTER_PROTO_IDX_IPV4 = 0,
+    VIR_NWFILTER_PROTO_IDX_IPV6,
+    VIR_NWFILTER_PROTO_IDX_ARP,
+    VIR_NWFILTER_PROTO_IDX_RARP,
+    VIR_NWFILTER_PROTO_IDX_MAC,
+    VIR_NWFILTER_PROTO_IDX_VLAN,
+    VIR_NWFILTER_PROTO_IDX_STP,
+    VIR_NWFILTER_PROTO_IDX_LAST
+};
+
+#define virNWFilterUShortMapEntryIdx(IDX, ATT, VAL) [IDX] = { .attr = ATT, .val = VAL }
 
 typedef int (*virNWFilterTechDrvInit)(bool privileged);
 typedef void (*virNWFilterTechDrvShutdown)(void);
@@ -69,6 +91,7 @@ enum techDrvFlags {
     TECHDRV_FLAG_INITIALIZED = (1 << 0),
 };
 
+typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
 struct _virNWFilterTechDriver {
     const char *name;
     enum techDrvFlags flags;
@@ -87,3 +110,25 @@ struct _virNWFilterTechDriver {
     virNWFilterDropAllRules applyDropAllRules;
     virNWFilterRemoveBasicRules removeBasicRules;
 };
+
+int virNWFilterRuleInstSort(const void *a, const void *b);
+
+int virNWFilterRuleInstSortPtr(const void *a,
+                           const void *b,
+                           void *opaque);
+int virNWFilterPrintVar(virNWFilterVarCombIter *vars,
+                        char *buf, int bufsize,
+                        nwItemDesc *item,
+                        bool *done);
+
+int virNWFilterPrintDataType(virNWFilterVarCombIter *vars,
+                             char *buf, int bufsize,
+                             nwItemDesc *item);
+
+int virNWFilterPrintDataTypeDirection(virNWFilterVarCombIter *vars,
+                                      char *buf, int bufsize,
+                                      nwItemDesc *item, bool directionIn);
+
+int virNWFilterPrintDataTypeAsHex(virNWFilterVarCombIter *vars,
+                                  char *buf, int bufsize,
+                                  nwItemDesc *item);
