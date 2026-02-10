@@ -17,6 +17,13 @@ v12.1.0 (unreleased)
 
 * **New features**
 
+  * qemu: Advertise firmware features in domain capabilities XML
+
+    The contents of the ``<firmwareFeatures/>`` element can be used to determine
+    ahead of time whether a firmware matching certain characteristics, for
+    example Secure Boot support, is available for the selected architecture and
+    machine type.
+
 * **Improvements**
 
 * **Bug fixes**
