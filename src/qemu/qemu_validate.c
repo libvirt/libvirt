@@ -1946,8 +1946,9 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             }
             hasV4Addr = true;
 
-            if (ip->prefix > 0 &&
-                (ip->prefix < 4 || ip->prefix > 27)) {
+            if (net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST &&
+                (ip->prefix > 0 &&
+                 (ip->prefix < 4 || ip->prefix > 27))) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("invalid prefix, must be in range of 4-27"));
                 return -1;
