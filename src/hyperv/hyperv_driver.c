@@ -4110,6 +4110,58 @@ hypervDomainGetBlockInfo(virDomainPtr domain,
 }
 
 
+static Msvm_VirtualSystemSettingData*
+hypervDomainLookupSnapshotSD(virDomainPtr domain, const char *snapshot)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    char domain_uuid_string[VIR_UUID_STRING_BUFLEN];
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    virUUIDFormat(domain->uuid, domain_uuid_string);
+
+    /* Hyper-V does not enforce unique snapshot names per domain, so we don't
+     * use the Hyper-V snapshot's ElementName field as the libvirt snapshot name.
+     * Instead we use the unique InstanceID as the name, even though it is not as
+     * user-friendly */
+    virBufferEscapeSQL(&query,
+                       MSVM_VIRTUALSYSTEMSETTINGDATA_WQL_SELECT
+                       "WHERE InstanceID='%s'",
+                       snapshot);
+    virBufferEscapeSQL(&query, "AND VirtualSystemIdentifier='%s'", domain_uuid_string);
+    virBufferAddLit(&query, "AND VirtualSystemType='"
+                    MSVM_VIRTUALSYSTEMSETTINGDATA_VIRTUALTYPE_SNAPSHOT "'");
+
+    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, &vssd) < 0)
+        return NULL;
+
+    if (!vssd) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("no domain snapshot with matching name '%1$s'"), snapshot);
+        return NULL;
+    }
+
+    return g_steal_pointer(&vssd);
+}
+
+
+static virDomainSnapshotPtr
+hypervDomainSnapshotLookupByName(virDomainPtr domain,
+                                 const char *name,
+                                 unsigned int flags)
+{
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+
+    virCheckFlags(0, NULL);
+
+    vssd = hypervDomainLookupSnapshotSD(domain, name);
+    if (vssd == NULL)
+        return NULL;
+
+    return virGetDomainSnapshot(domain, name);
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -4176,6 +4228,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .connectIsAlive = hypervConnectIsAlive, /* 0.9.8 */
     .domainInterfaceAddresses = hypervDomainInterfaceAddresses, /* 12.1.0 */
     .domainGetBlockInfo = hypervDomainGetBlockInfo, /* 12.1.0 */
+    .domainSnapshotLookupByName = hypervDomainSnapshotLookupByName, /* 12.2.0 */
 };
 
 

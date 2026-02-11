@@ -38,6 +38,9 @@
 #define MSVM_IMAGEMANAGEMENTSERVICE_SELECTOR \
     "CreationClassName=Msvm_ImageManagementService"
 
+#define MSVM_VIRTUALSYSTEMSETTINGDATA_VIRTUALTYPE_SNAPSHOT \
+    "Microsoft:Hyper-V:Snapshot:Realized"
+
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
 
