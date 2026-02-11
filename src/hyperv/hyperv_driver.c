@@ -4163,6 +4163,93 @@ hypervDomainSnapshotLookupByName(virDomainPtr domain,
 }
 
 
+static virDomainSnapshotPtr
+hypervDomainSnapshotCreateXML(virDomainPtr domain,
+                              const char *xmlDesc,
+                              unsigned int flags)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
+    g_autoptr(GHashTable) snapshotSettings = NULL;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(Msvm_VirtualSystemSettingData) snapshot = NULL;
+    g_auto(WsXmlDocH) response = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE, NULL);
+
+    def = virDomainSnapshotDefParseString(xmlDesc, priv->xmlopt, NULL, NULL, 0);
+    if (!def)
+        return NULL;
+
+    if (def->ndisks) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hyperv does not support per-disk snapshot configuration"));
+        return NULL;
+    }
+
+    if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("hyperv does not support external memory snapshots"));
+        return NULL;
+    }
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
+        return NULL;
+
+    virBufferEscapeSQL(&eprQuery,
+                       MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE Name = '%s'",
+                       uuid_string);
+
+    params = hypervCreateInvokeParamsList("CreateSnapshot",
+                                          MSVM_VIRTUALSYSTEMSNAPSHOTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemSnapshotService_WmiInfo);
+    if (!params)
+        return NULL;
+
+    if (hypervAddEprParam(params, "AffectedSystem", &eprQuery,
+                          Msvm_ComputerSystem_WmiInfo) < 0)
+        return NULL;
+
+    snapshotSettings = hypervCreateEmbeddedParam(Msvm_VirtualSystemSnapshotSettingData_WmiInfo);
+    if (!snapshotSettings)
+        return NULL;
+
+    if (hypervSetEmbeddedProperty(snapshotSettings, "ConsistencyLevel",
+                                  (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) ?
+                                  HYPERV_SNAPSHOT_CONSISTENCY_APP_CONSISTENT :
+                                  HYPERV_SNAPSHOT_CONSISTENCY_CRASH_CONSISTENT) < 0)
+        return NULL;
+
+    if (hypervAddEmbeddedParam(params, "SnapshotSettings", &snapshotSettings,
+                               Msvm_VirtualSystemSnapshotSettingData_WmiInfo) < 0)
+        return NULL;
+
+    hypervAddSimpleParam(params, "SnapshotType", HYPERV_SNAPSHOT_TYPE_FULL);
+
+    if (hypervInvokeMethod(priv, &params, &response) < 0)
+        return NULL;
+
+    /* The CreateSnapshot method will generally return an async job rather
+     * than returning the 'ResultingSnapshot' output parameter directly
+     * in the response. Although hypervInvokeMethod() polls the async job to
+     * completion when this occurs, the response will not include the output
+     * parameters. So we use this helper function to build a query to fetch the
+     * resulting object from the async job associations. */
+    if (hypervResponseGetOutputParam(priv, response, "ResultingSnapshot",
+                                     Msvm_VirtualSystemSettingData_WmiInfo,
+                                     (hypervObject**) &snapshot) < 0)
+        return NULL;
+
+    return virGetDomainSnapshot(domain, snapshot->data->InstanceID);
+}
+
+
 static int
 hypervDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
                            unsigned int flags)
@@ -4755,6 +4842,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSnapshotGetParent = hypervDomainSnapshotGetParent, /* 12.2.0 */
     .domainGetGuestInfo = hypervDomainGetGuestInfo, /* 12.3.0 */
     .domainSnapshotDelete = hypervDomainSnapshotDelete, /* 12.3.0 */
+    .domainSnapshotCreateXML = hypervDomainSnapshotCreateXML, /* 12.3.0 */
 };
 
 
