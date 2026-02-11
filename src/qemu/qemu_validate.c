@@ -1902,15 +1902,9 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                                    const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
-    bool hasIPv4 = false;
-    bool hasIPv6 = false;
+    bool hasV4Addr = false;
+    bool hasV6Addr = false;
     size_t i;
-
-    if (net->guestIP.nroutes) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Invalid attempt to set network interface guest-side IP route, not supported by QEMU"));
-        return -1;
-    }
 
     if (net->type == VIR_DOMAIN_NET_TYPE_USER ||
         (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
@@ -1926,57 +1920,66 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
                            virDomainNetBackendTypeToString(net->backend.type));
             return -1;
         }
+    }
 
-        for (i = 0; i < net->guestIP.nips; i++) {
-            const virNetDevIPAddr *ip = net->guestIP.ips[i];
+    for (i = 0; i < net->guestIP.nips; i++) {
+        const virNetDevIPAddr *ip = net->guestIP.ips[i];
 
-            if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
+        if (net->type != VIR_DOMAIN_NET_TYPE_USER &&
+            net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid attempt to set network interface guest-side IP address info, not supported for this interface type/backend"));
+            return -1;
+        }
+
+        if (VIR_SOCKET_ADDR_VALID(&net->guestIP.ips[i]->peer)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid attempt to set peer IP for guest"));
+            return -1;
+        }
+
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
+            if (hasV4Addr) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid attempt to set peer IP for guest"));
+                               _("Only one IPv4 address per interface is allowed"));
+                return -1;
+            }
+            hasV4Addr = true;
+
+            if (ip->prefix > 0 &&
+                (ip->prefix < 4 || ip->prefix > 27)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("invalid prefix, must be in range of 4-27"));
+                return -1;
+            }
+        }
+
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
+            if (hasV6Addr) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only one IPv6 address per interface is allowed"));
+                return -1;
+            }
+            hasV6Addr = true;
+
+            if (ip->prefix && ip->prefix != 64) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported IPv6 address prefix='%1$u' - must be 64"),
+                               ip->prefix);
                 return -1;
             }
 
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET)) {
-                if (hasIPv4) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Only one IPv4 address per interface is allowed"));
-                    return -1;
-                }
-                hasIPv4 = true;
-
-                if (ip->prefix > 0 &&
-                    (ip->prefix < 4 || ip->prefix > 27)) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("invalid prefix, must be in range of 4-27"));
-                    return -1;
-                }
-            }
-
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ip->address, AF_INET6)) {
-                if (hasIPv6) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Only one IPv6 address per interface is allowed"));
-                    return -1;
-                }
-                hasIPv6 = true;
-
-                if (ip->prefix && ip->prefix != 64) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unsupported IPv6 address prefix='%1$u' - must be 64"),
-                                   ip->prefix);
-                    return -1;
-                }
-
-                if (ip->prefix > 120) {
-                    virReportError(VIR_ERR_XML_ERROR, "%s",
-                                   _("prefix too long"));
-                    return -1;
-                }
+            if (ip->prefix > 120) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("prefix too long"));
+                return -1;
             }
         }
-    } else if (net->guestIP.nips) {
+    }
+
+    if (net->guestIP.nroutes) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Invalid attempt to set network interface guest-side IP address info, not supported by QEMU"));
+                       _("Invalid attempt to set network interface guest-side IP route, not supported by QEMU"));
         return -1;
     }
 
