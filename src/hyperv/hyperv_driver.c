@@ -4164,6 +4164,46 @@ hypervDomainSnapshotLookupByName(virDomainPtr domain,
 
 
 static int
+hypervDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
+                           unsigned int flags)
+{
+    hypervPrivate *priv = snapshot->domain->conn->privateData;
+    g_autoptr(hypervInvokeParamsList) params = NULL;
+    g_auto(virBuffer) eprQuery = VIR_BUFFER_INITIALIZER;
+    g_autoptr(Msvm_VirtualSystemSettingData) snapshotVSSD = NULL;
+
+    virCheckFlags(0, -1);
+
+    snapshotVSSD = hypervDomainLookupSnapshotSD(snapshot->domain, snapshot->name);
+    if (!snapshotVSSD)
+        return -1;
+
+    /* Build EPR for the snapshot to destroy */
+    virBufferEscapeSQL(&eprQuery,
+                      MSVM_VIRTUALSYSTEMSETTINGDATA_WQL_SELECT "WHERE InstanceID = '%s'",
+                      snapshotVSSD->data->InstanceID);
+
+    /* Destroy snapshot via DestroySnapshot method */
+    params = hypervCreateInvokeParamsList("DestroySnapshot",
+                                          MSVM_VIRTUALSYSTEMSNAPSHOTSERVICE_SELECTOR,
+                                          Msvm_VirtualSystemSnapshotService_WmiInfo);
+
+    if (!params)
+        return -1;
+
+    if (hypervAddEprParam(params, "AffectedSnapshot", &eprQuery,
+                          Msvm_VirtualSystemSettingData_WmiInfo) < 0)
+        return -1;
+
+    /* Invoke the method */
+    if (hypervInvokeMethod(priv, &params, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 hypervDomainListAllSnapshots(virDomainPtr domain,
                              virDomainSnapshotPtr **snaps,
                              unsigned int flags)
@@ -4714,6 +4754,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSnapshotCurrent = hypervDomainSnapshotCurrent, /* 12.2.0 */
     .domainSnapshotGetParent = hypervDomainSnapshotGetParent, /* 12.2.0 */
     .domainGetGuestInfo = hypervDomainGetGuestInfo, /* 12.3.0 */
+    .domainSnapshotDelete = hypervDomainSnapshotDelete, /* 12.3.0 */
 };
 
 
