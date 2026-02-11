@@ -866,6 +866,140 @@ hypervInvokeMethod(hypervPrivate *priv,
     return 0;
 }
 
+static char*
+hypervOutputParamReferenceId(WsXmlNodeH node)
+{
+    WsXmlNodeH selector_set = NULL;
+    WsXmlNodeH selector = NULL;
+    int i = 0;
+
+    if (node)
+        selector_set = ws_xml_find_in_tree(node, XML_NS_WS_MAN, "SelectorSet", TRUE);
+
+    if (selector_set) {
+        for (i = 0; (selector = ws_xml_get_child(selector_set, i, XML_NS_WS_MAN, "Selector")) != NULL; i++) {
+            if (STREQ_NULLABLE(ws_xml_find_attr_value(selector, NULL, "Name"), "InstanceID")) {
+                return ws_xml_get_node_text(selector);
+            }
+        }
+    }
+    return NULL;
+}
+
+
+/*
+ * hypervResponseGetOutputParam()
+ *
+ * Extracts an output parameter from a WMI method response and retrieves the
+ * referenced object.
+ *
+ * Handles both synchronous and asynchronous cases. When a method is
+ * synchronous, the parameter will be directly present in the response document.
+ * When the method returns asynchronously, we need to fetch the result parameter
+ * via its associations with the Msvm_ConcreteJob object referenced in the
+ * response document.
+ *
+ * Parameters:
+ *   @priv: hypervPrivate object associated with the connection
+ *   response: The WMI method response document
+ *   paramName: The output parameter name (e.g., "ResultingSnapshot")
+ *   paramClass: The WMI class info for the expected result type
+ *   outParam: return location for the named output parameter
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+hypervResponseGetOutputParam(hypervPrivate *priv,
+                             WsXmlDocH response,
+                             const char *paramName,
+                             hypervWmiClassInfo *paramClassInfo,
+                             hypervObject **outParam)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    WsXmlNodeH body = NULL;
+    WsXmlNodeH output_node = NULL;
+    char *output_name = NULL;
+    char *provider_ns = NULL;
+    const char *rv_str = NULL;
+    int return_code;
+    int i = 0;
+
+    body = ws_xml_get_soap_body(response);
+    if (!body) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find SOAP Body in response"));
+        return -1;
+    }
+
+    /* Find the $(METHOD)_OUTPUT node in the SOAP Body */
+    for (i = 0; (output_node = ws_xml_get_child(body, i, NULL, NULL)) != NULL; i++) {
+        output_name = ws_xml_get_node_local_name(output_node);
+        if (output_name && g_str_has_suffix(output_name, "_OUTPUT"))
+            break;
+        output_node = NULL;
+    }
+
+    if (!output_node) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find _OUTPUT node in method response"));
+        return -1;
+    }
+
+    provider_ns = ws_xml_get_node_name_ns(output_node);
+
+    rv_str = ws_xml_get_node_text(ws_xml_get_child(output_node, 0, provider_ns, "ReturnValue"));
+    if (!rv_str || virStrToLong_i(rv_str, NULL, 10, &return_code) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get ReturnValue from method response"));
+        return -1;
+    }
+
+    if (return_code == CIM_RETURNCODE_COMPLETED_WITH_NO_ERROR) {
+        /* if this was a synchronous response, the output parameter should contain
+         * the id of an object, so we can simply look it up by its instance ID */
+        WsXmlNodeH param_node = ws_xml_get_child(output_node, 0, provider_ns, paramName);
+        const char *out_param_id = NULL;
+
+        if (param_node)
+            out_param_id = hypervOutputParamReferenceId(param_node);
+
+        if (!out_param_id) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Could not find output parameter '%1$s' in response"),
+                           paramName);
+            return -1;
+        }
+        VIR_DEBUG("Method response was synchronous: %1$s = %2$s", paramName, out_param_id);
+        virBufferAsprintf(&query, "SELECT * FROM %s ", paramClassInfo->name);
+        virBufferEscapeSQL(&query, "WHERE InstanceID='%s'", out_param_id);
+    } else if (return_code == CIM_RETURNCODE_TRANSITION_STARTED) {
+        /* if this was an asynchronous response, we have to get the output
+         * parameter from its association with the async job */
+        WsXmlNodeH job_node = ws_xml_get_child(output_node, 0, provider_ns, "Job");
+        const char *job_id = NULL;
+
+        if (job_node)
+            job_id = hypervOutputParamReferenceId(job_node);
+
+        if (!job_id) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not find Job ID in async method response"));
+            return -1;
+        }
+        VIR_DEBUG("Method response was asynchronous. Job ID = %1$s", job_id);
+        virBufferEscapeSQL(&query, "ASSOCIATORS OF {Msvm_ConcreteJob.InstanceID='%s'} ", job_id);
+        virBufferAsprintf(&query, "WHERE AssocClass = Msvm_AffectedJobElement ResultClass = %s",
+                          paramClassInfo->name);
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected return code %1$d in method response"),
+                       return_code);
+        return -1;
+    }
+
+    return hypervGetWmiClassList(priv, paramClassInfo, &query, outParam);
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Object
  */

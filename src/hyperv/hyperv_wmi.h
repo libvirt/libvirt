@@ -166,6 +166,12 @@ int hypervInvokeMethod(hypervPrivate *priv,
                        hypervInvokeParamsList **paramsPtr,
                        WsXmlDocH *res);
 
+int hypervResponseGetOutputParam(hypervPrivate *priv,
+                                 WsXmlDocH response,
+                                 const char *paramName,
+                                 hypervWmiClassInfo *paramClassInfo,
+                                 hypervObject **outParam);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CIM/Msvm_ReturnCode
  */
