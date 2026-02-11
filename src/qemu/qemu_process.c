@@ -6962,7 +6962,13 @@ qemuProcessEnableDomainFeatures(virDomainObj *vm)
         if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(hv->features, i))
             continue;
 
-        vm->def->hyperv.features[i] = VIR_TRISTATE_SWITCH_ON;
+        if (vm->def->hyperv.features[i] == VIR_TRISTATE_SWITCH_ABSENT) {
+            vm->def->hyperv.features[i] = VIR_TRISTATE_SWITCH_ON;
+        } else {
+            /* if the user provided already config for this we skip the
+             * auto-population code */
+            continue;
+        }
 
         if (i == VIR_DOMAIN_HYPERV_SPINLOCKS) {
             if (hv->spinlocks != 0) {
