@@ -4162,6 +4162,86 @@ hypervDomainSnapshotLookupByName(virDomainPtr domain,
 }
 
 
+static int
+hypervDomainListAllSnapshots(virDomainPtr domain,
+                             virDomainSnapshotPtr **snaps,
+                             unsigned int flags)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    g_autoptr(Msvm_VirtualSystemSettingData) snapshots = NULL;
+    Msvm_VirtualSystemSettingData *snapshot = NULL;
+    g_autoptr(GList) filtered = NULL;
+    virDomainSnapshotPtr *snapshotsRet = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    int count = 0;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_LIST_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA, -1);
+
+    /* libvirt does not maintain any metadata for hyper-v snapshots */
+    if (flags & VIR_DOMAIN_SNAPSHOT_LIST_METADATA)
+        return 0;
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetDomainSnapshotsSD(priv, uuid_string, &snapshots) < 0)
+        return -1;
+
+    /* filter snapshots */
+    for (snapshot = snapshots; snapshot; snapshot = snapshot->next) {
+        if ((flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) && snapshot->data->Parent)
+            continue;
+
+        filtered = g_list_append(filtered, snapshot);
+    }
+
+    count = g_list_length(filtered);
+
+    if (!snaps)
+        return count;
+
+    if (count > 0) {
+        GList *l = NULL;
+        int idx = 0;
+
+        snapshotsRet = g_new0(virDomainSnapshotPtr, count);
+
+        for (l = filtered; l; l = l->next) {
+            Msvm_VirtualSystemSettingData *vssd = l->data;
+            snapshotsRet[idx] = virGetDomainSnapshot(domain, vssd->data->InstanceID);
+            if (!snapshotsRet[idx])
+                goto cleanup;
+            idx++;
+        }
+    }
+
+    *snaps = snapshotsRet;
+    ret = count;
+
+ cleanup:
+    if (ret < 0) {
+        size_t i;
+        for (i = 0; i < count; i++) {
+            if (snapshotsRet[i])
+                virObjectUnref(snapshotsRet[i]);
+        }
+        VIR_FREE(snapshotsRet);
+    }
+
+    return ret;
+}
+
+
+static int
+hypervDomainSnapshotNum(virDomainPtr domain,
+                        unsigned int flags)
+{
+    return hypervDomainListAllSnapshots(domain, NULL, flags);
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -4229,6 +4309,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainInterfaceAddresses = hypervDomainInterfaceAddresses, /* 12.1.0 */
     .domainGetBlockInfo = hypervDomainGetBlockInfo, /* 12.1.0 */
     .domainSnapshotLookupByName = hypervDomainSnapshotLookupByName, /* 12.2.0 */
+    .domainListAllSnapshots = hypervDomainListAllSnapshots, /* 12.2.0 */
+    .domainSnapshotNum = hypervDomainSnapshotNum, /* 12.2.0 */
 };
 
 

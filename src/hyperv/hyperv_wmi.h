@@ -240,6 +240,10 @@ int hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
                                                   const char *uuid_string,
                                                   Msvm_VirtualSystemSettingData **list);
 
+int hypervGetDomainSnapshotsSD(hypervPrivate *priv,
+                               const char *domain_uuid_string,
+                               Msvm_VirtualSystemSettingData **list);
+
 int hypervGetResourceAllocationSD(hypervPrivate *priv,
                                   const char *id,
                                   Msvm_ResourceAllocationSettingData **data);

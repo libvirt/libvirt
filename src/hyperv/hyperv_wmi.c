@@ -1406,6 +1406,26 @@ hypervGetMsvmVirtualSystemSettingDataFromUUID(hypervPrivate *priv,
 }
 
 
+int
+hypervGetDomainSnapshotsSD(hypervPrivate *priv,
+                           const char *domain_uuid_string,
+                           Msvm_VirtualSystemSettingData **list)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&query,
+                      "ASSOCIATORS OF {Msvm_ComputerSystem.CreationClassName='Msvm_ComputerSystem',Name='%s'} "
+                      "WHERE AssocClass = Msvm_SnapshotOfVirtualSystem "
+                      "ResultClass = Msvm_VirtualSystemSettingData",
+                      domain_uuid_string);
+
+    if (hypervGetWmiClass(Msvm_VirtualSystemSettingData, list) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 #define hypervGetSettingData(type, id, out) \
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER; \
     virBufferEscapeSQL(&query, \
