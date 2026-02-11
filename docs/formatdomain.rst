@@ -2197,6 +2197,9 @@ are:
       enlightenments are supported by hypervisor and expands them on domain
       startup into the live XML. In a sense, this is similar to ``host-model``
       CPU mode (See `CPU model and topology`_). :since:`Since 11.9.0`
+      It is also possible to set features, like in ``custom`` mode. These are
+      then left untouched and no expansion is done for them. :since:`Since
+      12.1.0`
 
    The ``mode`` attribute can be omitted and will default to ``custom``.
 

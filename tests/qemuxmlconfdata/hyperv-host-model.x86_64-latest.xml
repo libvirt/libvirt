@@ -10,7 +10,11 @@
   </os>
   <features>
     <acpi/>
-    <hyperv mode='host-model'/>
+    <hyperv mode='host-model'>
+      <relaxed state='on'/>
+      <spinlocks state='on' retries='8192'/>
+      <xmm_input state='off'/>
+    </hyperv>
   </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>

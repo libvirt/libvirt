@@ -8085,13 +8085,13 @@
         <attribute name="mode">
           <value>passthrough</value>
         </attribute>
-        <attribute name="mode">
-          <value>host-model</value>
-        </attribute>
         <group>
           <optional>
             <attribute name="mode">
-              <value>custom</value>
+              <choice>
+                <value>custom</value>
+                <value>host-model</value>
+              </choice>
             </attribute>
           </optional>
           <interleave>
