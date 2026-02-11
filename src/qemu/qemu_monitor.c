@@ -2275,7 +2275,6 @@ qemuMonitorMigrateToFd(qemuMonitor *mon,
 
 int
 qemuMonitorMigrateToFdSet(virDomainObj *vm,
-                          unsigned int flags,
                           int *fd,
                           int *directFd)
 {
@@ -2284,9 +2283,10 @@ qemuMonitorMigrateToFdSet(virDomainObj *vm,
     off_t offset;
     g_autoptr(qemuFDPass) fdPassMigrate = NULL;
     g_autofree char *uri = NULL;
+    unsigned int migrateFlags = 0; /* currently no flags are passed to the 'migrate' command */
     int ret;
 
-    VIR_DEBUG("fd=%d directFd=%d flags=0x%x", *fd, *directFd, flags);
+    VIR_DEBUG("fd=%d directFd=%d", *fd, *directFd);
 
     QEMU_CHECK_MONITOR(mon);
 
@@ -2304,7 +2304,7 @@ qemuMonitorMigrateToFdSet(virDomainObj *vm,
 
     uri = g_strdup_printf("file:%s,offset=%#jx",
                           qemuFDPassGetPath(fdPassMigrate), (uintmax_t)offset);
-    ret = qemuMonitorJSONMigrate(mon, flags, uri);
+    ret = qemuMonitorJSONMigrate(mon, migrateFlags, uri);
 
     return ret;
 }

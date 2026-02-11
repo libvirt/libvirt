@@ -7219,7 +7219,7 @@ qemuMigrationSrcToSparseFile(virDomainObj *vm,
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
-    ret = qemuMonitorMigrateToFdSet(vm, 0, fd, &directFd);
+    ret = qemuMonitorMigrateToFdSet(vm, fd, &directFd);
     qemuDomainObjExitMonitor(vm);
     return ret;
 }
