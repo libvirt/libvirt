@@ -2031,6 +2031,14 @@ virFileIsRegular(const char *path)
 }
 
 
+bool
+virFileFDIsRegular(int fd)
+{
+    struct stat s;
+    return (fstat(fd, &s) == 0) && S_ISREG(s.st_mode);
+}
+
+
 /**
  * virFileExists: Check for presence of file
  * @path: Path of file to check

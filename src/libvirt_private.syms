@@ -2375,6 +2375,7 @@ virFileDeleteTree;
 virFileDirectFdFlag;
 virFileExists;
 virFileFclose;
+virFileFDIsRegular;
 virFileFdopen;
 virFileFindHugeTLBFS;
 virFileFindMountPoint;
