@@ -905,7 +905,10 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
 
     if (fdst->thread) {
         virFDStreamMsg *msg = NULL;
+        size_t got = 0;
+        size_t bsz = 0;
 
+    more:
         while (!(msg = fdst->msg)) {
             if (fdst->threadQuit || fdst->threadErr) {
                 if (nbytes) {
@@ -917,7 +920,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
                         virReportSystemError(EBADF, "%s",
                                              _("stream is not open"));
                 } else {
-                    ret = 0;
+                    ret = got;
                 }
                 goto cleanup;
             } else {
@@ -931,7 +934,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
          * return 0 immediately. */
         if (msg->type == VIR_FDSTREAM_MSG_TYPE_HOLE &&
             msg->stream.hole.len == 0) {
-            ret = 0;
+            ret = got;
             goto cleanup;
         }
 
@@ -942,21 +945,26 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
             goto cleanup;
         }
 
-        if (nbytes > msg->stream.data.len - msg->stream.data.offset)
-            nbytes = msg->stream.data.len - msg->stream.data.offset;
+        bsz = msg->stream.data.len - msg->stream.data.offset;
+        if (nbytes < bsz)
+            bsz = nbytes;
 
-        memcpy(bytes,
+        memcpy(bytes + got,
                msg->stream.data.buf + msg->stream.data.offset,
-               nbytes);
+               bsz);
+        got += bsz;
+        nbytes -= bsz;
 
-        msg->stream.data.offset += nbytes;
+        msg->stream.data.offset += bsz;
         if (msg->stream.data.offset == msg->stream.data.len) {
             virFDStreamMsgQueuePop(fdst, fdst->fd, "pipe");
             virFDStreamMsgFree(msg);
         }
 
-        ret = nbytes;
-
+        ret = got;
+        if (nbytes > 0) {
+            goto more;
+        }
     } else {
      retry:
         ret = read(fdst->fd, bytes, nbytes);
