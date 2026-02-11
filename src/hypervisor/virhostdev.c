@@ -1369,11 +1369,12 @@ virHostdevFindUSBDeviceWithFlags(virDomainHostdevDef *hostdev,
     unsigned vendor = usbsrc->vendor;
     unsigned product = usbsrc->product;
     unsigned bus = usbsrc->bus;
+    const char *port = usbsrc->port;
     unsigned device = usbsrc->device;
     g_autoptr(virUSBDeviceList) devs = NULL;
     int rc;
 
-    rc = virUSBDeviceFind(vendor, product, bus, device, NULL, NULL,
+    rc = virUSBDeviceFind(vendor, product, bus, device, port, NULL,
                           mandatory, flags, &devs);
     if (rc < 0)
         return -1;
@@ -1403,6 +1404,7 @@ virHostdevFindUSBDevice(virDomainHostdevDef *hostdev,
     unsigned vendor = usbsrc->vendor;
     unsigned bus = usbsrc->bus;
     unsigned device = usbsrc->device;
+    const char *port = usbsrc->port;
     bool autoAddress = usbsrc->autoAddress;
     unsigned int flags = 0;
     int rc;
@@ -1413,14 +1415,19 @@ virHostdevFindUSBDevice(virDomainHostdevDef *hostdev,
         flags |= USB_DEVICE_FIND_BY_VENDOR;
     if (device)
         flags |= USB_DEVICE_FIND_BY_DEVICE;
+    if (port)
+        flags |= USB_DEVICE_FIND_BY_PORT;
 
     /* Rule out invalid cases. */
-    if (vendor && device) {
+    if (vendor && device && port) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Cannot match USB device on vendor/product and bus/device at once"));
-    } else if (!vendor && !device) {
+                       _("Cannot match USB device on vendor/product, bus/device, and bus/port at once."));
+    } else if (device && port) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("No matching fields for USB device found, vendor/product or bus/device required"));
+                       _("Cannot match USB device on bus/device and bus/port at once."));
+    } else if (!vendor && !device && !port) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("No matching fields for USB device found. Vendor/product, bus/device, or bus/port required."));
         return -1;
     }
 
