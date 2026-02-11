@@ -423,6 +423,20 @@ qemuSaveImageDecompressionStop(virCommand *cmd,
 }
 
 
+/**
+ * qemuSaveImageCreateFd:
+ * @vm: domain object
+ * @path: path to the save image file
+ * @wrapperFd: filled with helper structure for the virFileWrapper
+ * @sparse: 'sparse' image format is used for the save image
+ * @needUnlink: if filled with 'true' a new file was created and needs to be
+ *              removed on failure
+ * @bypassCache: Don't use cache for the writes of the save image
+ *
+ * Opens the save image @path and prepares it for saving of the VM state.
+ * Returns a file descriptor on succes. The returned FD is a pipe unless @
+ * sparse is true in which case it's an fd to a file.
+ */
 static int
 qemuSaveImageCreateFd(virDomainObj *vm,
                       const char *path,
@@ -454,6 +468,16 @@ qemuSaveImageCreateFd(virDomainObj *vm,
 
     if (fd < 0)
         return -1;
+
+    /* 'virQEMUFileOpenAs' can return a pipe/socket in case when it needs to bypass
+     * root-squashed NFS. Since 'sparse' backing format works only with real
+     * files we need to reject such cases */
+    if (sparse && !virFileFDIsRegular(fd)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("path '%1$s' can't be opened directly (without the use of helper proces) which is incompatible with 'sparse' save image"),
+                       path);
+        return -1;
+    }
 
     if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, fd) < 0)
         return -1;
