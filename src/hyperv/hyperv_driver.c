@@ -41,6 +41,7 @@
 #include "virstring.h"
 #include "virkeycode.h"
 #include "domain_conf.h"
+#include "snapshot_conf.h"
 #include "virfdstream.h"
 #include "virfile.h"
 
@@ -4242,6 +4243,71 @@ hypervDomainSnapshotNum(virDomainPtr domain,
 }
 
 
+/* A snapshot's parent is specified as an object path like 'InstanceID="$ID"'.
+ * This function extracts the id portion. */
+static char *
+hypervParseInstanceIdFromParentPath(const char *obj_path)
+{
+    const char *const instance_prefix = "InstanceID=\"";
+    const char *id_start = NULL;
+    if (!obj_path)
+        return NULL;
+
+    id_start = strstr(obj_path, instance_prefix);
+    if (id_start) {
+        const char *id_end;
+        id_start += strlen(instance_prefix);
+        id_end = strchr(id_start, '"');
+        if (id_end) {
+            g_autofree char* parent_id_escaped = g_strndup(id_start, id_end - id_start);
+            char* parent_id = virStringReplace(parent_id_escaped, "\\\\", "\\");
+            return parent_id;
+        }
+    }
+    return NULL;
+}
+
+
+static char *
+hypervDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
+                               unsigned int flags)
+{
+    hypervPrivate *priv = snapshot->domain->conn->privateData;
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_XML_SECURE, NULL);
+
+    vssd = hypervDomainLookupSnapshotSD(snapshot->domain, snapshot->name);
+    if (!vssd)
+        return NULL;
+
+    if (!(def = virDomainSnapshotDefNew()))
+        return NULL;
+
+    def->parent.name = g_strdup(vssd->data->InstanceID);
+    def->parent.description = g_strdup(vssd->data->ElementName);
+    def->parent.parent_name = hypervParseInstanceIdFromParentPath(vssd->data->Parent);
+    /* IsSaved indicates the snapshot configuration references a saved memory
+     * state file, meaning the snapshot was taken from a running VM and includes
+     * full machine state. Otherwise it's either a 'production' checkpoint or an
+     * offline snapshot, which are both disk-only. */
+    def->state = vssd->data->IsSaved ? VIR_DOMAIN_SNAPSHOT_RUNNING : VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
+
+    if (vssd->data->CreationTime) {
+        g_autoptr(GDateTime) dt = g_date_time_new_from_iso8601(vssd->data->CreationTime, NULL);
+        if (dt)
+            def->parent.creationTime = g_date_time_to_unix(dt);
+    }
+
+    virUUIDFormat(snapshot->domain->uuid, uuidstr);
+
+    return virDomainSnapshotDefFormat(uuidstr, def, priv->xmlopt,
+                                      virDomainSnapshotFormatConvertXMLFlags(flags));
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -4311,6 +4377,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSnapshotLookupByName = hypervDomainSnapshotLookupByName, /* 12.2.0 */
     .domainListAllSnapshots = hypervDomainListAllSnapshots, /* 12.2.0 */
     .domainSnapshotNum = hypervDomainSnapshotNum, /* 12.2.0 */
+    .domainSnapshotGetXMLDesc = hypervDomainSnapshotGetXMLDesc, /* 12.2.0 */
 };
 
 
