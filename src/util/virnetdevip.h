@@ -79,7 +79,7 @@ void virNetDevIPAddrFree(virNetDevIPAddr *ip);
 /* virNetDevIPRoute object */
 void virNetDevIPRouteFree(virNetDevIPRoute *def);
 virSocketAddr *virNetDevIPRouteGetAddress(virNetDevIPRoute *def);
-int virNetDevIPRouteGetPrefix(virNetDevIPRoute *def);
+int virNetDevIPRouteGetPrefix(const virNetDevIPRoute *def);
 unsigned int virNetDevIPRouteGetMetric(virNetDevIPRoute *def);
 virSocketAddr *virNetDevIPRouteGetGateway(virNetDevIPRoute *def);
 

@@ -776,7 +776,7 @@ virNetDevIPRouteGetAddress(virNetDevIPRoute *def)
 }
 
 int
-virNetDevIPRouteGetPrefix(virNetDevIPRoute *def)
+virNetDevIPRouteGetPrefix(const virNetDevIPRoute *def)
 {
     int prefix = 0;
     virSocketAddr zero;
