@@ -27,4 +27,7 @@
 #define HYPERV_MAX_IDE_CHANNELS 2
 #define HYPERV_MAX_DRIVES_PER_IDE_CHANNEL 2
 
+#define HYPERV_VM_GEN1 "Microsoft:Hyper-V:SubType:1"
+#define HYPERV_VM_GEN2 "Microsoft:Hyper-V:SubType:2"
+
 int hypervRegister(void);

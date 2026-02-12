@@ -2743,6 +2743,22 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
+    /* Generation 2 VMs use UEFI firmware */
+    if (STREQ_NULLABLE(virtualSystemSettingData->data->VirtualSystemSubType, HYPERV_VM_GEN2)) {
+        def->os.firmware = VIR_DOMAIN_OS_DEF_FIRMWARE_EFI;
+
+        if (virtualSystemSettingData->data->SecureBootEnabled) {
+            int *features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
+
+            /* Hyper-V doesn't distinguish between secure-boot and enrolled-keys,
+             * so set both when SecureBootEnabled is true */
+            features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] = VIR_TRISTATE_BOOL_YES;
+            features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] = VIR_TRISTATE_BOOL_YES;
+
+            def->os.firmwareFeatures = features;
+        }
+    }
+
     /* Allocate space for all potential devices */
 
     /* 256 scsi drives + 4 ide drives */
@@ -2947,6 +2963,20 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if (hypervSetEmbeddedProperty(defineSystemParam, "ElementName", def->name) < 0)
         goto error;
+
+    /* Set firmware settings */
+    if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+        /* Generation 2 VM (UEFI) */
+        if (hypervSetEmbeddedProperty(defineSystemParam, "VirtualSystemSubType", HYPERV_VM_GEN2) < 0)
+            goto error;
+
+        if (def->os.firmwareFeatures &&
+            (def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] == VIR_TRISTATE_BOOL_YES ||
+             def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] == VIR_TRISTATE_BOOL_YES)) {
+            if (hypervSetEmbeddedProperty(defineSystemParam, "SecureBootEnabled", "true") < 0)
+                goto error;
+        }
+    }
 
     if (hypervAddEmbeddedParam(params, "SystemSettings",
                                &defineSystemParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
@@ -3889,7 +3919,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
 
 
 virDomainDefParserConfig hypervDomainDefParserConfig = {
-    .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG,
+    .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
+                VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT,
 };
 
 
