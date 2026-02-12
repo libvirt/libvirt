@@ -1625,3 +1625,29 @@ hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
 
     return 0;
 }
+
+
+int
+hypervGetSecuritySD(hypervPrivate *priv,
+                    const char *vssd_instanceid,
+                    Msvm_SecuritySettingData **data)
+{
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+
+    virBufferEscapeSQL(&query,
+                       "ASSOCIATORS OF {Msvm_VirtualSystemSettingData.InstanceID='%s'} "
+                       "WHERE ResultClass = Msvm_SecuritySettingData",
+                       vssd_instanceid);
+
+    if (hypervGetWmiClass(Msvm_SecuritySettingData, data) < 0)
+        return -1;
+
+    if (!*data) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not look up security setting data with virtual system instance ID '%1$s'"),
+                       vssd_instanceid);
+        return -1;
+    }
+
+    return 0;
+}

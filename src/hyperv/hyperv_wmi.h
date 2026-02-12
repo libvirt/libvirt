@@ -269,6 +269,10 @@ int hypervImageManagementServiceGetVHDSD(hypervPrivate *priv,
                                          const char *vhdPath,
                                          WsXmlDocH *settingDataDoc);
 
+int hypervGetSecuritySD(hypervPrivate *priv,
+                        const char *vssd_instanceid,
+                        Msvm_SecuritySettingData **data);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_VirtualSystemManagementService
  */

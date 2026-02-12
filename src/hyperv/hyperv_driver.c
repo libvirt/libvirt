@@ -201,6 +201,22 @@ hypervGetOperatingSystem(hypervPrivate *priv, Win32_OperatingSystem **operatingS
 
 
 static int
+hypervDomainGetTPMEnabled(hypervPrivate *priv,
+                          const char *id,
+                          bool *enabled)
+{
+    g_autoptr(Msvm_SecuritySettingData) securitySD = NULL;
+
+    if (hypervGetSecuritySD(priv, id, &securitySD) < 0)
+        return -1;
+
+    VIR_DEBUG("Getting TPM state for '%s': %u", id, securitySD->data->TpmEnabled);
+    *enabled = securitySD->data->TpmEnabled;
+    return 0;
+}
+
+
+static int
 hypervRequestStateChange(virDomainPtr domain, int state)
 {
     g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
@@ -2651,6 +2667,7 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     g_autoptr(Msvm_SerialPortSettingData) spsd = NULL;
     Msvm_ResourceAllocationSettingData *serialDevices = NULL;
     g_autoptr(Msvm_EthernetPortAllocationSettingData) nets = NULL;
+    bool tpmEnabled = false;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
@@ -2790,6 +2807,22 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if (hypervDomainDefParseEthernet(domain, def, nets) < 0)
         return NULL;
+
+    if (hypervDomainGetTPMEnabled(priv, virtualSystemSettingData->data->InstanceID, &tpmEnabled) == 0
+        && tpmEnabled) {
+        virDomainTPMDef* tpm = NULL;
+
+        if (!def->tpms) {
+            def->tpms = g_new0(virDomainTPMDef *, 1);
+        }
+
+        tpm = g_new0(virDomainTPMDef, 1);
+        tpm->model = VIR_DOMAIN_TPM_MODEL_CRB;
+        tpm->type = VIR_DOMAIN_TPM_TYPE_EMULATOR;
+        tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
+
+        def->tpms[def->ntpms++] = tpm;
+    }
 
     /* XXX xmlopts must be non-NULL */
     return virDomainDefFormat(def, NULL, virDomainDefFormatConvertXMLFlags(flags));

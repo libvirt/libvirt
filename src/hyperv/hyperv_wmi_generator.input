@@ -1252,3 +1252,12 @@ class Win32_DiskDrive
     uint64   TotalTracks
     uint32   TracksPerCylinder
 end
+
+class Msvm_SecuritySettingData
+    boolean TpmEnabled
+    boolean KsdEnabled
+    boolean ShieldingRequested
+    boolean DataProtectionRequested
+    boolean EncryptStateAndVmMigrationTraffic
+    boolean VirtualizationBasedSecurityOptOut
+end
