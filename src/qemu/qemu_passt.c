@@ -263,6 +263,22 @@ qemuPasstBuildCommand(char **socketName,
         }
     }
 
+    /* Add default route(s) */
+    for (i = 0; i < net->guestIP.nroutes; i++) {
+        const virNetDevIPRoute *route = net->guestIP.routes[i];
+        g_autofree char *gateway = NULL;
+
+        if (!(gateway = virSocketAddrFormat(&route->gateway)))
+            return NULL;
+
+        /* validation has already guaranteed that there is at most 1
+         * IPv4 and 1 IPv6 route, and that they are only default
+         * routes (i.e. destination 0.0.0.0/0)
+         */
+
+        virCommandAddArgList(cmd, "--gateway", gateway, NULL);
+    }
+
     /* Add port forwarding info */
 
     for (i = 0; i < net->nPortForwards; i++) {

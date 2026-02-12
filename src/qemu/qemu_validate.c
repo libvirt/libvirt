@@ -1904,6 +1904,8 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
 {
     bool hasV4Addr = false;
     bool hasV6Addr = false;
+    bool hasV4Route = false;
+    bool hasV6Route = false;
     size_t i;
 
     if (net->type == VIR_DOMAIN_NET_TYPE_USER ||
@@ -1978,10 +1980,50 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
         }
     }
 
-    if (net->guestIP.nroutes) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Invalid attempt to set network interface guest-side IP route, not supported by QEMU"));
-        return -1;
+
+    for (i = 0; i < net->guestIP.nroutes; i++) {
+        const virNetDevIPRoute *route = net->guestIP.routes[i];
+
+        if (net->backend.type != VIR_DOMAIN_NET_BACKEND_PASST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid attempt to set network interface guest-side IP route, not supported for this interface type/backend"));
+            return -1;
+        }
+
+        switch (VIR_SOCKET_ADDR_FAMILY(&route->gateway)) {
+        case AF_INET:
+            if (hasV4Route) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only one IPv4 default route can be specified for an interface using the passt backend"));
+                return -1;
+            }
+            hasV4Route = true;
+            break;
+        case AF_INET6:
+            if (hasV6Route) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only one IPv6 default route can be specified for an interface using the passt backend"));
+                return -1;
+            }
+            hasV6Route = true;
+            break;
+        default:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("All <route> elements of an interface using the passt backend must be default routes, with an IPv4 or IPv6 gateway specified"));
+            return -1;
+        }
+
+        /* the only type of route that can be specified for passt is
+         * the default route, so none of the parameters except gateway
+         * are acceptable
+         */
+        if (VIR_SOCKET_ADDR_VALID(&route->address) ||
+            virNetDevIPRouteGetPrefix(route) != 0 ||
+            route->has_metric) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("<route> elements of an interface using the passt backend must be default routes, with only a gateway specified"));
+            return -1;
+        }
     }
 
     if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {

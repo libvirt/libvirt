@@ -36,6 +36,7 @@
       <source dev='eth42'/>
       <ip address='172.17.2.0' family='ipv4' prefix='24'/>
       <ip address='2001:db8:ac10:fd01::feed' family='ipv6'/>
+      <route family='ipv6' gateway='2001:db8:ac10:fd01::beef'/>
       <portForward proto='tcp' address='2001:db8:ac10:fd01::1:10'>
         <range start='22' to='2022'/>
         <range start='1000' end='1050'/>

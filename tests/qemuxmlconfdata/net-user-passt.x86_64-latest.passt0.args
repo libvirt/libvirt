@@ -9,6 +9,7 @@ passt \
 --address 172.17.2.0 \
 --netmask 24 \
 --address 2001:db8:ac10:fd01::feed \
+--gateway 172.17.2.1 \
 --tcp-ports '2001:db8:ac10:fd01::1:10/22:2022,1000-1050,~1020,~1030-1040' \
 --udp-ports '1.2.3.4%eth0/5000-5020:6000-6020,~5010-5015' \
 --tcp-ports 80 \
