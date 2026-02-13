@@ -447,7 +447,7 @@ hypervDomainCreateSCSIController(virDomainPtr domain, virDomainControllerDef *de
         return -1;
 
     if (hypervSetEmbeddedProperty(scsiResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Synthetic SCSI Controller") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_SCSI_CONTROLLER) < 0)
         return -1;
 
     /* perform the settings change */
@@ -493,7 +493,7 @@ hypervDomainAddVirtualDiskParent(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(controllerResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Synthetic Disk Drive") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_DISK_DRIVE) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &controllerResource,
@@ -537,7 +537,7 @@ hypervDomainAddVirtualHardDisk(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Virtual Hard Disk") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_VIRTUAL_HARD_DISK) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
@@ -615,10 +615,11 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
     /* prepare HostResource */
 
     /* get Msvm_DiskDrive root device ID */
-    virBufferAddLit(&query,
-                    MSVM_RESOURCEALLOCATIONSETTINGDATA_WQL_SELECT
-                    "WHERE ResourceSubType = 'Microsoft:Hyper-V:Physical Disk Drive' "
-                    "AND InstanceID LIKE '%%Default%%'");
+    virBufferEscapeSQL(&query,
+                       MSVM_RESOURCEALLOCATIONSETTINGDATA_WQL_SELECT
+                       "WHERE ResourceSubType = '%s' "
+                       "AND InstanceID LIKE '%%Default%%'",
+                       HYPERV_RESOURCE_SUBTYPE_PHYSICAL_DISK_DRIVE);
 
     if (hypervGetWmiClass(Msvm_ResourceAllocationSettingData, &diskdefault) < 0)
         return -1;
@@ -666,7 +667,7 @@ hypervDomainAttachPhysicalDisk(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Physical Disk Drive") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_PHYSICAL_DISK_DRIVE) < 0)
         return -1;
 
     if (hypervSetEmbeddedProperty(diskResource, "HostResource", hostResource) < 0)
@@ -715,7 +716,7 @@ hypervDomainAddOpticalDrive(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(driveResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Synthetic DVD Drive") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_DVD_DRIVE) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &driveResource,
@@ -758,7 +759,7 @@ hypervDomainAddOpticalDisk(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Virtual CD/DVD Disk") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_VIRTUAL_DVD_DISK) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
@@ -828,7 +829,7 @@ hypervDomainAttachFloppy(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(volumeResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Virtual Floppy Disk") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_VIRTUAL_FLOPPY_DISK) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &volumeResource,
@@ -1087,7 +1088,7 @@ hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(portResource, "ResourceSubType",
-                                  "Microsoft:Hyper-V:Synthetic Ethernet Port") < 0)
+                                  HYPERV_RESOURCE_SUBTYPE_ETHERNET_PORT) < 0)
         return -1;
 
     if (hypervSetEmbeddedProperty(portResource,
@@ -1156,7 +1157,7 @@ hypervDomainAttachSyntheticEthernetAdapter(virDomainPtr domain,
         return -1;
 
     if (hypervSetEmbeddedProperty(connectionResource,
-                                  "ResourceSubType", "Microsoft:Hyper-V:Ethernet Connection") < 0)
+                                  "ResourceSubType", HYPERV_RESOURCE_SUBTYPE_ETHERNET_CONNECTION) < 0)
         return -1;
 
     if (hypervMsvmVSMSAddResourceSettings(domain, &connectionResource,
@@ -1294,7 +1295,7 @@ hypervDomainDefParseVirtualExtent(hypervPrivate *priv,
     disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
     /* note if it's a CDROM disk */
-    if (STREQ(disk_entry->data->ResourceSubType, "Microsoft:Hyper-V:Virtual CD/DVD Disk"))
+    if (STREQ(disk_entry->data->ResourceSubType, HYPERV_RESOURCE_SUBTYPE_VIRTUAL_DVD_DISK))
         disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
     else
         disk->device = VIR_DOMAIN_DISK_DEVICE_DISK;

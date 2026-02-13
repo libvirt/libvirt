@@ -30,4 +30,15 @@
 #define HYPERV_VM_GEN1 "Microsoft:Hyper-V:SubType:1"
 #define HYPERV_VM_GEN2 "Microsoft:Hyper-V:SubType:2"
 
+/* ResourceSubType values for Msvm_*AllocationSettingData */
+#define HYPERV_RESOURCE_SUBTYPE_SCSI_CONTROLLER "Microsoft:Hyper-V:Synthetic SCSI Controller"
+#define HYPERV_RESOURCE_SUBTYPE_DISK_DRIVE "Microsoft:Hyper-V:Synthetic Disk Drive"
+#define HYPERV_RESOURCE_SUBTYPE_VIRTUAL_HARD_DISK "Microsoft:Hyper-V:Virtual Hard Disk"
+#define HYPERV_RESOURCE_SUBTYPE_PHYSICAL_DISK_DRIVE "Microsoft:Hyper-V:Physical Disk Drive"
+#define HYPERV_RESOURCE_SUBTYPE_DVD_DRIVE "Microsoft:Hyper-V:Synthetic DVD Drive"
+#define HYPERV_RESOURCE_SUBTYPE_VIRTUAL_DVD_DISK "Microsoft:Hyper-V:Virtual CD/DVD Disk"
+#define HYPERV_RESOURCE_SUBTYPE_VIRTUAL_FLOPPY_DISK "Microsoft:Hyper-V:Virtual Floppy Disk"
+#define HYPERV_RESOURCE_SUBTYPE_ETHERNET_PORT "Microsoft:Hyper-V:Synthetic Ethernet Port"
+#define HYPERV_RESOURCE_SUBTYPE_ETHERNET_CONNECTION "Microsoft:Hyper-V:Ethernet Connection"
+
 int hypervRegister(void);
