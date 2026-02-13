@@ -56,15 +56,20 @@ VIR_LOG_INIT("hyperv.hyperv_driver");
  */
 
 static int
-hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
-                          Win32_Processor **processorList)
+hypervGetProcessorList(hypervPrivate *priv, const char *computer_name,
+                       Win32_Processor **processorList)
 {
     g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
-    virBufferEscapeSQL(&query,
-                       "ASSOCIATORS OF {Win32_ComputerSystem.Name='%s'} "
-                       "WHERE AssocClass = Win32_ComputerSystemProcessor "
-                       "ResultClass = Win32_Processor",
-                       name);
+    if (computer_name) {
+        virBufferEscapeSQL(&query,
+                           "ASSOCIATORS OF {Win32_ComputerSystem.Name='%s'} "
+                           "WHERE AssocClass = Win32_ComputerSystemProcessor "
+                           "ResultClass = Win32_Processor",
+                           computer_name);
+
+    } else {
+        virBufferAddLit(&query, WIN32_PROCESSOR_WQL_SELECT);
+    }
 
     if (hypervGetWmiClass(Win32_Processor, processorList) < 0)
         return -1;
@@ -72,7 +77,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
     if (!*processorList) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor(s) on '%1$s'"),
-                       name);
+                       computer_name);
         return -1;
     }
 
@@ -1933,7 +1938,7 @@ hypervNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (hypervGetPhysicalSystemList(priv, &computerSystem) < 0)
         return -1;
 
-    if (hypervGetProcessorsByName(priv, computerSystem->data->Name, &processorList) < 0) {
+    if (hypervGetProcessorList(priv, computerSystem->data->Name, &processorList) < 0) {
         return -1;
     }
 
