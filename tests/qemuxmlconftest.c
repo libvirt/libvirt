@@ -388,6 +388,7 @@ testQemuPrepareHostdevUSB(virDomainHostdevDef *hostdev)
 static void
 testQemuPrepareHostdev(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = QEMU_DOMAIN_PRIVATE(vm);
     size_t i;
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
@@ -410,6 +411,9 @@ testQemuPrepareHostdev(virDomainObj *vm)
             break;
         }
     }
+
+    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def))
+        priv->iommufd = 0;
 }
 
 
