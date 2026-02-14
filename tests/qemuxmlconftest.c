@@ -352,28 +352,13 @@ fakeNetworkPortGetXMLDesc(virNetworkPortPtr port,
 
 
 static void
-testSetupHostdevPrivateData(virDomainDef *def)
+testQemuPrepareHostdevPCI(virDomainHostdevDef *hostdev)
 {
-    size_t i;
+    qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = def->hostdevs[i];
-
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
-            hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
-
-            qemuDomainHostdevPrivate *priv;
-
-            if (!hostdev->privateData) {
-                hostdev->privateData = qemuDomainHostdevPrivateNew();
-            }
-
-            priv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
-            /* Use a placeholder FD value for tests */
-            priv->vfioDeviceFd = 0;
-        }
+    if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+        /* Use a placeholder FD value for tests */
+        hostdevPriv->vfioDeviceFd = 0;
     }
 }
 
@@ -416,6 +401,8 @@ testQemuPrepareHostdev(virDomainObj *vm)
             testQemuPrepareHostdevUSB(hostdev);
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            testQemuPrepareHostdevPCI(hostdev);
+            break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
@@ -478,8 +465,6 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 
     if (testQemuPrepareHostBackendChardevOne(NULL, priv->monConfig, vm) < 0)
         return NULL;
-
-    testSetupHostdevPrivateData(vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
