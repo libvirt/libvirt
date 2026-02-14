@@ -1975,6 +1975,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->migrationRecoverSetup = false;
 
+    VIR_FORCE_CLOSE(priv->iommufd);
+
     g_clear_pointer(&priv->memoryBackingDir, g_free);
 }
 
