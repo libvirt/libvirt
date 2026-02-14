@@ -5366,6 +5366,8 @@ qemuBuildIOMMUFDCommandLine(virCommand *cmd,
     if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
         return -1;
 
+    priv->iommufdState = true;
+
     return 0;
 }
 

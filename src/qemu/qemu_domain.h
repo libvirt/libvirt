@@ -265,6 +265,7 @@ struct _qemuDomainObjPrivate {
     GHashTable *fds;
 
     qemuFDPassDirect *iommufd;
+    bool iommufdState; /* true if --object iommufd was added */
 
     char *memoryBackingDir;
 };

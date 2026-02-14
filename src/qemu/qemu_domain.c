@@ -1976,6 +1976,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     priv->migrationRecoverSetup = false;
 
     g_clear_pointer(&priv->iommufd, qemuFDPassDirectFree);
+    priv->iommufdState = false;
 
     g_clear_pointer(&priv->memoryBackingDir, g_free);
 }
@@ -2844,6 +2845,9 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
                           priv->preMigrationMemlock);
     }
 
+    if (priv->iommufdState)
+        virBufferAddLit(buf, "<iommufd/>\n");
+
     return 0;
 }
 
@@ -3581,6 +3585,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                        _("failed to parse pre-migration memlock limit"));
         return -1;
     }
+
+    priv->iommufdState = virXPathBoolean("boolean(./iommufd)", ctxt) == 1;
 
     return 0;
 }
