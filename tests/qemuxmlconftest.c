@@ -378,6 +378,54 @@ testSetupHostdevPrivateData(virDomainDef *def)
 }
 
 
+static void
+testQemuPrepareHostdevUSB(virDomainHostdevDef *hostdev)
+{
+    virDomainHostdevSubsysUSB *usb = &hostdev->source.subsys.u.usb;
+
+    if (!usb->device && !usb->bus) {
+        if (usb->vendor == 0x1234 && usb->product == 0x4321) {
+            usb->bus = 42;
+            usb->device = 0x1234;
+        } else {
+            g_assert_not_reached();
+        }
+    } else if (!usb->device && !usb->vendor && !usb->product) {
+        if (usb->bus == 2 && STREQ(usb->port, "3")) {
+            usb->device = 4;
+        } else {
+            g_assert_not_reached();
+        }
+    }
+}
+
+
+static void
+testQemuPrepareHostdev(virDomainObj *vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+
+        switch (hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            testQemuPrepareHostdevUSB(hostdev);
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
+        }
+    }
+}
+
+
 static virNetworkDriver fakeNetworkDriver = {
     .networkLookupByName = fakeNetworkLookupByName,
     .networkGetXMLDesc = fakeNetworkGetXMLDesc,
@@ -524,28 +572,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         }
     }
 
-    for (i = 0; i < vm->def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
-
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
-            virDomainHostdevSubsysUSB *usb = &hostdev->source.subsys.u.usb;
-            if (!usb->device && !usb->bus) {
-                if (usb->vendor == 0x1234 && usb->product == 0x4321) {
-                    usb->bus = 42;
-                    usb->device = 0x1234;
-                } else {
-                    g_assert_not_reached();
-                }
-            } else if (!usb->device && !usb->vendor && !usb->product) {
-                if (usb->bus == 2 && STREQ(usb->port, "3")) {
-                    usb->device = 4;
-                } else {
-                    g_assert_not_reached();
-                }
-            }
-        }
-    }
+    testQemuPrepareHostdev(vm);
 
     if (flags & FLAG_SLIRP_HELPER) {
         for (i = 0; i < vm->def->nnets; i++) {
