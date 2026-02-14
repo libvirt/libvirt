@@ -108,6 +108,7 @@ struct _virDomainCapsDeviceHostdev {
     virDomainCapsEnum subsysType;       /* Info about virDomainHostdevSubsysType */
     virDomainCapsEnum capsType;         /* Info about virDomainHostdevCapsType */
     virDomainCapsEnum pciBackend;       /* Info about virDomainHostdevSubsysPCIBackendType */
+    virDomainCapsEnum iommufd;          /* Info about iommufd:virTristateBool */
     /* add new fields here */
 };
 

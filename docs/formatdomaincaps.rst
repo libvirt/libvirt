@@ -461,6 +461,10 @@ Well, only if the following is enabled:
            <value>vfio</value>
            <value>xen</value>
          </enum>
+         <enum name='iommufd'>
+           <value>yes</value>
+           <value>no</value>
+         </enum>
        </hostdev>
      </devices>
    </domainCapabilities>
@@ -477,6 +481,9 @@ Well, only if the following is enabled:
    ``mode="capabilities"``.
 ``pciBackend``
    Options for the ``name`` attribute of the <driver/> element.
+``iommufd``
+   Options for the ``iommufd`` attribute of the <driver/> element.
+   :since:`Since 12.1.0`
 
 RNG device
 ^^^^^^^^^^
