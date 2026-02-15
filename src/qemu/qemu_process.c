@@ -7685,7 +7685,7 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
  *
  * Returns: 0 on success, -1 on failure
  */
-static int
+int
 qemuProcessOpenIommuFd(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -7709,7 +7709,7 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
  *
  * Returns: 0 on success, -1 on failure
  */
-static int
+int
 qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 {
     qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);

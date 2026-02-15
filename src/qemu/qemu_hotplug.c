@@ -1553,13 +1553,16 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
                                { .hostdev = hostdev } };
     virDomainDeviceInfo *info = hostdev->info;
+    qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
     int ret;
     g_autoptr(virJSONValue) devprops = NULL;
+    g_autoptr(virJSONValue) objprops = NULL;
     bool releaseaddr = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
     bool teardownmemlock = false;
+    bool removeiommufd = false;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int flags = 0;
 
@@ -1609,10 +1612,37 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         goto error;
     }
 
+    if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+        if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
+            goto error;
+
+        if (!priv->iommufdState) {
+            if (qemuProcessOpenIommuFd(vm) < 0)
+                goto error;
+
+            if (!(objprops = qemuBuildIOMMUFDProps(priv->iommufd)))
+                goto error;
+        }
+    }
+
     if (!(devprops = qemuBuildPCIHostdevDevProps(vm->def, hostdev)))
         goto error;
 
     qemuDomainObjEnterMonitor(vm);
+
+    if (objprops) {
+        if ((ret = qemuFDPassDirectTransferMonitor(priv->iommufd, priv->mon)) < 0)
+            goto exit_monitor;
+
+        if ((ret = qemuMonitorAddObject(priv->mon, &objprops, NULL)) < 0)
+            goto exit_monitor;
+
+        priv->iommufdState = true;
+        removeiommufd = true;
+    }
+
+    if ((ret = qemuFDPassDirectTransferMonitor(hostdevPriv->vfioDeviceFd, priv->mon)) < 0)
+        goto exit_monitor;
 
     if ((ret = qemuDomainAttachExtensionDevice(priv->mon, hostdev->info)) < 0)
         goto exit_monitor;
@@ -1643,6 +1673,15 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         VIR_WARN("Unable to remove host device from /dev");
     if (teardownmemlock && qemuDomainAdjustMaxMemLock(vm) < 0)
         VIR_WARN("Unable to reset maximum locked memory on hotplug fail");
+
+    if (removeiommufd) {
+        qemuDomainObjEnterMonitor(vm);
+        ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
+        qemuDomainObjExitMonitor(vm);
+    }
+
+    qemuFDPassDirectTransferMonitorRollback(hostdevPriv->vfioDeviceFd, priv->mon);
+    qemuFDPassDirectTransferMonitorRollback(priv->iommufd, priv->mon);
 
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, info);

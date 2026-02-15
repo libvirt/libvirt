@@ -134,6 +134,9 @@ int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
                                                 virDomainDeviceDef *dev)
     ATTRIBUTE_MOCKABLE;
 
+int qemuProcessOpenIommuFd(virDomainObj *vm);
+
+int qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev);
 
 int qemuProcessPrepareHost(virQEMUDriver *driver,
                            virDomainObj *vm,
