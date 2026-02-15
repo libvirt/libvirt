@@ -5356,43 +5356,25 @@ qemuBuildIOMMUFDCommandLine(virCommand *cmd,
                             const virDomainDef *def,
                             virDomainObj *vm)
 {
-    size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *fdstr = g_strdup_printf("%d", priv->iommufd);
+    g_autoptr(virJSONValue) props = NULL;
 
+    if (!virDomainDefHasPCIHostdevWithIOMMUFD(def))
+        return 0;
 
-    for (i = 0; i < def->nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = def->hostdevs[i];
-        virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
-        g_autoptr(virJSONValue) props = NULL;
+    virCommandPassFD(cmd, priv->iommufd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-            continue;
+    priv->iommufd = -1;
 
-        if (subsys->type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
-            continue;
+    if (qemuMonitorCreateObjectProps(&props, "iommufd",
+                                     "iommufd0",
+                                     "S:fd", fdstr,
+                                     NULL) < 0)
+        return -1;
 
-        if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
-            continue;
-
-        if (subsys->u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES)
-            continue;
-
-        virCommandPassFD(cmd, priv->iommufd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-
-        priv->iommufd = -1;
-
-        if (qemuMonitorCreateObjectProps(&props, "iommufd",
-                                         "iommufd0",
-                                         "S:fd", fdstr,
-                                         NULL) < 0)
-            return -1;
-
-        if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
-            return -1;
-
-        break;
-    }
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
+        return -1;
 
     return 0;
 }

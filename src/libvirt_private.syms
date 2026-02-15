@@ -348,6 +348,7 @@ virDomainDefHasNVMeDisk;
 virDomainDefHasOldStyleROUEFI;
 virDomainDefHasOldStyleUEFI;
 virDomainDefHasPCIHostdev;
+virDomainDefHasPCIHostdevWithIOMMUFD;
 virDomainDefHasTimer;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
