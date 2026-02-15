@@ -4762,10 +4762,11 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysPCI *pcisrc = &dev->source.subsys.u.pci;
     virDomainNetTeamingInfo *teaming;
-    g_autofree char *host = virPCIDeviceAddressAsString(&pcisrc->addr);
+    g_autofree char *host = NULL;
     const char *failover_pair_id = NULL;
     const char *driver = NULL;
     const char *iommufdId = NULL;
+    const char *fdstr = NULL;
     /* 'ramfb' property must be omitted unless it's to be enabled */
     bool ramfb = pcisrc->ramfb == VIR_TRISTATE_SWITCH_ON;
 
@@ -4799,30 +4800,27 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
         teaming->persistent)
         failover_pair_id = teaming->persistent;
 
-    if (pcisrc->driver.iommufd == VIR_TRISTATE_BOOL_YES)
+    if (virHostdevIsPCIDeviceWithIOMMUFD(dev)) {
+        qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(dev);
+
+        fdstr = qemuFDPassDirectGetPath(hostdevPriv->vfioDeviceFd);
         iommufdId = "iommufd0";
+    } else {
+        host = virPCIDeviceAddressAsString(&pcisrc->addr);
+    }
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", driver,
-                              "s:host", host,
+                              "S:host", host,
                               "s:id", dev->info->alias,
                               "p:bootindex", dev->info->effectiveBootIndex,
                               "S:failover_pair_id", failover_pair_id,
                               "S:display", qemuOnOffAuto(pcisrc->display),
                               "B:ramfb", ramfb,
                               "S:iommufd", iommufdId,
+                              "S:fd", fdstr,
                               NULL) < 0)
         return NULL;
-
-    if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
-        pcisrc->driver.iommufd == VIR_TRISTATE_BOOL_YES) {
-        qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(dev);
-
-        if (virJSONValueObjectAdd(&props,
-                                  "S:fd", qemuFDPassDirectGetPath(hostdevPriv->vfioDeviceFd),
-                                  NULL) < 0)
-            return NULL;
-    }
 
     if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
         return NULL;

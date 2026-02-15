@@ -27,6 +27,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 -boot strict=on \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -object '{"qom-type":"iommufd","id":"iommufd0","fd":"0"}' \
--device '{"driver":"vfio-pci","host":"0000:06:12.5","id":"hostdev0","iommufd":"iommufd0","fd":"0","bus":"pcie.0","addr":"0x1"}' \
+-device '{"driver":"vfio-pci","id":"hostdev0","iommufd":"iommufd0","fd":"0","bus":"pcie.0","addr":"0x1"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

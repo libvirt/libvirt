@@ -36,6 +36,6 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \
 -object '{"qom-type":"iommufd","id":"iommufd0","fd":"0"}' \
--device '{"driver":"vfio-pci","host":"0000:06:12.5","id":"hostdev0","iommufd":"iommufd0","fd":"0","bus":"pcie.0","addr":"0x3"}' \
+-device '{"driver":"vfio-pci","id":"hostdev0","iommufd":"iommufd0","fd":"0","bus":"pcie.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
