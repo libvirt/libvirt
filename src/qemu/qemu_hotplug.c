@@ -4997,6 +4997,14 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
         }
     }
 
+    if (priv->iommufdState &&
+        !virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
+        qemuDomainObjEnterMonitor(vm);
+        ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
+        qemuDomainObjExitMonitor(vm);
+        priv->iommufdState = false;
+    }
+
     virDomainAuditHostdev(vm, hostdev, "detach", true);
 
     if (!virHostdevIsPCIDevice(hostdev) &&
