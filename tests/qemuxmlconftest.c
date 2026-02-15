@@ -357,8 +357,10 @@ testQemuPrepareHostdevPCI(virDomainHostdevDef *hostdev)
     qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
     if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+        g_autofree char *name = g_strdup_printf("hostdev-%s-fd", hostdev->info->alias);
         /* Use a placeholder FD value for tests */
-        hostdevPriv->vfioDeviceFd = 0;
+        int vfioDeviceFD = 0;
+        hostdevPriv->vfioDeviceFd = qemuFDPassDirectNew(name, &vfioDeviceFD);
     }
 }
 

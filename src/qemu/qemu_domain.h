@@ -463,7 +463,7 @@ struct _qemuDomainHostdevPrivate {
     virObject parent;
 
     /* VFIO device file descriptor for iommufd passthrough */
-    int vfioDeviceFd;
+    qemuFDPassDirect *vfioDeviceFd;
 };
 
 

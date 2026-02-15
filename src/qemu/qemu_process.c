@@ -7714,9 +7714,13 @@ qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 {
     qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
     virDomainHostdevSubsysPCI *pci = &hostdev->source.subsys.u.pci;
+    g_autofree char *name = g_strdup_printf("hostdev-%s-fd", hostdev->info->alias);
+    int vfioDeviceFd;
 
-    if ((hostdevPriv->vfioDeviceFd = virPCIDeviceOpenVfioFd(&pci->addr)) < 0)
+    if ((vfioDeviceFd = virPCIDeviceOpenVfioFd(&pci->addr)) < 0)
         return -1;
+
+    hostdevPriv->vfioDeviceFd = qemuFDPassDirectNew(name, &vfioDeviceFd);
 
     return 0;
 }

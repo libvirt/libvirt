@@ -4818,12 +4818,10 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
         pcisrc->driver.iommufd == VIR_TRISTATE_BOOL_YES) {
         qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(dev);
 
-        if (hostdevPriv->vfioDeviceFd != -1) {
-            g_autofree char *fdstr = g_strdup_printf("%d", hostdevPriv->vfioDeviceFd);
-            if (virJSONValueObjectAdd(&props, "S:fd", fdstr, NULL) < 0)
-                return NULL;
-            hostdevPriv->vfioDeviceFd = -1;
-        }
+        if (virJSONValueObjectAdd(&props,
+                                  "S:fd", qemuFDPassDirectGetPath(hostdevPriv->vfioDeviceFd),
+                                  NULL) < 0)
+            return NULL;
     }
 
     if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
@@ -5273,10 +5271,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
             if (subsys->u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
                 qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
-                if (hostdevPriv->vfioDeviceFd != -1) {
-                    virCommandPassFD(cmd, hostdevPriv->vfioDeviceFd,
-                                     VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-                }
+                qemuFDPassDirectTransferCommand(hostdevPriv->vfioDeviceFd, cmd);
             }
 
             if (!(devprops = qemuBuildPCIHostdevDevProps(def, hostdev)))

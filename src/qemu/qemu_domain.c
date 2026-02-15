@@ -1245,7 +1245,7 @@ qemuDomainHostdevPrivateDispose(void *obj)
 {
     qemuDomainHostdevPrivate *priv = obj;
 
-    VIR_FORCE_CLOSE(priv->vfioDeviceFd);
+    g_clear_pointer(&priv->vfioDeviceFd, qemuFDPassDirectFree);
 }
 
 
@@ -1271,7 +1271,7 @@ qemuDomainHostdevPrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainHostdevPrivateClass)))
         return NULL;
 
-    priv->vfioDeviceFd = -1;
+    priv->vfioDeviceFd = NULL;
 
     return (virObject *) priv;
 }
