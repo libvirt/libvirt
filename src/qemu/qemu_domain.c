@@ -1975,7 +1975,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->migrationRecoverSetup = false;
 
-    VIR_FORCE_CLOSE(priv->iommufd);
+    g_clear_pointer(&priv->iommufd, qemuFDPassDirectFree);
 
     g_clear_pointer(&priv->memoryBackingDir, g_free);
 }
@@ -2044,7 +2044,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     priv->blockjobs = virHashNew(virObjectUnref);
     priv->fds = virHashNew(g_object_unref);
 
-    priv->iommufd = -1;
+    priv->iommufd = NULL;
     priv->pidMonitored = -1;
 
     /* agent commands block by default, user can choose different behavior */

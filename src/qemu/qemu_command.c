@@ -5357,19 +5357,16 @@ qemuBuildIOMMUFDCommandLine(virCommand *cmd,
                             virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autofree char *fdstr = g_strdup_printf("%d", priv->iommufd);
     g_autoptr(virJSONValue) props = NULL;
 
     if (!virDomainDefHasPCIHostdevWithIOMMUFD(def))
         return 0;
 
-    virCommandPassFD(cmd, priv->iommufd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-
-    priv->iommufd = -1;
+    qemuFDPassDirectTransferCommand(priv->iommufd, cmd);
 
     if (qemuMonitorCreateObjectProps(&props, "iommufd",
                                      "iommufd0",
-                                     "S:fd", fdstr,
+                                     "S:fd", qemuFDPassDirectGetPath(priv->iommufd),
                                      NULL) < 0)
         return -1;
 

@@ -7689,13 +7689,15 @@ static int
 qemuProcessOpenIommuFd(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    int iommufd;
 
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
-    if ((priv->iommufd = virIOMMUFDOpenDevice()) < 0)
+    if ((iommufd = virIOMMUFDOpenDevice()) < 0)
         return -1;
 
-    VIR_DEBUG("Opened IOMMU FD %d for domain %s", priv->iommufd, vm->def->name);
+    priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
+
     return 0;
 }
 

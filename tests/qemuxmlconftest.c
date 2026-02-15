@@ -412,8 +412,10 @@ testQemuPrepareHostdev(virDomainObj *vm)
         }
     }
 
-    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def))
-        priv->iommufd = 0;
+    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
+        int iommufd = 0;
+        priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
+    }
 }
 
 
