@@ -7680,24 +7680,23 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
 /**
  * qemuProcessOpenIommuFd:
  * @vm: domain object
- * @iommuFd: returned file descriptor
  *
  * Opens /dev/iommu file descriptor for the VM.
  *
- * Returns: FD on success, -1 on failure
+ * Returns: 0 on success, -1 on failure
  */
 static int
 qemuProcessOpenIommuFd(virDomainObj *vm)
 {
-    int fd = -1;
+    qemuDomainObjPrivate *priv = vm->privateData;
 
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
-    if ((fd = virIOMMUFDOpenDevice()) < 0)
+    if ((priv->iommufd = virIOMMUFDOpenDevice()) < 0)
         return -1;
 
-    VIR_DEBUG("Opened IOMMU FD %d for domain %s", fd, vm->def->name);
-    return fd;
+    VIR_DEBUG("Opened IOMMU FD %d for domain %s", priv->iommufd, vm->def->name);
+    return 0;
 }
 
 /**
@@ -7754,7 +7753,6 @@ qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 static int
 qemuProcessOpenVfioFds(virDomainObj *vm)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
 
     /* Check if we have any hostdevs that need VFIO FDs */
@@ -7772,8 +7770,7 @@ qemuProcessOpenVfioFds(virDomainObj *vm)
                  return -1;
 
             /* Open IOMMU FD */
-            priv->iommufd = qemuProcessOpenIommuFd(vm);
-            if (priv->iommufd == -1)
+            if (qemuProcessOpenIommuFd(vm) < 0)
                 return -1;
         }
     }
