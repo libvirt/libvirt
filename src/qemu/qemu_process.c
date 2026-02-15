@@ -7711,9 +7711,6 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
 static int
 qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 {
-    g_autofree char *vfioPath = NULL;
-    int fd = -1;
-
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -7721,25 +7718,7 @@ qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
         return -1;
     }
 
-    if (virPCIDeviceGetVfioPath(&hostdev->source.subsys.u.pci.addr, &vfioPath) < 0)
-        return -1;
-
-    VIR_DEBUG("Opening VFIO device %s", vfioPath);
-
-    if ((fd = open(vfioPath, O_RDWR | O_CLOEXEC)) < 0) {
-        if (errno == ENOENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("VFIO device %1$s not found - ensure device is bound to vfio-pci driver"),
-                           vfioPath);
-        } else {
-            virReportSystemError(errno,
-                                 _("cannot open VFIO device %1$s"), vfioPath);
-        }
-        return -1;
-    }
-
-    VIR_DEBUG("Opened VFIO device FD %d for %s", fd, vfioPath);
-    return fd;
+    return virPCIDeviceOpenVfioFd(&hostdev->source.subsys.u.pci.addr);
 }
 
 /**

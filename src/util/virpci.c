@@ -3359,3 +3359,31 @@ virPCIDeviceGetVfioPath(virPCIDeviceAddress *addr,
                    addrStr);
     return -1;
 }
+
+/**
+ * virPCIDeviceOpenVfioFd:
+ * @addr:
+ *
+ * Opens VFIO device and returns its FD.
+ *
+ * Returns: FD on success, -1 on failure
+ */
+int
+virPCIDeviceOpenVfioFd(virPCIDeviceAddress *addr)
+{
+    g_autofree char *vfioPath = NULL;
+    int fd = -1;
+
+    if (virPCIDeviceGetVfioPath(addr, &vfioPath) < 0)
+        return -1;
+
+    VIR_DEBUG("Opening VFIO device %s", vfioPath);
+
+    if ((fd = open(vfioPath, O_RDWR | O_CLOEXEC)) < 0) {
+        virReportSystemError(errno, _("cannot open VFIO device %1$s"), vfioPath);
+        return -1;
+    }
+
+    VIR_DEBUG("Opened VFIO device FD %d for %s", fd, vfioPath);
+    return fd;
+}

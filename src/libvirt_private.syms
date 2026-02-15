@@ -3175,6 +3175,7 @@ virPCIDeviceListNew;
 virPCIDeviceListSteal;
 virPCIDeviceListStealIndex;
 virPCIDeviceNew;
+virPCIDeviceOpenVfioFd;
 virPCIDeviceReattach;
 virPCIDeviceRebind;
 virPCIDeviceReset;
