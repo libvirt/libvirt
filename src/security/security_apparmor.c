@@ -860,7 +860,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
-                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
                     goto done;
 
                 ret = AppArmorSetSecurityPCILabel(pci, vfiofdDev, ptr);

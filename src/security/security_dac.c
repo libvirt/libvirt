@@ -1295,7 +1295,7 @@ virSecurityDACSetHostdevLabel(virSecurityManager *mgr,
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
-                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
                     return -1;
 
                 ret = virSecurityDACSetHostdevLabelHelper(vfiofdDev, false, &cbdata);
@@ -1468,7 +1468,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManager *mgr,
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
-                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
                     return -1;
 
                 ret = virSecurityDACRestoreFileLabelInternal(mgr, NULL,

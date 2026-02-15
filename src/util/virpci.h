@@ -296,7 +296,7 @@ void virPCIEDeviceInfoFree(virPCIEDeviceInfo *dev);
 
 void virPCIDeviceAddressFree(virPCIDeviceAddress *address);
 
-int virPCIDeviceGetVfioPath(virPCIDeviceAddress *addr, char **vfioPath);
+int virPCIDeviceGetVfioPath(virPCIDevice *pci, char **vfioPath);
 
 int virPCIDeviceOpenVfioFd(virPCIDeviceAddress *addr);
 

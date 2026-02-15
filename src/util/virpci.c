@@ -3331,19 +3331,17 @@ virPCIDeviceAddressFree(virPCIDeviceAddress *address)
  * Returns: 0 on success, -1 on failure
  */
 int
-virPCIDeviceGetVfioPath(virPCIDeviceAddress *addr,
+virPCIDeviceGetVfioPath(virPCIDevice *pci,
                         char **vfioPath)
 {
-    g_autofree char *addrStr = NULL;
     g_autofree char *sysfsPath = NULL;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry = NULL;
 
     *vfioPath = NULL;
-    addrStr = virPCIDeviceAddressAsString(addr);
 
     /* Look in device's vfio-dev subdirectory */
-    sysfsPath = g_strdup_printf("/sys/bus/pci/devices/%s/vfio-dev/", addrStr);
+    sysfsPath = virPCIFile(pci->name, "vfio-dev");
 
     if (virDirOpen(&dir, sysfsPath) == 1) {
         while (virDirRead(dir, &entry, sysfsPath) > 0) {
@@ -3356,7 +3354,7 @@ virPCIDeviceGetVfioPath(virPCIDeviceAddress *addr,
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("cannot find VFIO device for PCI device %1$s"),
-                   addrStr);
+                   pci->name);
     return -1;
 }
 
@@ -3371,10 +3369,14 @@ virPCIDeviceGetVfioPath(virPCIDeviceAddress *addr,
 int
 virPCIDeviceOpenVfioFd(virPCIDeviceAddress *addr)
 {
+    g_autoptr(virPCIDevice) pci = NULL;
     g_autofree char *vfioPath = NULL;
     int fd = -1;
 
-    if (virPCIDeviceGetVfioPath(addr, &vfioPath) < 0)
+    if (!(pci = virPCIDeviceNew(addr)))
+        return -1;
+
+    if (virPCIDeviceGetVfioPath(pci, &vfioPath) < 0)
         return -1;
 
     VIR_DEBUG("Opening VFIO device %s", vfioPath);

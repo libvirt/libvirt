@@ -2269,7 +2269,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManager *mgr,
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
-                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
                     return -1;
 
                 ret = virSecuritySELinuxSetHostdevLabelHelper(vfiofdDev, false, &data);
@@ -2515,7 +2515,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManager *mgr,
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
-                if (virPCIDeviceGetVfioPath(&dev->source.subsys.u.pci.addr, &vfiofdDev) < 0)
+                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
                     return -1;
 
                 ret = virSecuritySELinuxRestoreFileLabel(mgr, vfiofdDev, false, false);
