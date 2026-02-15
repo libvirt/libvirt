@@ -7719,27 +7719,28 @@ qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
     return 0;
 }
 
-/**
- * qemuProcessOpenVfioFds:
- * @vm: domain object
- *
- * Opens all necessary VFIO file descriptors for the domain.
- *
- * Returns: 0 on success, -1 on failure
- */
 static int
-qemuProcessOpenVfioFds(virDomainObj *vm)
+qemuProcessPrepareHostHostdev(virDomainObj *vm)
 {
     size_t i;
 
-    /* Check if we have any hostdevs that need VFIO FDs */
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
 
-        if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
-            /* Open VFIO device FD */
-            if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
-                return -1;
+        switch (hostdev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+                /* Open VFIO device FD */
+                if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
+                    return -1;
+            }
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
         }
     }
 
@@ -7807,7 +7808,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         hostdev_flags |= VIR_HOSTDEV_COLD_BOOT;
     if (qemuHostdevPrepareDomainDevices(driver, vm->def, hostdev_flags) < 0)
         return -1;
-    if (qemuProcessOpenVfioFds(vm) < 0)
+    if (qemuProcessPrepareHostHostdev(vm) < 0)
         return -1;
 
     VIR_DEBUG("Preparing chr device backends");
