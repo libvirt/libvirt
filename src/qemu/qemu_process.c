@@ -7702,23 +7702,21 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
 /**
  * qemuProcessOpenVfioDeviceFd:
  * @hostdev: host device definition
- * @vfioFd: returned file descriptor
  *
  * Opens the VFIO device file descriptor for a hostdev.
  *
- * Returns: FD on success, -1 on failure
+ * Returns: 0 on success, -1 on failure
  */
 static int
 qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
 {
-    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("VFIO FD only supported for PCI hostdevs"));
-        return -1;
-    }
+    qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
+    virDomainHostdevSubsysPCI *pci = &hostdev->source.subsys.u.pci;
 
-    return virPCIDeviceOpenVfioFd(&hostdev->source.subsys.u.pci.addr);
+    if ((hostdevPriv->vfioDeviceFd = virPCIDeviceOpenVfioFd(&pci->addr)) < 0)
+        return -1;
+
+    return 0;
 }
 
 /**
@@ -7737,16 +7735,14 @@ qemuProcessOpenVfioFds(virDomainObj *vm)
     /* Check if we have any hostdevs that need VFIO FDs */
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
-        qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
         if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
             hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
             hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
             hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
             /* Open VFIO device FD */
-            hostdevPriv->vfioDeviceFd = qemuProcessOpenVfioDeviceFd(hostdev);
-            if (hostdevPriv->vfioDeviceFd == -1)
-                 return -1;
+            if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
+                return -1;
 
             /* Open IOMMU FD */
             if (qemuProcessOpenIommuFd(vm) < 0)
