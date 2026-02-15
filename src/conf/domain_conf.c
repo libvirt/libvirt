@@ -32939,6 +32939,21 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 }
 
 
+/**
+ * virHostdevIsPCIDeviceWithIOMMUFD:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a PCI device with IOMMUFD enabled, false otherwise.
+ */
+bool
+virHostdevIsPCIDeviceWithIOMMUFD(const virDomainHostdevDef *hostdev)
+{
+    return virHostdevIsPCIDevice(hostdev) &&
+        hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
+        hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES;
+}
+
+
 static void
 virDomainObjGetMessagesIOErrorsSrc(virStorageSource *src,
                                    const char *diskdst,

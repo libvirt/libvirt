@@ -7736,10 +7736,7 @@ qemuProcessOpenVfioFds(virDomainObj *vm)
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
 
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-            hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
-            hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
+        if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
             /* Open VFIO device FD */
             if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
                 return -1;
