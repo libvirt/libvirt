@@ -5344,6 +5344,21 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
 }
 
 
+virJSONValue *
+qemuBuildIOMMUFDProps(qemuFDPassDirect *iommufd)
+{
+    g_autoptr(virJSONValue) props = NULL;
+
+    if (qemuMonitorCreateObjectProps(&props, "iommufd",
+                                     "iommufd0",
+                                     "S:fd", qemuFDPassDirectGetPath(iommufd),
+                                     NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
+}
+
+
 static int
 qemuBuildIOMMUFDCommandLine(virCommand *cmd,
                             const virDomainDef *def,
@@ -5357,10 +5372,7 @@ qemuBuildIOMMUFDCommandLine(virCommand *cmd,
 
     qemuFDPassDirectTransferCommand(priv->iommufd, cmd);
 
-    if (qemuMonitorCreateObjectProps(&props, "iommufd",
-                                     "iommufd0",
-                                     "S:fd", qemuFDPassDirectGetPath(priv->iommufd),
-                                     NULL) < 0)
+    if (!(props = qemuBuildIOMMUFDProps(priv->iommufd)))
         return -1;
 
     if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)

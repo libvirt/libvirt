@@ -190,6 +190,9 @@ int
 qemuBuildRNGBackendProps(virDomainRNGDef *rng,
                          virJSONValue **props);
 
+virJSONValue *
+qemuBuildIOMMUFDProps(qemuFDPassDirect *iommufd);
+
 /* Current, best practice */
 virJSONValue *
 qemuBuildUSBHostdevDevProps(const virDomainDef *def,
