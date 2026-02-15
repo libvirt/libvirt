@@ -7693,15 +7693,8 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
 
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
-    if ((fd = open(VIR_IOMMU_DEV_PATH, O_RDWR | O_CLOEXEC)) < 0) {
-        virReportSystemError(errno, "%s", _("cannot open /dev/iommu"));
+    if ((fd = virIOMMUFDOpenDevice()) < 0)
         return -1;
-    }
-
-    if (virIOMMUFDSetRLimitMode(fd, true) < 0) {
-        VIR_FORCE_CLOSE(fd);
-        return -1;
-    }
 
     VIR_DEBUG("Opened IOMMU FD %d for domain %s", fd, vm->def->name);
     return fd;

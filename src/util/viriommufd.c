@@ -1,5 +1,7 @@
 #include <config.h>
 
+#include <fcntl.h>
+
 #include "viriommufd.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -54,7 +56,7 @@ struct iommu_option {
  *
  * Returns: 0 on success, -1 on error
  */
-int
+static int
 virIOMMUFDSetRLimitMode(int fd, bool processAccounting)
 {
     struct iommu_option option = {
@@ -77,10 +79,24 @@ virIOMMUFDSetRLimitMode(int fd, bool processAccounting)
     return 0;
 }
 
+int
+virIOMMUFDOpenDevice(void)
+{
+    int fd = -1;
+
+    if ((fd = open(VIR_IOMMU_DEV_PATH, O_RDWR | O_CLOEXEC)) < 0)
+        virReportSystemError(errno, "%s", _("cannot open IOMMUFD device"));
+
+    if (virIOMMUFDSetRLimitMode(fd, true) < 0)
+        return -1;
+
+    return fd;
+}
+
 #else
 
-int virIOMMUFDSetRLimitMode(int fd G_GNUC_UNUSED,
-                            bool processAccounting G_GNUC_UNUSED)
+int
+virIOMMUFDOpenDevice(void)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("IOMMUFD is not supported on this platform"));

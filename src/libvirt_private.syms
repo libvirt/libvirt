@@ -2648,7 +2648,7 @@ virInitctlFifos;
 virInitctlSetRunLevel;
 
 # util/viriommufd.h
-virIOMMUFDSetRLimitMode;
+virIOMMUFDOpenDevice;
 virIOMMUFDSupported;
 
 # util/viriscsi.h
