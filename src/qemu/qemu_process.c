@@ -7740,11 +7740,13 @@ qemuProcessOpenVfioFds(virDomainObj *vm)
             /* Open VFIO device FD */
             if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
                 return -1;
-
-            /* Open IOMMU FD */
-            if (qemuProcessOpenIommuFd(vm) < 0)
-                return -1;
         }
+    }
+
+    /* Open IOMMU FD */
+    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def) &&
+        qemuProcessOpenIommuFd(vm) < 0) {
+        return -1;
     }
 
     return 0;
