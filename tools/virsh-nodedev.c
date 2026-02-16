@@ -1245,7 +1245,7 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
     vshPrint(ctl, "%-15s %s\n", _("Persistent:"),
              virNodeDeviceIsPersistent(device) ? _("yes") : _("no"));
     if (virNodeDeviceGetAutostart(device, &autostart) < 0)
-        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("unknown"));
     else
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
 

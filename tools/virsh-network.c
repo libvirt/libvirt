@@ -715,7 +715,7 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Persistent:"), persistent ? _("yes") : _("no"));
 
     if (virNetworkGetAutostart(network, &autostart) < 0)
-        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+        vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("unknown"));
     else
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
 
@@ -1055,7 +1055,7 @@ cmdNetworkList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
         if (optTable) {
             if (virNetworkGetAutostart(network, &is_autostart) < 0)
-                autostartStr = _("no autostart");
+                autostartStr = _("unknown");
             else
                 autostartStr = is_autostart ? _("yes") : _("no");
 

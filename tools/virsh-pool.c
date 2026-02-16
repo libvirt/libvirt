@@ -1204,7 +1204,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
         /* Retrieve the autostart status of the pool */
         if (virStoragePoolGetAutostart(list->pools[i], &autostart) < 0)
-            poolInfoTexts[i].autostart = g_strdup(_("no autostart"));
+            poolInfoTexts[i].autostart = g_strdup(_("unknown"));
         else
             poolInfoTexts[i].autostart = g_strdup(autostart ? _("yes") : _("no"));
 
@@ -1554,7 +1554,7 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         /* Check and display whether the pool is autostarted or not */
         if (virStoragePoolGetAutostart(pool, &autostart) < 0)
-            vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("no autostart"));
+            vshPrint(ctl, "%-15s %s\n", _("Autostart:"), _("unknown"));
         else
             vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
 
