@@ -141,7 +141,7 @@ unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
 unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_MOCKABLE;
 
-bool virHostHasIOMMU(void);
+bool virHostHasIOMMU(void) ATTRIBUTE_MOCKABLE;
 
 char *virHostGetDRMRenderNode(void) ATTRIBUTE_MOCKABLE;
 

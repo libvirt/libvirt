@@ -21,6 +21,7 @@
 #include "virhostmem.h"
 #include "viriommufd.h"
 #include "virmock.h"
+#include "virutil.h"
 
 #if WITH_QEMU
 # include "qemu/qemu_capabilities.h"
@@ -91,5 +92,14 @@ virFileExists(const char *path)
     if (STREQ(path, VIR_IOMMU_DEV_PATH))
         return true;
 
+    if (STREQ(path, "/dev/vfio/vfio"))
+        return true;
+
     return real_virFileExists(path);
+}
+
+bool
+virHostHasIOMMU(void)
+{
+    return true;
 }

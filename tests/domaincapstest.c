@@ -104,14 +104,6 @@ fillQemuCaps(virDomainCaps *domCaps,
                                   false) < 0)
         return -1;
 
-    /* The function above tries to query host's VFIO capabilities by calling
-     * virHostdevHostSupportsPassthroughVFIO() which, however, can't be
-     * successfully mocked as they are not exposed as internal APIs. Therefore,
-     * instead of mocking set the expected values here by hand. */
-    VIR_DOMAIN_CAPS_ENUM_SET(domCaps->hostdev.pciBackend,
-                             VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT,
-                             VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO);
-
     /* As of f05b6a918e28 we are expecting to see OVMF_CODE.fd file which
      * may not exists everywhere. */
     while (loader->values.nvalues)
