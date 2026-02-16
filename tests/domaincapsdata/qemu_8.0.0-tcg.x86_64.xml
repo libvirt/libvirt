@@ -1636,6 +1636,9 @@
         <value>default</value>
         <value>vfio</value>
       </enum>
+      <enum name='iommufd'>
+        <value>no</value>
+      </enum>
     </hostdev>
     <rng supported='yes'>
       <enum name='model'>

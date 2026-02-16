@@ -45,6 +45,7 @@
 #include "qemu_firmware.h"
 #include "virutil.h"
 #include "virtpm.h"
+#include "viriommufd.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -6779,6 +6780,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCaps *qemuCaps,
     hostdev->subsysType.report = true;
     hostdev->capsType.report = true;
     hostdev->pciBackend.report = true;
+    hostdev->iommufd.report = true;
 
     /* VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES is for containers only */
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->mode,
@@ -6810,11 +6812,20 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCaps *qemuCaps,
     virDomainCapsEnumClear(&hostdev->capsType);
 
     virDomainCapsEnumClear(&hostdev->pciBackend);
-    if (supportsPassthroughVFIO &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
-        VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
-                                 VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT,
-                                 VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(hostdev->iommufd, VIR_TRISTATE_BOOL_NO);
+
+    if (supportsPassthroughVFIO) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
+                                     VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT,
+                                     VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO);
+        }
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOMMUFD) &&
+            virIOMMUFDSupported()) {
+            VIR_DOMAIN_CAPS_ENUM_SET(hostdev->iommufd, VIR_TRISTATE_BOOL_YES);
+        }
     }
 }
 
