@@ -11041,11 +11041,12 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
                                         VIRSH_BYNAME|VIRSH_BYID)))
         return false;
 
-    if (virDomainGetUUIDString(dom, uuid) != -1)
-        vshPrint(ctl, "%s\n", uuid);
-    else
+    if (virDomainGetUUIDString(dom, uuid) == -1) {
         vshError(ctl, "%s", _("failed to get domain UUID"));
+        return false;
+    }
 
+    vshPrint(ctl, "%s\n", uuid);
     return true;
 }
 

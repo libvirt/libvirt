@@ -1389,11 +1389,12 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
                                              VIRSH_BYNAME)))
         return false;
 
-    if (virNetworkGetUUIDString(network, uuid) != -1)
-        vshPrint(ctl, "%s\n", uuid);
-    else
+    if (virNetworkGetUUIDString(network, uuid) == -1) {
         vshError(ctl, "%s", _("failed to get network UUID"));
+        return false;
+    }
 
+    vshPrint(ctl, "%s\n", uuid);
     return true;
 }
 

@@ -1720,11 +1720,12 @@ cmdPoolUuid(vshControl *ctl, const vshCmd *cmd)
     if (!(pool = virshCommandOptPoolBy(ctl, cmd, "pool", NULL, VIRSH_BYNAME)))
         return false;
 
-    if (virStoragePoolGetUUIDString(pool, uuid) != -1)
-        vshPrint(ctl, "%s\n", uuid);
-    else
+    if (virStoragePoolGetUUIDString(pool, uuid) == -1) {
         vshError(ctl, "%s", _("failed to get pool UUID"));
+        return false;
+    }
 
+    vshPrint(ctl, "%s\n", uuid);
     return true;
 }
 
