@@ -124,7 +124,7 @@ for file in filelist:
         for idx in range(len(argbits)):
             arg = argbits[idx]
             isstr = False
-            if 'char *' in arg:
+            if re.match(r'''.*char\s\*[^\*].*''', arg) is not None:
                 isstr = True
 
             m = re.search(r'''^.*\s\*?(\S+)$''', arg)
