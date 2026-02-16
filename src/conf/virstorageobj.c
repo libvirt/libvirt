@@ -621,19 +621,44 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
     virStorageVolObj *volobj = NULL;
     virStorageVolObjList *volumes = obj->volumes;
 
-    virObjectRWLockWrite(volumes);
-
-    if (!voldef->key || !voldef->name || !voldef->target.path ||
-        g_hash_table_contains(volumes->objsKey, voldef->key) ||
-        g_hash_table_contains(volumes->objsName, voldef->name) ||
-        g_hash_table_contains(volumes->objsPath, voldef->target.path)) {
-        virObjectRWUnlock(volumes);
+    if (!voldef->key) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("volume is missing key"));
+        return -1;
+    }
+    if (!voldef->name) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("volume is missing name"));
+        return -1;
+    }
+    if (!voldef->target.path) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("volume is missing target path"));
         return -1;
     }
 
+    virObjectRWLockWrite(volumes);
+
+    if (g_hash_table_contains(volumes->objsKey, voldef->key)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("volume with key '%1$s' already exist"),
+                       voldef->key);
+        goto error;
+    }
+    if (g_hash_table_contains(volumes->objsName, voldef->name)) {
+        virReportError(VIR_ERR_STORAGE_VOL_EXIST,
+                       _("'%1$s'"), voldef->name);
+        goto error;
+    }
+    if (g_hash_table_contains(volumes->objsPath, voldef->target.path)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("volume with target path '%1$s' already exist"),
+                       voldef->target.path);
+        goto error;
+    }
+
     if (!(volobj = virStorageVolObjNew())) {
-        virObjectRWUnlock(volumes);
-        return -1;
+        goto error;
     }
 
     VIR_WITH_OBJECT_LOCK_GUARD(volobj) {
@@ -652,6 +677,10 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
     virObjectUnref(volobj);
     virObjectRWUnlock(volumes);
     return 0;
+
+ error:
+    virObjectRWUnlock(volumes);
+    return -1;
 }
 
 
