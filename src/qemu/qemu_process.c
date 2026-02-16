@@ -7694,13 +7694,7 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
     if ((fd = open(VIR_IOMMU_DEV_PATH, O_RDWR | O_CLOEXEC)) < 0) {
-        if (errno == ENOENT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("IOMMU FD support requires /dev/iommu device"));
-        } else {
-            virReportSystemError(errno, "%s",
-                                 _("cannot open /dev/iommu"));
-        }
+        virReportSystemError(errno, "%s", _("cannot open /dev/iommu"));
         return -1;
     }
 

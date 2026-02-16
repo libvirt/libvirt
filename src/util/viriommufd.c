@@ -88,3 +88,16 @@ int virIOMMUFDSetRLimitMode(int fd G_GNUC_UNUSED,
 }
 
 #endif
+
+/**
+ * virIOMMUFDSupported:
+ *
+ * Check the presence of IOMMU device.
+ *
+ * Retruns: true if it exists, false otherwise
+ */
+bool
+virIOMMUFDSupported(void)
+{
+    return virFileExists(VIR_IOMMU_DEV_PATH);
+}

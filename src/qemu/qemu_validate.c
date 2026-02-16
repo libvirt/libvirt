@@ -27,6 +27,7 @@
 #include "qemu_process.h"
 #include "domain_conf.h"
 #include "virbitmap.h"
+#include "viriommufd.h"
 #include "virlog.h"
 #include "virutil.h"
 
@@ -2727,6 +2728,12 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOMMUFD)) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("IOMMUFD is not supported by this version of qemu"));
+                        return -1;
+                    }
+
+                    if (!virIOMMUFDSupported()) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("IOMMUFD is not supported by host kernel"));
                         return -1;
                     }
                 }

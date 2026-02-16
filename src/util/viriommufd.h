@@ -23,3 +23,5 @@
 #define VIR_IOMMU_DEV_PATH "/dev/iommu"
 
 int virIOMMUFDSetRLimitMode(int fd, bool processAccounting);
+
+bool virIOMMUFDSupported(void);
