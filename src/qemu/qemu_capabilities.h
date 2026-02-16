@@ -734,6 +734,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 490 */
     QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR, /* persistent reservation migration support */
+    QEMU_CAPS_OBJECT_IOMMUFD, /* -object iommufd */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

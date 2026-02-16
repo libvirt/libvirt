@@ -208,6 +208,7 @@
   <flag name='usb-bot'/>
   <flag name='acpi-generic-initiator'/>
   <flag name='virtio-iommu.aw-bits'/>
+  <flag name='iommufd'/>
   <version>9002000</version>
   <microcodeVersion>43100247</microcodeVersion>
   <package>v9.2.0</package>

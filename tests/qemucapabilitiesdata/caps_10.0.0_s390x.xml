@@ -137,6 +137,7 @@
   <flag name='nvme-ns'/>
   <flag name='usb-bot'/>
   <flag name='virtio-iommu.aw-bits'/>
+  <flag name='iommufd'/>
   <version>10000000</version>
   <microcodeVersion>39100285</microcodeVersion>
   <package>v10.0.0</package>

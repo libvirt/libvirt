@@ -2722,6 +2722,14 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                    _("VFIO PCI device assignment is not supported by this version of qemu"));
                     return -1;
                 }
+
+                if (hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
+                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOMMUFD)) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("IOMMUFD is not supported by this version of qemu"));
+                        return -1;
+                    }
+                }
             }
 
             if (hostdev->writeFiltering != VIR_TRISTATE_BOOL_ABSENT) {

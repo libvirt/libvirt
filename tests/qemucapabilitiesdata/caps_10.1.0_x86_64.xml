@@ -215,6 +215,7 @@
   <flag name='qom-list-get'/>
   <flag name='acpi-generic-initiator'/>
   <flag name='virtio-iommu.aw-bits'/>
+  <flag name='iommufd'/>
   <version>10001000</version>
   <microcodeVersion>43100286</microcodeVersion>
   <package>v10.1.0</package>

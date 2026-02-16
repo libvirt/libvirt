@@ -759,6 +759,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 490 */
               "scsi-block.migrate-pr", /* QEMU_CAPS_DEVICE_SCSI_BLOCK_MIGRATE_PR */
+              "iommufd", /* QEMU_CAPS_OBJECT_IOMMUFD */
     );
 
 
@@ -1466,6 +1467,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "tpm-emulator", QEMU_CAPS_DEVICE_TPM_EMULATOR },
     { "tpm-passthrough", QEMU_CAPS_DEVICE_TPM_PASSTHROUGH },
     { "acpi-generic-initiator", QEMU_CAPS_ACPI_GENERIC_INITIATOR },
+    { "iommufd", QEMU_CAPS_OBJECT_IOMMUFD },
 };
 
 
