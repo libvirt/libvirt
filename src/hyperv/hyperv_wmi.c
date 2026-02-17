@@ -40,7 +40,7 @@
 #include "hyperv_wmi.h"
 #include "virstring.h"
 #include "virlog.h"
-#include "virxml.h"
+#include "virhash.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 

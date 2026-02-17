@@ -26,7 +26,6 @@
 #include "virbuffer.h"
 #include "hyperv_private.h"
 #include "hyperv_wmi_classes.h"
-#include "virhash.h"
 
 
 #define HYPERV_WQL_QUERY_INITIALIZER { NULL, NULL }
