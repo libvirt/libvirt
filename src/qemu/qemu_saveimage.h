@@ -95,7 +95,7 @@ qemuSaveImageOpen(virQEMUDriver *driver,
                   bool sparse,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(2);
 
 int
 qemuSaveImageGetCompressionProgram(virQEMUSaveFormat format,
