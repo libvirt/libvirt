@@ -5760,19 +5760,50 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
     return 0;
 }
 
+
+/**
+ * qemuDomainRestoreInternal:
+ * @conn: connection object
+ * @vmRestore: Domain object (optional; see below)
+ * @path: path to the save image file
+ * @unlink_corrupt: remove corrupted save image file @path
+ * @dxml: XML to replace definition in the save image (optional)
+ * @params: restore parameters
+ * @nparams: number of @params
+ * @flags: binary-OR of virDomainSaveRestoreFlags
+ * @ensureACL: callback for function checking ACL access (optional)
+ * @asyncJob: async job type
+ *
+ * Restores VM from save image at @path.
+ *
+ * If @vmRestore is non-NULL the VM object is reused and also the name and UUID
+ * of the VM from the save image is checked against it.
+ *
+ * @dxml can be used to optionally override the XML from the save image.
+ *
+ * @ensureACL must be passed unless the access to the domain object was already
+ * verified.
+ *
+ * Returns 0 on success; -1 on error. If @unlink_corrupt is true and the
+ * corrupted image was removed 1 is returned.
+ */
 static int
 qemuDomainRestoreInternal(virConnectPtr conn,
+                          virDomainObj *vmRestore,
                           const char *path,
+                          bool unlink_corrupt,
                           const char *dxml,
                           virTypedParameterPtr params,
                           int nparams,
                           unsigned int flags,
-                          int (*ensureACL)(virConnectPtr, virDomainDef *))
+                          int (*ensureACL)(virConnectPtr, virDomainDef *),
+                          virDomainAsyncJob asyncJob)
 {
     virQEMUDriver *driver = conn->privateData;
     qemuDomainObjPrivate *priv = NULL;
     g_autoptr(virDomainDef) def = NULL;
     virDomainObj *vm = NULL;
+    virDomainObj *vmNew = NULL;
     g_autofree char *xmlout = NULL;
     const char *newxml = dxml;
     int fd = -1;
@@ -5792,8 +5823,21 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
         reset_nvram = true;
 
-    if (qemuSaveImageGetMetadata(driver, NULL, path, ensureACL, conn, &def, &data) < 0)
+    if (qemuSaveImageGetMetadata(driver, NULL, path, ensureACL, conn, &def, &data) < 0) {
+        if (unlink_corrupt &&
+            qemuSaveImageIsCorrupt(driver, path)) {
+            if (unlink(path) < 0) {
+                virReportSystemError(errno,
+                                     _("cannot remove corrupt file: %1$s"),
+                                     path);
+            } else {
+                virResetLastError();
+                ret = 1;
+            }
+        }
+
         goto cleanup;
+    }
 
     sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
     if (!(restoreParams = qemuMigrationParamsForSave(params, nparams, sparse,
@@ -5833,12 +5877,36 @@ qemuDomainRestoreInternal(virConnectPtr conn,
         def = tmp;
     }
 
-    if (!(vm = virDomainObjListAdd(driver->domains, &def,
-                                   driver->xmlopt,
-                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
-                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
-                                   NULL)))
-        goto cleanup;
+    if (vmRestore) {
+        vm = vmRestore;
+
+        if (STRNEQ(vm->def->name, def->name) ||
+            memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
+            char vm_uuidstr[VIR_UUID_STRING_BUFLEN];
+            char def_uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(vm->def->uuid, vm_uuidstr);
+            virUUIDFormat(def->uuid, def_uuidstr);
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' uuid %4$s"),
+                           vm->def->name, vm_uuidstr,
+                           def->name, def_uuidstr);
+            goto cleanup;
+        }
+
+        virDomainObjAssignDef(vm, &def, true, NULL);
+    } else {
+        if (!(vmNew = virDomainObjListAdd(driver->domains, &def,
+                                          driver->xmlopt,
+                                          VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                          VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                          NULL)))
+            goto cleanup;
+
+        vm = vmNew;
+
+        if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_RESTORE, flags) < 0)
+            goto cleanup;
+    }
 
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
         data->header.was_running = 1;
@@ -5850,13 +5918,11 @@ qemuDomainRestoreInternal(virConnectPtr conn,
         priv->hookRun = true;
     }
 
-    if (qemuProcessBeginJob(vm, VIR_DOMAIN_JOB_OPERATION_RESTORE, flags) < 0)
-        goto cleanup;
-
     ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path, restoreParams,
-                               false, reset_nvram, VIR_ASYNC_JOB_START);
+                               false, reset_nvram, asyncJob);
 
-    qemuProcessEndJob(vm);
+    if (vmNew)
+        qemuProcessEndJob(vmNew);
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
@@ -5864,9 +5930,9 @@ qemuDomainRestoreInternal(virConnectPtr conn,
         ret = -1;
     virFileWrapperFdFree(wrapperFd);
     virQEMUSaveDataFree(data);
-    if (vm && ret < 0)
-        qemuDomainRemoveInactive(vm, 0, false);
-    virDomainObjEndAPI(&vm);
+    if (vmNew && ret < 0)
+        qemuDomainRemoveInactive(vmNew, 0, false);
+    virDomainObjEndAPI(&vmNew);
     return ret;
 }
 
@@ -5876,16 +5942,18 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                        const char *dxml,
                        unsigned int flags)
 {
-    return qemuDomainRestoreInternal(conn, path, dxml, NULL, 0, flags,
-                                     virDomainRestoreFlagsEnsureACL);
+    return qemuDomainRestoreInternal(conn, NULL, path, false, dxml, NULL, 0,
+                                     flags, virDomainRestoreFlagsEnsureACL,
+                                     VIR_ASYNC_JOB_START);
 }
 
 static int
 qemuDomainRestore(virConnectPtr conn,
                   const char *path)
 {
-    return qemuDomainRestoreInternal(conn, path, NULL, NULL, 0, 0,
-                                     virDomainRestoreEnsureACL);
+    return qemuDomainRestoreInternal(conn, NULL, path, false, NULL, NULL, 0,
+                                     0, virDomainRestoreEnsureACL,
+                                     VIR_ASYNC_JOB_START);
 }
 
 static int
@@ -5917,8 +5985,9 @@ qemuDomainRestoreParams(virConnectPtr conn,
         return -1;
     }
 
-    ret = qemuDomainRestoreInternal(conn, path, dxml, params, nparams, flags,
-                                    virDomainRestoreParamsEnsureACL);
+    ret = qemuDomainRestoreInternal(conn, NULL, path, false, dxml, params, nparams,
+                                    flags, virDomainRestoreParamsEnsureACL,
+                                    VIR_ASYNC_JOB_START);
     return ret;
 }
 
@@ -6086,103 +6155,6 @@ qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    return ret;
-}
-
-/* Return 0 on success, 1 if incomplete saved image was silently unlinked,
- * and -1 on failure with error raised.  */
-static int
-qemuDomainObjRestore(virConnectPtr conn,
-                     virQEMUDriver *driver,
-                     virDomainObj *vm,
-                     const char *path,
-                     bool start_paused,
-                     bool bypass_cache,
-                     bool reset_nvram,
-                     virDomainAsyncJob asyncJob)
-{
-    g_autoptr(virDomainDef) def = NULL;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    int fd = -1;
-    int ret = -1;
-    g_autofree char *xmlout = NULL;
-    virQEMUSaveData *data = NULL;
-    virFileWrapperFd *wrapperFd = NULL;
-    bool sparse = false;
-    g_autoptr(qemuMigrationParams) restoreParams = NULL;
-
-    ret = qemuSaveImageGetMetadata(driver, NULL, path, NULL, NULL, &def, &data);
-    if (ret < 0) {
-        if (qemuSaveImageIsCorrupt(driver, path)) {
-            if (unlink(path) < 0) {
-                virReportSystemError(errno,
-                                     _("cannot remove corrupt file: %1$s"),
-                                     path);
-                ret = -1;
-            } else {
-                virResetLastError();
-                ret = 1;
-            }
-        }
-        goto cleanup;
-    }
-
-    sparse = data->header.format == QEMU_SAVE_FORMAT_SPARSE;
-    if (!(restoreParams = qemuMigrationParamsForSave(NULL, 0, sparse,
-                                                     bypass_cache)))
-        return -1;
-
-    fd = qemuSaveImageOpen(driver, path, bypass_cache, sparse, &wrapperFd, false);
-    if (fd < 0)
-        goto cleanup;
-
-    if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
-        int hookret;
-
-        if ((hookret = virHookCall(VIR_HOOK_DRIVER_QEMU, def->name,
-                                   VIR_HOOK_QEMU_OP_RESTORE,
-                                   VIR_HOOK_SUBOP_BEGIN,
-                                   NULL, data->xml, &xmlout)) < 0)
-            goto cleanup;
-
-        if (hookret == 0 && !virStringIsEmpty(xmlout)) {
-            virDomainDef *tmp;
-
-            VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-
-            if (!(tmp = qemuSaveImageUpdateDef(driver, def, xmlout)))
-                goto cleanup;
-
-            virDomainDefFree(def);
-            def = tmp;
-            priv->hookRun = true;
-        }
-    }
-
-    if (STRNEQ(vm->def->name, def->name) ||
-        memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
-        char vm_uuidstr[VIR_UUID_STRING_BUFLEN];
-        char def_uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(vm->def->uuid, vm_uuidstr);
-        virUUIDFormat(def->uuid, def_uuidstr);
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain '%3$s' uuid %4$s"),
-                       vm->def->name, vm_uuidstr,
-                       def->name, def_uuidstr);
-        goto cleanup;
-    }
-
-    virDomainObjAssignDef(vm, &def, true, NULL);
-
-    ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path, restoreParams,
-                               start_paused, reset_nvram, asyncJob);
-
- cleanup:
-    virQEMUSaveDataFree(data);
-    VIR_FORCE_CLOSE(fd);
-    if (virFileWrapperFdClose(wrapperFd) < 0)
-        ret = -1;
-    virFileWrapperFdFree(wrapperFd);
     return ret;
 }
 
@@ -6358,11 +6330,17 @@ qemuDomainObjStart(virConnectPtr conn,
             vm->hasManagedSave = false;
         } else {
             virDomainJobOperation op = vm->job->current->operation;
+            unsigned int restore_flags = 0;
+
             vm->job->current->operation = VIR_DOMAIN_JOB_OPERATION_RESTORE;
 
-            ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
-                                       start_paused, bypass_cache,
-                                       reset_nvram, asyncJob);
+            restore_flags |= start_paused ? VIR_DOMAIN_SAVE_PAUSED : 0;
+            restore_flags |= bypass_cache ? VIR_DOMAIN_SAVE_BYPASS_CACHE : 0;
+            restore_flags |= reset_nvram ? VIR_DOMAIN_SAVE_RESET_NVRAM : 0;
+
+            ret = qemuDomainRestoreInternal(conn, vm, managed_save, true, NULL, NULL, 0,
+                                            restore_flags, NULL,
+                                            asyncJob);
 
             if (ret == 0) {
                 if (unlink(managed_save) < 0)
