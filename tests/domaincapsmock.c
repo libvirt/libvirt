@@ -95,6 +95,10 @@ virFileExists(const char *path)
     if (STREQ(path, "/dev/vfio/vfio"))
         return true;
 
+    /* required by qemuhotplugtest */
+    if (STREQ(path, "/dev/mapper/virt"))
+        return true;
+
     return real_virFileExists(path);
 }
 

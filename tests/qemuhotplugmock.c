@@ -24,22 +24,11 @@
 #include "testutilsqemu.h"
 #include "conf/domain_conf.h"
 #include "virdevmapper.h"
-#include "virmock.h"
 #include <fcntl.h>
 
 #define LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
 #include "qemu/qemu_monitor_priv.h"
 
-static bool (*real_virFileExists)(const char *path);
-
-static void
-init_syms(void)
-{
-    if (real_virFileExists)
-        return;
-
-    VIR_MOCK_REAL_INIT(virFileExists);
-}
 
 unsigned long long
 qemuDomainGetUnplugTimeout(virDomainObj *vm)
@@ -66,18 +55,6 @@ virDevMapperGetTargets(const char *path,
     }
 
     return 0;
-}
-
-
-bool
-virFileExists(const char *path)
-{
-    init_syms();
-
-    if (STREQ(path, "/dev/mapper/virt"))
-        return true;
-
-    return real_virFileExists(path);
 }
 
 
