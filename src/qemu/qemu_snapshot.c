@@ -2423,6 +2423,7 @@ qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
 typedef struct _qemuSnapshotRevertMemoryData {
     int fd;
     char *path;
+    virFileWrapperFd *wrapperFd;
     virQEMUSaveData *data;
 } qemuSnapshotRevertMemoryData;
 
@@ -2430,6 +2431,8 @@ static void
 qemuSnapshotClearRevertMemoryData(qemuSnapshotRevertMemoryData *memdata)
 {
     VIR_FORCE_CLOSE(memdata->fd);
+    ignore_value(virFileWrapperFdClose(memdata->wrapperFd));
+    virFileWrapperFdFree(memdata->wrapperFd);
     virQEMUSaveDataFree(memdata->data);
 }
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(qemuSnapshotRevertMemoryData, qemuSnapshotClearRevertMemoryData);
@@ -2506,8 +2509,13 @@ qemuSnapshotRevertExternalPrepare(virDomainObj *vm,
             return -1;
 
         memdata->fd = qemuSaveImageOpen(driver, memdata->path,
-                                        false, false, NULL, false);
+                                        false, &memdata->wrapperFd, false);
         if (memdata->fd < 0)
+            return -1;
+
+        /* If 'wrapperFd' is used the FD can't be seeked so we need to make
+         * it point to the actual data, thus seek across the header */
+        if (qemuSaveImageFDSkipHeader(memdata->fd) < 0)
             return -1;
 
         if (!virDomainDefCheckABIStability(savedef, domdef, driver->xmlopt))
@@ -2705,7 +2713,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
     bool defined = false;
     int rc;
     g_autoptr(virDomainSnapshotDef) tmpsnapdef = NULL;
-    g_auto(qemuSnapshotRevertMemoryData) memdata = { -1, NULL, NULL };
+    g_auto(qemuSnapshotRevertMemoryData) memdata = { .fd = -1 };
     bool started = false;
 
     start_flags |= VIR_QEMU_PROCESS_START_PAUSED;

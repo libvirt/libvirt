@@ -5813,6 +5813,7 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     bool hook_taint = false;
     bool reset_nvram = false;
     bool sparse = false;
+    bool bypass_cache = (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0;
     g_autoptr(qemuMigrationParams) restoreParams = NULL;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -5844,11 +5845,30 @@ qemuDomainRestoreInternal(virConnectPtr conn,
                                                      (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE))))
         goto cleanup;
 
-    fd = qemuSaveImageOpen(driver, path,
-                           (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
-                           sparse, &wrapperFd, false);
-    if (fd < 0)
-        goto cleanup;
+    if (sparse) {
+        if ((fd = qemuSaveImageOpen(driver, path, bypass_cache, NULL, false)) < 0)
+            goto cleanup;
+
+        /* In sparse mode the FD needs to be a real file as qemu accesses it
+         * directly thus:
+         *  - ensure that we actualy got a file FD
+         *  - there's no need to seek it as qemu does it itself
+         */
+        if (!virFileFDIsRegular(fd)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("path '%1$s' can't be opened directly (without the use of helper proces) which is incompatible with 'sparse' save image"),
+                           path);
+            goto cleanup;
+        }
+    } else {
+        if ((fd = qemuSaveImageOpen(driver, path, bypass_cache, &wrapperFd, false)) < 0)
+            goto cleanup;
+
+        /* When virFileWrapperFD is used 'fd' can't be seeked so to make it
+         * point to the data read the header */
+        if (qemuSaveImageFDSkipHeader(fd) < 0)
+            goto cleanup;
+    }
 
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         int hookret;
@@ -6039,7 +6059,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
                                  conn, &def, &data) < 0)
         goto cleanup;
 
-    fd = qemuSaveImageOpen(driver, path, false, false, NULL, true);
+    fd = qemuSaveImageOpen(driver, path, false, NULL, true);
 
     if (fd < 0)
         goto cleanup;

@@ -92,7 +92,6 @@ int
 qemuSaveImageOpen(virQEMUDriver *driver,
                   const char *path,
                   bool bypass_cache,
-                  bool sparse,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
     ATTRIBUTE_NONNULL(2);
@@ -126,6 +125,9 @@ qemuSaveImageCreate(virDomainObj *vm,
                     qemuMigrationParams *saveParams,
                     unsigned int flags,
                     virDomainAsyncJob asyncJob);
+
+int
+qemuSaveImageFDSkipHeader(int fd);
 
 int
 virQEMUSaveDataWrite(virQEMUSaveData *data,

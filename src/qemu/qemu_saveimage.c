@@ -312,6 +312,13 @@ qemuSaveImageReadHeader(int fd, virQEMUSaveData **ret_data)
 }
 
 
+int
+qemuSaveImageFDSkipHeader(int fd)
+{
+    return qemuSaveImageReadHeader(fd, NULL);
+}
+
+
 /**
  * qemuSaveImageDecompressionStart:
  * @data: data from memory state file
@@ -697,7 +704,6 @@ qemuSaveImageGetMetadata(virQEMUDriver *driver,
  * @driver: qemu driver data
  * @path: path of the save image
  * @bypass_cache: bypass cache when opening the file
- * @sparse: Image contains mapped-ram save format
  * @wrapperFd: returns the file wrapper structure
  * @open_write: open the file for writing (for updates)
  *
@@ -707,7 +713,6 @@ int
 qemuSaveImageOpen(virQEMUDriver *driver,
                   const char *path,
                   bool bypass_cache,
-                  bool sparse,
                   virFileWrapperFd **wrapperFd,
                   bool open_write)
 {
@@ -729,16 +734,13 @@ qemuSaveImageOpen(virQEMUDriver *driver,
     if ((fd = qemuDomainOpenFile(cfg, NULL, path, oflags, NULL)) < 0)
         return -1;
 
-    /* If sparse, no need for the iohelper or positioning the file pointer. */
-    if (!sparse) {
-        if (bypass_cache &&
-            !(*wrapperFd = virFileWrapperFdNew(&fd, path,
-                                               VIR_FILE_WRAPPER_BYPASS_CACHE)))
-            return -1;
+    if (wrapperFd) {
+        unsigned int fdflags = VIR_FILE_WRAPPER_NON_BLOCKING;
 
-        /* Read the header to position the file pointer for QEMU. Unfortunately we
-         * can't use lseek with virFileWrapperFD. */
-        if (qemuSaveImageReadHeader(fd, NULL) < 0)
+        if (bypass_cache)
+            fdflags |= VIR_FILE_WRAPPER_BYPASS_CACHE;
+
+        if (!(*wrapperFd = virFileWrapperFdNew(&fd, path, fdflags)))
             return -1;
     }
 
