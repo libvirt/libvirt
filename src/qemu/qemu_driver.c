@@ -12318,6 +12318,12 @@ qemuDomainAbortJobPostcopy(virDomainObj *vm,
         return -1;
     }
 
+    if (virDomainObjIsFailedPostcopy(vm, vm->job)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("post-copy migration already stopped"));
+        return -1;
+    }
+
     VIR_DEBUG("Suspending post-copy migration at client request");
 
     qemuDomainObjAbortAsyncJob(vm);
