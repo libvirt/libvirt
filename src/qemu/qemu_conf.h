@@ -342,6 +342,9 @@ struct _virQEMUDriver {
     /* Immutable pointer, immutable object */
     virPortAllocatorRange *migrationPorts;
 
+    /* Immutable pointer, immutable object */
+    virPortAllocatorRange *backupPorts;
+
     /* Immutable pointer, lockless APIs */
     virSysinfoDef *hostsysinfo;
 

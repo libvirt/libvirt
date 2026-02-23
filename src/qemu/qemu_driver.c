@@ -719,6 +719,12 @@ qemuStateInitialize(bool privileged,
                                   cfg->migrationPortMax)) == NULL)
         goto error;
 
+    if ((qemu_driver->backupPorts =
+         virPortAllocatorRangeNew(_("backup"),
+                                  cfg->backupPortMin,
+                                  cfg->backupPortMax)) == NULL)
+        goto error;
+
     if (qemuSecurityInit(qemu_driver) < 0)
         goto error;
 
