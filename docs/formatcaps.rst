@@ -172,7 +172,7 @@ The ``<guest/>`` element will typically wrap up the following elements:
       Emulator (device model) path, for use in
       `emulator <formatdomain.html#devices>`__ element of domain XML.
    ``loader``
-      Loader path, for use in `loader <formatdomain.html#bios-bootloader>`__
+      Loader path, for use in `loader <formatdomain.html#guest-firmware>`__
       element of domain XML.
    ``machine``
       Machine type, for use in

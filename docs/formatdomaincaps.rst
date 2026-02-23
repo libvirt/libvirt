@@ -72,11 +72,11 @@ The root element that emulator capability XML document starts with has name
    Describes the `virtualization type <formatdomain.html#element-and-attribute-overview>`__ (or so
    called domain type).
 ``machine``
-   The domain's `machine type <formatdomain.html#bios-bootloader>`__. Since not
+   The domain's `machine type <formatdomain.html#guest-firmware>`__. Since not
    every hypervisor has a sense of machine types this element might be omitted
    in such drivers.
 ``arch``
-   The domain's `architecture <formatdomain.html#bios-bootloader>`__.
+   The domain's `architecture <formatdomain.html#guest-firmware>`__.
 
 CPU Allocation
 ~~~~~~~~~~~~~~
@@ -95,12 +95,17 @@ capabilities, e.g. virtual CPUs:
 ``vcpu``
    The maximum number of supported virtual CPUs
 
-BIOS bootloader
-~~~~~~~~~~~~~~~
+Guest firmware
+~~~~~~~~~~~~~~
 
-Sometimes users might want to tweak some BIOS knobs or use UEFI. For cases like
-that, `os <formatdomain.html#bios-bootloader>`__ element exposes what values can
-be passed to its children.
+.. container::
+   :name: bios-bootloader
+
+   .. this container only exists to keep old links working
+
+Exposes information about supported
+`guest firmware <formatdomain.html#guest-firmware>`__ configurations for
+domains.
 
 ::
 
