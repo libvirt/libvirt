@@ -7,7 +7,7 @@
 # dibalaj <dibalaj@dibalaj.cz>, 2013
 # Milan Kerslager <kerslage@linux.cz>, 2007
 # Zdenek <chmelarz@gmail.com>, 2016
-# Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019, 2023, 2024, 2025.
+# Pavel Borecki <pavel.borecki@gmail.com>, 2018, 2019, 2023, 2024, 2025, 2026.
 # Daniel Berrange <dan-zanata@berrange.com>, 2019
 # Matej Cepl <mcepl@cepl.eu>, 2021.
 # Daniel P. Berrange <berrange@redhat.com>, 2023.
@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-12-22 05:55+0000\n"
+"PO-Revision-Date: 2026-02-20 09:59+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.16\n"
 
 msgid ""
 "\n"
@@ -1215,11 +1215,11 @@ msgstr "soubor „%1$s“ se nevejde do paměti"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "Hyperv funkce „%1$s“ vyžaduje funkci „%2$s“"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "Hyperv funkce „%1$s“ vyžaduje časovač „%2$s“"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -1389,7 +1389,7 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "„initiator“ odkazuje na neexistující NUMA uzel"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "'ioeventfd' je podporované pouze řadiči virtio-scsi a nvme"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr "atribut 'iothread' je podporován pouze pro virtio scsi řadiče"
@@ -1971,16 +1971,16 @@ msgid "Access network filter"
 msgstr ""
 
 msgid "Access network port"
-msgstr ""
+msgstr "Přístup k síťovému portu"
 
 msgid "Access node device"
-msgstr ""
+msgstr "Přístup k zařízení uzlu"
 
 msgid "Access secret"
 msgstr ""
 
 msgid "Access storage pool"
-msgstr ""
+msgstr "Přístup k fondu úložiště"
 
 msgid "Access storage volume"
 msgstr "Přistupovat ke svazku úložiště"
@@ -2275,13 +2275,13 @@ msgid "Autostart"
 msgstr "Automatické spouštění"
 
 msgid "Autostart Once:"
-msgstr ""
+msgstr "Jednorázové automatické spuštění:"
 
 msgid "Autostart:"
-msgstr "Automatické spuštění:"
+msgstr "Automatické spouštění:"
 
 msgid "Available"
-msgstr "Dostupný"
+msgstr "K dispozici"
 
 msgid ""
 "Available servers on a daemon. Currently only supports 'libvirtd' or "
@@ -2518,7 +2518,7 @@ msgstr ""
 "Určení vyrovnávací paměti procesoru není pro architekturu „%1$s“ podporováno"
 
 msgid "CPU data"
-msgstr "data procesoru"
+msgstr "Data procesoru"
 
 #, c-format
 msgid "CPU described in %1$s is identical to host CPU\n"
@@ -2567,7 +2567,7 @@ msgstr ""
 "architekturu %1$s"
 
 msgid "CPU frequency:"
-msgstr "frekvence procesoru:"
+msgstr "Frekvence procesoru:"
 
 msgid "CPU map:"
 msgstr "Mapa procesoru:"
@@ -2617,10 +2617,10 @@ msgid "CPU model '%1$s' not supported by hypervisor"
 msgstr "Model procesoru „%1$s“ není hypervizorem podporován"
 
 msgid "CPU model:"
-msgstr "model procesoru:"
+msgstr "Model procesoru:"
 
 msgid "CPU models"
-msgstr "modely procesoru"
+msgstr "Modely procesoru"
 
 msgid "CPU socket topology has changed"
 msgstr "topologie patic procesorů se změnila"
@@ -3787,7 +3787,7 @@ msgstr "Certifikát „%1$s“ neexistuje"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
-msgstr ""
+msgstr "Certifikát „%1$s“ neexistuje, ale klíč „%2$s“ ano"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -3923,7 +3923,7 @@ msgid "Checking for cgroup '%1$s' controller support"
 msgstr "Kontrola podpory řadiče cgroup „%1$s“"
 
 msgid "Checking for device assignment IOMMU support"
-msgstr ""
+msgstr "Zjišťuje se podpora IOMMU přidělování zařízení"
 
 msgid "Checking for hardware virtualization"
 msgstr "Kontrola hardwarové virtualizace"
@@ -4250,6 +4250,8 @@ msgid ""
 "Conflicting NVME disk serial number, all disks on a controller must have the "
 "same serial number as the controller itself"
 msgstr ""
+"Konflikt v sériovém číslu NVME disku – je třeba, aby všechny disky na řadiči "
+"měly stejné sériové číslo jako řadič samotný"
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Připojit k virtuální sériové konzoli hosta"
@@ -5749,7 +5751,7 @@ msgstr ""
 "Před přiřazením doméně odpojit zařízení uzlu od jeho ovladače zařízení."
 
 msgid "Detaching node device driver requires authorization"
-msgstr ""
+msgstr "Odpojení ovladače zařízení uzlu vyžaduje ověření se"
 
 msgid "Detect storage pools"
 msgstr "Zjistit fondy úložiště"
@@ -6088,7 +6090,7 @@ msgstr "Doména „%1$s“ označena pro automatické spouštění\n"
 
 #, c-format
 msgid "Domain '%1$s' marked as autostarted on next boot\n"
-msgstr ""
+msgstr "Doména „%1$s“ označena jako automaticky spouštěná při příštím startu\n"
 
 #, c-format
 msgid "Domain '%1$s' resumed\n"
@@ -6121,6 +6123,8 @@ msgstr "Označení domény „%1$s“ pro automatické spouštění zrušeno\n"
 #, c-format
 msgid "Domain '%1$s' unmarked as autostarted on next boot\n"
 msgstr ""
+"Označení domény „%1$s“ jako automaticky spouštěné zrušeno při příštím "
+"startu\n"
 
 #, c-format
 msgid "Domain '%1$s' was reset\n"
@@ -7284,7 +7288,7 @@ msgstr "Nepodařilo se připojit ke správnímu serveru"
 
 #, c-format
 msgid "Failed to connect to vsock (cid=%1$llu port=%2$u)"
-msgstr ""
+msgstr "Nepodařilo se připojit k vsock (cid=%1$llu port=%2$u)"
 
 #, c-format
 msgid "Failed to connect: %1$s"
@@ -9906,7 +9910,7 @@ msgid "I/O Error"
 msgstr "Chyba vst./výstupu"
 
 msgid "I/O error"
-msgstr "chyba vstupu/výstupu"
+msgstr "Chyba vstupu/výstupu"
 
 #, c-format
 msgid ""
@@ -10438,7 +10442,7 @@ msgstr "Neplatná XML odpověď"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "neplatný úplný popis umístění „%1$s“"
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10590,7 +10594,7 @@ msgid "Invalid compressed save format %1$d"
 msgstr "Neplatný formát komprimovaného uložení %1$d"
 
 msgid "Invalid context"
-msgstr "neplatný kontext"
+msgstr "Neplatný kontext"
 
 #, c-format
 msgid "Invalid controller id '%1$d'"
@@ -10703,7 +10707,7 @@ msgid "Invalid dump_image_format '%1$s'"
 msgstr "Neplatný dump_image_format „%1$s“"
 
 msgid "Invalid duration"
-msgstr "Neplatné trvání"
+msgstr "Neplatná doba trvání"
 
 #, c-format
 msgid "Invalid enslaved interface name '%1$s' seen for bond '%2$s'"
@@ -10741,7 +10745,7 @@ msgstr "Neplatný název zařízení disketové mechaniky: %1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "Neplatný formát „%1$s“ pro typ nástroje pro načítání ROM"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
@@ -11344,7 +11348,7 @@ msgstr ""
 
 #, c-format
 msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
-msgstr ""
+msgstr "Klíč „%1$s“ neexistuje, ale certifikát „%2$s“ ano"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -11386,16 +11390,16 @@ msgid "Libvirt LXC"
 msgstr "Libvirt LXC"
 
 msgid "Libvirt Network"
-msgstr ""
+msgstr "Libvirt síť"
 
 msgid "Libvirt QEMU"
 msgstr "Libvirt QEMU"
 
 msgid "Libvirt Secret"
-msgstr ""
+msgstr "Libvirt tajemství"
 
 msgid "Libvirt Xen"
-msgstr ""
+msgstr "Libvirt Xen"
 
 #, c-format
 msgid "Lifecycle event '%1$s' doesn't support '%2$s' action"
@@ -11432,7 +11436,7 @@ msgid "List event types, or wait for storage pool events to occur"
 msgstr "Vypsat typy událostí nebo čekat na výskyt událostí fondu úložiště"
 
 msgid "List interfaces"
-msgstr ""
+msgstr "Vypsat rozhraní"
 
 msgid "List network filter bindings"
 msgstr "Vypsat navázání pravidla brány firewall"
@@ -11559,7 +11563,7 @@ msgid "MAC"
 msgstr "MAC adresa"
 
 msgid "MAC Address"
-msgstr "MAC Adresa"
+msgstr "MAC adresa"
 
 msgid "MAC address"
 msgstr "MAC adresa"
@@ -11888,7 +11892,7 @@ msgstr ""
 "QEMU podporován"
 
 msgid "Migrate domain"
-msgstr ""
+msgstr "Přestěhovat doménu"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
@@ -12272,7 +12276,7 @@ msgid "Missing lockspaces data from JSON file"
 msgstr "Z JSON souboru chybí data zamykacích prostorů"
 
 msgid "Missing macs"
-msgstr "Chybí mac adresy"
+msgstr "Chybí MAC adresy"
 
 msgid "Missing magic data in JSON document"
 msgstr "V JSON dokumentu chybí magic data"
@@ -12781,7 +12785,7 @@ msgstr "ladění NUMA není v režimu relace k dispozici"
 
 #, c-format
 msgid "NVMe NSID %1$d out of [0..14] range"
-msgstr ""
+msgstr "NVMe NSID %1$d mimo rozsah [0..14]"
 
 #, c-format
 msgid "NVMe controller index %1$d out of [0..3] range"
@@ -13464,7 +13468,7 @@ msgid "Normal data:"
 msgstr "Normální data:"
 
 msgid "Normal pages:"
-msgstr "Normální stránka:"
+msgstr "Normální stránky:"
 
 msgid "Not a download stream"
 msgstr "Nejedná se o stahovací proud"
@@ -13678,7 +13682,7 @@ msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Pro tento typ stroje je podporován pouze jediný IDE řadič"
 
 msgid "Only a single RNG device can be configured for this domain"
-msgstr ""
+msgstr "Pro tuto doménu je monžé nastavit pouze jedno RNG zařízení"
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Pro tuto doménu je možné nastavit pouze jedinou konzoli"
@@ -13784,7 +13788,7 @@ msgstr ""
 "V případě souběžného stěhování je možné zadat pouze jednu metodu komprimace"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "Na architektuře arm64 je podporována pouze jedna konzole"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Je podporováno pouze jedno zařízení hostitele modelu vfio-ap"
@@ -13923,6 +13927,7 @@ msgid ""
 "Option --tree is incompatible with --cap, --inactive, --persistent and --"
 "transient"
 msgstr ""
+"Volba --tree není slučitelná s --cap, --inactive, --persisent a --transient"
 
 msgid "Option argument is empty"
 msgstr "Argument volby je prázdný"
@@ -14130,6 +14135,8 @@ msgstr "Pořadové číslo paralelního portu %1$d je mimo rozsah 0 až 2"
 
 msgid "Parallel save is only supported with the 'sparse' save image format"
 msgstr ""
+"Paralelní ukládání je podporované pouze v případě, pokud obraz uložení je ve "
+"formátu 'sparse'"
 
 #, c-format
 msgid "Parameter '%1$s' is not a string"
@@ -14259,16 +14266,16 @@ msgid "Persistent"
 msgstr "Trvalé"
 
 msgid "Persistent domain state changes are not supported"
-msgstr ""
+msgstr "Změny stavu trvalé domény nejsou podporovány"
 
 msgid "Persistent:"
-msgstr "Trvalý:"
+msgstr "Trvalé:"
 
 msgid "Physical"
 msgstr "Fyzické"
 
 msgid "Physical:"
-msgstr "Fyzický:"
+msgstr "Fyzické:"
 
 msgid "Pin domain IOThreads to host physical CPUs."
 msgstr "Napevno přiřadit IOThreads fyzickým procesorům hostitele."
@@ -14459,13 +14466,13 @@ msgid "Protocol '%1$s' is not supported for tcp character device."
 msgstr "Protokol „%1$s“ není pro tcp znakové zařízení podporován."
 
 msgid "Pull aborted"
-msgstr "Natlačení přerušeno"
+msgstr "Natažení přerušeno"
 
 msgid "Pull complete"
-msgstr "Natlačení dokončeno"
+msgstr "Natažení dokončeno"
 
 msgid "Pull failed"
-msgstr "Natlačení se nezdařilo"
+msgstr "Natažení se nezdařilo"
 
 #, c-format
 msgid "QEMU '%1$s' does not support any CPU models for virttype '%2$s'"
@@ -14666,7 +14673,7 @@ msgid "ROM tuning is only supported for PCI devices"
 msgstr "ladění ROM je podporováno pouze pro PCI zařízení"
 
 msgid "RPC error"
-msgstr "chyba RPC"
+msgstr "Chyba RPC"
 
 msgid "Range exceeds available cells"
 msgstr "Rozsah překračuje buňky, které jsou k dispozici"
@@ -14679,7 +14686,7 @@ msgid "Raw I/O is not supported on this platform"
 msgstr "Holý vstup/výstup není na této platformě podporován"
 
 msgid "Read domain"
-msgstr ""
+msgstr "Číst doménu"
 
 msgid "Read domain block"
 msgstr "Načíst blok domény"
@@ -14688,7 +14695,7 @@ msgid "Read domain memory"
 msgstr "Číst paměť domény"
 
 msgid "Read host"
-msgstr ""
+msgstr "Číst hostitele"
 
 msgid "Read interface"
 msgstr "Číst rozhraní"
@@ -15469,7 +15476,7 @@ msgid "Secret not found: %1$s"
 msgstr "Tajemství nenalezeno: %1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "Hodnota tajemství není platné base64"
 
 msgid "Secret value set\n"
 msgstr "Hodnota tajemství nastavena\n"
@@ -15571,7 +15578,7 @@ msgstr ""
 "s architekturou hosta nebo typem stroje"
 
 msgid "Serial only works in UNIX/PTY modes"
-msgstr ""
+msgstr "Sériový port funguje pouze v režimech UNIX/PTY"
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
@@ -15884,7 +15891,7 @@ msgid "Snapshot '%1$s' already exists"
 msgstr "Zachycený stav „%1$s“ už existuje"
 
 msgid "Snapshot Delete"
-msgstr "Smazat zachycený stav"
+msgstr "Smazání zachyceného stavu"
 
 msgid "Snapshot Dump XML"
 msgstr "Výpis XML zachyceného stavu"
@@ -17401,12 +17408,17 @@ msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Je třeba, aby certifikát cert. autority %1$s byl přístupný všem uživatelům. "
+"S oprávněními správce (root) spusťte: chown root:root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Je třeba, aby klíč certifikát cert. autority %1$s NEbyl přístupný ostatním "
+"uživatelům. S oprávněními tohoto uživatele spusťte: chown %2$d:%3$d %4$s; "
+"chmod 0600 %5$s"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
@@ -17456,6 +17468,9 @@ msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
+"Je třeba, aby složka základu PKI infrastruktury %1$s NEbyla přístupná všem "
+"uživatelům. S oprávněními správce (root) spusťte: chown %2$d:%3$d %4$s; "
+"chmod 0700 %5$s"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
@@ -17515,12 +17530,17 @@ msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Je třeba, aby klientský certifikát %1$s byl přístupný všem uživatelům. S "
+"oprávněními správce (root) spusťte: chown root:root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Je třeba, aby přístup ke klientskému certifikát %1$s byl omezen pouze na "
+"tohoto uživatele. S jeho oprávněními spusťte: chown %2$d:%3$d %4$s; chmod "
+"0600 %5$s"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
@@ -17535,6 +17555,8 @@ msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Je třeba, aby klientský klíč %1$s byl přístupný všem uživatelům. S "
+"oprávněními správce (root) spusťte: chown root:root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
@@ -17659,12 +17681,16 @@ msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Je třeba, aby certifikát serveru %1$s byl přístupný všem uživatelům. S "
+"oprávněními správce (root) spusťte: chown root:root %2$s; chmod 0644 %3$s"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Je třeba, aby přístup k certifikátu serveru %1$s byl omezen pouze na tohoto "
+"uživatele. S jeho oprávněními spusťte: chown %2$d:%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
@@ -17685,6 +17711,8 @@ msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
+"Je třeba, aby klíč serveru %1$s NEbyl přístupný běžným uživatelům. S "
+"oprávněními správce (root) spusťte: chown root:root %2$s; chmod 0600 %3$s"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
@@ -17704,6 +17732,9 @@ msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Je třeba, aby systémová složka s certifikačními autoritami %1$s byla "
+"přístupná všem uživatelům. S oprávněními správce (root) spusťte: chown "
+"root:root; chmod 0755 %2$s"
 
 #, c-format
 msgid ""
@@ -17716,6 +17747,9 @@ msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Je třeba, aby systémová složka s PKI infrastrukturou %1$s byla přístupná "
+"všem uživatelům. S oprávněními správce (root) spusťte: chown root:root; "
+"chmod 0755 %2$s"
 
 #, c-format
 msgid ""
@@ -17727,6 +17761,9 @@ msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
+"Je třeba, aby systémová složka s certifikáty %1$s byla přístupná všem "
+"uživatelům. S oprávněními správce (root) spusťte: chown root:root; chmod "
+"0755 %2$s"
 
 #, c-format
 msgid ""
@@ -17738,6 +17775,8 @@ msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Je třeba, aby systémová složka s klíči %1$s byla přístupná všem uživatelům. "
+"S oprávněními správce (root) spusťte: chown root:root; chmod 0755 %2$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
@@ -18351,7 +18390,7 @@ msgid "Unable to add hardware machine"
 msgstr "Nedaří se přidat hardware stroje"
 
 msgid "Unable to add keepalive timer"
-msgstr ""
+msgstr "Nebylo možné přidat časovač udržování spojení"
 
 #, c-format
 msgid "Unable to add lockspace %1$s"
@@ -18372,13 +18411,13 @@ msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
 msgstr "Nebylo možné přidat port %1$s do OVS mostu %2$s: %3$s"
 
 msgid "Unable to add service timer"
-msgstr ""
+msgstr "Nebylo možné přidat časovač služby"
 
 msgid "Unable to add shutdown timer"
-msgstr ""
+msgstr "Nebylo možné přidat časovač vypnutí"
 
 msgid "Unable to add socket timer"
-msgstr ""
+msgstr "Nebylo možné přidat časovač soketu"
 
 msgid "Unable to add storage controller"
 msgstr "Nedaří se přidat řadič úložiště"
@@ -21349,7 +21388,7 @@ msgstr ""
 
 #, c-format
 msgid "Updated node device %1$s persistent config"
-msgstr ""
+msgstr "Zaktualizováno trvalé nastavení zařízení uzlu %1$s"
 
 #, c-format
 msgid "Updated node device %1$s persistent config and live state"
@@ -21564,7 +21603,7 @@ msgstr ""
 "VFIO přiřazování zařízení v tuto chvíli není na tomto systému podporováno"
 
 msgid "VFIO device assignment is not available on this platform"
-msgstr ""
+msgstr "přiřazování VFIO zařízení není na této platformě k dispozici"
 
 msgid "VM disk source and snapshot disk source are not the same"
 msgstr "Zdroj disku virt. stroje a zdroj disku zachyceného stavu nejsou stejné"
@@ -21763,7 +21802,7 @@ msgid "Wiping volume '%1$s'(%2$s) ... "
 msgstr "Vymazávání svazku „%1$s“(%2$s) … "
 
 msgid "Write domain"
-msgstr ""
+msgstr "Zapsat doménu"
 
 msgid "Write domain block"
 msgstr "Zapsat blok domény"
@@ -21777,10 +21816,10 @@ msgstr ""
 "Zapsání filtrování prostoru nastavení PCI zařízení není qemu podporováno"
 
 msgid "Write host"
-msgstr ""
+msgstr "Zapsat hostitele"
 
 msgid "Write interface"
-msgstr ""
+msgstr "Zapsat rozhraní"
 
 msgid "Write network"
 msgstr "Zapsat síť"
@@ -21821,7 +21860,7 @@ msgid "Writing network configuration requires authorization"
 msgstr "Zapisování nastavení sítě vyžaduje pověření"
 
 msgid "Writing network filter configuration requires authorization"
-msgstr ""
+msgstr "Zapsání nastavení filtru sítě vyžaduje ověření se"
 
 msgid "Writing network port configuration requires authorization"
 msgstr "Zapisování nastavení síťového portu vyžaduje pověření"
@@ -25927,6 +25966,8 @@ msgid ""
 "deletion of external disk snapshot with multiple children snapshots not "
 "supported"
 msgstr ""
+"smazání externího zachyceného stavu disku, pokud má vícero podřízených "
+"zachycených stavů, není podporováno"
 
 msgid "deletion of external disk snapshots with children not supported"
 msgstr ""
@@ -28275,7 +28316,7 @@ msgstr "Nepodařilo se označit úložiště %1$s jako automaticky spouštěné"
 
 #, c-format
 msgid "failed to monitor nbdkit process %1$i"
-msgstr ""
+msgstr "nepodařilo se monitorovat nbdkit proces %1$i"
 
 #, c-format
 msgid "failed to monitor qemu in-shutdown process %1$i"
@@ -29495,11 +29536,11 @@ msgstr "překročen časový limit příkazu agenta v hostovi: %1$s"
 
 #, c-format
 msgid "guest agent didn't respond to command within '%1$d' seconds"
-msgstr ""
+msgstr "agent v hostovi neodpověděl na příkaz do limitu „%1$d“ sekund"
 
 #, c-format
 msgid "guest agent didn't respond to synchronization within '%1$d' seconds"
-msgstr ""
+msgstr "agent v hostovi neodpověděl na synchronizaci do limitu „%1$d“ sekund"
 
 msgid "guest agent replied with wrong id to guest-sync command"
 msgstr "agent hosta odpověděl na guest-sync nesprávným identifikátorem"
@@ -29936,6 +29977,7 @@ msgstr "příchozí rychlost vyšší než maximum %1$u"
 
 msgid "include all CPU models known to the hypervisor for the architecture"
 msgstr ""
+"zahrnout veškeré modely procesorů známé hypervizoru pro danou architekturu"
 
 msgid "include backup size estimate in XML dump"
 msgstr "do XML výpisu odhadovanou velikost zálohy"
@@ -31028,6 +31070,7 @@ msgstr "identif. vstup./výstupního vlákna (iothreadid) %1$d nenalezen"
 
 msgid "iothreads are supported only by 'virtio-scsi' controllers"
 msgstr ""
+"iothreads (vlákna vstupu/výstupu) jspu podporována pouze řadiči 'virtio-scsi'"
 
 msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune není podporováno s vhostuser diskem"
@@ -32281,13 +32324,13 @@ msgid "migrate_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "migrate_tls_x509_cert_dir složka „%1$s“ neexistuje"
 
 msgid "migrated"
-msgstr "zmigrováno"
+msgstr "přestěhováno"
 
 msgid "migrating"
-msgstr "migruje se"
+msgstr "stěhuje se"
 
 msgid "migration"
-msgstr "migrace"
+msgstr "stěhování"
 
 msgid "migration URI is not supported by tunnelled migration"
 msgstr "URI adresa migrace není podporována tunelovanou migrací"
@@ -32763,7 +32806,7 @@ msgid "missing disk backing store source"
 msgstr "chybí zdroj úložiště, na kterém je disk založen"
 
 msgid "missing disk data file store source"
-msgstr ""
+msgstr "chybí zdroj uložení datového souboru disku"
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
@@ -32955,10 +32998,10 @@ msgid "missing name information in %1$s"
 msgstr "chybí informace o názvu v %1$s"
 
 msgid "missing nbdkit pidfile"
-msgstr ""
+msgstr "chybí nbdkit soubor s identif. procesu"
 
 msgid "missing nbdkit socketfile"
-msgstr ""
+msgstr "chybí ngdkit soubor se soketem"
 
 msgid "missing network device feature name"
 msgstr "chybí název funkce síťového rozhraní"
@@ -33052,7 +33095,7 @@ msgid "missing path for ACPI ERST pstore device"
 msgstr "chybí popis umístění pro ACPI ERST pstore zařízení"
 
 msgid "missing path in nbdkit capabilities cache"
-msgstr ""
+msgstr "chybějící popis umístění v mezipaměti schopností nbdkit"
 
 msgid "missing path to restore from"
 msgstr "chybí popis umístění ze kterého obnovit"
@@ -34498,7 +34541,7 @@ msgstr "je třeba, aby zařízení uzlu „%1$s“ v %2$s se shodovalo se spojen
 
 #, c-format
 msgid "node device '%1$s' is not persistent"
-msgstr ""
+msgstr "zařízení uzlu „%1$s“ není trvalé"
 
 msgid "node device details in XML"
 msgstr "podrobnosti o zařízení uzlu v XML"
@@ -34774,7 +34817,7 @@ msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr "pro pc-dimm zařízení jsou podporovány pouze 'dimm' adresy"
 
 msgid "only 'file' type is supported with NVRAM"
-msgstr ""
+msgstr "v případě NVRAM je podporován pouze typ 'file' (soubor)"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "pro zařízení sdílené paměti je podporována pouze 'pci' adresa"
@@ -34784,7 +34827,7 @@ msgstr "pro zařízení virtio-pmem jsou podporovány pouze 'pci' adresy"
 
 #, c-format
 msgid "only 'pci' and 'ccw' addresses are supported for the %1$s device"
-msgstr ""
+msgstr "pro zařízení %1$s jsou podporovány pouze adresy 'pci' a 'ccw'"
 
 msgid "only 'qcow2' formatted 'block' nvram backing can be formatted"
 msgstr "formátovat je možné pouze 'qcow2' formátované 'block' nvram podpůrné"
@@ -35177,7 +35220,7 @@ msgstr "parametr %1$s je pro cíl příliš velký"
 
 #, c-format
 msgid "parameter '%1$s' is missing in reply of guest-get-load"
-msgstr ""
+msgstr "v odpovědi na quest-get-load chybí parametr „%1$s“"
 
 #, c-format
 msgid "parameter '%1$s' not supported"
@@ -35538,7 +35581,7 @@ msgstr "port %1$u mimo rozsah v adrese USB sběrnice: %2$u port: %3$s"
 
 #, c-format
 msgid "port '%1$d' out of range"
-msgstr ""
+msgstr "port „%1$d“ mimo rozsah"
 
 #, c-format
 msgid "port '%1$s' out of range"
@@ -35798,6 +35841,8 @@ msgstr "sběrnice ps2 nepodporuje vstupní zařízení %1$s"
 
 msgid "ps2 bus inputs require the ps2 feature not to be disabled"
 msgstr ""
+"v případě vstupních zařízení pro sběrnici ps2 je třeba, aby funkce ps2 "
+"nebyla vypnutá"
 
 msgid "ps2 feature is not available with this QEMU binary"
 msgstr "funkce ps2 není u tohoto spustitelného souboru QEMU podporována"
@@ -35836,7 +35881,7 @@ msgid "qemu agent didn't return an array of keys"
 msgstr "qemu agent nevrátil pole klíčů"
 
 msgid "qemu agent didn't return an array of loads"
-msgstr ""
+msgstr "agent do qemu nevrátil pole jednotlivých vytížení"
 
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%1$zu'"
@@ -35914,7 +35959,7 @@ msgstr ""
 "qemu-rdp nepodporuje vícero očekávání spojení pro jedno grafické zařízení."
 
 msgid "qemu-rdp support requires a D-Bus bus graphics device."
-msgstr ""
+msgstr "podpora pro qemu-rdp vyžaduje grafické zařízení s D-Bus."
 
 #, c-format
 msgid "qom-get invalid object property type %1$d"
@@ -36231,6 +36276,7 @@ msgstr "readonly (pouze pro čtení) je podporováno pouze s vhostuser diskem"
 
 msgid "readonly mode cannot be set for externally started virtiofsd"
 msgstr ""
+"režim pouze pro čtení není možné nastavit pro externě spuštěné virtiofsd"
 
 msgid "readonly sata disks are not supported"
 msgstr "sata disky pouze pro čtení není podporován"
@@ -36402,7 +36448,7 @@ msgid "reply data was missing 'option' name or parameters"
 msgstr "data odpovědi postrádají název 'option' nebo parametry"
 
 msgid "reply data was missing 'properties' array"
-msgstr ""
+msgstr "data odpovědi postrádala pole 'properties' (vlastnosti)"
 
 msgid "reply was missing return data"
 msgstr "v odpovědi chyběla návratová data"
@@ -36496,7 +36542,7 @@ msgstr ""
 
 #, c-format
 msgid "requested firewall_backend '%1$s' is not available"
-msgstr ""
+msgstr "požadované firewall_backend „%1$s“ není k dispozici"
 
 msgid "requested size must be an integer multiple of block size"
 msgstr ""
@@ -37065,7 +37111,7 @@ msgid "setting ACPI S3/S4 not supported"
 msgstr "nastavení ACPI S3/S4 nepodporováno"
 
 msgid "setting IP addresses for SLIRP networking is not supported"
-msgstr ""
+msgstr "nastavování IP adres pro SLIRP síťování není podporováno"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
@@ -37553,7 +37599,7 @@ msgid "start_cpu %1$d larger than maximum of %2$d"
 msgstr "start_cpu %1$d vyšší než maximum z %2$d"
 
 msgid "started"
-msgstr "spouštěno"
+msgstr "spuštěno"
 
 msgid "starting up"
 msgstr "zapínání"
@@ -37971,7 +38017,7 @@ msgstr "ukončeno nenásilně"
 
 #, c-format
 msgid "test hypervisor does not support device assignment mode '%1$s'"
-msgstr ""
+msgstr "testovací hypervizor nepodporuje režim přiřazování zařízení „%1$s“"
 
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: zadejte cestu nebo test:///default"
@@ -39794,7 +39840,7 @@ msgid "unix"
 msgstr "unix"
 
 msgid "unknown"
-msgstr "neznámý"
+msgstr "neznámé"
 
 #, c-format
 msgid "unknown %1$s action: %2$s"
@@ -40267,6 +40313,8 @@ msgstr "nerozpoznaný název příkazu „%1$s“"
 msgid ""
 "unrecognized firewall_backend = '%1$s' set in network driver config file %2$s"
 msgstr ""
+"nerozpoznaný firewall_backend = '%1$s' nastavený v souboru s nastavením "
+"síťového ovladače %2$s"
 
 #, c-format
 msgid "unrecognized network update command code %1$d"
