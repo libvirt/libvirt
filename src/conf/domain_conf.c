@@ -30723,6 +30723,9 @@ bool
 virDomainObjIsFailedPostcopy(virDomainObj *dom,
                              virDomainJobObj *job)
 {
+    if (!virDomainObjIsActive(dom))
+        return false;
+
     if (job && job->asyncPaused &&
         (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_IN ||
          job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT))
@@ -30739,6 +30742,9 @@ bool
 virDomainObjIsPostcopy(virDomainObj *dom,
                        virDomainJobObj *job)
 {
+    if (!virDomainObjIsActive(dom))
+        return false;
+
     if (virDomainObjIsFailedPostcopy(dom, job))
         return true;
 
