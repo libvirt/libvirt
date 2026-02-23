@@ -969,6 +969,15 @@
 #migration_port_max = 49215
 
 
+# Port range used for automatic allocation of NBD backup server ports.
+# When a pull-mode backup is started without specifying a TCP port, a
+# port from this range will be assigned automatically. The NBD standard
+# port is 10809.
+#
+#backup_port_min = 10809
+#backup_port_max = 10872
+
+
 # Timestamp QEMU's log messages (if QEMU supports it)
 #
 # Defaults to 1.

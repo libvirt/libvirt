@@ -110,6 +110,8 @@ module Test_libvirtd_qemu =
 { "migration_host" = "host.example.com" }
 { "migration_port_min" = "49152" }
 { "migration_port_max" = "49215" }
+{ "backup_port_min" = "10809" }
+{ "backup_port_max" = "10872" }
 { "log_timestamp" = "0" }
 { "nvram"
     { "1" = "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd" }

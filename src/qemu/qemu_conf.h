@@ -241,6 +241,9 @@ struct _virQEMUDriverConfig {
     unsigned int migrationPortMin;
     unsigned int migrationPortMax;
 
+    unsigned int backupPortMin;
+    unsigned int backupPortMax;
+
     bool logTimestamp;
     bool stdioLogD;
 

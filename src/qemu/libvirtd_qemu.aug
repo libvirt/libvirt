@@ -146,6 +146,8 @@ module Libvirtd_qemu =
                  | int_entry "migration_port_min"
                  | int_entry "migration_port_max"
                  | str_entry "migration_host"
+                 | int_entry "backup_port_min"
+                 | int_entry "backup_port_max"
 
    let log_entry = bool_entry "log_timestamp"
 

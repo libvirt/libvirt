@@ -74,6 +74,9 @@ VIR_LOG_INIT("qemu.qemu_conf");
 #define QEMU_MIGRATION_PORT_MIN 49152
 #define QEMU_MIGRATION_PORT_MAX 49215
 
+#define QEMU_BACKUP_PORT_MIN 10809
+#define QEMU_BACKUP_PORT_MAX 10872
+
 VIR_ENUM_IMPL(virQEMUSchedCore,
               QEMU_SCHED_CORE_LAST,
               "none",
@@ -267,6 +270,9 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
 
     cfg->migrationPortMin = QEMU_MIGRATION_PORT_MIN;
     cfg->migrationPortMax = QEMU_MIGRATION_PORT_MAX;
+
+    cfg->backupPortMin = QEMU_BACKUP_PORT_MIN;
+    cfg->backupPortMax = QEMU_BACKUP_PORT_MAX;
 
     /* For privileged driver, try and find hugetlbfs mounts automatically.
      * Non-privileged driver requires admin to create a dir for the
@@ -986,6 +992,25 @@ virQEMUDriverConfigLoadNetworkEntry(virQEMUDriverConfig *cfg,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("%1$s: migration_port_max: port must be between the minimal port %2$d and 65535"),
                        filename, cfg->migrationPortMin);
+        return -1;
+    }
+
+    if (virConfGetValueUInt(conf, "backup_port_min", &cfg->backupPortMin) < 0)
+        return -1;
+    if (cfg->backupPortMin <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%1$s: backup_port_min: port must be greater than 0"),
+                        filename);
+        return -1;
+    }
+
+    if (virConfGetValueUInt(conf, "backup_port_max", &cfg->backupPortMax) < 0)
+        return -1;
+    if (cfg->backupPortMax > 65535 ||
+        cfg->backupPortMax < cfg->backupPortMin) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("%1$s: backup_port_max: port must be between the minimal port %2$d and 65535"),
+                       filename, cfg->backupPortMin);
         return -1;
     }
 
