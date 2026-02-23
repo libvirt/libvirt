@@ -145,15 +145,17 @@ domains.
      ...
    <domainCapabilities>
 
-The ``firmware`` enum corresponds to the ``firmware`` attribute of the ``os``
-element in the domain XML. The presence of this enum means libvirt is capable of
-the so-called firmware auto-selection feature. And the listed firmware values
-represent the accepted input in the domain XML. Note that the ``firmware`` enum
-reports only those values for which a firmware "descriptor file" exists on the
-host. Firmware descriptor file is a small JSON document that describes details
-about a given BIOS or UEFI binary on the host, e.g. the firmware binary path,
-its architecture, supported machine types, NVRAM template, etc. This ensures
-that the reported values won't cause a failure on guest boot.
+The presence of the ``firmware`` enum means that libvirt can perform firmware
+autoselection, and each of the values is guaranteed to be usable. In the
+domain XML, firmware autoselection is enabled as follows:
+
+::
+
+    <os firmware='efi'>
+      ...
+
+Autoselection is the recommended mechanism for configuring the guest firmware.
+Providing paths and other information manually is discouraged.
 
 The ``<firmwareFeatures/>`` element :since:`(since 12.1.0)` contains one
 enum for each of the features that can be used to fine-tune the firmware
@@ -196,27 +198,34 @@ such as:
 would not work, since ``no`` is not one of the valid values advertised by
 the ``secureBoot`` enum.
 
-For the ``loader`` element, the following can occur:
+The information contained in the ``<loader/>`` element is not relevant when
+using firmware autoselection, which is the recommended approach to guest
+firmware configuration, and as such can largely be ignored. Its subelements
+are the following:
 
 ``value``
-   List of known firmware binary paths. Currently this is used only to advertise
-   the known location of OVMF binaries for QEMU. OVMF binaries will only be
-   listed if they actually exist on host.
+   One element for each known firmware binary present on the system.
+
+   Note that a binary being present here indicates that the file exists and it
+   is compatible with the architecture/machine type, but does not provide any
+   insight into which mechanism (see ``type`` below) should be used to load it.
 ``type``
-   Whether the boot loader is a typical BIOS (``rom``) or a UEFI firmware
-   (``pflash``). Each ``value`` sub-element under the ``type`` enum represents a
-   possible value for the ``type`` attribute for the <loader/> element in the
-   domain XML. E.g. the presence of ``pfalsh`` under the ``type`` enum means
-   that a domain XML can use UEFI firmware via: <loader/> type="pflash"
-   ...>/path/to/the/firmware/binary/</loader>.
+   Whether firmware can be loaded using a ``pflash`` device (UEFI only) or as
+   a ``rom`` (either UEFI or BIOS).
 ``readonly``
-   Options for the ``readonly`` attribute of the <loader/> element in the domain
-   XML.
+   Supported values for the ``readonly`` attribute of the ``<loader/>`` element
+   in the domain XML.
 ``secure``
-   Options for the ``secure`` attribute of the <loader/> element in the domain
-   XML. Note that the value ``yes`` is listed only if libvirt detects a firmware
-   descriptor file that has path to an OVMF binary that supports Secure boot,
-   and lists its architecture and supported machine type.
+   Supported values for the ``secure`` attribute of the ``<loader/>`` element
+   in the domain XML.
+
+   Note that the value ``yes`` is listed if libvirt detects a firmware
+   descriptor file that points to a firmware binary that implements Secure
+   Boot and is compatible with the architecture/machine type, but the UEFI
+   variable store template associated with it might not have the usual set of
+   Secure Boot certificates enrolled. To figure out whether it's actually
+   possible to enforce Secure Boot, look at the ``enrolledKeys`` enum inside
+   the ``<firmwareFeatures/>`` element instead.
 
 CPU configuration
 ~~~~~~~~~~~~~~~~~
