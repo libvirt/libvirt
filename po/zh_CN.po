@@ -26,13 +26,14 @@
 # QiangWei Zhang <zhang.qiangwei@zte.com.cn>, 2025.
 # Poesty Li <poesty7450@gmail.com>, 2025.
 # Charles Lee <lchopn@gmail.com>, 2025.
+# Haorong Xu <haorongxu09@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-11-27 06:58+0000\n"
-"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
+"PO-Revision-Date: 2026-02-23 20:21+0000\n"
+"Last-Translator: Haorong Xu <haorongxu09@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -40,7 +41,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 5.16\n"
 
 msgid ""
 "\n"
@@ -1195,11 +1196,11 @@ msgstr "内存中放不下 '%1$s' 文件"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "虚拟化层功能 '%1$s' 依赖于 '%2$s' 功能"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "虚拟化层功能 '%1$s' 需要定时器 '%2$s'"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -1340,7 +1341,7 @@ msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "在 guest-get-fsinfo 的回复中缺少 'disk' 或者不是一个阵列"
 
 msgid "'dpofua' option is available only for SCSI disks"
-msgstr ""
+msgstr "'dpofua' 选项只适用于 SCSI 硬盘"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -1459,7 +1460,7 @@ msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "必须为 'pool' 类型源同时指定 'pool' 和 'volume'"
 
 msgid "'qom-list-get' returned unexpected number of paths"
-msgstr ""
+msgstr "'qom-list-get' 返回的路径数量异常"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr "'queue' 计数必须为显式 iothread 到队列映射进行配置"
@@ -1870,7 +1871,7 @@ msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI 索引只支持 PCI 设备"
 
 msgid "ACPI nodeset is not supported with this QEMU"
-msgstr ""
+msgstr "该 QEMU 不支持 ACPI 节点集"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "在此构架上 ACPI 需要 UEFI"
@@ -2007,7 +2008,7 @@ msgid "Added"
 msgstr "已添加的"
 
 msgid "Adding disk to domain failed"
-msgstr ""
+msgstr "向域添加磁盘失败"
 
 msgid "Address"
 msgstr "地址"
@@ -2092,7 +2093,7 @@ msgid ""
 msgstr "memnode 元素下的参数不与现有客户机的 NUMA 单元对应"
 
 msgid "Assigning disk alias failed"
-msgstr ""
+msgstr "分配磁盘别名失败"
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "至少有一个 NUMA 节点必须有 CPU"
@@ -2264,7 +2265,7 @@ msgid "Before dumping core, failed to suspend domain '%1$d' with libxenlight"
 msgstr "转储 core 之前，使用 libxenlight 挂起域 '%1$d' 失败"
 
 msgid "Bhyve version does not support NVMe"
-msgstr ""
+msgstr "Bhyve 的版本不支持 NVMe"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "Bhyve 版本不支持帧缓冲"
@@ -2373,7 +2374,7 @@ msgstr "忙碌"
 
 #, c-format
 msgid "CA certificate '%1$s' does not exist"
-msgstr ""
+msgstr "CA 证书 '%1$s' 不存在"
 
 msgid "CA certificate:"
 msgstr "CA 证书："
@@ -6971,7 +6972,7 @@ msgid "Failed to complete tree listing"
 msgstr "显示树形列表失败"
 
 msgid "Failed to connect network interfaces"
-msgstr ""
+msgstr "连接网络接口失败"
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -9959,7 +9960,7 @@ msgstr "网络 '%1$s' 中服务 '%2$s' 的无效 DNS SRV priority 属性"
 
 #, c-format
 msgid "Invalid HTTP response code from CH: %1$d"
-msgstr ""
+msgstr "CH 返回的 HTTP 状态码无效: %1$d"
 
 #, c-format
 msgid "Invalid IOThread id value: '%1$d'"
@@ -10049,7 +10050,7 @@ msgstr "无效的 XML 响应"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "无效的绝对路径 '%1$s'"
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10595,7 +10596,7 @@ msgstr "无效的 resctrl 监控"
 
 #, c-format
 msgid "Invalid response from CH. Device removal failed for device %1$s."
-msgstr ""
+msgstr "CH 的响应无效, 设备 %1$s 移除失败."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -10903,7 +10904,7 @@ msgstr "内核映像路径未定义。启用 sev_snp 时，请传递 igvm 路径
 
 #, c-format
 msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
-msgstr ""
+msgstr "密钥 '%1$s' 不存在, 但证书 '%2$s' 存在"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr "必须为私钥身份验证提供密钥文件路径"
@@ -11728,7 +11729,7 @@ msgid "Missing device name for container-side veth"
 msgstr "缺少容器端 veth 的设备名称"
 
 msgid "Missing disk alias"
-msgstr ""
+msgstr "磁盘别名缺失"
 
 msgid "Missing disk file path in domain"
 msgstr "在域中缺少磁盘文件路径"
@@ -12545,7 +12546,7 @@ msgid "No JSON parser implementation is available"
 msgstr "没有可用 JSON 解析程序"
 
 msgid "No PCI address provided"
-msgstr ""
+msgstr "未提供 PCI 地址"
 
 msgid "No PCI buses available"
 msgstr "没有可用 PCI 总线"
@@ -13031,7 +13032,7 @@ msgstr "<numa> 中的 CPU 数量超过所需的最大 vcpu 数量"
 
 #, c-format
 msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
-msgstr ""
+msgstr "证书数量 (%1$zu) 必须匹配密钥数量 (%2$zu)"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -13110,13 +13111,13 @@ msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "仅支持'nmdm'和'tcp'控制台类型"
 
 msgid "Only 'nmdm' console type is supported on arm64"
-msgstr ""
+msgstr "arm64 平台只支持 'nmdm' 类型终端"
 
 msgid "Only 'random' backend model is supported"
 msgstr "仅支持 'random' 后端模型"
 
 msgid "Only 'raw' protocol is supported for TCP sockets"
-msgstr ""
+msgstr "TCP 套接字只支持 'raw' 协议"
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr "仅支持 'virio' RNG 设备模型"
@@ -13147,7 +13148,7 @@ msgid "Only EFI firmware permits NVRAM"
 msgstr "只有 EFI 固件允许 NVRAM"
 
 msgid "Only IPv4 is supported"
-msgstr ""
+msgstr "仅支持 IPv4"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "只有 IPv4 或 IPv6 地址可以使用前缀"
@@ -13159,7 +13160,7 @@ msgid "Only PTY console types are supported"
 msgstr "只支持 PTY 控制台类型"
 
 msgid "Only RANDOM backend is supported for RNG devices"
-msgstr ""
+msgstr "RNG 设备只支持 RANDOM 后端"
 
 msgid "Only VNC supported"
 msgstr "仅支持 VNC"
@@ -13209,7 +13210,7 @@ msgid "Only file based or volume based filesystems are supported by vz driver."
 msgstr "vz 驱动程序仅支持基于文件或基于卷的文件系统。"
 
 msgid "Only four serial ports are supported"
-msgstr ""
+msgstr "只支持四个串行接口"
 
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "vz 驱动程序只支持硬盘和 CDROM。"
@@ -13221,7 +13222,7 @@ msgid "Only ide, sata and scsi disk supports 'product'"
 msgstr "仅 ide、sata 和 scsi 磁盘支持 'product'"
 
 msgid "Only listening TCP sockets are supported"
-msgstr ""
+msgstr "只支持监听 TCP 套接字"
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "原始文件只支持 luks 加密"
@@ -14235,7 +14236,7 @@ msgid "Reconnected to the hypervisor"
 msgstr "重新连接管理程序（即虚拟化层）"
 
 msgid "Recreated"
-msgstr ""
+msgstr "已重建"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -14881,7 +14882,7 @@ msgid "Secret not found: %1$s"
 msgstr "未找到 secret：%1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "secret 值不是有效的 base64 编码"
 
 msgid "Secret value set\n"
 msgstr "secret 值设定\n"
@@ -17088,7 +17089,7 @@ msgid "This QEMU binary doesn't support zPCI"
 msgstr "这个 QEMU 二进制文件不支持 zPCI"
 
 msgid "This QEMU doesn't support '-device usb-bot'"
-msgstr ""
+msgstr "该 QEMU 不支持 '-device usb-bot'"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "此 QEMU 不支持 '-device usb-storage'"
@@ -34169,7 +34170,7 @@ msgstr "端口 %1$u 超出 USB 地址总线的范围：%2$u 端口： %3$s"
 
 #, c-format
 msgid "port '%1$d' out of range"
-msgstr ""
+msgstr "端口 '%1$d' 超出范围"
 
 #, c-format
 msgid "port '%1$s' out of range"
@@ -35628,7 +35629,7 @@ msgid "setting ACPI S3/S4 not supported"
 msgstr "不支持设置 ACPI S3/S4"
 
 msgid "setting IP addresses for SLIRP networking is not supported"
-msgstr ""
+msgstr "不支持为 SLIRP 网络设置 IP 地址"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
