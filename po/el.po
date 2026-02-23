@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-22 15:22+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2026-02-01 08:27+0000\n"
+"Last-Translator: Jim Spentzos <jimspentzos2000@gmail.com>\n"
 "Language-Team: Greek <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/el/>\n"
 "Language: el\n"
@@ -807,9 +807,9 @@ msgstr "αδυναμία εγγραφής του αρχείου ρυθμίσεω
 msgid "%1$s: failure with %2$s: %3$s"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%1$s: initialization failed"
-msgstr "αδύνατη η αρχικοποίηση υπο συνθήκη μεταβλητής (condition variable)"
+msgstr "%1$s: αποτυχία αρχικοποίησης"
 
 #, c-format
 msgid "%1$s: initialization failed\n"
@@ -2591,9 +2591,9 @@ msgstr ""
 msgid "Cancelled"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access '%1$s'"
-msgstr "αδυναμία ερμηνείας διαύλου %1$s"
+msgstr "Δεν είναι δυνατή η πρόσβαση στο «%1$s»"
 
 #, c-format
 msgid "Cannot access backing file '%1$s' of storage file '%2$s'"
@@ -2685,9 +2685,9 @@ msgstr ""
 msgid "Cannot convert wide character string back to multi-byte domain name"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot create %1$s"
-msgstr "αδυναμία ερμηνείας της συσκευής %1$s"
+msgstr "Δεν είναι δυνατή η δημιουργία του «%1$s»"
 
 #, fuzzy
 msgid "Cannot create /dev"
@@ -2980,9 +2980,9 @@ msgstr ""
 msgid "Cannot offline enough CPUs"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot open %1$s"
-msgstr "αδυναμία ερμηνείας διαύλου %1$s"
+msgstr "Δεν είναι δυνατό το άνοιγμα του «%1$s»"
 
 msgid "Cannot open /proc/cgroups"
 msgstr ""
@@ -9850,9 +9850,8 @@ msgid ""
 "Invalid address type '%1$s' for the disk '%2$s' with the bus type '%3$s'"
 msgstr ""
 
-#, fuzzy
 msgid "Invalid address."
-msgstr "απαράδεκτο πρόθεμα διεύθυνσης IP"
+msgstr "Μη έγκυρη διεύθυνση."
 
 msgid "Invalid argument"
 msgstr ""
@@ -14688,9 +14687,8 @@ msgstr ""
 msgid "Security driver model '%1$s' is not available"
 msgstr ""
 
-#, fuzzy
 msgid "Security label:"
-msgstr "λείπει η ετικέτα ασφαλείας"
+msgstr "Ετικέτα ασφαλείας:"
 
 #, c-format
 msgid "Security model %1$s cannot be entered"
