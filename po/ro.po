@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
-# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024, 2025.
+# Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>, 2023, 2024, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 9.3.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-05-01 09:25+0000\n"
+"PO-Revision-Date: 2026-01-28 17:58+0000\n"
 "Last-Translator: Remus-Gabriel Chelu <remusgabriel.chelu@disroot.org>\n"
 "Language-Team: Romanian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ro/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.11.1\n"
+"X-Generator: Weblate 5.15.2\n"
 
 msgid ""
 "\n"
@@ -193,16 +193,16 @@ msgstr ""
 "%1$s [opțiuni]... [<șir-comenzi>]\n"
 "%2$s [opțiuni]... <comandă> [argumente...]\n"
 "\n"
-"  options:\n"
-"    -c | --connect=URI      URI de conectare a administratorului de demon\n"
-"    -d | --debug=NUMĂR      nivelul de depanare [0-4]\n"
-"    -h | --help             acest ajutor\n"
-"    -l | --log=FIȘIER       ieșirea de jurnalizare către fișier\n"
-"    -q | --quiet            modul silențios\n"
-"    -v                      versiunea scurtă\n"
-"    -V                      versiunea lungă\n"
-"         --version[=TIP]    versiune, TIPUL este short sau long (implicit "
-"short)\n"
+"  opțiuni:\n"
+"    -c | --connect=URI         URI conexiune hipervizor\n"
+"    -d | --debug=NUMĂR         nivelul de depanare [0-4]\n"
+"    -h | --help                acest ajutor\n"
+"    -l | --log=FIȘIER          înregistrarea ieșirii în fișier\n"
+"    -q | --quiet               modul silențios\n"
+"    -v                         afișează versiunea în formatul scurt\n"
+"    -V                         afișează versiunea în formatul lung\n"
+"         --version[=TIP]       afișează versiunea, TIP este short sau long\n"
+"                               (implicit short)\n"
 "  comenzi (modul neinteractiv):\n"
 "\n"
 
@@ -232,6 +232,33 @@ msgid ""
 "  commands (non interactive mode):\n"
 "\n"
 msgstr ""
+"\n"
+"%1$s [opțiuni]... [<șir-comenzi>]\n"
+"%2$s [opțiuni]... <comandă> [argumente...]\n"
+"\n"
+"  opțiuni:\n"
+"    -c | --connect=URI         URI conexiune hipervizor\n"
+"    -d | --debug=NUMĂR         nivelul de depanare [0-4]\n"
+"    -e | --escape <caracter>   stabilește secvența de eludare pentru "
+"consolă\n"
+"    -h | --help                acest ajutor\n"
+"    -k | --keepalive-interval=NUMĂR\n"
+"                               intervalul de menținere „keepalive” în "
+"secunde,\n"
+"                               0 pentru dezactivare\n"
+"    -K | --keepalive-count=NUMĂR\n"
+"                               numărul de mesaje keepalive pierdute posibil\n"
+"    -l | --log=FIȘIER          înregistrarea ieșirii în fișier\n"
+"    -q | --quiet               modul silențios\n"
+"    -r | --readonly            conectare numai pentru citire\n"
+"    -t | --timing              imprimare informații privind sincronizarea\n"
+"         --no-pkttyagent       suprimă înregistrarea pkttyagent\n"
+"    -v                         afișează versiunea în formatul scurt\n"
+"    -V                         afișează versiunea în formatul lung\n"
+"         --version[=TIP]       afișează versiunea, TIP este short sau long\n"
+"                               (implicit short)\n"
+"  comenzi (modul neinteractiv):\n"
+"\n"
 
 #, c-format
 msgid ""
@@ -1247,11 +1274,11 @@ msgstr "Fișierul „%1$s” nu încape în memorie"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' feature"
-msgstr ""
+msgstr "Caracteristica „%1$s” a hyperv necesită caracteristica „%2$s”"
 
 #, c-format
 msgid "'%1$s' hyperv feature requires '%2$s' timer"
-msgstr ""
+msgstr "Caracteristica „%1$s” a hyperv necesită temporizatorul „%2$s”"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
@@ -1400,7 +1427,7 @@ msgid "'disk' missing or not an array in reply of guest-get-fsinfo"
 msgstr "„disk” lipsește sau nu este o matrice în răspunsul guest-get-fsinfo"
 
 msgid "'dpofua' option is available only for SCSI disks"
-msgstr ""
+msgstr "opțiunea „dpofua” este disponibilă numai pentru discurile SCSI"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %1$s"
@@ -1424,7 +1451,7 @@ msgid "'initiator' refers to a non-existent NUMA node"
 msgstr "„initiator” se referă la un nod NUMA inexistent"
 
 msgid "'ioeventfd' is only supported by virtio-scsi and nvme controllers"
-msgstr ""
+msgstr "„ioeventfd” este acceptat numai de controlorii virtio-scsi și nvme"
 
 msgid "'iothread' attribute only supported for virtio scsi controllers"
 msgstr ""
@@ -1435,7 +1462,7 @@ msgstr "„iothread” este acceptat numai pentru controlorul virtio-scsi"
 
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
-msgstr ""
+msgstr "„iscsiadm”: modul nou a eșuat pentru ținta „%1$s” cu starea „%2$d”"
 
 msgid "'legacy KVM' device assignment is no longer supported on this system"
 msgstr ""
@@ -1451,6 +1478,8 @@ msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
+"Modul de creare de instantanee de disc „manual” necesită punerea în pauză "
+"explicită (VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE nu este acceptată)"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "Modul „manual” de creare a instantaneelor de memorie nu este acceptat"
@@ -1528,7 +1557,7 @@ msgstr ""
 "„pool” și „volume” trebuie specificate împreună pentru sursa de tip „pool”"
 
 msgid "'qom-list-get' returned unexpected number of paths"
-msgstr ""
+msgstr "„qom-list-get” a returnat un număr neașteptat de rute"
 
 msgid "'queue' count must be configured for explicit iothread to queue mapping"
 msgstr ""
@@ -1537,6 +1566,7 @@ msgstr ""
 
 msgid "'queues' is only supported by virtio-scsi and nvme controllers"
 msgstr ""
+"suportul pentru „queues” este oferit numai de controlorii virtio-scsi și nvme"
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1977,7 +2007,7 @@ msgid "ACPI index is only supported for PCI devices"
 msgstr "Indexul ACPI este acceptat numai pentru dispozitivele PCI"
 
 msgid "ACPI nodeset is not supported with this QEMU"
-msgstr ""
+msgstr "Setul de noduri ACPI nu este acceptat cu acest QEMU"
 
 msgid "ACPI requires UEFI on this architecture"
 msgstr "ACPI necesită UEFI pe această arhitectură"
@@ -2120,7 +2150,7 @@ msgid "Added"
 msgstr "Adăugat"
 
 msgid "Adding disk to domain failed"
-msgstr ""
+msgstr "Adăugarea discului la domeniu a eșuat"
 
 msgid "Address"
 msgstr "Adresă"
@@ -2217,7 +2247,7 @@ msgstr ""
 "existent"
 
 msgid "Assigning disk alias failed"
-msgstr ""
+msgstr "Alocarea numelui-alias de disc a eșuat"
 
 msgid "At least one NUMA node has to have CPUs"
 msgstr "Cel puțin un nod NUMA trebuie să aibă CPU-uri"
@@ -2408,7 +2438,7 @@ msgstr ""
 "domeniului „%1$d” cu libxenlight"
 
 msgid "Bhyve version does not support NVMe"
-msgstr ""
+msgstr "Versiunea Bhyve nu acceptă NVMe"
 
 msgid "Bhyve version does not support framebuffer"
 msgstr "Versiunea bhyve nu acceptă memoria tampon de cadre (framebuffer)"
@@ -2525,7 +2555,7 @@ msgstr "Ocupat"
 
 #, c-format
 msgid "CA certificate '%1$s' does not exist"
-msgstr ""
+msgstr "Certificatul CA „%1$s” nu există"
 
 msgid "CA certificate:"
 msgstr "Certificat CA:"
@@ -3081,6 +3111,8 @@ msgid ""
 "Cannot automatically add a new PCI bus for a device with unrecognized "
 "connect flags %1$.2x"
 msgstr ""
+"Nu se poate adăuga automat o nouă magistrală PCI pentru un dispozitiv cu "
+"fanioane de conectare nerecunoscute %1$.2x"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -3211,7 +3243,7 @@ msgid "Cannot determine system clock HZ"
 msgstr "Nu se poate determina frecvența de ceasului sistemului"
 
 msgid "Cannot determine the default interface"
-msgstr ""
+msgstr "Nu se poate determina interfața implicită"
 
 msgid "Cannot disable close-on-exec flag"
 msgstr "Nu se poate dezactiva fanionul close-on-exec"
@@ -3394,7 +3426,7 @@ msgid "Cannot get storage controller name"
 msgstr "Nu se poate obține numele controlorului de stocare"
 
 msgid "Cannot have more than one disk per NVMe controller"
-msgstr ""
+msgstr "Nu se poate avea mai mult de un disc pe fiecare controlor NVMe"
 
 msgid "Cannot hotplug platform device"
 msgstr "Nu se poate conecta la cald dispozitivul platformei"
@@ -3875,11 +3907,11 @@ msgstr "Utilizarea certificatului %1$s nu permite semnătura digitală"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist"
-msgstr ""
+msgstr "Certificatul „%1$s” nu există"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
-msgstr ""
+msgstr "Certificatul „%1$s” nu există, dar cheia „%2$s” există"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -4353,6 +4385,8 @@ msgid ""
 "Conflicting NVME disk serial number, all disks on a controller must have the "
 "same serial number as the controller itself"
 msgstr ""
+"Număr de serie NVME conflictual, toate discurile de pe un controlor trebuie "
+"să aibă același număr de serie ca și controlorul însuși."
 
 msgid "Connect the virtual serial console for the guest"
 msgstr "Conectează consola serială virtuală pentru invitat"
@@ -4437,7 +4471,7 @@ msgid "Core(s) per socket:"
 msgstr "Nuclee pe soclu:"
 
 msgid "Could detach device"
-msgstr ""
+msgstr "Se poate detașa dispozitivul"
 
 #, c-format
 msgid "Could find volume with name: %1$s"
@@ -4491,7 +4525,7 @@ msgid "Could not build CURL header list"
 msgstr "Nu s-a putut construi lista de antete CURL"
 
 msgid "Could not build disk json"
-msgstr ""
+msgstr "Nu s-a putut crea fișierul json al discului"
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4670,7 +4704,7 @@ msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "Nu s-a putut găsi PhysicalNic cu numele „%1$s”"
 
 msgid "Could not find a suitable controller for smmuv3"
-msgstr ""
+msgstr "Nu s-a găsit un controlor adecvat pentru smmuv3"
 
 msgid "Could not find any 'network' element in status file"
 msgstr "Nu s-a putut găsi niciun element „ network ” în fișierul de stare"
@@ -4878,7 +4912,7 @@ msgstr "Nu s-a putut obține memorie liberă pentru gazda %1$s"
 
 #, c-format
 msgid "Could not get index of disk '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut obține indexul discului „%1$s”"
 
 #, c-format
 msgid "Could not get instance ID for %1$s invocation"
@@ -5210,7 +5244,7 @@ msgid "Could not parse chain priority '%1$s'"
 msgstr "Nu s-a putut analiza prioritatea lanțului „%1$s”"
 
 msgid "Could not parse domain definition"
-msgstr ""
+msgstr "Nu s-a putut analiza definiția domeniului"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -6156,7 +6190,7 @@ msgstr "Domeniul %1$s nu a fost afișat"
 
 #, c-format
 msgid "Domain %1$s didn't show up in /dev/vmm"
-msgstr ""
+msgstr "Domeniul %1$s nu apare în /dev/vmm"
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -7211,7 +7245,7 @@ msgid "Failed to add capability %1$s: %2$d"
 msgstr "Adăugarea capabilității %1$s a eșuat: %2$d"
 
 msgid "Failed to add device"
-msgstr ""
+msgstr "Adăugarea dispozitivului a eșuat"
 
 #, c-format
 msgid ""
@@ -7307,9 +7341,10 @@ msgstr "Asocierea soclului la „%1$s” a eșuat"
 
 msgid "Failed to build QEMU command line for acpi-generic-initiator"
 msgstr ""
+"Construirea liniei de comandă QEMU pentru acpi-generic-initiator a eșuat"
 
 msgid "Failed to build acpi-generic-initiator properties"
-msgstr ""
+msgstr "Construirea proprietăților pentru acpi-generic-initiator a eșuat"
 
 msgid "Failed to build net json"
 msgstr "Construirea net json a eșuat"
@@ -7416,7 +7451,7 @@ msgid "Failed to complete tree listing"
 msgstr "Finalizarea listării arborescente a eșuat"
 
 msgid "Failed to connect network interfaces"
-msgstr ""
+msgstr "Conectarea la interfețele de rețea a eșuat"
 
 #, c-format
 msgid "Failed to connect socket to '%1$s'"
@@ -8534,7 +8569,7 @@ msgstr "Analizarea adresei MAC din „%1$s” a eșuat"
 
 #, c-format
 msgid "Failed to parse PCI address %1$s"
-msgstr ""
+msgstr "Analizarea adresei PCI %1$s a eșuat"
 
 #, c-format
 msgid "Failed to parse PCI config address '%1$s'"
@@ -8971,11 +9006,14 @@ msgstr "Execuția containerului de clonare a eșuat"
 
 msgid "Failed to run command 'iscsiadm' to create new iscsi interface"
 msgstr ""
+"Execuția comenzii „iscsiadm” pentru a crea o nouă interfață iscsi a eșuat"
 
 #, c-format
 msgid ""
 "Failed to run command 'iscsiadm' to update iscsi interface with IQN '%1$s'"
 msgstr ""
+"Execuția comenzii „iscsiadm” pentru a actualiza interfața iscsi cu IQN „%1$s"
+"” a eșuat"
 
 #, c-format
 msgid "Failed to run firewall command %1$s: %2$s"
@@ -10204,7 +10242,7 @@ msgstr ""
 "driver='qemu')"
 
 msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
-msgstr ""
+msgstr "Modelul IOMMU smmuv3 trebuie specificat pentru definiții IOMMU multiple"
 
 msgid "IORT table header ended early"
 msgstr "Antetul tabelului IORT s-a încheiat mai devreme"
@@ -10412,19 +10450,20 @@ msgid "Integrity error in watchdog models"
 msgstr "Eroare de integritate în modelele watchdog"
 
 msgid "Intel TDX launch security is not supported with PMU enabled"
-msgstr ""
+msgstr "Securitatea la lansare Intel TDX nu este acceptată cu PMU activat"
 
 msgid "Intel TDX launch security is not supported with SMM enabled"
-msgstr ""
+msgstr "Securitatea la lansare Intel TDX nu este acceptată cu SMM activat"
 
 msgid "Intel TDX launch security is not supported with pflash loader"
 msgstr ""
+"Securitatea la lansare Intel TDX nu este acceptată cu încărcătorul pflash"
 
 msgid "Intel TDX launch security is not supported with this QEMU binary"
-msgstr ""
+msgstr "Securitatea la lansare Intel TDX nu este acceptată cu acest binar QEMU"
 
 msgid "Intel TDX launch security needs split kernel irqchip"
-msgstr ""
+msgstr "Securitatea la lansarea Intel TDX necesită un irqchip de nucleu separat"
 
 msgid "Interface"
 msgstr "Interfață"
@@ -10550,7 +10589,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid HTTP response code from CH: %1$d"
-msgstr ""
+msgstr "Cod de răspuns HTTP nevalid de la CH: %1$d"
 
 #, c-format
 msgid "Invalid IOThread id value: '%1$d'"
@@ -10646,7 +10685,7 @@ msgstr "Răspuns XML nevalid"
 
 #, c-format
 msgid "Invalid absolute path '%1$s'"
-msgstr ""
+msgstr "Rută absolută nevalidă „%1$s”"
 
 #, c-format
 msgid "Invalid adapter name '%1$s' for SCSI pool"
@@ -10956,7 +10995,7 @@ msgstr "Nume nevalid al dispozitivului de dischetă: %1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "Format nevalid „%1$s” pentru tipul încărcătorului ROM"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
@@ -11049,7 +11088,7 @@ msgstr ""
 
 #, c-format
 msgid "Invalid log_level %1$u"
-msgstr ""
+msgstr "Nivel de jurnalizare nevalid „log_level” %1$u"
 
 #, c-format
 msgid "Invalid lookup from '%1$s'"
@@ -11227,7 +11266,7 @@ msgstr "Monitor resctrl nevalid"
 
 #, c-format
 msgid "Invalid response from CH. Device removal failed for device %1$s."
-msgstr ""
+msgstr "Răspuns nevalid de la CH. Eliminarea dispozitivului %1$s a eșuat."
 
 #, c-format
 msgid "Invalid save_image_format '%1$s'"
@@ -11568,7 +11607,7 @@ msgstr ""
 
 #, c-format
 msgid "Key '%1$s' does not exist, but certificate '%2$s' does"
-msgstr ""
+msgstr "Cheia „%1$s” nu există, dar certificatul „%2$s” există"
 
 msgid "Key file path must be provided for private key authentication"
 msgstr ""
@@ -11826,15 +11865,17 @@ msgstr "Mașina este null (nu este definită)"
 
 #, c-format
 msgid "Machine type '%1$s' does not support PCI"
-msgstr ""
+msgstr "Tipul de mașină „%1$s” nu acceptă PCI"
 
 #, c-format
 msgid "Machine type '%1$s' supports PCI but no PCI controller added"
 msgstr ""
+"Tipul de mașină „%1$s” acceptă PCI, dar nu a fost adăugat niciun controlor "
+"PCI"
 
 #, c-format
 msgid "Machine type '%1$s' wants PCI but PCI is not supported"
-msgstr ""
+msgstr "Tipul de mașină „%1$s” necesită PCI, dar PCI nu este acceptat."
 
 msgid "Malformatted array index"
 msgstr "Indice de matrice formatat greșit"
@@ -12423,7 +12464,7 @@ msgstr "Lipsește numele punții"
 
 #, c-format
 msgid "Missing callback definition for event type '%1$d'"
-msgstr ""
+msgstr "Definiția apelului de retur lipsește pentru tipul de eveniment „%1$d”"
 
 msgid "Missing capability type"
 msgstr "Lipsește tipul capacității"
@@ -12454,7 +12495,7 @@ msgid "Missing device name for container-side veth"
 msgstr "Lipsește numele dispozitivului veth din partea containerului"
 
 msgid "Missing disk alias"
-msgstr ""
+msgstr "Alias de disc lipsă"
 
 msgid "Missing disk file path in domain"
 msgstr "Lipsește ruta fișierului de disc din domeniu"
@@ -12535,7 +12576,7 @@ msgid "Missing mandatory average or floor attributes"
 msgstr "Lipsesc atributele obligatorii de nivel mediu sau nivel minim"
 
 msgid "Missing mandatory serial for NVMe controller"
-msgstr ""
+msgstr "Lipsește numărul de serie necesar pentru controlorul NVMe"
 
 msgid "Missing max_clients data in JSON document"
 msgstr "Lipsesc datele max_clients în documentul JSON"
@@ -13049,14 +13090,14 @@ msgstr "Ajustarea NUMA nu este disponibilă în modul sesiune (session)"
 
 #, c-format
 msgid "NVMe NSID %1$d out of [0..14] range"
-msgstr ""
+msgstr "NVMe NSID %1$d este în afara intervalului [0..14]"
 
 #, c-format
 msgid "NVMe controller index %1$d out of [0..3] range"
-msgstr ""
+msgstr "Indicele controlorului NVMe %1$d este în afara intervalului [0..3]"
 
 msgid "NVMe controllers are not supported with this QEMU binary"
-msgstr ""
+msgstr "Controlorii NVMe nu sunt acceptați cu acest binar QEMU"
 
 #, c-format
 msgid "NVMe device %1$s already in use by driver %2$s domain %3$s"
@@ -13081,13 +13122,14 @@ msgid "NVMe namespace can't be zero"
 msgstr "Spațiul de nume NVMe nu poate fi zero"
 
 msgid "NVRAM is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM nu este permis când încărcătorul este în modul citire/scriere"
 
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM nu este permis în cazul în care încărcătorul este fără stare"
 
 msgid "NVRAM template is not permitted when loader is read/write"
 msgstr ""
+"Șablonul NVRAM nu este permis când încărcătorul este în modul citire/scriere"
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "Șablonul NVRAM nu este permis atunci când încărcătorul este fără stare"
@@ -13294,6 +13336,8 @@ msgstr "Suportul pentru Nicdev nu este disponibil"
 
 msgid "No CA certificate path set to match server key(s)/cert(s)"
 msgstr ""
+"Ruta certificatului CA nu este definită pentru a se potrivi cu cheia(cheile)/"
+"certificatul(certificatele) serverului"
 
 msgid "No DRM render nodes available"
 msgstr "Nu sunt disponibile noduri de procesare DRM"
@@ -13313,7 +13357,7 @@ msgid "No JSON parser implementation is available"
 msgstr "Nu este disponibilă nicio implementare a analizatorului JSON"
 
 msgid "No PCI address provided"
-msgstr ""
+msgstr "Nu s-a furnizat adresa PCI"
 
 msgid "No PCI buses available"
 msgstr "Nu există magistrale PCI disponibile"
@@ -13587,9 +13631,13 @@ msgstr "Nu a fost specificat niciun runstatedir"
 
 msgid "No server certificate path(s) set to match server key(s)"
 msgstr ""
+"Nu există nicio rută de certificat de server definită pentru a corespunde "
+"cheilor de server."
 
 msgid "No server key path(s) set to match server cert(s)"
 msgstr ""
+"Nu există nicio rută de cheie de server definită pentru a corespunde "
+"certificatului (certificatelor) de server."
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13827,6 +13875,8 @@ msgstr ""
 #, c-format
 msgid "Number of certificates (%1$zu) must match number of keys (%2$zu)"
 msgstr ""
+"Numărul de certificate (%1$zu) trebuie să corespundă cu numărul de chei "
+"(%2$zu)"
 
 #, c-format
 msgid "Number of domain stats records is %1$d, which exceeds max limit: %2$d"
@@ -13914,16 +13964,16 @@ msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr "Sunt acceptate numai planificatoarele „credit” și „credit2”"
 
 msgid "Only 'nmdm' and 'tcp' console types are supported"
-msgstr ""
+msgstr "Sunt acceptate numai tipurile de consolă „nmdm” și „tcp”."
 
 msgid "Only 'nmdm' console type is supported on arm64"
-msgstr ""
+msgstr "Numai tipul de consolă „nmdm” este acceptat pe arm64."
 
 msgid "Only 'random' backend model is supported"
 msgstr "Numai modelul de gestionare „random” este acceptat"
 
 msgid "Only 'raw' protocol is supported for TCP sockets"
-msgstr ""
+msgstr "Pentru soclurile TCP este acceptat numai protocolul „raw”."
 
 msgid "Only 'virio' RNG device model is supported"
 msgstr "Numai modelul de dispozitiv RNG „virio” este acceptat"
@@ -13953,7 +14003,7 @@ msgid "Only EFI firmware permits NVRAM"
 msgstr "Numai firmware-ul EFI permite NVRAM"
 
 msgid "Only IPv4 is supported"
-msgstr ""
+msgstr "Este acceptat numai protocolul IPv4"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
 msgstr "Numai adresele IPv4 sau IPv6 pot fi utilizate cu un prefix"
@@ -13965,7 +14015,7 @@ msgid "Only PTY console types are supported"
 msgstr "Sunt acceptate numai tipurile de console PTY"
 
 msgid "Only RANDOM backend is supported for RNG devices"
-msgstr ""
+msgstr "Pentru dispozitivele RNG este acceptat numai modulul RANDOM."
 
 msgid "Only VNC supported"
 msgstr "Doar VNC este acceptat"
@@ -13977,7 +14027,7 @@ msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Doar un singur controlor IDE este acceptat pentru acest tip de mașină"
 
 msgid "Only a single RNG device can be configured for this domain"
-msgstr ""
+msgstr "Pentru acest domeniu poate fi configurat un singur dispozitiv RNG"
 
 msgid "Only a single console can be configured for this domain"
 msgstr "Doar o singură consolă poate fi configurată pentru acest domeniu"
@@ -13994,6 +14044,8 @@ msgid ""
 "Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
 "security policy"
 msgstr ""
+"Sunt acceptate numai bit0 (debug) și bit28 (sept-ve-disable) de către "
+"politica de securitate de lansare Intel TDX."
 
 msgid "Only bridged veth devices can be detached"
 msgstr "Pot fi detașate numai dispozitivele veth conectate prin punte"
@@ -14023,7 +14075,7 @@ msgstr ""
 "controlorul vz."
 
 msgid "Only four serial ports are supported"
-msgstr ""
+msgstr "Sunt acceptate doar patru porturi seriale."
 
 msgid "Only hard disks and cdroms are supported by vz driver."
 msgstr "Numai discurile dure și cdrom-urile sunt acceptate de controlorul vz."
@@ -14035,7 +14087,7 @@ msgid "Only ide, sata and scsi disk supports 'product'"
 msgstr "Numai discurile ide, sata și scsi acceptă „product”."
 
 msgid "Only listening TCP sockets are supported"
-msgstr ""
+msgstr "Sunt acceptate numai soclurile TCP de ascultare"
 
 msgid "Only luks encryption is supported for raw files"
 msgstr "Doar criptarea luks este acceptată pentru fișierele brute"
@@ -14089,7 +14141,7 @@ msgstr ""
 "O singură metodă de comprimare poate fi specificată cu comprimarea paralelă"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "Doar o singură consolă este acceptată pe arm64"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Este acceptat un singur hostdev cu modelul vfio-ap"
@@ -14141,7 +14193,7 @@ msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "Numai tipurile de magistrale virtio sunt acceptate pentru „%1$s”"
 
 msgid "Only virtio model is supported for RNG devices"
-msgstr ""
+msgstr "Pentru dispozitivele RNG este acceptat numai modelul virtio."
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "Sunt acceptate numai URI-urile de migrare vpxmigr://"
@@ -14587,7 +14639,7 @@ msgid "Persistent"
 msgstr "Persistentă"
 
 msgid "Persistent domain state changes are not supported"
-msgstr ""
+msgstr "Modificările persistente ale stării domeniului nu sunt acceptate"
 
 msgid "Persistent:"
 msgstr "Persistentă:"
@@ -14993,7 +15045,7 @@ msgid "RNG device is missing alias"
 msgstr "Dispozitivul RNG nu are alias"
 
 msgid "ROM loader type cannot be used as read/write"
-msgstr ""
+msgstr "Tipul de încărcător ROM nu poate fi utilizat pentru citire/scriere"
 
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "Ajustarea ROM nu este acceptată atunci când ROM este dezactivată"
@@ -15139,7 +15191,7 @@ msgid "Reconnected to the hypervisor"
 msgstr "Reconectat la hipervizor"
 
 msgid "Recreated"
-msgstr ""
+msgstr "Recreat"
 
 #, c-format
 msgid "Redirection bus %1$s is not supported by QEMU"
@@ -15234,426 +15286,462 @@ msgstr "Lungimea datelor solicitate %1$llu este mai mare decât maximul de %2$d"
 msgid ""
 "Requested device '%1$s' is locked by lock file '%2$s' held by process %3$lld"
 msgstr ""
+"Dispozitivul solicitat „%1$s” este blocat de fișierul de blocare „%2$s” "
+"deținut de procesul %3$lld."
 
 msgid "Requested metadata element is not present"
-msgstr ""
+msgstr "Elementul de metadate solicitat nu este prezent"
 
 #, c-format
 msgid ""
 "Requested number of virtual CPUs is greater than max allowable number of "
 "virtual CPUs for the domain: %1$d > %2$d"
 msgstr ""
+"Numărul solicitat de procesoare virtuale este mai mare decât numărul maxim "
+"permis de procesoare virtuale pentru domeniu: %1$d > %2$d"
 
 msgid "Requested number of virtual CPUs must at least be 1"
-msgstr ""
+msgstr "Numărul solicitat de procesoare virtuale trebuie să fie de cel puțin 1."
 
 msgid "Requested operation is not valid"
-msgstr ""
+msgstr "Operația solicitată nu este validă"
 
 #, c-format
 msgid "Requested operation is not valid: %1$s"
-msgstr ""
+msgstr "Operația solicitată nu este validă: %1$s"
 
 #, c-format
 msgid "Requested resize to '%1$llu' but device size is '%2$llu'"
 msgstr ""
+"S-a solicitat redimensionarea la „%1$llu”, dar dimensiunea dispozitivului "
+"este de „%2$llu”."
 
 #, c-format
 msgid "Requested volume '%1$s' is not in pool '%2$s'"
-msgstr ""
+msgstr "Volumul solicitat „%1$s” nu se află în fondul „%2$s”"
 
 #, c-format
 msgid ""
 "Required option '%1$s' is not set for PCI controller with index '%2$d', "
 "model '%3$s' and modelName '%4$s'"
 msgstr ""
+"Opțiunea necesară „%1$s” nu este definită pentru controlorul PCI cu indexul "
+"„%2$d”, modelul „%3$s” și numele modelului „%4$s”."
 
 #, c-format
 msgid ""
 "Resctrl ID must be set before determining resctrl parentpath='%1$s' "
 "prefix='%2$s'"
 msgstr ""
+"ID-ul Resctrl trebuie să fie definit înainte de a determina resctrl "
+"parentpath='%1$s' prefix='%2$s'"
 
 #, c-format
 msgid "Resctrl allocation path is already set to '%1$s'"
-msgstr ""
+msgstr "Ruta de alocare Resctrl este deja definită ca „%1$s”"
 
 #, c-format
 msgid "Resctrl monitor path is already set to '%1$s'"
-msgstr ""
+msgstr "Ruta monitorului Resctrl este deja definită ca „%1$s”"
 
 msgid "Reset domain"
-msgstr ""
+msgstr "Reinițializare domeniu"
 
 msgid "Reset node device before or after assigning to a domain."
 msgstr ""
+"Reinițializează dispozitivul nodului înainte sau după atribuirea acestuia "
+"unui domeniu."
 
 msgid "Reset the target domain as if by power button"
-msgstr ""
+msgstr "Reinițializează domeniul țintă ca și cum ați apăsa butonul de pornire"
 
 msgid "Resetting the domain requires authorization"
-msgstr ""
+msgstr "Reinițializarea domeniului necesită autorizare"
 
 msgid "Resize block device of domain."
-msgstr ""
+msgstr "Redimensionează dispozitivul de blocuri al domeniului."
 
 msgid "Resize storage volume"
-msgstr ""
+msgstr "Redimensionează volumul de stocare"
 
 msgid ""
 "Resizes a storage volume. This is safe only for storage volumes not in use "
 "by an active guest.\n"
 "See blockresize for live resizing."
 msgstr ""
+"Redimensionează un volum de stocare. Această operație este sigură numai "
+"pentru volumele de stocare care nu sunt utilizate de un invitat activ.\n"
+"Consultați „blockresize” pentru redimensionarea în timp real."
 
 msgid "Resizing storage volume requires authorization"
-msgstr ""
+msgstr "Redimensionarea volumului de stocare necesită autorizare"
 
 msgid "Resolved device mapper name too long"
 msgstr ""
+"Numele rezolvat de cartograful de dispozitive „device-mapper” este prea lung"
 
 msgid "Resource control is not supported on this host"
-msgstr ""
+msgstr "Controlul resurselor nu este acceptat pe această gazdă"
 
 #, c-format
 msgid "Resource lockspace '%1$s' exceeds %2$d characters"
-msgstr ""
+msgstr "Spațiul de blocare a resurselor „%1$s” depășește %2$d caractere"
 
 #, c-format
 msgid "Resource name '%1$s' exceeds %2$d characters"
-msgstr ""
+msgstr "Numele resursei „%1$s” depășește %2$d caractere"
 
 #, c-format
 msgid "Resource partition '%1$s' must start with '/'"
-msgstr ""
+msgstr "Partiția de resurse „%1$s” trebuie să înceapă cu „/”"
 
 msgid "Restore"
 msgstr "Restaurare"
 
 msgid "Restore a domain."
-msgstr ""
+msgstr "Restaurează un domeniu."
 
 msgid "Restored"
-msgstr "Restaurată"
+msgstr "Restaurat(ă)"
 
 #, c-format
 msgid "Restoring of leases failed on interface '%1$s'"
-msgstr ""
+msgstr "Restaurarea locațiilor alocate a eșuat pe interfața „%1$s”"
 
 msgid "Resume a previously suspended domain."
-msgstr ""
+msgstr "Reactivează(reia funcționarea) un(ui) domeniu suspendat anterior."
 
 msgid "Resume operation failed"
-msgstr ""
+msgstr "Operația de reluare a eșuat"
 
 msgid "Resumed"
-msgstr ""
+msgstr "Reluat"
 
 msgid "Resuming after dump failed"
-msgstr ""
+msgstr "Se reia după operația de transfer (dump) eșuată"
 
 #, sh-format
 msgid "Resuming guest $name: "
-msgstr ""
+msgstr "Se reia invitatul $name: "
 
 #, sh-format
 msgid "Resuming guests on $uri URI..."
-msgstr ""
+msgstr "Se reiau invitații de la adresa URI $uri..."
 
 msgid "Retrieve identity details about <client> from <server>"
-msgstr ""
+msgstr "Preia detaliile de identitate despre <client> de la <server>"
 
 msgid "Retrieve server's client-related configuration limits"
-msgstr ""
+msgstr "Preia limitele de configurare ale serverului legate de client"
 
 msgid "Retrieve threadpool attributes from a server."
-msgstr ""
+msgstr "Preia atributele threadpool de la un server."
 
 msgid "Return pool info in bytes"
-msgstr ""
+msgstr "Returnează informații despre fond în octeți"
 
 msgid "Returns XML <sources> document."
-msgstr ""
+msgstr "Returnează documentul <sources> XML."
 
 msgid "Returns a list of secrets"
-msgstr ""
+msgstr "Returnează o listă de secrete"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Returnează informații SEV de bază despre nod."
 
 msgid "Returns basic information about a checkpoint."
-msgstr ""
+msgstr "Returnează informații bazice despre un punct de control."
 
 msgid "Returns basic information about a snapshot."
-msgstr ""
+msgstr "Returnează informații bazice despre o instantanee."
 
 msgid "Returns basic information about the domain IOThreads."
-msgstr ""
+msgstr "Returnează informații bazice despre domeniul IOThreads."
 
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr ""
+"Returnează informații bazice despre procesoarele virtuale ale domeniului."
 
 msgid "Returns basic information about the domain."
-msgstr ""
+msgstr "Returnează informații bazice despre domeniu."
 
 msgid "Returns basic information about the network"
-msgstr ""
+msgstr "Returnează informații bazice despre rețea"
 
 msgid "Returns basic information about the node device"
-msgstr ""
+msgstr "Returnează informații bazice despre dispozitivul nodului"
 
 msgid "Returns basic information about the node."
-msgstr ""
+msgstr "Returnează informații bazice despre nod."
 
 msgid "Returns basic information about the storage pool."
-msgstr ""
+msgstr "Returnează informații de bază despre fondul de stocare."
 
 msgid "Returns basic information about the storage vol."
-msgstr ""
+msgstr "Returnează informații de bază despre volumul de stocare."
 
 msgid "Returns capabilities of emulator with respect to host and libvirt."
-msgstr ""
+msgstr "Returnează capacitățile emulatorului în raport cu gazda și libvirt."
 
 msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
+msgstr "Returnează capacitățile hipervizorului/controlorului."
 
 msgid "Returns capabilities of storage pool support."
-msgstr ""
+msgstr "Returnează capacitățile de suport ale fondului de stocare."
 
 msgid "Returns cpu stats of the node, in nanoseconds."
-msgstr ""
+msgstr "Returnează statisticile CPU ale nodului, în nanosecunde."
 
 msgid "Returns information about jobs running on a domain."
-msgstr ""
+msgstr "Returnează informații despre sarcinile care rulează pe un domeniu."
 
 msgid "Returns list of domains."
-msgstr ""
+msgstr "Returnează lista domeniilor."
 
 msgid "Returns list of network filter bindings."
-msgstr ""
+msgstr "Returnează lista legăturilor filtrului de rețea."
 
 msgid "Returns list of network filters."
-msgstr ""
+msgstr "Returnează lista filtrelor de rețea."
 
 msgid "Returns list of network ports."
-msgstr ""
+msgstr "Returnează lista porturilor de rețea."
 
 msgid "Returns list of networks."
-msgstr ""
+msgstr "Returnează lista rețelelor."
 
 msgid "Returns list of physical host interfaces."
-msgstr ""
+msgstr "Returnează lista interfețelor fizice ale gazdei."
 
 msgid "Returns list of pools."
-msgstr ""
+msgstr "Returnează lista de fonduri."
 
 msgid "Returns list of vols by pool."
-msgstr ""
+msgstr "Returnează lista volumelor după fond."
 
 msgid "Returns memory stats of the node, in kilobytes."
-msgstr ""
+msgstr "Returnează statistici de memorie ale nodului, în kiloocteți."
 
 msgid "Returns state about a domain."
-msgstr ""
+msgstr "Returnează starea unui domeniu."
 
 msgid "Returns state of a control interface to the domain."
-msgstr ""
+msgstr "Returnează starea unei interfețe de control către domeniu."
 
 msgid "Returns the number of virtual CPUs used by the domain."
-msgstr ""
+msgstr "Returnează numărul de procesoare virtuale utilizate de domeniu."
 
 msgid "Revert a domain to a snapshot"
-msgstr ""
+msgstr "Restaurează un domeniu la starea de la o instantanee"
 
 msgid "Revert domain to snapshot"
-msgstr ""
+msgstr "Restaurează domeniul la starea de la instantanee"
 
 #, c-format
 msgid "Route address '%1$s' conflicts with IP address for '%2$s'"
-msgstr ""
+msgstr "Adresa rutei „%1$s” intră în conflict cu adresa IP pentru „%2$s”"
 
 msgid "Run a reboot command in the target domain."
-msgstr ""
+msgstr "Execută o comandă de repornire în domeniul țintă."
 
 msgid "Run an arbitrary command in a lxc guest namespace; use at your own risk"
 msgstr ""
+"Rulează o comandă arbitrară într-un spațiu de nume de invitat lxc utilizați "
+"pe propria răspundere"
 
 msgid "Run an arbitrary qemu guest agent command; use at your own risk"
 msgstr ""
+"Rulează o comandă arbitrară a agentului invitat qemu; utilizați pe propria "
+"răspundere"
 
 msgid "Run as a daemon & write PID file"
-msgstr ""
+msgstr "Rulează ca demon și scrie fișierul PID"
 
 msgid "Run shutdown in the target domain."
-msgstr ""
+msgstr "Rulează comanda «shutdown» în domeniul țintă."
 
 #, c-format
 msgid "Running against daemon: %1$d.%2$d.%3$d\n"
-msgstr ""
+msgstr "Se execută față de demon: %1$d.%2$d.%3$d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
-msgstr ""
+msgstr "Se execută invitații la adresa URI $uri: "
 
 #, c-format
 msgid "Running hypervisor: %1$s %2$d.%3$d.%4$d\n"
-msgstr ""
+msgstr "Se execută hipervizorul: %1$s %2$d.%3$d.%4$d\n"
 
 msgid "S3 state is disabled for this domain"
-msgstr ""
+msgstr "Starea S3 este dezactivată pentru acest domeniu"
 
 msgid "S390 PV launch security is not supported by this host or kernel"
 msgstr ""
+"Securitatea lansării S390 PV nu este acceptată de această gazdă sau de acest "
+"nucleu."
 
 msgid "S4 state is disabled for this domain"
-msgstr ""
+msgstr "Starea S4 este dezactivată pentru acest domeniu"
 
 #, c-format
 msgid "SASL client identity '%1$s' not allowed by ACL"
-msgstr ""
+msgstr "Identitatea clientului SASL „%1$s” nu este permisă de ACL"
 
 #, c-format
 msgid "SASL data length %1$zu too long, max %2$zu"
-msgstr ""
+msgstr "Lungimea datelor SASL %1$zu este prea mare, maxim %2$zu"
 
 #, c-format
 msgid "SASL mechanism %1$s not supported by server"
-msgstr ""
+msgstr "Mecanismul SASL %1$s nu este acceptat de server"
 
 #, c-format
 msgid "SASL negotiation data too long: %1$zu bytes"
-msgstr ""
+msgstr "Datele de negociere SASL sunt prea lungi: %1$zu octeți"
 
 #, c-format
 msgid "SATA controller index %1$d out of [0..3] range"
-msgstr ""
+msgstr "Indicele controlorului SATA %1$d este în afara intervalului [0..3]"
 
 msgid "SATA is not supported with this QEMU binary"
-msgstr ""
+msgstr "SATA nu este acceptat cu acest binar QEMU."
 
 #, c-format
 msgid "SATA unit index %1$d out of [0..29] range"
-msgstr ""
+msgstr "Indicele unității SATA %1$d este în afara intervalului [0..29]"
 
 msgid "SCHED_CORE not supported by kernel"
-msgstr ""
+msgstr "SCHED_CORE nu este acceptat de către nucleu"
 
 #, c-format
 msgid "SCSI bus index %1$d out of [0] range"
-msgstr ""
+msgstr "Indicele de magistrală SCSI %1$d este în afara intervalului [0]"
 
 #, c-format
 msgid "SCSI controller index %1$d out of [0..3] range"
-msgstr ""
+msgstr "Indicele controlorului SCSI %1$d este în afara intervalului [0..3]"
 
 msgid "SCSI controller only supports 1 bus"
-msgstr ""
+msgstr "Controlorul SCSI acceptă doar 1 magistrală"
 
 #, c-format
 msgid "SCSI device %1$s is already in use by other domain(s) as '%2$s'"
-msgstr ""
+msgstr "Dispozitivul SCSI %1$s este deja utilizat de alte domenii ca „%2$s”"
 
 #, c-format
 msgid "SCSI device '%1$s': could not access %2$s"
-msgstr ""
+msgstr "Dispozitivul SCSI „%1$s”: nu s-a putut accesa %2$s"
 
 #, c-format
 msgid "SCSI disk index (parsed from '%1$s') is too large"
-msgstr ""
+msgstr "Indicele discului SCSI (analizat din „%1$s”) este prea mare"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
 "use by a SCSI disk"
 msgstr ""
+"Adresă gazdă SCSI controlor='%1$u' magistrală='%2$u' țintă='%3$u' "
+"unitate='%4$u', utilizată de un disc SCSI"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
 "use by another SCSI disk"
 msgstr ""
+"Adresă gazdă SCSI controlor='%1$u' magistrală='%2$u' țintă='%3$u' "
+"unitate='%4$u', utilizată de un alt disc SCSI"
 
 #, c-format
 msgid ""
 "SCSI host address controller='%1$u' bus='%2$u' target='%3$u' unit='%4$u' in "
 "use by another SCSI host device"
 msgstr ""
+"Adresă gazdă SCSI controlor='%1$u' magistrală='%2$u' țintă='%3$u' "
+"unitate='%4$u', utilizată de un alt dispozitiv gazdă SCSI"
 
 msgid "SCSI host device doesn't support managed mode"
-msgstr ""
+msgstr "Dispozitivul gazdă SCSI nu acceptă modul gestionat"
 
 msgid "SCSI host device must use 'drive' address type"
-msgstr ""
+msgstr "Dispozitivul gazdă SCSI trebuie să utilizeze tipul de adresă „drive”"
 
 #, c-format
 msgid "SCSI unit index %1$d out of [0..6,8..%2$u] range"
-msgstr ""
+msgstr "Indicele unității SCSI %1$d este în afara intervalului [0..6,8..%2$u]"
 
 #, c-format
 msgid "SCSI unit index %1$d out of [0..6,8..15] range"
-msgstr ""
+msgstr "Indicele unității SCSI %1$d este în afara intervalului [0..6,8..15]"
 
 msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr ""
+"Dispozitivul gazdă SCSI_host trebuie să utilizeze tipul de adresă „pci” sau „"
+"ccw”."
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
+"Pornirea directă a nucleului măsurată de SEV nu este acceptată cu acest "
+"binar QEMU"
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
-msgstr ""
+msgstr "SHUTDOWN_TIMEOUT trebuie să fie egal sau mai mare decât 0"
 
 #, c-format
 msgid "SMM TSEG differs: source: %1$s, destination: '%2$s'"
-msgstr ""
+msgstr "SMM TSEG diferă: sursă: %1$s, destinație: '%2$s'"
 
 msgid "SMM TSEG is only supported with q35 machine type"
-msgstr ""
+msgstr "SMM TSEG este compatibil numai cu tipul de mașină q35."
 
 msgid "SMM TSEG size must be divisible by 1 MiB"
-msgstr ""
+msgstr "Dimensiunea SMM TSEG trebuie să fie divizibilă cu 1 Mio"
 
 #, c-format
 msgid ""
 "SOAP fault during %1$s: code '%2$s', subcode '%3$s', reason '%4$s', detail "
 "'%5$s'"
 msgstr ""
+"Eroare SOAP în timpul %1$s: cod „%2$s”, subcod „%3$s”, motiv „%4$s”, detalii "
+"„%5$s”"
 
 msgid "SSH Agent did not provide any authentication identity"
-msgstr ""
+msgstr "Agentul SSH nu a furnizat nicio identitate de autentificare."
 
 #, c-format
 msgid "SSH host key for '%1$s' (%2$s) was not accepted"
-msgstr ""
+msgstr "Cheia gazdă SSH pentru „%1$s” (%2$s) nu a fost acceptată"
 
 #, c-format
 msgid "SSH session handshake failed: %1$s"
-msgstr ""
+msgstr "Negocierea conexiunii de sesiune SSH a eșuat: %1$s"
 
 msgid "SSH transport error"
-msgstr ""
+msgstr "Eroare de transport SSH"
 
 #, c-format
 msgid "SSH transport error: %1$s"
-msgstr ""
+msgstr "Eroare de transport SSH: %1$s"
 
 #, c-format
 msgid ""
 "STP filtering in %1$s direction with source MAC address set is not supported"
 msgstr ""
+"Filtrarea STP în direcția %1$s cu adresa MAC sursă definită nu este acceptată"
 
 msgid "SVE disabled, but SVE vector lengths provided"
-msgstr ""
+msgstr "SVE este dezactivat, dar sunt furnizate lungimile vectorilor SVE"
 
 #, c-format
 msgid "Sanlock helper arguments are longer than %1$d: '%2$s'"
-msgstr ""
+msgstr "Argumentele auxiliarului Sanlock sunt mai lungi decât %1$d: „%2$s”"
 
 #, c-format
 msgid "Sanlock helper path is longer than %1$d: '%2$s'"
-msgstr ""
+msgstr "Ruta asistentului Sanlock este mai lungă decât %1$d: „%2$s”"
 
 msgid "Sanlock plugin is not initialized"
-msgstr ""
+msgstr "Modulul Sanlock nu este inițializat"
 
 msgid "Save"
 msgstr "Salvează"
@@ -15664,733 +15752,835 @@ msgid ""
 "    command is next run for the domain, it will automatically\n"
 "    be started from this saved state."
 msgstr ""
+"Savează și distruge un domeniu în execuție, astfel încât acesta să poată fi\n"
+"repornit din aceeași stare la un moment ulterior. Când comanda virsh „start"
+"”\n"
+"este executată din nou pentru domeniu, acesta va fi pornit automat din "
+"această\n"
+"stare salvată."
 
 msgid "Save domain"
-msgstr ""
+msgstr "Salvează domeniul"
 
 msgid "Save interface"
-msgstr ""
+msgstr "Salvează interfața"
 
 msgid "Save network"
-msgstr ""
+msgstr "Salvează rețeaua"
 
 msgid "Save network filter"
-msgstr ""
+msgstr "Salvează filtrul de rețea"
 
 msgid "Save node device"
-msgstr ""
+msgstr "Salvează dispozitivul nodului"
 
 msgid "Save secret"
-msgstr ""
+msgstr "Salvează secretul"
 
 msgid "Save storage pool"
-msgstr ""
+msgstr "Salvează fondul de stocare"
 
 msgid "Save the RAM state of a running domain."
-msgstr ""
+msgstr "Salvează starea RAM a unui domeniu în execuție."
 
 msgid "Saved"
-msgstr "Salvată"
+msgstr "Salvat(ă)"
 
 #, c-format
 msgid "Saved image %1$s XML configuration not changed.\n"
-msgstr ""
+msgstr "Configurația XML a imaginii salvate %1$s nu a fost modificată.\n"
 
 msgid "Saving domain configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației domeniului necesită autorizare"
 
 msgid "Saving domain state requires authorization"
-msgstr ""
+msgstr "Salvarea stării domeniului necesită autorizare"
 
 msgid "Saving interface configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației interfeței necesită autorizare"
 
 msgid "Saving network configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației rețelei necesită autorizare"
 
 msgid "Saving network filter configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației filtrului de rețea necesită autorizare"
 
 msgid "Saving node device driver requires authorization"
-msgstr ""
+msgstr "Salvarea controlorului dispozitivului nod necesită autorizare"
 
 msgid "Saving secret configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației secrete necesită autorizare"
 
 msgid "Saving storage pool configuration requires authorization"
-msgstr ""
+msgstr "Salvarea configurației fondului de stocare necesită autorizare"
 
 #, c-format
 msgid ""
 "Scaled numeric value '%1$s' for <%2$s> option is malformed or out of range"
 msgstr ""
+"Valoarea numerică scalată „%1$s” pentru opțiunea <%2$s> este incorectă sau "
+"în afara intervalului"
 
 #, c-format
 msgid ""
 "Scaled numeric value '%1$s' for <--bandwidth> option is malformed or out of "
 "range"
 msgstr ""
+"Valoarea numerică scalată „%1$s” pentru opțiunea <--bandwidth> este "
+"incorectă sau în afara intervalului"
 
 msgid "Scheduler"
-msgstr ""
+msgstr "Planificatorul"
 
 #, c-format
 msgid "Scheduler '%1$s' is not supported on this platform"
-msgstr ""
+msgstr "Planificatorul „%1$s” nu este acceptat pe această platformă."
 
 #, c-format
 msgid "Scheduler priority %1$d out of range [%2$d, %3$d]"
 msgstr ""
+"Prioritatea planificatorului „%1$d” este în afara intervalului [%2$d, %3$d]"
 
 msgid "Screen cannot be selected"
-msgstr ""
+msgstr "Ecranul nu poate fi selectat"
 
 msgid "Screenshot feature is unsupported"
-msgstr ""
+msgstr "Funcția de captură de ecran nu este acceptată"
 
 #, c-format
 msgid "Screenshot saved to %1$s, with type of %2$s"
-msgstr ""
+msgstr "Captură de ecran salvată în %1$s, cu tipul %2$s"
 
 #, c-format
 msgid "Secret %1$s created\n"
-msgstr ""
+msgstr "Secret %1$s creat\n"
 
 #, c-format
 msgid "Secret %1$s deleted\n"
-msgstr ""
+msgstr "Secret %1$s șters\n"
 
 msgid "Secret Events"
-msgstr ""
+msgstr "Evenimente secret"
 
 msgid "Secret not found"
-msgstr ""
+msgstr "Secretul nu a fost găsit"
 
 #, c-format
 msgid "Secret not found: %1$s"
-msgstr ""
+msgstr "Secretul nu a fost găsit: %1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "Valoarea secretă nu este validă în format base64"
 
 msgid "Secret value set\n"
-msgstr ""
+msgstr "Valoare secret definită\n"
 
 msgid "Secure boot is not supported on Xen"
-msgstr ""
+msgstr "Pornirea securizată nu este acceptată pe Xen"
 
 msgid "Secure boot is supported for x86_64 architecture only"
-msgstr ""
+msgstr "Pornirea securizată este acceptată numai pentru arhitectura x86_64"
 
 msgid "Secure boot is supported with q35 machine types only"
-msgstr ""
+msgstr "Pornirea securizată este acceptată numai pentru tipurile de mașini q35"
 
 msgid "Secure boot requires SMM feature enabled"
-msgstr ""
+msgstr "Pornirea securizată necesită activarea caracteristicii SMM"
 
 msgid "Security DOI:"
-msgstr ""
+msgstr "Securitate DOI:"
 
 msgid "Security driver \"none\" cannot create confined guests"
-msgstr ""
+msgstr "Controlorul de securitate „none” nu poate crea invitați confinați"
 
 #, c-format
 msgid "Security driver %1$s not enabled"
-msgstr ""
+msgstr "Controlorul de securitate %1$s nu este activat"
 
 #, c-format
 msgid "Security driver %1$s not found"
-msgstr ""
+msgstr "Controlorul de securitate %1$s nu a fost găsit"
 
 #, c-format
 msgid "Security driver model '%1$s' is not available"
-msgstr ""
+msgstr "Modelul de controlor de securitate „%1$s” nu este disponibil"
 
 msgid "Security label:"
-msgstr ""
+msgstr "Etichetă de securitate:"
 
 #, c-format
 msgid "Security model %1$s cannot be entered"
-msgstr ""
+msgstr "Modelul de securitate %1$s nu poate fi introdus"
 
 msgid "Security model not found"
-msgstr ""
+msgstr "Modelul de securitate nu a fost găsit"
 
 #, c-format
 msgid "Security model not found: %1$s"
-msgstr ""
+msgstr "Modelul de securitate nu a fost găsit: %1$s"
 
 msgid "Security model:"
-msgstr ""
+msgstr "Modelul de securitate:"
 
 msgid "Security warning: VNC auth is not supported."
-msgstr ""
+msgstr "Avertisment de securitate: autentificarea VNC nu este acceptată."
 
 msgid "Security warning: VNC is used without authentication."
-msgstr ""
+msgstr "Avertisment de securitate: VNC este utilizat fără autentificare."
 
 #, c-format
 msgid ""
 "See web site at %1$s\n"
 "\n"
 msgstr ""
+"Consultați situl web la %1$s\n"
+"\n"
 
 msgid "Send domain input"
-msgstr ""
+msgstr "Trimite intrarea de domeniu"
 
 msgid "Send domain signal"
-msgstr ""
+msgstr "Trimite semnalul de domeniu"
 
 msgid "Send keycodes (integers or symbolic names) to the guest"
-msgstr ""
+msgstr "Trimite coduri cheie (numere întregi sau nume simbolice) către invitat"
 
 msgid "Send keycodes to the guest"
-msgstr ""
+msgstr "Trimite codurile cheie către invitat"
 
 msgid "Send signals to processes"
-msgstr ""
+msgstr "Trimite semnale către procese"
 
 msgid "Send signals to processes in the guest"
-msgstr ""
+msgstr "Trimite semnale către procesele din invitat"
 
 msgid "Sending file descriptors is not supported on this socket"
-msgstr ""
+msgstr "Trimiterea descriptorilor de fișiere nu este acceptată pe acest soclu"
 
 msgid "Sending input events to domain requires authorization"
-msgstr ""
+msgstr "Trimiterea evenimentelor de intrare către domeniu necesită autorizare"
 
 msgid "Sending signals to processes in domain requires authorization"
-msgstr ""
+msgstr "Trimiterea de semnale către procesele din domeniu necesită autorizare"
 
 #, c-format
 msgid ""
 "Serial device with target type '%1$s' and target model '%2$s' not compatible "
 "with guest architecture or machine type"
 msgstr ""
+"Dispozitivul serial cu tipul țintă „%1$s” și modelul țintă „%2$s” este "
+"incompatibil cu arhitectura invitatului sau tipul de mașină"
 
 msgid "Serial only works in UNIX/PTY modes"
-msgstr ""
+msgstr "Portul serial funcționează numai în modul UNIX/PTY"
 
 #, c-format
 msgid "Serial port index %1$d out of [0..3] range"
-msgstr ""
+msgstr "Indicele portului serial %1$d este în afara intervalului [0..3]"
 
 #, c-format
 msgid "Serial property not supported for drive bus '%1$s'"
 msgstr ""
+"Proprietatea serială nu este acceptată pentru magistrala unității „%1$s”"
 
 msgid "Server certificate:"
-msgstr ""
+msgstr "Certificat server:"
 
 #, c-format
 msgid "Server count %1$zd greater than default name count %2$zu"
 msgstr ""
+"Numărul de servere %1$zd este mai mare decât numărul implicit de nume %2$zu"
 
 msgid "Server not found"
-msgstr ""
+msgstr "Serverul nu a fost găsit"
 
 #, c-format
 msgid "Server not found: %1$s"
-msgstr ""
+msgstr "Serverul nu a fost găsit: %1$s"
 
 msgid "Server private key:"
-msgstr ""
+msgstr "Cheia privată a serverului:"
 
 msgid "Server to alter the client-related configuration limits on."
-msgstr ""
+msgstr "Serverul pe care se modifică limitele de configurare legate de client."
 
 msgid "Server to alter threadpool attributes on."
-msgstr ""
+msgstr "Serverul pe care se modifică atributele threadpool."
 
 msgid "Server to retrieve the client limits from."
-msgstr ""
+msgstr "Serverul de la care se preiau limitele clientului."
 
 msgid "Server to retrieve threadpool attributes from."
-msgstr ""
+msgstr "Serverul de la care se preiau atributele threadpool."
 
 msgid "Set a secret in the guest domain's memory"
-msgstr ""
+msgstr "Definește un secret în memoria domeniului invitatului"
 
 msgid "Set a secret value."
-msgstr ""
+msgstr "Definește o valoare secretă."
 
 msgid "Set domain launch security state"
-msgstr ""
+msgstr "Definește starea de securitate la lansarea domeniului"
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
 "update-device command."
 msgstr ""
+"Stabilește starea legăturii interfeței virtuale a unui domeniu. Această "
+"comandă încorporează utilizarea comenzii update-device."
 
 msgid ""
 "Set maximum tolerable downtime of a domain which is being live-migrated to "
 "another host."
 msgstr ""
+"Stabilește timpul maxim de nefuncționare tolerabil pentru un domeniu care "
+"este migrat în timp real către o altă gazdă."
 
 msgid "Set or query a block device I/O tuning parameters."
 msgstr ""
+"Definește sau interoghează parametrii de reglare In/Ieș ai unui dispozitiv "
+"de blocuri."
 
 msgid "Set or query disk I/O parameters such as block throttling."
 msgstr ""
+"Definește sau interoghează parametrii de In/Ieș ai discului, cum ar fi "
+"limitarea blocurilor."
 
 msgid "Set password of the domain's account"
-msgstr ""
+msgstr "Stabilește parola contului domeniului"
 
 msgid "Set the guest agent timeout"
-msgstr ""
+msgstr "Stabilește timpul de expirare al agentului invitat"
 
 msgid "Set the maximum migration bandwidth"
-msgstr ""
+msgstr "Stabilește lățimea de bandă maximă pentru migrare"
 
 msgid ""
 "Set the maximum migration bandwidth (in MiB/s) for a domain which is being "
 "migrated to another host."
 msgstr ""
+"Stabilește lățimea de bandă maximă de migrare (în Mio/s) pentru un domeniu "
+"care este migrat către o altă gazdă."
 
 msgid "Set the number of seconds to wait for a response from the guest agent."
 msgstr ""
+"Stabilește numărul de secunde de așteptare pentru un răspuns din partea "
+"agentului invitat."
 
 msgid "Setting TSEG size is not supported with this QEMU binary"
-msgstr ""
+msgstr "Definirea dimensiunii TSEG nu este acceptată cu acest binar QEMU."
 
 msgid ""
 "Setting device info for character devices is not supported by vz driver."
 msgstr ""
+"Definirea informațiilor despre dispozitiv pentru dispozitivele "
+"caracteristice nu este acceptată de controlorul vz."
 
 msgid "Setting device info for network devices is not supported by vz driver."
 msgstr ""
+"Definirea informațiilor despre dispozitiv pentru dispozitivele de rețeae nu "
+"este acceptată de controlorul vz."
 
 #, c-format
 msgid "Setting different DAC user or group on %1$s which is already in use"
 msgstr ""
+"Definirea unui alt utilizator sau grup DAC pe %1$s, care este deja în uz"
 
 #, c-format
 msgid "Setting different SELinux label on %1$s which is already in use"
-msgstr ""
+msgstr "Definirea unei etichete SELinux diferite pe %1$s, care este deja în uz"
 
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr ""
+"Definirea dimensiunilor blocurilor de disc nu este acceptată de controlorul "
+"vz."
 
 msgid "Setting disk error policy is not supported by vz driver."
 msgstr ""
+"Definirea politicii privind erorile de disc nu este acceptată de controlorul "
+"vz."
 
 msgid "Setting disk io limits is not supported by vz driver yet."
 msgstr ""
+"Stabilirea limitelor de acces (In/Ieș) la disc nu este încă acceptată de "
+"controlorul vz."
 
 msgid "Setting disk product id is not supported by vz driver."
-msgstr ""
+msgstr "Definirea ID-ului produsului disc nu este acceptată de controlorul vz."
 
 msgid "Setting disk serial number is supported only for disk devices."
 msgstr ""
+"Stabilirea numărului de serie al discului este acceptată numai pentru "
+"dispozitivele de tip disc."
 
 msgid "Setting disk vendor is not supported by vz driver."
-msgstr ""
+msgstr "Definirea fabricantului discului nu este acceptată de controlorul vz."
 
 msgid "Setting disk wwn id is not supported by vz driver."
-msgstr ""
+msgstr "Definirea ID-ului WWN al discului nu este acceptată de controlorul vz."
 
 msgid "Setting fs quotas is not supported by vz driver."
 msgstr ""
+"Stabilirea cotelor sistemului de fișiere nu este acceptată de controlorul vz."
 
 msgid "Setting guest interface name is not supported by vz driver."
 msgstr ""
+"Definirea numelui interfeței pentru invitat nu este acceptată de controlorul "
+"vz."
 
 msgid "Setting interface script is not supported by vz driver."
 msgstr ""
+"Scriptul de configurare a interfeței nu este acceptat de controlorul vz."
 
 msgid "Setting interface sndbuf is not supported by vz driver."
-msgstr ""
+msgstr "Configurarea interfețelor sndbuf nu este acceptată de controlorul vz."
 
 msgid "Setting network bandwidth is not supported by vz driver."
 msgstr ""
+"Definirea lățimii de bandă a rețelei nu este acceptată de controlorul vz."
 
 msgid "Setting network filter is not supported by vz driver."
-msgstr ""
+msgstr "Configurarea filtrului de rețea nu este acceptată de controlorul vz."
 
 msgid "Setting readonly for filesystems is not supported by vz driver."
 msgstr ""
+"Stabilirea modului de numai-citire pentru sistemele de fișiere nu este "
+"acceptată de controlorul vz."
 
 #, c-format
 msgid ""
 "Setting security context '%1$s' on '%2$s' not supported. Consider setting "
 "virt_use_nfs"
 msgstr ""
+"Stabilirea contextului de securitate „%1$s” pe „%2$s” nu este acceptată. "
+"Luați în considerare activarea virt_use_nfs."
 
 msgid "Setting security labels is not supported by vz driver."
 msgstr ""
+"Definirea etichetelor de securitate nu este acceptată de controlorul vz."
 
 msgid "Setting startupPolicy is only allowed for USB devices"
-msgstr ""
+msgstr "Stabilirea startupPolicy este permisă numai pentru dispozitivele USB."
 
 #, c-format
 msgid "Setting the 64-bit PCI hole size is not supported for machine '%1$s'"
 msgstr ""
+"Definirea dimensiunii slotului PCI pe 64 de biți nu este acceptată pentru "
+"mașina „%1$s”."
 
 msgid "Setting the domain accounts' password requires authorization"
-msgstr ""
+msgstr "Definirea parolei conturilor de domeniu necesită autorizare"
 
 msgid "Setting the domain time requires authorization"
-msgstr ""
+msgstr "Ajustarea orei domeniului necesită autorizare"
 
 msgid "Setting up disk discard parameter is not supported by vz driver."
 msgstr ""
+"Configurarea parametrului de eliminare a discului nu este acceptată de "
+"controlorul vz."
 
 msgid "Setting up disk io thread # is not supported by vz driver."
 msgstr ""
+"Configurarea numărului de fire de In/Ieș pentru disc nu este acceptată de "
+"controlorul vz."
 
 msgid "Setting up disk startup policy is not supported by vz driver."
 msgstr ""
+"Configurarea politicii de pornire a discului nu este acceptată de "
+"controlorul vz."
 
 msgid "Setting up vlans is not supported by vz driver."
-msgstr ""
+msgstr "Configurarea VLAN-urilor nu este acceptată de controlorul vz."
 
 msgid "Setting vendor or product is not supported for lun device"
 msgstr ""
+"Definirea producătorului sau a produsului nu este acceptată pentru "
+"dispozitivul LUN."
 
 msgid "Setting wwn is not supported for lun device"
-msgstr ""
+msgstr "Definirea wwn nu este acceptată pentru dispozitivul LUN."
 
 msgid "Setup time:"
-msgstr ""
+msgstr "Timpul de configurare:"
 
 msgid "Shared memory:\n"
-msgstr ""
+msgstr "Memorie partajată:\n"
 
 #, c-format
 msgid "Shell '%1$s' should have absolute path"
-msgstr ""
+msgstr "Shell-ul „%1$s” trebuie să aibă o rută absolută"
 
 msgid ""
 "Shortcut for calling the command with a single CPU model and no additional "
 "features"
 msgstr ""
+"Comandă rapidă pentru apelarea comenzii cu un singur model de procesor și "
+"fără funcții suplimentare"
 
 msgid "Should define both master and slave path attributes for nmdm device"
 msgstr ""
+"Trebuie definite atât atributele rutei master, cât și ale rutei sclav pentru "
+"dispozitivul nmdm"
 
 msgid "Show block device errors"
-msgstr ""
+msgstr "Afișează erorile dispozitivului de blocuri"
 
 msgid "Show errors on block devices"
-msgstr ""
+msgstr "Afișează erorile dispozitivelor de blocuri"
 
 msgid "Show features that are part of the CPU model type"
-msgstr ""
+msgstr "Afișează caracteristicile care fac parte din tipul modelului CPU"
 
 msgid "Show maximum number of virtual CPUs for guests on this connection."
 msgstr ""
+"Afișează numărul maxim de procesoare virtuale pentru invitații pe această "
+"conexiune."
 
 msgid "Show statistics from this CPU"
-msgstr ""
+msgstr "Afișează statisticile acestui procesor"
 
 msgid "Show total statistics only"
-msgstr ""
+msgstr "Afișează numai statisticile totale"
 
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Afișează/configurează parametrii planificatorului."
 
 msgid "Shows or modifies the XML metadata of a domain."
-msgstr ""
+msgstr "Afișează sau modifică metadatele XML ale unui domeniu."
 
 msgid "Shows or modifies the XML metadata of a network."
-msgstr ""
+msgstr "Afișează sau modifică metadatele XML ale unei rețele."
 
 msgid "Shutdown"
 msgstr "Oprire"
 
 #, sh-format
 msgid "Shutdown of guest $name complete."
-msgstr ""
+msgstr "Oprirea invitatului $name finalizată."
 
 #, sh-format
 msgid "Shutdown of guest $name failed to complete in time."
-msgstr ""
+msgstr "Oprirea invitatului $name nu a fost finalizată la timp."
 
 #, sh-format
 msgid "Shutting down guests on $uri URI..."
-msgstr ""
+msgstr "Oprirea invitaților de la adresa URI $uri..."
 
 msgid "Signal handling not available on this platform"
-msgstr ""
+msgstr "Gestionarea semnalelor nu este disponibilă pe această platformă"
 
 #, c-format
 msgid ""
 "Size of SMM TSEG size differs: source: '%1$llu %2$s', destination: '%3$llu "
 "%4$s'"
 msgstr ""
+"Dimensiunea SMM și dimensiunea TSEG diferă: sursă: «%1$llu %2$s», "
+"destinație: '%3$llu %4$s'"
 
 #, c-format
 msgid "Size of target NUMA node %1$zu (%2$llu) doesn't match source (%3$llu)"
 msgstr ""
+"Dimensiunea nodului NUMA țintă %1$zu (%2$llu) nu corespunde cu cea a sursei "
+"(%3$llu)"
 
 #, c-format
 msgid "Size of volume '%1$s' successfully changed by %2$s\n"
-msgstr ""
+msgstr "Dimensiunea volumului „%1$s” a fost modificată cu succes de %2$s\n"
 
 #, c-format
 msgid "Size of volume '%1$s' successfully changed to %2$s\n"
-msgstr ""
+msgstr "Dimensiunea volumului „%1$s” a fost modificată cu succes la %2$s\n"
 
 msgid "Skipping is not supported with this stream"
-msgstr ""
+msgstr "Saltul nu este acceptat cu acest flux"
 
 msgid "Snapshot"
 msgstr "Imagine instantanee"
 
 #, c-format
 msgid "Snapshot %1$s XML configuration not changed.\n"
-msgstr ""
+msgstr "Configurația XML a instantaneei %1$s nu a fost modificată.\n"
 
 #, c-format
 msgid "Snapshot %1$s cloned to %2$s.\n"
-msgstr ""
+msgstr "Instantanea %1$s a fost clonată în %2$s.\n"
 
 #, c-format
 msgid "Snapshot %1$s edited.\n"
-msgstr ""
+msgstr "Instantaneea %1$s a fost editată.\n"
 
 #, c-format
 msgid "Snapshot %1$s set as current"
-msgstr ""
+msgstr "Instantaneea %1$s a fost definită ca actuală"
 
 #, c-format
 msgid "Snapshot '%1$s' already exists"
-msgstr ""
+msgstr "Instantaneea „%1$s” există deja"
 
 msgid "Snapshot Delete"
-msgstr ""
+msgstr "Ștergere instantanee"
 
 msgid "Snapshot Dump XML"
-msgstr ""
+msgstr "Transferă în XML imaginea instantanee"
 
 msgid "Snapshot List"
-msgstr ""
+msgstr "Lista instantaneelor"
 
 msgid "Snapshot delete"
-msgstr ""
+msgstr "Șterge instantaneea"
 
 msgid "Snapshot domain"
-msgstr ""
+msgstr "Instantanee de domeniu"
 
 msgid "Snapshot is Null"
-msgstr ""
+msgstr "Instantaneea este Null"
 
 msgid "Snapshot revert"
-msgstr ""
+msgstr "Restaurarea unei instantanee"
 
 msgid "Snapshots are not yet supported with 'pool' volumes"
-msgstr ""
+msgstr "Instantaneele nu sunt încă acceptate cu volumele „pool”."
 
 #, c-format
 msgid "Snapshots have inconsistent relations for domain %1$s"
-msgstr ""
+msgstr "Instantaneele au relații inconsistente pentru domeniul %1$s"
 
 msgid "Snapshotting domain requires authorization"
-msgstr ""
+msgstr "Crearea instantaneii domeniului necesită autorizare"
 
 #, c-format
 msgid "Socket path %1$s too big for destination"
-msgstr ""
+msgstr "Ruta către soclu %1$s este prea mare pentru destinație"
 
 msgid "Sockets:"
-msgstr ""
+msgstr "Socluri:"
 
 msgid "Some activation file descriptors are unclaimed"
-msgstr ""
+msgstr "Unii descriptori de fișiere de activare nu sunt revendicați"
 
 #, c-format
 msgid "Some features cannot be reliably used with this QEMU: %1$s"
 msgstr ""
+"Unele caracteristici nu pot fi utilizate în mod fiabil cu acest QEMU: %1$s"
 
 msgid "Some parameters are not supported by migration protocol 2"
-msgstr ""
+msgstr "Unii parametri nu sunt acceptați de protocolul de migrare 2"
 
 msgid "Some parameters are not supported by migration protocol 3"
-msgstr ""
+msgstr "Unii parametri nu sunt acceptați de protocolul de migrare 3"
 
 msgid "Some processes refused to die"
-msgstr ""
+msgstr "Unele procese au refuzat să moară"
 
 msgid "Sound device model is not supported"
-msgstr ""
+msgstr "Modelul dispozitivului audio nu este acceptat"
 
 msgid "Sound devices emulation is not supported by given bhyve binary"
 msgstr ""
+"Emularea dispozitivelor audio nu este acceptată de binarul bhyve specificat."
 
 msgid "Source"
 msgstr "Sursa"
 
 #, c-format
 msgid "Source device does not exist when formatting pool '%1$s'"
-msgstr ""
+msgstr "Dispozitivul sursă nu există la formatarea fondului „%1$s”"
 
 #, c-format
 msgid "Source host lock driver %1$s different from target %2$s"
-msgstr ""
+msgstr "Controlorul de blocare al gazdei sursă %1$s diferă de cel țintă %2$s"
 
 msgid "Specified both --storage and --remove-all-storage"
 msgstr ""
+"A fost specificată atât opțiunea „--storage”, cât și opțiunea „--remove-all-"
+"storage”"
 
 msgid "Specified character device source type is not supported by vz driver."
 msgstr ""
+"Tipul de sursă specificat pentru dispozitivul de caractere nu este acceptat "
+"de controlorul vz."
 
 msgid "Specified character device target type is not supported by vz driver."
 msgstr ""
+"Tipul de țintă specificat pentru dispozitivul de caractere nu este acceptat "
+"de controlorul vz."
 
 msgid "Specified character device type is not supported by vz driver."
 msgstr ""
+"Tipul specificat pentru dispozitivul de caractere nu este acceptat de "
+"controlorul vz."
 
 msgid "Specified disk bus is not supported by vz driver."
-msgstr ""
+msgstr "Magistrala de disc specificată nu este acceptată de controlorul vz."
 
 msgid "Specified network adapter model is not supported by vz driver."
 msgstr ""
+"Modelul specificat de adaptor de rețea nu este acceptat de controlorul vz."
 
 msgid "Specified network adapter type is not supported by vz driver."
 msgstr ""
+"Tipul specificat de adaptor de rețea nu este acceptat de controlorul vz."
 
 msgid "Specifies if pages from different numa nodes can be merged"
-msgstr ""
+msgstr "Specifică dacă paginile din diferite noduri numa pot fi fuzionate"
 
 msgid "Specifying mount point is not supported for now"
-msgstr ""
+msgstr "Specificarea punctului de montare nu este acceptată în prezent."
 
 msgid "Spice audio is not supported without spice graphics"
-msgstr ""
+msgstr "Audio Spice nu este acceptat fără grafică Spice."
 
 msgid "Start"
-msgstr ""
+msgstr "Pornire"
 
 #, c-format
 msgid "Start CPU %1$d is out of range (min: 0, max: %2$d)"
 msgstr ""
+"Procesorul de pornire %1$d este în afara intervalului (min: 0, max: %2$d)"
 
 msgid "Start a block commit operation."
-msgstr ""
+msgstr "Pornește o operație de transfer în bloc."
 
 msgid "Start a block copy operation."
-msgstr ""
+msgstr "Pornește o operație de copiere în bloc."
 
 msgid "Start a disk backup of a live domain"
-msgstr ""
+msgstr "Inițiază o copiere de rezervă pe disc a unui domeniu activ"
 
 msgid ""
 "Start a domain, either from the last managedsave\n"
 "    state, or via a fresh boot if no managedsave state\n"
 "    is present."
 msgstr ""
+"Pornește un domeniu, fie din ultima stare managedsave,\n"
+"fie printr-o repornire completă dacă nu există nicio\n"
+"stare managedsave."
 
 msgid "Start a network."
-msgstr ""
+msgstr "Pornește o rețea."
 
 msgid "Start a pool."
-msgstr ""
+msgstr "Pornește un fond."
 
 msgid "Start an inactive node device"
-msgstr ""
+msgstr "Pornește un dispozitiv nod inactiv"
 
 msgid "Start domain"
-msgstr ""
+msgstr "Pornește domeniul"
 
 msgid "Start interface"
-msgstr ""
+msgstr "Ințiază interfața"
 
 msgid "Start network"
-msgstr ""
+msgstr "Inițiază rețeaua"
 
 msgid "Start node device"
-msgstr ""
+msgstr "Pornește dispozitivul nod"
 
 msgid "Start storage pool"
-msgstr ""
+msgstr "Pornește fondul de stocare"
 
 msgid "Start to calculate domain's memory dirty rate successfully.\n"
 msgstr ""
+"Începe să calculați procentul de memorie murdară a domeniului inițiat cu "
+"succes.\n"
 
 msgid "Started"
-msgstr "Început"
+msgstr "Pornit"
 
 msgid "Starting interface requires authorization"
-msgstr ""
+msgstr "Inițierea interfeței necesită autorizare"
 
 msgid "Starting network requires authorization"
-msgstr ""
+msgstr "Inițierea rețelei necesită autorizare"
 
 msgid "Starting node device requires authorization"
-msgstr ""
+msgstr "Pornirea dispozitivului nod necesită autorizare"
 
 #, sh-format
 msgid "Starting shutdown on guest: $name"
-msgstr ""
+msgstr "Se începe oprirea pe invitatul: $name"
 
 msgid "Starting storage pool configuration requires authorization"
-msgstr ""
+msgstr "Inițierea configurației fondului de stocare necesită autorizare"
 
 msgid "Starting the domain requires authorization"
-msgstr ""
+msgstr "Pornirea domeniului necesită autorizare"
 
 msgid "Starts an inactive node device that was previously defined"
-msgstr ""
+msgstr "Pornește un dispozitiv nod inactiv care a fost definit anterior"
 
 msgid "State"
 msgstr "Stare"
 
 #, c-format
 msgid "State file %1$s edited.\n"
-msgstr ""
+msgstr "Fișierul de stare %1$s a fost editat.\n"
 
 #, c-format
 msgid "State file %1$s updated.\n"
-msgstr ""
+msgstr "Fișierul de stare %1$s a fost actualizat.\n"
 
 #, c-format
 msgid ""
 "State of HyperV enlightenment feature '%1$s' differs: source: '%2$s', "
 "destination: '%3$s'"
 msgstr ""
+"Starea caracteristicii enlightenment HyperV „%1$s” diferă: sursă: „%2$s”, "
+"destinație: „%3$s”"
 
 #, c-format
 msgid ""
 "State of HyperV stimer direct feature differs: source: '%1$s', destination: "
 "'%2$s'"
 msgstr ""
+"Starea caracteristicii stimer direct HyperV diferă: sursă: „%1$s”, "
+"destinație: „%2$s”"
 
 #, c-format
 msgid ""
 "State of KVM feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
+"Starea caracteristicii KVM „%1$s” diferă: sursă: „%2$s”, destinație: „%3$s”"
 
 #, c-format
 msgid ""
 "State of Xen feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
 msgstr ""
+"Starea caracteristicii Xen „%1$s” diferă: sursă: „%2$s”, destinație: „%3$s”"
 
 #, c-format
 msgid "State of feature '%1$s' differs: source: '%2$s', destination: '%3$s'"
-msgstr ""
+msgstr "Starea caracteristicii „%1$s” diferă: sursă: „%2$s”, destinație: „%3$s”"
 
 #, c-format
 msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s', destination: "
 "'%5$s,%6$s=%7$s'"
 msgstr ""
+"Starea caracteristicii „%1$s” diferă: sursă: „%2$s,%3$s=%4$s”, destinație: "
+"„%5$s,%6$s=%7$s”"
 
 #, c-format
 msgid ""
 "State of feature '%1$s' differs: source: '%2$s,%3$s=%4$s,%5$s=%6$llu', "
 "destination: '%7$s,%8$s=%9$s,%10$s=%11$llu'"
 msgstr ""
+"Starea caracteristicii „%1$s” diferă: sursă: „%2$s,%3$s=%4$s,%5$s=%6$llu”, "
+"destinație: „%7$s,%8$s=%9$s,%10$s=%11$llu”"
 
 #, c-format
 msgid ""
 "State of feature '%1$s' differs: source: '%2$s=%3$s', destination: "
 "'%4$s=%5$s'"
 msgstr ""
+"Starea caracteristicii „%1$s” diferă: sursă: „%2$s=%3$s”, destinație: "
+"„%4$s=%5$s”"
 
 #, c-format
 msgid ""
 "State of vCPU '%1$zu' differs between source and destination definitions"
-msgstr ""
+msgstr "Starea vCPU „%1$zu” diferă între definițiile sursă și destinație"
 
 msgid "State:"
 msgstr "Stare:"
@@ -16399,1873 +16589,2206 @@ msgstr "Stare:"
 msgid ""
 "Static host definition in IPv4 network '%1$s' must have mac or name attribute"
 msgstr ""
+"Definiția unei gazde statice în rețeaua IPv4 „%1$s” trebuie să aibă "
+"atributul mac sau nume"
 
 #, c-format
 msgid ""
 "Static host definition in IPv6 network '%1$s' must have id or name attribute"
 msgstr ""
+"Definiția unei gazde statice în rețeaua IPv6 „%1$s” trebuie să aibă "
+"atributul id sau nume"
 
 #, c-format
 msgid "Stats %1$s too big for destination"
-msgstr ""
+msgstr "Statistici %1$s prea mari pentru destinație"
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon"
-msgstr ""
+msgstr "Biții de tipuri de statistici 0x%1$x nu sunt acceptați de acest demon."
 
 #, c-format
 msgid "Stats types bits 0x%1$x are not supported by this daemon or QEMU"
 msgstr ""
+"Biții de tipuri de statistici 0x%1$x nu sunt acceptați de acest demon sau "
+"QEMU."
 
 msgid "Status is unknown"
 msgstr "Stare necunoscută"
 
 msgid "Stop domain"
-msgstr ""
+msgstr "Oprește domeniul"
 
 msgid "Stop interface"
-msgstr ""
+msgstr "Oprește interfața"
 
 msgid "Stop network"
-msgstr ""
+msgstr "Oprește rețeaua"
 
 msgid "Stop node device"
-msgstr ""
+msgstr "Oprește dispozitivul nod"
 
 msgid "Stop storage pool"
-msgstr ""
+msgstr "Oprește fondul de stocare"
 
 msgid "Stopped"
 msgstr "Oprit"
 
 msgid "Stopping interface requires authorization"
-msgstr ""
+msgstr "Oprirea interfeței necesită autorizare"
 
 msgid "Stopping network requires authorization"
-msgstr ""
+msgstr "Oprirea rețelei necesită autorizare"
 
 msgid "Stopping node device requires authorization"
-msgstr ""
+msgstr "Oprirea dispozitivului nod necesită autorizare"
 
 msgid "Stopping storage pool configuration requires authorization"
-msgstr ""
+msgstr "Oprirea configurației fondului de stocare necesită autorizare"
 
 msgid "Stopping the domain requires authorization"
-msgstr ""
+msgstr "Oprirea domeniului necesită autorizare"
 
 msgid "Storage Pool Events"
-msgstr ""
+msgstr "Evenimente legate de fondul de stocare"
 
 #, c-format
 msgid "Storage pool '%1$s' for volume '%2$s' not found."
-msgstr ""
+msgstr "Nu s-a găsit fondul de stocare „%1$s” pentru volumul „%2$s”."
 
 msgid "Storage pool already built"
-msgstr ""
+msgstr "Fondul de stocare este deja construit"
 
 #, c-format
 msgid "Storage pool already built: %1$s"
-msgstr ""
+msgstr "Fondul de stocare este deja construit: %1$s"
 
 #, c-format
 msgid "Storage pool config filename '%1$s' does not match pool name '%2$s'"
 msgstr ""
+"Numele fișierului de configurare al fondului de stocare „%1$s” nu corespunde "
+"cu numele fondului „%2$s”"
 
 msgid "Storage pool not found"
-msgstr ""
+msgstr "Fondul de stocare nu a fost găsit"
 
 #, c-format
 msgid "Storage pool not found: %1$s"
-msgstr ""
+msgstr "Fondul de stocare nu a fost găsit: %1$s"
 
 msgid "Storage pool probe failed"
-msgstr ""
+msgstr "Testarea fondului de stocare a eșuat"
 
 #, c-format
 msgid "Storage pool probe failed: %1$s"
-msgstr ""
+msgstr "Testarea fondului de stocare a eșuat: %1$s"
 
 #, c-format
 msgid "Storage pool state file '%1$s' does not match pool name '%2$s'"
 msgstr ""
+"Fișierul de stare al fondului de stocare „%1$s” nu corespunde cu numele "
+"fondului „%2$s”"
 
 #, c-format
 msgid "Storage source %1$s must be a block device"
-msgstr ""
+msgstr "Sursa de stocare %1$s trebuie să fie un dispozitiv de blocuri"
 
 #, c-format
 msgid "Storage source %1$s must be a character device"
-msgstr ""
+msgstr "Sursa de stocare %1$s trebuie să fie un dispozitiv de caractere"
 
 #, c-format
 msgid "Storage source conflict with pool: '%1$s'"
-msgstr ""
+msgstr "Conflict între sursa de stocare și fondul de stocare: „%1$s”"
 
 #, c-format
 msgid ""
 "Storage volume '%1$s'(%2$s) is not managed by libvirt. Remove it manually."
 msgstr ""
+"Volumul de stocare „%1$s”(%2$s) nu este gestionat de libvirt. Eliminați-l "
+"manual."
 
 msgid "Storage volume deletion is supported only on stopped domains"
 msgstr ""
+"Ștergerea volumului de stocare este acceptată numai pe domeniile oprite."
 
 msgid "Storage volume not found"
-msgstr ""
+msgstr "Volumul de stocare nu a fost găsit"
 
 #, c-format
 msgid "Storage volume not found: %1$s"
-msgstr ""
+msgstr "Volumul de stocare nu a fost găsit: %1$s"
 
 #, c-format
 msgid ""
 "Stream data too long to send (%1$zu bytes needed, %2$zu bytes available)"
 msgstr ""
+"Datele de flux sunt prea mari pentru a fi trimise (%1$zu octeți necesari, "
+"%2$zu octeți disponibili)"
 
 msgid "Stream has untransferred data left"
-msgstr ""
+msgstr "Fluxul are date netransferate rămase"
 
 msgid "Stream is not open"
-msgstr ""
+msgstr "Fluxul nu este deschis"
 
 msgid "Successfully copied"
-msgstr ""
+msgstr "Copierea a fost efectuată cu succes."
 
 msgid "Successfully ejected media."
-msgstr ""
+msgstr "Suportul media a fost ejectat cu succes."
 
 msgid "Successfully inserted media."
-msgstr ""
+msgstr "Suportul media a fost introdus cu succes."
 
 msgid "Successfully pivoted"
-msgstr ""
+msgstr "Pivotat cu succes"
 
 msgid "Successfully updated media."
-msgstr ""
+msgstr "Suportul media a fost actualizat cu succes."
 
 #, c-format
 msgid "Sum of byte '%1$s' stat overflows"
-msgstr ""
+msgstr "Suma de octeți „%1$s” depășește limita statistică"
 
 msgid "Support for AppArmor is not enabled"
-msgstr ""
+msgstr "Suportul pentru AppArmor nu este activat"
 
 msgid "Support for SELinux is not enabled"
-msgstr ""
+msgstr "Suportul pentru SELinux nu este activat"
 
 msgid "Support only default gateway"
-msgstr ""
+msgstr "Acceptă numai poarta de acces(pasarela) implicită"
 
 msgid "Support only one IPv4 default gateway"
-msgstr ""
+msgstr "Acceptă numai o poartă de acces(pasarelă) IPV4 implicită"
 
 msgid "Support only one IPv6 default gateway"
-msgstr ""
+msgstr "Acceptă numai o poartă de acces(pasarelă) IPV6 implicită"
 
 msgid "Suspend a running domain."
-msgstr ""
+msgstr "Suspendă unui domeniu în execuție."
 
 msgid "Suspend domain"
-msgstr ""
+msgstr "Suspendă domeniul"
 
 msgid "Suspend duration in seconds, at least 60"
-msgstr ""
+msgstr "Durata suspendării în secunde, cel puțin 60"
 
 #, c-format
 msgid "Suspend duration is too short, must be at least %1$u seconds"
 msgstr ""
+"Durata suspendării este prea scurtă, trebuie să fie de cel puțin %1$u secunde"
 
 msgid "Suspend operation already in progress"
-msgstr ""
+msgstr "Operația de suspendare este deja în curs de desfășurare"
 
 msgid "Suspend operation failed"
-msgstr ""
+msgstr "Operația de suspendare a eșuat"
 
 msgid ""
 "Suspend the host node for a given time duration and attempt to resume "
 "thereafter."
 msgstr ""
+"Suspendă nodul gazdă pentru o anumită perioadă de timp și încearcă să reia "
+"funcționarea după aceea."
 
 msgid "Suspend-to-Disk"
-msgstr ""
+msgstr "Suspendare în disc"
 
 msgid "Suspend-to-RAM"
-msgstr ""
+msgstr "Suspendare în RAM"
 
 msgid "Suspended"
-msgstr ""
+msgstr "Suspendat"
 
 #, sh-format
 msgid "Suspending $name: "
-msgstr ""
+msgstr "Suspendarea $name: "
 
 msgid "Suspending domain CPUs requires authorization"
-msgstr ""
+msgstr "Suspendarea procesoarelor domeniului necesită autorizare"
 
 #, sh-format
 msgid "Suspending guests on $uri URI..."
-msgstr ""
+msgstr "Se suspendă invitații de la adresa URI $uri..."
 
 msgid ""
 "Suspends a running domain using guest OS's power management. (Note: This "
 "requires a guest agent configured and running in the guest OS)."
 msgstr ""
+"Suspendă un domeniu în execuție utilizând gestionarea energiei sistemului de "
+"operare invitat. (Notă: aceasta necesită un agent invitat configurat și în "
+"execuție în sistemul de operare invitat)."
 
 msgid "Switch running migration from pre-copy to post-copy"
-msgstr ""
+msgstr "Comută migrarea de la pre-copiere la post-copiere"
 
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
 "been started with --postcopy option."
 msgstr ""
+"Comută migrarea de la pre-copiere la post-copiere. Migrarea trebuie să fi "
+"fost pornită cu opțiunea „--postcopy”."
 
 msgid "System is in use"
-msgstr ""
+msgstr "Sistemul este în uz"
 
 msgid "System is not available"
-msgstr ""
+msgstr "Sistemul nu este disponibil"
 
 msgid "System policy prevents management of local virtualized systems"
 msgstr ""
+"Politica sistemului împiedică gestionarea sistemelor virtualizate locale"
 
 msgid "System policy prevents monitoring of local virtualized systems"
 msgstr ""
+"Politica sistemului împiedică monitorizarea sistemelor virtualizate locale"
 
 #, c-format
 msgid "System token in %1$s was corrupt"
-msgstr ""
+msgstr "Jetonul de sistem din %1$s era corupt"
 
 #, c-format
 msgid "TCG features are incompatible with domain type '%1$s'"
-msgstr ""
+msgstr "Caracteristicile TCG sunt incompatibile cu tipul de domeniu „%1$s”"
 
 #, c-format
 msgid "TLS handshake failed %1$s"
-msgstr ""
+msgstr "Negocierea TLS a eșuat %1$s"
 
 msgid "TLS migration is not supported with this QEMU binary"
-msgstr ""
+msgstr "Migrarea TLS nu este acceptată cu acest binar QEMU."
 
 #, c-format
 msgid "TLS transport is not supported for disk protocol '%1$s'"
-msgstr ""
+msgstr "Transportul TLS nu este acceptat pentru protocolul de disc „%1$s”"
 
 msgid "TLS usage specified, but name is missing"
-msgstr ""
+msgstr "Utilizarea TLS specificată, dar numele lipsește"
 
 msgid "TLS:"
-msgstr ""
+msgstr "TLS:"
 
 #, c-format
 msgid "TPM 1.2 is not supported for model '%1$s'"
-msgstr ""
+msgstr "TPM 1.2 nu este acceptat pentru modelul „%1$s”"
 
 #, c-format
 msgid "TPM 1.2 is not supported on architecture '%1$s'"
-msgstr ""
+msgstr "TPM 1.2 nu este acceptat pe arhitectura „%1$s”"
 
 #, c-format
 msgid "TPM Proxy model %1$s requires 'Passthrough' backend"
-msgstr ""
+msgstr "Modelul proxy TPM %1$s necesită protocolul „Passthrough”"
 
 #, c-format
 msgid "TPM device path %1$s is invalid"
-msgstr ""
+msgstr "Ruta dispozitivului TPM %1$s nu este validă"
 
 #, c-format
 msgid "TPM version '%1$s' is not supported"
-msgstr ""
+msgstr "Versiunea TPM „%1$s” nu este acceptată."
 
 msgid "Table row cannot be empty"
-msgstr ""
+msgstr "Rândul tabelului nu poate fi gol"
 
 msgid "Take domain screenshot"
-msgstr ""
+msgstr "Face o instantanee a domeniului"
 
 msgid "Taking domain screenshots requires authorization"
-msgstr ""
+msgstr "Realizarea instantaneelor de domeniu necesită autorizare"
 
 msgid "Target"
 msgstr "Ținta"
 
 #, c-format
 msgid "Target ACPI index '%1$u' does not match source '%2$u'"
-msgstr ""
+msgstr "Indicele ACPI țintă „%1$u” nu corespunde sursei „%2$u”"
 
 #, c-format
 msgid "Target CPU arch %1$s does not match source %2$s"
-msgstr ""
+msgstr "Arhitectura CPU țintă %1$s nu corespunde cu cea a sursei %2$s"
 
 msgid "Target CPU cache does not match source"
-msgstr ""
+msgstr "Cache-ul CPU țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target CPU check %1$s does not match source %2$s"
-msgstr ""
+msgstr "Verificarea CPU-ului țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target CPU clusters %1$d does not match source %2$d"
-msgstr ""
+msgstr "Clusterele CPU țintă %1$d nu corespund sursei %2$d"
 
 #, c-format
 msgid "Target CPU cores %1$d does not match source %2$d"
-msgstr ""
+msgstr "Nucleele CPU țintă %1$d nu corespund sursei %2$d"
 
 #, c-format
 msgid "Target CPU dies %1$d does not match source %2$d"
-msgstr ""
+msgstr "CPU-ul țintă ce se oprește %1$d nu corespunde sursei %2$d"
 
 msgid "Target CPU does not match source"
-msgstr ""
+msgstr "CPU-ul țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target CPU feature %1$s does not match source %2$s"
-msgstr ""
+msgstr "Caracteristica CPU-ului țintă %1$s nu corespunde cu cea a sursei %2$s"
 
 #, c-format
 msgid "Target CPU feature count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de caracteristici CPU țintă %1$zu nu corespunde cu cel al sursei "
+"%2$zu"
 
 #, c-format
 msgid "Target CPU feature policy %1$s does not match source %2$s"
 msgstr ""
+"Politica privind caracteristicile CPU țintă %1$s nu corespunde cu cea a "
+"sursei %2$s"
 
 msgid "Target CPU maxphysaddr does not match source"
-msgstr ""
+msgstr "maxphysaddr al CPU-ului țintă nu corespunde cu maxphysaddr al sursei"
 
 #, c-format
 msgid "Target CPU mode %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modul CPU-ului țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target CPU model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul CPU-ului țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target CPU sockets %1$d does not match source %2$d"
-msgstr ""
+msgstr "Soclurile CPU-ului țintă %1$d nu corespund cu cele sursă %2$d"
 
 #, c-format
 msgid "Target CPU threads %1$d does not match source %2$d"
-msgstr ""
+msgstr "Numărul de fire ale CPU-ului țintă %1$d nu corespunde cu cel sursă %2$d"
 
 #, c-format
 msgid "Target CPU type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul CPU-ului țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target CPU vendor %1$s does not match source %2$s"
-msgstr ""
+msgstr "Producătorul CPU-ului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target CPU vendor id %1$s does not match source %2$s"
 msgstr ""
+"Id-ul producătorului CPU-ului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target NUMA distance from %1$zu to %2$zu doesn't match source"
 msgstr ""
+"Distanța NUMA a țintei de la %1$zu la %2$zu nu corespunde cu cea a sursei"
 
 #, c-format
 msgid "Target NUMA node count '%1$zu' doesn't match source '%2$zu'"
 msgstr ""
+"Numărul de noduri NUMA al țintei „%1$zu” nu corespunde cu cel al sursei "
+"„%2$zu”"
 
 msgid "Target NVDIMM UUID doesn't match source NVDIMM"
-msgstr ""
+msgstr "UUID-ul NVDIMM al țintei nu corespunde cu cel al sursei NVDIMM"
 
 #, c-format
 msgid ""
 "Target NVDIMM alignment '%1$llu' doesn't match source NVDIMM alignment "
 "'%2$llu'"
 msgstr ""
+"Alinierea NVDIMM a țintei „%1$llu” nu corespunde cu alinierea NVDIMM a "
+"sursei „%2$llu”"
 
 #, c-format
 msgid ""
 "Target NVDIMM label size '%1$llu' doesn't match source NVDIMM label size "
 "'%2$llu'"
 msgstr ""
+"Dimensiunea etichetei NVDIMM a țintei „%1$llu” nu corespunde cu dimensiunea "
+"etichetei NVDIMM a sursei „%2$llu”"
 
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
 msgstr ""
+"Fanionul pmem NVDIMM al țintei nu corespunde cu fanionul pmem NVDIMM al "
+"sursei"
 
 msgid "Target NVDIMM readonly flag doesn't match source NVDIMM readonly flag"
 msgstr ""
+"Fanionul numai-citire NVDIMM al țintei nu corespunde cu fanionul numai-"
+"citire NVDIMM al sursei"
 
 #, c-format
 msgid "Target RNG model '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Modelul RNG al țintei „%1$s” nu corespunde cu cel al sursei „%2$s”"
 
 msgid "Target TPM device model doesn't match source"
-msgstr ""
+msgstr "Modelul dispozitivului TPM țintă nu corespunde cu cel sursă"
 
 msgid "Target TPM device type doesn't match source"
-msgstr ""
+msgstr "Tipul dispozitivului TPM țintă nu corespunde cu cel sursă"
 
 msgid "Target TPM version doesn't match source"
-msgstr ""
+msgstr "Versiunea TPM a țintei nu corespunde cu cea a sursei"
 
 #, c-format
 msgid "Target TSC frequency %1$llu does not match source %2$llu"
-msgstr ""
+msgstr "Frecvența TSC a țintei %1$llu nu corespunde cu cea a sursei %2$llu"
 
 #, c-format
 msgid "Target TSC mode %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modul TSC țintă %1$s nu corespunde cu cel sursă %2$s"
 
 msgid "Target USB Class code does not match source"
-msgstr ""
+msgstr "Codul clasei USB țintă nu corespunde cu cel al sursei"
 
 #, c-format
 msgid "Target USB allow '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Permisiunea USB-ului țintă „%1$s” nu corespunde cu cea a sursei „%2$s”"
 
 msgid "Target USB product ID does not match source"
-msgstr ""
+msgstr "ID-ul produsului USB țintă nu corespunde cu cel al sursei"
 
 #, c-format
 msgid ""
 "Target USB redirection filter rule count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de reguli ale filtrului de redirecționare USB țintă %1$zu nu "
+"corespunde cu cel al sursei %2$zu"
 
 msgid "Target USB vendor ID does not match source"
-msgstr ""
+msgstr "ID-ul producătorului USB țintă nu corespunde cu cel al sursei"
 
 msgid "Target USB version does not match source"
-msgstr ""
+msgstr "Versiunea USB a țintei nu corespunde cu cea a sursei"
 
 msgid "Target active PCR banks doesn't match source"
-msgstr ""
+msgstr "Bancurile PCR active țintă nu corespund cu cele din sursă"
 
 msgid "Target already exists"
-msgstr ""
+msgstr "Ținta există deja"
 
 #, c-format
 msgid ""
 "Target balloon autodeflate attribute value '%1$s' does not match source "
 "'%2$s'"
 msgstr ""
+"Valoarea atributului autodeflate a balonului țintei „%1$s” nu corespunde cu "
+"cea a sursei „%2$s”"
 
 #, c-format
 msgid ""
 "Target balloon freePageReporting attribute value '%1$s' does not match "
 "source '%2$s'"
 msgstr ""
+"Valoarea atributului freePageReporting a balonului țintei „%1$s” nu "
+"corespunde cu cea a sursei „%2$s”"
 
 #, c-format
 msgid "Target balloon model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul balonului țintă %1$s nu corespunde celui sursă %2$s"
 
 msgid "Target base board does not match source"
-msgstr ""
+msgstr "Placa bază a țintei nu corespunde cu cea a sursei"
 
 #, c-format
 msgid "Target channel addr %1$s does not match source %2$s"
-msgstr ""
+msgstr "Adresa canalului țintei %1$s nu corespunde cu cea a sursei %2$s"
 
 #, c-format
 msgid "Target channel name %1$s does not match source %2$s"
-msgstr ""
+msgstr "Numele canalului țintei %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target channel type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul canalului țintei %1$s nu corespunde cu cel al sursei %2$s"
 
 msgid "Target chassis does not match source"
-msgstr ""
+msgstr "Șasiul țintă nu corespunde sursei"
 
 #, c-format
 msgid "Target console type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul consolei țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target controller index %1$d does not match source %2$d"
-msgstr ""
+msgstr "Indicele controlorului țintă %1$d nu corespunde sursei %2$d"
 
 #, c-format
 msgid "Target controller model %1$d does not match source %2$d"
-msgstr ""
+msgstr "Modelul controlorului țintă %1$d nu corespunde sursei %2$d"
 
 #, c-format
 msgid "Target controller ports %1$d does not match source %2$d"
-msgstr ""
+msgstr "Porturile controlorului țintă %1$d nu corespund cu sursa %2$d"
 
 #, c-format
 msgid "Target controller type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul controlului țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target controller vectors %1$d does not match source %2$d"
-msgstr ""
+msgstr "Vectorii controlorului țintă %1$d nu corespund sursei %2$d"
 
 #, c-format
 msgid ""
 "Target device CCW address %1$x.%2$x.%3$04x does not match source %4$x.%5$x."
 "%6$04x"
 msgstr ""
+"Adresa CCW a dispozitivului țintă %1$x.%2$x.%3$04x nu corespunde cu sursa "
+"%4$x.%5$x.%6$04x"
 
 #, c-format
 msgid ""
 "Target device PCI address %1$04x:%2$02x:%3$02x.%4$d does not match source "
 "%5$04x:%6$02x:%7$02x.%8$d"
 msgstr ""
+"Adresa PCI a dispozitivului țintă %1$04x:%2$02x:%3$02x.%4$d nu corespunde cu "
+"sursa %5$04x:%6$02x:%7$02x.%8$d"
 
 #, c-format
 msgid "Target device address type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul adresei dispozitivului țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target device ats option '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Opțiunea ats a dispozitivului țintă „%1$s” nu corespunde sursei „%2$s”"
 
 #, c-format
 msgid "Target device ccid address %1$d:%2$d does not match source %3$d:%4$d"
 msgstr ""
+"Adresa ccid a dispozitivului țintă %1$d:%2$d nu corespunde cu cea a sursei "
+"%3$d:%4$d"
 
 #, c-format
 msgid "Target device dimm base address '%1$llx' does not match source '%2$llx'"
 msgstr ""
+"Adresa de bază dimm a dispozitivului țintă „%1$llx” nu corespunde cu cea a "
+"sursei „%2$llx”"
 
 #, c-format
 msgid "Target device dimm slot %1$u does not match source %2$u"
 msgstr ""
+"Slotul dimm al dispozitivului țintă %1$u nu corespunde cu cel al sursei %2$u"
 
 #, c-format
 msgid ""
 "Target device drive address %1$d:%2$d:%3$d does not match source %4$d:%5$d:"
 "%6$d"
 msgstr ""
+"Adresa unității dispozitivului țintă %1$d:%2$d:%3$d nu corespunde cu cea a "
+"sursei %4$d:%5$d:%6$d"
 
 #, c-format
 msgid "Target device iommu option '%1$s' does not match source '%2$s'"
 msgstr ""
+"Opțiunea iommu a dispozitivului țintă „%1$s” nu corespunde cu cea a sursei "
+"„%2$s”"
 
 #, c-format
 msgid "Target device isa address %1$d:%2$d does not match source %3$d:%4$d"
 msgstr ""
+"Adresa ISA a dispozitivului țintă %1$d:%2$d nu corespunde cu cea a sursei "
+"%3$d:%4$d"
 
 #, c-format
 msgid "Target device packed option '%1$s' does not match source '%2$s'"
 msgstr ""
+"Opțiunea packed a dispozitivului țintă „%1$s” nu corespunde cu cea a sursei "
+"„%2$s”"
 
 #, c-format
 msgid "Target device page_per_vq option '%1$s' does not match source '%2$s'"
 msgstr ""
+"Opțiunea page_per_vq a dispozitivului țintă „%1$s” nu corespunde cu cea a "
+"sursei „%2$s”"
 
 msgid "Target device virtio options don't match the source"
-msgstr ""
+msgstr "Opțiunile virtio ale dispozitivului țintă nu corespund cu cele sursă"
 
 #, c-format
 msgid ""
 "Target device virtio serial address %1$d:%2$d:%3$d does not match source "
 "%4$d:%5$d:%6$d"
 msgstr ""
+"Adresa serială virtio a dispozitivului țintă %1$d:%2$d:%3$d nu corespunde cu "
+"cea a sursei %4$d:%5$d:%6$d"
 
 #, c-format
 msgid "Target disk %1$s does not match source %2$s"
-msgstr ""
+msgstr "Discul țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
-msgstr ""
+msgstr "Proprietatea „dpofua” a discului țintă %1$s nu corespunde cu sursa %2$s"
 
 #, c-format
 msgid "Target disk 'removable' property %1$s does not match source %2$s"
 msgstr ""
+"Proprietatea „removable” a discului țintă %1$s nu corespunde cu sursa %2$s"
 
 msgid "Target disk access mode does not match source"
-msgstr ""
+msgstr "Modul de acces la discul țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target disk bus %1$s does not match source %2$s"
-msgstr ""
+msgstr "Magistrala discului țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target disk device %1$s does not match source %2$s"
-msgstr ""
+msgstr "Dispozitivul de disc țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target disk discard_granularity %1$u does not match source %2$u"
 msgstr ""
+"Proprietatea discard_granularity a discului țintă %1$u nu corespunde sursei "
+"%2$u"
 
 #, c-format
 msgid "Target disk logical_block_size %1$u does not match source %2$u"
 msgstr ""
+"Proprietatea logical_block_size a discului țintă %1$u nu corespunde sursei "
+"%2$u"
 
 #, c-format
 msgid "Target disk model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul discului țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target disk physical_block_size %1$u does not match source %2$u"
 msgstr ""
+"Proprietatea physical_block_size a discului țintă %1$u nu corespunde cu "
+"sursa %2$u"
 
 #, c-format
 msgid "Target disk queue count %1$u does not match source %2$u"
-msgstr ""
+msgstr "Numărul cozii de disc țintă %1$u nu corespunde sursei %2$u"
 
 #, c-format
 msgid "Target disk queue size %1$u does not match source %2$u"
-msgstr ""
+msgstr "Dimensiunea cozii discului țintă %1$u nu corespunde cu sursa %2$u"
 
 #, c-format
 msgid "Target disk rotation rate %1$u RPM does not match source %2$u RPM"
 msgstr ""
+"Viteza de rotație a discului țintă %1$u RPM nu corespunde cu viteza discului "
+"sursă %2$u RPM"
 
 #, c-format
 msgid "Target disk serial %1$s does not match source %2$s"
 msgstr ""
+"Numărul de serie al discului de țintă %1$s nu corespunde cu numărul de serie "
+"al discului sursă %2$s"
 
 #, c-format
 msgid "Target disk wwn '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "WWN-ul discului țintă „%1$s” nu corespunde cu cel al sursei „%2$s”"
 
 #, c-format
 msgid ""
 "Target domain IOMMU device aw_bits value '%1$d' does not match source '%2$d'"
 msgstr ""
+"Valoarea aw_bits a dispozitivului IOMMU din domeniul țintă „%1$d” nu "
+"corespunde cu cea a sursei „%2$d”."
 
 #, c-format
 msgid ""
 "Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"
 msgstr ""
+"Modul de stocare în cache al dispozitivului IOMMU al domeniului țintă „%1$s” "
+"nu corespunde cu cel al sursei „%2$s”"
 
 #, c-format
 msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor IOMMU din domeniul țintă %1$zu nu corespunde cu cel "
+"al sursei %2$zu"
 
 #, c-format
 msgid ""
 "Target domain IOMMU device dma translation '%1$s' does not match source "
 "'%2$s'"
 msgstr ""
+"Traducerea DMA a dispozitivului IOMMU din domeniul țintă „%1$s” nu "
+"corespunde cu cea a sursei „%2$s”."
 
 #, c-format
 msgid ""
 "Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"
 msgstr ""
+"Valoarea eim a dispozitivului IOMMU din domeniul țintă „%1$s” nu corespunde "
+"celei din sursa „%2$s”."
 
 #, c-format
 msgid ""
 "Target domain IOMMU device intremap value '%1$s' does not match source '%2$s'"
 msgstr ""
+"Valoarea intremap a dispozitivului IOMMU din domeniul țintă „%1$s” nu "
+"corespunde cu cea a sursei „%2$s”"
 
 #, c-format
 msgid ""
 "Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"
 msgstr ""
+"Valoarea iotlb a dispozitivului IOMMU din domeniul țintă „%1$s” nu "
+"corespunde cu cea a sursei „%2$s”"
 
 #, c-format
 msgid "Target domain IOMMU device model '%1$s' does not match source '%2$s'"
 msgstr ""
+"Modelul dispozitivului IOMMU al domeniului țintă „%1$s” nu corespunde cu cel "
+"al sursei „%2$s”."
 
 #, c-format
 msgid ""
 "Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
 msgstr ""
+"Valoarea pci_bus a dispozitivului IOMMU din domeniul țintă „%1$d” nu "
+"corespunde cu cea a sursei „%2$d”"
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
 msgstr ""
+"Tipul sistemului de operare al domeniului țintă %1$s nu corespunde cu cel al "
+"sursei %2$s"
 
 #, c-format
 msgid "Target domain RNG device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor RNG din domeniul țintă %1$zu nu corespunde cu cel din "
+"sursă %2$zu"
 
 #, c-format
 msgid "Target domain SMBIOS mode %1$s does not match source %2$s"
 msgstr ""
+"Modul SMBIOS al domeniului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target domain TPM device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor TPM din domeniul țintă %1$zu nu corespunde cu cel din "
+"sursă %2$zu"
 
 #, c-format
 msgid ""
 "Target domain USB redirection filter count %1$d does not match source %2$d"
 msgstr ""
+"Numărul de filtre de redirecționare USB din domeniul țintă %1$d nu "
+"corespunde cu cel al sursei %2$d"
 
 #, c-format
 msgid "Target domain architecture %1$s does not match source %2$s"
-msgstr ""
+msgstr "Arhitectura domeniului țintă %1$s nu corespunde cu cea a sursei %2$s"
 
 #, c-format
 msgid "Target domain channel count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de canale al domeniului țintă %1$zu nu corespunde cu cel al sursei "
+"%2$zu"
 
 #, c-format
 msgid "Target domain console count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de console al domeniului țintă %1$zu nu corespunde cu cel al sursei "
+"%2$zu"
 
 #, c-format
 msgid "Target domain controller count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de controlori al domeniului țintă %1$zu nu corespunde cu cel al "
+"sursei %2$zu"
 
 msgid "Target domain count of sysinfo does not match source"
-msgstr ""
+msgstr "Numărul domeniilor țintă din sysinfo nu corespunde cu cel din sursă"
 
 #, c-format
 msgid "Target domain current memory %1$lld does not match source %2$lld"
 msgstr ""
+"Memoria curentă a domeniului țintă %1$lld nu corespunde cu cea din sursă "
+"%2$lld"
 
 #, c-format
 msgid "Target domain disk count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de discuri al domeniului țintă %1$zu nu corespunde cu cel al sursei "
+"%2$zu"
 
 #, c-format
 msgid "Target domain filesystem count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de sisteme de fișiere al domeniului țintă %1$zu nu corespunde cu cel "
+"al sursei %2$zu"
 
 #, c-format
 msgid "Target domain genid %1$s does not match source %2$s"
-msgstr ""
+msgstr "genid-ul domeniului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target domain host device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor gazdă din domeniul țintă %1$zu nu corespunde cu cel "
+"al sursei %2$zu"
 
 #, c-format
 msgid "Target domain hub device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor hub din domeniul țintă %1$zu nu corespunde cu cel al "
+"sursei %2$zu"
 
 #, c-format
 msgid "Target domain input device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor de intrare din domeniul țintă %1$zu nu corespunde cu "
+"cel al sursei %2$zu"
 
 #, c-format
 msgid "Target domain machine type %1$s does not match source %2$s"
 msgstr ""
+"Tipul de mașină al domeniului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid "Target domain max memory %1$lld does not match source %2$lld"
 msgstr ""
+"Memoria maximă a domeniului țintă %1$lld nu corespunde cu cea a sursei %2$lld"
 
 #, c-format
 msgid "Target domain memory balloon count %1$d does not match source %2$d"
 msgstr ""
+"Numărul de baloane de memorie al domeniului țintă %1$d nu corespunde cu cel "
+"al sursei %2$d"
 
 #, c-format
 msgid "Target domain memory device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor de memorie din domeniul țintă %1$zu nu corespunde cu "
+"cel al sursei %2$zu"
 
 #, c-format
 msgid "Target domain memory slots count '%1$u' doesn't match source '%2$u'"
 msgstr ""
+"Numărul de sloturi de memorie ale domeniului țintă „%1$u” nu corespunde cu "
+"cel al sursei „%2$u”"
 
 #, c-format
 msgid "Target domain name '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Numele domeniului țintă „%1$s” nu corespunde cu cel al sursei „%2$s”"
 
 #, c-format
 msgid "Target domain net card count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de plăci de rețea ale domeniului țintă %1$zu nu corespunde cu cel al "
+"sursei %2$zu"
 
 #, c-format
 msgid "Target domain panic device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor de panică din domeniul țintă %1$zu nu corespunde cu "
+"cel al sursei %2$zu"
 
 #, c-format
 msgid "Target domain parallel port count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de porturi paralele ale domeniului țintă %1$zu nu corespunde cu cel "
+"al sursei %2$zu"
 
 msgid "Target domain pstore device count does not match source"
 msgstr ""
+"Numărul de dispozitive pstore din domeniul țintă nu corespunde cu cel din "
+"sursă"
 
 #, c-format
 msgid ""
 "Target domain redirected devices count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor redirecționate din domeniul țintă %1$zu nu corespunde "
+"cu cel din sursă %2$zu"
 
 msgid "Target domain requested genid does not match source"
-msgstr ""
+msgstr "genid-ul solicitat de domeniul țintă nu corespunde cu cel sursă"
 
 #, c-format
 msgid "Target domain serial port count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de porturi seriale ale domeniului țintă %1$zu nu corespunde cu cel "
+"al sursei %2$zu"
 
 #, c-format
 msgid ""
 "Target domain shared memory device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor de memorie partajată din domeniul țintă %1$zu nu "
+"corespunde cu cel din sursă %2$zu"
 
 #, c-format
 msgid "Target domain smartcard count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de smartcard-uri din domeniul țintă %1$zu nu corespunde cu cel din "
+"sursă %2$zu"
 
 #, c-format
 msgid "Target domain sound card count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de plăci de sunet din domeniul țintă %1$zu nu corespunde cu cel din "
+"sursă %2$zu"
 
 msgid "Target domain timers do not match source"
-msgstr ""
+msgstr "Temporizatoarele domeniului țintă nu corespund cu cele sursă"
 
 #, c-format
 msgid "Target domain uuid %1$s does not match source %2$s"
-msgstr ""
+msgstr "UUID-ul domeniului țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target domain vCPU max %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul maxim de CPU-uri virtuale (vCPU) pentru domeniul țintă %1$zu nu "
+"corespunde cu cel al sursei %2$zu."
 
 #, c-format
 msgid "Target domain video card count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul de plăci video din domeniul țintă %1$zu nu corespunde cu cel din "
+"sursă %2$zu"
 
 #, c-format
 msgid "Target domain virt type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul virt al domeniului țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 msgid "Target domain vsock device count does not match source"
 msgstr ""
+"Numărul de dispozitive vsock din domeniul țintă nu corespunde cu cel din "
+"sursă"
 
 #, c-format
 msgid "Target domain vsock device model '%1$s' does not match source '%2$s'"
 msgstr ""
+"Modelul dispozitivului vsock al domeniului țintă „%1$s” nu corespunde cu cel "
+"al sursei „%2$s”"
 
 #, c-format
 msgid "Target domain watchdog device count %1$zu does not match source %2$zu"
 msgstr ""
+"Numărul dispozitivelor watchdog din domeniul țintă %1$zu nu corespunde cu "
+"cel din sursă %2$zu"
 
 msgid "Target filesystem access mode does not match source"
 msgstr ""
+"Modul de acces al sistemului de fișiere țintă nu corespunde cu cel al sursei"
 
 #, c-format
 msgid "Target filesystem guest target %1$s does not match source %2$s"
-msgstr ""
+msgstr "Ținta sistemului de fișiere invitat %1$s nu corespunde sursei %2$s"
 
 msgid "Target filesystem model does not match source"
-msgstr ""
+msgstr "Modelul sistemului de fișiere țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target host device mode %1$s does not match source %2$s"
 msgstr ""
+"Modul dispozitivului gazdă țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 #, c-format
 msgid ""
 "Target host device subsystem type %1$s is not compatible with source "
 "subsystem type %2$s"
 msgstr ""
+"Tipul subsistemului dispozitivului gazdă țintă %1$s nu este compatibil cu "
+"tipul subsistemului sursă %2$s."
 
 #, c-format
 msgid "Target hub device type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul dispozitivului hub țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target input device bus %1$s does not match source %2$s"
 msgstr ""
+"Magistrala dispozitivului de intrare țintă %1$s nu corespunde cu cea sursă "
+"%2$s"
 
 #, c-format
 msgid "Target input device type %1$s does not match source %2$s"
 msgstr ""
+"Tipul dispozitivului de intrare țintă %1$s nu corespunde cu cel sursă %2$s"
 
 #, c-format
 msgid "Target input model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul de intrare țintă %1$s nu corespunde modelului sursă %2$s"
 
 #, c-format
 msgid "Target maximum memory size '%1$llu' doesn't match source '%2$llu'"
 msgstr ""
+"Dimensiunea maximă a memoriei țintă „%1$llu” nu corespunde cu dimensiunea "
+"sursă „%2$llu”"
 
 msgid ""
 "Target memory device 'dynamicMemslots' property doesn't match source memory "
 "device"
 msgstr ""
+"Proprietatea „dynamicMemslots” a dispozitivului de memorie țintă nu "
+"corespunde cu dispozitivul de memorie sursă."
 
 #, c-format
 msgid ""
 "Target memory device address '0x%1$llx' doesn't match source memory device "
 "address '0x%2$llx'"
 msgstr ""
+"Adresa dispozitivului de memorie țintă „0x%1$llx” nu corespunde cu adresa "
+"dispozitivului de memorie sursă „0x%2$llx”."
 
 #, c-format
 msgid "Target memory device alias '%1$s' doesn't match source alias '%2$s'"
 msgstr ""
+"Aliasul dispozitivului de memorie țintă „%1$s” nu corespunde aliasului sursă "
+"„%2$s”"
 
 #, c-format
 msgid ""
 "Target memory device block size '%1$llu' doesn't match source memory device "
 "block size '%2$llu'"
 msgstr ""
+"Dimensiunea blocului dispozitivului de memorie țintă „%1$llu” nu corespunde "
+"cu dimensiunea blocului dispozitivului de memorie sursă „%2$llu”."
 
 #, c-format
 msgid "Target memory device model '%1$s' doesn't match source model '%2$s'"
 msgstr ""
+"Modelul dispozitivului de memorie țintă „%1$s” nu corespunde modelului sursă "
+"„%2$s”."
 
 #, c-format
 msgid ""
 "Target memory device requested size '%1$llu' doesn't match source memory "
 "device requested size '%2$llu'"
 msgstr ""
+"Dimensiunea solicitată a dispozitivului de memorie țintă „%1$llu” nu "
+"corespunde cu dimensiunea solicitată a dispozitivului de memorie sursă "
+"„%2$llu”."
 
 #, c-format
 msgid ""
 "Target memory device size '%1$llu' doesn't match source memory device size "
 "'%2$llu'"
 msgstr ""
+"Dimensiunea dispozitivului de memorie țintă „%1$llu” nu corespunde cu "
+"dimensiunea dispozitivului de memorie sursă „%2$llu”."
 
 #, c-format
 msgid ""
 "Target memory device targetNode '%1$d' doesn't match source targetNode '%2$d'"
 msgstr ""
+"Proprietatea targetNode a dispozitivului de memorie țintă „%1$d” nu "
+"corespunde cu proprietatea targetNode sursă „%2$d”"
 
 #, c-format
 msgid ""
 "Target memoryBacking source '%1$s' doesn't match source memoryBacking "
 "source'%2$s'"
 msgstr ""
+"Sursa memoryBacking țintă „%1$s” nu corespunde cu sursa memoryBacking sursă "
+"„%2$s”"
 
 #, c-format
 msgid "Target model '%1$s' requires target type '%2$s'"
-msgstr ""
+msgstr "Modelul țintă „%1$s” necesită tipul țintă „%2$s”"
 
 #, c-format
 msgid "Target network card MTU %1$d does not match source %2$d"
-msgstr ""
+msgstr "MTU-ul plăcii de rețea țintă %1$d nu corespunde cu sursa %2$d"
 
 #, c-format
 msgid "Target network card mac %1$s does not match source %2$s"
 msgstr ""
+"Adresa MAC a plăcii de rețea țintă %1$s nu corespunde cu cea a sursei %2$s"
 
 #, c-format
 msgid "Target network card model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul plăcii de rețea țintă %1$s nu corespunde cu cel al sursei %2$s"
 
 msgid "Target not found"
-msgstr ""
+msgstr "Ținta nu a fost găsită"
 
 #, c-format
 msgid "Target panic model '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Modelul de panică țintă „%1$s” nu corespunde sursei „%2$s”"
 
 #, c-format
 msgid "Target parallel port %1$d does not match source %2$d"
-msgstr ""
+msgstr "Portul paralel țintă %1$d nu corespunde sursei %2$d"
 
 #, c-format
 msgid "Target pstore device backend '%1$s' does not match source '%2$s'"
 msgstr ""
+"Gestionarea dispozitivului pstore țintă „%1$s” nu corespunde sursei „%2$s”"
 
 #, c-format
 msgid "Target pstore size '%1$llu' does not match source '%2$llu'"
 msgstr ""
+"Dimensiunea pstore țintă „%1$llu” nu corespunde cu cea a sursei „%2$llu”"
 
 #, c-format
 msgid "Target redirected device bus %1$s does not match source %2$s"
 msgstr ""
+"Magistrala dispozitivului redirecționat țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid ""
 "Target redirected device source type %1$s does not match source device "
 "source type %2$s"
 msgstr ""
+"Tipul sursei dispozitivului redirecționat %1$s nu corespunde tipului sursei "
+"dispozitivului sursă %2$s"
 
 #, c-format
 msgid "Target serial model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul serial țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target serial port %1$d does not match source %2$d"
-msgstr ""
+msgstr "Portul serial țintă %1$d nu corespunde sursei %2$d"
 
 #, c-format
 msgid "Target serial type %1$s does not match source %2$s"
-msgstr ""
+msgstr "Tipul serial țintă %1$s nu corespunde sursei %2$s"
 
 msgid "Target shared memory MSI configuration doesn't match source"
-msgstr ""
+msgstr "Configurația MSI a memoriei partajate țintă nu corespunde cu cea sursă"
 
 #, c-format
 msgid "Target shared memory model '%1$s' does not match source model '%2$s'"
 msgstr ""
+"Modelul de memorie partajată țintă „%1$s” nu corespunde modelului sursă „%2$s"
+"”"
 
 #, c-format
 msgid "Target shared memory role '%1$s' does not match source role '%2$s'"
 msgstr ""
+"Rolul memoriei partajate țintă „%1$s” nu corespunde rolului sursă „%2$s”"
 
 msgid "Target shared memory server usage doesn't match source"
-msgstr ""
+msgstr "Utilizarea serverului de memorie partajată țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target shared memory size '%1$llu' does not match source size '%2$llu'"
 msgstr ""
+"Dimensiunea memoriei partajate țintă „%1$llu” nu corespunde dimensiunii "
+"sursei „%2$llu”"
 
 #, c-format
 msgid "Target sound card model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul plăcii de sunet țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid ""
 "Target sound card multichannel setting '%1$s' does not match source '%2$s'"
 msgstr ""
+"Configurarea multicanal a plăcii de sunet țintă „%1$s” nu corespunde sursei "
+"„%2$s”"
 
 #, c-format
 msgid "Target sysinfo %1$s %2$s does not match source %3$s"
-msgstr ""
+msgstr "sysinfo țintă %1$s %2$s nu corespunde sursei %3$s"
 
 #, c-format
 msgid "Target sysinfo %1$s does not match source %2$s"
-msgstr ""
+msgstr "sysinfo țintă %1$ss nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target sysinfo base board count '%1$zu' does not match source '%2$zu'"
 msgstr ""
+"Numărul plăcilor de bază sysinfo țintă „%1$zu” nu corespunde sursei „%2$zu”"
 
 msgid "Target sysinfo does not match source"
-msgstr ""
+msgstr "sysinfo țintă nu corespunde sursei"
 
 #, c-format
 msgid "Target timer %1$s does not match source %2$s"
-msgstr ""
+msgstr "Temporizatorul țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target timer presence '%1$s' does not match source '%2$s'"
-msgstr ""
+msgstr "Prezența temporizatorului țintă „%1$s” nu corespunde sursei „%2$s”"
 
 #, c-format
 msgid "Target type '%1$s' cannot have an associated address"
-msgstr ""
+msgstr "Tipul țintă „%1$s” nu poate avea o adresă asociată."
 
 #, c-format
 msgid "Target type '%1$s' requires address type '%2$s'"
-msgstr ""
+msgstr "Tipul țintă „%1$s” necesită tipul de adresă „%2$s”"
 
 #, c-format
 msgid "Target video card 2d accel %1$u does not match source %2$u"
-msgstr ""
+msgstr "Accelerarea 2D a plăcii video țintă %1$u nu corespunde cu sursa %2$u"
 
 #, c-format
 msgid "Target video card 3d accel %1$u does not match source %2$u"
-msgstr ""
+msgstr "Accelerarea 3D a plăcii video țintă %1$u nu corespunde cu sursa %2$u"
 
 msgid "Target video card acceleration does not match source"
-msgstr ""
+msgstr "Accelerarea plăcii video țintă nu corespunde cu sursa"
 
 #, c-format
 msgid "Target video card edid %1$s does not match source %2$s"
-msgstr ""
+msgstr "edid-ul plăcii video țintă %1$s nu corespunde cu sursa %2$s"
 
 #, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
-msgstr ""
+msgstr "Capetele plăcii video țintă %1$u nu corespund sursei %2$u"
 
 #, c-format
 msgid "Target video card model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul plăcii video țintă %1$s nu corespunde sursei %2$s"
 
 #, c-format
 msgid "Target video card ram %1$u does not match source %2$u"
-msgstr ""
+msgstr "Memoria RAM a plăcii video țintă %1$u nu corespunde cu sursa %2$u"
 
 #, c-format
 msgid "Target video card vgamem %1$u does not match source %2$u"
 msgstr ""
+"Valoarea vgamem a plăcii video țintă %1$u nu corespunde cu cea a sursei %2$u"
 
 #, c-format
 msgid "Target video card vram %1$u does not match source %2$u"
 msgstr ""
+"Valoarea vram a plăcii video țintă %1$u nu corespunde cu cea a sursei %2$u"
 
 #, c-format
 msgid "Target video card vram64 %1$u does not match source %2$u"
 msgstr ""
+"Valoarea vram64 a plăcii video țintă %1$u nu corespunde cu cea a sursei %2$u"
 
 #, c-format
 msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
 msgstr ""
+"Numărul de cozi de rețea virtio țintă „%1$d” nu corespunde sursei „%2$d”"
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
-msgstr ""
+msgstr "Modelul watchdog țintă %1$s nu corespunde sursei %2$s"
 
 msgid "Temporary disk space total:"
-msgstr ""
+msgstr "Spațiu total temporar pe disc:"
 
 msgid "Temporary disk space use:"
-msgstr ""
+msgstr "Spațiu temporar utilizat pe disc:"
 
 msgid "That firmware name is reserved"
-msgstr ""
+msgstr "Numele acestui firmware este rezervat"
 
 msgid "Thaw domain's mounted filesystems."
-msgstr ""
+msgstr "Dezgheață sistemele de fișiere montate ale domeniului."
 
 #, c-format
 msgid "Thawed %1$d filesystem(s)\n"
-msgstr ""
+msgstr "Sistem(e) de fișiere dezghețat(e) %1$d\n"
 
 #, c-format
 msgid "The %1$s interface already exists"
-msgstr ""
+msgstr "Interfața %1$s există deja"
 
 #, c-format
 msgid "The '%1$s' device is not supported by this QEMU binary"
-msgstr ""
+msgstr "Dispozitivul „%1$s” nu este compatibil cu acest fișier binar QEMU"
 
 #, c-format
 msgid ""
 "The '%1$s' feature is not supported for architecture '%2$s' or machine type "
 "'%3$s'"
 msgstr ""
+"Caracteristica „%1$s” nu este acceptată pentru arhitectura „%2$s” sau tipul "
+"de mașină „%3$s”."
 
 #, c-format
 msgid "The '%1$s' timer can't be disabled"
-msgstr ""
+msgstr "Temporizatorul „%1$s” nu poate fi dezactivat"
 
 #, c-format
 msgid "The '%1$s' timer does not support tickpolicy '%2$s'"
-msgstr ""
+msgstr "Temporarizatorul „%1$s” nu acceptă tickpolicy „%2$s”"
 
 msgid ""
 "The 'dev' attribute of the <source> element can only be used with "
 "<interface> type='user' or type='vhostuser' if the <backend> type='passt'"
 msgstr ""
+"Atributul „dev” al elementului <source> poate fi utilizat numai cu "
+"<interface> type='user' sau type='vhostuserț dacă <backend> type='passt'"
 
 #, c-format
 msgid ""
 "The 'eoi' attribute of the '%1$s' feature is not supported for architecture "
 "'%2$s' or machine type '%3$s'"
 msgstr ""
+"Atributul „eoi” al caracteristicii „%1$s” nu este acceptat pentru "
+"arhitectura „%2$s” sau tipul de mașină „%3$s”."
 
 msgid ""
 "The 'fqdn' attribute of the <backend> element can only be used with the "
 "<backend> type='passt'"
 msgstr ""
+"Atributul „fqdn” al elementului <backend> poate fi utilizat numai cu "
+"<backend> type='passt'"
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
 "type='vhostuser'"
 msgstr ""
+"Backend-ul „passt” poate fi utilizat numai cu interfața de tip „user” sau „"
+"vhostuser”"
 
 msgid ""
 "The 'range' of a 'portForward' requires 'start' attribute if 'end', 'to', or "
 "'exclude' is specified"
 msgstr ""
+"„Intervalul” unui „portForward” necesită atributul „start” dacă sunt "
+"specificate „end”, „to” sau „exclude”."
 
 #, c-format
 msgid ""
 "The <nat> element can only be used when <forward> 'mode' is 'nat' in network "
 "%1$s"
 msgstr ""
+"Elementul <nat> poate fi utilizat numai când <forward> „mode” este „nat” în "
+"rețeaua %1$s."
 
 msgid ""
 "The <portForward> element can only be used with the 'passt' backend of "
 "interface type='user' or type='vhostuser'"
 msgstr ""
+"Elementul <portForward> poate fi utilizat numai cu backend-ul „passt” al "
+"tipului de interfață „user” sau „vhostuser”."
 
 msgid ""
 "The <source> of <dataStore> can't have another nested <dataStore> or "
 "<backingStore> element"
 msgstr ""
+"Elementul <source> din <dataStore> nu poate conține un alt element "
+"<dataStore> sau <backingStore> imbricat."
 
 #, c-format
 msgid "The CA certificate %1$s has expired"
-msgstr ""
+msgstr "Certificatul CA %1$s a expirat"
 
 #, c-format
 msgid "The CA certificate %1$s is not yet active"
-msgstr ""
+msgstr "Certificatul CA %1$s nu este încă activ"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Certificatul CA %1$s trebuie să fie accesibil tuturor utilizatorilor. Ca "
+"root, executați: «chown root.root %2$s; chmod 0644 %3$s»"
 
 #, c-format
 msgid ""
 "The CA certificate %1$s must not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Certificatul CA %1$s nu trebuie să fie accesibil altor utilizatori. Ca "
+"utilizator, executați: «chown %2$d.%3$d %4$s; chmod 0600 %5$s»"
 
 #, c-format
 msgid "The CCW devno '%1$s' is in use already"
-msgstr ""
+msgstr "Dispozitivul CCW numărul „%1$s” este deja utilizat"
 
 #, c-format
 msgid ""
 "The CPU provided by hypervisor on the host is a superset of CPU described in "
 "%1$s\n"
 msgstr ""
+"CPU-ul furnizat de hipervizor pe gazdă este un superset al CPU-ului descris "
+"în %1$s.\n"
 
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pci-root' for this machine "
 "type, but model='%1$s' was found instead"
 msgstr ""
+"Controlorul PCI cu index='0' trebuie să fie model='pci-root' pentru acest "
+"tip de mașină, dar în schimb a fost găsit model='%1$s'"
 
 #, c-format
 msgid ""
 "The PCI controller with index='0' must be model='pcie-root' for this machine "
 "type, but model='%1$s' was found instead"
 msgstr ""
+"Controlorul PCI cu index='0' trebuie să fie model='pcie-root' pentru acest "
+"tip de mașină, dar în schimb a fost găsit model='%1$s'"
 
 msgid "The PCI controller with index=0 can't be associated with a NUMA node"
-msgstr ""
+msgstr "Controlorul PCI cu index=0 nu poate fi asociat cu un nod NUMA"
 
 #, c-format
 msgid "The PF device for VF %1$s has no network device name"
-msgstr ""
+msgstr "Dispozitivul PF pentru VF %1$s nu are nume de dispozitiv de rețea"
 
 #, c-format
 msgid ""
 "The PF device for VF %1$s has no network device name, cannot get virtual "
 "function info"
 msgstr ""
+"Dispozitivul PF pentru VF %1$s nu are nume de dispozitiv de rețea, nu se pot "
+"obține informații despre funcția virtuală"
 
 #, c-format
 msgid ""
 "The PKI base dir %1$s must not be accessible to other users. Run: chown %2$d."
 "%3$d %4$s; chmod 0700 %5$s"
 msgstr ""
+"Directorul de bază PKI %1$s nu trebuie să fie accesibil altor utilizatori. "
+"Rulați: «chown %2$d.%3$d %4$s; chmod 0700 %5$s»"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM backend type %2$s"
-msgstr ""
+msgstr "Executabilul QEMU %1$s nu acceptă tipul de gestionare TPM %2$s"
 
 #, c-format
 msgid "The QEMU executable %1$s does not support TPM model %2$s"
-msgstr ""
+msgstr "Executabilul QEMU %1$s nu acceptă modelul TPM %2$s"
 
 msgid "The XML configuration was changed by another user."
-msgstr ""
+msgstr "Configurația XML a fost modificată de un alt utilizator."
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "Audio asociat nu este de tipul „dbus”."
 
 #, c-format
 msgid "The certificate %1$s basic constraints do not show a CA"
 msgstr ""
+"Constrângerile de bază ale certificatului %1$s nu afișează o autoritate de "
+"certificare (CA)"
 
 #, c-format
 msgid ""
 "The certificate %1$s basic constraints show a CA, but we need one for a "
 "client"
 msgstr ""
+"Constrângerile de bază ale certificatului %1$s indică o autoritate de "
+"certificare, dar avem nevoie de una pentru un client"
 
 #, c-format
 msgid ""
 "The certificate %1$s basic constraints show a CA, but we need one for a "
 "server"
 msgstr ""
+"Constrângerile de bază ale certificatului %1$s indică o autoritate de "
+"certificare, dar avem nevoie de una pentru un server"
 
 #, c-format
 msgid "The certificate %1$s is missing basic constraints for a CA"
 msgstr ""
+"Certificatul %1$s nu conține constrângerile de bază pentru o autoritate de "
+"certificare (CA)."
 
 msgid "The certificate has been revoked."
-msgstr ""
+msgstr "Certificatul a fost revocat."
 
 msgid "The certificate has no peers"
-msgstr ""
+msgstr "Certificatul nu are parteneri"
 
 msgid "The certificate hasn't got a known issuer."
-msgstr ""
+msgstr "Certificatul nu are un emitent cunoscut."
 
 msgid "The certificate is not trusted."
 msgstr "Certificatul nu este de considerat de încredere."
 
 msgid "The certificate uses an insecure algorithm"
-msgstr ""
+msgstr "Certificatul utilizează un algoritm nesigur"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Certificatul clientului %1$s trebuie să fie accesibil tuturor "
+"utilizatorilor. Ca root, executați: «chown root.root %2$s; chmod 0644 %3$s»"
 
 #, c-format
 msgid ""
 "The client cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Certificatul clientului %1$s trebuie să fie restricționat la acest "
+"utilizator. Ca acest utilizator, executați: «chown %2$d.%3$d %4$s; chmod "
+"0600 %5$s»"
 
 #, c-format
 msgid "The client certificate %1$s has expired"
-msgstr ""
+msgstr "Certificatul clientului %1$s a expirat"
 
 #, c-format
 msgid "The client certificate %1$s is not yet active"
-msgstr ""
+msgstr "Certificatul clientului %1$s nu este încă activ"
 
 #, c-format
 msgid ""
 "The client key %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Cheia clientului %1$s trebuie să fie accesibilă tuturor utilizatorilor. Ca "
+"root, executați: «chown root.root %2$s; chmod 0644 %3$s»"
 
 #, c-format
 msgid ""
 "The client key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Cheia clientului %1$s nu trebuie să fie accesibilă altor utilizatori. Ca "
+"acest utilizator, executați: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 
 #, c-format
 msgid "The device at %1$s has no network device name"
-msgstr ""
+msgstr "Dispozitivul de la %1$s nu are nume de dispozitiv de rețea"
 
 #, c-format
 msgid ""
 "The device at PCI address %1$s cannot be plugged into the PCI controller "
 "with index='%2$d'. It requires a controller that accepts a %3$s."
 msgstr ""
+"Dispozitivul de la adresa PCI %1$s nu poate fi conectat la controlorul PCI "
+"cu index='%2$d'. Este necesar un controlor care acceptă %3$s."
 
 #, c-format
 msgid ""
 "The device at PCI address %1$s has unrecognized connection type flags "
 "0x%2$.2x"
 msgstr ""
+"Dispozitivul de la adresa PCI %1$s are fanioane de tip conexiune "
+"nerecunoscute 0x%2$.2x"
 
 #, c-format
 msgid "The device at PCI address %1$s needs to be an integrated device (bus=0)"
 msgstr ""
+"Dispozitivul de la adresa PCI %1$s trebuie să fie un dispozitiv integrat "
+"(bus=0)"
 
 #, c-format
 msgid ""
 "The device at PCI address %1$s requires hotplug capability, but the PCI "
 "controller with index='%2$d' doesn't support hotplug"
 msgstr ""
+"Dispozitivul de la adresa PCI %1$s necesită capacitatea de conectare la cald "
+"(hotplug), dar controlorul PCI cu index='%2$d' nu oferă suport pentru "
+"conectarea la cald."
 
 #, c-format
 msgid ""
 "The device at PCI address %1$s was auto-assigned this address, but the PCI "
 "controller with index='%2$d' doesn't allow auto-assignment"
 msgstr ""
+"Dispozitivului de la adresa PCI %1$s i s-a atribuit automat această adresă, "
+"dar controlerul PCI cu index='%2$d' nu permite atribuirea automată."
 
 #, c-format
 msgid "The disk device '%1$s' already has media"
-msgstr ""
+msgstr "Dispozitivul de disc „%1$s” conține deja un suport media"
 
 #, c-format
 msgid "The disk device '%1$s' doesn't have media"
-msgstr ""
+msgstr "Dispozitivul de disc „%1$s” nu conține un suport media"
 
 #, c-format
 msgid "The disk device '%1$s' is not removable"
-msgstr ""
+msgstr "Dispozitivul de disc „%1$s” nu este detașabil."
 
 msgid "The domain is not running"
-msgstr ""
+msgstr "Domeniul nu rulează"
 
 msgid "The host was not suspended"
-msgstr ""
+msgstr "Gazda nu a fost suspendată"
 
 msgid ""
 "The ich9-intel-hda audio controller is not supported in this QEMU binary"
-msgstr ""
+msgstr "Controlorul audio ich9-intel-hda nu este acceptat în acest binar QEMU."
 
 #, c-format
 msgid ""
 "The machine cannot act as a client or server. See https://libvirt.org/kbase/"
 "tlscerts.html#setting-up-a-certificate-authority-ca on how to install %1$s"
 msgstr ""
+"Mașina nu poate funcționa ca client sau server. Consultați https://"
+"libvirt.org/kbase/tlscerts.html#setting-up-a-certificate-authority-ca pentru "
+"informații despre cum să instalați %1$s."
 
 #, c-format
 msgid ""
 "The machine cannot act as a client. See https://libvirt.org/kbase/"
 "tlscerts.html#issuing-client-certificates on how to regenerate %1$s"
 msgstr ""
+"Mașina nu poate funcționa ca client. Consultați https://libvirt.org/kbase/"
+"tlscerts.html#issuing-client-certificates pentru a afla cum să regenerați "
+"%1$s."
 
 #, c-format
 msgid ""
 "The machine cannot act as a server. See https://libvirt.org/kbase/"
 "tlscerts.html#issuing-server-certificates on how to regenerate %1$s"
 msgstr ""
+"Mașina nu poate funcționa ca server. Consultați https://libvirt.org/kbase/"
+"tlscerts.html#issuing-server-certificates pentru a afla cum să regenerați "
+"%1$s."
 
 msgid "The machine has no snapshot and it should have it"
-msgstr ""
+msgstr "Mașina nu are nici o imagine instantanee și ar trebui să aibă"
 
 msgid "The maximum 'start' value for <clock offset='absolute'> is 253402300799"
 msgstr ""
+"Valoarea maximă „start” pentru <clock offset='absolute'> este 253402300799."
 
 msgid "The minimum lease time should be greater than 2 minutes"
-msgstr ""
+msgstr "Durata minimă a închirierii adresei trebuie să fie mai mare de 2 minute"
 
 msgid ""
 "The number of virtual CPU address bits cannot exceed the number supported by "
 "the host CPU"
 msgstr ""
+"Numărul de biți de adresă CPU virtuală nu poate depăși numărul acceptat de "
+"CPU-ul gazdă."
 
 msgid ""
 "The overall maximum number of clients must not be less than the number of "
 "clients waiting for authentication"
 msgstr ""
+"Numărul maxim total de clienți nu trebuie să fie mai mic decât numărul de "
+"clienți care așteaptă autentificarea."
 
 msgid "The read only disk has no parent"
-msgstr ""
+msgstr "Discul numai-pentru-citire nu are părinte"
 
 msgid ""
 "The read only disk number must be greater or equal to the read write disk "
 "number"
 msgstr ""
+"Numărul discului numai-pentru-citire trebuie să fie mai mare sau egal cu "
+"numărul discului pentru citire-scriere."
 
 #, c-format
 msgid ""
 "The server cert %1$s must be accessible to all users. As root run: chown "
 "root.root %2$s; chmod 0644 %3$s"
 msgstr ""
+"Certificatul serverului %1$s trebuie să fie accesibil tuturor "
+"utilizatorilor. Ca root, executați: «chown root.root %2$s; chmod 0644 %3$s»"
 
 #, c-format
 msgid ""
 "The server cert %1$s must be restricted to this user. As this user, run: "
 "chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Certificatul serverului %1$s trebuie restricționat la acest utilizator. Ca "
+"acest utilizator, executați: «chown %2$d.%3$d %4$s; chmod 0600 %5$s»"
 
 #, c-format
 msgid "The server certificate %1$s has expired"
-msgstr ""
+msgstr "Certificatul serverului %1$s a expirat."
 
 #, c-format
 msgid "The server certificate %1$s is not yet active"
-msgstr ""
+msgstr "Certificatul serverului %1$s nu este încă activ"
 
 #, c-format
 msgid ""
 "The server key %1$s must be not be accessible to other users. As this user, "
 "run: chown %2$d.%3$d %4$s; chmod 0600 %5$s"
 msgstr ""
+"Cheia serverului %1$s nu trebuie să fie accesibilă altor utilizatori. Ca "
+"acest utilizator, executați: «chown %2$d.%3$d %4$s; chmod 0600 %5$s»"
 
 #, c-format
 msgid ""
 "The server key %1$s must not be accessible to unprivileged users. As root "
 "run: chown root.root %2$s; chmod 0600 %3$s"
 msgstr ""
+"Cheia serverului %1$s nu trebuie să fie accesibilă utilizatorilor fără "
+"privilegii. Ca root, executați: «chown root.root %2$s; chmod 0600 %3$s»"
 
 #, c-format
 msgid "The server redirects from '%1$s' to '%2$s'"
-msgstr ""
+msgstr "Serverul redirecționează de la „%1$s” la „%2$s”"
 
 msgid "The slirp-helper doesn't support migration"
-msgstr ""
+msgstr "Slirp-helper nu oferă suport pentru migrare"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Directorul CA al sistemului %1$s este instalat de obicei ca parte a "
+"sistemului de fișiere de bază sau a pachetelor openssl"
 
 #, c-format
 msgid ""
 "The system CA dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Directorul CA al sistemului %1$s trebuie să fie accesibil tuturor "
+"utilizatorilor. Ca root, executați: «chown root.root; chmod 0755 %2$s»"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s is usually installed as part of the base filesystem "
 "or openssl packages"
 msgstr ""
+"Directorul PKI al sistemului %1$s este instalat de obicei ca parte a "
+"sistemului de fișiere de bază sau a pachetelor openssl"
 
 #, c-format
 msgid ""
 "The system PKI dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Directorul PKI al sistemului %1$s trebuie să fie accesibil tuturor "
+"utilizatorilor. Ca root, executați: «chown root.root; chmod 0755 %2$s»"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Directorul de certificate al sistemului %1$s este instalat de obicei ca "
+"parte a pachetului libvirt"
 
 #, c-format
 msgid ""
 "The system cert dir %1$s must be accessible to all users. As root, run: "
 "chown root.root; chmod 0755 %2$s"
 msgstr ""
+"Directorul de certificare al sistemului %1$s trebuie să fie accesibil "
+"tuturor utilizatorilor. Ca root, executați: «chown root.root; chmod 0755 %2$s"
+"»"
 
 #, c-format
 msgid ""
 "The system key dir %1$s is usually installed as part of the libvirt package"
 msgstr ""
+"Directorul de chei al sistemului %1$s este instalat de obicei ca parte a "
+"pachetului libvirt"
 
 #, c-format
 msgid ""
 "The system key dir %1$s must be accessible to all users. As root, run: chown "
 "root.root; chmod 0755 %2$s"
 msgstr ""
+"Directorul de chei al sistemului %1$s trebuie să fie accesibil tuturor "
+"utilizatorilor. Ca root, executați: «chown root.root; chmod 0755 %2$s»"
 
 #, c-format
 msgid "The vbox driver does not support %1$s SCSI controller model"
-msgstr ""
+msgstr "Controlorul vbox nu acceptă modelul de controlor SCSI %1$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s bus type"
-msgstr ""
+msgstr "Controlorul vbox nu acceptă tipul de magistrală %1$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s controller type"
-msgstr ""
+msgstr "Controlorul vbox nu acceptă tipul de controlor %1$s"
 
 #, c-format
 msgid "The vbox driver does not support %1$s disk device"
-msgstr ""
+msgstr "Controlorul vbox nu acceptă dispozitivul de disc %1$s"
 
 msgid "There are no more free CCW devnos."
-msgstr ""
+msgstr "Nu mai există numere de dispozitive (devno) CCW libere."
 
 #, c-format
 msgid "There is no more free %1$s."
-msgstr ""
+msgstr "Nu mai există %1$s libere."
 
 msgid "This QEMU binary doesn't support zPCI"
-msgstr ""
+msgstr "Acest binar QEMU nu acceptă zPCI"
 
 msgid "This QEMU doesn't support '-device usb-bot'"
-msgstr ""
+msgstr "Acest QEMU nu acceptă opțiunea „-device usb-bot”"
 
 msgid "This QEMU doesn't support '-device usb-storage'"
-msgstr ""
+msgstr "Acest QEMU nu acceptă opțiunea „-device usb-storage”"
 
 msgid ""
 "This QEMU doesn't support OpenGL rendernode with egl-headless graphics type"
 msgstr ""
+"Acest QEMU nu acceptă rendernode OpenGL cu tipul de grafică egl-headless"
 
 msgid "This QEMU doesn't support SCSI emulation with 'virtio-blk' device"
-msgstr ""
+msgstr "Acest QEMU nu acceptă emularea SCSI cu dispozitivul „virtio-blk”"
 
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
-msgstr ""
+msgstr "Acest QEMU nu acceptă scsi-block pentru LUN passthrough"
 
 msgid "This QEMU doesn't support spice OpenGL"
-msgstr ""
+msgstr "Acest QEMU nu acceptă spice OpenGL."
 
 msgid "This QEMU doesn't support spice OpenGL rendernode"
-msgstr ""
+msgstr "Acest QEMU nu acceptă rendernode OpenGL spice"
 
 msgid "This QEMU doesn't support target greater than 7"
-msgstr ""
+msgstr "Acest QEMU nu acceptă ținte mai mult de 7"
 
 msgid "This QEMU doesn't support the AM53C974 (ESP) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul AM53C974 (ESP)."
 
 msgid "This QEMU doesn't support the DC390 (ESP) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul DC390 (ESP)."
 
 msgid "This QEMU doesn't support the LSI 53C895A SCSI controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul SCSI LSI 53C895A"
 
 msgid "This QEMU doesn't support the LSI SAS1068 (MPT Fusion) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul LSI SAS1068 (MPT Fusion)"
 
 msgid "This QEMU doesn't support the LSI SAS1078 (MegaRAID) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul LSI SAS1078 (MegaRAID)"
 
 msgid "This QEMU doesn't support the NCR53C90 (ESP) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul NCR53C90 (ESP)"
 
 msgid ""
 "This QEMU doesn't support the pvscsi (VMware paravirtual SCSI) controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul pvscsi (VMware paravirtual SCSI)"
 
 msgid "This QEMU doesn't support vhost-scsi devices"
-msgstr ""
+msgstr "Acest QEMU nu acceptă dispozitive vhost-scsi"
 
 msgid "This QEMU doesn't support virtio scsi controller"
-msgstr ""
+msgstr "Acest QEMU nu acceptă controlorul virtio scsi"
 
 msgid "This QEMU only supports both bus and unit equal to 0"
-msgstr ""
+msgstr "Acest QEMU acceptă doar magistrala și unitatea egale cu 0."
 
 msgid ""
 "This command is intended to be used by libvirtd and not used directly.\n"
 msgstr ""
+"Această comandă este destinată utilizării de către libvirtd și nu poate fi "
+"utilizată direct.\n"
 
 msgid "This function is not supported on WIN32 platform"
-msgstr ""
+msgstr "Această funcție nu este acceptată pe platforma WIN32"
 
 #, c-format
 msgid ""
 "This host is managed by a vCenter with IP address %1$s, but a mismatching "
 "vCenter '%2$s' (%3$s) has been specified"
 msgstr ""
+"Această gazdă este gestionată de un vCenter cu adresa IP %1$s, dar a fost "
+"specificat un vCenter incompatibil „%2$s” (%3$s)."
 
 msgid "This host is not managed by a vCenter"
-msgstr ""
+msgstr "Această gazdă nu este gestionată de un vCenter"
 
 msgid "This snapshot has children, please delete these snapshots before"
 msgstr ""
+"Această instantanee are instantanee-copii, vă rugăm să ștergeți aceste "
+"instantanee înainte"
 
 msgid "This type of disk cannot be hot unplugged"
 msgstr ""
+"Acest tip de disc nu poate fi deconectat la cald (în timpul funcționării)"
 
 msgid "Thread(s) per core:"
 msgstr "Fire de execuție pe nucleu:"
 
 msgid "Throttle group deleted successfully\n"
-msgstr ""
+msgstr "Grupul accelerator a fost șters cu succes\n"
 
 msgid "Throttle group set successfully\n"
-msgstr ""
+msgstr "Grupul accelerator a fost definit cu succes\n"
 
 #, c-format
 msgid "Time '%1$lld' is too big for guest agent"
-msgstr ""
+msgstr "Durata de „%1$lld” este prea mare pentru agentul invitat"
 
 msgid "Time elapsed w/o network:"
-msgstr ""
+msgstr "Timpul scurs fără rețea:"
 
 msgid "Time elapsed:"
-msgstr ""
+msgstr "Timpul scurs:"
 
 msgid "Time remaining:"
-msgstr ""
+msgstr "Timpul rămas:"
 
 #, c-format
 msgid "Time: %1$lld"
-msgstr ""
+msgstr "Durata: %1$lld"
 
 #, c-format
 msgid "Time: %1$s"
-msgstr ""
+msgstr "Durata: %1$s"
 
 msgid "Timed out during operation"
-msgstr ""
+msgstr "Timpul alocat operației a expirat"
 
 #, c-format
 msgid "Timed out during operation: %1$s"
-msgstr ""
+msgstr "Timpul alocat operației a expirat: %1$s"
 
 #, c-format
 msgid "Timed out while reading log output: %1$s"
-msgstr ""
+msgstr "Timpul alocat citirii ieșirii jurnalului a expirat: %1$s"
 
 msgid "Timeout"
 msgstr "Timpul de așteptare"
 
 #, sh-format
 msgid "Timeout expired while shutting down domains"
-msgstr ""
+msgstr "Timpul de așteptare a expirat în timpul închiderii domeniilor"
 
 msgid "Timeout parameter not supported"
-msgstr ""
+msgstr "Parametrul de timp de așteptare/expirare (timeout) nu este acceptat"
 
 #, c-format
 msgid "Timeout waiting for %1$s invocation"
-msgstr ""
+msgstr "Timp expirat în așteptarea invocării %1$s"
 
 msgid "Title"
-msgstr ""
+msgstr "Titlu"
 
 #, c-format
 msgid "To enable ip%1$stables filtering for the VM do 'echo 1 > %2$s'"
 msgstr ""
+"Pentru a activa filtrarea ip%1$stables pentru VM, executați comanda «echo "
+"1 > %2$s»"
 
 msgid "Too long bridge device name"
-msgstr ""
+msgstr "Numele dispozitivului de punte este prea lung"
 
 msgid "Too long network device name"
-msgstr ""
+msgstr "Numele dispozitivului de rețea este prea lung"
 
 #, c-format
 msgid "Too many CPU models '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe modele CPU „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many FDs to send %1$d, expected %2$d maximum"
-msgstr ""
+msgstr "Prea multe FD-uri pentru a trimite %1$d, se aștepta maximum %2$d"
 
 #, c-format
 msgid "Too many IOThreads in info: %1$d for limit %2$d"
-msgstr ""
+msgstr "Prea multe IOThreads în informații: %1$d pentru limita %2$d"
 
 msgid "Too many bytes to read from stream"
-msgstr ""
+msgstr "Prea mulți octeți pentru a fi citiți din flux"
 
 msgid "Too many bytes to write to stream"
-msgstr ""
+msgstr "Prea mulți octeți pentru a fi scriși în flux"
 
 #, c-format
 msgid "Too many clients '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea mulți clienți „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many disks in fsinfo: %1$zd for limit %2$d"
-msgstr ""
+msgstr "Prea multe discuri în fsinfo: %1$zd pentru limita %2$d"
 
 msgid "Too many domain elements in migration cookie"
-msgstr ""
+msgstr "Prea multe elemente de domeniu în cookie-ul de migrare"
 
 #, c-format
 msgid "Too many domain_checkpoints '%1$d' for limit '%2$d'"
 msgstr ""
+"Prea multe puncte de verificare a domeniului (domain_checkpoints) „%1$d” "
+"pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many domain_snapshots '%1$d' for limit '%2$d'"
 msgstr ""
+"Prea multe instantanee de domeniu (domain_snapshots) „%1$d” pentru limita "
+"„%2$d”"
 
 #, c-format
 msgid "Too many domains '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe domenii „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many drivers, cannot register %1$s"
-msgstr ""
+msgstr "Prea mulți controlori, nu se poate înregistra %1$s"
 
 #, c-format
 msgid "Too many drivers, cannot register storage backend '%1$s'"
 msgstr ""
+"Prea mulți controlori, nu se poate înregistra sistemul de stocare „%1$s”"
 
 #, c-format
 msgid "Too many drivers, cannot register storage file backend '%1$s'"
 msgstr ""
+"Prea mulți controlori, nu se poate înregistra sistemul fișierului de stocare "
+"„%1$s”"
 
 #, c-format
 msgid "Too many filesystems detected for %1$s"
-msgstr ""
+msgstr "Au fost detectate prea multe sisteme de fișiere pentru %1$s"
 
 msgid "Too many id mappings defined."
-msgstr ""
+msgstr "Prea multe corespondențe(asocieri) de ID definite."
 
 #, c-format
 msgid "Too many interfaces '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe interfețe „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many levels of symbolic links: %1$s"
-msgstr ""
+msgstr "Prea multe niveluri de legături simbolice: %1$s"
 
 #, c-format
 msgid "Too many migration parameters '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea mulți parametri de migrare „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many model names '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe nume de modele „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many mountpoints in fsinfo: %1$d for limit %2$d"
-msgstr ""
+msgstr "Prea multe puncte de montare în fsinfo: %1$d pentru limita %2$d"
 
 #, c-format
 msgid "Too many network_ports '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe porturi de rețea „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many networks '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe rețele „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many node_devices '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe dispozitive nod „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many nwfilter_bindings '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe nwfilter_bindings „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many nwfilters '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe filtre nwfilters „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many resources %1$d for object"
-msgstr ""
+msgstr "Prea multe resurse %1$d pentru obiect"
 
 #, c-format
 msgid "Too many secrets '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe secrete „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many servers '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe servere „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many snapshots claiming to be current for domain %1$s"
 msgstr ""
+"Prea multe instantanee care pretind a fi cea curentă pentru domeniul %1$s"
 
 #, c-format
 msgid "Too many storage_pools '%1$d' for limit '%2$d'"
 msgstr ""
+"Prea multe fonduri de stocare (storage_pools) „%1$d” pentru limita „%2$d”"
 
 #, c-format
 msgid "Too many storage_vols '%1$d' for limit '%2$d'"
-msgstr ""
+msgstr "Prea multe volume de stocare (storage_vols) „%1$d” pentru limita „%2$d”"
 
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 msgid "Total downtime:"
-msgstr ""
+msgstr "Timpul total de nefuncționare:"
 
 msgid "Total size of memory devices exceeds the total memory size"
 msgstr ""
+"Dimensiunea totală a dispozitivelor de memorie depășește dimensiunea totală "
+"a memoriei"
 
 msgid "Total:\n"
-msgstr ""
+msgstr "Total:\n"
 
 msgid "Transient disks are not supported by vz driver."
-msgstr ""
+msgstr "Discurile tranzitorii nu sunt acceptate de controlorul vz."
 
 msgid "Transition started"
-msgstr ""
+msgstr "Tranziția a început"
 
 msgid "Transport"
-msgstr ""
+msgstr "Transport"
 
 #, c-format
 msgid "Transport error during %1$s: %2$s (%3$d)"
-msgstr ""
+msgstr "Eroare de transport în timpul %1$s: %2$s (%3$d)"
 
 msgid "Tried to write socket in error state"
-msgstr ""
+msgstr "S-a încercat scrierea pe soclu în stare de eroare"
 
 msgid "Trim domain filesystems"
-msgstr ""
+msgstr "Reduce sistemele de fișiere ale domeniului"
 
 msgid "Trimming domain filesystems requires authorization"
-msgstr ""
+msgstr "Reducerea sistemelor de fișiere de domeniu necesită autorizare"
 
 msgid "Try again?"
-msgstr ""
+msgstr "Încercați din nou?"
 
 msgid "Trying to free MultiCURL object that is still in use"
-msgstr ""
+msgstr "Se încearcă eliberarea obiectului MultiCURL care este încă în uz"
 
 msgid "Trying to free SharedCURL object that is still in use"
-msgstr ""
+msgstr "Se încearcă eliberarea obiectului SharedCURL care este încă în uz"
 
 #, c-format
 msgid "Trying to lock unknown SharedCURL lock %1$d"
-msgstr ""
+msgstr "Se încearcă blocarea necunoscută a blocajului SharedCURL %1$d"
 
 #, c-format
 msgid "Trying to unlock unknown SharedCURL lock %1$d"
-msgstr ""
+msgstr "Se încearcă deblocarea necunoscută a blocajului SharedCURL %1$d"
 
 msgid ""
 "Tune server's client-related configuration limits. See OPTIONS for currently "
 "supported attributes."
 msgstr ""
+"Ajustează limitele de configurare ale serverului legate de client. "
+"Consultați OPȚIUNI pentru atributele acceptate în prezent."
 
 msgid ""
 "Tune threadpool attributes on a server. See OPTIONS for currently supported "
 "attributes."
 msgstr ""
+"Ajustează atributele threadpool pe un server. Consultați OPȚIUNI pentru "
+"atributele acceptate în prezent."
 
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
+"S-a solicitat migrarea prin tunel, dar s-a apelat la o metodă RPC nevalidă"
 
 msgid "Tunnelling sockets not supported on this platform"
-msgstr ""
+msgstr "Tunelarea soclurilor nu este acceptată pe această platformă"
 
 msgid "Turn auto convergence on to tune it"
-msgstr ""
+msgstr "Activează convergența automată pentru a o regla"
 
 msgid "Turn multithread compression on to tune it"
-msgstr ""
+msgstr "Activează comprimarea multithread pentru a o regla"
 
 msgid "Turn parallel migration on to tune it"
-msgstr ""
+msgstr "Activează migrarea paralelă pentru a o regla"
 
 msgid "Turn xbzrle compression on to tune it"
-msgstr ""
+msgstr "Activează comprimarea xbzrle pentru a o regla"
 
 msgid "Turn zlib compression on to tune it"
-msgstr ""
+msgstr "Activează comprimarea zlib pentru a o regla"
 
 msgid "Turn zstd compression on to tune it"
-msgstr ""
+msgstr "Activează comprimarea zstd pentru a o regla"
 
 msgid "Type"
 msgstr "Tip"
 
 #, c-format
 msgid "Type mismatch for '%1$s' migration parameter"
-msgstr ""
+msgstr "Neconcordanță de tip pentru parametrul de migrare „%1$s”"
 
 msgid "Type:"
 msgstr "Tip:"
@@ -18275,1003 +18798,1049 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
+"Tastați:  „help” pentru ajutor cu comenzile\n"
+"         „quit” pentru a ieși\n"
+"\n"
 
 #, c-format
 msgid "Type='%1$s' unsupported for <interface type='vhostuser'>"
-msgstr ""
+msgstr "Type=«%1$s» nu este acceptat pentru <interface type='vhostuser'>"
 
 msgid "UEFI requires ACPI on this architecture"
-msgstr ""
+msgstr "UEFI necesită ACPI pe această arhitectură"
 
 msgid "UNIX disks URI does not include path"
-msgstr ""
+msgstr "URI-urile discurilor UNIX nu includ ruta"
 
 msgid "UNIX socket address is required"
-msgstr ""
+msgstr "Este necesară adresa soclului UNIX"
 
 #, c-format
 msgid "UNIX socket path '%1$s' too long"
-msgstr ""
+msgstr "Ruta soclului UNIX „%1$s” este prea lungă"
 
 msgid "UNIX sockets are not supported on this platform"
-msgstr ""
+msgstr "Soclurile UNIX nu sunt acceptate pe această platformă"
 
 msgid "UNIX sockets not supported on this platform"
-msgstr ""
+msgstr "Soclurile UNIX nu sunt acceptate pe această platformă"
 
 #, c-format
 msgid "URI '%1$s' does not include a driver name"
-msgstr ""
+msgstr "URI-ul „%1$s” nu include numele unui controlor"
 
 msgid "URI is missing the server part"
-msgstr ""
+msgstr "URI-ului îi lipsește partea de server"
 
 msgid "URI must be qemu:///embed"
-msgstr ""
+msgstr "Adresa URI trebuie să fie qemu:///embed"
 
 msgid "URI must be secret:///embed"
-msgstr ""
+msgstr "Adresa URI trebuie să fie secret:///embed"
 
 msgid "URI of the namespace"
-msgstr ""
+msgstr "Adresa URI a spațiului de nume"
 
 #, c-format
 msgid "URI scheme '%1$s' for embedded driver is not valid"
-msgstr ""
+msgstr "Schema URI „%1$s” pentru controlorul încorporat nu este validă"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
 msgstr ""
+"Adresă URI utilizată pentru migrarea discurilor (înlocuiește --disks-port)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %1$s"
-msgstr ""
+msgstr "Adresa URI cu schema TCP nu a furnizat o parte de server: %1$s"
 
 #, c-format
 msgid "USB bus %1$u requested but no controller with that index is present"
 msgstr ""
+"Magistrala USB %1$u solicitată, dar nu există niciun controlor cu acest "
+"indice"
 
 #, c-format
 msgid "USB controller model '%1$s' not supported in this QEMU binary"
 msgstr ""
+"Modelul controlorului USB „%1$s” nu este acceptat în acest fișier binar QEMU"
 
 #, c-format
 msgid ""
 "USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
 "support PCI"
 msgstr ""
+"Modelul controlorului USB „%1$s” necesită PCI, dar tipul de mașină „%2$s” nu "
+"acceptă PCI"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
-msgstr ""
+msgstr "Modelul de controlor USB „qusb1” sau „qusb2” nu este acceptat în %1$s"
 
 #, c-format
 msgid "USB device %1$s is already in use"
-msgstr ""
+msgstr "Dispozitivul USB %1$s este în uz"
 
 #, c-format
 msgid "USB device %1$s is in use by driver %2$s, domain %3$s"
-msgstr ""
+msgstr "Dispozitivul USB %1$s este utilizat de controlorul %2$s, domeniul %3$s"
 
 msgid ""
 "USB disk model was not selected. This QEMU doesn't support 'usb-storage' or "
 "'usb-bot'."
 msgstr ""
+"Modelul discului USB nu a fost selectat. Acest QEMU nu acceptă „usb-storage” "
+"sau „usb-bot”."
 
 msgid "USB disk supports only the following models: 'usb-storage', 'usb-bot'"
-msgstr ""
+msgstr "Discul USB acceptă numai următoarele modele: „usb-storage”, „usb-bot”"
 
 msgid "USB host device is missing bus/device information"
-msgstr ""
+msgstr "Dispozitivul gazdă USB nu are informații despre magistrală/dispozitiv"
 
 msgid "USB host device must use 'usb' address type"
-msgstr ""
+msgstr "Dispozitivul gazdă USB trebuie să utilizeze tipul de adresă „usb”."
 
 msgid ""
 "USB is disabled for this domain, but USB devices are present in the domain "
 "XML"
 msgstr ""
+"USB este dezactivat pentru acest domeniu, dar dispozitivele USB sunt "
+"prezente în XML-ul domeniului"
 
 msgid "USB redirection filter is not supported by this version of QEMU"
 msgstr ""
+"Filtrul de redirecționare USB nu este acceptat de această versiune a QEMU"
 
 msgid "USB redirection is not supported by this version of QEMU"
-msgstr ""
+msgstr "Redirecționarea USB nu este acceptată de această versiune a QEMU"
 
 #, c-format
 msgid "USB source %1$s was not a character device"
-msgstr ""
+msgstr "Sursa USB %1$s nu era un dispozitiv de caractere"
 
 msgid "UTS namespace support is required"
-msgstr ""
+msgstr "Este necesar suportul pentru spațiul de nume UTS"
 
 msgid "UUID"
 msgstr "UUID"
 
 msgid "UUID in config file malformed"
-msgstr ""
+msgstr "UUID-ul din fișierul de configurare este format incorect"
 
 msgid "UUID is not supported for NVDIMM device"
-msgstr ""
+msgstr "UUID-ul nu este acceptat pentru dispozitivul NVDIMM"
 
 msgid "UUID mismatch between <hwuuid> and <sysinfo>"
-msgstr ""
+msgstr "Neconcordanță a UUID între <hwuuid> și <sysinfo>"
 
 msgid "UUID mismatch between <uuid> and <sysinfo>"
-msgstr ""
+msgstr "Neconcordanță UUID între <uuid> și <sysinfo>"
 
 msgid "UUID:"
 msgstr "UUID:"
 
 msgid "Unable to accept client"
-msgstr ""
+msgstr "Nu se poate accepta clientul"
 
 #, c-format
 msgid "Unable to access %1$s"
-msgstr ""
+msgstr "Nu se poate accesa %1$s"
 
 #, c-format
 msgid "Unable to access cache '%1$s' for '%2$s'"
-msgstr ""
+msgstr "Nu se poate accesa spațiul cache „%1$s” pentru „%2$s”"
 
 #, c-format
 msgid "Unable to access config file %1$s"
-msgstr ""
+msgstr "Nu se poate accesa fișierul de configurare %1$s"
 
 #, c-format
 msgid "Unable to access file descriptor %1$d"
-msgstr ""
+msgstr "Nu se poate accesa descriptorul de fișier %1$d"
 
 msgid "Unable to access kernel32.dll"
-msgstr ""
+msgstr "Nu se poate accesa kernel32.dll"
 
 #, c-format
 msgid "Unable to access stream for '%1$s'"
-msgstr ""
+msgstr "Nu se poate accesa fluxul pentru „%1$s”"
 
 #, c-format
 msgid ""
 "Unable to acquire PID file: %1$s\n"
 " errno=%2$d"
 msgstr ""
+"Nu se poate obține fișierul PID: %1$s\n"
+" errno=%2$d"
 
 #, c-format
 msgid "Unable to acquire lock on '%1$s'"
-msgstr ""
+msgstr "Nu se poate obține blocarea pe „%1$s”"
 
 msgid "Unable to add address to interface multicast list on this platform"
 msgstr ""
+"Nu se poate adăuga adresa la lista multicast a interfeței pe această "
+"platformă"
 
 #, c-format
 msgid "Unable to add bridge %1$s port %2$s"
-msgstr ""
+msgstr "Nu se poate adăuga puntea %1$s port %2$s"
 
 msgid "Unable to add epoll fd"
-msgstr ""
+msgstr "Nu se poate adăuga epoll fd"
 
 msgid "Unable to add extra data"
-msgstr ""
+msgstr "Nu se pot adăuga date suplimentare"
 
 msgid "Unable to add hard disk to media Registry"
-msgstr ""
+msgstr "Nu se poate adăuga discul dur la registrul de medii"
 
 msgid "Unable to add hard disk to media registry"
-msgstr ""
+msgstr "Nu se poate adăuga discul dur la registrul de medii"
 
 msgid "Unable to add hard disk to the media registry"
-msgstr ""
+msgstr "Nu se poate adăuga discul dur la registrul de medii"
 
 msgid "Unable to add hardware machine"
-msgstr ""
+msgstr "Nu se poate adăuga hardware-ul mașinii"
 
 msgid "Unable to add keepalive timer"
-msgstr ""
+msgstr "Nu se poate adăuga temporizatorul keepalive"
 
 #, c-format
 msgid "Unable to add lockspace %1$s"
-msgstr ""
+msgstr "Nu se poate adăuga spațiul de blocare (lockspace) %1$s"
 
 #, c-format
 msgid "Unable to add lockspace %1$s: %2$s"
-msgstr ""
+msgstr "Nu se poate adăuga spațiul de blocare (lockspace) %1$s: %2$s"
 
 msgid "Unable to add log cleanup timer"
-msgstr ""
+msgstr "Imposibil de adăugat temporizatorul de curățare a jurnalului"
 
 msgid "Unable to add media registry other media"
-msgstr ""
+msgstr "Nu se pot adăuga alte suporturi media în registrul de suporturi media"
 
 #, c-format
 msgid "Unable to add port %1$s to OVS bridge %2$s: %3$s"
-msgstr ""
+msgstr "Nu se poate adăuga portul %1$s la puntea OVS %2$s: %3$s"
 
 msgid "Unable to add service timer"
-msgstr ""
+msgstr "Nu se poate adăuga temporizator de serviciu"
 
 msgid "Unable to add shutdown timer"
-msgstr ""
+msgstr "Nu se poate adăuga temporizator de oprire"
 
 msgid "Unable to add socket timer"
-msgstr ""
+msgstr "Nu se poate adăuga temporizator pentru soclu"
 
 msgid "Unable to add storage controller"
-msgstr ""
+msgstr "Nu se poate adăuga controlor de stocare"
 
 msgid "Unable to add the snapshot hardware"
-msgstr ""
+msgstr "Nu se poate adăuga hardware-ul instantaneei"
 
 msgid "Unable to add the snapshot storageController"
-msgstr ""
+msgstr "Nu se poate adăuga storageController instantaneei"
 
 msgid "Unable to add the snapshot to the machine description"
-msgstr ""
+msgstr "Nu se poate adăuga instantaneea la descrierea mașinii"
 
 msgid ""
 "Unable to add this snapshot, there is already a snapshot linked to the "
 "machine"
 msgstr ""
+"Nu se poate adăuga această instantanee, există deja o instantanee asociată "
+"cu mașina."
 
 msgid "Unable to add timer to event loop"
-msgstr ""
+msgstr "Nu se poate adăuga temporizator la bucla de evenimente"
 
 #, c-format
 msgid "Unable to add watch on log FD %1$d"
-msgstr ""
+msgstr "Nu se poate adăuga supravegherea în jurnalul FD %1$d"
 
 msgid "Unable to add watch on stdin"
-msgstr ""
+msgstr "Nu se poate adăuga supraveghere pentru intrarea standard"
 
 msgid "Unable to add watch on stdout"
-msgstr ""
+msgstr "Nu se poate adăuga supraveghere pentru ieșirea standard"
 
 #, c-format
 msgid "Unable to add watch on udev FD %1$d"
-msgstr ""
+msgstr "Nu se poate adăuga supraveghere pe udev FD %1$d"
 
 msgid "Unable to add/delete fdb entries on this platform"
-msgstr ""
+msgstr "Nu se pot adăuga/șterge intrări fdb pe această platformă"
 
 #, c-format
 msgid "Unable to allocate %1$llu pages. Allocated only %2$llu"
-msgstr ""
+msgstr "Imposibil de alocat %1$llu pagini. Alocate doar %2$llu"
 
 #, c-format
 msgid "Unable to allocate lease %1$s"
-msgstr ""
+msgstr "Nu se poate aloca închirierea %1$s"
 
 #, c-format
 msgid "Unable to allocate lockspace %1$s"
-msgstr ""
+msgstr "Nu se poate aloca spațiul de blocare (lockspace) %1$s"
 
 msgid "Unable to allocate stack"
-msgstr ""
+msgstr "Nu se poate aloca stiva"
 
 #, c-format
 msgid "Unable to allocate x509 credentials: %1$s"
-msgstr ""
+msgstr "Nu se pot aloca acreditările x509: %1$s"
 
 msgid "Unable to append command 'id' string"
-msgstr ""
+msgstr "Nu se poate adăuga șirul de comandă „id”"
 
 msgid "Unable to associate TAP device"
-msgstr ""
+msgstr "Nu se poate asocia dispozitivul TAP"
 
 #, c-format
 msgid "Unable to associate device %1$s with blkid library"
-msgstr ""
+msgstr "Nu se poate asocia dispozitivul %1$s cu biblioteca blkid"
 
 #, c-format
 msgid "Unable to associate file %1$s with NBD device"
-msgstr ""
+msgstr "Nu se poate asocia fișierul %1$s cu dispozitivul NBD"
 
 #, c-format
 msgid "Unable to associate file %1$s with loop device"
-msgstr ""
+msgstr "Nu se poate asocia fișierul %1$s cu dispozitivul de buclă (loop)"
 
 #, c-format
 msgid "Unable to attach %1$s to loop device"
-msgstr ""
+msgstr "Nu se poate atașa %1$s la dispozitivul de buclă (loop)"
 
 msgid "Unable to become session leader"
-msgstr ""
+msgstr "Imposibil de a deveni lider de sesiune"
 
 #, c-format
 msgid "Unable to bind port %1$s to the virtual port %2$s"
-msgstr ""
+msgstr "Imposibil de asociat portul %1$s cu portul virtual %2$s"
 
 #, c-format
 msgid "Unable to bind to UNIX socket path '%1$s'"
-msgstr ""
+msgstr "Imposibil de conectat la ruta soclului UNIX „%1$s”"
 
 msgid "Unable to bind to port"
-msgstr ""
+msgstr "Imposibil de conectat la port"
 
 #, c-format
 msgid "Unable to bind to port %1$d"
-msgstr ""
+msgstr "Imposibil de conectat la portul %1$d"
 
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Nu se poate modifica MaxMemorySize"
 
 msgid "Unable to change balloon collection period."
-msgstr ""
+msgstr "Nu se poate modifica perioada de colectare a baloanelor."
 
 msgid "Unable to change blkio parameters"
-msgstr ""
+msgstr "Nu se pot modifica parametrii blkio"
 
 msgid "Unable to change block I/O throttle"
-msgstr ""
+msgstr "Imposibil de modificat limitarea de In/Ieș a blocului"
 
 msgid "Unable to change daemon logging settings"
-msgstr ""
+msgstr "Imposibil de modificat opțiunile de jurnalizare ale demonului"
 
 msgid "Unable to change lifecycle action."
-msgstr ""
+msgstr "Imposibil de modificat acțiunea ciclului de viață."
 
 msgid ""
 "Unable to change memory of active domain without the balloon device and "
 "guest OS balloon driver"
 msgstr ""
+"Nu se poate modifica memoria domeniului activ fără dispozitivul balon și "
+"controlorul balonului sistemului de operare invitat."
 
 msgid "Unable to change memory parameters"
-msgstr ""
+msgstr "Imposibil de modificat parametrii memoriei"
 
 msgid "Unable to change numa parameters"
-msgstr ""
+msgstr "Imposibil de modificat parametrii numa"
 
 msgid "Unable to change server workerpool parameters"
-msgstr ""
+msgstr "Imposibil de modificat parametrii serverului workerpool"
 
 msgid "Unable to change server's client-related configuration limits"
 msgstr ""
+"Imposibil de modificat limitele de configurare ale serverului legate de "
+"client"
 
 msgid "Unable to change target guest XML during migration"
-msgstr ""
+msgstr "Nu se poate modifica XML-ul invitatului țintă în timpul migrării"
 
 #, c-format
 msgid "Unable to change to %1$s"
-msgstr ""
+msgstr "Nu se poate schimba la %1$s"
 
 msgid "Unable to change to root dir"
-msgstr ""
+msgstr "Nu se poate schimba la directorul rădăcină"
 
 #, c-format
 msgid "Unable to chdir(%1$s)"
-msgstr ""
+msgstr "Imposibil de executat chdir(%1$s)"
 
 #, c-format
 msgid "Unable to check interface %1$s"
-msgstr ""
+msgstr "Nu se poate verifica interfața %1$s"
 
 msgid "Unable to check interface config on this platform"
-msgstr ""
+msgstr "Imposibil de verificat configurația interfeței pe această platformă"
 
 #, c-format
 msgid "Unable to check interface flags for %1$s"
-msgstr ""
+msgstr "Imposibil de verificat opțiunile interfeței pentru %1$s"
 
 #, c-format
 msgid "Unable to check status of pid file '%1$s'"
-msgstr ""
+msgstr "Imposibil de verificat starea fișierului pid „%1$s”"
 
 msgid "Unable to check virtual function status on this platform"
-msgstr ""
+msgstr "Imposibil de verificat starea funcției virtuale pe această platformă"
 
 msgid "Unable to clear thread local variable"
-msgstr ""
+msgstr "Nu se poate șterge variabila locală a firului"
 
 msgid "Unable to clone to check reboot support"
-msgstr ""
+msgstr "Nu se poate clona pentru a verifica suportul pentru repornire"
 
 msgid "Unable to close"
-msgstr ""
+msgstr "Nu se poate închide"
 
 #, c-format
 msgid "Unable to close %1$s"
-msgstr ""
+msgstr "Nu se poate închide %1$s"
 
 msgid "Unable to close HardDisk"
-msgstr ""
+msgstr "Nu se poate închide HardDisk"
 
 msgid "Unable to close disk children"
-msgstr ""
+msgstr "Nu se pot închide discurile secundare"
 
 msgid "Unable to close recursively all disks"
-msgstr ""
+msgstr "Nu se pot închide recursiv toate discurile"
 
 msgid "Unable to close the new medium"
-msgstr ""
+msgstr "Nu se poate închide noul suport media"
 
 msgid "Unable to compile regex"
-msgstr ""
+msgstr "Imposibil de compilat expresia regulată"
 
 #, c-format
 msgid "Unable to compute hash of data: %1$s"
-msgstr ""
+msgstr "Imposibil de calculat suma de control a datelor: %1$s"
 
 #, c-format
 msgid ""
 "Unable to configure VF %1$d of PF '%2$s' because the PF is not online. "
 "Please change host network config to put the PF online."
 msgstr ""
+"Nu se poate configura VF %1$d din PF „%2$s” deoarece PF nu este conectat. "
+"Modificați configurația rețelei gazdei pentru a conecta PF."
 
 msgid "Unable to configure libxl's memory management parameters"
-msgstr ""
+msgstr "Imposibil de configurat parametrii de gestionare a memoriei libxl"
 
 msgid "Unable to construct table of device aliases"
-msgstr ""
+msgstr "Imposibil de construit tabelul cu pseudonimele dispozitivelor"
 
 #, c-format
 msgid "Unable to convert lease expiry time to long long: %1$s"
 msgstr ""
+"Imposibil de convertit data expirării închirierii în format long long: %1$s"
 
 msgid "Unable to convert time"
-msgstr ""
+msgstr "Imposibil de convertit timpul"
 
 msgid "Unable to copy socket file handle"
-msgstr ""
+msgstr "Nu se poate copia gestionarul fișierului soclu"
 
 #, c-format
 msgid "Unable to create %1$s"
-msgstr ""
+msgstr "Nu se poate crea %1$s"
 
 msgid "Unable to create HardDisk"
-msgstr ""
+msgstr "Nu se poate crea HardDisk"
 
 msgid "Unable to create KVM VM for TSC probing"
-msgstr ""
+msgstr "Imposibil de creat mașina virtuală KVM pentru testarea TSC"
 
 msgid "Unable to create KVM vCPU for TSC probing"
-msgstr ""
+msgstr "Imposibil de creat vCPU KVM pentru testarea TSC"
 
 #, c-format
 msgid "Unable to create RelaxNG parser for schema '%1$s'"
-msgstr ""
+msgstr "Imposibil de creat analizatorul RelaxNG pentru schema „%1$s”"
 
 #, c-format
 msgid "Unable to create RelaxNG validation context for schema '%1$s'"
-msgstr ""
+msgstr "Imposibil de creat contextul de validare RelaxNG pentru schema „%1$s”"
 
 msgid "Unable to create TAP devices on this platform"
-msgstr ""
+msgstr "Nu se pot crea dispozitive TAP pe această platformă"
 
 msgid "Unable to create UNIX socket"
-msgstr ""
+msgstr "Imposibil de creat soclu UNIX"
 
 #, c-format
 msgid "Unable to create and set qos configuration on port %1$s: %2$s"
-msgstr ""
+msgstr "Imposibil de creat și configurat configurația qos pe portul %1$s: %2$s"
 
 msgid "Unable to create blkid library handle"
-msgstr ""
+msgstr "Nu se poate crea gestionarul bibliotecii blkid"
 
 #, c-format
 msgid "Unable to create bridge %1$s"
-msgstr ""
+msgstr "Nu se poate crea puntea %1$s"
 
 msgid "Unable to create bridge device"
-msgstr ""
+msgstr "Nu se poate crea dispozitivul punte"
 
 #, c-format
 msgid "Unable to create device %1$s"
-msgstr ""
+msgstr "Nu se poate crea dispozitivul %1$s"
 
 #, c-format
 msgid "Unable to create directory %1$s"
-msgstr ""
+msgstr "Nu se poate crea directorul %1$s"
 
 #, c-format
 msgid "Unable to create directory '%1$s'"
-msgstr ""
+msgstr "Nu se poate crea directorul „%1$s”"
 
 msgid "Unable to create epoll fd"
-msgstr ""
+msgstr "Nu se poate crea fd epoll"
 
 msgid "Unable to create firewall command"
-msgstr ""
+msgstr "Nu se poate crea comanda firewall"
 
 msgid "Unable to create kqueue"
-msgstr ""
+msgstr "Nu se poate crea kqueue"
 
 #, c-format
 msgid "Unable to create lock '%1$s'"
-msgstr ""
+msgstr "Nu se poate crea blocarea „%1$s”"
 
 #, c-format
 msgid "Unable to create lockspace %1$s"
-msgstr ""
+msgstr "Nu se poate crea spațiul de blocare (lockspace) %1$s"
 
 #, c-format
 msgid ""
 "Unable to create lockspace %1$s: parent directory does not exist or is not a "
 "directory"
 msgstr ""
+"Nu se poate crea spațiul de blocare (lockspace) %1$s: directorul părinte nu "
+"există sau nu este un director."
 
 msgid "Unable to create media registry"
-msgstr ""
+msgstr "Nu se poate crea registrul de suporturi media"
 
 #, c-format
 msgid "Unable to create mediated device: %1$s"
-msgstr ""
+msgstr "Nu se poate crea dispozitivul mediat: %1$s"
 
 msgid "Unable to create migration thread"
-msgstr ""
+msgstr "Nu se poate crea firul de migrare"
 
 #, c-format
 msgid ""
 "Unable to create multiple fds for tap device %1$s (maybe existing device was "
 "created without multi_queue flag)"
 msgstr ""
+"Imposibil de creat mai multe fds pentru dispozitivul tap %1$s (probabil "
+"dispozitivul existent a fost creat fără fanionul multi_queue)"
 
 msgid "Unable to create pipes"
-msgstr ""
+msgstr "Imposibil de creat conducte"
 
 msgid "Unable to create socket"
-msgstr ""
+msgstr "Imposibil de creat soclul"
 
 #, c-format
 msgid "Unable to create socket object: %1$s"
-msgstr ""
+msgstr "Nu se poate crea obiectul soclu: %1$s"
 
 #, c-format
 msgid "Unable to create symlink %1$s (pointing to %2$s)"
-msgstr ""
+msgstr "Nu se poate crea legătura simbolică %1$s (indicând către %2$s)"
 
 msgid "Unable to create tap device"
-msgstr ""
+msgstr "Imposibil de creat dispozitivul tap"
 
 #, c-format
 msgid "Unable to create tap device %1$s"
-msgstr ""
+msgstr "Imposibil de creat dispozitivul tap %1$s"
 
 msgid "Unable to create thread to process command's IO"
-msgstr ""
+msgstr "Nu s-a putut crea firul de procesare pentru comanda de intrare/ieșire"
 
 msgid "Unable to create tunnel migration thread"
-msgstr ""
+msgstr "Nu se poate crea firul de migrare prin tunel"
 
 #, c-format
 msgid ""
 "Unable to create: %1$s\n"
 " errno=%2$d"
 msgstr ""
+"Imposibil de creat: %1$s\n"
+" errno=%2$d"
 
 msgid "Unable to decode header until len is received"
-msgstr ""
+msgstr "Imposibil de decodificat antetul până la primirea lungimii"
 
 msgid "Unable to decode message header"
-msgstr ""
+msgstr "Imposibil de decodificat antetul mesajului"
 
 msgid "Unable to decode message length"
-msgstr ""
+msgstr "Imposibil de decodificat lungimea mesajului"
 
 msgid "Unable to decode message payload"
-msgstr ""
+msgstr "Imposibil de decodificat conținutul mesajului"
 
 msgid "Unable to decode number of FDs"
-msgstr ""
+msgstr "Imposibil de decodificat numărul de FD-uri"
 
 #, c-format
 msgid "Unable to define mediated device: %1$s"
-msgstr ""
+msgstr "Imposibil de definit dispozitivul mediat: %1$s"
 
 #, c-format
 msgid "Unable to delete %1$s"
-msgstr ""
+msgstr "Nu se poate șterge %1$s"
 
 msgid "Unable to delete TAP devices on this platform"
-msgstr ""
+msgstr "Nu se pot șterge dispozitive TAP pe această platformă"
 
 msgid "Unable to delete address from interface multicast list on this platform"
 msgstr ""
+"Nu se poate șterge adresa din lista multicast a interfeței pe această "
+"platformă"
 
 #, c-format
 msgid "Unable to delete bridge %1$s"
-msgstr ""
+msgstr "Nu se poate șterge puntea %1$s"
 
 #, c-format
 msgid "Unable to delete file %1$s"
-msgstr ""
+msgstr "Nu se poate șterge fișierul %1$s"
 
 #, c-format
 msgid "Unable to delete lockspace resource %1$s"
-msgstr ""
+msgstr "Nu se poate șterge resursa de spațiu de blocare (lockspace) %1$s"
 
 msgid "Unable to delete medium"
-msgstr ""
+msgstr "Nu se poate șterge suportul media"
 
 #, c-format
 msgid "Unable to delete port %1$s from OVS: %2$s"
-msgstr ""
+msgstr "Nu se poate șterge portul %1$s din OVS: %2$s"
 
 #, c-format
 msgid "Unable to destroy '%1$s': %2$s"
-msgstr ""
+msgstr "Imposibil de distrus „%1$s”: %2$s"
 
 #, c-format
 msgid "Unable to destroy '%1$s': device in use"
-msgstr ""
+msgstr "Imposibil de distrus „%1$s”: dispozitiv în uz"
 
 msgid "Unable to detect SCHED_CORE"
-msgstr ""
+msgstr "Imposibil de detectat SCHED_CORE"
 
 #, c-format
 msgid "Unable to detect filesystem for %1$s"
-msgstr ""
+msgstr "Imposibil de detectat sistemul de fișiere pentru %1$s"
 
 msgid "Unable to determine Partition Type, requires build --overwrite"
 msgstr ""
+"Imposibil de determinat tipul partiției, se necesită compilarea cu --"
+"overwrite"
 
 #, c-format
 msgid "Unable to determine current file inode: %1$s"
-msgstr ""
+msgstr "Imposibil de determinat nodul-i al fișierului curent: %1$s"
 
 #, c-format
 msgid "Unable to determine current file offset: %1$s"
-msgstr ""
+msgstr "Imposibil de determinat decalajul fișierului curent: %1$s"
 
 #, c-format
 msgid "Unable to determine model for SCSI controller idx=%1$d"
-msgstr ""
+msgstr "Imposibil de determinat modelul pentru controlorul SCSI idx=%1$d"
 
 #, c-format
 msgid "Unable to determine model for USB controller idx=%1$d"
-msgstr ""
+msgstr "Imposibil de determinat modelul pentru controlorul USB idx=%1$d"
 
 msgid "Unable to determine mount table on this platform"
-msgstr ""
+msgstr "Imposibil de determinat tabelul de montare pe această platformă"
 
 msgid "Unable to disable nagle algorithm"
-msgstr ""
+msgstr "Imposibil de dezactivat algoritmul Nagle"
 
 msgid "Unable to dump link info on this platform"
-msgstr ""
+msgstr "Imposibil de descărcat informațiile despre legătură pe acea platformă"
 
 #, c-format
 msgid "Unable to duplicate FD %1$d"
-msgstr ""
+msgstr "Imposibil de duplicat FD %1$d"
 
 msgid "Unable to enable keepalives without async IO support"
 msgstr ""
+"Nu se poate activa fanionul „keepalive” fără suportul de In/Ieș asincron"
 
 #, c-format
 msgid "Unable to enable namespace: %1$s"
-msgstr ""
+msgstr "Nu se poate activa spațiul de nume: %1$s"
 
 msgid "Unable to enable non-blocking flag"
-msgstr ""
+msgstr "Nu se poate activa fanionul „non-blocking” (fără blocare)"
 
 msgid "Unable to enable/disable perf events"
-msgstr ""
+msgstr "Imposibil de activat/dezactivat evenimentele perf"
 
 msgid "Unable to encode message header"
-msgstr ""
+msgstr "Imposibil de a codifica antetul mesajului"
 
 msgid "Unable to encode message length"
-msgstr ""
+msgstr "Imposibil de a codifica lungimea mesajului"
 
 msgid "Unable to encode message payload"
-msgstr ""
+msgstr "Imposibil de a codifica conținutul mesajului"
 
 msgid "Unable to encode number of FDs"
-msgstr ""
+msgstr "Imposibil de a codifica numărul de FD-uri"
 
 msgid "Unable to enter mount namespace"
-msgstr ""
+msgstr "Nu se poate accesa spațiul de nume de montare"
 
 #, c-format
 msgid "Unable to exec shell %1$s"
-msgstr ""
+msgstr "Imposibil de executat shell-ul %1$s"
 
 #, c-format
 msgid "Unable to find '%1$s' binary in $PATH"
-msgstr ""
+msgstr "Nu se poate găsi fișierul binar „%1$s” în $PATH"
 
 #, c-format
 msgid ""
 "Unable to find '%1$s' firmware that is compatible with the current "
 "configuration"
 msgstr ""
+"Nu se poate găsi firmware-ul „%1$s” care să fie compatibil cu configurația "
+"actuală"
 
 #, c-format
 msgid "Unable to find '%1$s' limit for block device '%2$s'"
-msgstr ""
+msgstr "Nu se poate găsi limita „%1$s” pentru dispozitivul de blocuri „%2$s”"
 
 msgid "Unable to find 'cpuacct' cgroups controller mount"
-msgstr ""
+msgstr "Nu s-a găsit punctul de montare al controlorului cgroup „cpuacct”"
 
 msgid "Unable to find 'devices' cgroups controller mount"
-msgstr ""
+msgstr "Nu s-a găsit punctul de montare al controlorului cgroup „devices”"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
-msgstr ""
+msgstr "Nu s-a găsit binarul „dnsmasq” în $PATH"
 
 msgid "Unable to find 'memory' cgroups controller mount"
-msgstr ""
+msgstr "Nu s-a găsit punctul de montare al controlorului cgroup „memory”"
 
 msgid "Unable to find 'qemu-nbd' binary in $PATH"
-msgstr ""
+msgstr "Nu s-a găsit binarul „qemu-nbd” în $PATH"
 
 #, c-format
 msgid "Unable to find UUID %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi UUID-ul „%1$s”"
 
 #, c-format
 msgid "Unable to find UUID for location %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi UUID-ul pentru locația „%1$s”"
 
 msgid "Unable to find a free loop device in /dev"
-msgstr ""
+msgstr "Nu se poate găsi un dispozitiv de buclă liber în /dev"
 
 #, c-format
 msgid "Unable to find a free port on virtio-serial controller %1$u"
-msgstr ""
+msgstr "Nu s-a putut găsi un port liber pe controlorul virtio-serial %1$u"
 
 msgid "Unable to find a free virtio-serial port"
-msgstr ""
+msgstr "Nu s-a putut găsi un port virtio-serial liber"
 
 msgid "Unable to find a satisfying vhost-user-gpu"
-msgstr ""
+msgstr "Nu s-a putut găsi un vhost-user-gpu satisfăcător"
 
 msgid "Unable to find a satisfying virtiofsd"
-msgstr ""
+msgstr "Nu s-a putut găsi un virtiofsd satisfăcător"
 
 msgid "Unable to find a vCPU that is online"
-msgstr ""
+msgstr "Nu s-a putut găsi niciun vCPU activ"
 
 #, c-format
 msgid "Unable to find address for mdev parent device '%1$s'"
-msgstr ""
+msgstr "Nu se poate găsi adresa pentru dispozitivul părinte mdev „%1$s”"
 
 #, c-format
 msgid "Unable to find address for parent device '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut găsi adresa dispozitivului părinte „%1$s”"
 
 #, c-format
 msgid "Unable to find an unused port in range '%1$s' (%2$d-%3$d)"
-msgstr ""
+msgstr "Nu s-a putut găsi un port neutilizat în intervalul „%1$s” (%2$d-%3$d)"
 
 msgid "Unable to find any /dev mount"
-msgstr ""
+msgstr "Nu s-a putut găsi niciun punct de montare /dev"
 
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %1$llu KiB"
 msgstr ""
+"Nu s-a găsit niciun punct de montare hugetlbfs utilizabil pentru %1$llu Kio"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/arp_validate' for '%1$s'"
 msgstr ""
+"Nu s-a putut găsi valoarea corectă în „bonding/arp_validate” pentru „%1$s”"
 
 #, c-format
 msgid "Unable to find correct value in 'bonding/mode' for '%1$s'"
-msgstr ""
+msgstr "Nu s-a putut găsi valoarea corectă în „bonding/mode” pentru „%1$s”"
 
 #, c-format
 msgid "Unable to find filesystem type for %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi tipul de sistem de fișiere pentru %1$s"
 
 #, c-format
 msgid "Unable to find major for %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi major pentru %1$s"
 
 #, c-format
 msgid "Unable to find the hard disk with uuid %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi discul dur cu uuid-ul %1$s"
 
 #, c-format
 msgid "Unable to find the snapshot %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi instantaneea %1$s"
 
 #, c-format
 msgid "Unable to find the snapshot with name %1$s"
-msgstr ""
+msgstr "Nu s-a putut găsi instantaneea cu numele %1$s"
 
 msgid "Unable to force bind to IPv6 only"
-msgstr ""
+msgstr "Nu se poate forța conectarea numai prin IPv6"
 
 msgid "Unable to format NUMA node cache"
-msgstr ""
+msgstr "Imposibil de formatat cache-ul nodului NUMA"
 
 msgid "Unable to format SELinux context"
-msgstr ""
+msgstr "Imposibil de formatat contextul SELinux"
 
 msgid "Unable to format guestfwd port"
-msgstr ""
+msgstr "Nu se poate formata portul guestfwd"
 
 msgid "Unable to format metadata element"
-msgstr ""
+msgstr "Nu se poate formata elementul de metadate"
 
 msgid "Unable to format time"
-msgstr ""
+msgstr "Nu se poate formata ora"
 
 msgid "Unable to freeze filesystems"
-msgstr ""
+msgstr "Imposibil de a îngheța sistemele de fișiere"
 
 #, c-format
 msgid "Unable to get ACLs on %1$s"
-msgstr ""
+msgstr "Nu se pot obține listele ACL pe %1$s"
 
 msgid "Unable to get Capabilities"
 msgstr "Nu s-au putut obține capacitățile"
 
 #, c-format
 msgid "Unable to get Console object for domain %1$s"
-msgstr ""
+msgstr "Imposibil de obținut obiectul Console pentru domeniul %1$s"
 
 msgid "Unable to get IP address on this platform"
-msgstr ""
+msgstr "Imposibil de obținut adresa IP pe această platformă"
 
 #, c-format
 msgid "Unable to get IPv4 address for interface %1$s via ioctl"
-msgstr ""
+msgstr "Imposibil de obținut adresa IPv4 pentru interfața %1$s prin ioctl"
 
 #, c-format
 msgid "Unable to get Keyboard object for domain %1$s"
-msgstr ""
+msgstr "Imposibil de obținut obiectul Keyboard pentru domeniul %1$s"
 
 #, c-format
 msgid "Unable to get LVM key for %1$s"
-msgstr ""
+msgstr "Nu se poate obține cheia LVM pentru %1$s"
 
 #, c-format
 msgid "Unable to get NUMA node of cpu %1$zd"
-msgstr ""
+msgstr "Imposibil de obținut nodul NUMA al procesorului %1$zd"
 
 #, c-format
 msgid "Unable to get SCSI key for %1$s"
-msgstr ""
+msgstr "Nu se poate obține cheia SCSI pentru %1$s"
 
 #, c-format
 msgid "Unable to get SELinux label from %1$s"
-msgstr ""
+msgstr "Nu se poate obține eticheta SELinux din %1$s"
 
 #, c-format
 msgid "Unable to get STP delay on %1$s on this platform"
-msgstr ""
+msgstr "Imposibil de obținut întârzierea STP pe %1$s pe această platformă"
 
 #, c-format
 msgid "Unable to get STP on %1$s on this platform"
-msgstr ""
+msgstr "Imposibil de obținut STP pe %1$s pe această platformă"
 
 msgid "Unable to get VF net device stats on this platform"
 msgstr ""
+"Imposibil de obținut statistici privind dispozitivul de rețea VF pe această "
+"platformă"
 
 #, c-format
 msgid "Unable to get VLAN for interface %1$s"
-msgstr ""
+msgstr "Nu se poate obține VLAN pentru interfața %1$s"
 
 msgid "Unable to get VLAN on this platform"
-msgstr ""
+msgstr "Nu se poate obține VLAN pe această platformă"
 
 #, c-format
 msgid "Unable to get XATTR %1$s on %2$s"
-msgstr ""
+msgstr "Imposibil de obținut XATTR %1$s pe %2$s"
 
 msgid "Unable to get XML Desc of snapshot"
-msgstr ""
+msgstr "Imposibil de obținut descrierea XML a instantaneei"
 
 msgid "Unable to get a virDomainSnapshotDef *"
-msgstr ""
+msgstr "Nu se poate obține virDomainSnapshotDef *"
 
 msgid "Unable to get any controller"
-msgstr ""
+msgstr "Nu se poate obține niciun controlor"
 
 msgid "Unable to get blkio parameters"
-msgstr ""
+msgstr "Nu se pot obține parametrii blkio"
 
 msgid "Unable to get block I/O throttle parameters"
-msgstr ""
+msgstr "Imposibil de obținut parametrii de limitare a blocului de In/Ieș"
 
 #, c-format
 msgid "Unable to get bridge %1$s %2$s"
-msgstr ""
+msgstr "Imposibil de obținut puntea %1$s %2$s"
 
 #, c-format
 msgid "Unable to get bridge %1$s port %2$s %3$s"
-msgstr ""
+msgstr "Imposibil de obținut puntea %1$s port %2$s %3$s"
 
 msgid "Unable to get bridge port isolated on this platform"
-msgstr ""
+msgstr "Nu se poate izola portul de punte pe această platformă"
 
 msgid "Unable to get bridge port learning on this platform"
-msgstr ""
+msgstr "Nu se poate efectua învățarea portului punții pe această platformă"
 
 msgid "Unable to get bridge port unicast_flood on this platform"
-msgstr ""
+msgstr "Nu se poate obține portul de punte unicast_flood pe această platformă"
 
 msgid "Unable to get bridge vlan_filtering on this platform"
-msgstr ""
+msgstr "Nu se poate obține filtrarea VLAN pe această platformă"
 
 msgid "Unable to get childMedium location"
-msgstr ""
+msgstr "Nu se poate obține locația childMedium"
 
 msgid "Unable to get cpu map"
-msgstr ""
+msgstr "Nu se poate obține harta CPU-ului"
 
 msgid "Unable to get current position in file"
-msgstr ""
+msgstr "Imposibil de obținut poziția curentă din fișier"
 
 msgid "Unable to get current position in stream"
-msgstr ""
+msgstr "Imposibil de obținut poziția curentă din flux"
 
 msgid "Unable to get current process SELinux context"
-msgstr ""
+msgstr "Nu se poate obține contextul SELinux al procesului curent"
 
 msgid "Unable to get current time"
-msgstr ""
+msgstr "Nu se poate obține ora curentă"
 
 msgid "Unable to get daemon logging filters information"
 msgstr ""
+"Imposibil de obținut informații despre filtrele de jurnalizare ale demonului"
 
 msgid "Unable to get daemon logging outputs information"
-msgstr ""
+msgstr "Imposibil de obținut informații din jurnalele demonului"
 
 msgid "Unable to get default interface name"
-msgstr ""
+msgstr "Nu se poate obține numele interfeței implicite"
 
 msgid "Unable to get device master from netlink on this platform"
 msgstr ""
+"Imposibil de obținut dispozitivul master de la netlink pe această platformă"
 
 msgid "Unable to get device-mapper version"
-msgstr ""
+msgstr "Imposibil de obținut versiunea device-mapper"
 
 #, c-format
 msgid "Unable to get devmapper targets for %1$s"
-msgstr ""
+msgstr "Imposibil de obținut ținte devmapper pentru %1$s"
 
 msgid "Unable to get disk children"
-msgstr ""
+msgstr "Nu se pot obține copiii discului"
 
 msgid "Unable to get disk format"
-msgstr ""
+msgstr "Nu se poate obține formatul discului"
 
 msgid "Unable to get disk parent"
-msgstr ""
+msgstr "Nu se poate obține discul părinte"
 
 msgid "Unable to get disk uuid"
-msgstr ""
+msgstr "Nu se poate obține uuid-ul discului"
 
 msgid "Unable to get domain IOThreads information"
-msgstr ""
+msgstr "Nu se pot obține informații despre IOThreads pentru domeniu"
 
 msgid "Unable to get domain status"
-msgstr ""
+msgstr "Imposibil de obținut starea domeniului"
 
 #, c-format
 msgid "Unable to get driver name for '%1$s'"
-msgstr ""
+msgstr "Nu se poate obține numele controlorului pentru „%1$s”"
 
 msgid "Unable to get filesystem information"
-msgstr ""
+msgstr "Nu se pot obține informațiile despre sistemul de fișiere"
 
 msgid "Unable to get free loop device via ioctl"
-msgstr ""
+msgstr "Nu se poate obține dispozitivul de buclă liber prin ioctl"
 
 msgid "Unable to get hard disk format"
-msgstr ""
+msgstr "Nu se poate obține formatul discului dur"
 
 msgid "Unable to get hard disk id"
-msgstr ""
+msgstr "Nu se poate obține id-ul discului dur"
 
 msgid "Unable to get host SEV information"
-msgstr ""
+msgstr "Imposibil de obținut informații SEV despre gazdă"
 
 msgid "Unable to get host boot time"
-msgstr ""
+msgstr "Nu se poate obține timpul de pornire al gazdei"
 
 #, c-format
 msgid "Unable to get index for interface %1$s"
-msgstr ""
+msgstr "Nu se poate obține indicele pentru interfața %1$s"
 
 #, c-format
 msgid "Unable to get interface index for %1$s"
-msgstr ""
+msgstr "Nu se poate obține indicele interfeței pentru %1$s"
 
 #, c-format
 msgid "Unable to get interface index for '%1$s'"
-msgstr ""
+msgstr "Nu se poate obține indicele interfeței pentru „%1$s”"
 
 msgid "Unable to get interface index on this platform"
-msgstr ""
+msgstr "Nu se poate obține indicele interfeței pe această platformă"
 
 msgid "Unable to get interface parameters"
 msgstr ""
@@ -22209,24 +22778,24 @@ msgid "an os <type> must be specified"
 msgstr ""
 
 msgid "another backup job is already running"
-msgstr ""
+msgstr "o altă sarcină de copie de rezervă este deja în curs de execuție"
 
 #, c-format
 msgid "another migration job is already running for domain '%1$s'"
 msgstr ""
 
 msgid "any configuration"
-msgstr ""
+msgstr "orice configurație"
 
 #, c-format
 msgid "ap-domain value '%1$s' is out of range for '%2$s'"
 msgstr ""
 
 msgid "api error"
-msgstr ""
+msgstr "Eroare API"
 
 msgid "apparmor_parser exited with error"
-msgstr ""
+msgstr "apparmor_parser s-a încheiat cu o eroare"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
 msgstr ""
@@ -22252,11 +22821,11 @@ msgid "argument key '%1$s' must not have null value"
 msgstr ""
 
 msgid "argument unsupported"
-msgstr ""
+msgstr "argument neacceptat"
 
 #, c-format
 msgid "argument unsupported: %1$s"
-msgstr ""
+msgstr "argument neacceptat: %1$s"
 
 msgid "argument virt_type must not be NULL"
 msgstr ""
