@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-11 00:58+0000\n"
+"PO-Revision-Date: 2026-01-18 13:58+0000\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.15.2\n"
 
 msgid ""
 "\n"
@@ -35433,7 +35433,7 @@ msgstr "port %1$u utanför intervallet i USB-adressbuss: %2$u port %3$s"
 
 #, c-format
 msgid "port '%1$d' out of range"
-msgstr ""
+msgstr "port '%1$d' utanför intervallet"
 
 #, c-format
 msgid "port '%1$s' out of range"
