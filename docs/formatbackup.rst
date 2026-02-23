@@ -42,7 +42,8 @@ were supplied). The following child elements and attributes are supported:
    ```protocol`` element of a disk <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ attached
    via NBD in the domain (such as transport, socket, name, port, or tls),
    necessary to set up an NBD server that exposes the content of each disk at
-   the time the backup is started.
+   the time the backup is started. For TCP transport, if ``port`` is omitted, a
+   port is allocated automatically from the range configured in ``/etc/libvirt/qemu.conf``.
 
    In addition to the above the NBD server used for backups allows using
    ``transport='fd' fdgroup='NAME'`` where ``NAME`` is the name used with
