@@ -30,7 +30,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2026-02-19 11:33+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -31160,7 +31160,7 @@ msgstr "definición de CPU no válida en el índice %1$zu"
 msgid "invalid CPU definition stub"
 msgstr "conducto de definición de CPU no válida"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid DNS SRV port attribute for service '%1$s' in network '%2$s'"
 msgstr ""
 "atributo no válido del puerto DNS SRV para servicio '%1$s' en red '%2$s'"
@@ -31178,21 +31178,20 @@ msgstr "dirección MAC no válida"
 msgid "invalid MAC address: %1$s"
 msgstr "dirección MAC no válida: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid NUMA node ID supplied for '%1$s'"
-msgstr "el ID de nodo NUMA indicado para '%1$s' no es válido"
+msgstr "el ID de nodo NUMA proporcionado para '%1$s' no es válido"
 
-#, fuzzy
 msgid "invalid NUMA node in target"
 msgstr "nodo NUMA no válido en destino"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI bus ID supplied for '%1$s'"
 msgstr "el ID de bus PCI proporcionado para '%1$s' no es válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid PCI class supplied for '%1$s'"
-msgstr "la clase PCI proporcionada para '%1$s' no es válida"
+msgstr "clase PCI no válida proporcionada para '%1$s'"
 
 #, c-format
 msgid "invalid PCI domain ID supplied for '%1$s'"
@@ -31294,19 +31293,18 @@ msgstr "longitud XML no válida: %1$d"
 msgid "invalid ap-adapter value '%1$s' for '%2$s'"
 msgstr "adaptado ap no válido con valor '%1$s' para '%2$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid ap-domain value '%1$s' for '%2$s'"
-msgstr "valor de dominio-ap '%1$s' no válido para '%2$s'"
+msgstr "el valor de ap-domain '%1$s' no es válido para '%2$s'"
 
-#, fuzzy
 msgid "invalid argument"
 msgstr "argumento no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid argument: %1$s"
 msgstr "argumento no válido: %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid backing protocol '%1$s'"
 msgstr "respaldo de protocolo '%1$s' no válido"
 
@@ -31467,11 +31465,10 @@ msgstr "indicador de interfaz no válido en %1$s"
 msgid "invalid iommuGroup number attribute for '%1$s'"
 msgstr "atributo de número iommuGroup no válido para '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid iothreads count '%1$s'"
-msgstr "contador '%1$s' de iothreads no válido"
+msgstr "contador '%1$s' de hilo de E/S no válido"
 
-#, fuzzy
 msgid "invalid job statistics type"
 msgstr "tipo de estadísticas de tarea no válido"
 
@@ -31493,9 +31490,9 @@ msgstr ""
 "json no válido en dispositivo de red guardado en archivo de configuración "
 "'%1$s': '%2$.60s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid keycode %1$u of %2$s codeset"
-msgstr "keycode no válido %1$u en el codeset %2$s"
+msgstr "código de tecla %1$u no válida del conjunto de código %2$s"
 
 #, c-format
 msgid "invalid keycode: '%1$s'"
@@ -31508,9 +31505,9 @@ msgstr "Longitud no válida para nuevo perfil"
 msgid "invalid lifecycle action '%1$u'"
 msgstr "acción lifecycle no válida: '%1$u'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid lifecycle type '%1$u'"
-msgstr "tipo de lifecycle no válido: '%1$u'"
+msgstr "tipo de ciclo de vida '%1$u' no válido"
 
 #, c-format
 msgid "invalid link state '%1$s'"
@@ -31540,9 +31537,9 @@ msgstr ""
 "dirección mac '%1$s' no válida en array 'unicast-table' en respuesta de "
 "query-rx-filter"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid master key read, size=%1$zd"
-msgstr "lectura de clave maestra no válida, size=%1$zd"
+msgstr "lectura de clave maestra no válida, tamaño=%1$zd"
 
 msgid "invalid microcode version"
 msgstr "versión microcode no válida"
@@ -31636,9 +31633,8 @@ msgstr "nombre de partición no válido: '%1$s', cuando se esperaba '%2$s'"
 msgid "invalid path %1$s not assigned to domain"
 msgstr "ruta no válida '%1$s' no asignada al dominio"
 
-#, fuzzy
 msgid "invalid path for master key file"
-msgstr "Longitud no válida para nuevo perfil"
+msgstr "ruta no válida para el archivo de llave maestra"
 
 #, c-format
 msgid "invalid path, '%1$s' is not a known interface"
@@ -31648,9 +31644,8 @@ msgstr "ruta no válida, '%1$s' no es una interfaz conocida"
 msgid "invalid path: %1$s"
 msgstr "ruta no válida: %1$s"
 
-#, fuzzy
 msgid "invalid prefix, must be in range of 4-27"
-msgstr "Valor no válido para rebootTimeout, debe ser del intervalo [-1,65535]"
+msgstr "prefijo no válida, debe estar dentro de un intervalo de 4-27"
 
 #, c-format
 msgid "invalid protocol argument: %1$d"
@@ -31690,9 +31685,8 @@ msgstr "Tipo de secreto no válido %1$s"
 msgid "invalid secret type '%1$s'"
 msgstr "Tipo de secreto '%1$s'es nulo"
 
-#, fuzzy
 msgid "invalid server address"
-msgstr "dirección MAC no válida"
+msgstr "dirección de servidor no válida"
 
 msgid "invalid size of ACPI ERST pstore device"
 msgstr "tamaño no válido de dispositivo pstore de ACPI ERST"
@@ -31781,11 +31775,11 @@ msgstr "uuid no válido %1$s"
 
 #, c-format
 msgid "invalid value %1$d"
-msgstr "Valor no válido %1$d"
+msgstr "valor %1$d no válido"
 
-#, fuzzy, c-format
+#, c-format
 msgid "invalid value '%1$s' for migration parameter '%2$s'"
-msgstr "valor '%1$s' no válido parea parámetro de migración '%2$s'"
+msgstr "valor '%1$s' no válido parea migración con parámetro '%2$s'"
 
 #, c-format
 msgid "invalid value '%1$s' for parameter '%2$s' of device '%3$s'"
@@ -31793,7 +31787,7 @@ msgstr "valor '%1$s' no válido para parámetro '%2$s', de dispositivo '%3$s'"
 
 #, c-format
 msgid "invalid value '%1$s' of 'value' attribute of 'qemu:property'"
-msgstr "valor '%1$s' no válido de atributo 'value' de 'qemu:property'"
+msgstr "valor '%1$s' no válido de atributo 'valor' de 'qemu:property'"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -31831,13 +31825,11 @@ msgstr "acción watchdog no válida"
 msgid "io is not supported with vhostuser disk"
 msgstr "E/S no está admitida con disco vhostuser"
 
-#, fuzzy
 msgid "io policy of disk device"
-msgstr "Serial de dispositivo de disco"
+msgstr "normativa de E/S del dispositivo del disco"
 
-#, fuzzy
 msgid "io uring is not supported by this QEMU binary"
-msgstr "Binario QEMU no admite descarte"
+msgstr "URL de E/S no admitida por este binario QEMU"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
 msgstr ""
@@ -31847,9 +31839,9 @@ msgstr ""
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr "ioeventfd no está admitido con vhostuser de disco"
 
-#, fuzzy
 msgid "iommu driver option is only supported for virtio devices"
-msgstr "vhost-net solamente tiene soporte para interfaces de red virtio"
+msgstr ""
+"opción de unidad de iommu solo está admitida para dispositivos de E/S virtual"
 
 #, c-format
 msgid "iommu model '%1$s' can't have address"
@@ -31866,20 +31858,17 @@ msgstr "el modelo '%1$s' de iommu no admite algunos atributos adicionales"
 msgid "iommu: aw_bits is not supported with this QEMU binary"
 msgstr "iommu: los aw_bits no están mantenidos con este QEMU binario"
 
-#, fuzzy
 msgid "iommu: caching mode is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
+msgstr "iommu: modo caché no está admitida con este QEMU binario"
 
-#, fuzzy
 msgid "iommu: device IOTLB is not supported with this QEMU binary"
-msgstr "Esta versión de QEMU no admite el dispositivo nvram"
+msgstr "iommu: dispositivo IOTLB no está admitido con este QEMU binario"
 
 msgid "iommu: eim is not supported with this QEMU binary"
 msgstr "iommu: eim no está admitido con este binario QEMU"
 
-#, fuzzy
 msgid "iommu: interrupt remapping is not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
+msgstr "iommu: reasociar interrupción no está admitido con este QEMU binario"
 
 msgid "iommu: updating dma translation is not supported with this QEMU binary"
 msgstr "iommu: actualizando traslado dma no está admitido con este QEMU binario"
@@ -31929,7 +31918,7 @@ msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune no está admitido con disco vhostuser"
 
 msgid "iowait:"
-msgstr "iowait:"
+msgstr "espera de E/S:"
 
 msgid "ipset name contains invalid characters"
 msgstr "nombre ipset contiene caracteres no válidos"
@@ -31980,9 +31969,8 @@ msgstr "tarea '%1$s' incorrecta inesperadamente"
 msgid "job type '%1$s' does not support pivot"
 msgstr "tipo de tarea '%1$s' no soporta pivote"
 
-#, fuzzy
 msgid "kdump-compressed format is not supported here"
-msgstr "El formato de disco %s no tiene soporte"
+msgstr "formato de volcado del kernel comprimido no está admitido aquí"
 
 msgid "kdump-compressed format is only supported with memory-only dump"
 msgstr ""
@@ -32004,9 +31992,9 @@ msgstr "Intervalo de keepalive %1$d es demasiado largo"
 msgid "keepalive interval already set"
 msgstr "El intervalo keepalive ya se ha establecido"
 
-#, fuzzy
 msgid "kernel cpu time field is too long for the destination"
-msgstr "Campo de memoria de kernel es demasiado extenso"
+msgstr ""
+"campo de tiempo de memoria del kernel es demasiado extenso para el destino"
 
 msgid "key to be used as a namespace identifier"
 msgstr "clave a ser utilizada como un identificador de espacio de nombre"
@@ -32039,7 +32027,7 @@ msgid "lazy_refcounts not supported with compat level %1$s"
 msgstr "lazy_refcounts no mantenido con nivel compatible %1$s"
 
 msgid "lease file write failed"
-msgstr "error al escribir el archivo de concesión"
+msgstr "concede escritura de archivo incorrecta"
 
 msgid "leave the guest paused after creation"
 msgstr "colocar en pausa a un huésped luego de haber sido creado"
@@ -32072,17 +32060,15 @@ msgstr "librbd de cifrado está mantenido solo con disco respaldados de RBD"
 msgid "librbd encryption layering is not supported by this QEMU binary"
 msgstr "capa de cifrado libbrbd no está mantenido por este QEMU binario"
 
-#, fuzzy
 msgid "libssh transport error"
-msgstr "Error de transporte SSH"
+msgstr "error de transporte libssh"
 
 #, c-format
 msgid "libssh transport error: %1$s"
 msgstr "error de transporte libssh: %1$s"
 
-#, fuzzy
 msgid "libssh transport support was not enabled"
-msgstr "Soporte de transporte libssh2 no está habilitado"
+msgstr "el soporte de transporte libssh no fue habilitado"
 
 msgid "libssh2 transport support was not enabled"
 msgstr "Soporte de transporte libssh2 no está habilitado"
@@ -32096,7 +32082,7 @@ msgstr "libvirt ha sido compilada sin el controlador '%1$s'"
 
 #, c-format
 msgid "libvirt was not compiled with libpcap and \"%1$s\" requires it"
-msgstr "libvirt no fue compilado con libpcap y \"%1$s\" lo requiere"
+msgstr "libvirt no ha sido compilado con libpcap y \"%1$s\" lo requiere"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
 msgstr ""
@@ -32190,11 +32176,11 @@ msgid "libxenlight failed to store userdata"
 msgstr "libxenlight falló al almacenar datos de usuario"
 
 msgid "libxenlight state driver is not active"
-msgstr "Controlador de estado de libxenlight no está activo"
+msgstr "Unidad del estado libxenlight no está activo"
 
 #, c-format
 msgid "libxl_domain_info failed for domain '%1$d'"
-msgstr "Error en libxl_domain_info para dominio '%1$d'"
+msgstr "libxl_domain_info incorrecto para dominio '%1$d'"
 
 msgid "libxl_get_cpu_topology failed"
 msgstr "libxl_get_cpu_topology incorrecto"
@@ -32203,15 +32189,14 @@ msgid "libxl_get_numainfo failed"
 msgstr "libxl_get_numainfo incorrecto"
 
 msgid "libxl_get_physinfo_info failed"
-msgstr "Error en libxl_get_physinfo_info"
+msgstr "libxl_get_physinfo_info incorrecto"
 
 #, c-format
 msgid "libxml2 doesn't handle %1$s encoding"
 msgstr "libxml2 no maneja codificación %1$s"
 
-#, fuzzy
 msgid "lifecycle action to set"
-msgstr "acción %d de ciclo de vida no esperada"
+msgstr "acción de ciclo de vida a establecer"
 
 msgid "lifecycle type to modify"
 msgstr "tipo lifecycle a modificar"
@@ -32219,9 +32204,8 @@ msgstr "tipo lifecycle a modificar"
 msgid "limit list to children of current snapshot"
 msgstr "limita el listado a herederos de captura actual"
 
-#, fuzzy
 msgid "limit list to children of given checkpoint"
-msgstr "limit list to children of given snapshot"
+msgstr "listado de límite para heredero de punto de control dado"
 
 msgid "limit list to children of given snapshot"
 msgstr "limitar el listado a herederos de instantánea dada"
@@ -32230,9 +32214,8 @@ msgstr "limitar el listado a herederos de instantánea dada"
 msgid "line %1$d corrupt ipaddr \"%2$s\""
 msgstr "línea %1$d ipaddr corrupta \"%2$s\""
 
-#, fuzzy
 msgid "list UUID of active pools only"
-msgstr "muestra los grupos inactivos"
+msgstr "listado de UUID de solo pozos activos"
 
 msgid "list all domain blocks"
 msgstr "Liste todos los bloques de dominio"
@@ -32249,13 +32232,11 @@ msgstr "enumera claves SSH autorizadas para usuario dado (vía agente)"
 msgid "list available servers on a daemon"
 msgstr "lista de servidores disponibles en un demonio"
 
-#, fuzzy
 msgid "list checkpoint names only"
-msgstr "nombres de lista únicamente"
+msgstr "listado de nombres de solo el punto de control"
 
-#, fuzzy
 msgid "list checkpoints in a tree"
-msgstr "Listar las instantáneas en el árbol"
+msgstr "listado de punto de control en un árbol"
 
 msgid "list clients connected to <server>"
 msgstr "listado de clientes conectados a <server>"
@@ -32290,9 +32271,8 @@ msgstr "lista dominios con autoinicio desactivado"
 msgid "list domains with autostart enabled"
 msgstr "lista dominios con autoinicio activado"
 
-#, fuzzy
 msgid "list domains with existing checkpoint"
-msgstr "Listar dominios con instantánea existente"
+msgstr "lista dominios con punto de control existente"
 
 msgid "list domains with existing snapshot"
 msgstr "Listar dominios con instantánea existente"
@@ -32300,9 +32280,8 @@ msgstr "Listar dominios con instantánea existente"
 msgid "list domains with managed save state"
 msgstr "Lista los dominios con el estado de almacenamiento administrado"
 
-#, fuzzy
 msgid "list domains without a checkpoint"
-msgstr "Listar dominios sin una instantánea"
+msgstr "listado de dominios sin un punto de control"
 
 msgid "list domains without a snapshot"
 msgstr "Listar dominios sin una instantánea"
@@ -32346,23 +32325,20 @@ msgstr "muestra los grupos inactivos"
 msgid "list is not closed with ]"
 msgstr "la lista no finaliza con ]"
 
-#, fuzzy
 msgid "list name of active pools only"
-msgstr "muestra los grupos activos e inactivos"
+msgstr "listado de nombre solamente de pozos activos"
 
 msgid "list network filter bindings"
-msgstr "Listado de vínculos de filtro de red"
+msgstr "listado de vínculos del filtro de red"
 
 msgid "list network filters"
-msgstr "muestra los filtros de red"
+msgstr "listado de filtros de red"
 
-#, fuzzy
 msgid "list network names only"
-msgstr "lista nombres de instantánea únicamente"
+msgstr "listado de nombres de red únicamente"
 
-#, fuzzy
 msgid "list network ports"
-msgstr "muestra las redes"
+msgstr "listado de puertos de red"
 
 msgid "list networks"
 msgstr "muestra las redes"
@@ -32379,100 +32355,89 @@ msgstr "lista secretos no efímeros"
 msgid "list non-private secrets"
 msgstr "lista secretos non-private"
 
-#, fuzzy
 msgid "list of cpus to enable or disable"
-msgstr "lista grupos con autostart inhabilitado"
+msgstr "listado de las cpu para habilitar o inhabilitar"
 
-#, fuzzy
 msgid "list of domains to get stats for"
-msgstr "Listar dominios en otros estados"
+msgstr "listado de dominios para obtener estados"
 
-#, fuzzy
 msgid "list only active domains"
-msgstr "muestra los dominios inactivos"
+msgstr "listado de solo los dominios activos"
 
-#, fuzzy
 msgid "list only checkpoints that are not leaves (with children)"
-msgstr "Lista únicamente instantáneas que no son salidas (con hijos)"
+msgstr ""
+"listado de puntos de control solo que no son abandonados (con herederos)"
 
-#, fuzzy
 msgid "list only checkpoints without children"
-msgstr "Listar solo las instantáneas sin hijos"
+msgstr "listar solo de puntos de control sin herederos"
 
-#, fuzzy
 msgid "list only checkpoints without parents"
-msgstr "Lista todas las instantáneas sin padres"
+msgstr "listado solo de puntos de control sin antecesores"
 
-#, fuzzy
 msgid "list only domains in other states"
-msgstr "Listar dominios en otros estados"
+msgstr "listado de solo dominios en otros estados"
 
-#, fuzzy
 msgid "list only inactive domains"
-msgstr "muestra los dominios inactivos"
+msgstr "listado solo de dominios inactivos"
 
-#, fuzzy
 msgid "list only paused domains"
-msgstr "muestra los dominios inactivos"
+msgstr "listado de solo dominios pausados"
 
-#, fuzzy
 msgid "list only persistent domains"
-msgstr "list persistent domains"
+msgstr "listado de solo dominios persistentes"
 
-#, fuzzy
 msgid "list only running domains"
-msgstr "lista dominios transitorios"
+msgstr "listado de solo dominios en ejecución"
 
-#, fuzzy
 msgid "list only shutoff domains"
-msgstr "lista dominios transitorios"
+msgstr "listado solo de dominios apagados"
 
 msgid "list only snapshots that are not leaves (with children)"
-msgstr "Lista únicamente instantáneas que no son salidas (con hijos)"
+msgstr ""
+"listado únicamente de instantáneas que no son abandonadas (con herederos)"
 
 msgid "list only snapshots that have metadata that would prevent undefine"
 msgstr ""
-"Lista únicamente las instantáneas que tienen metadatos que impedirían quitar "
-"la definición"
+"listado únicamente de instantáneas que tienen metadatos que impedirían "
+"indefinición"
 
 msgid "list only snapshots that have no metadata managed by libvirt"
 msgstr ""
-"Lista solamente las instantáneas que no tienen metadatos administrados por "
+"listado solamente las instantáneas que no tienen metadatos gestionados por "
 "libvirt"
 
 msgid "list only snapshots without children"
-msgstr "Listar solo las instantáneas sin hijos"
+msgstr "listar solo las instantáneas sin herederos"
 
 msgid "list only snapshots without parents"
-msgstr "Lista todas las instantáneas sin padres"
+msgstr "lista solo instantáneas sin antecesores"
 
-#, fuzzy
 msgid "list only transient domains"
-msgstr "lista dominios transitorios"
+msgstr "listado de solo dominios transitorios"
 
 msgid "list persistent devices"
 msgstr "listado de dispositivos persistentes"
 
 msgid "list persistent domains"
-msgstr "listar dominios persistentes"
+msgstr "listado de dominios persistentes"
 
 msgid "list persistent networks"
-msgstr "lista redes persistentes"
+msgstr "listado de redes persistentes"
 
 msgid "list persistent pools"
-msgstr "lista grupos persistentes"
+msgstr "listado de pozos persistentes"
 
 msgid "list physical host interfaces"
-msgstr "muestra las interfaces de host físico"
+msgstr "listado de interfaces host físicos"
 
 msgid "list pools"
-msgstr "muestra los grupos"
+msgstr "listado de acumulaciones"
 
 msgid "list pools with autostart disabled"
-msgstr "lista grupos con autostart inhabilitado"
+msgstr "listado de acumulaciones con auto-inicio inhabilitado"
 
 msgid "list pools with autostart enabled"
-msgstr "lista grupos con autostart activado"
+msgstr "listado de acumulaciones con auto-inicio habilitado"
 
 msgid "list private secrets"
 msgstr "lista secretos privados"
@@ -32532,7 +32497,7 @@ msgid "lists not allowed in VMX format"
 msgstr "lista no permitida en formato VMX"
 
 msgid "live"
-msgstr "Viva"
+msgstr "viva"
 
 #, c-format
 msgid "live attach of device '%1$s' is not supported"
@@ -32544,7 +32509,7 @@ msgstr "Desconexión en vivo del dispositivo '%1$s' no tiene soporte"
 
 #, c-format
 msgid "live detach of interface type %1$s is not implemented yet"
-msgstr ""
+msgstr "separación viva del tipo de interfaz %1$s no está aún implementado"
 
 #, c-format
 msgid "live detach of shmem model '%1$s' is not supported"
@@ -32555,6 +32520,8 @@ msgstr "migración en vivo"
 
 msgid "live snapshot creation is supported only during full system snapshots"
 msgstr ""
+"creación de instantánea viva está admitida solo durante instantáneas del "
+"sistema completo"
 
 #, c-format
 msgid "live update of device '%1$s' is not supported"
@@ -32562,11 +32529,11 @@ msgstr "La actualización en vivo del dispositivo '%1$s' no tiene soporte"
 
 #, c-format
 msgid "load of internal snapshot '%1$s' job failed: %2$s"
-msgstr ""
+msgstr "carga de tarea de instantánea interna '%1$s' incorrecta: %2$s"
 
 #, c-format
 msgid "loadparm value '%1$s' must be between 1 and 8 characters"
-msgstr ""
+msgstr "valor '%1$s' del parámetro de carga debe estar entre 1 y 8 caracteres"
 
 msgid "lock manager connection has been restricted"
 msgstr "La conexión del gestor de cerrojo ha sido restringida"
@@ -32575,26 +32542,28 @@ msgid "lock owner details have not been registered"
 msgstr "La información de propietario de cerrojo no ha sido registrada"
 
 msgid "locking options are not supported by this virtiofsd"
-msgstr ""
+msgstr "las opciones de bloqueo no están admitidas por este virtiofsd"
 
 #, c-format
 msgid "logical volume '%1$s' is sparse, volume wipe not supported"
 msgstr "volumen lógico '%1$s' está disperso, no se admite purgado de volumen"
 
 msgid "loop until timeout or interrupt, rather than one-shot"
-msgstr ""
+msgstr "bucle hasta vencimiento o interrupción, en vez de un disparo"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "acotación inferior para el pozo de subprocesos de trabajador"
 
 msgid "luks-any encryption is not supported by this QEMU binary"
-msgstr ""
+msgstr "cifrado luks-cualquiera no está admitido por este binario de QEMU"
 
 msgid "lxc state driver is not active"
 msgstr "El estado del controlador lxc está inactivo"
 
 msgid "lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"
 msgstr ""
+"se ha encontrado lxc.mount.fstab o lxc.mount, utilice en su lugar las líneas "
+"lxc.mount.entry"
 
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild() ha transmitido una definición vm no válida"
@@ -32608,7 +32577,7 @@ msgstr ""
 "no pudo ser iniciada"
 
 msgid "machine is null"
-msgstr ""
+msgstr "la máquina es nula"
 
 msgid "machine not in running state to suspend it"
 msgstr ""
@@ -32625,26 +32594,26 @@ msgstr "la máquina ha sido pausada, de modo que no puede apagarse"
 
 #, c-format
 msgid "machine type '%1$s'"
-msgstr ""
+msgstr "el tipo de máquina '%1$s'"
 
 #, c-format
 msgid "machine type '%1$s' does not support ACPI"
-msgstr ""
+msgstr "el tipo de máquina '%1$s' no admite ACPI"
 
 msgid "machine type (/domain/os/type/@machine)"
-msgstr ""
+msgstr "el tipo de máquina (/domain/os/type/@machine)"
 
 msgid "make added vcpus hot(un)pluggable"
-msgstr ""
+msgstr "crea las cpu virtuales añadidas a hot(un)pluggable"
 
 msgid "make live change persistent"
 msgstr "Hacer el cambio en vivo persistente"
 
 msgid "make the copy share a backing chain"
-msgstr "haga que la copia comparta una cadena de respaldo"
+msgstr "haga que la copia comparta un encadenado de respaldo"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr ""
+msgstr "propiedad malformada de 'offset' de unidad 'raw'"
 
 msgid "malformed 'prefix' field"
 msgstr "campo 'prefix' malformado"
@@ -32652,33 +32621,34 @@ msgstr "campo 'prefix' malformado"
 #, c-format
 msgid "malformed 'readahead' field in backing store definition '%1$s'"
 msgstr ""
+"campo 'readahead' malformado en definición de almacén '%1$s' de respaldo"
 
 msgid "malformed 'size' property of 'raw' driver"
-msgstr ""
+msgstr "propiedad 'size' malformada de unidad 'raw'"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%1$s'"
 msgstr ""
+"campo 'sslverify' malformado en definición '%1$s' de almacén de respaldo"
 
 #, c-format
 msgid "malformed 'timeout' field in backing store definition '%1$s'"
-msgstr ""
+msgstr "campo 'timeout' malformado en definición '%1$s' de almacén de respaldo"
 
-#, fuzzy
 msgid "malformed 'wwpn' value"
-msgstr "valor de retorno mal formado"
+msgstr "valor 'wwpn' malformado"
 
 msgid "malformed <blockDirtyBitmaps> in migration cookie"
-msgstr ""
+msgstr "<blockDirtyBitmaps> malformado en galleta de migración"
 
 msgid "malformed <sysinfo> uuid element"
 msgstr "elemento <sysinfo> uuid es incorrecto"
 
 msgid "malformed <tempBlockDirtyBitmaps> in status XML"
-msgstr ""
+msgstr "<tempBlockDirtyBitmaps> malformado en estado XML"
 
 msgid "malformed GIC version in QEMU capabilities cache"
-msgstr ""
+msgstr "versión GIC malformada en caché de capacidades QEMU"
 
 #, c-format
 msgid "malformed QAPI schema when querying '%1$s' of '%2$s'"
@@ -32688,15 +32658,15 @@ msgid "malformed QMP schema"
 msgstr "esquema QMP malformado"
 
 msgid "malformed TDX panic data"
-msgstr ""
+msgstr "datos de pánico TDX malformados"
 
 #, c-format
 msgid "malformed TLS secret uuid '%1$s' provided"
-msgstr ""
+msgstr "uuid '%1$s' de TLS secreto malformado proporcionado"
 
 #, c-format
 msgid "malformed backing store path for protocol %1$s"
-msgstr ""
+msgstr "ruta de almacén de respaldo malformado para protocolo %1$s"
 
 msgid "malformed capacity element"
 msgstr "elemento de capacidad erróneo"
@@ -32709,11 +32679,10 @@ msgid "malformed disk path: %1$s"
 msgstr "ruta de disco malformado: %1$s"
 
 msgid "malformed emulated GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "información GIC emulada malformada en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "malformed genid element"
-msgstr "elemento uuid erróneo"
+msgstr "elemento genid malformado"
 
 msgid "malformed group element"
 msgstr "elemento de grupo erróneo"
@@ -32724,16 +32693,17 @@ msgstr "Elemento hostuuid incorrecto en datos de migración"
 #, c-format
 msgid "malformed http cookie '%1$s' in backing store definition '%2$s'"
 msgstr ""
+"galleta '%1$s' http malformada en definición '%2$s' de almacén del respaldo"
 
 msgid "malformed hwuuid element"
-msgstr ""
+msgstr "elemento hwuuid malformado"
 
-#, fuzzy
 msgid "malformed hyperv panic data"
-msgstr "cadena de dispositivo de caracteres errónea"
+msgstr "datos hyperv en pánico malformado"
 
 msgid "malformed in-kernel GIC information in QEMU capabilities cache"
 msgstr ""
+"información malformada dentro del GIC del kernel en capacidades caché de QEMU"
 
 msgid "malformed ipset flags"
 msgstr "indicadores de ipset incorrectos"
@@ -32742,9 +32712,8 @@ msgstr "indicadores de ipset incorrectos"
 msgid "malformed mac address '%1$s'"
 msgstr "dirección mac '%1$s' errónea"
 
-#, fuzzy
 msgid "malformed mtu size"
-msgstr "Tamaño %s erróneo"
+msgstr "tamaño mtu malformado"
 
 #, c-format
 msgid "malformed namespace name: %1$s"
@@ -32762,145 +32731,138 @@ msgstr "modo octal erróneo"
 
 #, c-format
 msgid "malformed output of 'iscsiadm': %1$s"
-msgstr ""
+msgstr "salida malformada de 'iscsiadm': %1$s"
 
 msgid "malformed owner element"
-msgstr "elemento dueño erróneo"
+msgstr "elemento propietario malformado"
 
-#, fuzzy
 msgid "malformed prManager reply"
-msgstr "elemento dueño erróneo"
+msgstr "réplica prManager malformada"
 
 msgid "malformed qemu-current-machine reply"
-msgstr ""
+msgstr "réplica qemu-current-machine malformada"
 
-#, fuzzy
 msgid "malformed query string"
-msgstr "cadena de dispositivo de caracteres errónea"
+msgstr "cadena de solicitud malformada"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed refcount %1$s on %2$s"
-msgstr "refcount malformado: %1$s en %2$s"
+msgstr "contador referencial %1$s malformado en %2$s"
 
 msgid "malformed refreservation reported"
-msgstr ""
+msgstr "reserva referencial malformada reportada"
 
 msgid "malformed return value"
-msgstr "valor de retorno mal formado"
+msgstr "valor devuelto malformado"
 
 msgid "malformed s390 panic data"
-msgstr ""
+msgstr "datos en pánico de s390 malformado"
 
 #, c-format
 msgid "malformed signal name: %1$s"
-msgstr "Nombre de señal incorrecto: %1$s"
+msgstr "nombre de señal malformado: %1$s"
 
 msgid "malformed uuid element"
-msgstr "elemento uuid erróneo"
+msgstr "elemento uuid malformado"
 
 #, c-format
 msgid "malformed uuid element for '%1$s'"
-msgstr "elemento uuid para '%1$s' erróneo'"
+msgstr "elemento uuid para '%1$s' malformado"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed value '%1$s' of 'offset' attribute of slice"
-msgstr "valor malformado '%1$s' del atributo 'offset' de slice"
+msgstr "valor '%1$s' malformado del atributo 'offset' de rebanada"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed value '%1$s' of 'size' attribute of slice"
-msgstr "valor malformado '%1$s' del atributo 'tamaño' de slice"
+msgstr "valor '%1$s' malformado del atributo 'size' de rebanada"
 
-#, fuzzy
 msgid "malformed volsize reported"
-msgstr "modo octal erróneo"
+msgstr "tamaño reportado del volumen volsize malformado"
 
 msgid "malformed volume allocation value"
-msgstr "Valor de asignación de volumen erróneo"
+msgstr "valor de asignación del volumen malformado"
 
-#, fuzzy
 msgid "malformed volume extent devices value"
-msgstr "valor de dispositivos de alcance de volúmenes malformado"
+msgstr "valor malformado del alcance de los dispositivos del volumen"
 
 msgid "malformed volume extent length value"
-msgstr "volumen erroneo supera el valor de la longitud"
+msgstr "valor de longitud extensiva del volumen malformado"
 
 msgid "malformed volume extent offset value"
-msgstr "valor del desplazamiento del tamaño del volumen mal formado"
+msgstr "valor del volumen medido del desplazamiento malformado"
 
 msgid "malformed volume extent size value"
-msgstr "valor del tamaño de volumen erróneo"
+msgstr "valor del tamaño extendido del volumen malformado"
 
 msgid "malformed volume extent stripes value"
-msgstr "valor malformado de segmentos de extensión del volumen"
+msgstr "valor de segmentos de extensión del volumen malformado"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr ""
+msgstr "direc malformada/ausente en informe de memoria dimm"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
-msgstr ""
+msgstr "enchufable en caliente malformado/ausente en informe de memoria dimm"
 
 msgid "malformed/missing hotplugged in dimm memory info"
-msgstr ""
+msgstr "enchufable en caliente malformado/ausente en informe de memoria dimm"
 
 msgid "malformed/missing memaddr in sgx-epc memory info"
-msgstr ""
+msgstr "direc de memoria malformada/ausente en informe de memoria sgx-epc"
 
 msgid "malformed/missing memaddr in virtio memory info"
 msgstr ""
+"dirección de memoria malformada/ausente en informe de memoria virtual de E/S"
 
 msgid "malformed/missing size in sgx-epc memory info"
-msgstr ""
+msgstr "tamaño malformado/ausente en informe de memoria agx-epc"
 
 msgid "malformed/missing size in virtio memory info"
-msgstr ""
+msgstr "tamaño malformado/ausente en informe de memoria de E/S virtual"
 
 msgid "malformed/missing slot in dimm memory info"
-msgstr ""
+msgstr "ranura malformada/ausente en informe de memoria dimm"
 
 msgid "managed save cannot be requested for transient domains"
-msgstr ""
+msgstr "guardado gestionado no puede ser solicitado para dominios transientes"
 
 msgid "managed save of a domain state"
 msgstr "Almacenamiento administrado de un estado de dominio"
 
 msgid "managing externally launched configuration"
-msgstr ""
+msgstr "gestionando externamente configuración lanzada"
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
 msgstr ""
+"manipula archivo de claves SSH autorizadas para usuario dado (vía agente)"
 
 msgid "maplen must be non-negative"
-msgstr ""
+msgstr "maplen debe ser no negativo"
 
 msgid "mark inactive domains with managed save state"
 msgstr "Marcar dominios inactivos con estado de almacenamiento administrado"
 
-#, fuzzy
 msgid "masterbus not found"
-msgstr "No se encontró hostdev %s"
+msgstr "bus maestro no encontrado"
 
 #, c-format
 msgid "match mode %1$s not supported"
 msgstr "coincide modo %1$s no mantenido"
 
 msgid "matching filesystem not found"
-msgstr ""
+msgstr "coincidiendo sistema de archivos no encontrado"
 
 msgid "matching input device not found"
 msgstr "no se ha encontrado un dispositivo de entrada coincidente"
 
 msgid "matching iommu device not found"
-msgstr ""
+msgstr "coincidiendo dispositivo iommu no encontrado"
 
-#, fuzzy
 msgid "matching memory device was not found"
-msgstr ""
-"No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
+msgstr "no fue encontrado el dispositivo de memoria coincidente"
 
-#, fuzzy
 msgid "matching shmem device was not found"
-msgstr ""
-"No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
+msgstr "no se pudo encontrar el dispositivo shmem coincidente"
 
 msgid "matching vsock device not found"
 msgstr "no se ha encontrado un dispositivo vsock coincidente"
@@ -32909,13 +32871,13 @@ msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
 msgid "maxWorkers must not be switched from zero to non-zero and vice versa"
-msgstr ""
+msgstr "maxWorkers debe no ser intercambiado desde cero a no cero y vice-versa"
 
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
 msgid "maxcells must be non-negative"
-msgstr ""
+msgstr "maxcells debe ser no negativo"
 
 msgid "maxerrors too large"
 msgstr "maxerrors demasiado grandes"
@@ -32924,24 +32886,28 @@ msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxids > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maxids must be non-negative"
-msgstr ""
+msgstr "maxids debe ser no negativo"
 
 msgid "maximum"
 msgstr "Máximo"
 
 msgid "maximum CPU is not supported by QEMU binary"
-msgstr ""
+msgstr "mínimo de CPU no está admitido por QEMU binario"
 
 msgid "maximum amount of in-flight data during the copy"
-msgstr ""
+msgstr "cantidad máxima de datos en vuelo durante la copia"
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
 msgstr ""
+"tamaño de memoria máximo debe ser igual o mayor que el tamaño de memoria "
+"actual"
 
 msgid ""
 "maximum memory size must be specified when specifying number of memory slots"
 msgstr ""
+"debe ser especificado el tamaño de memoria máximo cuando especifique el "
+"número de ranuras de memoria"
 
 msgid "maximum memory size overflowed after alignment"
 msgstr "tamaño de memoria máxima desbordada tras alineamiento"
@@ -32952,12 +32918,13 @@ msgstr ""
 
 msgid "maximum vCPU count must not be less than current vCPU count"
 msgstr ""
+"el contador de vCPU máximo debe no ser menor que el contador actual de vCPU"
 
 msgid "maximum vcpu count of a live domain can't be modified"
-msgstr ""
+msgstr "contador de vcpu máximo de un dominio vivo no puede ser modificado"
 
 msgid "maximum vcpus count must be an integer"
-msgstr ""
+msgstr "contador de vcpu máximo debe ser un entero"
 
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
@@ -32966,7 +32933,7 @@ msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 msgid "maxinfo must be non-negative"
-msgstr ""
+msgstr "maxinfo debe ser no negativo"
 
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
 msgstr "maxnames > REMOTE_DOMAIN_LIST_MAX"
@@ -32996,31 +32963,32 @@ msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 msgstr "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
 
 msgid "maxnames must be non-negative"
-msgstr ""
+msgstr "maxnames debe ser no negativo"
 
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
 msgstr "maxuuids > REMOTE_SECRET_LIST_MAX"
 
 msgid "maxuuids must be non-negative"
-msgstr ""
+msgstr "maxuuid debe ser no negativo"
 
 msgid "mdev attribute missing name or value"
-msgstr ""
+msgstr "al atributo mdev le falta nombre o valor"
 
 msgid "mdevctl JSON response contains no devices"
-msgstr ""
+msgstr "respuesta JSON mdevctl no contiene dispositivos"
 
 #, c-format
 msgid "mediated device %1$s is in use by driver %2$s, domain %3$s"
 msgstr ""
+"dispositivo %1$s mediado está dentro de uso por unidad %2$s, dominio %3$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "mediated device '%1$s' not found"
 msgstr "dispositivo mediado '%1$s' no encontrado"
 
-#, fuzzy
 msgid "mediated devices are not supported on non-linux platforms"
-msgstr "no tiene soporte en plataformas non-linux"
+msgstr ""
+"dispositivos mediados no son soportados en plataformas distintas de linux"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
 msgstr ""
@@ -33028,7 +32996,7 @@ msgstr ""
 
 #, c-format
 msgid "memory '%1$s' not found"
-msgstr ""
+msgstr "memoria '%1$s' no encontrada"
 
 #, c-format
 msgid "memory access mode '%1$s' not supported without guest numa node"
@@ -33037,7 +33005,7 @@ msgstr ""
 
 #, c-format
 msgid "memory address must be aligned to %1$ld bytes"
-msgstr ""
+msgstr "dirección de memoria debe estar alineada a %1$ld bytes"
 
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "atributos de memoria: [file=]name[,snapshot=type]"
@@ -33047,20 +33015,24 @@ msgid ""
 "memory device address [0x%1$llx:0x%2$llx] overlaps with other memory device "
 "(0x%3$llx)"
 msgstr ""
+"dirección del dispositivo [0x%1$llx:0x%2$llx] de memoria cubre con otro "
+"dispositivo de memoria (0x%3$llx)"
 
 #, c-format
 msgid "memory device address is not supported for model '%1$s'"
 msgstr ""
+"la dirección de dispositivo de memoria no está mantenida para modelo '%1$s'"
 
 msgid "memory device address must be aligned to blocksize"
 msgstr ""
+"la dirección del dispositivo de memoria debe estar alineada a tamaño de "
+"bloque"
 
 msgid "memory device alias"
-msgstr ""
+msgstr "alias de dispositivo de memoria"
 
-#, fuzzy
 msgid "memory device alias is not assigned"
-msgstr "PCI device %s is not assignable"
+msgstr "alias de dispositivo de memoria no está asignado"
 
 #, c-format
 msgid "memory device slot '%1$u' exceeds slots count '%2$u'"
@@ -33071,18 +33043,19 @@ msgstr ""
 msgid ""
 "memory device slot '%1$u' is already being used by another memory device"
 msgstr ""
+"la ranura '%1$u' del dispositivo de memoria ya está siendo utilizada por "
+"otro dispositivo de memoria"
 
 msgid "memory device target node"
-msgstr ""
+msgstr "nodo destino del dispositivo de memoria"
 
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 "tamaño total del dispositivo de memoria supera el espacio de enchufado "
 "caliente"
 
-#, fuzzy
 msgid "memory devices are not supported by this driver"
-msgstr "Dispositivos Multiqueue no tienen soporte en este sistema"
+msgstr "dispositivos de memoria no están mantenidos por esta unidad"
 
 #, c-format
 msgid "memory filename '%1$s' requires external snapshot"
@@ -33092,6 +33065,8 @@ msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
 "swap_hard_limit"
 msgstr ""
+"el límite hard_limit de memoria de valor ajustable debe ser más inferior que "
+"o igual a swap_hard_limit"
 
 msgid "memory hotplug isn't supported by this QEMU binary"
 msgstr ""
@@ -33101,9 +33076,11 @@ msgid ""
 "memory hotplug tunables <maxMemory> are not supported by this hypervisor "
 "driver"
 msgstr ""
+"los ajustes <maxMemory> de memoria enchufable en caliente no están "
+"soportados por esta unidad de hipervisor"
 
 msgid "memory not found"
-msgstr ""
+msgstr "memoria no encontrada"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %1$zi > %2$d"
@@ -33118,11 +33095,11 @@ msgstr ""
 
 #, c-format
 msgid "memory size of NUMA node '%1$zu' overflowed after alignment"
-msgstr ""
+msgstr "tamaño de memoria de nodo NUMA '%1$zu' desbordado tras alineamiento"
 
 #, c-format
 msgid "memory snapshot file path (%1$s) must be absolute"
-msgstr ""
+msgstr "la ruta (%1$s) del archivo de captura de memoria debe ser absoluta"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
 msgstr ""
@@ -33130,7 +33107,7 @@ msgstr ""
 "solo-disco"
 
 msgid "memory-only dump failed for unknown reason"
-msgstr ""
+msgstr "el volcado de solo memoria ha fallado por razón desconocida"
 
 #, c-format
 msgid "memory-only dump failed: %1$s"
@@ -33141,6 +33118,8 @@ msgstr "Mensaje"
 
 msgid "metadata cache max size control is supported only with qcow2 images"
 msgstr ""
+"el tamaño máx del caché de metadatos del control está mantenido solo con "
+"imágenes qcow2"
 
 msgid "metadata not found"
 msgstr "No se encontraron los metadatos"
@@ -33163,26 +33142,23 @@ msgstr "La preasignación de metadatos no tiene soporte para volúmenes crudos"
 msgid "metadata preallocation only available with qcow2"
 msgstr "preasignación de metadatos está solo disponible con qcow2"
 
-#, fuzzy
 msgid "metadata title can't contain newlines"
-msgstr "Título de dominio no puede contener nuevas líneas"
+msgstr "el título de metadatos no puede contener nuevas líneas"
 
 msgid "metadata_cache is not supported with vhostuser disk"
-msgstr ""
+msgstr "el metadata_cache no está admitido con disco vhostuser"
 
 msgid "migrate domain to another host"
 msgstr "migrar el dominio hacia otro host"
 
-#, fuzzy
 msgid "migrate uri is not set"
-msgstr "migrar el dominio hacia otro host"
+msgstr "migrar url no está establecido"
 
 msgid "migrate: Invalid downtime"
 msgstr "migración: Tiempo de inactividad no válido"
 
-#, fuzzy
 msgid "migrate: Unexpected --timeout-* option without --timeout"
-msgstr "migrar: Tiempo de espera inesperado para migración fuera de línea"
+msgstr "migrar: opción inesperada de --timeout-* sin --timeout"
 
 msgid "migrate: Unexpected timeout for offline migration"
 msgstr "migrar: Tiempo de espera inesperado para migración fuera de línea"
@@ -33197,13 +33173,11 @@ msgstr "migrado"
 msgid "migrating"
 msgstr "Migrando"
 
-#, fuzzy
 msgid "migration"
-msgstr "Migración"
+msgstr "migración"
 
-#, fuzzy
 msgid "migration URI is not supported by tunnelled migration"
-msgstr "El host de destino no soporta migración desconectada"
+msgstr "no está admitida la URL de migración por la migración tunelizada"
 
 msgid "migration URI, usually can be omitted"
 msgstr "migración URI, generalmente puede ser omitida"
@@ -33219,9 +33193,11 @@ msgid ""
 "migration failed. Message from the source host: %1$s. Message from the "
 "destination host: %2$s"
 msgstr ""
+"migración incorrecta. Mensaje desde el host origen: %1$s. Mensaje desde el "
+"host destino: %2$s"
 
 msgid "migration in"
-msgstr ""
+msgstr "migración en"
 
 #, c-format
 msgid "migration of disk %1$s failed"
@@ -33234,21 +33210,26 @@ msgstr "la migración del disco %1$s falló: %2$s"
 #, c-format
 msgid "migration of domain %1$s is being actively monitored by another thread"
 msgstr ""
+"migración de dominio %1$s está siento monitorizada activamente por otro hilo"
 
 #, c-format
 msgid "migration of domain %1$s is not in post-copy phase"
-msgstr ""
+msgstr "migración de dominio %1$s no está dentro de la fase post-copia"
 
 msgid "migration of non-shared disks requested but NBD is not set up"
 msgstr ""
+"la migración de discos no-compartidos solicitados pero NBD no está "
+"configurado"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
+"migración de almacén no compartido no está admitido con migración tunelizada "
+"y este QEMU"
 
 msgid "migration out"
-msgstr ""
+msgstr "migración externa"
 
 #, c-format
 msgid "migration parameter '%1$s' must be less than %2$llu"
@@ -33262,13 +33243,12 @@ msgstr "el parámetro de migración ' %1$s' debería ser inferior a %2$u"
 msgid "migration protocol going backwards %1$s => %2$s"
 msgstr "Protocolo migración va hacia atrás %1$s => %2$s"
 
-#, fuzzy
 msgid "migration statistics are available only on the source host"
-msgstr "El host de origen no soporta migración desconectada"
+msgstr ""
+"las estadísticas de migración están disponibles solo sobre el host origen"
 
-#, fuzzy
 msgid "migration successfully aborted"
-msgstr "migración URI, generalmente puede ser omitida"
+msgstr "migración interrumpida correctamente"
 
 #, c-format
 msgid "migration successfully aborted: %1$s"
@@ -33299,38 +33279,39 @@ msgstr ""
 "imagen base compartida entre origen y destino)"
 
 msgid "migration with this virtiofs device is not supported"
-msgstr ""
+msgstr "migración con este dispositivo virtiofs no está admitida"
 
 msgid "migration with transient disk is not supported"
-msgstr ""
+msgstr "migración con disco transiente no está admitida"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %1$s"
-msgstr ""
+msgstr "migration_address debe no ser la dirección de la máquina local: %1$s"
 
 #, c-format
 msgid "migration_host must not be the address of the local machine: %1$s"
-msgstr ""
+msgstr "migration_host no debe ser la dirección de la máquina local: %1$s"
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
+msgstr "minWorkers no puede ser más grande que maxWorkers"
 
 #, c-format
 msgid "minimum SSF levels lower than %1$d are not supported"
-msgstr ""
+msgstr "niveles SSF mínimos más bajos que %1$d no está admitido"
 
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
+"tamaño de destino mínimo para el NVDIMM debe ser 256MB más el tamaño de "
+"etiqueta"
 
 msgid "mirror requires file name"
 msgstr "espejo requiere el nombre de archivo"
 
-#, fuzzy
 msgid "mirror requires source element"
-msgstr "espejo requiere el nombre de archivo"
+msgstr "espejo requiere elemento origen"
 
 msgid "mirror without type only supported by copy job"
-msgstr ""
+msgstr "espejo sin tipo solo admitido por tarea de copia"
 
 #, c-format
 msgid "mishandled storage format '%1$s'"
@@ -33341,339 +33322,339 @@ msgid ""
 "mismatch between configured type for snapshot disk '%1$s' and the type of "
 "existing file '%2$s'"
 msgstr ""
+"no coincide entre tipo configurado para disco de captura '%1$s' y tipo de "
+"archivo existente '%2$s'"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s"
-msgstr ""
+msgstr "no coincide la familia de dirección en rango %1$s - %2$s"
 
 #, c-format
 msgid "mismatch of address family in range %1$s - %2$s for network %3$s"
 msgstr ""
+"no coincide la familia de dirección dentro del rango %1$s - %2$s para red "
+"%3$s"
 
 msgid "mismatched header magic"
 msgstr "encabezado magic no coincidente"
 
 msgid "missing \""
-msgstr "No se encuentra \""
+msgstr "no se encuentra \""
 
 #, c-format
 msgid "missing %1$s in <virtualport type='%2$s'>"
-msgstr "Falta %1$s en <virtualport type='%2$s'>"
+msgstr "no se encuentra %1$s en <virtualport type='%2$s'>"
 
 #, c-format
 msgid "missing '%1$s' in 'config' from cloud-hypervisor"
-msgstr ""
+msgstr "no se encuentra '%1$s' en 'config' desde nuble-hipervisor"
 
-#, fuzzy
 msgid "missing 'DateTime' element"
-msgstr "No se encuentra elemento root"
+msgstr "no se encuentra elemento 'DateTime'"
 
 msgid "missing 'alias' attribute for qemu:device"
-msgstr ""
+msgstr "no se encuentra atributo 'alias' para qemu:device"
 
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
+"no se encuentra 'config' en resultado de solicitud info desde nube-hipervisor"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%1$s'"
 msgstr ""
+"no se encuentra el valor 'content' en archivo de contexto lxc selinux '%1$s'"
 
 #, c-format
 msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
-"Falta el atributo 'end' en elemento <address> en <nat> en <forward> en red "
-"%1$s"
+"no se encuentra el atributo 'end' en elemento <address> en <nat> en "
+"<forward> en red %1$s"
 
 #, c-format
 msgid "missing 'file' in '%1$s' from cloud-hypervisor"
-msgstr ""
+msgstr "no se encuentra 'file' en '%1$s' desde nube-hipervisor"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%1$s'"
 msgstr ""
-"valor de 'file' ausente interno a contextos lxc selinux del archivo '%1$s'"
+"no se encuentra valor de 'file' interno a contextos lxc selinux del archivo "
+"'%1$s'"
 
 msgid "missing 'filename' field in JSON backing volume definition"
 msgstr ""
-"falta el campo 'filename' en la definición de volumen de respaldo del JSON"
+"no se encuentra el campo 'filename' en la definición de volumen de respaldo "
+"del JSON"
 
-#, fuzzy
 msgid "missing 'guid' attribute"
-msgstr "No se encuentra atributo de orden de arranque"
+msgstr "no se encuentra atributo 'guid'"
 
-#, fuzzy
 msgid "missing 'id' attribute for mediated device's <type> element"
 msgstr ""
-"no se encuentra el atributo de tipo en el elemento <actual> de la interfaz"
+"no se encuentra atributo 'id' para elemento <type> del dispositivo mediado"
 
 msgid ""
 "missing 'name' attribute for a host CPU model deprecated property in QEMU "
 "capabilities cache"
 msgstr ""
+"no se encuentra el atributo 'name' para un modelo de CPU host de propiedad "
+"obsoleta en caché de capacidades de QEMU"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
+"no se encuentra atributo 'name' para una propiedad de modelo CPU host en "
+"caché de capacidades QEMU"
 
 msgid "missing 'name' attribute for qemu:property"
-msgstr ""
+msgstr "no se encuentra atributo 'name' para qemu:property"
 
 msgid "missing 'path' attribute for vhostuser disk source"
-msgstr ""
+msgstr "no se encuentra atributo 'path' para origen de disco vhostuser"
 
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"no se encuentra atributo 'path' en definición respaldo JSON para volumen NFS"
 
 msgid "missing 'portal' address in iSCSI backing definition"
-msgstr ""
+msgstr "no se encuentra dirección 'portal' en definición respaldo iSCSI"
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%1$s'"
 msgstr ""
+"no se encuentra valor 'process' en contexto lxc selinux del archivo '%1$s'"
 
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"no se encuentra atributo 'server' en definición de respaldo JSON para "
+"volumen NFS"
 
 msgid "missing 'start' attribute for clock with offset='absolute'"
 msgstr ""
+"no se encuentra atributo 'start' para reloj con desplazamiento='absolute'"
 
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %1$s"
 msgstr ""
-"Falta el atributo 'start' en elemento <address> en <nat> en <forward> en red "
-"%1$s"
+"no se encuentra atributo 'start' en elemento <address> en <nat> en <forward> "
+"en red %1$s"
 
-#, fuzzy
 msgid "missing 'state' attribute"
-msgstr "No se encuentra atributo de tipo de dominio"
+msgstr "no se encuentra atributo 'state'"
 
 msgid "missing 'target' in iSCSI backing definition"
-msgstr ""
+msgstr "no se encuentra 'target' en definición de respaldo iSCSI"
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
-msgstr ""
-"no se encuentra atributo 'timezone' para el reloj con compensación='timezone'"
+msgstr "no se encuentra atributo 'timezone' para el reloj con offset='timezone'"
 
 msgid "missing 'type' attribute for vhostuser disk source"
-msgstr ""
+msgstr "no se encuentra atributo 'type' para origen de disco vhostuser"
 
 msgid "missing 'type' attribute to disk source"
-msgstr "falta atributo 'type' para disco origen"
+msgstr "no se encuentra atributo 'type' para disco origen"
 
 msgid "missing 'url' in JSON backing volume definition"
-msgstr ""
+msgstr "no se encuentra 'url' en definición de volumen respaldo JSON"
 
 msgid "missing 'usage' attribute for RAM filesystem"
-msgstr "falta atributo 'usage' para sistema de archivos RAM"
+msgstr "no se encuentra atributo 'usage' para sistema de archivos RAM"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
 msgstr ""
+"no se encuentra el atributo 'user' o 'group' en definición respaldo JSON "
+"para volumen NFS"
 
 msgid "missing 'value' attribute for 'qemu:property'"
-msgstr ""
+msgstr "no se encuentra atributo 'value' para 'qemu:property'"
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
-msgstr "atributo 'value' ausente para característica HyperV 'vendor_id'"
+msgstr "no se encuentra atributo 'value' para capacidad HyperV 'vendor_id'"
 
 msgid ""
 "missing 'vdisk-id' or 'server' attribute in JSON backing definition for VxHS "
 "volume"
 msgstr ""
+"no se encuentra atributo 'vdisk-id' o 'server' en definición segundo plano "
+"JSON para volumen VxHS"
 
 msgid ""
 "missing 'volume', 'path' or 'server' attribute in JSON backing definition "
 "for gluster volume"
 msgstr ""
+"no se encuentra atributo 'volume', 'path' o 'server' en definición segundo "
+"plano JSON para volumen gluster"
 
-#, fuzzy
 msgid "missing <target> element for <memory> device"
-msgstr "No se encuentra el elemento 'target' para arrendamiento"
+msgstr "no se encuentra elemento <target> para dispositivo <memory>"
 
 msgid "missing <type> element in <capability> element"
-msgstr ""
+msgstr "no se encuentra elemento <type> en elemento <capability>"
 
-#, fuzzy
 msgid "missing CPU data architecture"
-msgstr "No se encuentra la arquitectura de la CPU"
+msgstr "no se encuentra arquitectura de datos de CPU"
 
-#, fuzzy
 msgid "missing CPU definition"
-msgstr "(CPU_definition)"
+msgstr "no se encuentra definición de CPU"
 
 msgid "missing EGD backend type"
-msgstr "falta el tipo de backend EGD"
+msgstr "no se encuentra tipo de backend EGD"
 
-#, fuzzy
 msgid "missing GIC version"
-msgstr "No se encuentra proveedor"
+msgstr "no se encuentra versión GIC"
 
-#, fuzzy
 msgid "missing GIC version in QEMU capabilities cache"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra versión GIC en caché de capacidad QEMU"
 
 msgid "missing IFLA_VF_INFO in netlink response"
-msgstr "Falta IFLA_VF_INFO en respuesta de netlink"
+msgstr "no se encuentra IFLA_VF_INFO en respuesta de netlink"
 
 #, c-format
 msgid "missing SCSI host capability type for '%1$s'"
-msgstr "No se encuentra el tipo de capacidad de host SCSI para '%1$s'"
+msgstr "no se encuentra el tipo de capacidad host SCSI para '%1$s'"
 
-#, fuzzy
 msgid "missing SEV certChain information in QEMU capabilities cache"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra información SEV en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing SEV pdh information in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra información pdn SEV en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing SEV platform data in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra datos de plataforma SEV en caché de capacidad QEMU"
 
 msgid "missing SGX platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "no se encuentra datos de plataforma SGX en caché de capacidades QEMU"
 
 msgid "missing TPM device backend"
-msgstr "Falta plano secundario de dispositivo TPM"
+msgstr "no se encuentra backend de dispositivo TPM"
 
 msgid "missing TPM source path"
-msgstr ""
+msgstr "no se encuentra ruta de origen TPM"
 
-#, fuzzy
 msgid "missing Xen migration stream version"
-msgstr "falta información del sistema operativo"
+msgstr "no se encuentra versión de flujo de migración Xen"
 
 #, c-format
 msgid "missing address type in network %1$s"
-msgstr "Falta tipo de dirección en red %1$s"
+msgstr "no se encuentra tipo de dirección en red %1$s"
 
-#, fuzzy
 msgid "missing alias for memory device"
-msgstr "no se encuentra el dispositivo de origen"
+msgstr "no se encuentra alias para dispositivo de memoria"
 
-#, fuzzy
 msgid "missing alias for network device"
-msgstr "no se encuentra el dispositivo de origen"
+msgstr "no se encuentra alias para dispositivo de red"
 
 #, c-format
 msgid "missing alias on encryption secret #%1$zu"
-msgstr ""
+msgstr "no se encuentra alias sobre cifrado secreto #%1$zu"
 
 #, c-format
 msgid "missing alias or qom-type for qemu object '%1$s'"
-msgstr "falta alias o qom-type para el objeto de qemu '%1$s'"
+msgstr "no se encuentra alias o qom-type para objeto qemu '%1$s'"
 
 #, c-format
 msgid "missing ap-adapter value for '%1$s'"
-msgstr ""
+msgstr "no se encuentra valor ap-adaptador para '%1$s'"
 
 #, c-format
 msgid "missing ap-domain value for '%1$s'"
-msgstr ""
+msgstr "no se encuentra valor ap-domain para '%1$s'"
 
-#, fuzzy
 msgid "missing arch in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra arch en caché de capacidades QEMU"
 
 msgid "missing argument"
-msgstr "Falta argumento"
+msgstr "no se encuentra argumento"
 
 msgid "missing array element"
-msgstr "Falta elemento de array"
+msgstr "no se encuentra elemento de repertorio"
 
 #, c-format
 msgid "missing backend for pool type %1$d"
-msgstr "No se encuentra backend para el tipo de grupo %1$d"
+msgstr "no se encuentra backend para tipo de consorcio %1$d"
 
 #, c-format
 msgid "missing backend for pool type %1$d (%2$s)"
-msgstr "falta el backend para el tipo de grupo %1$d (%2$s)"
+msgstr "no se encuentra backend para el tipo de consorcio %1$d (%2$s)"
 
 #, c-format
 msgid "missing bitmap name for disk '%1$s' of checkpoint '%2$s'"
 msgstr ""
+"no se encuentra nombre de bitmap para disco '%1$s' de punto de control '%2$s'"
 
 #, c-format
 msgid "missing block job data for disk '%1$s'"
-msgstr "faltan datos de tarea del bloque para disco '%1$s'"
+msgstr "no se encuentran datos de tarea del bloque para disco '%1$s'"
 
-#, fuzzy
 msgid "missing blocker name in QEMU capabilities cache"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra nombre de bloqueador en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing capability name"
-msgstr "No se encuentra el tipo de capacidad"
+msgstr "no se encuentra nombre de capacidad"
 
 msgid "missing capacity element"
-msgstr "No se encuentra un elemento de capacidad"
+msgstr "no se encuentra elemento de capacidad"
 
-#, fuzzy
 msgid "missing cellno argument"
-msgstr "Falta argumento"
+msgstr "no se encuentra argumento nº de celda"
 
 msgid "missing connection mode for <reservations/>"
-msgstr "falta el modo de conexión para <reservations/>"
+msgstr "no se encuentra modo de conexión para <reservations/>"
 
 msgid "missing connection type for <reservations/>"
-msgstr "falta el tipo de conexión para <reservations/>"
+msgstr "no se encuentra el tipo de conexión para <reservations/>"
 
-#, fuzzy
 msgid "missing cookie name"
-msgstr "No se encuentra el nombre del temporizador"
+msgstr "no se encuentra el nombre de galleta"
 
-#, fuzzy
 msgid "missing cpu name in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra nombre de cpu en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
-msgstr "no se encuentra cpuset para vcpupin"
+msgstr "no se encuentra cpuset para emulatorpin"
 
-#, fuzzy
 msgid "missing cpuset for iothreadpin"
-msgstr "no se encuentra cpuset para vcpupin"
+msgstr "no se encuentra cpuset para iothreadpin"
 
 msgid "missing cpuset for vcpupin"
 msgstr "no se encuentra cpuset para vcpupin"
 
-#, fuzzy
 msgid "missing creationTime from existing checkpoint"
-msgstr "no se encuentra creationTime en la instantánea existente"
+msgstr "no se encuentra creationTime desde punto de control existente"
 
 msgid "missing creationTime from existing snapshot"
-msgstr "no se encuentra creationTime en la instantánea existente"
+msgstr "no se encuentra creationTime desde instantánea existente"
 
 #, c-format
 msgid "missing cssid value for '%1$s'"
-msgstr "falta el valor cssid para '%1$s'"
+msgstr "no se encuentra el valor cssid para '%1$s'"
 
 msgid "missing data file store format"
-msgstr ""
+msgstr "no se encuentra formato de almacén del archivo de datos"
 
 #, c-format
 msgid "missing decode element in CPU model %1$s"
-msgstr ""
+msgstr "no se encuentra elemento de decodificación en modelo de CPU %1$s"
 
 #, c-format
 msgid "missing destination file for disk %1$s: %2$s"
-msgstr "Falta el archivo de destino para el disco %1$s: %2$s"
+msgstr "no se encuentra el archivo de destino para el disco %1$s: %2$s"
 
 msgid "missing dev attribute in <interface> element"
-msgstr "Falta atributo dev en <interface>"
+msgstr "no se encuentra atributo dev en elemento <interface>"
 
 #, c-format
 msgid "missing device API for mediated device type '%1$s'"
-msgstr "falta API de dispositivo para tipo de dispositivo mediado '%1$s'"
+msgstr ""
+"no se encuentra API del dispositivo para tipo de dispositivo mediado '%1$s'"
 
 msgid "missing devices information"
-msgstr "falta información de dispositivos"
+msgstr "no se encuentra información de dispositivos"
 
 #, c-format
 msgid "missing devices information for %1$s"
@@ -33681,241 +33662,232 @@ msgstr "no se encuentra información de dispositivos para %1$s"
 
 #, c-format
 msgid "missing devno value for '%1$s'"
-msgstr "falta el valor devno para '%1$s'"
+msgstr "no se encuentra valor devno para '%1$s'"
 
-#, fuzzy
 msgid "missing disk backing store format"
-msgstr "falta información de dispositivos"
+msgstr "no se encuentra formato de almacenaje en segundo plano del disco"
 
 msgid "missing disk backing store source"
-msgstr "falta origen de almacenaje de respaldo de disco"
+msgstr "no se encuentra origen de almacenaje de respaldo de disco"
 
 msgid "missing disk data file store source"
-msgstr ""
+msgstr "no se encuentra origen de almacén del archivo de datos del disco"
 
 #, c-format
 msgid "missing disk device alias name for %1$s"
 msgstr "no se encuentra el nombre apodo del dispositivo de disco para %1$s"
 
-#, fuzzy
 msgid "missing domain in checkpoint"
-msgstr "Falta un dominio en una instantánea"
+msgstr "no se encuentra un dominio interno al punto de control"
 
 msgid "missing domain in snapshot"
-msgstr "Falta un dominio en una instantánea"
+msgstr "no se encuentra dominio interno a instantánea"
 
-#, fuzzy
 msgid "missing domain name"
-msgstr "No se encuentra un estado del dominio"
+msgstr "no se encuentra nombre del dominio"
 
 msgid "missing domain type attribute"
-msgstr "No se encuentra atributo de tipo de dominio"
+msgstr "no se encuentra atributo de tipo de dominio"
 
 #, c-format
 msgid "missing element or attribute '%1$s'"
-msgstr "No se encuentra elemento o atributo '%1$s'"
+msgstr "no se encuentra elemento o atributo '%1$s'"
 
-#, fuzzy
 msgid "missing emulated GIC information"
-msgstr "Falta información de nombre"
+msgstr "no se encuentra información de GIC emulado"
 
-#, fuzzy
 msgid "missing emulated GIC information in QEMU capabilities cache"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra información GIC emulada en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing emulator in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra emulador en caché de capacidades QEMU"
 
-#, fuzzy
 msgid "missing encryption description"
-msgstr "falta información del dispositivo raíz"
+msgstr "no se encuentra descripción de cifrado"
 
-#, fuzzy
 msgid "missing entry in GIC capabilities list"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra apunte en listado de capacidades GIC"
 
 msgid "missing entry in migration capabilities list"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra apunte en listado de capacidades de migración"
 
-#, fuzzy
 msgid "missing entry in supported dump formats"
-msgstr "falta información del sistema operativo"
+msgstr "no se encuentra apunte en formatos de volcado admitido"
 
 #, c-format
 msgid "missing existing file for disk %1$s: %2$s"
-msgstr "Falta archivo existente para disco %1$s: %2$s"
+msgstr "no se encuentra archivo existente para disco %1$s: %2$s"
 
 msgid "missing external TPM backend source type"
-msgstr ""
+msgstr "no se encuentra tipo origen en segundo plano de TPM externo"
 
 msgid "missing feature name"
-msgstr "Falta nombre de funcionalidad"
+msgstr "no se encuentra nombre de funcionalidad"
 
 msgid "missing filter parameter table"
-msgstr "Falta tabla de parámetro de filtro"
+msgstr "no se encuentra tabla de parámetro de filtro"
 
-#, fuzzy
 msgid "missing flag name in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra nombre de indicador en caché de capacidades QEMU"
 
 msgid "missing group name"
-msgstr ""
+msgstr "no se encuentra nombre de grupo"
 
 #, c-format
 msgid "missing group_device value for '%1$s'"
-msgstr ""
+msgstr "no se encuentra valor group_device para '%1$s'"
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %1$s"
 msgstr ""
+"no se encuentra informe de modelo CPU host desde capacidades QEMU para %1$s "
+"binario"
 
 msgid "missing host CPU model name in QEMU capabilities cache"
-msgstr ""
+msgstr "no se encuentra nombre del modelo CPU host en caché de capacidades QEMU"
 
 #, c-format
 msgid "missing host in migration URI: %1$s"
-msgstr "Falta host en migración URI: %1$s"
+msgstr "no se encuentra host en URL de migración: %1$s"
 
 msgid ""
 "missing host specification of NBD server in JSON backing volume definition"
 msgstr ""
+"no se encuentra especificación host de servidor NBD en definición de volumen "
+"backing JSON"
 
 msgid "missing host/server or path of SSH JSON backing volume definition"
 msgstr ""
+"no se encuentra host/servidor o ruta de definición de volumen respaldo de "
+"SSH JSON"
 
 msgid "missing hostname element in migration data"
-msgstr "Falta elemento nombre de host en migración de datos"
+msgstr "no se encuentra elemento nombre de host en migración de datos"
 
 msgid ""
 "missing hostname for tcp backing server in JSON backing volume definition"
 msgstr ""
+"no se encuentra nombre de host para servidor tcp en segundo plano en "
+"definición de volumen en segundo plano de JSON"
 
 msgid "missing hostuuid element in migration data"
-msgstr "Falta elemento hostuuid en migración de datos"
+msgstr "no se encuentra elemento hostuuid en datos de migración"
 
 msgid "missing hub device type"
-msgstr "Falta tipo de dispositivo concentrador"
+msgstr "no se encuentra tipo de dispositivo concentrador"
 
 msgid "missing iSCSI hostdev source path name"
-msgstr "falta nombre de ruta origen de hostdev iSCSI"
+msgstr "no se encuentra nombre de ruta origen de hostdev iSCSI"
 
-#, fuzzy
 msgid "missing in-kernel GIC information"
-msgstr "falta la información GIC en el kernel"
+msgstr "no se encuentra información GIC interna al kernel"
 
-#, fuzzy
 msgid "missing in-kernel GIC information in QEMU capabilities cache"
-msgstr "Falta entrada en lista de capacidades"
+msgstr ""
+"no se encuentra información GIC interna al kernel en caché de capacidades "
+"QEMU"
 
 #, c-format
 msgid "missing info on pr-manager %1$s"
-msgstr "falta informe en pr-manager %1$s"
+msgstr "no se encuentra informe sobre %1$s pr-manager"
 
-#, fuzzy
 msgid "missing initiator IQN"
-msgstr "No se encuentra un estado del dominio"
+msgstr "no se encuentra iniciador IQN"
 
 msgid "missing input device type"
-msgstr "Falta el tipo de dispositivo de entrada"
+msgstr "no se encuentra tipo de dispositivo de entrada"
 
 msgid "missing input volume target path"
-msgstr "Falta ruta de destino de volumen de salida"
+msgstr "no se encuentra ruta de entrada del destino de volumen"
 
 #, c-format
 msgid "missing iothread mapping for queue '%1$zd'"
-msgstr ""
+msgstr "no se encuentra distribución de hilo E/S para cola '%1$zd'"
 
-#, fuzzy
 msgid "missing ivgen info name string"
-msgstr "falta la cadena de nombre de ivgen info"
+msgstr "no se encuentra cadena de nombre del informe ivgen"
 
-#, fuzzy
 msgid "missing job chain data"
-msgstr "No se encuentra un estado del dominio"
+msgstr "no se encuentra tara de datos encadenados"
 
 msgid "missing kernel information"
-msgstr "falta información del kernel"
+msgstr "no se encuentra información del kernel"
 
 #, c-format
 msgid "missing kernel information: %1$s"
-msgstr "falta información del kernel: %1$s"
+msgstr "no se encuentra información del kernel: %1$s"
 
 #, c-format
 msgid "missing label for static security driver in domain %1$s"
-msgstr "Falta etiqueta para controlador de seguridad estática en dominio %1$s"
+msgstr ""
+"no se encuentra etiqueta para unidad de seguridad estática en dominio %1$s"
 
 msgid "missing listen attribute in migration data"
-msgstr "Falta atributo de escucha en migración de datos"
+msgstr "no se encuentra atributo de escucha en migración de datos"
 
-#, fuzzy
 msgid "missing listen element"
-msgstr "No se encuentra elemento root"
+msgstr "no se encuentra elemento de escucha"
 
 msgid "missing listen element for VNC graphics"
-msgstr ""
+msgstr "no se encuentra elemento de escucha para gráficos VNC"
 
-#, fuzzy
 msgid "missing listen element for spice graphics"
-msgstr "No se encuentra el elemento 'key' para arrendamiento"
+msgstr "no se encuentra elemento de escucha para gráficos de especie"
 
-#, fuzzy
 msgid "missing microcode version in QEMU capabilities cache"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra versión de micro-código en caché de capacidades QEMU"
 
 msgid "missing migration capability name"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra nombre de capacidad de migración"
 
-#, fuzzy
 msgid "missing migration parameter name"
-msgstr "Falta nombre de capacidad de migración"
+msgstr "no se encuentra nombre de parámetro de migración"
 
 msgid "missing name element in migration data"
-msgstr "Falta nombre de elemento en migración de datos"
+msgstr "no se encuentra nombre de elemento en datos de migración"
 
 msgid "missing name for disk source"
-msgstr "falta nombre de origen del disco"
+msgstr "no se encuentra nombre para disco origen"
 
 msgid "missing name for host"
-msgstr "no se encuentra el nombre del equipo"
+msgstr "no se encuentra nombre para host"
 
-#, fuzzy
 msgid "missing name from disk backup element"
-msgstr "Falta nombre del elemento de instantánea de disco"
+msgstr "no se encuentra nombre desde elemento de respaldo del disco"
 
 msgid "missing name from disk snapshot element"
-msgstr "Falta nombre del elemento de instantánea de disco"
+msgstr "no se encuentra nombre desde elemento de instantánea de disco"
 
 msgid "missing name information"
-msgstr "Falta información de nombre"
+msgstr "no se encuentra información de nombre"
 
 #, c-format
 msgid "missing name information in %1$s"
-msgstr "Falta información de nombre en %1$s"
+msgstr "no se encuentra información de nombre en %1$s"
 
 msgid "missing nbdkit pidfile"
-msgstr ""
+msgstr "no se encuentra archivo de pid de nbcdkit"
 
 msgid "missing nbdkit socketfile"
-msgstr ""
+msgstr "no se encuentra archivo de zócalo del kit nbd"
 
-#, fuzzy
 msgid "missing network device feature name"
-msgstr "Falta nombre de funcionalidad"
+msgstr "no se encuentra nombre de funcionalidad del dispositivo de red"
 
 msgid "missing node name in QEMU capabilities cache"
-msgstr ""
+msgstr "no se encuentra nombre de nodo en caché de capacidades QEMU"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%1$s'"
 msgstr ""
+"no se encuentra número de instancias disponibles para tipo de dispositivo "
+"mediado '%1$s'"
 
-#, fuzzy
 msgid "missing offset or size attribute of slice"
-msgstr "No se encuentra atributo de orden de arranque"
+msgstr "no se encuentra desplazamiento o tamaño de atributo de ranura"
 
 msgid "missing operating system information"
-msgstr "falta información del sistema operativo"
+msgstr "no se encuentra información del sistema operativo"
 
 #, c-format
 msgid "missing operating system information for %1$s"
@@ -33923,13 +33895,17 @@ msgstr "no se encuentra información de sistema operativo para %1$s"
 
 #, c-format
 msgid "missing or broken bitmap '%1$s' for disk '%2$s'"
-msgstr ""
+msgstr "no se encuentra bitmap '%1$s' o roto para el disco '%2$s'"
 
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
 msgstr ""
+"no se encuentra propiedad de modelo de CPU o no es válido en la caché de "
+"capacidades de QEMU"
 
 msgid "missing or invalid SGX platform flc in QEMU capabilities cache"
 msgstr ""
+"no se encuentra o no es válida la plataforma SGX flc en la caché de "
+"capacidades de QEMU"
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
 msgstr ""
@@ -33956,22 +33932,23 @@ msgid ""
 msgstr ""
 
 msgid "missing or malformed session-uuid element in migration data"
-msgstr "elemento session-uuid ausente o malformado en datos de migración"
+msgstr ""
+"no se encuentra elemento session-uuid o malformado en datos de migración"
 
-#, fuzzy
 msgid "missing or malformed uuid element in migration data"
-msgstr "Falta elemento UUID en migración de datos"
+msgstr "no se encuentra elemento uuid o malformado en migración de datos"
 
-#, fuzzy
 msgid "missing pagesize argument"
-msgstr "Falta argumento"
+msgstr "no se encuentra argumento pagesize"
 
 msgid "missing parent device"
-msgstr ""
+msgstr "no se encuentra dispositivo antecesor"
 
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
+"falta la implementación del intérprete para el backing JSON de la unidad "
+"'%1$s' del volumen"
 
 msgid "missing path for <reservations/>"
 msgstr "falta la ruta para <reservations/>"
@@ -33986,11 +33963,11 @@ msgid "missing path to restore from"
 msgstr ""
 
 msgid "missing per-device path"
-msgstr "Falta ruta per-device"
+msgstr "no se encuentra ruta por-dispositivo"
 
 #, c-format
 msgid "missing persistent configuration for disk '%1$s'"
-msgstr "falta configuración persistente para disco '%1$s'"
+msgstr "no se encuentra configuración persistente para disco '%1$s'"
 
 msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr ""
@@ -42772,7 +42749,7 @@ msgid "xml modification unsupported"
 msgstr "Modificación de XML no tiene soporte"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "expresión de ruta x para filtro del documento XML"
 
 #, c-format
 msgid "xsd:dateTime value '%1$s' has unexpected format"
