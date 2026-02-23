@@ -6,13 +6,14 @@
 # Daniel  <veillard@redhat.com>, 2011
 # Pierros Papadeas <pierros@papadeas.gr>, 2009
 # Jim Spentzos <jimspentzos2000@gmail.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
 "PO-Revision-Date: 2026-01-22 15:22+0000\n"
-"Last-Translator: Jim Spentzos <jimspentzos2000@gmail.com>\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Greek <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/el/>\n"
 "Language: el\n"
@@ -40109,7 +40110,7 @@ msgid "y - yes, start editor again"
 msgstr ""
 
 msgid "yes"
-msgstr ""
+msgstr "ναι"
 
 #, c-format
 msgid "zPCI %1$s %2$o is already reserved"
