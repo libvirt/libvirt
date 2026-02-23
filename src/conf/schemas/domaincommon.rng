@@ -349,31 +349,7 @@
             </element>
           </optional>
           <optional>
-            <element name="nvram">
-              <optional>
-                <attribute name="template">
-                  <ref name="absFilePath"/>
-                </attribute>
-              </optional>
-              <optional>
-                <attribute name="templateFormat">
-                  <ref name="pflashFormatTypes"/>
-                </attribute>
-              </optional>
-              <optional>
-                <ref name="pflashFormat"/>
-              </optional>
-              <optional>
-                <choice>
-                  <group>
-                    <ref name="absFilePath"/>
-                  </group>
-                  <group>
-                    <ref name="diskSource"/>
-                  </group>
-                </choice>
-              </optional>
-            </element>
+            <ref name="osnvram"/>
           </optional>
           <optional>
             <ref name="osbootkernel"/>
@@ -449,6 +425,34 @@
         </attribute>
       </optional>
       <value>hvm</value>
+    </element>
+  </define>
+
+  <define name="osnvram">
+    <element name="nvram">
+      <optional>
+        <attribute name="template">
+          <ref name="absFilePath"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="templateFormat">
+          <ref name="pflashFormatTypes"/>
+        </attribute>
+      </optional>
+      <optional>
+        <ref name="pflashFormat"/>
+      </optional>
+      <optional>
+        <choice>
+          <group>
+            <ref name="absFilePath"/>
+          </group>
+          <group>
+            <ref name="diskSource"/>
+          </group>
+        </choice>
+      </optional>
     </element>
   </define>
 
