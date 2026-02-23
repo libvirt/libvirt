@@ -5,13 +5,13 @@
 # Translators:
 # Daniel  <veillard@redhat.com>, 2011
 # Pierros Papadeas <pierros@papadeas.gr>, 2009
-# Jim Spentzos <jimspentzos2000@gmail.com>, 2025.
+# Jim Spentzos <jimspentzos2000@gmail.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2025-06-16 17:43+0000\n"
+"PO-Revision-Date: 2026-01-22 15:22+0000\n"
 "Last-Translator: Jim Spentzos <jimspentzos2000@gmail.com>\n"
 "Language-Team: Greek <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/el/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.1\n"
+"X-Generator: Weblate 5.15.2\n"
 
 msgid ""
 "\n"
@@ -37,6 +37,8 @@ msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
+"\n"
+"  ΠΕΡΙΓΡΑΦΗ\n"
 
 msgid ""
 "\n"
@@ -104,11 +106,15 @@ msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
+"\n"
+"  ΕΠΙΛΟΓΕΣ\n"
 
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
+"\n"
+"  ΣΥΝΟΨΗ\n"
 
 #, c-format
 msgid ""
@@ -291,7 +297,7 @@ msgid "    Bandwidth limit: %1$llu bytes/s (%2$-.3lf %3$s/s)"
 msgstr ""
 
 msgid "  NAME\n"
-msgstr ""
+msgstr "  ΟΝΟΜΑ\n"
 
 #, c-format
 msgid " %1$s (help keyword '%2$s')\n"
@@ -342,11 +348,11 @@ msgstr ""
 
 #, c-format
 msgid "%1$s\n"
-msgstr ""
+msgstr "%1$s\n"
 
 #, c-format
 msgid "%1$s %2$s"
-msgstr ""
+msgstr "%1$s %2$s"
 
 #, fuzzy, c-format
 msgid "%1$s %2$s '%3$s' has an unsupported type '%4$s'"
@@ -2461,9 +2467,8 @@ msgstr ""
 msgid "Can't change domain configuration in managed save state"
 msgstr ""
 
-#, fuzzy
 msgid "Can't change domain state."
-msgstr "δεν ορίζεται η κατάσταση του τομέα (domain state)"
+msgstr "Δεν είναι δυνατή η αλλαγή της κατάστασης του τομέα."
 
 #, sh-format
 msgid "Can't connect to $uri. Skipping."
@@ -39951,11 +39956,11 @@ msgid "wakeup a domain from pmsuspended state"
 msgstr ""
 
 msgid "warning"
-msgstr ""
+msgstr "προειδοποίηση"
 
 #, c-format
 msgid "warning: %1$s\n"
-msgstr ""
+msgstr "προειδοποίηση: %1$s\n"
 
 msgid "watchdog"
 msgstr ""
