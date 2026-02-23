@@ -12,13 +12,14 @@
 # Weblate <noreply-mt-weblate@weblate.org>, 2024.
 # Anders Jonsson <anders.jonsson@norsjovallen.se>, 2024.
 # Daniel Nylander <po@danielnylander.se>, 2025, 2026.
+# Luna Jernberg <droidbittin@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-18 13:58+0000\n"
-"Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
+"PO-Revision-Date: 2026-01-19 05:45+0000\n"
+"Last-Translator: Luna Jernberg <droidbittin@gmail.com>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
 "Language: sv\n"
@@ -12798,13 +12799,13 @@ msgid "NVMe namespace can't be zero"
 msgstr "NVMe-namnrymden kan inte vara noll"
 
 msgid "NVRAM is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM är inte tillåtet när laddaren är läs/skriv"
 
 msgid "NVRAM is not permitted when loader is stateless"
 msgstr "NVRAM är inte tillåtet när laddaren är tillståndslös"
 
 msgid "NVRAM template is not permitted when loader is read/write"
-msgstr ""
+msgstr "NVRAM-mall är inte tillåten när laddaren är läs/skriv"
 
 msgid "NVRAM template is not permitted when loader is stateless"
 msgstr "En NVRAM-mall är inte tillåten när laddaren är tillståndslös"
@@ -13605,7 +13606,7 @@ msgid "Only 'nmdm' and 'tcp' console types are supported"
 msgstr "Endast konsoltyperna \"nmdm\" och \"tcp\" stöds"
 
 msgid "Only 'nmdm' console type is supported on arm64"
-msgstr ""
+msgstr "Endast 'nmdm' konsol-typ stöds på arm64"
 
 msgid "Only 'random' backend model is supported"
 msgstr "Endast backend-modellen \"random\" stöds"
@@ -13774,7 +13775,7 @@ msgid ""
 msgstr "Endast en komprimeringsmetod kunde anges med parallell komprimering"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "Endast en konsol stöds på arm64"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "Endast en hostdev av modell vfio-ap stöds"
@@ -14639,7 +14640,7 @@ msgid "RNG device is missing alias"
 msgstr "RNG-enheten saknar alias"
 
 msgid "ROM loader type cannot be used as read/write"
-msgstr ""
+msgstr "ROM-laddartypen kan inte användas som läs/skriv"
 
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "ROM-trimning stöds inte när ROM är avaktiverat"
@@ -15436,7 +15437,7 @@ msgid "Secret not found: %1$s"
 msgstr "Hemligheten finns inte: %1$s"
 
 msgid "Secret value is not valid base64"
-msgstr ""
+msgstr "Hemligt värde är inte giltig base64"
 
 msgid "Secret value set\n"
 msgstr "Hemlighetens värde satt\n"
@@ -36965,7 +36966,7 @@ msgid "setting ACPI S3/S4 not supported"
 msgstr "att sätta ACPI S3/S4 stöds inte"
 
 msgid "setting IP addresses for SLIRP networking is not supported"
-msgstr ""
+msgstr "Det stöds inte att ställa in IP-adresser för SLIRP-nätverk"
 
 #, c-format
 msgid "setting MTU on interface type %1$s is not supported yet"
