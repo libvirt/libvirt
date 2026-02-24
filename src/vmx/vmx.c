@@ -1423,6 +1423,8 @@ virVMXParseConfig(virVMXContext *ctx,
         return NULL;
     }
 
+    VIR_DEBUG("VMX config:\n%s", vmx);
+
     conf = virConfReadString(vmx, VIR_CONF_FLAG_VMX_FORMAT);
 
     if (conf == NULL)
