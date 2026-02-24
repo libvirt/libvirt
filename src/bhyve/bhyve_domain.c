@@ -135,6 +135,12 @@ bhyveDomainDefPostParse(virDomainDef *def,
         }
     }
 
+    if (def->os.loader &&
+        def->os.loader->path &&
+        !def->os.loader->type) {
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+
     return 0;
 }
 
