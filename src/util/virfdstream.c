@@ -907,6 +907,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
         virFDStreamMsg *msg = NULL;
         size_t got = 0;
         size_t bsz = 0;
+        bool isEOF;
 
     more:
         while (!(msg = fdst->msg)) {
@@ -945,6 +946,7 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
             goto cleanup;
         }
 
+        isEOF = msg->stream.data.len == 0;
         bsz = msg->stream.data.len - msg->stream.data.offset;
         if (nbytes < bsz)
             bsz = nbytes;
@@ -956,12 +958,24 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
         nbytes -= bsz;
 
         msg->stream.data.offset += bsz;
-        if (msg->stream.data.offset == msg->stream.data.len) {
+        /* If the stream msg is fully consumed, then remove
+         * it from the queue.
+         *
+         * Exception: if this is the second time around the
+         * loop, and the msg indicated an EOF, we must leave
+         * it on the queue so a subsequent read sees the
+         * ret == 0 EOF condition
+         */
+        if (msg->stream.data.offset == msg->stream.data.len &&
+            (!isEOF || got == 0)) {
             virFDStreamMsgQueuePop(fdst, fdst->fd, "pipe");
             virFDStreamMsgFree(msg);
         }
 
-        if (nbytes > 0) {
+        /* If we didn't just see EOF and can read more into
+         * 'bytes' then retry the loop
+         */
+        if (nbytes > 0 && !isEOF) {
             goto more;
         }
         ret = got;
