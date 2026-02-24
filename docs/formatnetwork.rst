@@ -664,6 +664,12 @@ network is running, the configuration for the system-defined route should be
 modified to have a higher metric, and the route on the virtual network given a
 lower metric (for example, the default metric of "1").
 
+Only the ``gateway`` attribute is mandatory for a ``route``
+element. If ``address`` is unspecified, it is assumed to be "0.0.0.0"
+(or "::" for IPv6), and if neither prefix nor netmask is specified, a
+prefix of "0" is assumed (thus, a ``route`` with only gateway is
+essentially specifying the "default route").
+
 ::
 
    ...

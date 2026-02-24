@@ -50,15 +50,6 @@ virNetDevIPRouteCreate(const char *errorDetail,
     def->metric = metric;
     def->has_metric = hasMetric;
 
-    /* Note: both network and gateway addresses must be specified */
-
-    if (!address) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("%1$s: Missing required address attribute in route definition"),
-                       errorDetail);
-        return NULL;
-    }
-
     if (!gateway) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("%1$s: Missing required gateway attribute in route definition"),
@@ -66,17 +57,17 @@ virNetDevIPRouteCreate(const char *errorDetail,
         return NULL;
     }
 
-    if (virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("%1$s: Bad network address '%2$s' in route definition"),
-                       errorDetail, address);
-        return NULL;
-    }
-
     if (virSocketAddrParse(&def->gateway, gateway, AF_UNSPEC) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("%1$s: Bad gateway address '%2$s' in route definition"),
                        errorDetail, gateway);
+        return NULL;
+    }
+
+    if (address && virSocketAddrParse(&def->address, address, AF_UNSPEC) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("%1$s: Bad network address '%2$s' in route definition"),
+                       errorDetail, address);
         return NULL;
     }
 
@@ -127,7 +118,8 @@ virNetDevIPRouteCreate(const char *errorDetail,
             return NULL;
         }
     } else if (STREQ(def->family, "ipv6")) {
-        if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6)) {
+        if (!(VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET6) ||
+              VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_UNSPEC))) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("%1$s: ipv6 family specified for non-IPv6 address '%2$s' in route definition"),
                            errorDetail, address);
@@ -158,28 +150,31 @@ virNetDevIPRouteCreate(const char *errorDetail,
         return NULL;
     }
 
-    /* make sure the address is a network address */
-    if (netmask) {
-        if (virSocketAddrMask(&def->address, &def->netmask, &testAddr) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in route definition"),
-                           errorDetail, address, netmask);
+    if (address) {
+        /* make sure the address is a network address */
+
+        if (netmask) {
+            if (virSocketAddrMask(&def->address, &def->netmask, &testAddr) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("%1$s: Error converting address '%2$s' with netmask '%3$s' to network-address in route definition"),
+                               errorDetail, address, netmask);
+                return NULL;
+            }
+        } else {
+            if (virSocketAddrMaskByPrefix(&def->address,
+                                          def->prefix, &testAddr) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route definition"),
+                               errorDetail, address, def->prefix);
+                return NULL;
+            }
+        }
+        if (!virSocketAddrEqual(&def->address, &testAddr)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("%1$s: Address '%2$s' in route definition is not a network address"),
+                           errorDetail, address);
             return NULL;
         }
-    } else {
-        if (virSocketAddrMaskByPrefix(&def->address,
-                                      def->prefix, &testAddr) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%1$s: Error converting address '%2$s' with prefix %3$u to network-address in route definition"),
-                           errorDetail, address, def->prefix);
-            return NULL;
-        }
-    }
-    if (!virSocketAddrEqual(&def->address, &testAddr)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("%1$s: Address '%2$s' in route definition is not a network address"),
-                       errorDetail, address);
-        return NULL;
     }
 
     return g_steal_pointer(&def);
@@ -229,10 +224,11 @@ virNetDevIPRouteFormat(virBuffer *buf,
     if (def->family)
         virBufferAsprintf(buf, " family='%s'", def->family);
 
-    if (!(address = virSocketAddrFormat(&def->address)))
-        return -1;
-    virBufferAsprintf(buf, " address='%s'", address);
-
+    if (VIR_SOCKET_ADDR_VALID(&def->address)) {
+        if (!(address = virSocketAddrFormat(&def->address)))
+            return -1;
+        virBufferAsprintf(buf, " address='%s'", address);
+    }
     if (VIR_SOCKET_ADDR_VALID(&def->netmask)) {
         if (!(netmask = virSocketAddrFormat(&def->netmask)))
             return -1;
