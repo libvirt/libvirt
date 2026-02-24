@@ -961,10 +961,10 @@ static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
             virFDStreamMsgFree(msg);
         }
 
-        ret = got;
         if (nbytes > 0) {
             goto more;
         }
+        ret = got;
     } else {
      retry:
         ret = read(fdst->fd, bytes, nbytes);
