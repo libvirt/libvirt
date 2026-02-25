@@ -22615,14 +22615,14 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
     }
     if (src->pt != dst->pt) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device passthrough '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->pt),
                        virTristateSwitchTypeToString(src->pt));
         return false;
     }
     if (src->xtsup != dst->xtsup) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device xtsup '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->xtsup),
                        virTristateSwitchTypeToString(src->xtsup));
         return false;
