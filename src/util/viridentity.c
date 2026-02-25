@@ -328,14 +328,14 @@ virIdentity *virIdentityGetSystem(void)
         return NULL;
 
     if (!(username = virGetUserName(geteuid())))
-        return ret;
+        return NULL;
     if (virIdentitySetUserName(ret, username) < 0)
         return NULL;
     if (virIdentitySetUNIXUserID(ret, getuid()) < 0)
         return NULL;
 
     if (!(groupname = virGetGroupName(getegid())))
-        return ret;
+        return NULL;
     if (virIdentitySetGroupName(ret, groupname) < 0)
         return NULL;
     if (virIdentitySetUNIXGroupID(ret, getgid()) < 0)
