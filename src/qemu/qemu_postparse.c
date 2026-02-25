@@ -797,7 +797,7 @@ static bool
 qemuDomainNeedsIOMMUWithEIM(const virDomainDef *def)
 {
     return ARCH_IS_X86(def->os.arch) &&
-           virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM &&
+           virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_X2APIC &&
            qemuDomainIsQ35(def);
 }
 
@@ -1204,7 +1204,7 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
             addImplicitSATA = true;
             addITCOWatchdog = true;
 
-            if (virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
+            if (virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_X2APIC) {
                 addIOMMU = true;
             }
         }

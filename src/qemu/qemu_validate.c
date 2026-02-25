@@ -920,17 +920,18 @@ qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCaps *qemuCaps)
     }
 
     if (ARCH_IS_X86(def->os.arch) &&
-        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_EIM) {
+        virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_X2APIC) {
         if (!qemuDomainIsQ35(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("more than %1$d vCPUs are only supported on q35-based machine types"),
-                           QEMU_MAX_VCPUS_WITHOUT_EIM);
+                           QEMU_MAX_VCPUS_WITHOUT_X2APIC);
             return -1;
         }
-        if (!def->iommus || def->iommus[0]->eim != VIR_TRISTATE_SWITCH_ON) {
+        if (!def->iommus || (def->iommus[0]->eim != VIR_TRISTATE_SWITCH_ON &&
+            def->iommus[0]->xtsup != VIR_TRISTATE_SWITCH_ON)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("more than %1$d vCPUs require extended interrupt mode enabled on the iommu device"),
-                           QEMU_MAX_VCPUS_WITHOUT_EIM);
+                           _("more than %1$d vCPUs require EIM or XTSup mode enabled on the iommu device"),
+                           QEMU_MAX_VCPUS_WITHOUT_X2APIC);
             return -1;
         }
     }
