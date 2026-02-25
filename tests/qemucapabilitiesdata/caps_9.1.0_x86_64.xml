@@ -205,6 +205,7 @@
   <flag name='acpi-generic-initiator'/>
   <flag name='virtio-iommu.aw-bits'/>
   <flag name='iommufd'/>
+  <flag name='amd-iommu.xtsup'/>
   <version>9001000</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v9.1.0</package>

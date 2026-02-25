@@ -794,7 +794,7 @@ qemuDomainPstoreDefPostParse(virDomainPstoreDef *pstore,
 
 
 static bool
-qemuDomainNeedsIOMMUWithEIM(const virDomainDef *def)
+qemuDomainNeedsIOMMUWithx2APIC(const virDomainDef *def)
 {
     return ARCH_IS_X86(def->os.arch) &&
            virDomainDefGetVcpusMax(def) > QEMU_MAX_VCPUS_WITHOUT_X2APIC &&
@@ -808,22 +808,34 @@ qemuDomainIOMMUDefPostParse(virDomainIOMMUDef *iommu,
                             virQEMUCaps *qemuCaps,
                             unsigned int parseFlags)
 {
-    /* In case domain has huge number of vCPUS and Extended Interrupt Mode
-     * (EIM) is not explicitly turned off, let's enable it. If we didn't then
+    /* In case domain has huge number of vCPUS and x2APIC (intel EIM or AMD
+     * XTSUP) is not explicitly turned off, let's enable it. If we didn't then
      * guest will have troubles with interrupts. */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE &&
-        qemuDomainNeedsIOMMUWithEIM(def) &&
-        iommu && iommu->model == VIR_DOMAIN_IOMMU_MODEL_INTEL) {
+        qemuDomainNeedsIOMMUWithx2APIC(def) && iommu) {
+        if (iommu->model == VIR_DOMAIN_IOMMU_MODEL_INTEL) {
+            /* eim requires intremap. */
+            if (iommu->intremap == VIR_TRISTATE_SWITCH_ABSENT &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
+                iommu->intremap = VIR_TRISTATE_SWITCH_ON;
+            }
 
-        /* eim requires intremap. */
-        if (iommu->intremap == VIR_TRISTATE_SWITCH_ABSENT &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
-            iommu->intremap = VIR_TRISTATE_SWITCH_ON;
+            if (iommu->eim == VIR_TRISTATE_SWITCH_ABSENT &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM)) {
+                iommu->eim = VIR_TRISTATE_SWITCH_ON;
+            }
         }
 
-        if (iommu->eim == VIR_TRISTATE_SWITCH_ABSENT &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM)) {
-            iommu->eim = VIR_TRISTATE_SWITCH_ON;
+        if (iommu->model == VIR_DOMAIN_IOMMU_MODEL_AMD) {
+            if (iommu->intremap == VIR_TRISTATE_SWITCH_ABSENT &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
+                iommu->intremap = VIR_TRISTATE_SWITCH_ON;
+            }
+
+            if (iommu->xtsup == VIR_TRISTATE_SWITCH_ABSENT &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_AMD_IOMMU_XTSUP)) {
+                iommu->xtsup = VIR_TRISTATE_SWITCH_ON;
+            }
         }
     }
 
@@ -1544,7 +1556,7 @@ qemuDomainDefEnableDefaultFeatures(virDomainDef *def,
      * modified so change it now. */
     if (def->iommus && def->iommus[0]->pci_bus < 0 &&
         (def->iommus[0]->intremap == VIR_TRISTATE_SWITCH_ON ||
-         qemuDomainNeedsIOMMUWithEIM(def)) &&
+         qemuDomainNeedsIOMMUWithx2APIC(def)) &&
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_DOMAIN_IOAPIC_NONE) {
         def->features[VIR_DOMAIN_FEATURE_IOAPIC] = VIR_DOMAIN_IOAPIC_QEMU;
     }

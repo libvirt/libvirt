@@ -201,6 +201,7 @@
   <flag name='nvme-ns'/>
   <flag name='amd-iommu'/>
   <flag name='usb-bot'/>
+  <flag name='amd-iommu.xtsup'/>
   <version>8002000</version>
   <microcodeVersion>43100246</microcodeVersion>
   <package>v8.2.0</package>

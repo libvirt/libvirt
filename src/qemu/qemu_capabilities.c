@@ -763,6 +763,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "iommufd", /* QEMU_CAPS_OBJECT_IOMMUFD */
               "uefi-vars", /* QEMU_CAPS_DEVICE_UEFI_VARS */
               "query-block-flat", /* QEMU_CAPS_QUERY_BLOCK_FLAT */
+              "amd-iommu.xtsup", /* QEMU_CAPS_AMD_IOMMU_XTSUP */
     );
 
 
@@ -1633,6 +1634,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlkCCW[] =
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsAMDIOMMU[] = {
     { "pci-id", QEMU_CAPS_AMD_IOMMU_PCI_ID, NULL },
+    { "xtsup", QEMU_CAPS_AMD_IOMMU_XTSUP, NULL },
 };
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */

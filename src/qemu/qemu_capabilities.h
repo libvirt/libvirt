@@ -737,6 +737,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_IOMMUFD, /* -object iommufd */
     QEMU_CAPS_DEVICE_UEFI_VARS, /* -device uefi-vars-{x64,sysbus} */
     QEMU_CAPS_QUERY_BLOCK_FLAT, /* 'query-block' command supports 'flat' */
+    QEMU_CAPS_AMD_IOMMU_XTSUP, /* amd-iommu.xtsup */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
