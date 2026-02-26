@@ -141,6 +141,8 @@ struct pciDevice {
     int device;
     int klass;
     int iommuGroup;
+    int sriovTotalvfs;
+    unsigned int virtfnCount;
     const char *physfn;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
     struct pciVPD vpd;
@@ -440,6 +442,38 @@ pci_device_create_iommu(const struct pciDevice *dev,
 
 
 static void
+register_vf(struct pciDevice *vf)
+{
+    struct pciDeviceAddress pfAddr;
+    struct pciDevice *pf;
+    g_autofree char *relPath = NULL;
+    g_autofree char *pfPath = NULL;
+    g_autofree char *virtfnName = NULL;
+
+    if (pci_address_parse(&pfAddr, vf->physfn) < 0)
+        ABORT("Unable to parse PCI address %s", vf->physfn);
+
+    if (!(pf = pci_device_find_by_id(&pfAddr))) {
+        ABORT("Unable to find PF for VF %s", vf->physfn);
+    }
+
+    relPath = g_strdup_printf("../" ADDR_STR_FMT,
+                              vf->addr.domain,
+                              vf->addr.bus,
+                              vf->addr.device,
+                              vf->addr.function);
+
+    virtfnName = g_strdup_printf("virtfn%u", pf->virtfnCount);
+
+    pfPath = pci_device_get_path(pf, NULL, true);
+
+    make_symlink(pfPath, virtfnName, relPath);
+
+    pf->virtfnCount++;
+}
+
+
+static void
 pci_device_new_from_stub(const struct pciDevice *data)
 {
     struct pciDevice *dev;
@@ -537,6 +571,14 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     make_symlink(devsympath, devid, tmp);
 
+    if (dev->sriovTotalvfs) {
+        if (g_snprintf(tmp, sizeof(tmp), "%d\n", dev->sriovTotalvfs) < 0) {
+            ABORT("@tmp overflow");
+        }
+
+        make_file(devpath, "sriov_totalvfs", tmp, -1);
+    }
+
     if (dev->physfn) {
         if (g_snprintf(tmp, sizeof(tmp),
                        "%s%s/devices/%s", fakerootdir,
@@ -544,6 +586,8 @@ pci_device_new_from_stub(const struct pciDevice *data)
             ABORT("@tmp overflow");
         }
         make_symlink(devpath, "physfn", tmp);
+
+        register_vf(dev);
     }
 
     if (dev->vpd.data && dev->vpd.vpd_len)
@@ -1043,12 +1087,14 @@ init_env(void)
     MAKE_PCI_DEVICE("0000:0a:01.0", 0x8086, 0x0047, 8);
     MAKE_PCI_DEVICE("0000:0a:02.0", 0x8286, 0x0048, 8);
     MAKE_PCI_DEVICE("0000:0a:03.0", 0x8386, 0x0048, 8);
-    MAKE_PCI_DEVICE("0000:06:12.0", 0x8086, 0x0047, 9);
+    MAKE_PCI_DEVICE("0000:06:12.0", 0x8086, 0x0047, 9,
+                    .sriovTotalvfs = 7);
     MAKE_PCI_DEVICE("0000:06:12.1", 0x8086, 0x0047, 10,
                     .physfn = "0000:06:12.0"); /* Virtual Function */
     MAKE_PCI_DEVICE("0000:06:12.2", 0x8086, 0x0047, 11,
                     .physfn = "0000:06:12.0"); /* Virtual Function */
-    MAKE_PCI_DEVICE("0021:de:1f.0", 0x8086, 0x0047, 12);
+    MAKE_PCI_DEVICE("0021:de:1f.0", 0x8086, 0x0047, 12,
+                    .sriovTotalvfs = 7);
     MAKE_PCI_DEVICE("0021:de:1f.1", 0x8086, 0x0047, 13,
                     .physfn = "0021:de:1f.0"); /* Virtual Function */
 
