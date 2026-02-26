@@ -3517,6 +3517,20 @@ void virDomainVideoDefFree(virDomainVideoDef *def)
 }
 
 
+static int
+virDomainHostdevDefPrivateDataNew(virDomainHostdevDef *def,
+                                  virDomainXMLOption *xmlopt)
+{
+    if (!xmlopt || !xmlopt->privateData.hostdevNew)
+        return 0;
+
+    if (!(def->privateData = xmlopt->privateData.hostdevNew()))
+        return -1;
+
+    return 0;
+}
+
+
 virDomainHostdevDef *
 virDomainHostdevDefNew(virDomainXMLOption *xmlopt)
 {
@@ -3526,8 +3540,7 @@ virDomainHostdevDefNew(virDomainXMLOption *xmlopt)
 
     def->info = g_new0(virDomainDeviceInfo, 1);
 
-    if (xmlopt && xmlopt->privateData.hostdevNew &&
-        !(def->privateData = xmlopt->privateData.hostdevNew())) {
+    if (virDomainHostdevDefPrivateDataNew(def, xmlopt) < 0) {
         VIR_FREE(def->info);
         VIR_FREE(def);
         return NULL;
@@ -9739,6 +9752,9 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
         virDomainHostdevDef *hostdev = &actual->data.hostdev.def;
         int type;
 
+        if (virDomainHostdevDefPrivateDataNew(hostdev, xmlopt) < 0)
+            goto error;
+
         hostdev->parentnet = parent;
         hostdev->info = &parent->info;
         /* The helper function expects type to already be found and
@@ -10431,6 +10447,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     case VIR_DOMAIN_NET_TYPE_HOSTDEV: {
         g_autofree char *addrtype = virXPathString("string(./source/address/@type)", ctxt);
         int type;
+
+        if (virDomainHostdevDefPrivateDataNew(&def->data.hostdev.def, xmlopt) < 0)
+            return NULL;
 
         def->data.hostdev.def.parentnet = def;
         def->data.hostdev.def.info = &def->info;
