@@ -33,6 +33,28 @@ virNetDevSysfsFile(char **pf_sysfs_device_link,
                                             NET_DEV_TEST_DATA_PREFIX, ifname, file);
     return 0;
 }
+
+
+int
+virNetDevSaveNetConfig(const char *linkdev G_GNUC_UNUSED,
+                       int vf G_GNUC_UNUSED,
+                       const char *stateDir G_GNUC_UNUSED,
+                       bool saveVlan G_GNUC_UNUSED)
+{
+    return 0;
+}
+
+
+int
+virNetDevSetNetConfig(const char *linkdev G_GNUC_UNUSED,
+                      int vf G_GNUC_UNUSED,
+                      const virMacAddr *adminMAC G_GNUC_UNUSED,
+                      const virNetDevVlan *vlan G_GNUC_UNUSED,
+                      const virMacAddr *MAC G_GNUC_UNUSED,
+                      bool setVLan G_GNUC_UNUSED)
+{
+    return 0;
+}
 #else
 /* Nothing to override on non-__linux__ platforms */
 #endif

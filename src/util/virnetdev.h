@@ -248,7 +248,8 @@ int virNetDevGetVirtualFunctions(const char *pfname,
 int virNetDevSaveNetConfig(const char *linkdev, int vf,
                            const char *stateDir,
                            bool saveVlan)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT
+    ATTRIBUTE_MOCKABLE;
 
 int
 virNetDevReadNetConfig(const char *linkdev, int vf,
@@ -265,7 +266,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
                       const virNetDevVlan *vlan,
                       const virMacAddr *MAC,
                       bool setVLan)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT ATTRIBUTE_MOCKABLE;
 
 int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
                                     int *vf)
