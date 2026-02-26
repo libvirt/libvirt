@@ -548,7 +548,7 @@ hypervSerializeEmbeddedParam(hypervParam *p, const char *resourceUri,
     hypervWmiClassInfo *classInfo = p->embedded.info;
     g_autofree virHashKeyValuePair *items = NULL;
     hypervCimType *property = NULL;
-    ssize_t numKeys = -1;
+    size_t numKeys = 0;
     int len = 0, i = 0;
 
     if (!(xmlNodeParam = ws_xml_add_child(*methodNode, resourceUri, p->embedded.name,
@@ -582,8 +582,7 @@ hypervSerializeEmbeddedParam(hypervParam *p, const char *resourceUri,
     }
 
     /* retrieve parameters out of hash table */
-    numKeys = virHashSize(p->embedded.table);
-    items = virHashGetItems(p->embedded.table, NULL, false);
+    items = virHashGetItems(p->embedded.table, &numKeys, false);
     if (!items) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not read embedded param hash table"));
