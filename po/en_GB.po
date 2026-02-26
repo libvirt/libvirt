@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-08 15:33+0000\n"
+"PO-Revision-Date: 2026-02-26 18:58+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.16.1\n"
 
 msgid ""
 "\n"
@@ -1424,6 +1424,8 @@ msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 msgstr ""
+"'manual' disk snapshot mode requires explicit quiescing "
+"(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "'manual' memory snapshot mode not supported"
@@ -2831,16 +2833,17 @@ msgstr "Can't find boot device of type: %1$s, index: %2$d"
 
 #, c-format
 msgid "Can't find disk '%1$s' in domain definition"
-msgstr ""
+msgstr "Can't find disk '%1$s' in domain definition"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't find network boot device for index: %1$d"
-msgstr "cannot modify network device boot index setting"
+msgstr "Can't find network boot device for index: %1$d"
 
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 msgstr ""
+"Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %1$s"
 
 msgid "Can't initialize access manager"
 msgstr "Can't initialise access manager"
@@ -2853,9 +2856,9 @@ msgstr "Can't load config file: %1$s: %2$s"
 msgid "Can't modify device type '%1$s'"
 msgstr "Can't modify device type '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse barrier from vzlist output '%1$s'"
-msgstr "Can't parse prlctl output"
+msgstr "Can't parse barrier from vzlist output '%1$s'"
 
 #, fuzzy, c-format
 msgid "Can't parse limit from vzlist output '%1$s'"
