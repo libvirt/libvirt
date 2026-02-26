@@ -41,6 +41,13 @@ v12.1.0 (unreleased)
     the `guest firmware configuration <formatdomain.html#guest-firmware>`__
     section of the documentation.
 
+  * hyperv: improve API coverage for the hyperv driver
+
+    The `virDomainInterfaceAddresses()` and `virDomainGetBlockInfo()` APIs are
+    now supported by the hyperv driver. In addition, the domain xml for hyperv
+    domains will indicate via firmware features whether secure boot is enabled.
+    It also honors these firmware features when creating new domains.
+
 * **Improvements**
 
 * **Bug fixes**
