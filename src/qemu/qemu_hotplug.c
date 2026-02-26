@@ -1674,14 +1674,15 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if (teardownmemlock && qemuDomainAdjustMaxMemLock(vm) < 0)
         VIR_WARN("Unable to reset maximum locked memory on hotplug fail");
 
-    if (removeiommufd) {
-        qemuDomainObjEnterMonitor(vm);
+    qemuDomainObjEnterMonitor(vm);
+
+    if (removeiommufd)
         ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
-        qemuDomainObjExitMonitor(vm);
-    }
 
     qemuFDPassDirectTransferMonitorRollback(hostdevPriv->vfioDeviceFd, priv->mon);
     qemuFDPassDirectTransferMonitorRollback(priv->iommufd, priv->mon);
+
+    qemuDomainObjExitMonitor(vm);
 
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, info);
