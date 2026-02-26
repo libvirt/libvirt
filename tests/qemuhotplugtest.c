@@ -697,6 +697,10 @@ mymain(void)
     DO_TEST_DETACH("ppc64", "pseries-base-live", "hostdev-pci", false, false,
                    "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
 
+    DO_TEST_ATTACH("x86_64", "base-live", "interface-hostdev", false, true,
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("x86_64", "base-live", "interface-hostdev", false, false,
+                   "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
     DO_TEST_ATTACH("x86_64", "base-live", "interface-vdpa", false, true,
                    "query-fdsets", "{\"return\":[{\"fdset-id\":99999}]}",
                    "add-fd", "{ \"return\": { \"fdset-id\": 1, \"fd\": 95 }}",
@@ -802,4 +806,5 @@ VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("virpci"),
                       VIR_TEST_MOCK("domaincaps"),
                       VIR_TEST_MOCK("virprocess"),
-                      VIR_TEST_MOCK("qemuhotplug"));
+                      VIR_TEST_MOCK("qemuhotplug"),
+                      VIR_TEST_MOCK("virnetdev"));
