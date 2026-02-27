@@ -2953,6 +2953,13 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
         return NULL;
     }
 
+    /* abort if a domain with this name already exists */
+    if (hypervGetVirtualSystemByName(priv, def->name, &existing) == 0 &&
+        existing != NULL) {
+        virReportError(VIR_ERR_DOM_EXIST, "%s", def->name);
+        return NULL;
+    }
+
     /* prepare params: only set the VM's name for now */
     params = hypervCreateInvokeParamsList("DefineSystem",
                                           MSVM_VIRTUALSYSTEMMANAGEMENTSERVICE_SELECTOR,
