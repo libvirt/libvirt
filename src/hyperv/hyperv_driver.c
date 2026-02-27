@@ -2925,7 +2925,9 @@ hypervDomainUndefine(virDomainPtr domain)
 
 
 static virDomainPtr
-hypervDomainDefineXML(virConnectPtr conn, const char *xml)
+hypervDomainDefineXMLFlags(virConnectPtr conn,
+                           const char *xml,
+                           unsigned int flags)
 {
     hypervPrivate *priv = conn->privateData;
     g_autofree char *hostname = hypervConnectGetHostname(conn);
@@ -2936,10 +2938,14 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     g_autoptr(Msvm_ComputerSystem) existing = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN];
     size_t i = 0;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
-    /* parse xml */
-    def = virDomainDefParseString(xml, priv->xmlopt, NULL,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+    virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
+
+    if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
+
+    def = virDomainDefParseString(xml, priv->xmlopt, NULL, parse_flags);
 
     if (!def)
         goto error;
@@ -3038,6 +3044,14 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
         hypervDomainUndefine(domain);
 
     return NULL;
+}
+
+
+static virDomainPtr
+hypervDomainDefineXML(virConnectPtr conn,
+                      const char *xml)
+{
+    return hypervDomainDefineXMLFlags(conn, xml, 0);
 }
 
 
@@ -4106,6 +4120,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainCreate = hypervDomainCreate, /* 0.9.5 */
     .domainCreateWithFlags = hypervDomainCreateWithFlags, /* 0.9.5 */
     .domainDefineXML = hypervDomainDefineXML, /* 7.1.0 */
+    .domainDefineXMLFlags = hypervDomainDefineXMLFlags, /* 12.2.0 */
     .domainUndefine = hypervDomainUndefine, /* 7.1.0 */
     .domainUndefineFlags = hypervDomainUndefineFlags, /* 7.1.0 */
     .domainAttachDevice = hypervDomainAttachDevice, /* 7.1.0 */
