@@ -41,7 +41,6 @@
 #include "virscsivhost.h"
 #include "virstring.h"
 #include "virutil.h"
-#include "viriommufd.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -1295,17 +1294,6 @@ virSecurityDACSetHostdevLabel(virSecurityManager *mgr,
                                                         &cbdata) < 0) {
                     return -1;
                 }
-            } else {
-                g_autofree char *vfiofdDev = NULL;
-
-                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    return -1;
-
-                if (virSecurityDACSetHostdevLabelHelper(vfiofdDev, false, &cbdata) < 0)
-                    return -1;
-
-                if (virSecurityDACSetHostdevLabelHelper(VIR_IOMMU_DEV_PATH, false, &cbdata) < 0)
-                    return -1;
             }
         } else {
             if (virPCIDeviceFileIterate(pci,
@@ -1474,21 +1462,6 @@ virSecurityDACRestoreHostdevLabel(virSecurityManager *mgr,
 
                 if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
                                                            vfioGroupDev, false) < 0) {
-                    return -1;
-                }
-            } else {
-                g_autofree char *vfiofdDev = NULL;
-
-                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    return -1;
-
-                if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
-                                                           vfiofdDev, false) < 0) {
-                    return -1;
-                }
-
-                if (virSecurityDACRestoreFileLabelInternal(mgr, NULL,
-                                                           VIR_IOMMU_DEV_PATH, false) < 0) {
                     return -1;
                 }
             }

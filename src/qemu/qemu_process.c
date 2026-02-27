@@ -7728,11 +7728,14 @@ int
 qemuProcessOpenIommuFd(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int iommufd;
+    VIR_AUTOCLOSE iommufd = -1;
 
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
     if ((iommufd = virIOMMUFDOpenDevice()) < 0)
+        return -1;
+
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
         return -1;
 
     priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
@@ -7749,14 +7752,19 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
  * Returns: 0 on success, -1 on failure
  */
 int
-qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev)
+qemuProcessOpenVfioDeviceFd(virDomainObj *vm,
+                            virDomainHostdevDef *hostdev)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
     virDomainHostdevSubsysPCI *pci = &hostdev->source.subsys.u.pci;
     g_autofree char *name = g_strdup_printf("hostdev-%s-fd", hostdev->info->alias);
-    int vfioDeviceFd;
+    VIR_AUTOCLOSE vfioDeviceFd = -1;
 
     if ((vfioDeviceFd = virPCIDeviceOpenVfioFd(&pci->addr)) < 0)
+        return -1;
+
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, vfioDeviceFd) < 0)
         return -1;
 
     hostdevPriv->vfioDeviceFd = qemuFDPassDirectNew(name, &vfioDeviceFd);
@@ -7776,7 +7784,7 @@ qemuProcessPrepareHostHostdev(virDomainObj *vm)
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
                 /* Open VFIO device FD */
-                if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
+                if (qemuProcessOpenVfioDeviceFd(vm, hostdev) < 0)
                     return -1;
             }
             break;

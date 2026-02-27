@@ -45,7 +45,6 @@
 #include "virstring.h"
 #include "virscsi.h"
 #include "virmdev.h"
-#include "viriommufd.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -855,17 +854,6 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
                     return -1;
 
                 if (AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr) < 0)
-                    return -1;
-            } else {
-                g_autofree char *vfiofdDev = NULL;
-
-                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    return -1;
-
-                if (AppArmorSetSecurityPCILabel(pci, vfiofdDev, ptr) < 0)
-                    return -1;
-
-                if (AppArmorSetSecurityPCILabel(pci, VIR_IOMMU_DEV_PATH, ptr) < 0)
                     return -1;
             }
         } else {

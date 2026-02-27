@@ -1613,7 +1613,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     }
 
     if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
-        if (qemuProcessOpenVfioDeviceFd(hostdev) < 0)
+        if (qemuProcessOpenVfioDeviceFd(vm, hostdev) < 0)
             goto error;
 
         if (!priv->iommufdState) {

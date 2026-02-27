@@ -41,7 +41,6 @@
 #include "virconf.h"
 #include "virtpm.h"
 #include "virstring.h"
-#include "viriommufd.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -2267,17 +2266,6 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManager *mgr,
                                                             &data) < 0) {
                     return -1;
                 }
-            } else {
-                g_autofree char *vfiofdDev = NULL;
-
-                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    return -1;
-
-                if (virSecuritySELinuxSetHostdevLabelHelper(vfiofdDev, false, &data) < 0)
-                    return -1;
-
-                if (virSecuritySELinuxSetHostdevLabelHelper(VIR_IOMMU_DEV_PATH, false, &data) < 0)
-                    return -1;
             }
         } else {
             if (virPCIDeviceFileIterate(pci, virSecuritySELinuxSetPCILabel, &data) < 0)
@@ -2518,17 +2506,6 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManager *mgr,
                     return -1;
 
                 if (virSecuritySELinuxRestoreFileLabel(mgr, vfioGroupDev, false, false) < 0)
-                    return -1;
-            } else {
-                g_autofree char *vfiofdDev = NULL;
-
-                if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    return -1;
-
-                if (virSecuritySELinuxRestoreFileLabel(mgr, vfiofdDev, false, false) < 0)
-                    return -1;
-
-                if (virSecuritySELinuxRestoreFileLabel(mgr, VIR_IOMMU_DEV_PATH, false, false) < 0)
                     return -1;
             }
         } else {

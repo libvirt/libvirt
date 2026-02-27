@@ -136,7 +136,8 @@ int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
 
 int qemuProcessOpenIommuFd(virDomainObj *vm);
 
-int qemuProcessOpenVfioDeviceFd(virDomainHostdevDef *hostdev);
+int qemuProcessOpenVfioDeviceFd(virDomainObj *vm,
+                                virDomainHostdevDef *hostdev);
 
 int qemuProcessPrepareHost(virQEMUDriver *driver,
                            virDomainObj *vm,
