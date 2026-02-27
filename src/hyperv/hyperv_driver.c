@@ -2933,6 +2933,8 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
     virDomainPtr domain = NULL;
     g_autoptr(hypervInvokeParamsList) params = NULL;
     g_autoptr(GHashTable) defineSystemParam = NULL;
+    g_autoptr(Msvm_ComputerSystem) existing = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
     size_t i = 0;
 
     /* parse xml */
@@ -2943,13 +2945,11 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
         goto error;
 
     /* abort if a domain with this UUID already exists */
-    if ((domain = hypervDomainLookupByUUID(conn, def->uuid))) {
-        char uuid_string[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(domain->uuid, uuid_string);
-        virReportError(VIR_ERR_DOM_EXIST, _("Domain already exists with UUID '%1$s'"), uuid_string);
-
-        // Don't use the 'exit' label, since we don't want to delete the existing domain.
-        virObjectUnref(domain);
+    virUUIDFormat(def->uuid, uuid_string);
+    if (hypervMsvmComputerSystemFromUUID(priv, uuid_string, &existing) == 0 && existing != NULL) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Domain '%1$s' already exists, editing existing domains is not supported yet"),
+                       uuid_string);
         return NULL;
     }
 
