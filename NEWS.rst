@@ -50,7 +50,55 @@ v12.1.0 (unreleased)
 
 * **Improvements**
 
+  * Introduce granule attribute for virtio-iommu
+
+    In case when guest page size doesn't match the host page size (typically
+    aarch64) the ``virtio-iommu`` needs to know the guest page size so it can
+    allocate memory aligned to guest page size.
+
+  * Parse hyperv features even for host-model
+
+    Two releases ago, in v11.9.0 new ``host-model`` mode for Hyper-V
+    enlightenments was introduced. Starting with this release, users can
+    additionally override the defaults that are picked when domain is started
+    and features are expanded.
+
 * **Bug fixes**
+
+  * Fix build with remote driver disabled
+
+    Some parts of code were wrongly annotated as depended on remote driver.
+    But they were used even from client side drivers. This is now fixed and
+    libvirt builds properly even with remote driver disabled.
+
+  * Various fixes to libvirt-guests.sh
+
+    Firstly, the exit code of various commands was ignored (which may lead the
+    script to wrongly determine persistent/transient domain state, for
+    instance). Secondly, due to logical error, the script might have
+    incorrectly asses state a domain is in.
+
+  * AppArmor: Ask for no deny rule for readonly disk elements
+
+    For read only disks, libvirt created an AppArmor profile which disallowed
+    any future write rules. But when doing a blockcommit, libvirt needs to
+    allow hypervisor to write to even readonly disks. The rule in the profile
+    was changed so that future write rules can be added, temporarily.
+
+  * esx: Allow connecting to IPv6 server
+
+    Due to a bug in our code, if an IPv6 address was provided in connection
+    URI, libvirt would fail to connect to VMWare server. This is now fixed.
+
+  * qemu: Use device alias if interface has no name
+
+    The ``virDomainInterfaceAddresses()`` API (or ``virsh domifaddr``) returns
+    an array interfaces among with their addresses. But some interface names
+    might be unknown, for instance if the API is told to parse host's ARP table
+    then PCI assigned NICs or slirp/passt lack interface name. If that's the
+    case, let the API return domain's ``<interface/>`` alias.
+
+  * bhyve: hyperv: Various memory leak fixes
 
 
 v12.0.0 (2026-01-15)
