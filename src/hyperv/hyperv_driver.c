@@ -2939,7 +2939,7 @@ hypervDomainDefineXML(virConnectPtr conn, const char *xml)
 
     /* parse xml */
     def = virDomainDefParseString(xml, priv->xmlopt, NULL,
-                                  1 << VIR_DOMAIN_VIRT_HYPERV | VIR_DOMAIN_XML_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
 
     if (!def)
         goto error;
