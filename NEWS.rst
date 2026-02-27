@@ -48,6 +48,17 @@ v12.1.0 (unreleased)
     domains will indicate via firmware features whether secure boot is enabled.
     It also honors these firmware features when creating new domains.
 
+  * bhyve: Add support for vCPU pinning configuration
+
+    Bhyve guests can now have vCPU pinning configured::
+
+     <cputune>
+       <vcpupin vcpu="0" cpuset="1,2,3"/>
+     </cputune>
+
+    Additionally, the ``domainGetVcpuPinInfo`` API is implemented for
+    querying vCPU pinning information.
+
 * **Improvements**
 
   * Introduce granule attribute for virtio-iommu
@@ -62,6 +73,12 @@ v12.1.0 (unreleased)
     enlightenments was introduced. Starting with this release, users can
     additionally override the defaults that are picked when domain is started
     and features are expanded.
+
+  * bhyve: Improve loader configuration for arm64 guests
+
+    If loader is not explicitly configured, use the loader
+    from the ``sysutils/u-boot-bhyve-arm64`` port/package for the
+    arm64 guests.
 
 * **Bug fixes**
 
