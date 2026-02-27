@@ -905,6 +905,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
     unsigned nusbcontrollers = 0;
     unsigned nisacontrollers = 0;
     unsigned nvcpus = virDomainDefGetVcpus(def);
+    size_t ncells = virDomainNumaGetNodeCount(def->numa);
 
     /* CPUs */
     virCommandAddArg(cmd, "-c");
@@ -952,6 +953,31 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
                 virCommandAddArgFormat(cmd, "%zu:%zu", i, j);
             }
 
+        }
+    }
+
+    /* NUMA */
+    if (ncells) {
+        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NUMA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Installed bhyve binary does not support NUMA configuration"));
+            return NULL;
+        }
+
+        if (def->os.bootloader || !def->os.loader) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("NUMA configuration is only supported when booting using UEFI"));
+            return NULL;
+        }
+
+        for (i = 0; i < ncells; i++) {
+            unsigned long long memSize = virDomainNumaGetNodeMemorySize(def->numa, i);
+            virBitmap *cpus = virDomainNumaGetNodeCpumask(def->numa, i);
+            g_autofree char *cpumask = virBitmapFormat(cpus);
+
+            virCommandAddArg(cmd, "-n");
+            virCommandAddArgFormat(cmd, "id=%zu,size=%llu,cpus=%s", i, VIR_DIV_UP(memSize, 1024),
+                                   cpumask);
         }
     }
 

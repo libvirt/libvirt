@@ -258,6 +258,9 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
     if (strstr(help, "-A:") != NULL)
         *caps |= BHYVE_CAP_ACPI;
 
+    if (strstr(help, "-n:") != NULL)
+        *caps |= BHYVE_CAP_NUMA;
+
     return 0;
 }
 

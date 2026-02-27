@@ -202,7 +202,7 @@ mymain(void)
                        BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
                        BHYVE_CAP_CPUTOPOLOGY | BHYVE_CAP_SOUND_HDA | \
                        BHYVE_CAP_VNC_PASSWORD | BHYVE_CAP_VIRTIO_9P | \
-                       BHYVE_CAP_NVME;
+                       BHYVE_CAP_NVME | BHYVE_CAP_NUMA;
 
     DO_TEST("base");
     DO_TEST("wired");
@@ -254,6 +254,11 @@ mymain(void)
     DO_TEST("isa-controller");
     DO_TEST_FAILURE("isa-multiple-controllers");
     DO_TEST("firmware-efi");
+    DO_TEST("numa");
+    DO_TEST_FAILURE("numa-empty-cpuset");
+    DO_TEST_FAILURE("numa-too-many-domains");
+    driver.bhyvecaps &= ~BHYVE_CAP_NUMA;
+    DO_TEST_FAILURE("numa");
     fakefirmwaredir = g_steal_pointer(&driver.config->firmwareDir);
     driver.config->firmwareDir = g_steal_pointer(&fakefirmwareemptydir);
     DO_TEST_PREPARE_ERROR("firmware-efi");
@@ -345,10 +350,13 @@ mymain(void)
     driver.caps = virBhyveCapsBuild();
     /* bhyve does not support UTC clock on ARM */
     driver.bhyvecaps ^= BHYVE_CAP_RTC_UTC;
+    /* bhyve does not support NUMA on ARM */
+    driver.bhyvecaps &= ~BHYVE_CAP_NUMA;
 
     DO_TEST("base");
     DO_TEST("console");
     DO_TEST("bootloader");
+    DO_TEST_FAILURE("numa");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

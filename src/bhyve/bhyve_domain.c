@@ -411,6 +411,7 @@ bhyveDomainDefValidate(const virDomainDef *def,
                        void *parseOpaque G_GNUC_UNUSED)
 {
     size_t i;
+    size_t ncells;
     virStorageSource *src = NULL;
     g_autoptr(GHashTable) nvme_controllers = g_hash_table_new(g_direct_hash,
                                                               g_direct_equal);
@@ -443,6 +444,24 @@ bhyveDomainDefValidate(const virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("using passthrough devices requires locking guest memory"));
         return -1;
+    }
+
+    ncells = virDomainNumaGetNodeCount(def->numa);
+    if (ncells) {
+        if (ncells > 8) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only up to 8 NUMA domains are supported"));
+            return -1;
+        }
+
+        for (i = 0; i < ncells; i++) {
+            if (!virDomainNumaGetNodeCpumask(def->numa, i)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("NUMA domain id %1$zu: empty cpusets are not allowed"),
+                               i);
+                return -1;
+            }
+        }
     }
 
     if (!def->os.loader)
