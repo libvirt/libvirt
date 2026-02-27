@@ -757,6 +757,8 @@ void virNetClientDispose(void *obj)
     virObjectUnref(client->sasl);
 #endif
 
+    g_clear_pointer(&client->error, virFreeError);
+
     virNetMessageClear(&client->msg);
 }
 
