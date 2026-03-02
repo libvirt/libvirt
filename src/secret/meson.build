@@ -54,13 +54,15 @@ if conf.has('WITH_SECRETS')
 
   virt_secret_init_encryption_conf.set('localstatedir', localstatedir)
 
-  configure_file(
-    input: 'virt-secret-init-encryption.service.in',
-    output: '@0@.service'.format('virt-secret-init-encryption'),
-    configuration: virt_secret_init_encryption_conf,
-    install: true,
-    install_dir: unitdir,
-  )
+  if init_script == 'systemd'
+    configure_file(
+      input: 'virt-secret-init-encryption.service.in',
+      output: '@0@.service'.format('virt-secret-init-encryption'),
+      configuration: virt_secret_init_encryption_conf,
+      install: true,
+      install_dir: unitdir,
+    )
+  endif
 
   virt_daemon_units += {
     'service': 'virtsecretd',
