@@ -59,6 +59,11 @@ v12.1.0 (unreleased)
     Additionally, the ``domainGetVcpuPinInfo`` API is implemented for
     querying vCPU pinning information.
 
+  * qemu: Support block operation latency histograms
+
+    Libvirt now allows configuring qemu's block latency histogram collection
+    as well as returns them via the bulk stats API.
+
 * **Improvements**
 
   * Introduce granule attribute for virtio-iommu
@@ -116,6 +121,12 @@ v12.1.0 (unreleased)
     case, let the API return domain's ``<interface/>`` alias.
 
   * bhyve: hyperv: Various memory leak fixes
+
+  * qemu: Fix failures when restoring save/managed-save images with upcoming qemu versions
+
+    Current git version of qemu would return an error when attempting to load
+    an existing (managed) save image as we relied on deprecated features that
+    were now removed.
 
 
 v12.0.0 (2026-01-15)
