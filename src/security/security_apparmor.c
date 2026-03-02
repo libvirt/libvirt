@@ -800,7 +800,6 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
                                 const char *vroot)
 {
     g_autofree struct SDPDOP *ptr = NULL;
-    int ret = -1;
     virSecurityLabelDef *secdef =
         virDomainDefGetSecurityLabelDef(def, SECURITY_APPARMOR_NAME);
     virDomainHostdevSubsysUSB *usbsrc = &dev->source.subsys.u.usb;
@@ -834,9 +833,10 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
         g_autoptr(virUSBDevice) usb =
             virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot);
         if (!usb)
-            goto done;
+            return -1;
 
-        ret = virUSBDeviceFileIterate(usb, AppArmorSetSecurityUSBLabel, ptr);
+        if (virUSBDeviceFileIterate(usb, AppArmorSetSecurityUSBLabel, ptr) < 0)
+            return -1;
         break;
     }
 
@@ -845,30 +845,32 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
             virPCIDeviceNew(&pcisrc->addr);
 
         if (!pci)
-            goto done;
+            return -1;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
             if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
                 g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
-                if (!vfioGroupDev) {
-                    goto done;
-                }
-                ret = AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr);
+                if (!vfioGroupDev)
+                    return -1;
+
+                if (AppArmorSetSecurityPCILabel(pci, vfioGroupDev, ptr) < 0)
+                    return -1;
             } else {
                 g_autofree char *vfiofdDev = NULL;
 
                 if (virPCIDeviceGetVfioPath(pci, &vfiofdDev) < 0)
-                    goto done;
+                    return -1;
 
-                ret = AppArmorSetSecurityPCILabel(pci, vfiofdDev, ptr);
-                if (ret < 0)
-                    goto done;
+                if (AppArmorSetSecurityPCILabel(pci, vfiofdDev, ptr) < 0)
+                    return -1;
 
-                ret = AppArmorSetSecurityPCILabel(pci, VIR_IOMMU_DEV_PATH, ptr);
+                if (AppArmorSetSecurityPCILabel(pci, VIR_IOMMU_DEV_PATH, ptr) < 0)
+                    return -1;
             }
         } else {
-            ret = virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr);
+            if (virPCIDeviceFileIterate(pci, AppArmorSetSecurityPCILabel, ptr) < 0)
+                return -1;
         }
         break;
     }
@@ -881,10 +883,11 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
                              scsihostsrc->target, scsihostsrc->unit,
                              dev->readonly, dev->shareable);
 
-         if (!scsi)
-             goto done;
+        if (!scsi)
+            return -1;
 
-        ret = virSCSIDeviceFileIterate(scsi, AppArmorSetSecuritySCSILabel, ptr);
+        if (virSCSIDeviceFileIterate(scsi, AppArmorSetSecuritySCSILabel, ptr) < 0)
+            return -1;
         break;
     }
 
@@ -892,11 +895,13 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
         g_autoptr(virSCSIVHostDevice) host = virSCSIVHostDeviceNew(hostsrc->wwpn);
 
         if (!host)
-            goto done;
+            return -1;
 
-        ret = virSCSIVHostDeviceFileIterate(host,
-                                            AppArmorSetSecurityHostLabel,
-                                            ptr);
+        if (virSCSIVHostDeviceFileIterate(host,
+                                          AppArmorSetSecurityHostLabel,
+                                          ptr) < 0) {
+            return -1;
+        }
         break;
     }
 
@@ -904,19 +909,18 @@ AppArmorSetSecurityHostdevLabel(virSecurityManager *mgr,
         g_autofree char *vfiodev = NULL;
 
         if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdevsrc->uuidstr)))
-            goto done;
+            return -1;
 
-        ret = AppArmorSetSecurityHostdevLabelHelper(vfiodev, ptr);
+        if (AppArmorSetSecurityHostdevLabelHelper(vfiodev, ptr) < 0)
+            return -1;
         break;
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-        ret = 0;
         break;
     }
 
- done:
-    return ret;
+    return 0;
 }
 
 
