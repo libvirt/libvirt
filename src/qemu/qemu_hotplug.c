@@ -1146,7 +1146,7 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
             return -1;
 
         dev->data.disk->src = NULL;
-        virDomainDiskDefFree(dev->data.disk);
+        g_clear_pointer(&dev->data.disk, virDomainDiskDefFree);
         return 0;
     }
 
@@ -3455,7 +3455,7 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
         ret = qemuDomainAttachDeviceDiskLive(driver, vm, dev);
-        if (!ret) {
+        if (ret == 0 && dev->data.disk) {
             alias = dev->data.disk->info.alias;
             dev->data.disk = NULL;
         }
