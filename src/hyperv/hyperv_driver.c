@@ -4354,6 +4354,31 @@ hypervDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 }
 
 
+static virDomainSnapshotPtr
+hypervDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
+                              unsigned int flags)
+{
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autofree char* parent_id = NULL;
+
+    virCheckFlags(0, NULL);
+
+    vssd = hypervDomainLookupSnapshotSD(snapshot->domain, snapshot->name);
+    if (!vssd)
+        return NULL;
+
+    parent_id = hypervParseInstanceIdFromParentPath(vssd->data->Parent);
+    if (!parent_id) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("snapshot '%1$s' does not have a parent"),
+                       snapshot->name);
+        return NULL;
+    }
+
+    return virGetDomainSnapshot(snapshot->domain, parent_id);
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -4426,6 +4451,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainSnapshotGetXMLDesc = hypervDomainSnapshotGetXMLDesc, /* 12.2.0 */
     .domainHasCurrentSnapshot = hypervDomainHasCurrentSnapshot, /* 12.2.0 */
     .domainSnapshotCurrent = hypervDomainSnapshotCurrent, /* 12.2.0 */
+    .domainSnapshotGetParent = hypervDomainSnapshotGetParent, /* 12.2.0 */
 };
 
 
