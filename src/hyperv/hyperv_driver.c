@@ -4268,6 +4268,52 @@ hypervParseInstanceIdFromParentPath(const char *obj_path)
 }
 
 
+static int
+hypervDomainHasCurrentSnapshot(virDomainPtr domain,
+                               unsigned int flags)
+{
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+
+    virCheckFlags(0, -1);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        return -1;
+
+    return vssd->data->Parent != NULL;
+}
+
+
+static virDomainSnapshotPtr
+hypervDomainSnapshotCurrent(virDomainPtr domain,
+                            unsigned int flags)
+{
+    hypervPrivate *priv = domain->conn->privateData;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    g_autoptr(Msvm_VirtualSystemSettingData) vssd = NULL;
+    g_autofree char* current_snapshot = NULL;
+
+    virCheckFlags(0, NULL);
+
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervGetMsvmVirtualSystemSettingDataFromUUID(priv, uuid_string, &vssd) < 0)
+        return NULL;
+
+    current_snapshot = hypervParseInstanceIdFromParentPath(vssd->data->Parent);
+    if (!current_snapshot) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
+                       _("the domain does not have a current snapshot"));
+        return NULL;
+    }
+
+    return virGetDomainSnapshot(domain, current_snapshot);
+}
+
+
 static char *
 hypervDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
                                unsigned int flags)
@@ -4378,6 +4424,8 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainListAllSnapshots = hypervDomainListAllSnapshots, /* 12.2.0 */
     .domainSnapshotNum = hypervDomainSnapshotNum, /* 12.2.0 */
     .domainSnapshotGetXMLDesc = hypervDomainSnapshotGetXMLDesc, /* 12.2.0 */
+    .domainHasCurrentSnapshot = hypervDomainHasCurrentSnapshot, /* 12.2.0 */
+    .domainSnapshotCurrent = hypervDomainSnapshotCurrent, /* 12.2.0 */
 };
 
 
