@@ -1134,20 +1134,19 @@ qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
                                virDomainObj *vm,
                                virDomainDeviceDef *dev)
 {
-    virDomainDiskDef *disk = dev->data.disk;
     virDomainDiskDef *orig_disk = NULL;
 
     /* this API overloads media change semantics on disk hotplug
      * for devices supporting media changes */
-    if ((disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
-         disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
-        (orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
+    if ((dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
+         dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
+        (orig_disk = virDomainDiskByTarget(vm->def, dev->data.disk->dst))) {
         if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
-                                           disk->src, false) < 0)
+                                           dev->data.disk->src, false) < 0)
             return -1;
 
-        disk->src = NULL;
-        virDomainDiskDefFree(disk);
+        dev->data.disk->src = NULL;
+        virDomainDiskDefFree(dev->data.disk);
         return 0;
     }
 
