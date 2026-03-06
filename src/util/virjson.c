@@ -1416,7 +1416,7 @@ virJSONValueFromJsonC(json_object *jobj)
             virJSONValue *cur = virJSONValueFromJsonC(iter.val);
 
             if (virJSONValueObjectAppend(ret, iter.key, &cur) < 0) {
-                g_free(ret);
+                virJSONValueFree(ret);
                 return NULL;
             }
         }
@@ -1438,7 +1438,7 @@ virJSONValueFromJsonC(json_object *jobj)
             cur = virJSONValueFromJsonC(val);
 
             if (!cur) {
-                g_free(ret);
+                virJSONValueFree(ret);
                 return NULL;
             }
 
