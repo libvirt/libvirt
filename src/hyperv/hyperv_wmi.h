@@ -41,6 +41,17 @@
 #define MSVM_VIRTUALSYSTEMSETTINGDATA_VIRTUALTYPE_SNAPSHOT \
     "Microsoft:Hyper-V:Snapshot:Realized"
 
+#define MSVM_VIRTUALSYSTEMSNAPSHOTSERVICE_SELECTOR \
+    "CreationClassName=Msvm_VirtualSystemSnapshotService"
+
+/* Msvm_VirtualSystemSnapshotSettingData ConsistencyLevel values */
+#define HYPERV_SNAPSHOT_CONSISTENCY_APP_CONSISTENT   "1" /* VSS (production checkpoint) */
+#define HYPERV_SNAPSHOT_CONSISTENCY_CRASH_CONSISTENT "2" /* Standard checkpoint */
+
+/* Msvm_VirtualSystemSnapshotService CreateSnapshot SnapshotType values */
+#define HYPERV_SNAPSHOT_TYPE_FULL      "2" /* Full snapshot including memory if running */
+#define HYPERV_SNAPSHOT_TYPE_DISK_ONLY "3" /* Disk-only, no memory state */
+
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
 
