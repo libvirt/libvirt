@@ -421,6 +421,22 @@ testDomainDevicesDefPostParse(virDomainDeviceDef *dev G_GNUC_UNUSED,
 }
 
 
+static int
+testDomainDefPostParse(virDomainDef *def,
+                       unsigned int parseFlags G_GNUC_UNUSED,
+                       void *opaque G_GNUC_UNUSED,
+                       void *parseOpaque G_GNUC_UNUSED)
+{
+    if (def->os.loader &&
+        def->os.loader->path &&
+        !def->os.loader->type) {
+        def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+
+    return 0;
+}
+
+
 static void
 testDomainObjPrivateFree(void *data)
 {
@@ -448,6 +464,7 @@ testDriverNew(void)
                     VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                     VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
         .devicesPostParseCallback = testDomainDevicesDefPostParse,
+        .domainPostParseCallback = testDomainDefPostParse,
         .defArch = VIR_ARCH_I686,
     };
     virDomainXMLPrivateDataCallbacks privatecb = {
