@@ -1014,6 +1014,22 @@ virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
     *mhz = cpu_freq / 1000000;
 # endif
 
+# ifdef __FreeBSD__
+#  define FILL_DATA_SYSCTL(var, sysctl, error_msg) \
+    do { \
+        size_t _len = sizeof(*var); \
+        if (sysctlbyname(sysctl, var, &_len, NULL, 0) < 0) { \
+            virReportSystemError(errno, "%s", error_msg); \
+            return -1; \
+        } \
+    } while (0)
+
+    FILL_DATA_SYSCTL(nodes, "vm.ndomains", _("cannot obtain NUMA domain count"));
+    FILL_DATA_SYSCTL(cores, "kern.smp.cores", _("cannot obtain CPU core count"));
+    FILL_DATA_SYSCTL(threads, "kern.smp.threads_per_core",
+                      _("cannot obtain CPU threads per core"));
+# endif /* __FreeBSD__ */
+
     return 0;
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
