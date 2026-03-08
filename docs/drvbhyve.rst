@@ -757,6 +757,32 @@ Example:
     ...
   </domain>
 
+NUMA domains configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:since:`Since 12.2.0`, it is possible to configure NUMA domains
+for the guest.
+
+Example:
+
+::
+
+  <domain type='bhyve'>
+    ...
+    <memory unit='KiB'>4194304</memory>
+    <vcpu>8</vcpu>
+    ...
+    <cpu>
+      <numa>
+        <cell id='0' cpus='0-3' memory='2097152' unit='KiB'/>
+        <cell id='1' cpus='4-7' memory='2097152' unit='KiB'/>
+      </numa>
+    </cpu>
+  </domain>
+
+Every NUMA domain must have `memory` and `cpus` specified.
+Bhyve allows configuring up to 8 NUMA domains.
+
 Guest-specific considerations
 -----------------------------
 
