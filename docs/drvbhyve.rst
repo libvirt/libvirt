@@ -720,7 +720,7 @@ any configuration on the host.
 
 virtio-scsi
 ~~~~~~~~~~~
-:since:`Since 12:0.0`, it is possible to use ``virtio-scsi`` devices.
+:since:`Since 12.0.0`, it is possible to use ``virtio-scsi`` devices.
 It uses CAM Target layer (CTL) as a source.
 
 Example:
