@@ -697,10 +697,18 @@ mymain(void)
     DO_TEST_DETACH("ppc64", "pseries-base-live", "hostdev-pci", false, false,
                    "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
 
+#ifdef __linux__
+    /* While <interface type='hostdev'/> is nearly the same as <hostdev/>,
+     * there are subtle differences, e.g. checking that PCI device specified in
+     * <interface/> is a VF. Checks like these are done by walking sysfs which
+     * is limited to Linux, obviously. And while our virpcimock creates
+     * necessary structure, on non-Linux the virpci.c is compiled with stubs
+     * that do nothing but report an error. */
     DO_TEST_ATTACH("x86_64", "base-live", "interface-hostdev", false, true,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "interface-hostdev", false, false,
                    "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
+#endif
     DO_TEST_ATTACH("x86_64", "base-live", "interface-vdpa", false, true,
                    "query-fdsets", "{\"return\":[{\"fdset-id\":99999}]}",
                    "add-fd", "{ \"return\": { \"fdset-id\": 1, \"fd\": 95 }}",
