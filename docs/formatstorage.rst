@@ -25,6 +25,13 @@ attribute ``type``, which is one of ``dir``, ``fs``, ``netfs``, ``disk``,
 ``iscsi-direct`` ( :since:`since 4.7.0` ). This corresponds to the storage
 backend drivers listed further along in this document.
 
+ .. note::
+  Any modification of the storage pool outside of libvirt or on a different
+  host for shared storage pools may not update the cached volume or pool
+  metadata. The pool metadata can be refreshed by calling
+  ``virsh pool-refresh POOLNAME`` or by the
+  `virStoragePoolRefresh <html/libvirt-libvirt-storage.html#virStoragePoolRefresh>`__ API.
+
 Storage pool general metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
