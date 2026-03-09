@@ -4079,6 +4079,7 @@ processShutdownCompletedEvent(virDomainObj *vm)
 
     if (virDomainObjIsActive(vm)) {
         qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_UNKNOWN, VIR_ASYNC_JOB_NONE, 0);
+        qemuDomainRemoveInactive(vm, 0, false);
     }
 
     qemuProcessEndStopJob(vm);
