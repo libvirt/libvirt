@@ -743,36 +743,36 @@ virProcessPrLimit(pid_t pid G_GNUC_UNUSED,
 #endif
 
 #if WITH_GETRLIMIT
+# if defined(__linux__)
 static const char*
 virProcessLimitResourceToLabel(int resource)
 {
     switch (resource) {
-# if defined(RLIMIT_MEMLOCK)
+#  if defined(RLIMIT_MEMLOCK)
         case RLIMIT_MEMLOCK:
             return "Max locked memory";
-# endif /* defined(RLIMIT_MEMLOCK) */
+#  endif /* defined(RLIMIT_MEMLOCK) */
 
-# if defined(RLIMIT_NPROC)
+#  if defined(RLIMIT_NPROC)
         case RLIMIT_NPROC:
             return "Max processes";
-# endif /* defined(RLIMIT_NPROC) */
+#  endif /* defined(RLIMIT_NPROC) */
 
-# if defined(RLIMIT_NOFILE)
+#  if defined(RLIMIT_NOFILE)
         case RLIMIT_NOFILE:
             return "Max open files";
-# endif /* defined(RLIMIT_NOFILE) */
+#  endif /* defined(RLIMIT_NOFILE) */
 
-# if defined(RLIMIT_CORE)
+#  if defined(RLIMIT_CORE)
         case RLIMIT_CORE:
             return "Max core file size";
-# endif /* defined(RLIMIT_CORE) */
+#  endif /* defined(RLIMIT_CORE) */
 
         default:
             return NULL;
     }
 }
 
-# if defined(__linux__)
 static int
 virProcessGetLimitFromProc(pid_t pid,
                            int resource,
