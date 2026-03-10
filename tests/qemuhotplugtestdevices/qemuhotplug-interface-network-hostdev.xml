@@ -1,0 +1,4 @@
+<interface type='network'>
+  <mac address='52:54:00:7b:35:93'/>
+  <source network='hostdev;plug-hostdev-pci'/>
+</interface>

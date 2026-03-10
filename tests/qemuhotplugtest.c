@@ -724,6 +724,10 @@ mymain(void)
                    "device_add", QMP_OK);
     DO_TEST_DETACH("x86_64", "base-live", "interface-hostdev", false, false,
                    "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
+    DO_TEST_ATTACH("x86_64", "base-live", "interface-network-hostdev", false, true,
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("x86_64", "base-live", "interface-network-hostdev", false, false,
+                   "device_del", QMP_DEVICE_DELETED("hostdev0") QMP_OK);
 #endif
     DO_TEST_ATTACH("x86_64", "base-live", "interface-vdpa", false, true,
                    "query-fdsets", "{\"return\":[{\"fdset-id\":99999}]}",
