@@ -1121,6 +1121,19 @@ virHostCPUGetOnlineBitmap(void)
     virFileReadValueBitmap(&ret, "%s/cpu/online", SYSFS_SYSTEM_PATH);
 
     return ret;
+#elif defined(__FreeBSD__)
+    virBitmap *ret = NULL;
+    int ncpus = virHostCPUGetCountAppleFreeBSD();
+
+    if (ncpus == -1)
+        return ret;
+
+    /* FreeBSD does not support CPU hotplug, so it is safe to assume
+     * that all available CPUs are online */
+    ret = virBitmapNew(ncpus);
+    virBitmapSetAll(ret);
+
+    return ret;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node online CPU map not implemented on this platform"));
