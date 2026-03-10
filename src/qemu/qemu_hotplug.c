@@ -1630,19 +1630,22 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(vm);
 
-    if (objprops) {
-        if ((ret = qemuFDPassDirectTransferMonitor(priv->iommufd, priv->mon)) < 0)
-            goto exit_monitor;
 
-        if ((ret = qemuMonitorAddObject(priv->mon, &objprops, NULL)) < 0)
-            goto exit_monitor;
+    if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+        if (objprops) {
+            if ((ret = qemuFDPassDirectTransferMonitor(priv->iommufd, priv->mon)) < 0)
+                goto exit_monitor;
 
-        priv->iommufdState = true;
-        removeiommufd = true;
+            if ((ret = qemuMonitorAddObject(priv->mon, &objprops, NULL)) < 0)
+                goto exit_monitor;
+
+            priv->iommufdState = true;
+            removeiommufd = true;
+        }
+
+        if ((ret = qemuFDPassDirectTransferMonitor(hostdevPriv->vfioDeviceFd, priv->mon)) < 0)
+            goto exit_monitor;
     }
-
-    if ((ret = qemuFDPassDirectTransferMonitor(hostdevPriv->vfioDeviceFd, priv->mon)) < 0)
-        goto exit_monitor;
 
     if ((ret = qemuDomainAttachExtensionDevice(priv->mon, hostdev->info)) < 0)
         goto exit_monitor;
@@ -1674,15 +1677,17 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if (teardownmemlock && qemuDomainAdjustMaxMemLock(vm) < 0)
         VIR_WARN("Unable to reset maximum locked memory on hotplug fail");
 
-    qemuDomainObjEnterMonitor(vm);
+    if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
+        qemuDomainObjEnterMonitor(vm);
 
-    if (removeiommufd)
-        ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
+        if (removeiommufd)
+            ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
 
-    qemuFDPassDirectTransferMonitorRollback(hostdevPriv->vfioDeviceFd, priv->mon);
-    qemuFDPassDirectTransferMonitorRollback(priv->iommufd, priv->mon);
+        qemuFDPassDirectTransferMonitorRollback(hostdevPriv->vfioDeviceFd, priv->mon);
+        qemuFDPassDirectTransferMonitorRollback(priv->iommufd, priv->mon);
 
-    qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitor(vm);
+    }
 
     if (releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, info);
