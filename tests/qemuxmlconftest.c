@@ -6,33 +6,30 @@
 #include <fcntl.h>
 
 #include "testutils.h"
+#include "internal.h"
+#include "viralloc.h"
+#include "viridentity.h"
+#include "qemu/qemu_block.h"
+#include "qemu/qemu_capabilities.h"
+#include "qemu/qemu_domain.h"
+#include "qemu/qemu_migration.h"
+#include "qemu/qemu_passt.h"
+#include "qemu/qemu_process.h"
+#include "qemu/qemu_slirp.h"
+#include "qemu/qemu_virtiofs.h"
+#include "qemu/qemu_vhost_user.h"
+#include "datatypes.h"
+#include "conf/storage_conf.h"
+#include "virfilewrapper.h"
+#include "configmake.h"
+#include "testutilsqemuschema.h"
 
-#ifdef WITH_QEMU
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
+#include "qemu/qemu_capspriv.h"
 
-# include "internal.h"
-# include "viralloc.h"
-# include "viridentity.h"
-# include "qemu/qemu_block.h"
-# include "qemu/qemu_capabilities.h"
-# include "qemu/qemu_domain.h"
-# include "qemu/qemu_migration.h"
-# include "qemu/qemu_passt.h"
-# include "qemu/qemu_process.h"
-# include "qemu/qemu_slirp.h"
-# include "qemu/qemu_virtiofs.h"
-# include "qemu/qemu_vhost_user.h"
-# include "datatypes.h"
-# include "conf/storage_conf.h"
-# include "virfilewrapper.h"
-# include "configmake.h"
-# include "testutilsqemuschema.h"
+#include "testutilsqemu.h"
 
-# define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
-# include "qemu/qemu_capspriv.h"
-
-# include "testutilsqemu.h"
-
-# define VIR_FROM_THIS VIR_FROM_QEMU
+#define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virQEMUDriver driver;
 
@@ -95,7 +92,7 @@ static virSecretDriver fakeSecretDriver = {
 };
 
 
-# define STORAGE_POOL_XML_PATH "storagepoolxml2xmlout/"
+#define STORAGE_POOL_XML_PATH "storagepoolxml2xmlout/"
 static const unsigned char fakeUUID[VIR_UUID_BUFLEN] = "fakeuuid";
 
 static virStoragePoolPtr
@@ -743,7 +740,7 @@ testQemuConfXMLCommon(testQemuInfo *info,
     if (testInfoCheckDuplicate(info) < 0)
         goto cleanup;
 
-# if !WITH_NBDKIT
+#if !WITH_NBDKIT
     /* when compiled without nbdkit support we want to skip the test after
      * marking it as used */
     if (info->args.fakeNbdkitCaps) {
@@ -751,7 +748,7 @@ testQemuConfXMLCommon(testQemuInfo *info,
         info->prepared = true;
         goto cleanup;
     }
-# endif /* !WITH_NBDKIT */
+#endif /* !WITH_NBDKIT */
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
@@ -1302,64 +1299,64 @@ mymain(void)
  * the test cases should be forked using DO_TEST_CAPS_VER with the appropriate
  * version.
  */
-# define DO_TEST_FULL(_name, _suffix, ...) \
+#define DO_TEST_FULL(_name, _suffix, ...) \
     testRun(_name, _suffix, &ret, &testConf, __VA_ARGS__);
 
-# define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
+#define DO_TEST_CAPS_INTERNAL(name, arch, ver, ...) \
     DO_TEST_FULL(name, "." arch "-" ver, \
                  ARG_CAPS_ARCH, arch, \
                  ARG_CAPS_VER, ver, \
                  __VA_ARGS__, \
                  ARG_END)
 
-# define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
+#define DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, "latest", __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
+#define DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ...) \
     DO_TEST_CAPS_INTERNAL(name, arch, ver, __VA_ARGS__)
 
-# define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, ARG_END)
 
-# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, arch) \
     DO_TEST_FULL(name, "." arch "-latest.abi-update", \
                  ARG_CAPS_ARCH, arch, \
                  ARG_CAPS_VER, "latest", \
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE, \
                  ARG_END)
 
-# define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
+#define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
 
-# define DO_TEST_CAPS_LATEST_NBDKIT(name, ...) \
+#define DO_TEST_CAPS_LATEST_NBDKIT(name, ...) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", ARG_NBDKIT_CAPS, __VA_ARGS__, QEMU_NBDKIT_CAPS_LAST, ARG_END)
 
-# define DO_TEST_CAPS_LATEST(name) \
+#define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")
 
-# define DO_TEST_CAPS_LATEST_ABI_UPDATE(name) \
+#define DO_TEST_CAPS_LATEST_ABI_UPDATE(name) \
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE(name, "x86_64")
 
-# define DO_TEST_CAPS_VER(name, ver) \
+#define DO_TEST_CAPS_VER(name, ver) \
     DO_TEST_CAPS_ARCH_VER(name, "x86_64", ver)
 
-# define DO_TEST_CAPS_LATEST_PPC64(name) \
+#define DO_TEST_CAPS_LATEST_PPC64(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "ppc64")
 
-# define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU(name, hostcpu) \
+#define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU(name, hostcpu) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "ppc64", \
                                   ARG_CAPS_HOST_CPU_MODEL, hostcpu)
 
-# define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE(name, hostcpu) \
+#define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE(name, hostcpu) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, "ppc64", \
                                   ARG_CAPS_HOST_CPU_MODEL, hostcpu, \
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
-# define DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
-# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, arch) \
     DO_TEST_FULL(name, "." arch "-latest.abi-update", \
                  ARG_CAPS_ARCH, arch, \
                  ARG_CAPS_VER, "latest", \
@@ -1367,24 +1364,24 @@ mymain(void)
                  ARG_FLAGS, FLAG_EXPECT_FAILURE, \
                  ARG_END)
 
-# define DO_TEST_CAPS_ARCH_VER_FAILURE(name, arch, ver) \
+#define DO_TEST_CAPS_ARCH_VER_FAILURE(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
                                ARG_FLAGS, FLAG_EXPECT_FAILURE)
 
-# define DO_TEST_CAPS_LATEST_FAILURE(name) \
+#define DO_TEST_CAPS_LATEST_FAILURE(name) \
     DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, "x86_64")
 
-# define DO_TEST_CAPS_LATEST_ABI_UPDATE_FAILURE(name) \
+#define DO_TEST_CAPS_LATEST_ABI_UPDATE_FAILURE(name) \
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_FAILURE(name, "x86_64")
 
-# define DO_TEST_CAPS_VER_FAILURE(name, ver) \
+#define DO_TEST_CAPS_VER_FAILURE(name, ver) \
     DO_TEST_CAPS_ARCH_VER_FAILURE(name, "x86_64", ver)
 
-# define DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
-# define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, arch) \
+#define DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, arch) \
     DO_TEST_FULL(name, "." arch "-latest.abi-update", \
                  ARG_CAPS_ARCH, arch, \
                  ARG_CAPS_VER, "latest", \
@@ -1392,20 +1389,20 @@ mymain(void)
                  ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR, \
                  ARG_END)
 
-# define DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, arch, ver) \
+#define DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, \
                                ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR)
 
-# define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
+#define DO_TEST_CAPS_LATEST_PARSE_ERROR(name) \
     DO_TEST_CAPS_ARCH_LATEST_PARSE_ERROR(name, "x86_64")
 
-# define DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR(name) \
+#define DO_TEST_CAPS_LATEST_ABI_UPDATE_PARSE_ERROR(name) \
     DO_TEST_CAPS_ARCH_LATEST_ABI_UPDATE_PARSE_ERROR(name, "x86_64")
 
-# define DO_TEST_CAPS_VER_PARSE_ERROR(name, ver) \
+#define DO_TEST_CAPS_VER_PARSE_ERROR(name, ver) \
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR(name, "x86_64", ver)
 
-# define DO_TEST_GIC(name, ver, gic) \
+#define DO_TEST_GIC(name, ver, gic) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, "aarch64", ver, ARG_GIC, gic, ARG_FLAGS, FLAG_ALLOW_DUPLICATE_OUTPUT, ARG_END)
 
     /* Unset or set all envvars here that are copied in qemudBuildCommandLine
@@ -3418,12 +3415,3 @@ VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("virrandom"),
                       VIR_TEST_MOCK("qemucpu"),
                       VIR_TEST_MOCK("virnuma"))
-
-#else
-
-int main(void)
-{
-    return EXIT_AM_SKIP;
-}
-
-#endif /* WITH_QEMU */

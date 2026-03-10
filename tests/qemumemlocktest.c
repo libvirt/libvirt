@@ -6,16 +6,13 @@
 #include <fcntl.h>
 
 #include "testutils.h"
+#include "internal.h"
+#include "conf/domain_conf.h"
+#include "qemu/qemu_domain.h"
 
-#ifdef WITH_QEMU
+#include "testutilsqemu.h"
 
-# include "internal.h"
-# include "conf/domain_conf.h"
-# include "qemu/qemu_domain.h"
-
-# include "testutilsqemu.h"
-
-# define VIR_FROM_THIS VIR_FROM_QEMU
+#define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virQEMUDriver driver;
 
@@ -52,7 +49,7 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
-# define DO_TEST(name, memlock) \
+#define DO_TEST(name, memlock) \
     do { \
         static struct testInfo info = { \
             name, memlock \
@@ -127,13 +124,3 @@ mymain(void)
 VIR_TEST_MAIN_PRELOAD(mymain,
                       VIR_TEST_MOCK("virpci"),
                       VIR_TEST_MOCK("domaincaps"))
-
-#else
-
-int
-main(void)
-{
-    return EXIT_AM_SKIP;
-}
-
-#endif /* WITH_QEMU */

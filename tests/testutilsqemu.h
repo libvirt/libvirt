@@ -16,19 +16,17 @@
 
 #pragma once
 
-#ifdef WITH_QEMU
+#include "capabilities.h"
+#include "virfilecache.h"
+#include "domain_conf.h"
+#include "qemu/qemu_capabilities.h"
+#include "qemu/qemu_conf.h"
 
-# include "capabilities.h"
-# include "virfilecache.h"
-# include "domain_conf.h"
-# include "qemu/qemu_capabilities.h"
-# include "qemu/qemu_conf.h"
-
-# define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
-# define TEST_TPM_ENV_VAR "VIR_TEST_MOCK_FAKE_TPM_VERSION"
-# define TPM_VER_1_2 "1.2"
-# define TPM_VER_2_0 "2.0"
-# define TEST_NBDKIT_PATH "/fakebindir/nbdkit"
+#define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
+#define TEST_TPM_ENV_VAR "VIR_TEST_MOCK_FAKE_TPM_VERSION"
+#define TPM_VER_1_2 "1.2"
+#define TPM_VER_2_0 "2.0"
+#define TEST_NBDKIT_PATH "/fakebindir/nbdkit"
 
 enum {
     GIC_NONE = 0,
@@ -187,4 +185,3 @@ testQemuInsertRealCaps(virFileCache *cache,
                        GHashTable *capsCache,
                        GHashTable *schemaCache,
                        GHashTable **schema);
-#endif

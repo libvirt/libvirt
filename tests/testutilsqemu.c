@@ -1,23 +1,22 @@
 #include <config.h>
-#ifdef WITH_QEMU
 
-# include "testutilsqemu.h"
-# include "testutilsqemuschema.h"
-# include "testutilshostcpus.h"
-# include "testutils.h"
-# include "viralloc.h"
-# include "cpu_conf.h"
-# include "qemu/qemu_domain.h"
-# define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
-# include "qemu/qemu_capspriv.h"
-# include "virstring.h"
-# include "virfilecache.h"
-# include "virtpm.h"
+#include <sys/types.h>
+#include <fcntl.h>
 
-# include <sys/types.h>
-# include <fcntl.h>
+#include "testutilsqemu.h"
+#include "testutilsqemuschema.h"
+#include "testutilshostcpus.h"
+#include "testutils.h"
+#include "viralloc.h"
+#include "cpu_conf.h"
+#include "qemu/qemu_domain.h"
+#define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
+#include "qemu/qemu_capspriv.h"
+#include "virstring.h"
+#include "virfilecache.h"
+#include "virtpm.h"
 
-# define VIR_FROM_THIS VIR_FROM_QEMU
+#define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virCPUDef *cpuDefault;
 static virCPUDef *cpuHaswell;
@@ -289,8 +288,8 @@ qemuTestCapsCacheInsert(virFileCache *cache,
     return 0;
 }
 
-# define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
-# define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
+#define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
+#define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
 
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
@@ -443,8 +442,8 @@ testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
 
     gicCapabilities = g_new0(virGICCapability, 2);
 
-# define IMPL_BOTH \
-         VIR_GIC_IMPLEMENTATION_KERNEL|VIR_GIC_IMPLEMENTATION_EMULATED
+#define IMPL_BOTH \
+    VIR_GIC_IMPLEMENTATION_KERNEL|VIR_GIC_IMPLEMENTATION_EMULATED
 
     if (gic & GIC_V2) {
         gicCapabilities[ngicCapabilities].version = VIR_GIC_VERSION_2;
@@ -457,15 +456,13 @@ testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
         ngicCapabilities++;
     }
 
-# undef IMPL_BOTH
+#undef IMPL_BOTH
 
     virQEMUCapsSetGICCapabilities(qemuCaps,
                                   gicCapabilities, ngicCapabilities);
 
     return 0;
 }
-
-#endif
 
 
 struct testQemuCapsFile {
