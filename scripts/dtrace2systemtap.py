@@ -127,7 +127,7 @@ for file in filelist:
             if re.match(r'''.*char\s\*[^\*].*''', arg) is not None:
                 isstr = True
 
-            m = re.search(r'''^.*\s\*?(\S+)$''', arg)
+            m = re.search(r'''^.*\s\**(\S+)$''', arg)
             if m is not None:
                 arg = m.group(1)
             else:
