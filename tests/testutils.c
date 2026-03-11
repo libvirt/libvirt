@@ -859,9 +859,6 @@ int virTestMain(int argc,
         preloads[npreloads] = NULL;
     }
 
-    if (!(fakerootdir = virTestFakeRootDirInit()))
-        return EXIT_FAILURE;
-
     va_start(ap, func);
     while ((lib = va_arg(ap, const char *))) {
         g_autofree char *abs_lib_path = g_strdup_printf("%s/%s", abs_builddir, lib);
@@ -933,6 +930,9 @@ int virTestMain(int argc,
     }
 
     failedTests = virBitmapNew(1);
+
+    if (!(fakerootdir = virTestFakeRootDirInit()))
+        return EXIT_FAILURE;
 
     ret = (func)();
 
