@@ -118,6 +118,10 @@ static const vshCmdOptDef opts_domcapabilities[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report host CPU model with deprecated features disabled"),
     },
+    {.name = "expand-cpu-features",
+     .type = VSH_OT_BOOL,
+     .help = N_("show all features in host CPU model"),
+    },
     {.name = NULL}
 };
 
@@ -136,6 +140,9 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "disable-deprecated-features"))
         flags |= VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES;
+
+    if (vshCommandOptBool(cmd, "expand-cpu-features"))
+        flags |= VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES;
 
     if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptString(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||

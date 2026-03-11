@@ -592,6 +592,7 @@ domcapabilities
    domcapabilities [virttype] [emulatorbin] [arch] [machine]
                    [--xpath EXPRESSION] [--wrap]
                    [--disable-deprecated-features]
+                   [--expand-cpu-features]
 
 
 Print an XML document describing the domain capabilities for the
@@ -637,6 +638,10 @@ The **--disable-deprecated-features** argument will modify the contents
 of host-model CPU XML, updating the features list with any features
 flagged as deprecated for the CPU model by the hypervisor. These
 features will be paired with the "disable" policy.
+
+The **--expand-cpu-features** option will cause the host-model CPU definition
+to contain all CPU features supported on the host including those implicitly
+enabled by the selected CPU model.
 
 
 pool-capabilities
