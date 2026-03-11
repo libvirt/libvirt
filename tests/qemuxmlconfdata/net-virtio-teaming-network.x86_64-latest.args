@@ -32,7 +32,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -netdev '{"type":"tap","fd":"102","vhost":true,"vhostfd":"44","id":"hostua-backup0"}' \
 -device '{"driver":"virtio-net-pci","failover":true,"netdev":"hostua-backup0","id":"ua-backup0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"vfio-pci","host":"0001:02:03.4","id":"hostdev0","failover_pair_id":"ua-backup0","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"vfio-pci","host":"0000:06:12.2","id":"hostdev0","failover_pair_id":"ua-backup0","bus":"pci.0","addr":"0x3"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
