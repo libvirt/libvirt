@@ -28,6 +28,7 @@
 #include "testutilsqemuschema.h"
 #include "virhostdev.h"
 #include "virfile.h"
+#include "qemufakedrivers.h"
 
 #define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"
@@ -483,6 +484,7 @@ static int
 mymain(void)
 {
     int ret = 0;
+    g_autoptr(virConnect) conn = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autoptr(GHashTable) capsLatestFiles = testQemuGetLatestCaps();
     g_autoptr(GHashTable) capsCache = virHashNew(virObjectUnref);
@@ -499,6 +501,20 @@ mymain(void)
 
     cfg = virQEMUDriverGetConfig(&driver);
 
+    if (!(conn = virGetConnect()))
+        return EXIT_FAILURE;
+
+    conn->secretDriver = testQemuGetFakeSecretDriver();
+    conn->storageDriver = testQemuGetFakeStorageDriver();
+    conn->nwfilterDriver = testQemuGetFakeNWFilterDriver();
+    conn->networkDriver = testQemuGetFakeNetworkDriver();
+
+    virSetConnectInterface(conn);
+    virSetConnectNetwork(conn);
+    virSetConnectNWFilter(conn);
+    virSetConnectNodeDev(conn);
+    virSetConnectSecret(conn);
+    virSetConnectStorage(conn);
     virEventRegisterDefaultImpl();
 
     driver.lockManager = virLockManagerPluginNew("nop", "qemu",
