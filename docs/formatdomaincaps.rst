@@ -316,6 +316,10 @@ more details about it:
    reports physical address size of the host CPU if this value is available and
    applicable for the requested domain type. This is useful for computing
    baseline CPU definition which should be compatible with several hosts.
+   Consistently with all other CPU definitions used by libvirt, features
+   implicitly enabled by the selected CPU model (in ``model`` sub element) are
+   not listed. Use ``--expand-cpu-features`` virsh option or the equivalent API
+   flag to request all supported features to be listed in the CPU definition.
 ``custom``
    The ``mode`` element contains a list of supported CPU models, each described
    by a dedicated ``model`` element. The ``usable`` attribute specifies whether
