@@ -12330,6 +12330,11 @@ virDomainSetUserPassword(virDomainPtr dom,
  * instance, if host, libvirt and qemu is capable of VFIO
  * passthrough and so on.
  *
+ * If @flags includes VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES,
+ * libvirt will explicitly list all CPU features (in host-model CPU definition)
+ * that are supported on the host. Without this flag features that are part of
+ * the CPU model itself will not be listed.
+ *
  * Returns NULL in case of error or an XML string
  * defining the capabilities.
  *

@@ -1517,6 +1517,8 @@ int virDomainMigrateStartPostCopy(virDomainPtr domain,
 typedef enum {
     /* Report host model with deprecated features disabled. (Since: 11.0.0) */
     VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES = (1 << 0),
+    /* Report all host model CPU features. (Since: 12.2.0) */
+    VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES = (1 << 1),
 } virConnectGetDomainCapabilitiesFlags;
 
 char * virConnectGetDomainCapabilities(virConnectPtr conn,
