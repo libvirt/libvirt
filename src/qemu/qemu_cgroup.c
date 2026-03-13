@@ -479,7 +479,7 @@ qemuSetupHostdevCgroup(virDomainObj *vm,
     g_autofree char *path = NULL;
     int perms;
 
-    if (dev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES)
+    if (virHostdevIsPCIDeviceWithIOMMUFD(dev))
         return 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))

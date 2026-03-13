@@ -1133,7 +1133,7 @@ get_files(vahControl * ctl)
 
             if ((driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO ||
                 driverName == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_DEFAULT) &&
-                dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+                virHostdevIsPCIDeviceWithoutIOMMUFD(dev)) {
                 needsVfio = true;
             }
 

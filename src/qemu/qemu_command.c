@@ -5266,7 +5266,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
             if (qemuCommandAddExtDevice(cmd, hostdev->info, def, qemuCaps) < 0)
                 return -1;
 
-            if (subsys->u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES) {
+            if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
                 qemuDomainHostdevPrivate *hostdevPriv = QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
                 qemuFDPassDirectTransferCommand(hostdevPriv->vfioDeviceFd, cmd);

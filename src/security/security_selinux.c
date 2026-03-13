@@ -2255,7 +2255,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManager *mgr,
             return -1;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
-            if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+            if (virHostdevIsPCIDeviceWithoutIOMMUFD(dev)) {
                 g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
                 if (!vfioGroupDev)
@@ -2499,7 +2499,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManager *mgr,
             return -1;
 
         if (pcisrc->driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO) {
-            if (dev->source.subsys.u.pci.driver.iommufd != VIR_TRISTATE_BOOL_YES) {
+            if (virHostdevIsPCIDeviceWithoutIOMMUFD(dev)) {
                 g_autofree char *vfioGroupDev = virPCIDeviceGetIOMMUGroupDev(pci);
 
                 if (!vfioGroupDev)
