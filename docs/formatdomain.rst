@@ -1382,6 +1382,27 @@ Block I/O Tuning
    ``write_iops_sec``
       Write I/O operations per second limit. :since:`Since 1.2.2`
 
+Host Device IOMMUFD
+-------------------
+
+::
+
+   <domain>
+     ...
+     <iommufd enabled='yes'/>
+     ...
+   </domain>
+
+``iommufd``
+   :since:`Since 12.2.0 (QEMU/KVM only)` The optional ``iommufd`` element with
+   mandatory ``enabled`` attribute can be used to enable IOMMUFD backend for
+   VFIO host devices. This provides an interface to propagate DMA mappings to
+   kernel for assigned devices. Libvirt will open the /dev/iommu and VFIO device
+   cdev and pass associated file descriptors to QEMU.
+
+   This controls IOMMUFD usage for all host devices, each device can change this
+   global default by setting ``iommufd`` attribute for ``driver`` element.
+
 Resource partitioning
 ---------------------
 

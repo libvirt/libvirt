@@ -19883,6 +19883,31 @@ virDomainDefControllersParse(virDomainDef *def,
     return 0;
 }
 
+static int
+virDomainDefIommufdParse(virDomainDef *def,
+                         xmlXPathContextPtr ctxt)
+{
+    int n;
+    g_autofree xmlNodePtr *nodes = NULL;
+
+    if ((n = virXPathNodeSet("./iommufd", ctxt, &nodes)) < 0)
+        return -1;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only one 'iommufd' element is supported"));
+        return -1;
+    }
+
+    if (n == 0)
+        return 0;
+
+    if (virXMLPropTristateBool(nodes[0], "enabled", VIR_XML_PROP_REQUIRED, &def->iommufd) < 0)
+        return -1;
+
+    return 0;
+}
+
 static virDomainDef *
 virDomainDefParseXML(xmlXPathContextPtr ctxt,
                      virDomainXMLOption *xmlopt,
@@ -19960,6 +19985,9 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         !def->cputune.emulatorpin &&
         !virDomainIOThreadIDArrayHasPin(def))
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO;
+
+    if (virDomainDefIommufdParse(def, ctxt) < 0)
+        return NULL;
 
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0)
         return NULL;
@@ -28173,6 +28201,22 @@ virDomainHubDefFormat(virBuffer *buf,
 
 
 static void
+virDomainDefIommufdFormat(virBuffer *buf,
+                          virDomainDef *def)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+    if (def->iommufd == VIR_TRISTATE_BOOL_ABSENT)
+        return;
+
+    virBufferAsprintf(&attrBuf, " enabled='%s'",
+                      virTristateBoolTypeToString(def->iommufd));
+
+    virXMLFormatElement(buf, "iommufd", &attrBuf, NULL);
+}
+
+
+static void
 virDomainResourceDefFormat(virBuffer *buf,
                            virDomainResourceDef *def)
 {
@@ -29720,6 +29764,8 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
 
     if (virDomainNumatuneFormatXML(buf, def->numa) < 0)
         return -1;
+
+    virDomainDefIommufdFormat(buf, def);
 
     virDomainResourceDefFormat(buf, def->resource);
 

@@ -263,6 +263,8 @@ mymain(void)
 
     DO_TEST("iothreadids");
 
+    DO_TEST("iommufd");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

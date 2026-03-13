@@ -3244,6 +3244,8 @@ struct _virDomainDef {
     virTristateSwitch apic_eoi;
     virDomainFeatureTCG *tcg_features;
 
+    virTristateBool iommufd;
+
     bool tseg_specified;
     unsigned long long tseg_size;
 
