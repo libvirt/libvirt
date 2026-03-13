@@ -2004,6 +2004,19 @@ virDomainDefValidateThrottleGroups(const virDomainDef *def)
 
 
 static int
+virDomainDefValidateIommufd(const virDomainDef *def)
+{
+    if (def->iommufd == VIR_TRISTATE_BOOL_NO && def->iommufd_fdgroup) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting 'fdgroup' when 'iommufd' is disabled is not supported."));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def,
                              virDomainXMLOption *xmlopt)
 {
@@ -2062,6 +2075,9 @@ virDomainDefValidateInternal(const virDomainDef *def,
         return -1;
 
     if (virDomainDefValidateThrottleGroups(def) < 0)
+        return -1;
+
+    if (virDomainDefValidateIommufd(def) < 0)
         return -1;
 
     return 0;

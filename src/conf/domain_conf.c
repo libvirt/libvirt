@@ -4242,6 +4242,8 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def->kvm_features);
     g_free(def->tcg_features);
 
+    g_free(def->iommufd_fdgroup);
+
     virBlkioDeviceArrayClear(def->blkio.devices,
                              def->blkio.ndevices);
     g_free(def->blkio.devices);
@@ -19905,6 +19907,8 @@ virDomainDefIommufdParse(virDomainDef *def,
     if (virXMLPropTristateBool(nodes[0], "enabled", VIR_XML_PROP_REQUIRED, &def->iommufd) < 0)
         return -1;
 
+    def->iommufd_fdgroup = virXMLPropString(nodes[0], "fdgroup");
+
     return 0;
 }
 
@@ -28211,6 +28215,8 @@ virDomainDefIommufdFormat(virBuffer *buf,
 
     virBufferAsprintf(&attrBuf, " enabled='%s'",
                       virTristateBoolTypeToString(def->iommufd));
+
+    virBufferEscapeString(&attrBuf, " fdgroup='%s'", def->iommufd_fdgroup);
 
     virXMLFormatElement(buf, "iommufd", &attrBuf, NULL);
 }

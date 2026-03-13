@@ -1377,6 +1377,9 @@
       <attribute name="enabled">
         <ref name="virYesNo"/>
       </attribute>
+      <optional>
+        <attribute name="fdgroup"/>
+      </optional>
     </element>
   </define>
 

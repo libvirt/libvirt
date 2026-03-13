@@ -3245,6 +3245,7 @@ struct _virDomainDef {
     virDomainFeatureTCG *tcg_features;
 
     virTristateBool iommufd;
+    char *iommufd_fdgroup;
 
     bool tseg_specified;
     unsigned long long tseg_size;

@@ -1389,7 +1389,7 @@ Host Device IOMMUFD
 
    <domain>
      ...
-     <iommufd enabled='yes'/>
+     <iommufd enabled='yes' fdgroup='iommu'/>
      ...
    </domain>
 
@@ -1402,6 +1402,12 @@ Host Device IOMMUFD
 
    This controls IOMMUFD usage for all host devices, each device can change this
    global default by setting ``iommufd`` attribute for ``driver`` element.
+
+   Optional ``fdgroup`` attribute can be used together with
+   `virDomainFDAssociate <html/libvirt-libvirt-domain.html#virDomainFDAssociate>`__
+   to pass /dev/iommu FD instead of letting libvirt to open it. Caller is
+   responsible for setting per-process locked memory accounting otherwise
+   starting multiple VMs with host devices using IOMMUFD may fail.
 
 Resource partitioning
 ---------------------

@@ -4,7 +4,7 @@
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
-  <iommufd enabled='yes'/>
+  <iommufd enabled='yes' fdgroup='iommu'/>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
