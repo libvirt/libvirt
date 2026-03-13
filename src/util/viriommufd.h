@@ -22,6 +22,6 @@
 
 #define VIR_IOMMU_DEV_PATH "/dev/iommu"
 
-int virIOMMUFDOpenDevice(void);
+int virIOMMUFDOpenDevice(bool privileged);
 
 bool virIOMMUFDSupported(void);

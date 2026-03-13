@@ -80,14 +80,14 @@ virIOMMUFDSetRLimitMode(int fd, bool processAccounting)
 }
 
 int
-virIOMMUFDOpenDevice(void)
+virIOMMUFDOpenDevice(bool privileged)
 {
     int fd = -1;
 
     if ((fd = open(VIR_IOMMU_DEV_PATH, O_RDWR | O_CLOEXEC)) < 0)
         virReportSystemError(errno, "%s", _("cannot open IOMMUFD device"));
 
-    if (virIOMMUFDSetRLimitMode(fd, true) < 0) {
+    if (privileged && virIOMMUFDSetRLimitMode(fd, true) < 0) {
         VIR_FORCE_CLOSE(fd);
         return -1;
     }
@@ -98,7 +98,7 @@ virIOMMUFDOpenDevice(void)
 #else
 
 int
-virIOMMUFDOpenDevice(void)
+virIOMMUFDOpenDevice(bool privileged G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("IOMMUFD is not supported on this platform"));

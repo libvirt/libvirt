@@ -7732,7 +7732,7 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
 
     VIR_DEBUG("Opening IOMMU FD for domain %s", vm->def->name);
 
-    if ((iommufd = virIOMMUFDOpenDevice()) < 0)
+    if ((iommufd = virIOMMUFDOpenDevice(priv->driver->privileged)) < 0)
         return -1;
 
     if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
