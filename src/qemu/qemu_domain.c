@@ -9835,7 +9835,7 @@ qemuDomainPrepareStorageSourceFDs(virStorageSource *src,
 {
     qemuDomainStorageSourcePrivate *srcpriv = NULL;
     virStorageType actualType = virStorageSourceGetActualType(src);
-    virStorageSourceFDTuple *fdt = NULL;
+    virDomainFDTuple *fdt = NULL;
     size_t i;
 
     if (actualType != VIR_STORAGE_TYPE_FILE &&

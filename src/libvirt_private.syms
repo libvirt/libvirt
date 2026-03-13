@@ -1180,7 +1180,6 @@ virStorageSourceChainHasManagedPR;
 virStorageSourceChainHasNVMe;
 virStorageSourceClear;
 virStorageSourceCopy;
-virStorageSourceFDTupleNew;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
 virStorageSourceHasBacking;
@@ -1231,6 +1230,10 @@ virDomainCheckpointObjListRemoveAll;
 virDomainCheckpointSetCurrent;
 virDomainCheckpointUpdateRelations;
 virDomainListCheckpoints;
+
+
+# conf/virdomainfd.h
+virDomainFDTupleNew;
 
 
 #conf/virdomainjob.h

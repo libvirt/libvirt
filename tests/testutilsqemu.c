@@ -712,7 +712,7 @@ testQemuInfoSetArgs(testQemuInfo *info,
             break;
 
         case ARG_FD_GROUP: {
-            virStorageSourceFDTuple *new = virStorageSourceFDTupleNew();
+            virDomainFDTuple *new = virDomainFDTupleNew();
             const char *fdname = va_arg(argptr, char *);
             VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
             bool writable = va_arg(argptr, int);

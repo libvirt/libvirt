@@ -24,6 +24,7 @@
 #include "storage_encryption_conf.h"
 #include "virbitmap.h"
 #include "virconftypes.h"
+#include "virdomainfd.h"
 #include "virenum.h"
 #include "virobject.h"
 #include "virpci.h"
@@ -269,27 +270,6 @@ struct _virStorageSourceSlice {
 void
 virStorageSourceSliceFree(virStorageSourceSlice *slice);
 
-struct _virStorageSourceFDTuple {
-    GObject parent;
-    int *fds;
-    size_t nfds;
-    int *testfds; /* populated by tests to ensure stable FDs */
-
-    bool writable;
-    bool tryRestoreLabel;
-
-    /* connection this FD tuple is associated with for auto-closing */
-    virConnect *conn;
-
-    /* original selinux label when we relabel the image */
-    char *selinuxLabel;
-};
-G_DECLARE_FINAL_TYPE(virStorageSourceFDTuple, vir_storage_source_fd_tuple, VIR, STORAGE_SOURCE_FD_TUPLE, GObject);
-
-virStorageSourceFDTuple *
-virStorageSourceFDTupleNew(void);
-
-
 typedef struct _virStorageSource virStorageSource;
 
 /* Stores information related to a host resource.  In the case of backing
@@ -442,7 +422,7 @@ struct _virStorageSource {
      * one event for it */
     bool thresholdEventWithIndex;
 
-    virStorageSourceFDTuple *fdtuple;
+    virDomainFDTuple *fdtuple;
 
     /* Setting 'seclabelSkipRemember' to true will cause the security driver to
      * not remember the security label even if it otherwise were to be

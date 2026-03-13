@@ -20269,7 +20269,7 @@ qemuDomainFDHashCloseConnect(virDomainObj *vm,
                              virConnectPtr conn)
 {
     qemuDomainObjPrivate *priv = QEMU_DOMAIN_PRIVATE(vm);
-    virStorageSourceFDTuple *data;
+    virDomainFDTuple *data;
     GHashTableIter htitr;
 
     if (!priv->fds)
@@ -20293,7 +20293,7 @@ qemuDomainFDAssociate(virDomainPtr domain,
 {
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
-    g_autoptr(virStorageSourceFDTuple) new = NULL;
+    g_autoptr(virDomainFDTuple) new = NULL;
     size_t i;
     int ret = -1;
 
@@ -20311,7 +20311,7 @@ qemuDomainFDAssociate(virDomainPtr domain,
 
     priv = vm->privateData;
 
-    new = virStorageSourceFDTupleNew();
+    new = virDomainFDTupleNew();
     new->nfds = nfds;
     new->fds = g_new0(int, new->nfds);
     for (i = 0; i < new->nfds; i++) {

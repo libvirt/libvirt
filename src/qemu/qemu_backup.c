@@ -876,7 +876,7 @@ qemuBackupBegin(virDomainObj *vm,
     priv->backup = g_steal_pointer(&def);
 
     if (pull && priv->backup->server->fdgroup) {
-        virStorageSourceFDTuple *fdt = NULL;
+        virDomainFDTuple *fdt = NULL;
         VIR_AUTOCLOSE fdcopy = -1;
 
         if (!(fdt = virHashLookup(priv->fds, priv->backup->server->fdgroup))) {
