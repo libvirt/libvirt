@@ -7749,9 +7749,11 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
  *
  * Find passed FD via virDomainFDAssociate() API for the VM.
  *
+ * Exported only to be used in tests.
+ *
  * Returns: 0 on success, -1 on failure
  */
-static int
+int
 qemuProcessGetPassedIommuFd(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -7771,10 +7773,14 @@ qemuProcessGetPassedIommuFd(virDomainObj *vm)
         return -1;
     }
 
-    iommufd = dup(fdt->fds[0]);
+    if (fdt->testfds) {
+        iommufd = dup2(fdt->fds[0], fdt->testfds[0]);
+    } else {
+        iommufd = dup(fdt->fds[0]);
 
-    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
-        return -1;
+        if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
+            return -1;
+    }
 
     priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
 

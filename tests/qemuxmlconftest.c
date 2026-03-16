@@ -28,6 +28,9 @@
 #define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"
 
+#define LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW
+#include "qemu/qemu_processpriv.h"
+
 #include "testutilsqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -98,7 +101,9 @@ testQemuPrepareHostdev(virDomainObj *vm)
         }
     }
 
-    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
+    if (vm->def->iommufd_fdgroup) {
+        ignore_value(qemuProcessGetPassedIommuFd(vm));
+    } else if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
         int iommufd = 0;
         priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
     }
@@ -2815,6 +2820,8 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("iommufd");
     DO_TEST_CAPS_LATEST("iommufd-q35");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("iommufd-q35-fd", "x86_64",
+                                  ARG_FD_GROUP, "iommu", false, 1, 20);
     DO_TEST_CAPS_ARCH_LATEST("iommufd-virt", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("iommufd-virt-pci-bus-single", "aarch64");
 
