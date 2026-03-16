@@ -7744,6 +7744,44 @@ qemuProcessOpenIommuFd(virDomainObj *vm)
 }
 
 /**
+ * qemuProcessGetPassedIommuFd:
+ * @vm: domain object
+ *
+ * Find passed FD via virDomainFDAssociate() API for the VM.
+ *
+ * Returns: 0 on success, -1 on failure
+ */
+static int
+qemuProcessGetPassedIommuFd(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainFDTuple *fdt = virHashLookup(priv->fds, vm->def->iommufd_fdgroup);
+    VIR_AUTOCLOSE iommufd = -1;
+
+    if (!fdt) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("file descriptor group '%1$s' was not associated with the domain"),
+                       vm->def->iommufd_fdgroup);
+        return -1;
+    }
+
+    if (fdt->nfds != 1) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Only one file descriptor needs to be associated with iommufd"));
+        return -1;
+    }
+
+    iommufd = dup(fdt->fds[0]);
+
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
+        return -1;
+
+    priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
+
+    return 0;
+}
+
+/**
  * qemuProcessOpenVfioDeviceFd:
  * @hostdev: host device definition
  *
@@ -7798,9 +7836,12 @@ qemuProcessPrepareHostHostdev(virDomainObj *vm)
     }
 
     /* Open IOMMU FD */
-    if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def) &&
-        qemuProcessOpenIommuFd(vm) < 0) {
-        return -1;
+    if (vm->def->iommufd_fdgroup) {
+        if (qemuProcessGetPassedIommuFd(vm) < 0)
+            return -1;
+    } else if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
+        if (qemuProcessOpenIommuFd(vm) < 0)
+            return -1;
     }
 
     return 0;

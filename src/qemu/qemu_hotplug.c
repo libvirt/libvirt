@@ -1615,7 +1615,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         if (qemuProcessOpenVfioDeviceFd(vm, hostdev) < 0)
             goto error;
 
-        if (!priv->iommufdState) {
+        if (!priv->iommufdState && !vm->def->iommufd_fdgroup) {
             if (qemuProcessOpenIommuFd(vm) < 0)
                 goto error;
 
@@ -5041,7 +5041,7 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
         }
     }
 
-    if (priv->iommufdState &&
+    if (priv->iommufdState && !vm->def->iommufd_fdgroup &&
         !virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
         qemuDomainObjEnterMonitor(vm);
         ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
