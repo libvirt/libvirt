@@ -4301,7 +4301,8 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                               unsigned int granularity,
                               unsigned long long buf_size,
                               bool shallow,
-                              bool syncWrite)
+                              bool syncWrite,
+                              bool targetIsZero)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -4333,6 +4334,7 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                                      "S:copy-mode", copymode,
                                      "T:auto-finalize", autofinalize,
                                      "T:auto-dismiss", autodismiss,
+                                     "B:target-is-zero", targetIsZero,
                                      NULL);
     if (!cmd)
         return -1;

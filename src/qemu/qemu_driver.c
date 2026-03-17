@@ -14541,7 +14541,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                                     qemuBlockStorageSourceGetEffectiveNodename(disk->src),
                                     bandwidth,
                                     granularity, buf_size, mirror_shallow,
-                                    syncWrites);
+                                    syncWrites, false);
 
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(vm);

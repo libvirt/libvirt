@@ -1245,7 +1245,8 @@ qemuMonitorBlockdevMirror(qemuMonitor *mon,
                           unsigned int granularity,
                           unsigned long long buf_size,
                           bool shallow,
-                          bool syncWrite)
+                          bool syncWrite,
+                          bool targetIsZero)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
 int

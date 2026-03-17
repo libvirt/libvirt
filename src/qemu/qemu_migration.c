@@ -1173,7 +1173,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
                                             qemuBlockStorageSourceGetEffectiveNodename(copysrc),
                                             NULL,
                                             mirror_speed, 0, 0, mirror_shallow,
-                                            syncWrites);
+                                            syncWrites, false);
 
     if (mon_ret != 0)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
