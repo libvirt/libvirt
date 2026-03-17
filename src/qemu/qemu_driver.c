@@ -10919,7 +10919,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
      * Consume any cookie we were able to decode though
      */
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, NULL,
-                                  NULL, dconnuri, uri, NULL, NULL, NULL, NULL, 0,
+                                  NULL, dconnuri, uri, NULL, NULL, NULL, NULL, NULL, 0,
                                   NULL,
                                   migParams, cookie, cookielen,
                                   NULL, NULL, /* No output cookies in v2 */
@@ -10995,7 +10995,7 @@ qemuDomainMigrateBegin3(virDomainPtr domain,
     }
 
     return qemuMigrationSrcBegin(domain->conn, vm, xmlin, dname,
-                                 cookieout, cookieoutlen, NULL, NULL, flags);
+                                 cookieout, cookieoutlen, NULL, NULL, NULL, flags);
 }
 
 static char *
@@ -11010,6 +11010,7 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
     const char *dname = NULL;
     g_autofree const char **migrate_disks = NULL;
     g_autofree const char **migrate_disks_detect_zeroes = NULL;
+    g_autofree const char **migrate_disks_target_zero = NULL;
     virDomainObj *vm;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
@@ -11031,6 +11032,10 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
                                 VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES,
                                 &migrate_disks_detect_zeroes);
 
+    virTypedParamsGetStringList(params, nparams,
+                                VIR_MIGRATE_PARAM_MIGRATE_DISKS_TARGET_ZERO,
+                                &migrate_disks_target_zero);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
@@ -11042,6 +11047,7 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
     return qemuMigrationSrcBegin(domain->conn, vm, xmlin, dname,
                                  cookieout, cookieoutlen,
                                  migrate_disks, migrate_disks_detect_zeroes,
+                                 migrate_disks_target_zero,
                                  flags);
 }
 
@@ -11319,7 +11325,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
         goto cleanup;
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, xmlin, NULL,
-                                  dconnuri, uri, NULL, NULL, NULL, NULL, 0,
+                                  dconnuri, uri, NULL, NULL, NULL, NULL, NULL, 0,
                                   NULL, migParams,
                                   cookiein, cookieinlen,
                                   cookieout, cookieoutlen,
@@ -11351,6 +11357,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     const char *listenAddress = NULL;
     g_autofree const char **migrate_disks = NULL;
     g_autofree const char **migrate_disks_detect_zeroes = NULL;
+    g_autofree const char **migrate_disks_target_zero = NULL;
     unsigned long long bandwidth = 0;
     int nbdPort = 0;
     g_autoptr(qemuMigrationParams) migParams = NULL;
@@ -11410,6 +11417,9 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     virTypedParamsGetStringList(params, nparams,
                                 VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES,
                                 &migrate_disks_detect_zeroes);
+    virTypedParamsGetStringList(params, nparams,
+                                VIR_MIGRATE_PARAM_MIGRATE_DISKS_TARGET_ZERO,
+                                &migrate_disks_target_zero);
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) ||
         migrate_disks) {
@@ -11432,8 +11442,10 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
 
     ret = qemuMigrationSrcPerform(driver, dom->conn, vm, dom_xml, persist_xml,
                                   dconnuri, uri, graphicsuri, listenAddress,
-                                  migrate_disks, migrate_disks_detect_zeroes, nbdPort,
-                                  nbdURI, migParams,
+                                  migrate_disks,
+                                  migrate_disks_detect_zeroes,
+                                  migrate_disks_target_zero,
+                                  nbdPort, nbdURI, migParams,
                                   cookiein, cookieinlen, cookieout, cookieoutlen,
                                   flags, dname, bandwidth, true);
  cleanup:

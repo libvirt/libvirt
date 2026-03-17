@@ -1286,6 +1286,18 @@ typedef enum {
 # define VIR_MIGRATE_PARAM_MIGRATE_DISKS_DETECT_ZEROES    "migrate_disks_detect_zeroes"
 
 /**
+ * VIR_MIGRATE_PARAM_MIGRATE_DISKS_TARGET_ZERO:
+ *
+ * virDomainMigrate* params multiple field: The multiple values that list
+ * the block devices for which the hypervisor is allowed to assume that the
+ * destination image was zeroed out and thus may skip zeroing it beforehand.
+ * At the moment this is only supported by the QEMU driver.
+ *
+ * Since: 12.2.0
+ */
+# define VIR_MIGRATE_PARAM_MIGRATE_DISKS_TARGET_ZERO "migrate_disks_target_zero"
+
+/**
  * VIR_MIGRATE_PARAM_DISKS_PORT:
  *
  * virDomainMigrate* params field: port that destination server should use
