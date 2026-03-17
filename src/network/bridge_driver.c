@@ -2080,8 +2080,9 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
         }
     }
 
-    /* If forward.type != NONE, turn on global IP forwarding */
-    if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
+    /* If forward.type != NONE and != OPEN, turn on global IP forwarding */
+    if (def->forward.type != VIR_NETWORK_FORWARD_NONE &&
+        def->forward.type != VIR_NETWORK_FORWARD_OPEN) {
         if (v6present && !virNetDevIPCheckIPv6Forwarding())
             goto error; /* Precise error message already provided */
 
