@@ -143,6 +143,7 @@
   <flag name='virtio-iommu.aw-bits'/>
   <flag name='iommufd'/>
   <flag name='uefi-vars'/>
+  <flag name='blockdev-mirror.target-is-zero'/>
   <version>10001000</version>
   <microcodeVersion>39100286</microcodeVersion>
   <package>v10.1.0</package>

@@ -764,6 +764,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "uefi-vars", /* QEMU_CAPS_DEVICE_UEFI_VARS */
               "query-block-flat", /* QEMU_CAPS_QUERY_BLOCK_FLAT */
               "amd-iommu.xtsup", /* QEMU_CAPS_AMD_IOMMU_XTSUP */
+
+              /* 495 */
+              "blockdev-mirror.target-is-zero", /* QEMU_CAPS_BLOCKDEV_MIRROR_TARGET_IS_ZERO */
     );
 
 
@@ -1648,6 +1651,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-add/arg-type/+qcow2/discard-no-unref", QEMU_CAPS_QCOW2_DISCARD_NO_UNREF },
     { "blockdev-add/arg-type/+virtio-blk-vhost-vdpa/$fdset", QEMU_CAPS_DEVICE_VIRTIO_BLK_VHOST_VDPA},
+    { "blockdev-mirror/arg-type/target-is-zero", QEMU_CAPS_BLOCKDEV_MIRROR_TARGET_IS_ZERO },
     { "calc-dirty-rate/arg-type/mode", QEMU_CAPS_DIRTYRATE_MODE },
     { "chardev-add/arg-type/backend/+socket/data/reconnect-ms", QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS },
     { "chardev-add/arg-type/backend/+qemu-vdagent", QEMU_CAPS_CHARDEV_QEMU_VDAGENT },

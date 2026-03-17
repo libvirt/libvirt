@@ -196,6 +196,7 @@
   <flag name='iommufd'/>
   <flag name='uefi-vars'/>
   <flag name='amd-iommu.xtsup'/>
+  <flag name='blockdev-mirror.target-is-zero'/>
   <version>10001000</version>
   <microcodeVersion>43100286</microcodeVersion>
   <package>v10.1.0</package>
