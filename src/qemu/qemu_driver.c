@@ -14291,13 +14291,15 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     virStorageSource *mirrorBacking = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
     bool syncWrites = !!(flags & VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES);
+    bool targetIsZero = !!(flags & VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED);
     int rc = 0;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
                   VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB |
-                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES, -1);
+                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES |
+                  VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED, -1);
 
     if (virStorageSourceIsRelative(mirror)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -14330,6 +14332,13 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (virStorageSourceIsFD(mirror)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("copy to a FD passed disk source is not yet supported"));
+        goto endjob;
+    }
+
+    if (targetIsZero &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_MIRROR_TARGET_IS_ZERO)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("this qemu doesn't support 'VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED'"));
         goto endjob;
     }
 
@@ -14541,7 +14550,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                                     qemuBlockStorageSourceGetEffectiveNodename(disk->src),
                                     bandwidth,
                                     granularity, buf_size, mirror_shallow,
-                                    syncWrites, false);
+                                    syncWrites, targetIsZero);
 
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(vm);
@@ -14676,7 +14685,8 @@ qemuDomainBlockCopy(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
                   VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
                   VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB |
-                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES, -1);
+                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES |
+                  VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED, -1);
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,

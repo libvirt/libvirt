@@ -5004,6 +5004,13 @@ typedef enum {
      * Since: 8.0.0
      */
     VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES = 1 << 3,
+
+    /* Destination of the copy is zeroed (any read returns only 0x00 bytes) so
+     * the hypervisor may optimize out clearing of the target image.
+     *
+     * Since: 12.2.0 */
+    VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED = 1 << 4,
+
 } virDomainBlockCopyFlags;
 
 /**

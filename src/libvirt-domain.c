@@ -11261,6 +11261,10 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * the destination storage is slower. This may impact performance of writes
  * while the blockjob is running.
  *
+ * If @flags contains VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED the hypervisor may
+ * assume that the target image was already zeroed out (any read will return
+ * 0x00 bytes) and thus may skip this step.
+ *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or the device target shorthand (the
