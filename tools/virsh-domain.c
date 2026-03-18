@@ -2714,6 +2714,10 @@ static const vshCmdOptDef opts_blockcopy[] = {
      .type = VSH_OT_BOOL,
      .help = N_("print the XML used to start the copy job instead of starting the job")
     },
+    {.name = "dest-is-zero",
+     .type = VSH_OT_BOOL,
+     .help = N_("the destination image is already zeroed; hypervisor may skip pre-zeroing")
+    },
     {.name = NULL}
 };
 
@@ -2737,6 +2741,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     bool bytes = vshCommandOptBool(cmd, "bytes");
     bool transientjob = vshCommandOptBool(cmd, "transient-job");
     bool syncWrites = vshCommandOptBool(cmd, "synchronous-writes");
+    bool destIsZero = vshCommandOptBool(cmd, "dest-is-zero");
     int timeout = 0;
     const char *path = NULL;
     int abort_flags = 0;
@@ -2773,6 +2778,8 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
+    if (destIsZero)
+        flags |= VIR_DOMAIN_BLOCK_COPY_TARGET_ZEROED;
 
     if (timeout)
         blocking = true;
@@ -2818,7 +2825,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml ||
-        transientjob || syncWrites || print_xml) {
+        transientjob || syncWrites || destIsZero || print_xml) {
         /* New API */
         if (bandwidth || granularity || buf_size) {
             params = g_new0(virTypedParameter, 3);
