@@ -349,6 +349,7 @@ virDomainDefHasOldStyleROUEFI;
 virDomainDefHasOldStyleUEFI;
 virDomainDefHasPCIHostdev;
 virDomainDefHasPCIHostdevWithIOMMUFD;
+virDomainDefHasPCIHostdevWithoutIOMMUFD;
 virDomainDefHasTimer;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;

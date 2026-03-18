@@ -9284,10 +9284,17 @@ qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
 }
 
 
+/**
+ * qemuDomainNeedsVFIO:
+ * @def: domain definition to check
+ *
+ * Check the domain definition to figure out if QEMU needs access
+ * to /dev/vfio/vfio. It's not required if IOMMUFD is used.
+ */
 bool
 qemuDomainNeedsVFIO(const virDomainDef *def)
 {
-    return virDomainDefHasPCIHostdev(def) ||
+    return virDomainDefHasPCIHostdevWithoutIOMMUFD(def) ||
         virDomainDefHasMdevHostdev(def) ||
         virDomainDefHasNVMeDisk(def);
 }

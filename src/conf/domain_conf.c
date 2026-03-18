@@ -32765,6 +32765,20 @@ virDomainDefHasPCIHostdevWithIOMMUFD(const virDomainDef *def)
 
 
 bool
+virDomainDefHasPCIHostdevWithoutIOMMUFD(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (virHostdevIsPCIDeviceWithoutIOMMUFD(def->hostdevs[i]))
+            return true;
+    }
+
+    return false;
+}
+
+
+bool
 virDomainDefHasMdevHostdev(const virDomainDef *def)
 {
     size_t i;

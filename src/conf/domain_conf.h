@@ -4675,6 +4675,9 @@ bool
 virDomainDefHasPCIHostdevWithIOMMUFD(const virDomainDef *def);
 
 bool
+virDomainDefHasPCIHostdevWithoutIOMMUFD(const virDomainDef *def);
+
+bool
 virDomainDefHasMdevHostdev(const virDomainDef *def);
 
 bool
