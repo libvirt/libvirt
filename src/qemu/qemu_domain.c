@@ -10120,10 +10120,12 @@ qemuDomainPrepareHostdevSCSI(virDomainHostdevDef *hostdev,
 
 
 static int
-qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
+qemuDomainPrepareHostdevPCI(const virDomainDef *def,
+                            virDomainHostdevDef *hostdev,
                             virQEMUCaps *qemuCaps)
 {
     virDeviceHostdevPCIDriverName *driverName = &hostdev->source.subsys.u.pci.driver.name;
+    virDomainHostdevSubsysPCI *pcisrc = &hostdev->source.subsys.u.pci;
 
     /* assign defaults for hostdev passthrough */
     switch (*driverName) {
@@ -10160,12 +10162,16 @@ qemuDomainPrepareHostdevPCI(virDomainHostdevDef *hostdev,
         return -1;
     }
 
+    if (pcisrc->driver.iommufd == VIR_TRISTATE_BOOL_ABSENT)
+        pcisrc->driver.iommufd = def->iommufd;
+
     return 0;
 }
 
 
 int
-qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
+qemuDomainPrepareHostdev(const virDomainDef *def,
+                         virDomainHostdevDef *hostdev,
                          qemuDomainObjPrivate *priv)
 {
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -10175,7 +10181,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         return qemuDomainPrepareHostdevSCSI(hostdev, priv);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-        return qemuDomainPrepareHostdevPCI(hostdev, priv->qemuCaps);
+        return qemuDomainPrepareHostdevPCI(def, hostdev, priv->qemuCaps);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:

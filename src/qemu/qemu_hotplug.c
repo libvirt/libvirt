@@ -2891,7 +2891,7 @@ qemuDomainAttachHostDevice(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuDomainPrepareHostdev(hostdev, vm->privateData) < 0)
+    if (qemuDomainPrepareHostdev(vm->def, hostdev, vm->privateData) < 0)
         return -1;
 
     switch (hostdev->source.subsys.type) {

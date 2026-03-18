@@ -1040,7 +1040,8 @@ qemuDomainDiskCachemodeFlags(virDomainDiskCache cachemode,
                              bool *noflush);
 
 int
-qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
+qemuDomainPrepareHostdev(const virDomainDef *def,
+                         virDomainHostdevDef *hostdev,
                          qemuDomainObjPrivate *priv);
 
 char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivate *priv);

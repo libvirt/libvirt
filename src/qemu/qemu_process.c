@@ -6087,7 +6087,7 @@ qemuProcessPrepareDomainNetwork(virDomainObj *vm)
                 /* For hostdev present in qemuProcessPrepareDomain() phase this was
                  * done already, but this code runs after that, so we have to call
                  * it ourselves. */
-                if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
+                if (qemuDomainPrepareHostdev(def, hostdev, priv) < 0)
                     return -1;
 
                 virDomainHostdevInsert(def, hostdev);
@@ -6875,7 +6875,7 @@ qemuProcessPrepareDomainHostdevs(virDomainObj *vm,
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDef *hostdev = vm->def->hostdevs[i];
 
-        if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
+        if (qemuDomainPrepareHostdev(vm->def, hostdev, priv) < 0)
             return -1;
     }
 
