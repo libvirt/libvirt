@@ -33026,6 +33026,33 @@ virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
 }
 
 
+static bool
+virHostdevPCIDevHasIOMMUFD(const virDomainHostdevDef *hostdev)
+{
+    return hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
+        hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES;
+}
+
+
+static bool
+virHostdevIsPCIDeviceImpl(const virDomainHostdevDef *hostdev,
+                          virTristateBool iommufd)
+{
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return false;
+
+    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+        return false;
+
+    if (iommufd != VIR_TRISTATE_BOOL_ABSENT) {
+        bool hasIOMMUFD = iommufd == VIR_TRISTATE_BOOL_YES;
+        return hasIOMMUFD == virHostdevPCIDevHasIOMMUFD(hostdev);
+    }
+
+    return true;
+}
+
+
 /**
  * virHostdevIsPCIDevice:
  * @hostdev: host device to check
@@ -33035,8 +33062,7 @@ virHostdevIsMdevDevice(const virDomainHostdevDef *hostdev)
 bool
 virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 {
-    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI;
+    return virHostdevIsPCIDeviceImpl(hostdev, VIR_TRISTATE_BOOL_ABSENT);
 }
 
 
@@ -33049,9 +33075,7 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 bool
 virHostdevIsPCIDeviceWithIOMMUFD(const virDomainHostdevDef *hostdev)
 {
-    return virHostdevIsPCIDevice(hostdev) &&
-        hostdev->source.subsys.u.pci.driver.name == VIR_DEVICE_HOSTDEV_PCI_DRIVER_NAME_VFIO &&
-        hostdev->source.subsys.u.pci.driver.iommufd == VIR_TRISTATE_BOOL_YES;
+    return virHostdevIsPCIDeviceImpl(hostdev, VIR_TRISTATE_BOOL_YES);
 }
 
 
