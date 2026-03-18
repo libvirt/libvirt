@@ -8259,8 +8259,14 @@ getPPC64MemLockLimitBytes(virDomainDef *def)
         passthroughLimit = maxMemory +
                            128 * (1ULL<<30) / 512 * nPCIHostBridges +
                            8192;
-    } else if (qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def)) {
-        /* For regular (non-NVLink2 present) VFIO passthrough, the value
+    } else if (virDomainDefHasPCIHostdev(def) ||
+               virDomainDefHasMdevHostdev(def) ||
+               virDomainDefHasNVMeDisk(def) ||
+               virDomainDefHasVDPANet(def)) {
+        /* Not using qemuDomainNeedsVFIO() as that doesn't take PCI host
+         * devices with IOMMFD into account.
+         *
+         * For regular (non-NVLink2 present) VFIO passthrough, the value
          * of passthroughLimit is:
          *
          * passthroughLimit := max( 2 GiB * #PHBs,                       (c)
