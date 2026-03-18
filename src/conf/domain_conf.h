@@ -4735,6 +4735,9 @@ virHostdevIsPCIDevice(const virDomainHostdevDef *hostdev)
 bool
 virHostdevIsPCIDeviceWithIOMMUFD(const virDomainHostdevDef *hostdev)
     ATTRIBUTE_NONNULL(1);
+bool
+virHostdevIsPCIDeviceWithoutIOMMUFD(const virDomainHostdevDef *hostdev)
+    ATTRIBUTE_NONNULL(1);
 
 void
 virDomainObjGetMessagesIOErrorsChain(virStorageSource *src,

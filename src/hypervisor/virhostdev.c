@@ -2533,10 +2533,17 @@ virHostdevUpdateActiveNVMeDevices(virHostdevManager *hostdev_mgr,
     goto cleanup;
 }
 
+/**
+ * virHostdevNeedsVFIO:
+ * @hostdev: host device to check
+ *
+ * Returns true if using the @hostdev requires access to /dev/vfio/vfio,
+ * otherwise false.
+ */
 bool
 virHostdevNeedsVFIO(const virDomainHostdevDef *hostdev)
 {
-    return virHostdevIsPCIDevice(hostdev) ||
+    return virHostdevIsPCIDeviceWithoutIOMMUFD(hostdev) ||
         virHostdevIsMdevDevice(hostdev);
 }
 
