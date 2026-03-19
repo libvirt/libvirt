@@ -513,13 +513,13 @@ hypervSerializeEprParam(hypervParam *p, hypervPrivate *priv,
         return -1;
     }
 
-    if (!ws_xml_ns_add(xmlNodeParam, "http://schemas.xmlsoap.org/ws/2004/08/addressing", "a")) {
+    if (!ws_xml_ns_add(xmlNodeParam, XML_NS_ADDRESSING, "a")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not set namespace address for xmlNodeParam"));
         return -1;
     }
 
-    if (!ws_xml_ns_add(xmlNodeParam, "http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd", "w")) {
+    if (!ws_xml_ns_add(xmlNodeParam, XML_NS_WS_MAN, "w")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not set wsman namespace address for xmlNodeParam"));
         return -1;
