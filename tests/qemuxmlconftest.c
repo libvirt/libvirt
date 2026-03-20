@@ -2977,8 +2977,10 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("ppc64-default-cpu-tcg-pseries-3.1", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-default-cpu-kvm-pseries-4.2", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-default-cpu-tcg-pseries-4.2", "ppc64");
-    DO_TEST_CAPS_ARCH_LATEST("s390-default-cpu-kvm-ccw-virtio-4.2", "s390x");
-    DO_TEST_CAPS_ARCH_LATEST("s390-default-cpu-tcg-ccw-virtio-4.2", "s390x");
+    DO_TEST_CAPS_ARCH_VER("s390-default-cpu-kvm-ccw-virtio-4.2", "s390x", "10.0.0");
+    DO_TEST_CAPS_ARCH_VER("s390-default-cpu-tcg-ccw-virtio-4.2", "s390x", "10.0.0");
+    DO_TEST_CAPS_ARCH_LATEST("s390-default-cpu-kvm-ccw-virtio-10.0", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("s390-default-cpu-tcg-ccw-virtio-10.0", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-default-cpu-kvm-pc", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-default-cpu-tcg-pc", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-default-cpu-kvm-q35", "x86_64");
