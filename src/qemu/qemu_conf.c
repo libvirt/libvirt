@@ -1808,7 +1808,7 @@ qemuTranslateSnapshotDiskSourcePool(virDomainSnapshotDiskDef *def)
     if (def->src->type != VIR_STORAGE_TYPE_VOLUME)
         return 0;
 
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                    _("Snapshots are not yet supported with 'pool' volumes"));
     return -1;
 }
