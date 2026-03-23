@@ -17928,6 +17928,20 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         if (!visitBacking)
             break;
+
+        if (virStorageSourceIsBacking(n->dataFileStore)) {
+            qemuDomainGetStatsBlockExportHeader(disk, n->dataFileStore,
+                                                *recordnr, params);
+
+            qemuDomainGetStatsOneBlock(cfg, dom, params,
+                                       qemuBlockStorageSourceGetEffectiveNodename(n->dataFileStore),
+                                       n->dataFileStore,
+                                       *recordnr, stats);
+
+            qemuDomainGetStatsBlockExportBackendStorage(qemuBlockStorageSourceGetStorageNodename(n->dataFileStore),
+                                                        stats, *recordnr, params);
+            (*recordnr)++;
+        }
     }
 
     /* in blockdev mode where we can properly and uniquely identify images we
