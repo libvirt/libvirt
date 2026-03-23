@@ -2468,9 +2468,6 @@ qemuBuildFSStr(virDomainFSDef *fs)
         if (fs->dmode) {
             virBufferAsprintf(&opt, ",dmode=%04o", fs->dmode);
         }
-    } else if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE) {
-        /* removed since qemu 4.0.0 see v3.1.0-29-g93aee84f57 */
-        virBufferAddLit(&opt, "handle");
     }
 
     if (fs->wrpolicy)
