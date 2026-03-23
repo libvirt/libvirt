@@ -2478,7 +2478,7 @@ qemuBuildFSStr(virDomainFSDef *fs)
     virQEMUBuildBufferEscapeComma(&opt, fs->src->path);
 
     if (fs->readonly)
-        virBufferAddLit(&opt, ",readonly");
+        virBufferAddLit(&opt, ",readonly=on");
 
     return virBufferContentAndReset(&opt);
 }
