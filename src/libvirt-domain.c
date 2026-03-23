@@ -6681,12 +6681,15 @@ virDomainMemoryPeek(virDomainPtr dom,
  * Since: 0.8.1
  */
 int
-virDomainGetBlockInfo(virDomainPtr domain, const char *disk,
-                      virDomainBlockInfoPtr info, unsigned int flags)
+virDomainGetBlockInfo(virDomainPtr domain,
+                      const char *disk,
+                      virDomainBlockInfoPtr info,
+                      unsigned int flags)
 {
     virConnectPtr conn;
 
-    VIR_DOMAIN_DEBUG(domain, "info=%p, flags=0x%x", info, flags);
+    VIR_DOMAIN_DEBUG(domain, "disk='%s', info=%p, flags=0x%x",
+                     disk, info, flags);
 
     virResetLastError();
 
