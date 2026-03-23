@@ -396,7 +396,6 @@
     <filesystem supported='yes'>
       <enum name='driverType'>
         <value>path</value>
-        <value>handle</value>
         <value>virtiofs</value>
       </enum>
     </filesystem>

@@ -6916,8 +6916,7 @@ virQEMUCapsFillDomainDeviceFSCaps(virQEMUCaps *qemuCaps,
                                  VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS);
 
     VIR_DOMAIN_CAPS_ENUM_SET(filesystem->driverType,
-                             VIR_DOMAIN_FS_DRIVER_TYPE_PATH,
-                             VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE);
+                             VIR_DOMAIN_FS_DRIVER_TYPE_PATH);
 }
 
 
