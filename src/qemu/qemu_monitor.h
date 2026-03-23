@@ -851,6 +851,7 @@ struct _qemuBlockStats {
     unsigned long long wr_total_times;
     unsigned long long flush_req;
     unsigned long long flush_total_times;
+
     unsigned long long capacity;
     unsigned long long physical;
 
