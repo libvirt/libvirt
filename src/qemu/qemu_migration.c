@@ -2700,7 +2700,8 @@ qemuMigrationSrcBeginXML(virDomainObj *vm,
     if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
         return NULL;
 
-    if (qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm) < 0)
+    if (!(flags & VIR_MIGRATE_OFFLINE) &&
+        qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm) < 0)
         return NULL;
 
     if (qemuMigrationCookieFormat(mig, driver, vm,
