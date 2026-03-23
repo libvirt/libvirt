@@ -30,6 +30,13 @@
       <target dir='/import/from/host2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </filesystem>
+    <filesystem type='mount' accessmode='mapped'>
+      <driver type='path'/>
+      <source dir='/export/to/guest-ro'/>
+      <target dir='/import/from/host-ro'/>
+      <readonly/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </filesystem>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
