@@ -35,15 +35,9 @@
       <target dir='/import/from/host2'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0002'/>
     </filesystem>
-    <filesystem type='mount' accessmode='passthrough'>
-      <driver type='handle' wrpolicy='immediate'/>
-      <source dir='/export/to/guest3'/>
-      <target dir='/import/from/host3'/>
-      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0003'/>
-    </filesystem>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>
-      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0004'/>
+      <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0003'/>
     </memballoon>
     <panic model='s390'/>
   </devices>

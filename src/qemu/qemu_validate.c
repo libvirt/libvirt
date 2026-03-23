@@ -5136,13 +5136,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
         break;
 
     case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
-        if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only supports passthrough accessmode"));
-            return -1;
-        }
-        break;
-
+        /* removed since qemu 4.0.0 see v3.1.0-29-g93aee84f57 */
     case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
     case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
     case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
