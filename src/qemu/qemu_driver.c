@@ -10664,6 +10664,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             info->allocation = entry->physical;
 
         if (qemuDomainStorageUpdatePhysical(cfg, vm, disk->src) == 0) {
+            VIR_DEBUG("updating physical disk size to '%llu'", disk->src->physical);
             info->physical = disk->src->physical;
         } else {
             info->physical = entry->physical;
