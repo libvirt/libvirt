@@ -727,7 +727,8 @@ virSecurityManagerReleaseLabel(virSecurityManager *mgr,
 
 
 static int virSecurityManagerCheckModel(virSecurityManager *mgr,
-                                        char *secmodel)
+                                        char *secmodel,
+                                        bool relabel)
 {
     g_autofree virSecurityManager **sec_managers = NULL;
     size_t i;
@@ -744,6 +745,11 @@ static int virSecurityManagerCheckModel(virSecurityManager *mgr,
         }
     }
 
+    if (relabel == false) {
+        VIR_INFO("Ignoring seclabel with model %s and relabel=no", secmodel);
+        return 0;
+    }
+
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                    _("Security driver model '%1$s' is not available"),
                    secmodel);
@@ -758,8 +764,11 @@ virSecurityManagerCheckDomainLabel(virSecurityManager *mgr,
     size_t i;
 
     for (i = 0; i < def->nseclabels; i++) {
-        if (virSecurityManagerCheckModel(mgr, def->seclabels[i]->model) < 0)
+        if (virSecurityManagerCheckModel(mgr,
+                                         def->seclabels[i]->model,
+                                         def->seclabels[i]->relabel) < 0) {
             return -1;
+        }
     }
 
     return 0;
@@ -773,8 +782,11 @@ virSecurityManagerCheckDiskLabel(virSecurityManager *mgr,
     size_t i;
 
     for (i = 0; i < disk->src->nseclabels; i++) {
-        if (virSecurityManagerCheckModel(mgr, disk->src->seclabels[i]->model) < 0)
+        if (virSecurityManagerCheckModel(mgr,
+                                         disk->src->seclabels[i]->model,
+                                         disk->src->seclabels[i]->relabel) < 0) {
             return -1;
+        }
     }
 
     return 0;
@@ -788,8 +800,11 @@ virSecurityManagerCheckChardevLabel(virSecurityManager *mgr,
     size_t i;
 
     for (i = 0; i < dev->source->nseclabels; i++) {
-        if (virSecurityManagerCheckModel(mgr, dev->source->seclabels[i]->model) < 0)
+        if (virSecurityManagerCheckModel(mgr,
+                                         dev->source->seclabels[i]->model,
+                                         dev->source->seclabels[i]->relabel) < 0) {
             return -1;
+        }
     }
 
     return 0;
