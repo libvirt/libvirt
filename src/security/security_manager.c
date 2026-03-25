@@ -729,9 +729,8 @@ virSecurityManagerReleaseLabel(virSecurityManager *mgr,
 static int virSecurityManagerCheckModel(virSecurityManager *mgr,
                                         char *secmodel)
 {
-    int ret = -1;
+    g_autofree virSecurityManager **sec_managers = NULL;
     size_t i;
-    virSecurityManager **sec_managers = NULL;
 
     if (STREQ_NULLABLE(secmodel, "none"))
         return 0;
@@ -741,17 +740,14 @@ static int virSecurityManagerCheckModel(virSecurityManager *mgr,
 
     for (i = 0; sec_managers[i]; i++) {
         if (STREQ_NULLABLE(secmodel, sec_managers[i]->drv->name)) {
-            ret = 0;
-            goto cleanup;
+            return 0;
         }
     }
 
     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                    _("Security driver model '%1$s' is not available"),
                    secmodel);
- cleanup:
-    VIR_FREE(sec_managers);
-    return ret;
+    return -1;
 }
 
 
