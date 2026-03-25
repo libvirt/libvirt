@@ -218,7 +218,7 @@ linuxTestNodeCPUStats(const void *data)
     const struct nodeCPUStatsData *testData = data;
     int result = -1;
     g_autofree char *cpustatfile = NULL;
-    g_autofree g_autofree char *outfile = NULL;
+    g_autofree char *outfile = NULL;
 
     cpustatfile = g_strdup_printf("%s/virhostcpudata/linux-cpustat-%s.stat",
                                   abs_srcdir, testData->name);
