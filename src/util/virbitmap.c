@@ -601,8 +601,7 @@ virBitmapNewCopy(virBitmap *src)
  * Allocate a bitmap from a chunk of data containing bits
  * information
  *
- * Returns a pointer to the allocated bitmap or NULL if
- * memory cannot be allocated.
+ * Returns a pointer to the allocated bitmap.
  */
 virBitmap *
 virBitmapNewData(const void *data,
