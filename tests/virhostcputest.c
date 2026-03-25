@@ -245,10 +245,40 @@ linuxTestNodeCPUStats(const void *data)
 
 
 static int
+linuxTestHostCPUGetMap(const void *data G_GNUC_UNUSED)
+{
+    g_autofree unsigned char *cpumap = NULL;
+
+    int ncpus = virHostCPUGetMap(&cpumap, NULL, 0);
+
+    g_autoptr(virBitmap) actual = virBitmapNewData(cpumap, VIR_DIV_UP(ncpus, 8));
+    g_autoptr(virBitmap) expected = NULL;
+
+    if (virFileReadValueBitmap(&expected, "%s/cpu/online", SYSFS_SYSTEM_PATH) < 0)
+        return -1;
+
+    if (!virBitmapEqual(actual, expected)) {
+        g_autofree char *expected_str = virBitmapFormat(expected);
+        g_autofree char *actual_str = virBitmapFormat(actual);
+        fprintf(stderr,
+                "Bitmaps are different\nexpected: %s\nactual: %s\n",
+                expected_str, actual_str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
     size_t i;
+    int rc = 0;
+    struct dirent *ent = NULL;
+    g_autofree char *datadir = g_strdup_printf("%s/virhostcpudata", abs_srcdir);
+    g_autoptr(DIR) dir = NULL;
     const struct linuxTestHostCPUData nodeData[] = {
         {"test1", VIR_ARCH_X86_64},
         {"test1", VIR_ARCH_PPC},
@@ -299,6 +329,33 @@ mymain(void)
 
     DO_TEST_CPU_STATS("24cpu", 24, false);
     DO_TEST_CPU_STATS("24cpu", 25, true);
+
+    /* Tests for virHostCPUGetMap() with each data subdirectory. */
+    if (virDirOpen(&dir, datadir) < 0)
+        return -1;
+
+    while ((rc = virDirRead(dir, &ent, datadir)) > 0) {
+        struct stat sb;
+        g_autofree char *path = g_strdup_printf("%s/%s", datadir, ent->d_name);
+
+        if (stat(path, &sb) < 0) {
+            fprintf(stderr, "Cannot stat %s\n", path);
+            return -1;
+        }
+
+        if (!S_ISDIR(sb.st_mode))
+            continue;
+
+        virFileWrapperAddPrefix(SYSFS_SYSTEM_PATH, path);
+        if (virTestRun(ent->d_name, linuxTestHostCPUGetMap, NULL) < 0)
+            ret = -1;
+        virFileWrapperRemovePrefix(SYSFS_SYSTEM_PATH);
+    }
+
+    if (rc < 0) {
+        fprintf(stderr, "Error reading %s\n", SYSFS_SYSTEM_PATH);
+        return -1;
+    }
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
