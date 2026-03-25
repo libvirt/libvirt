@@ -7076,14 +7076,13 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     if (!(seclabel = virSecurityLabelDefNew(model)))
         return NULL;
 
-    /* set default value */
-    seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
-
-    if (virXMLPropEnum(ctxt->node, "type",
-                       virDomainSeclabelTypeFromString,
-                       VIR_XML_PROP_NONZERO,
-                       &seclabel->type) < 0)
+    if (virXMLPropEnumDefault(ctxt->node, "type",
+                              virDomainSeclabelTypeFromString,
+                              VIR_XML_PROP_NONZERO,
+                              &seclabel->type,
+                              VIR_DOMAIN_SECLABEL_DYNAMIC) < 0) {
         return NULL;
+    }
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
