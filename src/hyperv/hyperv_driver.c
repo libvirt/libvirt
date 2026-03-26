@@ -44,6 +44,7 @@
 #include "snapshot_conf.h"
 #include "virfdstream.h"
 #include "virfile.h"
+#include "cpu_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 
@@ -2765,6 +2766,28 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 
     if (virDomainDefSetVcpus(def, processorSettingData->data->VirtualQuantity) < 0)
         return NULL;
+
+    if (processorSettingData->data->ExposeVirtualizationExtensions) {
+        g_autoptr(Win32_Processor) processors = NULL;
+        const char *cpuFeature = NULL;
+
+        if (hypervGetProcessorList(priv, NULL, &processors) < 0)
+            return NULL;
+
+        if (STREQ_NULLABLE(processors->data->Manufacturer, "GenuineIntel"))
+            cpuFeature = "vmx";
+        else if (STREQ_NULLABLE(processors->data->Manufacturer, "AuthenticAMD"))
+            cpuFeature = "svm";
+
+        if (cpuFeature) {
+            def->cpu = virCPUDefNew();
+            def->cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+            def->cpu->type = VIR_CPU_TYPE_GUEST;
+
+            if (virCPUDefAddFeature(def->cpu, cpuFeature, VIR_CPU_FEATURE_REQUIRE) < 0)
+                return NULL;
+        }
+    }
 
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 

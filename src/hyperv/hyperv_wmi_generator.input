@@ -174,9 +174,14 @@ class Msvm_ProcessorSettingData
     string  AddressOnParent
     string  VirtualQuantityUnits
     boolean LimitCPUID
+    uint64  HwThreadsPerCore
     boolean LimitProcessorFeatures
     uint64  MaxProcessorsPerNumaNode
     uint64  MaxNumaNodesPerSocket
+    boolean EnableHostResourceProtection
+    string  CpuGroupId
+    boolean HideHypervisorPresent
+    boolean ExposeVirtualizationExtensions
 end
 
 
