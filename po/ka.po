@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the libvirt package.
-# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023, 2025.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2022, 2023, 2025, 2026.
 # Mariam Low-Ghelaghutashvili <mariamlow@zusmail.xyz>, 2023, 2024.
 # Weblate <noreply-mt-weblate@weblate.org>, 2023, 2024, 2025, 2026.
 msgid ""
@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: libvirt 8.4.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-17 09:47+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2026-03-03 10:20+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/ka/>\n"
 "Language: ka\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.16.1\n"
 
 msgid ""
 "\n"
@@ -9537,10 +9537,10 @@ msgid "IVirtualBox object is null"
 msgstr ""
 
 msgid "Id"
-msgstr "ID"
+msgstr "Id"
 
 msgid "Id:"
-msgstr "ID:"
+msgstr "Id:"
 
 msgid "Identical vcpus found in same type monitors"
 msgstr ""
