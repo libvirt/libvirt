@@ -1523,6 +1523,7 @@ saferead_lim(int fd, size_t max_len, size_t *length)
                 break;
             buf[size] = '\0';
             *length = size;
+            VIR_REALLOC_N(buf, size + 1);
             return buf;
         }
     }
