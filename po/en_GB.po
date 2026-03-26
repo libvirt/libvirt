@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-02-26 18:58+0000\n"
+"PO-Revision-Date: 2026-03-19 18:58+0000\n"
 "Last-Translator: Andi Chandler <andi@gowling.com>\n"
 "Language-Team: English (United Kingdom) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/en_GB/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1\n"
+"X-Generator: Weblate 5.16.2\n"
 
 msgid ""
 "\n"
@@ -1237,7 +1237,7 @@ msgstr "'%1$s' hyperv feature requires '%2$s' timer"
 
 #, c-format
 msgid "'%1$s' is currently not supported by the qemu encryption engine"
-msgstr "'%1$s' is currently not supported by the QEMU encryption engine"
+msgstr "'%1$s' is currently not supported by the qemu encryption engine"
 
 #, c-format
 msgid "'%1$s' is not a VF device"
@@ -1504,7 +1504,7 @@ msgstr ""
 "'queue' count must be configured for explicit iothread to queue mapping"
 
 msgid "'queues' is only supported by virtio-scsi and nvme controllers"
-msgstr "'queues' is only supported by virtio-scsi and NVMe controllers"
+msgstr "'queues' is only supported by virtio-scsi and nvme controllers"
 
 msgid ""
 "'reconnect' attribute is not supported when source mode='server' for "
@@ -1811,7 +1811,7 @@ msgid "<profile/> requires TPM version '%1$s'"
 msgstr "<profile/> requires TPM version '%1$s'"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr "<reservations/> allowed only for LUN devices"
+msgstr "<reservations/> allowed only for lun devices"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "<snapshot> element is currently supported only with 'rbd' disks"
@@ -2860,9 +2860,9 @@ msgstr "Can't modify device type '%1$s'"
 msgid "Can't parse barrier from vzlist output '%1$s'"
 msgstr "Can't parse barrier from vzlist output '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't parse limit from vzlist output '%1$s'"
-msgstr "Can't parse prlctl output"
+msgstr "Can't parse limit from vzlist output '%1$s'"
 
 msgid "Can't parse prlctl output"
 msgstr "Can't parse prlctl output"
@@ -2874,17 +2874,18 @@ msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided"
 msgstr ""
+"Can't perform keyboard-interactive authentication: Authentication callback "
+"not provided"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Can't read %1$s"
-msgstr "cannot read %1$s"
+msgstr "Can't read %1$s"
 
-#, fuzzy
 msgid "Can't rename domain to itself"
-msgstr "Could not resume domain: %s"
+msgstr "Can't rename domain to itself"
 
 msgid "Can't set 0 processors for a VM"
-msgstr ""
+msgstr "Can't set 0 processors for a VM"
 
 msgid "Can't set soft limit without hard limit"
 msgstr "Can't set soft limit without hard limit"
@@ -2895,41 +2896,43 @@ msgstr "Can't setup disk for non-block device"
 msgid "Can't setup disk without media"
 msgstr "Can't setup disk without media"
 
-#, fuzzy
 msgid "Can't setup host uuid"
-msgstr "cannot get the host uuid"
+msgstr "Can't setup host UUID"
 
 msgid ""
 "Can't shrink capacity below current capacity unless shrink flag explicitly "
 "specified"
 msgstr ""
+"Can't shrink capacity below current capacity unless shrink flag explicitly "
+"specified"
 
 msgid ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
 msgstr ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
 
-#, fuzzy
 msgid "Cancelled"
-msgstr "save cancelled"
+msgstr "Cancelled"
 
 #, c-format
 msgid "Cannot access '%1$s'"
 msgstr "Cannot access '%1$s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access backing file '%1$s' of storage file '%2$s'"
-msgstr "inaccessible backing store volume %s"
+msgstr "Cannot access backing file '%1$s' of storage file '%2$s'"
 
 #, c-format
 msgid ""
 "Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, gid:"
 "%4$u)"
 msgstr ""
+"Cannot access backing file '%1$s' of storage file '%2$s' (as uid:%3$u, "
+"gid:%4$u)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot access storage file '%1$s'"
-msgstr "Cannot delete file '%1$s'"
+msgstr "Cannot access storage file '%1$s'"
 
 #, c-format
 msgid "Cannot access storage file '%1$s' (as uid:%2$u, gid:%3$u)"
