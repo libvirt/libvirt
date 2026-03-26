@@ -782,6 +782,9 @@ virHostdevPreparePCIDevicesImpl(virHostdevManager *mgr,
         }
     }
 
+    /* Step 2.5: Wait for udev to handle all events for devices. */
+    virWaitForDevices();
+
     /* At this point, all devices are attached to the stub driver and have
      * been marked as inactive */
 
