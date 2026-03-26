@@ -1037,6 +1037,7 @@ qemuStateCleanup(void)
     virLockManagerPluginUnref(qemu_driver->lockManager);
     virSysinfoDefFree(qemu_driver->hostsysinfo);
     virPortAllocatorRangeFree(qemu_driver->migrationPorts);
+    virPortAllocatorRangeFree(qemu_driver->backupPorts);
     virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
     virPortAllocatorRangeFree(qemu_driver->rdpPorts);
     virPortAllocatorRangeFree(qemu_driver->remotePorts);
