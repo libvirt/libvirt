@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-01-11 00:58+0000\n"
+"PO-Revision-Date: 2026-03-03 10:20+0000\n"
 "Last-Translator: Américo Monteiro <a_monteiro@gmx.com>\n"
 "Language-Team: Portuguese <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/pt/>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.16.1\n"
 
 msgid ""
 "\n"
@@ -4896,10 +4896,10 @@ msgid "Could not get process ID of passt"
 msgstr "Não pude obter ID de processo de passt"
 
 msgid "Could not get process id of swtpm"
-msgstr "Não pude obter ID de processo de swtpm"
+msgstr "Não pude obter id de processo de swtpm"
 
 msgid "Could not get process id of vhost-user-gpu"
-msgstr "Não pude obter ID de processo de vhost-user-gpu"
+msgstr "Não pude obter id de processo de vhost-user-gpu"
 
 msgid "Could not get read only state"
 msgstr "Não pude obter estado de só-leitura"
@@ -16000,7 +16000,7 @@ msgid "Snapshot domain"
 msgstr "Instantâneo a domínio"
 
 msgid "Snapshot is Null"
-msgstr "Instantâneo é NULO"
+msgstr "Instantâneo é Nulo"
 
 msgid "Snapshot revert"
 msgstr "Reverter instantâneo"
@@ -19984,7 +19984,7 @@ msgstr "Incapaz de ler %1$s"
 
 #, c-format
 msgid "Unable to read %1$s for ipv6 forwarding checks"
-msgstr "Incapaz de ler %1$s para verificações de encaminhamento IPv6"
+msgstr "Incapaz de ler %1$s para verificações de encaminhamento ipv6"
 
 msgid "Unable to read TLS confirmation"
 msgstr "Incapaz de ler confirmação TLS"
@@ -26986,10 +26986,10 @@ msgid "domain has to be shutoff before renaming"
 msgstr "domínio tem de ser encerrado antes de renomeado"
 
 msgid "domain id or name"
-msgstr "ID ou nome do domínio"
+msgstr "id ou nome do domínio"
 
 msgid "domain id or uuid"
-msgstr "ID ou UUID do domínio"
+msgstr "id ou uuid do domínio"
 
 msgid "domain information"
 msgstr "informação do domínio"
@@ -27052,7 +27052,7 @@ msgstr ""
 "domínio tem de ter pelo menos um disco para efetuar pontos de verificação"
 
 msgid "domain name or uuid"
-msgstr "nome ou UUID do domínio"
+msgstr "nome ou uuid do domínio"
 
 msgid "domain name, id or uuid"
 msgstr "nome, id ou uuid do domínio"
@@ -29385,13 +29385,13 @@ msgid "filter by internal snapshots"
 msgstr "filtrar por instantâneos internos"
 
 msgid "filter by network name or uuid"
-msgstr "filtrar por nome ou UUID da rede"
+msgstr "filtrar por nome ou uuid da rede"
 
 msgid "filter by node device name"
 msgstr "filtrar por nome de dispositivo d nó"
 
 msgid "filter by secret name or uuid"
-msgstr "filtrar por nome ou UUID do segredo"
+msgstr "filtrar por nome ou uuid do segredo"
 
 msgid "filter by snapshots taken while active (full system snapshots)"
 msgstr ""
@@ -29402,7 +29402,7 @@ msgid "filter by snapshots taken while inactive"
 msgstr "filtrar por instantâneos tirados quando inactivo"
 
 msgid "filter by storage pool name or uuid"
-msgstr "filtrar por nome ou UUID do pool de armazenamento"
+msgstr "filtrar por nome ou uuid do pool de armazenamento"
 
 msgid "filter creation API error"
 msgstr "erro de API na criação de filtro"
@@ -34836,7 +34836,7 @@ msgid "node SEV information"
 msgstr "informação do nó SEV"
 
 msgid "node cpu info not implemented on this platform"
-msgstr "informação de CPU de nó não implementada nesta plataforma"
+msgstr "informação de cpu de nó não implementada nesta plataforma"
 
 msgid "node cpu map"
 msgstr "mapa de cpu de nó"
@@ -37762,7 +37762,7 @@ msgstr "ordenar lista topologicamente em vez de pelo nome"
 
 #, c-format
 msgid "sound card model '%1$s' is not supported by qemu"
-msgstr "modelo de placa de som '%1$s' não é suportado pelo QEMU"
+msgstr "modelo de placa de som '%1$s' não é suportado pelo qemu"
 
 msgid "source config data format"
 msgstr "formato de dados de configuração de fonte"
@@ -39164,7 +39164,7 @@ msgid "try to restore security label after use if possible"
 msgstr "tenta restaurar etiqueta de segurança após uso se possível"
 
 msgid "tty console"
-msgstr "consola TTY"
+msgstr "consola tty"
 
 msgid "tunnelFD argument is required for tunnelled migration"
 msgstr "argumento tunnelFD é requerido para migração em túnel"
@@ -41449,7 +41449,7 @@ msgid "vcpu id '%1$u' reported by guest agent is out of range"
 msgstr "id de vcpu '%1$u' reportado pelo agente convidado está fora de alcance"
 
 msgid "vcpu number"
-msgstr "número do vCPU"
+msgstr "número de vcpu"
 
 #, c-format
 msgid "vcpu order '%1$u' exceeds vcpu count"
@@ -41878,7 +41878,7 @@ msgid "vmrun utility is missing"
 msgstr "utilitário vmrun está em falta"
 
 msgid "vnc display"
-msgstr "visualização de VNC"
+msgstr "visualização de vnc"
 
 msgid "vnc port must be in range [5900,65535]"
 msgstr "porto vnc tem de estar na gama"
