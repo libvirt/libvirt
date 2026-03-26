@@ -29,7 +29,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-02-19 11:33+0000\n"
+"PO-Revision-Date: 2026-03-08 21:24+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.16.2\n"
 
 msgid ""
 "\n"
@@ -7616,7 +7616,7 @@ msgstr "Incorrecto al crear memoria del dir de respaldo %1$s"
 
 #, c-format
 msgid "Failed to create network filter from %1$s"
-msgstr "Incorrecto al crear filtro de red desde %1$s"
+msgstr "Ha fallado al crear filtro de red desde %1$s"
 
 #, c-format
 msgid "Failed to create network from %1$s"
@@ -7669,7 +7669,7 @@ msgstr "Incorrecto al crear zócalo"
 
 #, c-format
 msgid "Failed to create state dir %1$s"
-msgstr "Incorrecto al crear dir de estado %1$s"
+msgstr "Ha fallado al crear dir de estado %1$s"
 
 #, c-format
 msgid "Failed to create state dir '%1$s'"
@@ -7828,7 +7828,7 @@ msgstr "Incorrecto al destruir dominio '%1$d'"
 
 #, c-format
 msgid "Failed to destroy domain '%1$s'"
-msgstr "Incorrecto al destruir dominio '%1$s'"
+msgstr "Ha fallado al destruir dominio '%1$s'"
 
 #, c-format
 msgid "Failed to destroy interface %1$s"
@@ -8023,7 +8023,7 @@ msgid "Failed to generate UUID"
 msgstr "Incorrecto al generar UUID"
 
 msgid "Failed to generate genid"
-msgstr "Incorrecto al generar GENID"
+msgstr "Ha fallado al generar GENID"
 
 #, c-format
 msgid "Failed to get %1$s minor number"
@@ -8526,7 +8526,7 @@ msgstr "Incorrecto al abrir zócalo para demonio sanlock"
 
 #, c-format
 msgid "Failed to open socket to sanlock daemon: %1$s"
-msgstr "Incorrecto al abrir zócalo del demonio sanlock: %1$s"
+msgstr "Ha fallado al abrir socket del demonio sanlock: %1$s"
 
 #, c-format
 msgid "Failed to open storage volume with path '%1$s'"
@@ -10976,7 +10976,7 @@ msgid "Invalid fallback attribute"
 msgstr "Atributo de respaldo no válido"
 
 msgid "Invalid file descriptor while waiting for agent"
-msgstr "Descriptor de archivo no válido al esperar por agente"
+msgstr "El descriptor del archivo no es válido al esperar agente"
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%1$s')"
@@ -12424,7 +12424,7 @@ msgid "Missing address in 'phys_function' capability"
 msgstr "No se encuentra dirección en la capacidad 'phys_function'"
 
 msgid "Missing agent reply object"
-msgstr "No se encuentra objeto de respuesta de agente"
+msgstr "Agente ausente de objeto de réplica"
 
 #, c-format
 msgid "Missing ancestor's name in CPU model %1$s"
@@ -12432,7 +12432,7 @@ msgstr "No se encuentra el nombre del ancestro en el modelo de la CPU %1$s"
 
 #, c-format
 msgid "Missing argument for '%1$s'"
-msgstr "No se encuentra argumento para '%1$s'"
+msgstr "Falta argumento para '%1$s'"
 
 #, c-format
 msgid "Missing attribute '%1$s' in element '%2$s'"
@@ -12467,7 +12467,7 @@ msgstr ""
 "«%1$d»"
 
 msgid "Missing capability type"
-msgstr "No se encuentra tipo de capacidad"
+msgstr "Tipo de capacidad ausente"
 
 #, c-format
 msgid "Missing certificate file '%1$s'"
@@ -12526,7 +12526,7 @@ msgstr ""
 "No se encuentra el nombre de la característica para el modelo de CPU %1$s"
 
 msgid "Missing files data from JSON file"
-msgstr "No se encuentran datos de archivos desde archivo JSON"
+msgstr "Faltan datos de los archivos desde el archivo JSON"
 
 #, c-format
 msgid "Missing group 'credentials-%1$s' referenced from group '%2$s' in '%3$s'"
@@ -12765,7 +12765,7 @@ msgid "Missing property '%1$s' in answer"
 msgstr "Falta propiedad '%1$s' en respuesta"
 
 msgid "Missing readonly field in JSON state document"
-msgstr "Falta el campo readonly en documento JSON"
+msgstr "Falta el campo readonly en el documento de estado JSON"
 
 #, c-format
 msgid "Missing ref property on ccw_device in members for '%1$s'"
@@ -12928,7 +12928,7 @@ msgid "Mountpoint"
 msgstr "Punto de montaje"
 
 msgid "Multi-head video devices are unsupported"
-msgstr "Dispositivos de vídeo multi-cabezales no tienen soporte"
+msgstr "Dispositivos de vídeo multi-cabezales no tienen mantenimiento"
 
 #, c-format
 msgid "Multiple '%1$s' controllers with index '%2$d'"
@@ -13517,7 +13517,7 @@ msgstr "No hay dominio con UUID %1$s"
 
 #, c-format
 msgid "No domain with matching ID '%1$d'"
-msgstr "Ningún dominio con ID '%1$d' coincidente"
+msgstr "No coincide ningún dominio con ID '%1$d'"
 
 #, c-format
 msgid "No domain with matching id %1$d"
@@ -17301,7 +17301,7 @@ msgstr "El serial %1$s de disco destino no coincide con origen %2$s"
 
 #, c-format
 msgid "Target disk wwn '%1$s' does not match source '%2$s'"
-msgstr "El disco destino ‘%1$s’ no coincide con origen ‘%2$s’"
+msgstr "El disco wwn destino ‘%1$s’ no coincide con origen ‘%2$s’"
 
 #, c-format
 msgid ""
@@ -21697,7 +21697,7 @@ msgstr "Elemento <ip> sin asistencia en la red %1$s con modo='%2$s' de reenvío"
 
 #, c-format
 msgid "Unsupported <mac> element in network %1$s with forward mode='%2$s'"
-msgstr "Elemento <mac> no esperado en la red %1$s con forward mode='%2$s'"
+msgstr "Elemento <mac> no esperado en la red %1$s con reenvío a mode='%2$s'"
 
 #, c-format
 msgid "Unsupported <tftp> element in an IPv6 element in network '%1$s'"
@@ -22558,7 +22558,7 @@ msgstr ""
 "autorización"
 
 msgid "Writing secret configuration requires authorization"
-msgstr "La escritura de configuración secreta requiere autorización"
+msgstr "La escritura de la configuración secreta requiere autorización"
 
 msgid "Writing storage pool configuration requires authorization"
 msgstr "La escritura de la configuración de reserva requiere autorización"
@@ -22567,7 +22567,7 @@ msgid "Writing storage volume data requires authorization"
 msgstr "La escritura de datos del volumen de almacenaje requiere autorización"
 
 msgid "Writing the host configuration requires authorization"
-msgstr "La escritura de configuración del host requiere autorización"
+msgstr "La escritura de la configuración del host requiere autorización"
 
 msgid "Wrong MAC address"
 msgstr "Dirección MAC errónea"
@@ -22725,13 +22725,13 @@ msgid "a slirp-helper cannot be migrated"
 msgstr "un ayudante slirp no puede ser migrado"
 
 msgid "abort active domain job"
-msgstr "interrumpir trabajo de dominio activo"
+msgstr "interrumpe tarea de dominio activo"
 
 msgid "abort on soft errors during migration"
-msgstr "Interrumpir errores suaves durante migración"
+msgstr "Interrumpe en errores suaves durante migración"
 
 msgid "abort the active job on the specified disk"
-msgstr "Abortar la tarea activa en el disco especificado"
+msgstr "interrumpe la tarea activa en el disco especificado"
 
 msgid "absolute path must be used as block copy target"
 msgstr "la ruta absoluta debe ser utilizada como destino de copia del bloque"
@@ -22761,8 +22761,8 @@ msgid ""
 "active qemu domains require external disk snapshots; disk %1$s requested "
 "internal"
 msgstr ""
-"Dominios de QEMU activos requieren instantáneas de discos externos; disco "
-"%1$s solicitado interno"
+"activa dominios de qemu requiere instantánea de discos externos; disco %1$s "
+"solicitado interno"
 
 msgid "adapter name to be used for underlying storage"
 msgstr "nombre de adaptador a ser utilizado para almacén subyacente"
@@ -22892,13 +22892,13 @@ msgid "all CPU models are accepted"
 msgstr "todos los modelos de CPU están aceptados"
 
 msgid "all vcpus must have either set or unset order"
-msgstr "todos los cvpus deben tener o bien orden fijada o suelta"
+msgstr "todos los vcpus deben tener o bien orden fijada o suelta"
 
 msgid "allocate the new capacity, rather than leaving it sparse"
-msgstr "Asignar la nueva capacidad, en lugar de dejarla dispersa"
+msgstr "asignar la nueva capacidad, en lugar de dejarla dispersa"
 
 msgid "allocated netlink buffer is too small"
-msgstr "El buffer netlink asignado es demasiado pequeño"
+msgstr "tampón netlink asignado es demasiado pequeño"
 
 msgid "allow cloning to new name"
 msgstr "concede clonar a nombre nuevo"
@@ -22965,7 +22965,7 @@ msgid "ap-domain value '%1$s' is out of range for '%2$s'"
 msgstr "valor ap-dominio '%1$s' está fuera del intervalo para '%2$s'"
 
 msgid "api error"
-msgstr "error de API"
+msgstr "error de api"
 
 msgid "apparmor_parser exited with error"
 msgstr "apparmor_parser salió con error"
@@ -22993,14 +22993,14 @@ msgstr "llave de argumento «%1$s» no debe ser negativa"
 
 #, c-format
 msgid "argument key '%1$s' must not have null value"
-msgstr "llave de argumento '%1$s' no debe ser de valor NULL"
+msgstr "llave de argumento '%1$s' no debe tener valor nulo"
 
 msgid "argument unsupported"
-msgstr "Argumento sin soporte"
+msgstr "argumento no admitido"
 
 #, c-format
 msgid "argument unsupported: %1$s"
-msgstr "Argumento sin soporte: %1$s"
+msgstr "argumento no mantenido: %1$s"
 
 msgid "argument virt_type must not be NULL"
 msgstr "el argumento virt_type no debe ser NULL"
@@ -23023,10 +23023,10 @@ msgstr ""
 "guest-get-fsinfo"
 
 msgid "array element missing in guest-get-disks return value"
-msgstr "elemento de array ausente en valor devuelto de guest-get-disc"
+msgstr "elemento de formación ausente en valor devuelto de guest-get-disc"
 
 msgid "array element missing in guest-get-users return value"
-msgstr "elemento array ausente interno al valor devuelto de guest-get-vcpus"
+msgstr "elemento formación ausente interno al valor devuelto de guest-get-vcpus"
 
 msgid "array element missing in guest-get-vcpus return value"
 msgstr "elemento array ausente dentro del valor devuelto de guest-get-vcpus"
@@ -23104,25 +23104,25 @@ msgstr ""
 msgid ""
 "attempt to merge virtualports with mismatched managerids (%1$d and %2$d)"
 msgstr ""
-"intenta fusionar puertos virtuales con ID de gestión desiguales (%1$d y %2$d)"
+"intenta fusionar puertos virtuales con id de gestión desiguales (%1$d y %2$d)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched profileids ('%1$s' and '%2$s')"
 msgstr ""
-"intenta fusionar puertos virtuales con los ID de perfiles ('%1$s' y '%2$s')"
+"intenta fusionar puertos virtuales con los id de perfiles ('%1$s' y '%2$s')"
 
 #, c-format
 msgid "attempt to merge virtualports with mismatched typeids (%1$d and %2$d)"
 msgstr ""
-"intenta fusionar puertos virtuales con los ID de tipo desiguales (%1$d y "
+"intenta fusionar puertos virtuales con los id de tipo desiguales (%1$d y "
 "%2$d)"
 
 #, c-format
 msgid ""
 "attempt to merge virtualports with mismatched typeidversions (%1$d and %2$d)"
 msgstr ""
-"intenta fusionar puertos virtuales con versiones de ID de tipo desiguales "
+"intenta fusionar puertos virtuales con versiones de id de tipo desiguales "
 "(%1$d y %2$d)"
 
 #, c-format
@@ -23161,7 +23161,8 @@ msgid "auth type to be used for underlying storage"
 msgstr "tipo de autoridad a ser utilizado para almacén subyacente"
 
 msgid "auth username to be used for underlying storage"
-msgstr "autorización del ID de usuario a ser utilizado en almacén subyacente"
+msgstr ""
+"autorización de nombre de usuario a ser utilizado para almacén subyacente"
 
 msgid "authentication cancelled"
 msgstr "Se canceló la autenticación"
@@ -23171,7 +23172,7 @@ msgid "authentication cancelled: %1$s"
 msgstr "Se canceló la autenticación: %1$s"
 
 msgid "authentication failed"
-msgstr "Error en la autenticación"
+msgstr "autenticación incorrecta"
 
 msgid "authentication failed, see test XML for the correct username/password"
 msgstr ""
@@ -23190,7 +23191,7 @@ msgid "authentication is supported only for network backed disks"
 msgstr "autenticación está admitida solo para discos respaldados de red"
 
 msgid "authentication required"
-msgstr "Se requiere autenticación"
+msgstr "autenticación requerida"
 
 msgid "authentication unavailable"
 msgstr "autenticación no disponible"
@@ -23306,13 +23307,13 @@ msgid "backup_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "el directorio '%1$s' de backup_tls_x509_cert_dir no existe"
 
 msgid "bad command"
-msgstr "Comando errado"
+msgstr "comando incorrecto"
 
 msgid "bad name"
-msgstr "Nombre errado"
+msgstr "nombre incorrecto"
 
 msgid "bad pathname"
-msgstr "Nombre de ruta errado"
+msgstr "nombre de ruta incorrecta"
 
 #, c-format
 msgid "bad prefix %1$d for network %2$s when checking range %3$s - %4$s"
@@ -23343,7 +23344,7 @@ msgid "bandwidth controller id %1$zd does not exist"
 msgstr "el ancho de banda del id %1$z de controlador no existe"
 
 msgid "bandwidth limit in MiB/s"
-msgstr "Límite de ancho de banda en MIB/s"
+msgstr "límite de ancho de banda en MiB/s"
 
 #, c-format
 msgid "bandwidth must be less than %1$llu"
@@ -23533,10 +23534,10 @@ msgstr ""
 
 #, c-format
 msgid "block_io_throttle field '%1$s' missing in qemu's output"
-msgstr "Falta block_io_throttle field '%1$s' en salida de QEMU"
+msgstr "el campo block_io_throttle '%1$s' falta en la salida de qemu"
 
 msgid "block_io_throttle inserted entry was not in expected format"
-msgstr "Entrada block_io_throttle insertada no estaba en el formato esperado"
+msgstr "Apunte block_io_throttle insertado no estaba en el formato esperado"
 
 #, c-format
 msgid ""
@@ -23641,10 +23642,10 @@ msgstr "puente '%1$s' tiene una máscara de red no válida o dirección IP"
 
 #, c-format
 msgid "bridge '%1$s' has an invalid prefix"
-msgstr "Puente '%1$s' tiene un prefijo no válido"
+msgstr "puente '%1$s' tiene un prefijo no válido"
 
 msgid "bridge an existing network device"
-msgstr "Crear puente de un dispositivo de red existente"
+msgstr "puente de un dispositivo de red existente"
 
 #, c-format
 msgid ""
@@ -23684,13 +23685,13 @@ msgid "bridge zone not allowed in %1$s mode (network '%2$s')"
 msgstr "zona de puente no logrado en modo %1$s (red ‘%2$s’)"
 
 msgid "buffer for root interface name is too small"
-msgstr "el búfer del nombre de la interfaz raíz es demasiado pequeño"
+msgstr "el tampón del nombre de la interfaz raíz es demasiado pequeño"
 
 msgid "buffer too small for IP address"
-msgstr "el búfer es demasiado pequeño para direcciones IP"
+msgstr "el tampón es demasiado pequeño para direcciones IP"
 
 msgid "buffer too small for IPv6 address"
-msgstr "el búfer es demasiado pequeño para la dirección IPv6"
+msgstr "el tampón es demasiado pequeño para la dirección IPv6"
 
 msgid "build a pool"
 msgstr "compila un grupo"
@@ -23727,13 +23728,13 @@ msgstr ""
 "admitido del intervalo desde 1 hasta 60, por defecto a 1."
 
 msgid "caller ignores cookie or cookielen"
-msgstr "el llamador ignora cookie o cookielen"
+msgstr "el remite ignora cookie o cookielen"
 
 msgid "caller ignores cookieout or cookieoutlen"
-msgstr "El llamador ignora cookieout o cookieoutlen"
+msgstr "El remite ignora cookieout o cookieoutlen"
 
 msgid "caller ignores uri_out"
-msgstr "el llamador ignora uri_out"
+msgstr "el remite ignora uri_out"
 
 msgid ""
 "can be either or both of --live and --config, depends on implementation "
@@ -23756,8 +23757,7 @@ msgstr ""
 "invitado solo tiene configurados '%2$zu' nodos NUMA"
 
 msgid "can't change link state: device alias not found"
-msgstr ""
-"No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
+msgstr "no puede cambiar estado de enlace: no se encuentra alias de dispositivo"
 
 msgid "can't change media while a block job is running on the device"
 msgstr ""
@@ -23773,7 +23773,7 @@ msgid "can't change numatune mode for running domain"
 msgstr "no puede cambiar el modo numatune para dominio en ejecución"
 
 msgid "can't connect to virtlogd"
-msgstr "no se puede conectar a virtlogd"
+msgstr "no puede conectar a virtlogd"
 
 #, c-format
 msgid "can't convert relative size: '%1$s'"
@@ -23814,13 +23814,13 @@ msgstr "no puede abrir contexto de bitácora"
 
 #, c-format
 msgid "can't open session to the domain with id %1$d"
-msgstr "no es posible abrir una sesión en el dominio con ID %1$d"
+msgstr "no puede abrir una sesión en el dominio con id %1$d"
 
 msgid "can't parse cputune emulator period value"
-msgstr "No se puede leer valor de periodo de cputune"
+msgstr "no puede leer valor de periodo de cputune"
 
 msgid "can't parse cputune emulator quota value"
-msgstr "No se puede leer valor de cuota de emulador de cputune"
+msgstr "no puede leer valor de cuota de emulador de cputune"
 
 msgid "can't parse cputune global period value"
 msgstr "no puede interpretar el valor del periodo global del ajuste de cpu"
@@ -23835,13 +23835,13 @@ msgid "can't parse cputune iothread quota value"
 msgstr "no puede interpretar valor de cuota de E/S de hilo para ajuste de cpu"
 
 msgid "can't parse cputune period value"
-msgstr "No se puede leer valor de periodo de cputune"
+msgstr "no puede leer valor de periodo de cputune"
 
 msgid "can't parse cputune quota value"
-msgstr "No se puede leer valor de cuota"
+msgstr "no puede leer valor de cuota"
 
 msgid "can't parse cputune shares value"
-msgstr "No se puede leer valor compartido de cputune"
+msgstr "no puede leer valor compartido de cputune"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
 msgstr ""
@@ -23860,17 +23860,17 @@ msgid "can't resize empty or readonly disk '%1$s'"
 msgstr "no puede redimensionar disco «%1$s» vacío o de solo-lectura"
 
 msgid "can't shrink capacity below existing allocation"
-msgstr "No se puede achicar la capacidad por debajo de la asignación existente"
+msgstr "no puede reducir la capacidad por debajo de la asignación existente"
 
 msgid "can't undefine transient network"
-msgstr "no se pudo anular la definición de la red transitoria"
+msgstr "no puede indefinir red transitoria"
 
 #, c-format
 msgid "can't update '%1$s' section of network '%2$s'"
-msgstr "No se puede actualizar sección '%1$s' de red '%2$s'"
+msgstr "no puede actualizar sección '%1$s' de red '%2$s'"
 
 msgid "can't update unrecognized section of network"
-msgstr "No se puede actualizar sección desconocida de 'network'"
+msgstr "no puede actualizar sección desconocida de 'network'"
 
 msgid "can't upload volume, all existing snapshots will be lost"
 msgstr "no puede subir volumen, todas las instantáneas existentes se perderán"
@@ -23883,7 +23883,7 @@ msgid "canceled"
 msgstr "cancelado"
 
 msgid "canceled by client"
-msgstr "Cancelado por cliente"
+msgstr "cancelado por cliente"
 
 msgid "cannot abort VM start; use virDomainDestroy instead"
 msgstr ""
@@ -23891,19 +23891,19 @@ msgstr ""
 
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
-"No se puede abortar migración de entrada; use virDomainDestroy en su lugar"
+"no se puede abortar migración de entrada; use virDomainDestroy en su lugar"
 
 msgid "cannot abort memory-only dump"
-msgstr "no puede interrumpir el volcado de memoria exclusivamente"
+msgstr "no se puede abortar el volcado de memoria exclusivamente"
 
 msgid "cannot abort migration in post-copy mode"
-msgstr "no se puede interrumpir migración en modo post-copia"
+msgstr "no se puede abortar migración en modo post-copia"
 
 msgid "cannot acquire job mutex"
-msgstr "no pueden adquirir la exclusión mutua de trabajo"
+msgstr "no se puede adquirir la exclusión mutua de tarea"
 
 msgid "cannot acquire state change lock"
-msgstr "no es posible obtener bloqueo de cambio de estado"
+msgstr "no se puede adquirir bloqueo de cambio de estado"
 
 #, c-format
 msgid "cannot acquire state change lock (held by agent=%1$s)"
@@ -23948,7 +23948,7 @@ msgstr ""
 
 msgid "cannot acquire state change lock due to max_queued limit"
 msgstr ""
-"No se puede adquirir estado de cambio de cerrojo debido al límite max_queued"
+"no se puede adquirir estado de cambio de cerrojo debido al límite max_queued"
 
 #, c-format
 msgid "cannot add domain %1$s device %2$s to nonexistent bridge %3$s"
@@ -23962,7 +23962,7 @@ msgstr ""
 "no se puede añadir característica de CPU huésped para la arquitectura %1$s"
 
 msgid "cannot add netlink membership"
-msgstr "No se puede añadir la membresía de netlink"
+msgstr "no se puede añadir la membresía de netlink"
 
 msgid "cannot add redirected USB device: USB is disabled for this domain"
 msgstr ""
@@ -23974,24 +23974,24 @@ msgid "cannot allocate %1$llu bytes in file '%2$s'"
 msgstr "no se pudieron asignar %1$llu bytes en el archivo '%2$s'"
 
 msgid "cannot allocate nlhandle for netlink"
-msgstr "No se pudo asignar nlhandle para netlink"
+msgstr "no se puede asignar nlhandle para netlink"
 
 msgid "cannot allocate placeholder nlhandle for netlink"
-msgstr "No se puede asignar marcador de sitio nlhandle para netlink"
+msgstr "no se puede asignar marcador de sitio nlhandle para netlink"
 
 #, c-format
 msgid "cannot apply process capabilities %1$d"
-msgstr "No se pueden aplicar las capacidades del proceso %1$d"
+msgstr "no se pueden aplicar las capacidades del proceso %1$d"
 
 #, c-format
 msgid "cannot apply process capabilities: %1$d"
 msgstr "no se puede aplicar capacidades del proceso: %1$d"
 
 msgid "cannot become session leader"
-msgstr "no es posible convertirse en líder de sesión"
+msgstr "no se puede convertir en líder de sesión"
 
 msgid "cannot block signals"
-msgstr "no es posible bloquear señales"
+msgstr "no se pueden bloquear señales"
 
 msgid "cannot both keep and delete TPM"
 msgstr "no se pueden ambos mantener y borrar TPM"
@@ -24002,13 +24002,14 @@ msgstr "no se puede conservar y borrar ambos nvram"
 #, c-format
 msgid "cannot change between disk only and full system in snapshot %1$s"
 msgstr ""
-"no se pudo cambiar entre solo disco y sistema completo en la instantánea %1$s"
+"no se puede cambiar entre solo disco y sistema completo en la instantánea "
+"%1$s"
 
 #, c-format
 msgid ""
 "cannot change between online and offline snapshot state in snapshot %1$s"
 msgstr ""
-"no se pudo cambiar entre el estado de la instantánea en línea y fuera de "
+"no se puede cambiar entre el estado de la instantánea en línea y fuera de "
 "línea para la instantánea %1$s"
 
 #, c-format
@@ -24016,57 +24017,52 @@ msgid "cannot change config of '%1$s' network interface type"
 msgstr "no se puede cambiar config del tipo de interfaz de red '%1$s'"
 
 msgid "cannot change keymap setting on spice graphics"
-msgstr "No se puede cambiar configuración de keymap en gráficas SPICE"
+msgstr "no se pueden cambiar los ajustes de keymap en gráficas spice"
 
 msgid "cannot change keymap setting on vnc graphics"
-msgstr "no es posible modificar la configuración de keymap sobre gráficos vnc"
+msgstr "no se puede modificar la configuración de keymap sobre gráficos vnc"
 
 #, c-format
 msgid "cannot change listen address setting on '%1$s' graphics"
 msgstr ""
-"no se pudo cambiar la configuración de la dirección de escucha de los "
+"no se puede cambiar la configuración de la dirección de escucha de los "
 "gráficos '%1$s'"
 
 #, c-format
 msgid "cannot change listen socket setting on '%1$s' graphics"
 msgstr ""
-"no se pudo cambiar la configuración del socket de escucha de los gráficos "
-"'%1$s'"
+"no se pueden cambiar los ajustes del socket de escucha de los gráficos '%1$s'"
 
 #, c-format
 msgid "cannot change network interface mac address from %1$s to %2$s"
 msgstr ""
-"No se puede cambiar dirección MAC de interfaz 'network' de '%1$s' a %2$s"
+"no se puede cambiar dirección mac de interfaz de red desde %1$s hasta %2$s"
 
 #, c-format
 msgid "cannot change network interface type to '%1$s'"
-msgstr "No se puede cambiar tipo de interfaz de red a '%1$s'"
+msgstr "no se puede cambiar tipo de interfaz de red a '%1$s'"
 
 #, c-format
 msgid "cannot change permission of '%1$s'"
-msgstr "No se puede cambiar permiso de '%1$s'"
+msgstr "no se puede cambiar permiso de '%1$s'"
 
 msgid "cannot change persistent config of a transient domain"
-msgstr ""
-"No se puede cambiar configuración persistente de un dominio transitorio"
+msgstr "no se puede cambiar configuración persistente de un dominio transitorio"
 
 msgid "cannot change persistent config of a transient network"
-msgstr ""
-"No se puede cambiar la configuración persistente de una red transitoria"
+msgstr "no se puede cambiar la configuración persistente de una red transitoria"
 
 msgid "cannot change port settings on rdp graphics"
 msgstr "no se puede cambiar ajuste de puerto sobre gráficos rdp"
 
 msgid "cannot change port settings on spice graphics"
-msgstr "No se puede cambiar configuración de puerto en gráficas SPICE"
+msgstr "no se pueden cambiar los ajustes de puerto en gráficas spice"
 
 msgid "cannot change port settings on vnc graphics"
-msgstr ""
-"no es posible modificar la configuración de los puertos sobre los gráficos "
-"vnc"
+msgstr "no se pueden cambiar los ajustes de los puertos sobre los gráficos vnc"
 
 msgid "cannot change private flag on existing secret"
-msgstr "no es posible modificar la marca privada de un secreto existente"
+msgstr "no se puede cambiar la marca privada de un secreto existente"
 
 #, c-format
 msgid "cannot change the number of listen addresses on '%1$s' graphics"
@@ -24081,18 +24077,18 @@ msgstr ""
 
 #, c-format
 msgid "cannot change to '%1$u' group"
-msgstr "No se puede cambiar a '%1$u' group"
+msgstr "no se puede cambiar al grupo '%1$u'"
 
 msgid "cannot change to root directory"
-msgstr "No se pudo cambiar directorio raíz"
+msgstr "no se puede cambiar directorio raíz"
 
 #, c-format
 msgid "cannot change to root directory: %1$s"
-msgstr "No es posible trasladarse al directorio raíz: %1$s"
+msgstr "no se puede trasladarse al directorio raíz: %1$s"
 
 #, c-format
 msgid "cannot change to uid to '%1$u'"
-msgstr "No se puede cambiar a uid para '%1$u'"
+msgstr "no se puede cambiar a uid para '%1$u'"
 
 #, c-format
 msgid "cannot check guest CPU feature for %1$s architecture"
@@ -24101,34 +24097,34 @@ msgstr ""
 
 #, c-format
 msgid "cannot chmod '%1$s' to 0660"
-msgstr "No se puede ejecutar chmod '%1$s' para 0660"
+msgstr "no se puede ejecutar chmod '%1$s' para 0660"
 
 #, c-format
 msgid "cannot chown %1$s to (%2$u, %3$u)"
-msgstr "no es posible modificar la pertenencia de %1$s a (%2$u, %3$u)"
+msgstr "no se puede modificar la pertenencia de %1$s a (%2$u, %3$u)"
 
 #, c-format
 msgid "cannot chown '%1$s' to (%2$u, %3$u)"
-msgstr "no es posible modificar la pertenencua de '%1$s' a (%2$u, %3$u)"
+msgstr "no se puede modificar la pertenencia de '%1$s' a (%2$u, %3$u)"
 
 #, c-format
 msgid "cannot chown '%1$s' to group %2$u"
-msgstr "no es posible modificar la pertenencia de '%1$s' al grupo %2$u"
+msgstr "no se puede cambiar la pertenencia de '%1$s' al grupo %2$u"
 
 msgid "cannot close file"
-msgstr "No se puede cerrar archivo"
+msgstr "no se puede cerrar archivo"
 
 #, c-format
 msgid "cannot close file %1$s"
-msgstr "No se puede cerrar archivo %1$s"
+msgstr "no se puede cerrar archivo %1$s"
 
 #, c-format
 msgid "cannot close file '%1$s'"
-msgstr "no es posible cerrar el archivo '%1$s'"
+msgstr "no se puede cerrar el archivo '%1$s'"
 
 #, c-format
 msgid "cannot close file: %1$s"
-msgstr "No se puede cerrar archivo: %1$s"
+msgstr "no se puede cerrar archivo: %1$s"
 
 #, c-format
 msgid "cannot close stream on domain '%1$s'"
@@ -24136,15 +24132,15 @@ msgstr "no se puede cerrar flujo sobre dominio '%1$s'"
 
 #, c-format
 msgid "cannot close volume %1$s"
-msgstr "No se puede cerrar 'volume' %1$s"
+msgstr "no se puede cerrar 'volume' %1$s"
 
 #, c-format
 msgid "cannot compare CPUs of %1$s architecture"
-msgstr "no es posible comparar los CPUs de la arquitectura %1$s"
+msgstr "no se puede comparar las CPU de la arquitectura %1$s"
 
 #, c-format
 msgid "cannot compute baseline CPU of %1$s architecture"
-msgstr "No es posible computar la línea base de la CPU de la arquitectura %1$s"
+msgstr "no se puede calcular la línea base de la CPU de la arquitectura %1$s"
 
 #, c-format
 msgid "cannot connect to netlink socket with protocol %1$d"
@@ -24159,7 +24155,7 @@ msgstr "no es posible copiar desde el volumen hacia un volumen de directorio"
 
 #, c-format
 msgid "cannot create %1$s"
-msgstr "No se puede crear %1$s"
+msgstr "no se puede crear %1$s"
 
 msgid "cannot create a mediated device without a parent"
 msgstr "no se puede crear un dispositivo mediado sin un antecesor"
@@ -24172,14 +24168,14 @@ msgstr "no se puede crear un puntero vboxSnapshotXmlPtr"
 
 #, c-format
 msgid "cannot create autostart directory %1$s"
-msgstr "No es posible crear directorio de inicio automático %1$s"
+msgstr "no es posible crear directorio de inicio automático %1$s"
 
 #, c-format
 msgid "cannot create autostart directory '%1$s'"
-msgstr "No es posible crear un directorio autostart '%1$s'"
+msgstr "no es posible crear un directorio autostart '%1$s'"
 
 msgid "cannot create capabilities for libxenlight"
-msgstr "No se pudieron crear capacidades para libxenlight"
+msgstr "no se pueden crear capacidades para libxenlight"
 
 #, c-format
 msgid "cannot create checkpoint directory '%1$s'"
@@ -24193,27 +24189,27 @@ msgstr "no se puede crear punto de control mientras exista instantánea"
 
 #, c-format
 msgid "cannot create config directory %1$s"
-msgstr "No se ha posido crear un directorio %1$s de configuración"
+msgstr "no se puede crear un directorio %1$s de configuración"
 
 #, c-format
 msgid "cannot create config directory '%1$s'"
-msgstr "No es posible crear configuración de directorio '%1$s'"
+msgstr "no se puede crear configuración de directorio '%1$s'"
 
 #, c-format
 msgid "cannot create directory %1$s"
-msgstr "No se puede crear directorio %1$s"
+msgstr "no se puede crear directorio %1$s"
 
 #, c-format
 msgid "cannot create file %1$s"
-msgstr "No se puede crear archivo %1$s"
+msgstr "no se puede crear archivo %1$s"
 
 #, c-format
 msgid "cannot create file '%1$s'"
-msgstr "No se puede crear el archivo '%1$s'"
+msgstr "no se puede crear el archivo '%1$s'"
 
 #, c-format
 msgid "cannot create log directory %1$s"
-msgstr "no es posible crear directorio de registro %1$s"
+msgstr "no se puede crear directorio de registro %1$s"
 
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
@@ -24221,17 +24217,17 @@ msgstr ""
 
 #, c-format
 msgid "cannot create path '%1$s'"
-msgstr "no es posible crear la ruta '%1$s'"
+msgstr "no se puede crear ruta '%1$s'"
 
 msgid "cannot create pipe for tunnelled migration"
-msgstr "No se puede crear tubo para migración en túnel"
+msgstr "no se puede crear conducto para migración en túnel"
 
 #, c-format
 msgid "cannot create snapshot directory '%1$s'"
-msgstr "no se puede crear un directorio de pantallazo '%1$s'"
+msgstr "no se puede crear un directorio de captura '%1$s'"
 
 msgid "cannot create snapshot while checkpoint exists"
-msgstr "no es posible crear instantánea mientras exista punto de control"
+msgstr "no se puede crear instantánea mientras exista punto de control"
 
 #, c-format
 msgid "cannot create state directory '%1$s'"
@@ -24239,8 +24235,7 @@ msgstr "no se puede crear directorio de estado ‘%1$s’"
 
 #, c-format
 msgid "cannot decode CPU data for %1$s architecture"
-msgstr ""
-"no es posible decodificar los datos de la CPU para la arquitectura %1$s"
+msgstr "no se puede decodificar los datos de la CPU para la arquitectura %1$s"
 
 msgid "cannot define a mediated device without a parent"
 msgstr "no se puede definir un dispositivo mediado sin un antecesor"
@@ -24249,7 +24244,7 @@ msgid "cannot delete checkpoint for inactive domain"
 msgstr "no se puede borrar punto de comprobación para dominio inactivo"
 
 msgid "cannot delete domain snapshot for running domain"
-msgstr "no es posible borrar instantánea para dominio en ejecución"
+msgstr "no se puede borrar instantánea para dominio en ejecución"
 
 msgid "cannot delete external snapshots when there is another active block job"
 msgstr ""
@@ -24261,13 +24256,13 @@ msgstr "no se puede borrar dominio inactivo con %1$d puntos de control"
 
 #, c-format
 msgid "cannot delete inactive domain with %1$d snapshots"
-msgstr "No se puede borrar dominio inactivo con instantáneas %1$d"
+msgstr "no se puede borrar dominio inactivo con instantáneas %1$d"
 
 msgid "cannot delete metadata of a snapshot with children"
-msgstr "no es posible borrar metadatos de una instantánea con herederos"
+msgstr "no se puede borrar metadatos de una instantánea con herederos"
 
 msgid "cannot delete snapshots of running domain"
-msgstr "no es posible borrar instantáneas del dominio en ejecución"
+msgstr "no se puede borrar instantáneas del dominio en ejecución"
 
 #, c-format
 msgid "cannot detect host CPU model for %1$s architecture"
@@ -24275,25 +24270,25 @@ msgstr "no se puede detectar modelo de CPU de host para arquitectura %1$s"
 
 #, c-format
 msgid "cannot determine filesystem for '%1$s'"
-msgstr "no es posible determinar el sistema de archivos de '%1$s'"
+msgstr "no se puede determinar el sistema de archivos de '%1$s'"
 
 msgid "cannot do managed save for transient domain"
-msgstr "No se puede guardar para dominio transitorio"
+msgstr "no se puede guardar para dominio transitorio"
 
 #, c-format
 msgid "cannot download from volume %1$s"
-msgstr "No se puede descargar desde el volumen %1$s"
+msgstr "no se puede descargar desde el volumen %1$s"
 
 #, c-format
 msgid "cannot encode CPU data for %1$s architecture"
-msgstr "no es posible codificar datos de la CPU para la arquitectura %1$s"
+msgstr "no se puede codificar datos de la CPU para la arquitectura %1$s"
 
 msgid "cannot enforce change protection"
-msgstr "No es posible aplicar protección de cambio"
+msgstr "no se puede forzar protección de cambio"
 
 #, c-format
 msgid "cannot execute binary %1$s"
-msgstr "no es posible ejecutar binario %1$s"
+msgstr "no se puede ejecutar binario %1$s"
 
 #, c-format
 msgid "cannot export the public key from the private key '%1$s'"
@@ -24301,23 +24296,23 @@ msgstr "no se puede exportar la clave pública desde la clave privada «%1$s»"
 
 #, c-format
 msgid "cannot extend file '%1$s'"
-msgstr "no es posible extender el archivo '%1$s'"
+msgstr "no se puede extender el archivo '%1$s'"
 
 #, c-format
 msgid "cannot fill file '%1$s'"
-msgstr "no es posible completar el archivo '%1$s'"
+msgstr "no se puede completar el archivo '%1$s'"
 
 #, c-format
 msgid "cannot find %1$s name in CPU map '%2$s'"
-msgstr "no se pudo encontrar el nombre de %1$s en el mapa de CPU '%2$s'"
+msgstr "no se puede encontrar el nombre de %1$s en el mapa de CPU '%2$s'"
 
 #, c-format
 msgid "cannot find CPU map for %1$s architecture"
-msgstr "No es posible encontrar mapeo de la CPU para la arquitectura %1$s"
+msgstr "no se puede encontrar mapeo de la CPU para la arquitectura %1$s"
 
 #, c-format
 msgid "cannot find IOThread '%1$u' in iothreadids"
-msgstr "no se pudo encontrar el IOThread '%1$u' en iothreadids"
+msgstr "no se puede encontrar el IOThread '%1$u' en iothreadids"
 
 #, c-format
 msgid "cannot find IOThread '%1$u' in iothreadids list"
@@ -24334,19 +24329,19 @@ msgstr ""
 
 #, c-format
 msgid "cannot find architecture %1$s"
-msgstr "no se encuentra arquitectura %1$s"
+msgstr "no se puede encontrar arquitectura %1$s"
 
 #, c-format
 msgid "cannot find channel %1$s"
-msgstr "No se encontró el canal %1$s"
+msgstr "no se puede encontrar el canal %1$s"
 
 #, c-format
 msgid "cannot find character device %1$s"
-msgstr "No se puede encontrar dispositivo de caracteres %1$s"
+msgstr "no se puede encontrar dispositivo de caracteres %1$s"
 
 #, c-format
 msgid "cannot find console device '%1$s'"
-msgstr "No se puede acceder al dispositivo de consola '%1$s'"
+msgstr "no se puede acceder al dispositivo de consola '%1$s'"
 
 msgid "cannot find device number"
 msgstr "no se puede encontrar número de dispositivo"
@@ -24354,7 +24349,7 @@ msgstr "no se puede encontrar número de dispositivo"
 #, c-format
 msgid "cannot find existing graphics device to modify of type '%1$s'"
 msgstr ""
-"no se pudo encontrar un dispositivo gráfico existente para modificar del "
+"no se puede encontrar un dispositivo gráfico existente para modificar del "
 "tipo '%1$s'"
 
 #, c-format
@@ -24366,12 +24361,12 @@ msgstr ""
 #, c-format
 msgid "cannot find init path '%1$s' relative to container root"
 msgstr ""
-"no se pudo encontrar una ruta de init '%1$s' relativa a la raíz del "
+"no se puede encontrar una ruta de init '%1$s' relativa a la raíz del "
 "contenedor"
 
 #, c-format
 msgid "cannot find iscsiadm session: %1$s"
-msgstr "no se pude encontrar sesión iscsiadm: %1$s"
+msgstr "no se puede encontrar sesión iscsiadm: %1$s"
 
 #, c-format
 msgid "cannot find logical volume group name '%1$s'"
@@ -24383,7 +24378,7 @@ msgstr "no se puede encontrar hilo IOThread '%1$u' en el monitor de QEMU."
 
 #, c-format
 msgid "cannot find newly created volume '%1$s'"
-msgstr "no es posible encontrar el volumen '%1$s' creado recientemente"
+msgstr "no se puede encontrar el volumen '%1$s' creado recientemente"
 
 #, c-format
 msgid "cannot find parent '%1$s' definition"
@@ -24396,43 +24391,43 @@ msgid "cannot find parent using provided wwnn/wwpn"
 msgstr "no se puede encontrar antecesor utilizando wwnn/wwpn proporcionado"
 
 msgid "cannot find pid in vmware log file"
-msgstr "No se puede encontrar PID en archivo de registro vmware"
+msgstr "no se puede encontrar el pid en archivo de registro vmware"
 
 #, c-format
 msgid "cannot find statistics for device '%1$s'"
-msgstr "no es posible encontrar estadísticas para el dispositivo '%1$s'"
+msgstr "no se puede encontrar estadísticas para el dispositivo '%1$s'"
 
 #, c-format
 msgid "cannot find throttling info for device '%1$s'"
 msgstr ""
-"No se puede hallar información de estrangulamiento para dispositivo '%1$s"
+"no se puede encontrar información de estrangulamiento para dispositivo '%1$s"
 
 #, c-format
 msgid "cannot find version pattern \"%1$s\""
 msgstr "no se puede encontrar patrón de versión «%1$s»"
 
 msgid "cannot fork child process"
-msgstr "no es posible iniciar proceso hijo"
+msgstr "no se puede iniciar proceso heredado"
 
 #, c-format
 msgid "cannot format %1$s CPU data"
 msgstr "no se puede dar formato a datos de la CPU %1$s"
 
 msgid "cannot generate a random uuid for instanceid"
-msgstr "No es posible generar de forma azarosa un UUID para instanceid"
+msgstr "no se puede generar de forma azarosa un UUID para instanceid"
 
 msgid "cannot generate a random uuid for interfaceid"
-msgstr "No se puede generar un UUID aleatorio para interfaceid"
+msgstr "no se puede generar un UUID aleatorio para interfaceid"
 
 #, c-format
 msgid "cannot generate dac user and group id for domain %1$s"
-msgstr "No se puede generar el usuario DAC e ID de grupo para dominio %1$s"
+msgstr "no se puede generar el usuario dac e id de grupo para dominio %1$s"
 
 #, c-format
 msgid ""
 "cannot generate external snapshot name for disk '%1$s' on a '%2$s' device"
 msgstr ""
-"no se pudo generar el nombre de instantánea externa para el disco '%1$s' en "
+"no se puede generar el nombre de instantánea externa para el disco '%1$s' en "
 "un dispositivo '%2$s'"
 
 #, c-format
@@ -24446,15 +24441,15 @@ msgid ""
 "cannot generate external snapshot name for disk '%1$s': collision with disk "
 "'%2$s'"
 msgstr ""
-"no se pudo generar el nombre de instantánea externa para el disco '%1$s': "
+"no se puede generar el nombre de instantánea externa para el disco '%1$s': "
 "colisión con el disco '%2$s'"
 
 #, c-format
 msgid "cannot get CPU affinity of process %1$d"
-msgstr "No es posible obtener afinidad de CPU en el proceso %1$d"
+msgstr "no se puede obtener afinidad de CPU en el proceso %1$d"
 
 msgid "cannot get RSS for domain"
-msgstr "No se puede obtener RSS para dominio"
+msgstr "no se puede obtener RSS para dominio"
 
 #, c-format
 msgid "cannot get cert distinguished name: %1$s"
@@ -24464,7 +24459,7 @@ msgid "cannot get children disk"
 msgstr "no se puede obtener disco heredero"
 
 msgid "cannot get current time"
-msgstr "no es posible obtener la hora actual"
+msgstr "no se puede obtener la hora actual"
 
 msgid "cannot get disk location"
 msgstr "no se puede obtener el lugar del disco"
@@ -24474,17 +24469,17 @@ msgstr "no se pudieron obtener indicadores de funciones en macvtap tap"
 
 #, c-format
 msgid "cannot get file context of '%1$s'"
-msgstr "no es posible obtener contexto de archivo '%1$s'"
+msgstr "no se puede obtener contexto de archivo '%1$s'"
 
 msgid "cannot get host CPU capabilities"
-msgstr "No es posible obtener capacidades de la CPU del equipo"
+msgstr "no se puede obtener capacidades de la CPU del equipo"
 
 msgid "cannot get interface flags on macvtap tap"
-msgstr "no es posible obtener las banderas de la interfaz Tap macvtap"
+msgstr "no se puede obtener los indicadores de la interfaz Tap macvtap"
 
 #, c-format
 msgid "cannot get locked memory limit of process %1$lld"
-msgstr "no se pudo conseguir el límite de memoria bloqueada del proceso %1$lld"
+msgstr "no se puede obtener el límite de memoria bloqueada del proceso %1$lld"
 
 msgid "cannot get machine"
 msgstr "no se puede obtener máquina"
@@ -24502,11 +24497,11 @@ msgid "cannot get medium attachments"
 msgstr "no se puede obtener medio adjuntado"
 
 msgid "cannot get netlink socket fd"
-msgstr "No se puede obtener FD de socket netlink"
+msgstr "no se puede obtener fd de socket netlink"
 
 #, c-format
 msgid "cannot get security props %1$d (%2$s)"
-msgstr "No se pueden obtener ayuda de seguridad %1$d (%2$s)"
+msgstr "no se pueden obtener ayuda de seguridad %1$d (%2$s)"
 
 msgid "cannot get settings file path"
 msgstr "no se puede obtener ajustes de ruta del archivo"
@@ -24515,10 +24510,10 @@ msgid "cannot get snapshot ids"
 msgstr "no se puede obtener los ID de instantánea"
 
 msgid "cannot get the host uuid"
-msgstr "no es posible obtener el uuid del equipo"
+msgstr "no se puede obtener el uuid del equipo"
 
 msgid "cannot get vCPU placement & pCPU time"
-msgstr "no es posible obtener el lugar de vCPU ni la hora pCPU"
+msgstr "no se puede obtener el lugar de vCPU ni la hora pCPU"
 
 msgid "cannot get vcpupin for offline domain"
 msgstr "no se puede obtener vcpupin para dominio desconectado"
@@ -24527,10 +24522,10 @@ msgid "cannot get vcpupin for transient domain"
 msgstr "no se puede obtener vcpupin para dominio transitorio"
 
 msgid "cannot halt after snapshot of transient domain"
-msgstr "No se puede deterne después de toma de pantalla de dominio transitorio"
+msgstr "no se puede detener después de toma de pantalla de dominio transitorio"
 
 msgid "cannot halt after transient domain snapshot"
-msgstr "No se puede detener la toma de pantalla de dominio transitorio"
+msgstr "no se puede detener la toma de pantalla de dominio transitorio"
 
 #, c-format
 msgid ""
@@ -24567,10 +24562,10 @@ msgstr "no se puede inicializar condición de agente"
 
 #, c-format
 msgid "cannot initialize cert object: %1$s"
-msgstr "No se puede inicializar objeto de certificado:%1$s"
+msgstr "no se puede inicializar objeto de certificado: %1$s"
 
 msgid "cannot initialize condition variable"
-msgstr "No es posible inicializar la variable de condición"
+msgstr "no se puede inicializar la variable de condición"
 
 msgid "cannot initialize console condition"
 msgstr "no se puede inicializar condición de consola"
@@ -24583,10 +24578,10 @@ msgstr ""
 "ejecutándose en un Xen Dom0, inhabilitando unidad"
 
 msgid "cannot initialize monitor condition"
-msgstr "no es posible inicializar condición de monitor"
+msgstr "no se puede inicializar condición de monitor"
 
 msgid "cannot initialize mutex"
-msgstr "No es posible iniciar mutex"
+msgstr "no se puede iniciar mutex"
 
 #, c-format
 msgid "cannot limit core file size of process %1$lld to %2$llu"
@@ -24595,37 +24590,37 @@ msgstr ""
 
 #, c-format
 msgid "cannot limit locked memory of process %1$lld to %2$llu"
-msgstr "No se puede limitar memoria bloqueada de proceso %1$lld a %2$llu"
+msgstr "no se puede limitar memoria bloqueada de proceso %1$lld a %2$llu"
 
 #, c-format
 msgid "cannot limit number of open files of process %1$lld to %2$u"
 msgstr ""
-"No se puede limitar el número de archivos abiertos de proceso %1$lld a %2$u"
+"no se puede limitar el número de archivos abiertos de proceso %1$lld a %2$u"
 
 #, c-format
 msgid "cannot limit number of subprocesses of process %1$lld to %2$u"
-msgstr "No se puede limitar número de subprocesos de proceso %1$lld a %2$u"
+msgstr "no se puede limitar número de subprocesos de proceso %1$lld a %2$u"
 
 msgid "cannot list IOThreads for an inactive domain"
-msgstr "no es posible alistar IOThread para un dominio inactivo"
+msgstr "no se puede alistar IOThread para un dominio inactivo"
 
 #, c-format
 msgid "cannot list SASL mechanisms %1$d (%2$s)"
-msgstr "No es posible mostrar los mecanismos de SASL %1$d (%2$s)"
+msgstr "no se puede enumerar los mecanismos de SASL %1$d (%2$s)"
 
 msgid "cannot list vcpu pinning for an inactive domain"
-msgstr "no es posible mostrar vcpus adjuntos en un dominio inactivo"
+msgstr "no se puede enumerar chincheta de vcpus en un dominio inactivo"
 
 msgid "cannot list vcpus for an inactive domain"
-msgstr "No es posible mostrar vcpus en un dominio inactivo"
+msgstr "no se puede enumerar vcpus en un dominio inactivo"
 
 #, c-format
 msgid "cannot load AppArmor profile '%1$s'"
-msgstr "No se puede cargar perfil AppArmor '%1$s'"
+msgstr "no se puede cargar perfil AppArmor '%1$s'"
 
 #, c-format
 msgid "cannot load cert data from %1$s: %2$s"
-msgstr "No se pueden cargar datos de certificado desde %1$s: %2$s"
+msgstr "no se pueden cargar datos de certificado desde %1$s: %2$s"
 
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %1$d"
@@ -24637,7 +24632,7 @@ msgstr "no se puede migrar un dominio con <hostdev mode='capabilities'>"
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%1$s'>"
 msgstr ""
-"no se pudo migrar un dominio con <hostdev mode='subsystem' type='%1$s'>"
+"no se puede migrar un dominio con <hostdev mode='subsystem' type='%1$s'>"
 
 #, c-format
 msgid "cannot migrate a domain with <interface type='%1$s'>"
@@ -24645,10 +24640,10 @@ msgstr "no se puede migrar un dominio con <interface type='%1$s'>"
 
 #, c-format
 msgid "cannot migrate domain with %1$d snapshots"
-msgstr "No se pudo migrar con instantáneas %1$d"
+msgstr "no se puede migrar con instantáneas %1$d"
 
 msgid "cannot migrate domain with I/O error"
-msgstr "No se puede migrar dominio con error de E/S"
+msgstr "no se puede migrar dominio con error de E/S"
 
 #, c-format
 msgid "cannot migrate domain: %1$s"
@@ -24658,13 +24653,13 @@ msgid "cannot migrate this domain without dbus-vmstate support"
 msgstr "no se puede migrar este dominio sin asistencia dbus-vmstate"
 
 msgid "cannot mix caller fds with blocking execution"
-msgstr "No se pudo mezclar llamada fds con ejecución de bloqueo"
+msgstr "no se puede mezclar invocación fds con ejecución de bloqueo"
 
 msgid "cannot mix string I/O with asynchronous command"
-msgstr "No se pudo mezclar cadena de E/S con comando asíncrono"
+msgstr "no se puede mezclar cadena de E/S con comando asíncrono"
 
 msgid "cannot mix string I/O with daemon"
-msgstr "No se pudo mezclar cadena de E/S con demonio"
+msgstr "no se puede mezclar cadena de E/S con demonio"
 
 msgid "cannot modify '<iothreads>' configuration of the disk"
 msgstr "no se puede modificar la configuración de '<iothreads>' del disco"
@@ -24729,56 +24724,55 @@ msgstr ""
 
 msgid "cannot modify network device boot index setting"
 msgstr ""
-"No se puede modificar parámetro de índice de arranque de dispositivo de red"
+"no se puede modificar parámetro de índice de arranque de dispositivo de red"
 
 msgid "cannot modify network device guest PCI address"
-msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
+msgstr "no se puede modificar dirección PCI de huésped de dispositivo de red"
 
 #, c-format
 msgid "cannot modify network device model from %1$s to %2$s"
-msgstr "No se puede modificar modelo de dispositivo de red %1$s a %2$s"
+msgstr "no se puede modificar modelo de dispositivo de red %1$s a %2$s"
 
 msgid "cannot modify network device portgroup attribute"
 msgstr "no se puede modificar dispositivo de red en el atributo portgroup"
 
 msgid "cannot modify network device rom bar setting"
-msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
+msgstr "no se puede modificar ajuste de barra rom del dispositivo de red"
 
 msgid "cannot modify network device rom enabled setting"
-msgstr ""
-"no se puede modificar parámetro habilitado de rom del dispositivo de red"
+msgstr "no se puede modificar ajustes habilitados de rom del dispositivo de red"
 
 msgid "cannot modify network device script attribute"
-msgstr "No se puede modificar atributo de script de dispositivo de red"
+msgstr "no se puede modificar atributo de script de dispositivo de red"
 
 msgid "cannot modify network device tap name"
-msgstr "No se puede modificar nombre de dispositivo de red tap"
+msgstr "no se puede modificar nombre de dispositivo de red tap"
 
 msgid "cannot modify network rom file"
-msgstr "No se puede modificar archivo ROM de red"
+msgstr "no se puede modificar archivo rom de red"
 
 msgid "cannot modify the persistent configuration of a domain"
-msgstr "no es posible modificar la configuración persistente de un dominio"
+msgstr "no se puede modificar la configuración persistente de un dominio"
 
 msgid "cannot modify virtio network device driver attributes"
-msgstr "No se pueden modificar atributos de controlador de dispositivo de red"
+msgstr "no se pueden modificar atributos de controlador de dispositivo de red"
 
 msgid "cannot modify virtio network device driver options"
 msgstr "no se puede modificar opciones de unidad de dispositivo de red virtio"
 
 msgid "cannot obtain CPU freq"
-msgstr "No se puede obtener frecuencia de CPU"
+msgstr "no se puede obtener frecuencia de CPU"
 
 #, c-format
 msgid "cannot open %1$s"
-msgstr "No se puede abrir %1$s"
+msgstr "no se puede abrir %1$s"
 
 #, c-format
 msgid "cannot open '%1$s'"
-msgstr "no es posible abrir '%1$s'"
+msgstr "no se puede abrir '%1$s'"
 
 msgid "cannot open SELinux label_handle"
-msgstr "no se pudo abrir el label_handle de SELinux"
+msgstr "no se puede abrir label_handle de SELinux"
 
 msgid "cannot open bus path"
 msgstr "no se puede abrir la ruta del bus"
@@ -24788,23 +24782,23 @@ msgid "cannot open directory '%1$s'"
 msgstr "no se puede abrir directorio «%1$s»"
 
 msgid "cannot open file using fd"
-msgstr "No se puede abrir archivo mediante fd"
+msgstr "no se puede abrir archivo mediante fd"
 
 #, c-format
 msgid "cannot open macvtap tap device %1$s"
-msgstr "no es posible abrir el dispositivo Tap macvtap %1$s"
+msgstr "no se puede abrir el dispositivo Tap macvtap %1$s"
 
 #, c-format
 msgid "cannot open path '%1$s'"
-msgstr "no es posible abrir la ruta '%1$s'"
+msgstr "no se puede abrir la ruta '%1$s'"
 
 #, c-format
 msgid "cannot open path '%1$s' in '%2$s'"
-msgstr "no se pudo abrir la ruta '%1$s' en '%2$s'"
+msgstr "no se puede abrir ruta '%1$s' en '%2$s'"
 
 #, c-format
 msgid "cannot open volume '%1$s'"
-msgstr "no e posible abrir el volumen '%1$s'"
+msgstr "no se puede abrir el volumen '%1$s'"
 
 #, c-format
 msgid "cannot parse %1$s CPU data"
@@ -24812,7 +24806,7 @@ msgstr "no se puede interpretar los datos %1$s de la CPU"
 
 #, c-format
 msgid "cannot parse %1$s version number in '%3$.*2$s'"
-msgstr "No se puede analizar el número de la versión %1$s en '%3$.*2$s'"
+msgstr "no se puede interpretar el número de la versión %1$s en '%3$.*2$s'"
 
 #, c-format
 msgid "cannot parse 'dspPolicy' value '%1$i'"
@@ -24823,7 +24817,7 @@ msgstr "no se pueden interpretar los datos de la CPU"
 
 #, c-format
 msgid "cannot parse MAC address '%1$s' from file '%2$s'"
-msgstr "no se pudo procesar la dirección MAC '%1$s' desde el archivo '%2$s'"
+msgstr "no se puede procesar la dirección MAC '%1$s' desde el archivo '%2$s'"
 
 #, c-format
 msgid "cannot parse cpu sys stat '%1$s'"
@@ -24838,10 +24832,10 @@ msgid "cannot parse cpu user stat '%1$s'"
 msgstr "no se puede interpretar estado de usuario '%1$s'"
 
 msgid "cannot parse device end location"
-msgstr "no es posible analizar ubicación final del dispositivo"
+msgstr "no se puede interpretar el lugar final del dispositivo"
 
 msgid "cannot parse device start location"
-msgstr "no es posible analizar ubicación de inicio del dispositivo"
+msgstr "no se puede interpretar el lugar de inicio del dispositivo"
 
 #, c-format
 msgid "cannot parse openfiles '%1$s' for virtiofs"
@@ -24850,20 +24844,20 @@ msgstr "no se pueden interpretar apertura de archivos '%1$s' para virtiofs"
 #, c-format
 msgid "cannot parse partition number from target '%1$s'"
 msgstr ""
-"no es posible analizar el número de la partición desde el destino '%1$s'"
+"no se puede interpretar el número de la partición desde el destino '%1$s'"
 
 #, c-format
 msgid "cannot parse password validity time '%1$s', expect YYYY-MM-DDTHH:MM:SS"
 msgstr ""
-"No se puede analizar tiempo de validez de contraseña '%1$s', se espera YYYY-"
-"MM-DDTHH:MM:SS"
+"no se puede interpretar de validez de contraseña '%1$s', se espera YYYY-MM-"
+"DDTHH:MM:SS"
 
 #, c-format
 msgid "cannot parse pci address '%1$s' for network interface"
-msgstr "no se pudo procesar la dirección pci '%1$s' para la interfaz de red"
+msgstr "no se puede interpretar la dirección pci '%1$s' para la interfaz de red"
 
 msgid "cannot parse pid in vmware log file"
-msgstr "No se puede leer PID en archivo de registro vmware"
+msgstr "no se puede interpretar el pid en archivo de registro vmware"
 
 #, c-format
 msgid "cannot parse queue size '%1$s' for virtiofs"
@@ -24880,7 +24874,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%1$s' for RAM filesystem"
-msgstr "No se puede leer uso '%1$s' para sistema de archivos RAM"
+msgstr "no se puede interpretar el uso de '%1$s' para sistema de archivos RAM"
 
 #, c-format
 msgid "cannot parse value '%1$s' for coalesce parameter"
@@ -24888,21 +24882,21 @@ msgstr "no se puede interpretar valor '%1$s' para parámetro de fusión"
 
 #, c-format
 msgid "cannot parse vlan tag '%1$s' from file '%2$s'"
-msgstr "no se pudo analizar la etiqueta vlan '%1$s' desde el archivo '%2$s'"
+msgstr "no se puede interpretar la etiqueta vlan '%1$s' desde el archivo '%2$s'"
 
 msgid "cannot pass pipe for tunnelled migration"
-msgstr "No se puede pasar tubo para migración en túnel"
+msgstr "no se puede pasar conducto para migración en túnel"
 
 msgid "cannot perform disk backup for inactive domain"
-msgstr "no es posible realizar respaldo de disco para dominio no activo"
+msgstr "no se puede realizar respaldo de disco para dominio no activo"
 
 msgid "cannot perform tunnelled migration without using peer2peer flag"
 msgstr ""
-"No es posible realizar una migración en túnel sin la utilización de una "
-"marca de par a par (peer2peer)"
+"no se puede realizar una migración en túnel sin la utilización de una marca "
+"de par a par (peer2peer)"
 
 msgid "cannot pin vcpus on an inactive domain"
-msgstr "no es posible adjuntar vcpus en un dominio inactivo"
+msgstr "no se puede adjuntar pin de vcpus en un dominio inactivo"
 
 #, c-format
 msgid "cannot precreate storage for disk type '%1$s'"
@@ -24910,27 +24904,27 @@ msgstr "no se puede pre-crear almacén para tipo de disco «%1$s»"
 
 #, c-format
 msgid "cannot probe backing volume format: %1$s"
-msgstr "No se pudo sondear formato de volumen de respaldo: %1$s"
+msgstr "no se puede sondear formato de volumen de respaldo: %1$s"
 
 #, c-format
 msgid "cannot query SASL ssf on connection %1$d (%2$s)"
-msgstr "No es posible consultar el SSF SASL en la conexión %1$d (%2$s)"
+msgstr "no se puede consultar el SSF SASL en la conexión %1$d (%2$s)"
 
 #, c-format
 msgid "cannot query SASL username on connection %1$d (%2$s)"
 msgstr ""
-"No es posible consultar el nombre de usuario SASL en la conexión %1$d (%2$s)"
+"no se puede consultar el nombre de usuario SASL en la conexión %1$d (%2$s)"
 
 msgid "cannot query both live and config at once"
-msgstr "No se pueden solicitar vivo y configuración a la vez"
+msgstr "no se puede solicitar a la vez vivo y configuración"
 
 #, c-format
 msgid "cannot read %1$s"
-msgstr "no es posible leer %1$s"
+msgstr "no se puede leer %1$s"
 
 #, c-format
 msgid "cannot read %1$s statistic"
-msgstr "no es posible leer estadísticas de %1$s"
+msgstr "no se puede leer estadísticas de %1$s"
 
 #, c-format
 msgid "cannot read %1$s value"
@@ -24942,48 +24936,48 @@ msgstr "no es posible leer '%1$s'"
 
 #, c-format
 msgid "cannot read SELinux virtual domain context file '%1$s'"
-msgstr "No se puede leer archivo de contexto de dominio virtual SELinux '%1$s'"
+msgstr "no se puede leer archivo de contexto de dominio virtual SELinux '%1$s'"
 
 #, c-format
 msgid "cannot read SELinux virtual image context file %1$s"
-msgstr "No es posible leer archivo %1$s de contexto de imagen virtual SELinux"
+msgstr "no se puede leer archivo %1$s de contexto de imagen virtual SELinux"
 
 #, c-format
 msgid "cannot read beginning of file '%1$s'"
-msgstr "no es posible leer el principio del archivo '%1$s'"
+msgstr "no se puede leer el comienzo del archivo '%1$s'"
 
 msgid "cannot read cputime for domain"
-msgstr "No es posible leer cputime para el dominio"
+msgstr "no se puede leer cputime para el dominio"
 
 #, c-format
 msgid "cannot read cputime for domain %1$d"
-msgstr "No se puede leer cputime para el dominio %1$d"
+msgstr "no se puede leer cputime para el dominio %1$d"
 
 #, c-format
 msgid "cannot read dir '%1$s'"
-msgstr "no es posible leer el directorio '%1$s'"
+msgstr "no se puede leer el directorio '%1$s'"
 
 #, c-format
 msgid "cannot read domain image '%1$s'"
-msgstr "no es posible leer imagen de dominio '%1$s'"
+msgstr "no se puede leer imagen de dominio '%1$s'"
 
 #, c-format
 msgid "cannot read file '%1$s'"
-msgstr "No se puede leer el archivo '%1$s'"
+msgstr "no se puede leer el archivo '%1$s'"
 
 msgid "cannot read from stdin"
 msgstr "no se puede leer desde entrada estándar"
 
 msgid "cannot read from stream"
-msgstr "No se puede leer desde la secuencia"
+msgstr "no se puede leer desde la secuencia"
 
 #, c-format
 msgid "cannot read header '%1$s'"
-msgstr "no es posible leer el encabezadio '%1$s'"
+msgstr "no se puede leer el encabezado '%1$s'"
 
 #, c-format
 msgid "cannot read mount list '%1$s'"
-msgstr "no es posible leer la lista de montaje '%1$s'"
+msgstr "no se puede leer la lista de montaje '%1$s'"
 
 #, c-format
 msgid "cannot read node header '%1$s'"
@@ -24994,7 +24988,7 @@ msgid "cannot receive data from volume %1$s"
 msgstr "no se pueden recibir datos desde el volumen %1$s"
 
 msgid "cannot register file watch on stream"
-msgstr "no es posible registrar vigilancia de archivo en la secuencia"
+msgstr "no se puede registrar vigilancia de archivo en la secuencia"
 
 #, c-format
 msgid "cannot remove IOThread %1$u since it is being used by disk '%2$s'"
@@ -25013,27 +25007,27 @@ msgstr "no se puede retirar punto de control desde dominio no activo"
 
 #, c-format
 msgid "cannot remove config %1$s"
-msgstr "No es posible eliminar configuración %1$s"
+msgstr "no se puede eliminar configuración %1$s"
 
 #, c-format
 msgid "cannot remove config file '%1$s'"
-msgstr "No es posible eliminar el archivo de configuración '%1$s'"
+msgstr "no se puede eliminar el archivo de configuración '%1$s'"
 
 #, c-format
 msgid "cannot remove config for %1$s"
-msgstr "No es posible eliminar configuración para %1$s"
+msgstr "no se puede eliminar configuración para %1$s"
 
 #, c-format
 msgid "cannot remove corrupt file: %1$s"
-msgstr "No se puede retirar archivo corrupto: %1$s"
+msgstr "no se puede retirar archivo corrupto: %1$s"
 
 #, c-format
 msgid "cannot remove directory '%1$s'"
-msgstr "No se puede retirar directorio '%1$s'"
+msgstr "no se puede retirar directorio '%1$s'"
 
 #, c-format
 msgid "cannot remove gluster volume dir '%1$s'"
-msgstr "no se puede quitar volumen gluster del dir «%1$s»"
+msgstr "no se puede retirar volumen gluster del dir «%1$s»"
 
 #, c-format
 msgid "cannot remove gluster volume file '%1$s'"
@@ -25041,20 +25035,20 @@ msgstr "no se puede retirar volumen gluster del archivo «%1$s»"
 
 #, c-format
 msgid "cannot remove managed save file %1$s"
-msgstr "No se puede retirar archivo de almacenamiento administrado %1$s"
+msgstr "no se puede retirar archivo de almacenamiento administrado %1$s"
 
 msgid "cannot rename a transient domain"
-msgstr "no es posible quitar la definición del dominio transitorio"
+msgstr "no se puede quitar la definición del dominio transitorio"
 
 msgid "cannot rename active domain"
 msgstr "no se puede renombrar dominio activo"
 
 #, c-format
 msgid "cannot rename file '%1$s' as '%2$s'"
-msgstr "No se puede renombrar archivo '%1$s' como '%2$s'"
+msgstr "no se puede renombrar archivo '%1$s' como '%2$s'"
 
 msgid "cannot replace NETIF config"
-msgstr "No se puede remplazar configuración NETIF"
+msgstr "no se puede remplazar configuración NETIF"
 
 #, c-format
 msgid "cannot reset '%1$s' when '%2$s' is set"
@@ -25064,7 +25058,7 @@ msgid "cannot reset current job"
 msgstr "no se puede restablecer tarea actual"
 
 msgid "cannot resize the maximum memory on an active domain"
-msgstr "No se puede cambiar la memoria máxima en un dominio activo"
+msgstr "no se puede cambiar la memoria máxima en un dominio activo"
 
 #, c-format
 msgid "cannot resolve '%1$s' without starting directory"
@@ -25072,28 +25066,28 @@ msgstr "no se puede resolver «%1$s» sin directorio de inicio"
 
 #, c-format
 msgid "cannot resolve driver link %1$s"
-msgstr "No es posible apuntar enlace %1$s al controlador"
+msgstr "no se puede resolver enlace %1$s de unidad"
 
 #, c-format
 msgid ""
 "cannot restore domain '%1$s' uuid %2$s from a file which belongs to domain "
 "'%3$s' uuid %4$s"
 msgstr ""
-"no es posible restaurar el dominio '%1$s' con uuid %2$s desde un archivo que "
+"no se puede restaurar el dominio '%1$s' con uuid %2$s desde un archivo que "
 "pertenece al dominio '%3$s', uuid %4$s"
 
 msgid "cannot restore domain snapshot for running domain"
-msgstr "no es posible restaurar instantáneas de dominio en ejecución"
+msgstr "no se puede restaurar instantáneas de dominio en ejecución"
 
 msgid "cannot retrieve vcpu information for inactive domain"
 msgstr "no se puede obtener información de vcpu para dominio no activo"
 
 msgid "cannot revert snapshot of running domain"
-msgstr "no es posible revertir instantáneas del dominio en ejecución"
+msgstr "no se puede revertir instantáneas del dominio en ejecución"
 
 #, c-format
 msgid "cannot save file '%1$s'"
-msgstr "No se puede guardar el archivo '%1$s'"
+msgstr "no se puede guardar el archivo '%1$s'"
 
 msgid "cannot save/restore domain with host devices"
 msgstr "no se puede guardar/restaurar dominio con dispositivos host"
@@ -25103,7 +25097,7 @@ msgstr "no se puede guardar/restaurar dominio con dispositivos de red"
 
 #, c-format
 msgid "cannot seek in '%1$s'"
-msgstr "No es posible buscar en '%1$s'"
+msgstr "no se puede buscar en '%1$s'"
 
 #, c-format
 msgid "cannot seek into '%1$s'"
@@ -25111,31 +25105,31 @@ msgstr "no se puede buscar '%1$s'"
 
 #, c-format
 msgid "cannot seek to beginning of file '%1$s'"
-msgstr "no es posible buscar en el principio del archivo '%1$s'"
+msgstr "no se puede buscar en el principio del archivo '%1$s'"
 
 #, c-format
 msgid "cannot seek to start of '%1$s'"
-msgstr "No se puede tratar de iniciar de '%1$s'"
+msgstr "no se puede tratar de iniciar de '%1$s'"
 
 #, c-format
 msgid "cannot send data to volume %1$s"
-msgstr "No se pueden enviar datos a 'volume %1$s"
+msgstr "no se pueden enviar datos a 'volume %1$s"
 
 msgid "cannot send to netlink socket"
-msgstr "no es posible enviar hacia el socket netlink"
+msgstr "no se puede enviar hacia el socket netlink"
 
 #, c-format
 msgid "cannot set CPU affinity on process %1$d"
-msgstr "No es posible definir afinidad de CPU en el proceso %1$d"
+msgstr "no se puede definir afinidad de CPU en el proceso %1$d"
 
 msgid "cannot set autostart for transient device"
 msgstr "no se puede establecer autoinicio para dispositivo transiente"
 
 msgid "cannot set autostart for transient domain"
-msgstr "No es posible realizar inicio automático para dominios transitorios"
+msgstr "no se puede establecer inicio automático para dominios transitorios"
 
 msgid "cannot set autostart for transient network"
-msgstr "No es posible establecer inicio automático para la red transitoria"
+msgstr "no se puede establecer inicio automático para la red transitoria"
 
 msgid "cannot set backing store for raw volume"
 msgstr "no se puede respaldar almacenaje para volumen en crudo"
@@ -25145,19 +25139,19 @@ msgstr "no se puede establecer ajustes de segundo plano del sonido común"
 
 #, c-format
 msgid "cannot set current job to %1$s"
-msgstr "no se pudo establecer la tarea actual a %1$s"
+msgstr "no se puede establecer tarea actual a %1$s"
 
 #, c-format
 msgid "cannot set external SSF %1$d (%2$s)"
-msgstr "no es posible establecer SSF externo %1$d (%2$s)"
+msgstr "no se puede establecer SSF externo %1$d (%2$s)"
 
 #, c-format
 msgid "cannot set file mode '%1$s'"
-msgstr "no es posible definir el modo de archivo '%1$s'"
+msgstr "no se puede definir el modo de archivo '%1$s'"
 
 #, c-format
 msgid "cannot set file owner '%1$s'"
-msgstr "no es posible establecer el dueño del archivo '%1$s'"
+msgstr "no se puede establecer el dueño del archivo '%1$s'"
 
 msgid "cannot set initial memory size greater than the maximum memory size"
 msgstr ""
@@ -25165,45 +25159,44 @@ msgstr ""
 "de memoria"
 
 msgid "cannot set memory higher than max memory"
-msgstr ""
-"No es posible establecer que la memoria sea mayor que la memoria máxima"
+msgstr "no se puede establecer que la memoria sea mayor que la memoria máxima"
 
 #, c-format
 msgid "cannot set mode of '%1$s' to %2$04o"
-msgstr "no es posible definir el modo de '%1$s' a %2$04o"
+msgstr "no se puede definir el modo de '%1$s' a %2$04o"
 
 #, c-format
 msgid "cannot set moment %1$s as its own parent"
-msgstr "no se pudo establecer el momento %1$s como su propio padre"
+msgstr "no se puede establecer el momento %1$s como su propio padre"
 
 msgid "cannot set netlink socket buffer size to 128k"
 msgstr "no se puede establecer tamaño del tampón de zócalo a 128k"
 
 msgid "cannot set netlink socket nonblocking"
-msgstr "No se puede establecer socket de netlink de no bloqueo"
+msgstr "no se puede establecer socket de netlink de no bloqueo"
 
 #, c-format
 msgid "cannot set security props %1$d (%2$s)"
-msgstr "no es posible establecer props de seguridad %1$d (%2$s)"
+msgstr "no se puede establecer props de seguridad %1$d (%2$s)"
 
 msgid "cannot set supplemental groups"
-msgstr "No se pueden establecer grupos complementarios"
+msgstr "no se pueden establecer grupos complementarios"
 
 msgid "cannot set time: qemu doesn't support rtc-reset-reinjection command"
 msgstr ""
-"no se puede establecer día y hora: qemu no admite la instrucción tyc-reset-"
+"no se pueden establecer día y hora: qemu no admite la instrucción tyc-reset-"
 "reinjection"
 
 #, c-format
 msgid "cannot set to start of '%1$s'"
-msgstr "no es posible definir al inicio de '%1$s'"
+msgstr "no se puede establecer al inicio de '%1$s'"
 
 #, c-format
 msgid "cannot set topology for CPU type '%1$s'"
 msgstr "no se puede establecer topología para tipo «%1$s» de CPU"
 
 msgid "cannot set vcpus on an inactive domain"
-msgstr "No se pueden establecer VCPU en un dominio activo"
+msgstr "no se puede establecer vcpus en un dominio activo"
 
 #, c-format
 msgid "cannot set worker name to %1$s"
@@ -25216,11 +25209,11 @@ msgstr ""
 
 #, c-format
 msgid "cannot stat '%1$s'"
-msgstr "no es posible obtener el estado de '%1$s'"
+msgstr "no se puede obtener el estado de '%1$s'"
 
 #, c-format
 msgid "cannot stat fd %1$d"
-msgstr "No se pudo stat fd %1$d"
+msgstr "no se puede obtener el estado fd %1$d"
 
 #, c-format
 msgid "cannot stat file '%1$s'"
@@ -25228,7 +25221,7 @@ msgstr "no es posible obtener el estado del archivo '%1$s'"
 
 #, c-format
 msgid "cannot stat path '%1$s'"
-msgstr "No se puede ejecutar ruta de stat '%1$s'"
+msgstr "no se puede establecer ruta '%1$s'"
 
 #, c-format
 msgid "cannot stat tap fd %1$d"
@@ -25236,23 +25229,23 @@ msgstr "no se puede iniciar cobertura fd %1$d"
 
 #, c-format
 msgid "cannot statvfs path '%1$s'"
-msgstr "no es posible statvfs a la dirección '%1$s'"
+msgstr "no se puede statvfs a la dirección '%1$s'"
 
 #, c-format
 msgid "cannot statvfs path '%1$s' in '%2$s'"
-msgstr "no se pudo ejecutar statvfs sobre la ruta '%1$s' en '%2$s'"
+msgstr "no se puede ejecutar statvfs sobre la ruta '%1$s' en '%2$s'"
 
 #, c-format
 msgid "cannot sync data to file '%1$s'"
-msgstr "no es posible sincronizar los datos con el archivo '%1$s'"
+msgstr "no se puede sincronizar los datos con el archivo '%1$s'"
 
 #, c-format
 msgid "cannot sync data to volume with path '%1$s'"
-msgstr "No se pueden sincronizar datos al volumen con ruta '%1$s'"
+msgstr "no se puede sincronizar datos al volumen con ruta '%1$s'"
 
 #, c-format
 msgid "cannot sync file '%1$s'"
-msgstr "No se puede sincronizar el archivo '%1$s'"
+msgstr "no se puede sincronizar el archivo '%1$s'"
 
 msgid "cannot terminate console stream"
 msgstr "no se puede terminar flujo de consola"
@@ -25274,13 +25267,13 @@ msgstr ""
 "código de tecla xt"
 
 msgid "cannot unblock signals"
-msgstr "no es posible desbloquear señales"
+msgstr "no se puede desbloquear señales"
 
 msgid "cannot undefine domain with nvram"
-msgstr "no es posible quitar la definición del dominio con nvram"
+msgstr "no se puede quitar la definición del dominio con nvram"
 
 msgid "cannot undefine transient domain"
-msgstr "no es posible quitar la definición del dominio transitorio"
+msgstr "no se puede quitar la definición del dominio transitorio"
 
 #, c-format
 msgid "cannot unlink '%1$s'"
@@ -25288,11 +25281,11 @@ msgstr "no se puede desenlazar ‘%1$s’"
 
 #, c-format
 msgid "cannot unlink file '%1$s'"
-msgstr "no es posible desenlazar el archivo '%1$s'"
+msgstr "no se puede desenlazar el archivo '%1$s'"
 
 #, c-format
 msgid "cannot update AppArmor profile '%1$s'"
-msgstr "no es posible actualizar el perfil AppArmor '%1$s'"
+msgstr "no se puede actualizar el perfil AppArmor '%1$s'"
 
 #, c-format
 msgid "cannot update guest CPU for %1$s architecture"
@@ -25307,7 +25300,7 @@ msgstr ""
 
 #, c-format
 msgid "cannot upload to volume %1$s"
-msgstr "No se puede cargar a 'volume' %1$s"
+msgstr "no se puede cargar a 'volume' %1$s"
 
 msgid "cannot use custom tap device in session mode"
 msgstr "no se puede utilizar dispositivo de capa personal en modo de selección"
@@ -25330,7 +25323,7 @@ msgstr ""
 
 msgid "cannot version information from libxenlight, disabling driver"
 msgstr ""
-"no se pudo obtener información de la versión desde libxenlight, "
+"no se puede obtener información de la versión desde libxenlight, "
 "deshabilitando el controlador"
 
 #, c-format
@@ -25339,11 +25332,11 @@ msgstr "no se puede purgar partición extendida «%1$s»"
 
 #, c-format
 msgid "cannot write config file '%1$s'"
-msgstr "No es posible escribir el archivo de configuración '%1$s'"
+msgstr "no se puede escribir el archivo de configuración '%1$s'"
 
 #, c-format
 msgid "cannot write data to file '%1$s'"
-msgstr "No se puede guardar en el archivo '%1$s'"
+msgstr "no se puede guardar en el archivo '%1$s'"
 
 #, c-format
 msgid "cannot write to '%1$s' on bridge '%2$s'"
@@ -25353,7 +25346,7 @@ msgid "cannot write to stdout"
 msgstr "no se puede escribir por salida estándar"
 
 msgid "cannot write to stream"
-msgstr "no es posible escribir a la secuencia"
+msgstr "no se puede escribir a la secuencia"
 
 msgid "cap for XEN_CREDIT"
 msgstr "capacidad para XEN_CREDIT"
@@ -25367,11 +25360,11 @@ msgstr "Nombres de capacidad, separados por coma"
 #, c-format
 msgid "capacity in %1$s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
-"La capacidad en %1$s no puede ser cero sin indicadores de 'delta' o 'shrink' "
+"la capacidad en %1$s no puede ser cero sin indicadores de 'delta' o 'shrink' "
 "definidos"
 
 msgid "capture disk state but not vm state"
-msgstr "Capture el estado de disco pero no el estado VM"
+msgstr "capture el estado de disco pero no el estado vm"
 
 #, c-format
 msgid "cd: %1$s: %2$s"
@@ -33909,27 +33902,37 @@ msgstr ""
 
 msgid "missing or invalid SGX platform sgx1 in QEMU capabilities cache"
 msgstr ""
+"agx1 ausente o no válida en la plataforma SGX dentro de caché de capacidades "
+"de QEMU"
 
 msgid "missing or invalid SGX platform sgx2 in QEMU capabilities cache"
 msgstr ""
+"agx2 ausente o no válida en la plataforma SGX dentro de caché de capacidades "
+"de QEMU"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
-msgstr ""
+msgstr "campo de 'device' ausente o malformado del almacén 'nvme'"
 
 msgid "missing or malformed 'namespace' field of 'nvme' storage"
-msgstr ""
+msgstr "campo 'namespace' ausente o malformado del almacenaje 'nvme'"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
 msgstr ""
+"no se encuentra información de cbitpos de SEV o malformado del caché de "
+"capacidades de QEMU"
 
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
 msgstr ""
+"no se encuentra información reducedPhysBits SEV o malformada en caché de "
+"capacidades QEMU"
 
 msgid ""
 "missing or malformed SGX platform section_size in QEMU capabilities cache"
 msgstr ""
+"no se encuentra plataforma SGX o malformada en section_size en la caché de "
+"capacidades de QEMU"
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr ""
@@ -33947,20 +33950,20 @@ msgstr "no se encuentra dispositivo antecesor"
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%1$s'"
 msgstr ""
-"falta la implementación del intérprete para el backing JSON de la unidad "
-"'%1$s' del volumen"
+"no se encuentra la implementación del intérprete para el backing JSON de la "
+"unidad '%1$s' del volumen"
 
 msgid "missing path for <reservations/>"
-msgstr "falta la ruta para <reservations/>"
+msgstr "no se encuentra la ruta para <reservations/>"
 
 msgid "missing path for ACPI ERST pstore device"
-msgstr ""
+msgstr "no se encuentra la ruta para dispositivo de almacén pstore ACPI ERST"
 
 msgid "missing path in nbdkit capabilities cache"
-msgstr ""
+msgstr "no se encuentra ruta en caché de capacidades nbdkit"
 
 msgid "missing path to restore from"
-msgstr ""
+msgstr "no se encuentra ruta para origen de restauración"
 
 msgid "missing per-device path"
 msgstr "no se encuentra ruta por-dispositivo"
@@ -33969,31 +33972,38 @@ msgstr "no se encuentra ruta por-dispositivo"
 msgid "missing persistent configuration for disk '%1$s'"
 msgstr "no se encuentra configuración persistente para disco '%1$s'"
 
+#, fuzzy
 msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr ""
+"no se encuentra nombre de consorcio o imagen en especificación JSON de "
+"volumen de respaldo ceph"
 
+#, fuzzy
 msgid "missing pool source name element"
 msgstr "no se encuentra elemento de nombre de compartición origen"
 
 msgid "missing port attribute in migration data"
-msgstr "Falta atributo de puerto en migración de datos"
+msgstr "no se encuentra atributo de puerto en migración de datos"
 
 msgid "missing product"
-msgstr "No se encuentra producto"
+msgstr "no se encuentra producto"
 
-#, fuzzy
 msgid "missing qemuctime in QEMU capabilities XML"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra qemuctime en capacidades QEMU en XML"
 
 msgid "missing remote server specification in JSON backing volume definition"
 msgstr ""
+"no se encuentra especificación de servidor remoto en definición del volumen "
+"JSON de respaldo"
 
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %1$s"
-msgstr "Falta el atributo de nombre requerido en registro DNS TXT de red %1$s"
+msgstr ""
+"no se encuentra el atributo de nombre requerido en registro DNS TXT de red "
+"%1$s"
 
 msgid "missing required persistent attribute in hostdev teaming element"
-msgstr ""
+msgstr "falta atributo persistente requerido en hostdev de elementos de equipo"
 
 #, c-format
 msgid ""
@@ -34013,11 +34023,11 @@ msgid ""
 "missing required value attribute in DNS TXT record named '%1$s' of network "
 "%2$s"
 msgstr ""
-"Falta el valor del atributo requerido en el registro DNS TXT llamado "
-"'%1$s'de red %2$s"
+"no se encuentra el valor del atributo requerido en el registro DNS TXT "
+"nombrado '%1$s'de red %2$s"
 
 msgid "missing required virtualport type"
-msgstr "Falta el tipo virtualport requerido"
+msgstr "no se encuentra tipo virtualport requerido"
 
 msgid "missing root device information"
 msgstr "falta información del dispositivo raíz"
@@ -34027,11 +34037,11 @@ msgid "missing root device information in %1$s"
 msgstr "no se encuentra información en %1$s acerca del dispositivo raíz"
 
 msgid "missing root element"
-msgstr "No se encuentra elemento root"
+msgstr "no se encuentra elemento raíz"
 
 #, c-format
 msgid "missing rport name for '%1$s'"
-msgstr "falta el nombre de rport para '%1$s'"
+msgstr "no se encuentra el nombre de rport para '%1$s'"
 
 msgid "missing scheme for URI"
 msgstr ""
@@ -34049,14 +34059,13 @@ msgid "missing secret uuid or usage attribute"
 msgstr "No se encuentra atributo de orden de arranque"
 
 msgid "missing security model in domain seclabel"
-msgstr "Falta modelo de seguridad en dominio seclabel"
+msgstr "no se encuentra modelo de seguridad en dominio seclabel"
 
 msgid "missing security model when using multiple labels"
-msgstr "Falta el modelo de seguridad al usar etiquetas múltiples"
+msgstr "no se encuentra modelo de seguridad al usar etiquetas múltiples"
 
-#, fuzzy
 msgid "missing selfctime in QEMU capabilities XML"
-msgstr "Falta entrada en lista de capacidades"
+msgstr "no se encuentra selfctime en capacidades QEMU en XML"
 
 msgid "missing sheepdog URI in JSON backing volume definition"
 msgstr ""
@@ -34073,7 +34082,7 @@ msgid "missing socket address type in JSON backing volume definition"
 msgstr "Falta campo socks en documento JSON"
 
 msgid "missing socket for unix transport"
-msgstr "Falta socket para transporte UNIX"
+msgstr "no se encuentra zócalo para transporte unix"
 
 msgid "missing socket path for external TPM device"
 msgstr ""
@@ -34116,13 +34125,15 @@ msgstr "segundo plano de almacén ausente para almacén '%1$s'"
 #, c-format
 msgid "missing storage backend for network files using %1$s protocol"
 msgstr ""
+"no se encuentra al backen de almacén para archivo red utilizando el "
+"protocolo %1$s"
 
 #, c-format
 msgid "missing storage capability type for '%1$s'"
-msgstr "No se encuentra tipo de capacidad de almacenamiento para '%1$s'"
+msgstr "no se encuentra tipo de capacidad de almacenamiento para '%1$s'"
 
 msgid "missing storage pool host name"
-msgstr "falta el nombre de anfitrión del grupo de almacenamiento"
+msgstr "no se encuentra el nombre anfitrión del grupo de almacenamiento"
 
 msgid "missing storage pool source adapter"
 msgstr "Falta adaptador de origen de grupo de almacenamiento"
