@@ -6451,6 +6451,11 @@ virDomainBlockPeek(virDomainPtr dom,
  * size.  Depending on the file format, the hypervisor may round up
  * to the next alignment boundary.
  *
+ * *BEWARE*: The block device may be shrunk if @size is less than the current
+ * guest visible size. Callers who wish to only extend @disk should always pass
+ * VIR_DOMAIN_BLOCK_RESIZE_EXTEND (since 12.3.0) in @flags which instructs the
+ * hypervisor to deny an attempt to shrink the device.
+ *
  * If @flag contains VIR_DOMAIN_BLOCK_RESIZE_CAPACITY (since 10.0.0) the
  * hypervisor will resize the guest block device to fully fill the source.
  * @size must be either set to zero, or to the exact size of the block

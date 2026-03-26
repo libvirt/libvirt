@@ -2351,6 +2351,9 @@ typedef enum {
 
     /* resize to full the capacity of the source (Since: 10.0.0) */
     VIR_DOMAIN_BLOCK_RESIZE_CAPACITY = 1 << 1,
+
+    /* Disallow shrinking (Since: 12.3.0) */
+    VIR_DOMAIN_BLOCK_RESIZE_EXTEND = 1 << 2,
 } virDomainBlockResizeFlags;
 
 int                     virDomainBlockResize (virDomainPtr dom,

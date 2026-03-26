@@ -9448,7 +9448,8 @@ qemuDomainBlockResize(virDomainPtr dom,
     virDomainDiskDef *persistDisk = NULL;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES |
-                  VIR_DOMAIN_BLOCK_RESIZE_CAPACITY, -1);
+                  VIR_DOMAIN_BLOCK_RESIZE_CAPACITY |
+                  VIR_DOMAIN_BLOCK_RESIZE_EXTEND, -1);
 
     /* We prefer operating on bytes.  */
     if ((flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES) == 0) {
@@ -9587,11 +9588,40 @@ qemuDomainBlockResize(virDomainPtr dom,
     if (!qemuDiskBusIsSD(disk->bus)) {
         nodename = qemuBlockStorageSourceGetEffectiveNodename(disk->src);
     } else {
+        if (flags & VIR_DOMAIN_BLOCK_RESIZE_EXTEND) {
+            /* technically possible, just not implemented */
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("cannot prevent shrink on SD devices"));
+            goto endjob;
+        }
+
         if (!(device = qemuAliasDiskDriveFromDisk(disk)))
             goto endjob;
     }
 
     qemuDomainObjEnterMonitor(vm);
+
+    if (flags & VIR_DOMAIN_BLOCK_RESIZE_EXTEND) {
+        g_autoptr(GHashTable) blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon);
+        qemuBlockNamedNodeData *entry;
+
+        if (!(entry = virHashLookup(blockNamedNodeData, nodename))) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("failed to determine current size of '%1$s'"),
+                           path);
+            qemuDomainObjExitMonitor(vm);
+            goto endjob;
+        }
+
+        if (entry->capacity > size) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("resize of '%1$s' would shrink it from '%2$llu' to '%3$llu' bytes"),
+                           path, entry->capacity, size);
+            qemuDomainObjExitMonitor(vm);
+            goto endjob;
+        }
+    }
+
     if (qemuMonitorBlockResize(priv->mon, device, nodename, size) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto endjob;
