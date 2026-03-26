@@ -69,7 +69,7 @@ hypervGetProcessorsByName(hypervPrivate *priv, const char *name,
     if (hypervGetWmiClass(Win32_Processor, processorList) < 0)
         return -1;
 
-    if (!processorList) {
+    if (!*processorList) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not look up processor(s) on '%1$s'"),
                        name);
