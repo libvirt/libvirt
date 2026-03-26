@@ -20,7 +20,7 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2022.
 # Jan Tomko <jtomko@redhat.com>, 2022.
 # Jiri Denemark <jdenemar@redhat.com>, 2023.
-# jianqing yan <yanjianqing@kylinos.cn>, 2024, 2025.
+# jianqing yan <yanjianqing@kylinos.cn>, 2024, 2025, 2026.
 # zk dc <zkdc2345@qq.com>, 2024.
 # "Daniel P. Berrange" <berrange@redhat.com>, 2025.
 # QiangWei Zhang <zhang.qiangwei@zte.com.cn>, 2025.
@@ -32,8 +32,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-02-23 20:21+0000\n"
-"Last-Translator: Haorong Xu <haorongxu09@gmail.com>\n"
+"PO-Revision-Date: 2026-03-15 11:58+0000\n"
+"Last-Translator: jianqing yan <yanjianqing@kylinos.cn>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
 "projects/libvirt/libvirt/zh_CN/>\n"
 "Language: zh_CN\n"
@@ -41,7 +41,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.16.2\n"
 
 msgid ""
 "\n"
@@ -1375,7 +1375,7 @@ msgstr "'iothread' 只支持 virtio-scsi 控制器"
 
 #, c-format
 msgid "'iscsiadm': failed new mode for target '%1$s' with status '%2$d'"
-msgstr ""
+msgstr "'iscsiadm': 为目标 '%1$s' 设置新模式失败，状态为 '%2$d'"
 
 #, fuzzy
 msgid "'legacy KVM' device assignment is no longer supported on this system"
@@ -1390,7 +1390,7 @@ msgstr "guest-get-users 的回复中缺少 'login-time'"
 msgid ""
 "'manual' disk snapshot mode requires explicit quiescing "
 "(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE is not supported)"
-msgstr ""
+msgstr "'手动'磁盘快照模式需要显式暂停（不支持VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE）"
 
 msgid "'manual' memory snapshot mode not supported"
 msgstr "不支持 'manual' 内存快照模式"
@@ -2869,7 +2869,7 @@ msgstr "除非知道 init PID，否则无法附加 hostdev。"
 msgid ""
 "Cannot automatically add a new PCI bus for a device with unrecognized "
 "connect flags %1$.2x"
-msgstr ""
+msgstr "无法为带有无法识别连接标志 %1$.2x 的设备自动添加新的 PCI 总线"
 
 #, c-format
 msgid "Cannot boot from device %1$s"
@@ -3168,7 +3168,7 @@ msgid "Cannot get storage controller name"
 msgstr "无法获取存储控制器名称"
 
 msgid "Cannot have more than one disk per NVMe controller"
-msgstr ""
+msgstr "每个 NVMe 控制器不能有多个磁盘"
 
 msgid "Cannot hotplug platform device"
 msgstr "无法热插拔平台设备"
@@ -3623,11 +3623,11 @@ msgstr "证书 %1$s 用法不允许数字签名"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist"
-msgstr ""
+msgstr "证书 '%1$s' 不存在"
 
 #, c-format
 msgid "Certificate '%1$s' does not exist, but key '%2$s' does"
-msgstr ""
+msgstr "证书 '%1$s' 不存在，但密钥 '%2$s' 存在"
 
 #, c-format
 msgid "Certificate failed validation: %1$s"
@@ -4162,7 +4162,7 @@ msgid "Core(s) per socket:"
 msgstr "每个 socket 的内核数："
 
 msgid "Could detach device"
-msgstr ""
+msgstr "可以分离设备"
 
 #, c-format
 msgid "Could find volume with name: %1$s"
@@ -4216,7 +4216,7 @@ msgid "Could not build CURL header list"
 msgstr "无法构建 CURL 表头列表"
 
 msgid "Could not build disk json"
-msgstr ""
+msgstr "无法构建磁盘 json"
 
 #, c-format
 msgid "Could not change memory parameters: %1$s"
@@ -4392,7 +4392,7 @@ msgid "Could not find PhysicalNic with name '%1$s'"
 msgstr "无法找到名为 '%1$s' 的 PhysicalNic"
 
 msgid "Could not find a suitable controller for smmuv3"
-msgstr ""
+msgstr "找不到适用于 smmuv3 的合适控制器"
 
 msgid "Could not find any 'network' element in status file"
 msgstr "无法在状态文件中找到任何 'network' 元素"
@@ -4595,7 +4595,7 @@ msgstr "无法为主机 %1$s 获取空闲的内存"
 
 #, c-format
 msgid "Could not get index of disk '%1$s'"
-msgstr ""
+msgstr "无法获取磁盘 '%1$s' 的索引"
 
 #, c-format
 msgid "Could not get instance ID for %1$s invocation"
@@ -4909,7 +4909,7 @@ msgid "Could not parse chain priority '%1$s'"
 msgstr "无法解析链优先权 '%1$s'"
 
 msgid "Could not parse domain definition"
-msgstr ""
+msgstr "无法解析域定义"
 
 #, c-format
 msgid "Could not parse positive integer from '%1$s'"
@@ -5802,7 +5802,7 @@ msgstr "未显示域 %1$s"
 
 #, c-format
 msgid "Domain %1$s didn't show up in /dev/vmm"
-msgstr ""
+msgstr "域 %1$s 未显示在 /dev/vmm 中"
 
 #, c-format
 msgid "Domain '%1$d' has to be running because libxenlight will suspend it"
@@ -6770,7 +6770,7 @@ msgid "Failed to add capability %1$s: %2$d"
 msgstr "添加功能 %1$s 失败：%2$d"
 
 msgid "Failed to add device"
-msgstr ""
+msgstr "添加设备失败"
 
 #, c-format
 msgid ""
@@ -6862,10 +6862,10 @@ msgid "Failed to bind socket to '%1$s'"
 msgstr "将插槽捆绑到 '%1$s' 失败"
 
 msgid "Failed to build QEMU command line for acpi-generic-initiator"
-msgstr ""
+msgstr "构建 acpi-generic-initiator 的 QEMU 命令行失败"
 
 msgid "Failed to build acpi-generic-initiator properties"
-msgstr ""
+msgstr "构建 acpi-generic-initiator 属性失败"
 
 #, fuzzy
 msgid "Failed to build net json"
@@ -8053,7 +8053,7 @@ msgstr "解析 '%1$s' 中的 MAC 地址失败"
 
 #, c-format
 msgid "Failed to parse PCI address %1$s"
-msgstr ""
+msgstr "解析 PCI 地址 %1$s 失败"
 
 #, c-format
 msgid "Failed to parse PCI config address '%1$s'"
@@ -9637,7 +9637,7 @@ msgid ""
 msgstr "IOMMU 中断重映射需要分离 I/O APIC(ioapic driver='qemu')"
 
 msgid "IOMMU model smmuv3 must be specified for multiple IOMMU definitions"
-msgstr ""
+msgstr "必须为多个 IOMMU 定义指定 IOMMU 模型 smmuv3"
 
 #, fuzzy
 msgid "IORT table header ended early"
@@ -9842,7 +9842,7 @@ msgid "Intel TDX launch security is not supported with this QEMU binary"
 msgstr "这个QEMU 二进制文件不支持 Intel TDX 启动安全"
 
 msgid "Intel TDX launch security needs split kernel irqchip"
-msgstr ""
+msgstr "Intel TDX 启动安全要求使用拆分内核中断控制器"
 
 msgid "Interface"
 msgstr "接口"
@@ -10335,7 +10335,7 @@ msgstr "无效软盘设备名称：%1$s"
 
 #, c-format
 msgid "Invalid format '%1$s' for ROM loader type"
-msgstr ""
+msgstr "ROM加载器类型不支持格式'%1$s'"
 
 #, c-format
 msgid "Invalid format for 'bonding/arp_validate' for '%1$s'"
@@ -11138,15 +11138,15 @@ msgstr "机器为 null"
 
 #, c-format
 msgid "Machine type '%1$s' does not support PCI"
-msgstr ""
+msgstr "机器类型 '%1$s' 不支持 PCI"
 
 #, c-format
 msgid "Machine type '%1$s' supports PCI but no PCI controller added"
-msgstr ""
+msgstr "机器类型 '%1$s' 支持 PCI，但未添加 PCI 控制器"
 
 #, c-format
 msgid "Machine type '%1$s' wants PCI but PCI is not supported"
-msgstr ""
+msgstr "机器类型 '%1$s' 需要 PCI，但不支持 PCI"
 
 msgid "Malformatted array index"
 msgstr "不正常的数组下标"
@@ -12526,7 +12526,7 @@ msgid "Nicdev support unavailable"
 msgstr "Nicdev 支持不可用"
 
 msgid "No CA certificate path set to match server key(s)/cert(s)"
-msgstr ""
+msgstr "未设置 CA 证书路径以匹配服务器密钥/证书"
 
 msgid "No DRM render nodes available"
 msgstr "没有 DRM 渲染节点可用"
@@ -12811,10 +12811,10 @@ msgid "No runstatedir specified"
 msgstr "未指定 runstatedir"
 
 msgid "No server certificate path(s) set to match server key(s)"
-msgstr ""
+msgstr "未设置与服务器密钥匹配的服务器证书路径"
 
 msgid "No server key path(s) set to match server cert(s)"
-msgstr ""
+msgstr "未设置与服务器证书匹配的服务器密钥路径"
 
 #, c-format
 msgid "No server named '%1$s'"
@@ -13172,7 +13172,7 @@ msgid "Only a single IDE controller is supported for this machine type"
 msgstr "此机器类型只支持一个 IDE 控制器"
 
 msgid "Only a single RNG device can be configured for this domain"
-msgstr ""
+msgstr "此域只能配置一个随机数生成器设备"
 
 msgid "Only a single console can be configured for this domain"
 msgstr "这个域只能配置一个控制台"
@@ -13186,7 +13186,7 @@ msgstr "这个域只能配置一个串口"
 msgid ""
 "Only bit0(debug) and bit28(sept-ve-disable) are supported intel TDX launch "
 "security policy"
-msgstr ""
+msgstr "仅支持 bit0（调试）和 bit28（sept-ve-disable）的 Intel TDX 启动安全策略"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "只能端口桥接的 veth 设备"
@@ -13272,7 +13272,7 @@ msgid ""
 msgstr "只能使用并行压缩指定一种压缩方法"
 
 msgid "Only one console is supported on arm64"
-msgstr ""
+msgstr "arm64 仅支持一个控制台"
 
 msgid "Only one hostdev of model vfio-ap is supported"
 msgstr "仅支持型号 vfio-ap 的一个 hostdev。"
@@ -13321,7 +13321,7 @@ msgid "Only virtio bus types are supported for '%1$s'"
 msgstr "仅对 '%1$s' 支持 virtio 总线类型"
 
 msgid "Only virtio model is supported for RNG devices"
-msgstr ""
+msgstr "RNG 设备仅支持 virtio 模型"
 
 msgid "Only vpxmigr:// migration URIs are supported"
 msgstr "只支持 vpxmigr:// migration URI"
@@ -13723,7 +13723,7 @@ msgid "Persistent"
 msgstr "持久"
 
 msgid "Persistent domain state changes are not supported"
-msgstr ""
+msgstr "不支持持久域状态更改"
 
 msgid "Persistent:"
 msgstr "持久："
@@ -14095,7 +14095,7 @@ msgid "RNG device is missing alias"
 msgstr "RNG 设备缺少别名"
 
 msgid "ROM loader type cannot be used as read/write"
-msgstr ""
+msgstr "ROM加载器类型不能用作读/写"
 
 msgid "ROM tuning is not supported when ROM is disabled"
 msgstr "当禁用 ROM 时不支持 ROM 调优"
@@ -16091,11 +16091,11 @@ msgstr "目标磁盘 %1$s 与源 %2$s 不匹配"
 
 #, c-format
 msgid "Target disk 'dpofua' property %1$s does not match source %2$s"
-msgstr ""
+msgstr "目标磁盘 'dpofua' 属性 %1$s 与源 %2$s 不匹配"
 
 #, c-format
 msgid "Target disk 'removable' property %1$s does not match source %2$s"
-msgstr ""
+msgstr "目标磁盘“可移动”属性 %1$s 与源 %2$s 不匹配"
 
 msgid "Target disk access mode does not match source"
 msgstr "目标磁盘访问模式与源不匹配"
@@ -16156,7 +16156,7 @@ msgstr "目标域 IOMMU 设备缓存模式 '%1$s' 与源 '%2$s' 不匹配"
 
 #, c-format
 msgid "Target domain IOMMU device count %1$zu does not match source %2$zu"
-msgstr ""
+msgstr "目标域 IOMMU 设备数量 %1$zu 与源 %2$zu 不匹配"
 
 #, c-format
 msgid ""
@@ -16186,7 +16186,7 @@ msgstr "目标域 IOMMU 设备型号 '%1$s' 与源 '%2$s' 不匹配"
 #, c-format
 msgid ""
 "Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"
-msgstr ""
+msgstr "目标域 IOMMU 设备 pci_bus 值 '%1$d' 与源 '%2$d' 不匹配"
 
 #, c-format
 msgid "Target domain OS type %1$s does not match source %2$s"
@@ -16568,7 +16568,7 @@ msgstr "目标显卡加速与源不匹配"
 
 #, c-format
 msgid "Target video card edid %1$s does not match source %2$s"
-msgstr ""
+msgstr "目标显卡的 edid %1$s 与源 %2$s 不匹配"
 
 #, c-format
 msgid "Target video card heads %1$u does not match source %2$u"
@@ -16596,7 +16596,7 @@ msgstr "目标视频卡 vram64 %1$u 与源 %2$u 不匹配"
 
 #, c-format
 msgid "Target virtio network queue count '%1$d' does not match source '%2$d'"
-msgstr ""
+msgstr "目标 virtio 网络队列数量 '%1$d' 与源 '%2$d' 不匹配"
 
 #, c-format
 msgid "Target watchdog model %1$s does not match source %2$s"
@@ -16656,7 +16656,7 @@ msgstr "'%1$s' 功能的 'eoi'属性不支持架构 '%2$s' 或机器类型 '%3$s
 msgid ""
 "The 'fqdn' attribute of the <backend> element can only be used with the "
 "<backend> type='passt'"
-msgstr ""
+msgstr "<backend> 元素的 'fqdn' 属性只能与 <backend> type='passt' 一起使用"
 
 msgid ""
 "The 'passt' backend can only be used with interface type='user' or "
@@ -17527,7 +17527,7 @@ msgstr "这个 QEMU 二进制文件不支持 USB 控制器型号 '%1$s'"
 msgid ""
 "USB controller model '%1$s' requires PCI but machine type '%2$s' does not "
 "support PCI"
-msgstr ""
+msgstr "USB控制器型号 '%1$s' 需要PCI，但机器类型 '%2$s' 不支持PCI"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %1$s"
@@ -39553,7 +39553,7 @@ msgstr "视频分辨率值必须大于 0"
 msgid "video type %1$s is not supported by libxl"
 msgstr "libxl 不支持显卡类型 %1$s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "video type '%1$s' does not support blob resources"
 msgstr "视频类型 '%1$s' 不支持 blob 资源"
 
@@ -39677,7 +39677,7 @@ msgstr "virVMXContext 没有设定 formatFileName 功能"
 msgid "virVMXContext has no parseFileName function set"
 msgstr "virVMXContext 中没有设定 parseFileName 功能"
 
-#, fuzzy, c-format
+#, c-format
 msgid "virt type '%1$s' is not supported"
 msgstr "不支持virt 类型 '%1$s'"
 
@@ -39730,7 +39730,6 @@ msgstr "控制器 %1$u 上的 virtio 串行端口 %2$u 已被占用"
 msgid "virtio-mem device is missing <requested/>"
 msgstr "缺少 virtio-mem 设备 <requested/>"
 
-#, fuzzy
 msgid "virtio-mem does not support dynamicMemslots"
 msgstr "virtio-mem 不支持动态内存插槽"
 
@@ -39770,9 +39769,8 @@ msgstr "virtio-scsi IOThreads 仅适用于 virtio pci 和 virtio ccw 控制器"
 msgid "virtio-serial controller %1$u not available"
 msgstr "virtio-serial 控制器 %1$u 不可用"
 
-#, fuzzy
 msgid "virtio-sound controller is not supported in this QEMU binary"
-msgstr "virtio-sound 控制器在此 QEMU 二进制文件中不受支持"
+msgstr "此 QEMU 二进制是不支持virtio-sound 控制器"
 
 msgid "virtiofs does not support fmode and dmode"
 msgstr "virtiofs 不支持 fmode 和 dmode"
