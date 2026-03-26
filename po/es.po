@@ -29,8 +29,8 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-03-08 21:24+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"PO-Revision-Date: 2026-03-09 12:17+0000\n"
+"Last-Translator: Nicolás Gal <nialegal@yandex.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
 "Language: es\n"
@@ -33972,15 +33972,13 @@ msgstr "no se encuentra ruta por-dispositivo"
 msgid "missing persistent configuration for disk '%1$s'"
 msgstr "no se encuentra configuración persistente para disco '%1$s'"
 
-#, fuzzy
 msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr ""
-"no se encuentra nombre de consorcio o imagen en especificación JSON de "
+"falta el nombre de grupo o el de la imagen en la especificación JSON del "
 "volumen de respaldo ceph"
 
-#, fuzzy
 msgid "missing pool source name element"
-msgstr "no se encuentra elemento de nombre de compartición origen"
+msgstr "falta el elemento nombre de origen del grupo"
 
 msgid "missing port attribute in migration data"
 msgstr "no se encuentra atributo de puerto en migración de datos"
