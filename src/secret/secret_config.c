@@ -175,5 +175,6 @@ virSecretDaemonConfigDispose(void *obj)
     virSecretDaemonConfig *cfg = obj;
 
     virSecureErase(cfg->secretsEncryptionKey, cfg->secretsKeyLen);
+    g_free(cfg->secretsEncryptionKey);
     g_free(cfg->secretsEncryptionKeyPath);
 }
