@@ -4379,6 +4379,267 @@ hypervDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 }
 
 
+static int
+hypervGetServicesProcessOne(const char *xmlStr,
+                            unsigned int supportedTypes,
+                            unsigned int *processedTypes,
+                            virTypedParamList *ifaceAddrList,
+                            virTypedParamList *list)
+{
+    g_autoptr(xmlDoc) xml = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree char *name = NULL;
+    g_autofree char *val = NULL;
+    const struct {
+        const char *name;
+        const char *key;
+        unsigned int type;
+    } lookupTable[] = {
+        { "FullyQualifiedDomainName", VIR_DOMAIN_GUEST_INFO_HOSTNAME_HOSTNAME,
+            VIR_DOMAIN_GUEST_INFO_HOSTNAME },
+        { "OSBuildNumber", VIR_DOMAIN_GUEST_INFO_OS_KERNEL_RELEASE,
+            VIR_DOMAIN_GUEST_INFO_OS },
+        { "OSName", VIR_DOMAIN_GUEST_INFO_OS_NAME,
+            VIR_DOMAIN_GUEST_INFO_OS},
+        { "OSVersion", VIR_DOMAIN_GUEST_INFO_OS_VERSION,
+            VIR_DOMAIN_GUEST_INFO_OS},
+        { "OSMajorVersion", VIR_DOMAIN_GUEST_INFO_OS_VERSION_ID,
+            VIR_DOMAIN_GUEST_INFO_OS},
+        { "ProcessorArchitecture", VIR_DOMAIN_GUEST_INFO_OS_MACHINE,
+            VIR_DOMAIN_GUEST_INFO_OS},
+    };
+    size_t i;
+
+    VIR_DEBUG("xmlStr=%s", xmlStr);
+
+    if (!(xml = virXMLParseStringCtxt(xmlStr, _("guest intrinsic exchange data"), &ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot parse guest intrinsic exchange data"));
+        return -1;
+    }
+
+    name = virXPathString("string(//INSTANCE/PROPERTY[@NAME='Name']/VALUE/text())", ctxt);
+    if (!name) {
+        VIR_DEBUG("Skipping unexpected guest intrinsic XML (no name): %s", xmlStr);
+        return 0;
+    }
+
+    val = virXPathString("string(//INSTANCE/PROPERTY[@NAME='Data']/VALUE/text())", ctxt);
+    if (!val) {
+        VIR_DEBUG("Skipping unexpected guest intrinsic XML (no value): %s", xmlStr);
+        return 0;
+    }
+
+    for (i = 0; i < G_N_ELEMENTS(lookupTable); i++) {
+        if (supportedTypes & lookupTable[i].type &&
+            STREQ(name, lookupTable[i].name)) {
+            virTypedParamListAddString(list, val, "%s", lookupTable[i].key);
+            *processedTypes |= lookupTable[i].type;
+            return 1;
+        }
+    }
+
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_INTERFACES &&
+        (STREQ(name, "NetworkAddressIPv4") || STREQ(name, "NetworkAddressIPv6"))) {
+        g_auto(GStrv) tmp = NULL;
+        unsigned int newAddrCount = 0;
+        size_t addrIndex = 0;
+        const char *addrType = "ipv4";
+
+        if (STREQ(name, "NetworkAddressIPv6"))
+            addrType = "ipv6";
+
+        if (virTypedParamListFetch(ifaceAddrList, NULL, &addrIndex) < 0)
+            return -1;
+
+        /* Per Microsoft docs:
+         * - NetworkAddressIPv4
+         *   A string that contains a semicolon-delimited list of the IPv4
+         *   addresses currently assigned to the guest virtual machine.
+         * - NetworkAddressIPv6
+         *   A string that contains a semicolon-delimited list of the IPv6
+         *   addresses currently assigned to the guest virtual machine.
+         */
+
+        tmp = g_strsplit(val, ";", 0);
+        newAddrCount = g_strv_length(tmp);
+
+        for (i = 0; i < newAddrCount; i++) {
+            virTypedParamListAddString(ifaceAddrList, addrType,
+                                       VIR_DOMAIN_GUEST_INFO_IF_PREFIX "0" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_TYPE,
+                                       addrIndex + i);
+            virTypedParamListAddString(ifaceAddrList, tmp[i],
+                                       VIR_DOMAIN_GUEST_INFO_IF_PREFIX "0" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_SUFFIX_ADDR,
+                                       addrIndex + i);
+            *processedTypes |= VIR_DOMAIN_GUEST_INFO_INTERFACES;
+        }
+
+        return 1;
+    }
+
+    return 0;
+}
+
+
+static int
+hypervDomainGetGuestInfoImpl(hypervPrivate *priv,
+                             const char *uuid,
+                             unsigned int supportedTypes,
+                             bool reportUnsupported,
+                             virTypedParamList *list)
+{
+    g_autoptr(Msvm_KvpExchangeComponent) kvpList = NULL;
+    Msvm_KvpExchangeComponent_Data *data = NULL;
+    g_auto(virBuffer) query = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virTypedParamList) ifaceAddrList = virTypedParamListNew();
+    unsigned int processedTypes = 0;
+    size_t nIfaceAddresses = 0;
+    size_t i;
+
+    virBufferEscapeSQL(&query,
+                       MSVM_KVPEXCHANGECOMPONENT_WQL_SELECT
+                       "WHERE SystemName = '%s'",
+                       uuid);
+
+    if (hypervGetWmiClass(Msvm_KvpExchangeComponent, &kvpList) < 0)
+        return -1;
+
+    if (!kvpList) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Empty reply from guest. Maybe KVP service is not running?"));
+        return -1;
+    }
+
+    data = kvpList->data;
+
+    for (i = 0; i < data->GuestIntrinsicExchangeItems.count; i++) {
+        const char *xml = ((const char **)data->GuestIntrinsicExchangeItems.data)[i];
+
+        if (hypervGetServicesProcessOne(xml, supportedTypes,
+                                        &processedTypes, ifaceAddrList, list) < 0) {
+            return -1;
+        }
+    }
+
+    if (virTypedParamListFetch(ifaceAddrList, NULL, &nIfaceAddresses) < 0)
+        return -1;
+
+    if (nIfaceAddresses > 0) {
+        virTypedParamListAddUInt(list, 1, VIR_DOMAIN_GUEST_INFO_IF_COUNT);
+        virTypedParamListAddUInt(list, nIfaceAddresses,
+                                 VIR_DOMAIN_GUEST_INFO_IF_PREFIX "0" VIR_DOMAIN_GUEST_INFO_IF_SUFFIX_ADDR_COUNT);
+        virTypedParamListConcat(list, &ifaceAddrList);
+    }
+
+    if (processedTypes != supportedTypes &&
+        reportUnsupported) {
+        uint16_t status = ((uint16_t *)kvpList->data->OperationalStatus.data)[0];
+
+        /* Per Microsoft doc, the status value can be:
+         * 2 - OK,
+         * 3 - Degraded,
+         * 7 - Non-recoverable error,
+         * 12 - No contact,
+         * 13 - Lost communication.
+         */
+        switch (status) {
+        case 3:
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("Unable to fetch all requested information. Data Exchange service (KVP) is degraded"));
+            break;
+        case 7:
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("Unable to fetch all requested information. Data Exchange service (KVP) encountered a non-recoverable error"));
+            break;
+        case 12:
+        case 13:
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("Unable to fetch all requested information. Data Exchange service (KVP) is not running"));
+            break;
+        default:
+            virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                           _("Unable to fetch all requested information"));
+            break;
+        }
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+hypervDomainGetGuestInfoCheckSupport(unsigned int types,
+                                     unsigned int *supportedTypes)
+{
+    const unsigned int hypervSupportedTypes =
+        VIR_DOMAIN_GUEST_INFO_OS |
+        VIR_DOMAIN_GUEST_INFO_HOSTNAME |
+        VIR_DOMAIN_GUEST_INFO_INTERFACES;
+
+    if (types == 0) {
+        *supportedTypes = hypervSupportedTypes;
+        return 0;
+    }
+
+    *supportedTypes = types & hypervSupportedTypes;
+
+    if (types != *supportedTypes) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported guest information types '0x%1$x'"),
+                       types & ~hypervSupportedTypes);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+hypervDomainGetGuestInfo(virDomainPtr domain,
+                         unsigned int types,
+                         virTypedParameterPtr *params,
+                         int *nparams,
+                         unsigned int flags)
+{
+    hypervPrivate *priv = NULL;
+    char uuid_string[VIR_UUID_STRING_BUFLEN];
+    unsigned int supportedTypes = 0;
+    bool reportUnsupported = types != 0;
+    g_autoptr(Msvm_ComputerSystem) computerSystem = NULL;
+    g_autoptr(virTypedParamList) list = virTypedParamListNew();
+
+    virCheckFlags(0, -1);
+
+    if (hypervDomainGetGuestInfoCheckSupport(types, &supportedTypes) < 0)
+        return -1;
+
+    if (hypervMsvmComputerSystemFromDomain(domain, &computerSystem) < 0)
+        return -1;
+
+    if (!hypervIsMsvmComputerSystemActive(computerSystem, NULL)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+
+        return -1;
+    }
+
+    priv = domain->conn->privateData;
+    virUUIDFormat(domain->uuid, uuid_string);
+
+    if (hypervDomainGetGuestInfoImpl(priv,
+                                     uuid_string, supportedTypes,
+                                     reportUnsupported, list) < 0) {
+        return -1;
+    }
+
+    if (virTypedParamListSteal(list, params, nparams) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static virHypervisorDriver hypervHypervisorDriver = {
     .name = "Hyper-V",
     .connectOpen = hypervConnectOpen, /* 0.9.5 */
@@ -4452,6 +4713,7 @@ static virHypervisorDriver hypervHypervisorDriver = {
     .domainHasCurrentSnapshot = hypervDomainHasCurrentSnapshot, /* 12.2.0 */
     .domainSnapshotCurrent = hypervDomainSnapshotCurrent, /* 12.2.0 */
     .domainSnapshotGetParent = hypervDomainSnapshotGetParent, /* 12.2.0 */
+    .domainGetGuestInfo = hypervDomainGetGuestInfo, /* 12.3.0 */
 };
 
 
