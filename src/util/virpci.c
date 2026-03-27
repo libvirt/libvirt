@@ -1760,19 +1760,20 @@ virPCIDeviceReadID(virPCIDevice *dev, const char *id_name)
 {
     g_autofree char *path = NULL;
     g_autofree char *id_str = NULL;
+    int len;
 
     path = virPCIFile(dev->name, id_name);
 
     /* ID string is '0xNNNN\n' ... i.e. 7 bytes */
-    if (virFileReadAll(path, 7, &id_str) < 0)
+    if ((len = virFileReadAllQuiet(path, 7, &id_str)) < 0)
         return NULL;
 
-    /* Check for 0x suffix */
+    /* Check for 0x prefix */
     if (id_str[0] != '0' || id_str[1] != 'x')
         return NULL;
 
-    /* Chop off the newline; we know the string is 7 bytes */
-    id_str[6] = '\0';
+    /* Chop off the newline */
+    virStringTrimOptionalNewline(id_str);
 
     return g_steal_pointer(&id_str);
 }
