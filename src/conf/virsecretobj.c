@@ -908,9 +908,6 @@ virSecretLoadValue(virSecretObj *obj,
         if ((filelen = virFileReadAll(filename, secretFileMaxLen, &filecontent)) < 0)
             return -1;
 
-        filecontent = g_realloc(filecontent, filelen + 1);
-        filecontent[filelen] = '\0';
-
         decoded = g_base64_decode(filecontent, &decodedlen);
 
         virSecureErase(filecontent, filelen);
