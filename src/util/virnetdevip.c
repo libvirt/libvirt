@@ -547,10 +547,6 @@ virNetDevIPCheckIPv6Forwarding(void)
         return false;
     }
 
-    /* Dropping the last character to stop the loop */
-    if (len > 0)
-        buf[len-1] = '\0';
-
     cur = buf;
     while (cur) {
         char route[33], flags[9], iface[9];
