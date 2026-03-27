@@ -1503,10 +1503,13 @@ saferead_lim(int fd, size_t max_len, size_t *length)
         int count;
         int requested;
 
-        if (size + BUFSIZ + 1 > alloc) {
+        if (alloc < max_len + 1 &&
+            size + BUFSIZ + 1 > alloc) {
             alloc += alloc / 2;
             if (alloc < size + BUFSIZ + 1)
                 alloc = size + BUFSIZ + 1;
+
+            alloc = MIN(alloc, max_len + 1);
 
             VIR_REALLOC_N(buf, alloc);
         }
