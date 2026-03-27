@@ -487,7 +487,6 @@ virPCIDeviceReadClass(virPCIDevice *dev, uint16_t *device_class)
     if (virFileReadAll(path, 9, &id_str) < 0)
         return -1;
 
-    id_str[8] = '\0';
     if (virStrToLong_ui(id_str, NULL, 16, &value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unusual value in %1$s/devices/%2$s/class: %3$s"),
