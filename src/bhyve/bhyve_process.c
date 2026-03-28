@@ -516,6 +516,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
                     virDomainShutoffReason reason)
 {
     int ret = 0;
+    size_t i = 0;
     g_autoptr(virCommand) cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
 
@@ -556,6 +557,19 @@ virBhyveProcessStop(struct _bhyveConn *driver,
             VIR_WARN("Failed to release VNC port for '%s'",
                      vm->def->name);
         }
+    }
+
+    /* UNIX sockets cleanup */
+    for (i = 0; i < vm->def->nchannels; i++) {
+        virDomainChrDef *channel = vm->def->channels[i];
+
+        if (channel->source->type != VIR_DOMAIN_CHR_TYPE_UNIX)
+            continue;
+        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            continue;
+
+        if (virFileExists(channel->source->data.nix.path))
+            virFileRemove(channel->source->data.nix.path, 0, 0);
     }
 
     virCloseCallbacksDomainRemove(vm, NULL, bhyveProcessAutoDestroy);

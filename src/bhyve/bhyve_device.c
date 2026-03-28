@@ -31,6 +31,36 @@
 
 VIR_LOG_INIT("bhyve.bhyve_device");
 
+
+static int
+bhyveDomainAssignVirtioSerialAddresses(virDomainDef *def)
+{
+    int ret = -1;
+    size_t i;
+    virDomainVirtioSerialAddrSet *addrs = NULL;
+
+    if (!(addrs = virDomainVirtioSerialAddrSetCreateFromDomain(def)))
+        goto cleanup;
+
+    VIR_DEBUG("Finished reserving existing ports");
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDef *chr = def->channels[i];
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+            chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+            !virDomainVirtioSerialAddrIsComplete(&chr->info) &&
+            virDomainVirtioSerialAddrAutoAssignFromCache(def, addrs,
+                                                         &chr->info, false) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainVirtioSerialAddrSetFree(addrs);
+    return ret;
+}
+
 static int
 bhyveCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
                        virDomainDeviceDef *device G_GNUC_UNUSED,
@@ -39,7 +69,8 @@ bhyveCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
 {
     virDomainPCIAddressSet *addrs = NULL;
     virPCIDeviceAddress *addr = NULL;
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
         return 0;
 
     addrs = opaque;
@@ -116,6 +147,7 @@ bhyveAssignDevicePCISlots(virDomainDef *def,
             (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) ||
             (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_NVME) ||
             (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) ||
+            (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) ||
             ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) &&
              (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI)) ||
             def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA) {
@@ -242,5 +274,11 @@ int bhyveDomainAssignPCIAddresses(virDomainDef *def,
 
 int bhyveDomainAssignAddresses(virDomainDef *def, virDomainObj *obj)
 {
-    return bhyveDomainAssignPCIAddresses(def, obj);
+    if (bhyveDomainAssignVirtioSerialAddresses(def) < 0)
+        return -1;
+
+    if (bhyveDomainAssignPCIAddresses(def, obj) < 0)
+        return -1;
+
+    return 0;
 }

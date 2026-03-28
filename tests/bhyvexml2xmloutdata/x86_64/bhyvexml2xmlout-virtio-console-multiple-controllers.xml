@@ -1,0 +1,123 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='2' unit='0'/>
+    </disk>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='virtio-serial' index='0' ports='16'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
+    <controller type='virtio-serial' index='1' ports='16'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </controller>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </controller>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-1'/>
+      <target type='virtio' name='org.qemu.guest_agent.1'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-2'/>
+      <target type='virtio' name='org.qemu.guest_agent.2'/>
+      <address type='virtio-serial' controller='0' bus='0' port='2'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-3'/>
+      <target type='virtio' name='org.qemu.guest_agent.3'/>
+      <address type='virtio-serial' controller='0' bus='0' port='3'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-4'/>
+      <target type='virtio' name='org.qemu.guest_agent.4'/>
+      <address type='virtio-serial' controller='0' bus='0' port='4'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-5'/>
+      <target type='virtio' name='org.qemu.guest_agent.5'/>
+      <address type='virtio-serial' controller='0' bus='0' port='5'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-6'/>
+      <target type='virtio' name='org.qemu.guest_agent.6'/>
+      <address type='virtio-serial' controller='0' bus='0' port='6'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-7'/>
+      <target type='virtio' name='org.qemu.guest_agent.7'/>
+      <address type='virtio-serial' controller='0' bus='0' port='7'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-8'/>
+      <target type='virtio' name='org.qemu.guest_agent.8'/>
+      <address type='virtio-serial' controller='0' bus='0' port='8'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-9'/>
+      <target type='virtio' name='org.qemu.guest_agent.9'/>
+      <address type='virtio-serial' controller='0' bus='0' port='9'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-10'/>
+      <target type='virtio' name='org.qemu.guest_agent.10'/>
+      <address type='virtio-serial' controller='0' bus='0' port='10'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-11'/>
+      <target type='virtio' name='org.qemu.guest_agent.11'/>
+      <address type='virtio-serial' controller='0' bus='0' port='11'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-12'/>
+      <target type='virtio' name='org.qemu.guest_agent.12'/>
+      <address type='virtio-serial' controller='0' bus='0' port='12'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-13'/>
+      <target type='virtio' name='org.qemu.guest_agent.13'/>
+      <address type='virtio-serial' controller='0' bus='0' port='13'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-14'/>
+      <target type='virtio' name='org.qemu.guest_agent.14'/>
+      <address type='virtio-serial' controller='0' bus='0' port='14'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-15'/>
+      <target type='virtio' name='org.qemu.guest_agent.15'/>
+      <address type='virtio-serial' controller='0' bus='0' port='15'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-16'/>
+      <target type='virtio' name='org.qemu.guest_agent.16'/>
+      <address type='virtio-serial' controller='1' bus='0' port='1'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-17'/>
+      <target type='virtio' name='org.qemu.guest_agent.17'/>
+      <address type='virtio-serial' controller='1' bus='0' port='2'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-18'/>
+      <target type='virtio' name='org.qemu.guest_agent.18'/>
+      <address type='virtio-serial' controller='1' bus='0' port='3'/>
+    </channel>
+  </devices>
+</domain>

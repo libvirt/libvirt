@@ -491,6 +491,43 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
 }
 
 static int
+bhyveBuildVirtioSerialControllerArgStr(const virDomainDef *def,
+                                       virDomainControllerDef *controller,
+                                       struct _bhyveConn *driver G_GNUC_UNUSED,
+                                       virCommand *cmd)
+{
+    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
+    size_t i;
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDef *channel = def->channels[i];
+
+        if (channel->info.addr.vioserial.controller != controller->idx)
+            continue;
+
+        if (channel->source->type != VIR_DOMAIN_CHR_TYPE_UNIX)
+            continue;
+
+        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            continue;
+
+        virBufferAsprintf(&opt,
+                          ",%s=%s",
+                          channel->target.name,
+                          channel->source->data.nix.path);
+    }
+
+    if (virBufferUse(&opt) > 0) {
+        virCommandAddArg(cmd, "-s");
+        virCommandAddArgFormat(cmd, "%d:0,virtio-console%s",
+                               controller->info.addr.pci.slot,
+                               virBufferContentAndReset(&opt));
+    }
+
+    return 0;
+}
+
+static int
 bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
                            virDomainDiskDef *disk,
                            virCommand *cmd)
@@ -606,9 +643,12 @@ bhyveBuildControllerArgStr(const virDomainDef *def,
         if (bhyveBuildNVMeControllerArgStr(def, controller, driver, cmd) < 0)
             return -1;
         break;
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+        if (bhyveBuildVirtioSerialControllerArgStr(def, controller, driver, cmd) < 0)
+            return -1;
+        break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
-    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
     case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
     case VIR_DOMAIN_CONTROLLER_TYPE_LAST:

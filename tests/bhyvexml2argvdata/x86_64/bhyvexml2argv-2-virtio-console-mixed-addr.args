@@ -1,0 +1,10 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,virtio-console,org.qemu.guest_agent.0=/var/run/libvirt/bhyve/bhyve.agent,org.qemu.guest_agent.1=/var/run/libvirt/bhyve/bhyve.agent-2 \
+-s 3:0,ahci,hd:/tmp/freebsd.img \
+bhyve

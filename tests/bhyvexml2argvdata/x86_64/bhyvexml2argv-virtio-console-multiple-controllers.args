@@ -1,0 +1,11 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,virtio-console,org.qemu.guest_agent.1=/var/run/libvirt/bhyve/bhyve.agent-1,org.qemu.guest_agent.2=/var/run/libvirt/bhyve/bhyve.agent-2,org.qemu.guest_agent.3=/var/run/libvirt/bhyve/bhyve.agent-3,org.qemu.guest_agent.4=/var/run/libvirt/bhyve/bhyve.agent-4,org.qemu.guest_agent.5=/var/run/libvirt/bhyve/bhyve.agent-5,org.qemu.guest_agent.6=/var/run/libvirt/bhyve/bhyve.agent-6,org.qemu.guest_agent.7=/var/run/libvirt/bhyve/bhyve.agent-7,org.qemu.guest_agent.8=/var/run/libvirt/bhyve/bhyve.agent-8,org.qemu.guest_agent.9=/var/run/libvirt/bhyve/bhyve.agent-9,org.qemu.guest_agent.10=/var/run/libvirt/bhyve/bhyve.agent-10,org.qemu.guest_agent.11=/var/run/libvirt/bhyve/bhyve.agent-11,org.qemu.guest_agent.12=/var/run/libvirt/bhyve/bhyve.agent-12,org.qemu.guest_agent.13=/var/run/libvirt/bhyve/bhyve.agent-13,org.qemu.guest_agent.14=/var/run/libvirt/bhyve/bhyve.agent-14,org.qemu.guest_agent.15=/var/run/libvirt/bhyve/bhyve.agent-15 \
+-s 3:0,virtio-console,org.qemu.guest_agent.16=/var/run/libvirt/bhyve/bhyve.agent-16,org.qemu.guest_agent.17=/var/run/libvirt/bhyve/bhyve.agent-17,org.qemu.guest_agent.18=/var/run/libvirt/bhyve/bhyve.agent-18 \
+-s 4:0,ahci,hd:/tmp/freebsd.img \
+bhyve

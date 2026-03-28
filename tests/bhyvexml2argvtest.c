@@ -293,6 +293,14 @@ mymain(void)
     DO_TEST_FAILURE("blkiotune-invalid-device");
     DO_TEST_FAILURE("blkiotune-multiple-devices");
     DO_TEST_FAILURE("blkiotune-weight");
+    DO_TEST("virtio-console");
+    DO_TEST("virtio-console-addr");
+    DO_TEST("2-virtio-console-mixed-addr");
+    DO_TEST("virtio-console-multiple-controllers");
+    DO_TEST("virtio-console-controllers");
+    DO_TEST_FAILURE("virtio-console-too-many-ports");
+    DO_TEST_FAILURE("virtio-console-invalid-name");
+    DO_TEST_FAILURE("virtio-console-invalid-path");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");

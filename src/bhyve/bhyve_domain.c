@@ -29,6 +29,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
+#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_BHYVE
@@ -89,6 +90,11 @@ bhyveDomainDefPostParse(virDomainDef *def,
 {
     struct _bhyveConn *driver = opaque;
     g_autoptr(virCaps) caps = bhyveDriverGetCapabilities(driver);
+    size_t i;
+    size_t virtio_channels = 0;
+    size_t virtio_serial_controllers = 0;
+    size_t virtio_serial_existing_controllers = 0;
+    size_t virtio_serial_controllers_to_create = 0;
     if (!caps)
         return -1;
 
@@ -139,6 +145,27 @@ bhyveDomainDefPostParse(virDomainDef *def,
         def->os.loader->path &&
         !def->os.loader->type) {
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
+    }
+
+    for (i = 0; i < def->nchannels; i++)
+        if (def->channels[i]->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            virtio_channels++;
+
+    for (i = 0; i < def->ncontrollers; i++)
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
+            virtio_serial_existing_controllers++;
+
+    /* bhyve supports 16 ports per virtio-console device */
+    virtio_serial_controllers = (virtio_channels / 16) + (virtio_channels % 16 != 0);
+    if (virtio_serial_controllers > virtio_serial_existing_controllers) {
+        virtio_serial_controllers_to_create = virtio_serial_controllers - virtio_serial_existing_controllers;
+
+        for (i = 0; i < virtio_serial_controllers_to_create; i++) {
+            virDomainControllerDef *cont;
+
+            cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, -1, -1);
+            cont->opts.vioserial.ports = 16;
+        }
     }
 
     return 0;
@@ -225,6 +252,10 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDef *dev,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("pci-root and pcie-root controllers should have index 0"));
             return -1;
+        } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+            /* bhyve supports 16 ports per controller */
+            if (cont->opts.vioserial.ports == -1)
+                cont->opts.vioserial.ports = 16;
         }
     }
 
@@ -287,13 +318,21 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                              void *parseOpaque G_GNUC_UNUSED)
 {
     switch (dev->type) {
-    case VIR_DOMAIN_DEVICE_CONTROLLER:
-        if (dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
-            dev->data.controller->idx != 0) {
+    case VIR_DOMAIN_DEVICE_CONTROLLER: {
+        virDomainControllerDef *controller = dev->data.controller;
+
+        if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
+            controller->idx != 0) {
             return -1;
+        } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+            if (controller->opts.vioserial.ports > 16) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Bhyve virtio-serial controller supports up to 16 ports"));
+                return -1;
+            }
         }
         break;
-
+    }
     case VIR_DOMAIN_DEVICE_RNG:
         if (dev->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO) {
             if (dev->data.rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
@@ -314,9 +353,9 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         }
         break;
 
-    case VIR_DOMAIN_DEVICE_CHR:
-        if (dev->data.chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
-            virDomainChrDef *chr = dev->data.chr;
+    case VIR_DOMAIN_DEVICE_CHR: {
+        virDomainChrDef *chr = dev->data.chr;
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL) {
             if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM &&
                 chr->source->type != VIR_DOMAIN_CHR_TYPE_TCP) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -341,9 +380,24 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                     return -1;
                 }
             }
+        } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
+                   chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+                   chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            if (virStringHasChars(chr->target.name, ",")) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Commas (',') are not allowed in channel names"));
+                    return -1;
+            }
+            if (chr->source->data.nix.path) {
+                if (virStringHasChars(chr->source->data.nix.path, ",")) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Commas (',') are not allowed in UNIX socket paths"));
+                    return -1;
+                }
+            }
         }
         break;
-
+    }
     case VIR_DOMAIN_DEVICE_DISK: {
         virDomainDiskDef *disk = dev->data.disk;
 

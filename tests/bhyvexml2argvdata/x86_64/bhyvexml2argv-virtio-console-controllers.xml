@@ -1,0 +1,31 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='hda' bus='sata'/>
+      <address type='drive' controller='0' bus='0' target='2' unit='0'/>
+    </disk>
+    <controller type='virtio-serial' index='0' ports='4'>
+    </controller>
+    <controller type='virtio-serial' index='1'>
+    </controller>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-1'/>
+      <target type='virtio' name='org.qemu.guest_agent.1'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent-2'/>
+      <target type='virtio' name='org.qemu.guest_agent.2'/>
+      <address type='virtio-serial' controller='1' bus='0' port='1'/>
+    </channel>
+  </devices>
+</domain>
