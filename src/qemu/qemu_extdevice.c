@@ -225,7 +225,7 @@ qemuExtDevicesStart(virQEMUDriver *driver,
     for (i = 0; i < def->nfss; i++) {
         virDomainFSDef *fs = def->fss[i];
 
-        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS && !fs->sock) {
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
             if (qemuVirtioFSStart(driver, vm, fs) < 0)
                 return -1;
         }
@@ -315,8 +315,7 @@ qemuExtDevicesStop(virQEMUDriver *driver,
     for (i = 0; i < def->nfss; i++) {
         virDomainFSDef *fs = def->fss[i];
 
-        if (!fs->sock &&
-            fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
             qemuVirtioFSStop(driver, vm, fs);
     }
 
@@ -473,8 +472,7 @@ qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
     for (i = 0; i < def->nfss; i++) {
         virDomainFSDef *fs = def->fss[i];
 
-        if (!fs->sock &&
-            fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS &&
+        if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS &&
             qemuVirtioFSSetupCgroup(vm, fs, cgroup) < 0)
             return -1;
     }

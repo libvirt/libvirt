@@ -3334,7 +3334,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
     virErrorPtr origErr = NULL;
     bool releaseaddr = false;
     bool chardevAdded = false;
-    bool started = false;
+    bool startCalled = false;
     g_autofree char *charAlias = NULL;
     int ret = -1;
 
@@ -3361,17 +3361,15 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
     if (!(devprops = qemuBuildVHostUserFsDevProps(fs, vm->def, charAlias, priv)))
         goto cleanup;
 
-    if (!fs->sock) {
-        if (qemuVirtioFSPrepareDomain(driver, fs) < 0)
-            goto cleanup;
+    if (qemuVirtioFSPrepareDomain(driver, fs) < 0)
+        goto cleanup;
 
-        if (qemuVirtioFSStart(driver, vm, fs) < 0)
-            goto cleanup;
-        started = true;
+    if (qemuVirtioFSStart(driver, vm, fs) < 0)
+        goto cleanup;
+    startCalled = true;
 
-        if (qemuVirtioFSSetupCgroup(vm, fs, priv->cgroup) < 0)
-            goto cleanup;
-    }
+    if (qemuVirtioFSSetupCgroup(vm, fs, priv->cgroup) < 0)
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(vm);
 
@@ -3400,7 +3398,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
         virErrorPreserveLast(&origErr);
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, &fs->info);
-        if (started)
+        if (startCalled)
             qemuVirtioFSStop(driver, vm, fs);
         virErrorRestore(&origErr);
     }
@@ -5533,7 +5531,7 @@ qemuDomainRemoveFSDevice(virQEMUDriver *driver,
     if (rc < 0)
         return -1;
 
-    if (!fs->sock && fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+    if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
         qemuVirtioFSStop(driver, vm, fs);
 
     if ((idx = virDomainFSDefFind(vm->def, fs)) >= 0)
