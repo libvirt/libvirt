@@ -181,7 +181,7 @@ virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,
         cfg->configBaseDir = g_strdup(SYSCONFDIR "/libvirt");
 
         cfg->stateDir = g_strdup_printf("%s/libvirt/qemu", RUNSTATEDIR);
-        cfg->swtpmStateDir = g_strdup_printf("%s/libvirt/qemu/swtpm", RUNSTATEDIR);
+        cfg->swtpmStateDir = g_strdup_printf("%s/swtpm", cfg->stateDir);
         cfg->channelTargetDir = g_strdup_printf("%s/channel", cfg->stateDir);
 
         cfg->cacheDir = g_strdup_printf("%s/cache/libvirt/qemu", LOCALSTATEDIR);
