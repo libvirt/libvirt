@@ -65,16 +65,6 @@ qemuVirtioFSCreatePidFilename(virDomainObj *vm,
 }
 
 
-char *
-qemuVirtioFSCreateSocketFilename(virDomainObj *vm,
-                                 const char *alias)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    return virFileBuildPath(priv->libDir, alias, "-fs.sock");
-}
-
-
 static int
 qemuVirtioFSOpenChardev(virQEMUDriver *driver,
                         virDomainObj *vm,
