@@ -19,6 +19,13 @@ v12.2.0 (unreleased)
 
 * **Improvements**
 
+  * conf: support more than 255 vCPUs with amd-iommu
+
+    With 256 or more vCPUs libvirt previously required EIM enabled for all
+    models of IOMMU. This is not valid for AMD model and validation was changed
+    so that XTSup is required there. Additionally, it is automatically enabled
+    if needed.
+
 * **Bug fixes**
 
 
