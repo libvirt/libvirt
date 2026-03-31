@@ -26,6 +26,12 @@ v12.2.0 (unreleased)
     so that XTSup is required there. Additionally, it is automatically enabled
     if needed.
 
+  * Introduce VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES flag
+
+    This new flag for virConnectGetDomainCapabilities can be used to request
+    the host-model CPU definition to include all supported features (normally
+    only extra features relative to the selected CPU model are listed).
+
 * **Bug fixes**
 
 
