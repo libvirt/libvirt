@@ -127,7 +127,7 @@ typedef void (*virLogOutputFunc) (virLogSource *src,
                                   int linenr,
                                   const char *funcname,
                                   const char *timestamp,
-                                  struct _virLogMetadata *metadata,
+                                  virLogMetadata *metadata,
                                   const char *rawstr,
                                   const char *str,
                                   void *data);
@@ -170,7 +170,7 @@ void virLogMessage(virLogSource *source,
                    const char *filename,
                    int linenr,
                    const char *funcname,
-                   struct _virLogMetadata *metadata,
+                   virLogMetadata *metadata,
                    const char *fmt, ...) G_GNUC_PRINTF(7, 8);
 
 bool virLogProbablyLogMessage(const char *str);

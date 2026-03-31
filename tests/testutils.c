@@ -680,7 +680,7 @@ virtTestLogOutput(virLogSource *source G_GNUC_UNUSED,
                   int lineno G_GNUC_UNUSED,
                   const char *funcname G_GNUC_UNUSED,
                   const char *timestamp,
-                  struct _virLogMetadata *metadata G_GNUC_UNUSED,
+                  virLogMetadata *metadata G_GNUC_UNUSED,
                   const char *rawstr G_GNUC_UNUSED,
                   const char *str,
                   void *data)
