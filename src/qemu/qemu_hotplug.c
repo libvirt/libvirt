@@ -1679,8 +1679,10 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
         qemuDomainObjEnterMonitor(vm);
 
-        if (removeiommufd)
+        if (removeiommufd) {
+            priv->iommufdState = false;
             ignore_value(qemuMonitorDelObject(priv->mon, "iommufd0", false));
+        }
 
         qemuFDPassDirectTransferMonitorRollback(hostdevPriv->vfioDeviceFd, priv->mon);
         qemuFDPassDirectTransferMonitorRollback(priv->iommufd, priv->mon);
