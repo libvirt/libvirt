@@ -15,6 +15,11 @@ v12.2.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Stop advertising support for ``handle`` backend of 9p filesystems
+
+    QEMU removed the feature in the 4.0 release, but our capability XML
+    still reported it.
+
 * **New features**
 
   * qemu: Add support to configure IOMMUFD backend for whole VM
@@ -28,6 +33,13 @@ v12.2.0 (unreleased)
     Management applications running unprivileged libvirt can open /dev/iommu
     and pass FD to libvirt in order to change locked memory accounting.
     This is done via new ``<iommufd>`` element.
+
+  * qemu: Add support for declaring that storage was zeroed for storage copy APIs
+
+    The qemu driver now can skip zeroing of the storage during
+    ``virDomainBlockCopy`` or migration with non-shared storage with the
+    appropriate flags. This can be used for storage technologies which lack
+    efficient zeroing support.
 
 * **Improvements**
 
@@ -43,6 +55,11 @@ v12.2.0 (unreleased)
     This new flag for virConnectGetDomainCapabilities can be used to request
     the host-model CPU definition to include all supported features (normally
     only extra features relative to the selected CPU model are listed).
+
+  * qemu: Add statistics for ``<dataStore>`` storage
+
+    The bulk statistics (``virsh domstats --block --backing``) now report also
+    information about the ``<dataStore>`` if given disk uses this feature.
 
 * **Bug fixes**
 
