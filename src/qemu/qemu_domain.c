@@ -10690,7 +10690,6 @@ qemuDomainOpenFile(virQEMUDriverConfig *cfg,
     bool dynamicOwnership = cfg->dynamicOwnership;
     virSecurityLabelDef *seclabel;
 
-    /* TODO: Take imagelabel into account? */
     if (def &&
         (seclabel = virDomainDefGetSecurityLabelDef(def, "dac")) != NULL &&
         seclabel->label != NULL &&
