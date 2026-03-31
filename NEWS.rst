@@ -17,6 +17,18 @@ v12.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support to configure IOMMUFD backend for whole VM
+
+    In addition to setting IOMMUFD backend for each device it is possible
+    to use the new ``<iommufd>`` element to enable IOMMUFD backend for all
+    host devices. Users can still change it per device.
+
+  * qemu: Add support to pass FD for IOMMUFD when starting VM
+
+    Management applications running unprivileged libvirt can open /dev/iommu
+    and pass FD to libvirt in order to change locked memory accounting.
+    This is done via new ``<iommufd>`` element.
+
 * **Improvements**
 
   * conf: support more than 255 vCPUs with amd-iommu
@@ -33,6 +45,11 @@ v12.2.0 (unreleased)
     only extra features relative to the selected CPU model are listed).
 
 * **Bug fixes**
+
+  * qemu: Fix crash when attaching network inteface with hostdev network
+
+    Introduced in v12.1.0 by implementing IOMMUFD backend support for
+    host devices.
 
 
 v12.1.0 (2026-03-02)
