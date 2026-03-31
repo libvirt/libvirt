@@ -41,6 +41,14 @@ v12.2.0 (unreleased)
     appropriate flags. This can be used for storage technologies which lack
     efficient zeroing support.
 
+  * hyperv: Add basic snapshot functionality
+
+    The hyperv driver now implements the following libvirt APIs:
+    ``virDomainDefineXMLFlags()``, ``virDomainSnapshotLookupByName()``,
+    ``virDomainListAllSnapshots()``, ``virDomainSnapshotNum()``,
+    ``virDomainSnapshotGetXMLDesc()``, ``virDomainSnapshotCurrent()``,
+    ``virDomainHasCurrentSnapshot()``, ``virDomainSnapshotGetParent()``.
+
 * **Improvements**
 
   * conf: support more than 255 vCPUs with amd-iommu
@@ -60,6 +68,9 @@ v12.2.0 (unreleased)
 
     The bulk statistics (``virsh domstats --block --backing``) now report also
     information about the ``<dataStore>`` if given disk uses this feature.
+
+  * hyperv: Hyper-V guests now report TPM device status in their domain xml
+    definition.
 
 * **Bug fixes**
 
