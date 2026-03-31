@@ -3339,6 +3339,10 @@ static const vshCmdOptDef opts_blockresize[] = {
      .type = VSH_OT_BOOL,
      .help = N_("resize to capacity of source (block device)")
     },
+    {.name = "extend",
+     .type = VSH_OT_BOOL,
+     .help = N_("ensure that the new size is larger than actual capacity (prevent shrink)")
+    },
     {.name = NULL}
 };
 
@@ -3351,6 +3355,9 @@ cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
 
     VSH_ALTERNATIVE_OPTIONS("size", "capacity");
+
+    if (vshCommandOptBool(cmd, "extend"))
+        flags |= VIR_DOMAIN_BLOCK_RESIZE_EXTEND;
 
     if (vshCommandOptString(ctl, cmd, "path", (const char **) &path) < 0)
         return false;

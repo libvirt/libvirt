@@ -1642,13 +1642,18 @@ blockresize
 
 ::
 
-   blockresize domain path ([size] | [--capacity])
+   blockresize domain path ([size] | [--capacity]) [--extend]
 
 Resize a block device of domain while the domain is running, *path*
 specifies the absolute path of the block device; it corresponds
 to a unique target name (<target dev='name'/>) or source file (<source
 file='name'/>) for one of the disk devices attached to *domain* (see
 also ``domblklist`` for listing these names).
+
+The *--extend* flag instructs the hypervisor to ensure that the new size isn't
+smaller than the old size, thus prevents (accidental) shrinking of the block
+device which may lead to data loss. Users are encouraged to always use this
+flag unless communicating with an older hypervisor.
 
 For image formats without metadata (raw) stored inside fixed-size storage (e.g.
 block devices) the --capacity flag can be used to resize the device to the
