@@ -480,6 +480,75 @@ virLogSourceUpdate(virLogSource *source)
 
 
 /**
+ * virLogToOneTarget:
+ *
+ * (these first several args are coming directly from the args of
+ * virLogVMessage() - you can find their description there)
+ *
+ * @source, @priority, @filename, @linenr, @funcname, @metadata:
+ *
+ * (the next 3 are created once during each call to virLogMMessage() and reused
+ * for each target)
+ *
+ * @timestamp:   cached (during this one log to multiple targets) raw time
+ * @str:         the log message formatted from what appears in the VIR_*()
+                 or virReport*() call
+ * @msg:         the formatted log message with function name, line number, and
+ *               priority added
+ *
+ * @outputFunc:  pointer to function to call to output the data
+ * @data:        private data used by @outputFunc (e.g. fd to write to)
+ * @needInit:    pointer to bool that gets set to false once the
+ *               once-per-daemon-run init message has been sent to this target
+ *
+ * If needInit is true, construct the strings to send the "init"
+ * message (a banner with software version, etc) to the log target
+ * using @outputFunc and set @needInit to false. Then send the current
+ * log message to the target (described by the other args) using
+ * @outputFunc.
+ */
+static void
+virLogToOneTarget(virLogSource *source,
+                  virLogPriority priority,
+                  const char *filename,
+                  int linenr,
+                  const char *funcname,
+                  virLogMetadata *metadata,
+                  const char *timestamp,
+                  const char *str,
+                  const char *msg,
+                  virLogOutputFunc outputFunc,
+                  void *data,
+                  bool *needInit)
+{
+    if (*needInit) {
+        const char *rawinitmsg;
+        char *hoststr = NULL;
+        char *initmsg = NULL;
+
+        virLogVersionString(&rawinitmsg, &initmsg);
+        outputFunc(&virLogSelf, VIR_LOG_INFO,
+                   __FILE__, __LINE__, __func__,
+                   timestamp, NULL, rawinitmsg, initmsg,
+                   data);
+        VIR_FREE(initmsg);
+
+        virLogHostnameString(&hoststr, &initmsg);
+        outputFunc(&virLogSelf, VIR_LOG_INFO,
+                   __FILE__, __LINE__, __func__,
+                   timestamp, NULL, hoststr, initmsg,
+                   data);
+        VIR_FREE(hoststr);
+        VIR_FREE(initmsg);
+        *needInit = false;
+    }
+
+    outputFunc(source, priority, filename, linenr, funcname,
+               timestamp, metadata, str, msg, data);
+}
+
+
+/**
  * virLogVMessage:
  * @source: where is that message coming from
  * @priority: the priority level
@@ -548,57 +617,19 @@ virLogVMessage(virLogSource *source,
      */
     for (i = 0; i < virLogNbOutputs; i++) {
         if (priority >= virLogOutputs[i]->priority) {
-            if (virLogOutputs[i]->logInitMessage) {
-                const char *rawinitmsg;
-                char *hoststr = NULL;
-                char *initmsg = NULL;
-                virLogVersionString(&rawinitmsg, &initmsg);
-                virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                    __FILE__, __LINE__, __func__,
-                                    timestamp, NULL, rawinitmsg, initmsg,
-                                    virLogOutputs[i]->data);
-                VIR_FREE(initmsg);
-
-                virLogHostnameString(&hoststr, &initmsg);
-                virLogOutputs[i]->f(&virLogSelf, VIR_LOG_INFO,
-                                    __FILE__, __LINE__, __func__,
-                                    timestamp, NULL, hoststr, initmsg,
-                                    virLogOutputs[i]->data);
-                VIR_FREE(hoststr);
-                VIR_FREE(initmsg);
-                virLogOutputs[i]->logInitMessage = false;
-            }
-            virLogOutputs[i]->f(source, priority,
-                                filename, linenr, funcname,
-                                timestamp, metadata,
-                                str, msg, virLogOutputs[i]->data);
+            virLogToOneTarget(source, priority, filename, linenr, funcname, metadata,
+                              timestamp, str, msg,
+                              virLogOutputs[i]->f,
+                              virLogOutputs[i]->data,
+                              &virLogOutputs[i]->logInitMessage);
         }
     }
     if (virLogNbOutputs == 0) {
-        if (logInitMessageStderr) {
-            const char *rawinitmsg;
-            char *hoststr = NULL;
-            char *initmsg = NULL;
-            virLogVersionString(&rawinitmsg, &initmsg);
-            virLogOutputToFd(&virLogSelf, VIR_LOG_INFO,
-                             __FILE__, __LINE__, __func__,
-                             timestamp, NULL, rawinitmsg, initmsg,
-                             (void *) STDERR_FILENO);
-            VIR_FREE(initmsg);
-
-            virLogHostnameString(&hoststr, &initmsg);
-            virLogOutputToFd(&virLogSelf, VIR_LOG_INFO,
-                             __FILE__, __LINE__, __func__,
-                             timestamp, NULL, hoststr, initmsg,
-                             (void *) STDERR_FILENO);
-            VIR_FREE(hoststr);
-            VIR_FREE(initmsg);
-            logInitMessageStderr = false;
-        }
-        virLogOutputToFd(source, priority,
-                         filename, linenr, funcname,
-                         timestamp, metadata,
-                         str, msg, (void *) STDERR_FILENO);
+        virLogToOneTarget(source, priority, filename, linenr, funcname, metadata,
+                          timestamp, str, msg,
+                          virLogOutputToFd,
+                          (void *) STDERR_FILENO,
+                          &logInitMessageStderr);
     }
     virLogUnlock();
 
