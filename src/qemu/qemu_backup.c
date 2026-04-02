@@ -808,9 +808,6 @@ qemuBackupBegin(virDomainObj *vm,
     int ret = -1;
     g_autoptr(qemuFDPassDirect) fdpass = NULL;
 
-    virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL |
-                  VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN, -1);
-
     if (!(def = virDomainBackupDefParseString(backupXML, priv->driver->xmlopt, 0)))
         return -1;
 
@@ -986,15 +983,12 @@ qemuBackupBegin(virDomainObj *vm,
 
 
 char *
-qemuBackupGetXMLDesc(virDomainObj *vm,
-                     unsigned int flags)
+qemuBackupGetXMLDesc(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainBackupDef *backup;
-
-    virCheckFlags(0, NULL);
 
     if (!(backup = qemuDomainGetBackup(vm)))
         return NULL;

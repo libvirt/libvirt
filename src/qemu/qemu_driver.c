@@ -13633,6 +13633,9 @@ qemuDomainBackupBegin(virDomainPtr domain,
     virDomainObj *vm = NULL;
     int ret = -1;
 
+    virCheckFlags(VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL |
+                  VIR_DOMAIN_BACKUP_BEGIN_PRESERVE_SHUTDOWN_DOMAIN, -1);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
@@ -13654,13 +13657,15 @@ qemuDomainBackupGetXMLDesc(virDomainPtr domain,
     virDomainObj *vm = NULL;
     char *ret = NULL;
 
+    virCheckFlags(0, NULL);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         return NULL;
 
     if (virDomainBackupGetXMLDescEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = qemuBackupGetXMLDesc(vm, flags);
+    ret = qemuBackupGetXMLDesc(vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
