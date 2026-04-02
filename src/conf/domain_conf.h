@@ -4543,6 +4543,10 @@ const char *virDomainChrSourceDefGetPath(virDomainChrSourceDef *chr);
 
 void virDomainChrSourceDefClear(virDomainChrSourceDef *def);
 
+#define VIR_DOMAIN_OBJ_GET_METADATA_FLAGS \
+    VIR_DOMAIN_AFFECT_LIVE | \
+    VIR_DOMAIN_AFFECT_CONFIG
+
 char *virDomainObjGetMetadata(virDomainObj *vm,
                               int type,
                               const char *uri,

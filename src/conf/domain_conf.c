@@ -31557,8 +31557,7 @@ virDomainObjGetMetadata(virDomainObj *vm,
     virDomainDef *def;
     char *ret = NULL;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, NULL);
+    virCheckFlags(VIR_DOMAIN_OBJ_GET_METADATA_FLAGS, NULL);
 
     if (type >= VIR_DOMAIN_METADATA_LAST) {
         virReportError(VIR_ERR_INVALID_ARG,

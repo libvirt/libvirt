@@ -16004,6 +16004,8 @@ qemuDomainGetMetadata(virDomainPtr dom,
     virDomainObj *vm;
     char *ret = NULL;
 
+    virCheckFlags(VIR_DOMAIN_OBJ_GET_METADATA_FLAGS, NULL);
+
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return NULL;
 
