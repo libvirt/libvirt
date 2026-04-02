@@ -25,8 +25,7 @@
 
 int virHostMemGetStats(int cellNum,
                        virNodeMemoryStatsPtr params,
-                       int *nparams,
-                       unsigned int flags);
+                       int *nparams);
 int virHostMemGetCellsFree(unsigned long long *freeMems,
                            int startCell,
                            int maxCells);
@@ -34,12 +33,10 @@ int virHostMemGetInfo(unsigned long long *mem,
                       unsigned long long *freeMem);
 
 int virHostMemGetParameters(virTypedParameterPtr params,
-                            int *nparams,
-                            unsigned int flags);
+                            int *nparams);
 
 int virHostMemSetParameters(virTypedParameterPtr params,
-                            int nparams,
-                            unsigned int flags);
+                            int nparams);
 
 int virHostMemGetFreePages(unsigned int npages,
                            unsigned int *pages,

@@ -1862,7 +1862,9 @@ openvzNodeGetMemoryStats(virConnectPtr conn G_GNUC_UNUSED,
                          int *nparams,
                          unsigned int flags)
 {
-    return virHostMemGetStats(cellNum, params, nparams, flags);
+    virCheckFlags(0, -1);
+
+    return virHostMemGetStats(cellNum, params, nparams);
 }
 
 

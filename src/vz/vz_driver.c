@@ -1981,10 +1981,12 @@ vzNodeGetMemoryStats(virConnectPtr conn,
                      int *nparams,
                      unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
         return -1;
 
-    return virHostMemGetStats(cellNum, params, nparams, flags);
+    return virHostMemGetStats(cellNum, params, nparams);
 }
 
 static int

@@ -1160,10 +1160,12 @@ bhyveNodeGetMemoryStats(virConnectPtr conn,
                         int *nparams,
                         unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (virNodeGetMemoryStatsEnsureACL(conn) < 0)
         return -1;
 
-    return virHostMemGetStats(cellNum, params, nparams, flags);
+    return virHostMemGetStats(cellNum, params, nparams);
 }
 
 static int
@@ -1375,10 +1377,12 @@ bhyveNodeGetMemoryParameters(virConnectPtr conn,
                              int *nparams,
                              unsigned int flags)
 {
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
     if (virNodeGetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return virHostMemGetParameters(params, nparams, flags);
+    return virHostMemGetParameters(params, nparams);
 }
 
 static int
@@ -1387,10 +1391,12 @@ bhyveNodeSetMemoryParameters(virConnectPtr conn,
                              int nparams,
                              unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 
-    return virHostMemSetParameters(params, nparams, flags);
+    return virHostMemSetParameters(params, nparams);
 }
 
 static char *
