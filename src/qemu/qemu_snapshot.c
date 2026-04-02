@@ -2222,24 +2222,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_LIVE |
-                  VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
-
-    VIR_REQUIRE_FLAG_RET(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE,
-                         VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY,
-                         NULL);
-    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_SNAPSHOT_CREATE_LIVE,
-                            VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
-                            NULL);
-
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot halt after transient domain snapshot"));
@@ -2949,11 +2931,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     g_autoptr(virDomainDef) inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
-
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_FORCE |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM, -1);
 
     if (flags & VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM)
         start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
@@ -4488,10 +4465,6 @@ qemuSnapshotDelete(virDomainObj *vm,
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
     bool stop_qemu = false;
     g_autoslist(qemuSnapshotDeleteExternalData) externalData = NULL;
-
-    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
-                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
-                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
     if (virDomainObjBeginAsyncJob(vm, VIR_ASYNC_JOB_SNAPSHOT,
                                   VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_DELETE,

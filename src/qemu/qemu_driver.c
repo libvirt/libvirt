@@ -13016,6 +13016,24 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
     virDomainObj *vm = NULL;
     virDomainSnapshotPtr snapshot = NULL;
 
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_HALT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_LIVE |
+                  VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE, NULL);
+
+    VIR_REQUIRE_FLAG_RET(VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE,
+                         VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY,
+                         NULL);
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_SNAPSHOT_CREATE_LIVE,
+                            VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
+                            NULL);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
@@ -13414,6 +13432,11 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainObj *vm = NULL;
     int ret = -1;
 
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_FORCE |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM, -1);
+
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
         goto cleanup;
 
@@ -13434,6 +13457,10 @@ qemuDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 {
     virDomainObj *vm = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
+                  VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
         return -1;
