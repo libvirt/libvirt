@@ -5849,6 +5849,11 @@ qemuNodeGetSecurityModel(virConnectPtr conn,
     return 0;
 }
 
+#define QEMU_DOMAIN_RESTORE_FLAGS \
+    VIR_DOMAIN_SAVE_BYPASS_CACHE | \
+    VIR_DOMAIN_SAVE_RUNNING | \
+    VIR_DOMAIN_SAVE_PAUSED | \
+    VIR_DOMAIN_SAVE_RESET_NVRAM
 
 /**
  * qemuDomainRestoreInternal:
@@ -5900,18 +5905,12 @@ qemuDomainRestoreInternal(virConnectPtr conn,
     virQEMUSaveData *data = NULL;
     virFileWrapperFd *wrapperFd = NULL;
     bool hook_taint = false;
-    bool reset_nvram = false;
+    bool reset_nvram = (flags & VIR_DOMAIN_SAVE_RESET_NVRAM) != 0;
     bool sparse = false;
     bool bypass_cache = (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0;
     g_autoptr(qemuMigrationParams) restoreParams = NULL;
 
-    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
-                  VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED |
-                  VIR_DOMAIN_SAVE_RESET_NVRAM, -1);
-
-    if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
-        reset_nvram = true;
+    virCheckFlags(QEMU_DOMAIN_RESTORE_FLAGS, -1);
 
     if (qemuSaveImageGetMetadata(driver, NULL, path, ensureACL, conn, &def, &data) < 0) {
         if (unlink_corrupt &&
@@ -6051,6 +6050,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
                        const char *dxml,
                        unsigned int flags)
 {
+    virCheckFlags(QEMU_DOMAIN_RESTORE_FLAGS, -1);
+
     return qemuDomainRestoreInternal(conn, NULL, path, false, dxml, NULL, 0,
                                      flags, virDomainRestoreFlagsEnsureACL,
                                      VIR_ASYNC_JOB_START);
@@ -6073,6 +6074,8 @@ qemuDomainRestoreParams(virConnectPtr conn,
     const char *path = NULL;
     const char *dxml = NULL;
     int ret = -1;
+
+    virCheckFlags(QEMU_DOMAIN_RESTORE_FLAGS, -1);
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
