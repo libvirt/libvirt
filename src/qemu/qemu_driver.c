@@ -1078,10 +1078,11 @@ qemuConnectURIProbe(char **uri)
     return 0;
 }
 
-static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
-                                        virConnectAuthPtr auth G_GNUC_UNUSED,
-                                        virConf *conf G_GNUC_UNUSED,
-                                        unsigned int flags)
+static virDrvOpenStatus
+qemuConnectOpen(virConnectPtr conn,
+                virConnectAuthPtr auth G_GNUC_UNUSED,
+                virConf *conf G_GNUC_UNUSED,
+                unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -1123,7 +1124,8 @@ static virDrvOpenStatus qemuConnectOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 }
 
-static int qemuConnectClose(virConnectPtr conn)
+static int
+qemuConnectClose(virConnectPtr conn)
 {
     virQEMUDriver *driver = conn->privateData;
 
@@ -1172,7 +1174,9 @@ qemuConnectSupportsFeature(virConnectPtr conn, int feature)
     }
 }
 
-static const char *qemuConnectGetType(virConnectPtr conn) {
+static const char *
+qemuConnectGetType(virConnectPtr conn)
+{
     if (virConnectGetTypeEnsureACL(conn) < 0)
         return NULL;
 
@@ -1180,19 +1184,22 @@ static const char *qemuConnectGetType(virConnectPtr conn) {
 }
 
 
-static int qemuConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
+static int
+qemuConnectIsSecure(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Trivially secure, since always inside the daemon */
     return 1;
 }
 
-static int qemuConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
+static int
+qemuConnectIsEncrypted(virConnectPtr conn G_GNUC_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
     return 0;
 }
 
-static int qemuConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
+static int
+qemuConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 {
     return 1;
 }
@@ -1221,7 +1228,8 @@ qemuConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 }
 
 static int
-qemuConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED, const char *type)
+qemuConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED,
+                       const char *type)
 {
     if (virConnectGetMaxVcpusEnsureACL(conn) < 0)
         return -1;
@@ -1241,7 +1249,9 @@ qemuConnectGetMaxVcpus(virConnectPtr conn G_GNUC_UNUSED, const char *type)
 }
 
 
-static char *qemuConnectGetCapabilities(virConnectPtr conn) {
+static char *
+qemuConnectGetCapabilities(virConnectPtr conn)
+{
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virCaps) caps = NULL;
 
@@ -1361,8 +1371,9 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
 }
 
 
-static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
-                                         int id)
+static virDomainPtr
+qemuDomainLookupByID(virConnectPtr conn,
+                     int id)
 {
     virQEMUDriver *driver = conn->privateData;
     virDomainObj *vm;
@@ -1386,8 +1397,9 @@ static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
     return dom;
 }
 
-static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
-                                           const unsigned char *uuid)
+static virDomainPtr
+qemuDomainLookupByUUID(virConnectPtr conn,
+                       const unsigned char *uuid)
 {
     virQEMUDriver *driver = conn->privateData;
     virDomainObj *vm;
@@ -1413,8 +1425,9 @@ static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
     return dom;
 }
 
-static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
-                                           const char *name)
+static virDomainPtr
+qemuDomainLookupByName(virConnectPtr conn,
+                       const char *name)
 {
     virQEMUDriver *driver = conn->privateData;
     virDomainObj *vm;
@@ -1439,7 +1452,8 @@ static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
 }
 
 
-static int qemuDomainIsActive(virDomainPtr dom)
+static int
+qemuDomainIsActive(virDomainPtr dom)
 {
     virDomainObj *obj;
     int ret = -1;
@@ -1457,7 +1471,8 @@ static int qemuDomainIsActive(virDomainPtr dom)
     return ret;
 }
 
-static int qemuDomainIsPersistent(virDomainPtr dom)
+static int
+qemuDomainIsPersistent(virDomainPtr dom)
 {
     virDomainObj *obj;
     int ret = -1;
@@ -1475,7 +1490,8 @@ static int qemuDomainIsPersistent(virDomainPtr dom)
     return ret;
 }
 
-static int qemuDomainIsUpdated(virDomainPtr dom)
+static int
+qemuDomainIsUpdated(virDomainPtr dom)
 {
     virDomainObj *obj;
     int ret = -1;
@@ -1493,7 +1509,9 @@ static int qemuDomainIsUpdated(virDomainPtr dom)
     return ret;
 }
 
-static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version)
+static int
+qemuConnectGetVersion(virConnectPtr conn,
+                      unsigned long *version)
 {
     virQEMUDriver *driver = conn->privateData;
     unsigned int qemuVersion = 0;
@@ -1515,7 +1533,8 @@ static int qemuConnectGetVersion(virConnectPtr conn, unsigned long *version)
 }
 
 
-static char *qemuConnectGetHostname(virConnectPtr conn)
+static char *
+qemuConnectGetHostname(virConnectPtr conn)
 {
     if (virConnectGetHostnameEnsureACL(conn) < 0)
         return NULL;
@@ -1524,7 +1543,10 @@ static char *qemuConnectGetHostname(virConnectPtr conn)
 }
 
 
-static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids)
+static int
+qemuConnectListDomains(virConnectPtr conn,
+                       int *ids,
+                       int nids)
 {
     virQEMUDriver *driver = conn->privateData;
 
@@ -1535,7 +1557,9 @@ static int qemuConnectListDomains(virConnectPtr conn, int *ids, int nids)
                                         virConnectListDomainsCheckACL, conn);
 }
 
-static int qemuConnectNumOfDomains(virConnectPtr conn)
+
+static int
+qemuConnectNumOfDomains(virConnectPtr conn)
 {
     virQEMUDriver *driver = conn->privateData;
 
@@ -1547,9 +1571,10 @@ static int qemuConnectNumOfDomains(virConnectPtr conn)
 }
 
 
-static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
-                                        const char *xml,
-                                        unsigned int flags)
+static virDomainPtr
+qemuDomainCreateXML(virConnectPtr conn,
+                    const char *xml,
+                    unsigned int flags)
 {
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virDomainDef) def = NULL;
@@ -1637,7 +1662,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
 }
 
 
-static int qemuDomainSuspend(virDomainPtr dom)
+static int
+qemuDomainSuspend(virDomainPtr dom)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -1687,7 +1713,8 @@ static int qemuDomainSuspend(virDomainPtr dom)
 }
 
 
-static int qemuDomainResume(virDomainPtr dom)
+static int
+qemuDomainResume(virDomainPtr dom)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -1804,7 +1831,9 @@ qemuDomainShutdownFlagsMonitor(virDomainObj *vm,
 }
 
 
-static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
+static int
+qemuDomainShutdownFlags(virDomainPtr dom,
+                        unsigned int flags)
 {
     virDomainObj *vm;
     int ret = -1;
@@ -1862,7 +1891,9 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     return ret;
 }
 
-static int qemuDomainShutdown(virDomainPtr dom)
+
+static int
+qemuDomainShutdown(virDomainPtr dom)
 {
     return qemuDomainShutdownFlags(dom, 0);
 }
@@ -2112,7 +2143,10 @@ qemuDomainDestroy(virDomainPtr dom)
     return qemuDomainDestroyFlags(dom, 0);
 }
 
-static char *qemuDomainGetOSType(virDomainPtr dom) {
+
+static char *
+qemuDomainGetOSType(virDomainPtr dom)
+{
     virDomainObj *vm;
     char *type = NULL;
 
@@ -2128,6 +2162,7 @@ static char *qemuDomainGetOSType(virDomainPtr dom) {
     virDomainObjEndAPI(&vm);
     return type;
 }
+
 
 /* Returns max memory in kb, 0 if error */
 static unsigned long long
@@ -2149,8 +2184,11 @@ qemuDomainGetMaxMemory(virDomainPtr dom)
     return ret;
 }
 
-static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
-                                    unsigned int flags)
+
+static int
+qemuDomainSetMemoryFlags(virDomainPtr dom,
+                         unsigned long newmem,
+                         unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     qemuDomainObjPrivate *priv;
@@ -2279,18 +2317,27 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     return ret;
 }
 
-static int qemuDomainSetMemory(virDomainPtr dom, unsigned long newmem)
+
+static int
+qemuDomainSetMemory(virDomainPtr dom,
+                    unsigned long newmem)
 {
     return qemuDomainSetMemoryFlags(dom, newmem, VIR_DOMAIN_AFFECT_LIVE);
 }
 
-static int qemuDomainSetMaxMemory(virDomainPtr dom, unsigned long memory)
+
+static int
+qemuDomainSetMaxMemory(virDomainPtr dom,
+                       unsigned long memory)
 {
     return qemuDomainSetMemoryFlags(dom, memory, VIR_DOMAIN_MEM_MAXIMUM);
 }
 
-static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
-                                          unsigned int flags)
+
+static int
+qemuDomainSetMemoryStatsPeriod(virDomainPtr dom,
+                               int period,
+                               unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     qemuDomainObjPrivate *priv;
@@ -2360,7 +2407,10 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
     return ret;
 }
 
-static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
+
+static int
+qemuDomainInjectNMI(virDomainPtr domain,
+                    unsigned int flags)
 {
     virDomainObj *vm = NULL;
     int ret = -1;
@@ -2394,12 +2444,14 @@ static int qemuDomainInjectNMI(virDomainPtr domain, unsigned int flags)
     return ret;
 }
 
-static int qemuDomainSendKey(virDomainPtr domain,
-                             unsigned int codeset,
-                             unsigned int holdtime,
-                             unsigned int *keycodes,
-                             int nkeycodes,
-                             unsigned int flags)
+
+static int
+qemuDomainSendKey(virDomainPtr domain,
+                  unsigned int codeset,
+                  unsigned int holdtime,
+                  unsigned int *keycodes,
+                  int nkeycodes,
+                  unsigned int flags)
 {
     virDomainObj *vm = NULL;
     int ret = -1;
@@ -5647,7 +5699,9 @@ qemuDomainSetIOThreadParams(virDomainPtr dom,
 }
 
 
-static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr seclabel)
+static int
+qemuDomainGetSecurityLabel(virDomainPtr dom,
+                           virSecurityLabelPtr seclabel)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -5688,8 +5742,10 @@ static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secl
     return ret;
 }
 
-static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
-                                          virSecurityLabelPtr* seclabels)
+
+static int
+qemuDomainGetSecurityLabelList(virDomainPtr dom,
+                               virSecurityLabelPtr* seclabels)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -5750,8 +5806,9 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
 }
 
 
-static int qemuNodeGetSecurityModel(virConnectPtr conn,
-                                    virSecurityModelPtr secmodel)
+static int
+qemuNodeGetSecurityModel(virConnectPtr conn,
+                         virSecurityModelPtr secmodel)
 {
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virCaps) caps = NULL;
@@ -6205,9 +6262,9 @@ qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
 }
 
 
-static char
-*qemuDomainGetXMLDesc(virDomainPtr dom,
-                      unsigned int flags)
+static char *
+qemuDomainGetXMLDesc(virDomainPtr dom,
+                     unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -6251,10 +6308,11 @@ static char
 }
 
 
-static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
-                                          const char *format,
-                                          const char *xmlData,
-                                          unsigned int flags)
+static char *
+qemuConnectDomainXMLToNative(virConnectPtr conn,
+                             const char *format,
+                             const char *xmlData,
+                             unsigned int flags)
 {
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virDomainObj) vm = NULL;
@@ -6314,8 +6372,11 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 }
 
 
-static int qemuConnectListDefinedDomains(virConnectPtr conn,
-                                         char **const names, int nnames) {
+static int
+qemuConnectListDefinedDomains(virConnectPtr conn,
+                              char **const names,
+                              int nnames)
+{
     virQEMUDriver *driver = conn->privateData;
 
     if (virConnectListDefinedDomainsEnsureACL(conn) < 0)
@@ -6326,7 +6387,9 @@ static int qemuConnectListDefinedDomains(virConnectPtr conn,
                                             conn);
 }
 
-static int qemuConnectNumOfDefinedDomains(virConnectPtr conn)
+
+static int
+qemuConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     virQEMUDriver *driver = conn->privateData;
 
@@ -7800,14 +7863,18 @@ qemuDomainDetachDeviceAlias(virDomainPtr dom,
 }
 
 
-static int qemuDomainDetachDevice(virDomainPtr dom, const char *xml)
+static int
+qemuDomainDetachDevice(virDomainPtr dom,
+                       const char *xml)
 {
     return qemuDomainDetachDeviceFlags(dom, xml,
                                        VIR_DOMAIN_AFFECT_LIVE);
 }
 
-static int qemuDomainGetAutostart(virDomainPtr dom,
-                                  int *autostart)
+
+static int
+qemuDomainGetAutostart(virDomainPtr dom,
+                       int *autostart)
 {
     virDomainObj *vm;
     int ret = -1;
@@ -7826,8 +7893,10 @@ static int qemuDomainGetAutostart(virDomainPtr dom,
     return ret;
 }
 
-static int qemuDomainSetAutostart(virDomainPtr dom,
-                                  int autostart)
+
+static int
+qemuDomainSetAutostart(virDomainPtr dom,
+                       int autostart)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -7992,8 +8061,9 @@ qemuDomainSetAutostartOnce(virDomainPtr dom,
 }
 
 
-static char *qemuDomainGetSchedulerType(virDomainPtr dom,
-                                        int *nparams)
+static char *
+qemuDomainGetSchedulerType(virDomainPtr dom,
+                           int *nparams)
 {
     char *ret = NULL;
     virDomainObj *vm = NULL;
@@ -18924,9 +18994,11 @@ qemuDomainRenameCallback(virDomainObj *vm,
     return ret;
 }
 
-static int qemuDomainRename(virDomainPtr dom,
-                            const char *new_name,
-                            unsigned int flags)
+
+static int
+qemuDomainRename(virDomainPtr dom,
+                 const char *new_name,
+                 unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
