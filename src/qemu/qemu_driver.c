@@ -19680,15 +19680,12 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
 
 static int
 qemuDomainGetSEVInfo(virDomainObj *vm,
-                     virTypedParamList *list,
-                     unsigned int flags)
+                     virTypedParamList *list)
 {
     int ret = -1;
     int rv;
     g_autofree char *tmp = NULL;
     qemuMonitorSEVInfo info = { };
-
-    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return -1;
@@ -19749,6 +19746,8 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     virDomainObj *vm;
     int ret = -1;
 
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
@@ -19763,7 +19762,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     switch (vm->def->sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV:
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV_SNP:
-        if (qemuDomainGetSEVInfo(vm, list, flags) < 0)
+        if (qemuDomainGetSEVInfo(vm, list) < 0)
             goto cleanup;
         break;
     case VIR_DOMAIN_LAUNCH_SECURITY_PV:
