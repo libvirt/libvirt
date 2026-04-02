@@ -3234,6 +3234,12 @@ doCoreDump(virQEMUDriver *driver,
     return ret;
 }
 
+#define QEMU_DOMAIN_CORE_DUMP_FLAGS \
+    VIR_DUMP_CRASH | \
+    VIR_DUMP_BYPASS_CACHE | \
+    VIR_DUMP_RESET | \
+    VIR_DUMP_MEMORY_ONLY
+
 
 static int
 qemuDomainCoreDumpWithFormat(virDomainPtr dom,
@@ -3248,9 +3254,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     int ret = -1;
     virObjectEvent *event = NULL;
 
-    virCheckFlags(VIR_DUMP_CRASH |
-                  VIR_DUMP_BYPASS_CACHE | VIR_DUMP_RESET |
-                  VIR_DUMP_MEMORY_ONLY, -1);
+    virCheckFlags(QEMU_DOMAIN_CORE_DUMP_FLAGS, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
@@ -3343,6 +3347,8 @@ qemuDomainCoreDump(virDomainPtr dom,
                    const char *path,
                    unsigned int flags)
 {
+    virCheckFlags(QEMU_DOMAIN_CORE_DUMP_FLAGS, -1);
+
     return qemuDomainCoreDumpWithFormat(dom, path,
                                         VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,
                                         flags);
