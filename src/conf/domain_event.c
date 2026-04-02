@@ -2537,9 +2537,7 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
         return -1;
 
     if (flags != -1)
-        virCheckFlags(VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX |
-                      VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE,
-                      -1);
+        virCheckFlags(VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_FLAGS, -1);
     data = g_new0(virDomainQemuMonitorEventData, 1);
     data->flags = flags;
     if (event && flags != -1) {

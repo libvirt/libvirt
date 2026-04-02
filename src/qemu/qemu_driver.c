@@ -16358,6 +16358,8 @@ qemuConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
     virQEMUDriver *driver = conn->privateData;
     int ret = -1;
 
+    virCheckFlags(VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_FLAGS, -1);
+
     if (virConnectDomainQemuMonitorEventRegisterEnsureACL(conn) < 0)
         return -1;
 

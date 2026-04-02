@@ -340,6 +340,11 @@ virDomainEventStateDeregister(virConnectPtr conn,
                               virConnectDomainEventCallback callback)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+
+#define VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_FLAGS \
+    VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX | \
+    VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE
+
 int
 virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
                                          virObjectEventState *state,
