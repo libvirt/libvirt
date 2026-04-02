@@ -13726,6 +13726,9 @@ qemuDomainBackupGetXMLDesc(virDomainPtr domain,
 }
 
 
+#define QEMU_DOMAIN_MONITOR_COMMAND_FLAGS \
+    VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP
+
 static int
 qemuDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
                                       const char *cmd,
@@ -13743,7 +13746,7 @@ qemuDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
     bool hmp;
     int fd = -1;
 
-    virCheckFlags(VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP, -1);
+    virCheckFlags(QEMU_DOMAIN_MONITOR_COMMAND_FLAGS, -1);
 
     /* currently we don't pass back any fds */
     if (outfds)
@@ -13797,6 +13800,8 @@ qemuDomainQemuMonitorCommand(virDomainPtr domain,
                              char **result,
                              unsigned int flags)
 {
+    virCheckFlags(QEMU_DOMAIN_MONITOR_COMMAND_FLAGS, -1);
+
     return qemuDomainQemuMonitorCommandWithFiles(domain, cmd, 0, NULL, NULL, NULL, result, flags);
 }
 
