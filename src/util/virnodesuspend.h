@@ -24,7 +24,6 @@
 #include "internal.h"
 
 int virNodeSuspend(unsigned int target,
-                   unsigned long long duration,
-                   unsigned int flags);
+                   unsigned long long duration);
 
 int virNodeSuspendGetTargetMask(unsigned int *bitmask);

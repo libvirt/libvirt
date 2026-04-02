@@ -138,15 +138,12 @@ static void virNodeSuspendHelper(void *cmdString)
  * operation is still in progress.
  */
 int virNodeSuspend(unsigned int target,
-                   unsigned long long duration,
-                   unsigned int flags)
+                   unsigned long long duration)
 {
     static virThread thread;
     const char *cmdString = NULL;
     unsigned int supported;
     VIR_LOCK_GUARD lock = { NULL };
-
-    virCheckFlags(0, -1);
 
     if (virNodeSuspendGetTargetMask(&supported) < 0)
         return -1;
