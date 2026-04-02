@@ -6126,6 +6126,11 @@ qemuDomainSaveImageGetXMLDesc(virConnectPtr conn, const char *path,
     return ret;
 }
 
+
+#define QEMU_SAVE_IMAGE_DEFINE_FLAGS \
+    VIR_DOMAIN_SAVE_RUNNING | \
+    VIR_DOMAIN_SAVE_PAUSED
+
 static int
 qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
                              const char *dxml, unsigned int flags)
@@ -6138,8 +6143,7 @@ qemuDomainSaveImageDefineXML(virConnectPtr conn, const char *path,
     virQEMUSaveData *data = NULL;
     int state = -1;
 
-    virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED, -1);
+    virCheckFlags(QEMU_SAVE_IMAGE_DEFINE_FLAGS, -1);
 
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
         state = 1;
@@ -6248,6 +6252,8 @@ qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
     virDomainObj *vm;
     g_autofree char *path = NULL;
     int ret = -1;
+
+    virCheckFlags(QEMU_SAVE_IMAGE_DEFINE_FLAGS, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
