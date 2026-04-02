@@ -1043,11 +1043,8 @@ virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
 int
 virHostCPUGetStats(int cpuNum G_GNUC_UNUSED,
                    virNodeCPUStatsPtr params G_GNUC_UNUSED,
-                   int *nparams G_GNUC_UNUSED,
-                   unsigned int flags)
+                   int *nparams G_GNUC_UNUSED)
 {
-    virCheckFlags(0, -1);
-
 #ifdef __linux__
     {
         int ret;
@@ -1144,13 +1141,10 @@ virHostCPUGetOnlineBitmap(void)
 
 int
 virHostCPUGetMap(unsigned char **cpumap,
-                 unsigned int *online,
-                 unsigned int flags)
+                 unsigned int *online)
 {
     g_autoptr(virBitmap) cpus = NULL;
     int ncpus = virHostCPUGetCount();
-
-    virCheckFlags(0, -1);
 
     if (!cpumap && !online)
         return ncpus;

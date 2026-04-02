@@ -16390,10 +16390,12 @@ qemuNodeGetCPUStats(virConnectPtr conn,
                     int *nparams,
                     unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (virNodeGetCPUStatsEnsureACL(conn) < 0)
         return -1;
 
-    return virHostCPUGetStats(cpuNum, params, nparams, flags);
+    return virHostCPUGetStats(cpuNum, params, nparams);
 }
 
 
@@ -16471,10 +16473,12 @@ qemuNodeGetCPUMap(virConnectPtr conn,
                   unsigned int *online,
                   unsigned int flags)
 {
+    virCheckFlags(0, -1);
+
     if (virNodeGetCPUMapEnsureACL(conn) < 0)
         return -1;
 
-    return virHostCPUGetMap(cpumap, online, flags);
+    return virHostCPUGetMap(cpumap, online);
 }
 
 

@@ -1849,7 +1849,9 @@ openvzNodeGetCPUStats(virConnectPtr conn G_GNUC_UNUSED,
                       int *nparams,
                       unsigned int flags)
 {
-    return virHostCPUGetStats(cpuNum, params, nparams, flags);
+    virCheckFlags(0, -1);
+
+    return virHostCPUGetStats(cpuNum, params, nparams);
 }
 
 
@@ -1890,7 +1892,9 @@ openvzNodeGetCPUMap(virConnectPtr conn G_GNUC_UNUSED,
                     unsigned int *online,
                     unsigned int flags)
 {
-    return virHostCPUGetMap(cpumap, online, flags);
+    virCheckFlags(0, -1);
+
+    return virHostCPUGetMap(cpumap, online);
 }
 
 

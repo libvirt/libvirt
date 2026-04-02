@@ -249,7 +249,7 @@ linuxTestHostCPUGetMap(const void *data G_GNUC_UNUSED)
 {
     g_autofree unsigned char *cpumap = NULL;
 
-    int ncpus = virHostCPUGetMap(&cpumap, NULL, 0);
+    int ncpus = virHostCPUGetMap(&cpumap, NULL);
 
     g_autoptr(virBitmap) actual = virBitmapNewData(cpumap, VIR_DIV_UP(ncpus, 8));
     g_autoptr(virBitmap) expected = NULL;

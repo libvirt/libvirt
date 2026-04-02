@@ -36,8 +36,7 @@ struct _virHostCPUTscInfo {
 
 int virHostCPUGetStats(int cpuNum,
                        virNodeCPUStatsPtr params,
-                       int *nparams,
-                       unsigned int flags);
+                       int *nparams);
 
 bool virHostCPUHasBitmap(void);
 virBitmap *virHostCPUGetPresentBitmap(void);
@@ -49,8 +48,7 @@ int virHostCPUGetCount(void);
 int virHostCPUGetThreadsPerSubcore(virArch arch) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUGetMap(unsigned char **cpumap,
-                     unsigned int *online,
-                     unsigned int flags);
+                     unsigned int *online);
 int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *cpus,
                       unsigned int *mhz,
