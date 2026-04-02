@@ -7423,9 +7423,6 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, -1);
-
     cfg = virQEMUDriverGetConfig(driver);
 
     /* The config and live post processing address auto-generation algorithms
@@ -7517,6 +7514,9 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
@@ -7666,9 +7666,6 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
     g_autoptr(virDomainDef) vmdef = NULL;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, -1);
-
     cfg = virQEMUDriverGetConfig(driver);
 
     if ((flags & VIR_DOMAIN_AFFECT_CONFIG) &&
@@ -7801,6 +7798,9 @@ qemuDomainDetachDeviceFlags(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
