@@ -13454,6 +13454,9 @@ qemuDomainCheckpointCreateXML(virDomainPtr domain,
     virDomainObj *vm = NULL;
     virDomainCheckpointPtr checkpoint = NULL;
 
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
+                  VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE, NULL);
+
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
@@ -13595,6 +13598,10 @@ qemuDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
     virDomainObj *vm = NULL;
     char *xml = NULL;
 
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_XML_SECURE |
+                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN |
+                  VIR_DOMAIN_CHECKPOINT_XML_SIZE, NULL);
+
     if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
         return NULL;
 
@@ -13615,6 +13622,10 @@ qemuDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
 {
     virDomainObj *vm = NULL;
     int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
+                  VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
 
     if (!(vm = qemuDomObjFromCheckpoint(checkpoint)))
         return -1;

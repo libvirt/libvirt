@@ -582,9 +582,6 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainCheckpointDef) def = NULL;
 
-    virCheckFlags(VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE |
-                  VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE, NULL);
-
     if (redefine) {
         parse_flags |= VIR_DOMAIN_CHECKPOINT_PARSE_REDEFINE;
         update_current = false;
@@ -783,10 +780,6 @@ qemuCheckpointGetXMLDesc(virDomainObj *vm,
     virDomainCheckpointDef *chkdef;
     unsigned int format_flags;
 
-    virCheckFlags(VIR_DOMAIN_CHECKPOINT_XML_SECURE |
-                  VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN |
-                  VIR_DOMAIN_CHECKPOINT_XML_SIZE, NULL);
-
     if (!(chk = qemuCheckpointObjFromCheckpoint(vm, checkpoint)))
         return NULL;
 
@@ -846,10 +839,6 @@ qemuCheckpointDelete(virDomainObj *vm,
     virQEMUMomentRemove rem;
     struct virQEMUCheckpointReparent rep;
     bool metadata_only = !!(flags & VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY);
-
-    virCheckFlags(VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN |
-                  VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
-                  VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         return -1;
