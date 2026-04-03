@@ -434,30 +434,6 @@ virLogFormatString(char **msg,
 
 
 static void
-virLogVersionString(const char **rawmsg,
-                    char **msg)
-{
-    *rawmsg = VIR_LOG_VERSION_STRING;
-    virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, VIR_LOG_VERSION_STRING);
-}
-
-/* Similar to virGetHostname() but avoids use of error
- * reporting APIs or logging APIs, to prevent recursion
- */
-static void
-virLogHostnameString(char **rawmsg,
-                     char **msg)
-{
-    char *hoststr;
-
-    hoststr = g_strdup_printf("hostname: %s", g_get_host_name());
-
-    virLogFormatString(msg, 0, NULL, VIR_LOG_INFO, hoststr);
-    *rawmsg = hoststr;
-}
-
-
-static void
 virLogSourceUpdate(virLogSource *source)
 {
     virLogLock();
@@ -476,6 +452,34 @@ virLogSourceUpdate(virLogSource *source)
         source->serial = virLogFiltersSerial;
     }
     virLogUnlock();
+}
+
+
+/**
+ * virLogOneInitMsg:
+ *
+ *  @str:    the "raw" form of the string that's going to be logged
+ *
+ * (the args are all described in the caller - virLogToOneTarget()
+ * @timestamp,@outputFunc, @data
+ *
+ * send one "init message" (the lines that are at the beginning of the
+ * log when a new daemon starts) to one target. This just creates the
+ * "fancy" version of the string with thread-id and priority, and
+ * sends that, along with the "raw" version of the string, to the log
+ * target at INFO level.
+ */
+static void
+virLogOneInitMsg(const char *timestamp,
+                 const char *str,
+                 virLogOutputFunc outputFunc,
+                 void *data)
+{
+    g_autofree char *msg = NULL;
+
+    virLogFormatString(&msg, 0, NULL, VIR_LOG_INFO, str);
+    outputFunc(&virLogSelf, VIR_LOG_INFO, __FILE__, __LINE__, __func__,
+               timestamp, NULL, str, msg, data);
 }
 
 
@@ -522,24 +526,17 @@ virLogToOneTarget(virLogSource *source,
                   bool *needInit)
 {
     if (*needInit) {
-        const char *rawinitmsg;
-        char *hoststr = NULL;
-        char *initmsg = NULL;
+        g_autofree char *hoststr = NULL;
 
-        virLogVersionString(&rawinitmsg, &initmsg);
-        outputFunc(&virLogSelf, VIR_LOG_INFO,
-                   __FILE__, __LINE__, __func__,
-                   timestamp, NULL, rawinitmsg, initmsg,
-                   data);
-        VIR_FREE(initmsg);
+        /* put some useful info at the top of the log. Avoid calling
+         * any function that might end up reporting an error or
+         * otherwise logging something, to prevent recursion.
+         */
+        virLogOneInitMsg(timestamp, VIR_LOG_VERSION_STRING, outputFunc, data);
 
-        virLogHostnameString(&hoststr, &initmsg);
-        outputFunc(&virLogSelf, VIR_LOG_INFO,
-                   __FILE__, __LINE__, __func__,
-                   timestamp, NULL, hoststr, initmsg,
-                   data);
-        VIR_FREE(hoststr);
-        VIR_FREE(initmsg);
+        hoststr = g_strdup_printf("hostname: %s", g_get_host_name());
+        virLogOneInitMsg(timestamp, hoststr, outputFunc, data);
+
         *needInit = false;
     }
 
