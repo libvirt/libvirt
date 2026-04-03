@@ -526,6 +526,7 @@ virLogToOneTarget(virLogSource *source,
                   bool *needInit)
 {
     if (*needInit) {
+        uid_t uid = geteuid();
         g_autofree char *hoststr = NULL;
 
         /* put some useful info at the top of the log. Avoid calling
@@ -534,7 +535,8 @@ virLogToOneTarget(virLogSource *source,
          */
         virLogOneInitMsg(timestamp, VIR_LOG_VERSION_STRING, outputFunc, data);
 
-        hoststr = g_strdup_printf("hostname: %s", g_get_host_name());
+        hoststr = g_strdup_printf("hostname: %s, uid: %u",
+                                  g_get_host_name(), (unsigned int)uid);
         virLogOneInitMsg(timestamp, hoststr, outputFunc, data);
 
         *needInit = false;
