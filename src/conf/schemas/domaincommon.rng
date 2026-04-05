@@ -1049,7 +1049,10 @@
           <element name="device">
             <interleave>
               <element name="path">
-                <ref name="absFilePath"/>
+                <choice>
+                  <ref name="absFilePath"/>
+                  <value>*</value>
+                </choice>
               </element>
               <optional>
                 <element name="weight">

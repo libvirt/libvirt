@@ -24,6 +24,7 @@
 #include <config.h>
 #include <sys/utsname.h>
 #include <dirent.h>
+#include <sys/sysctl.h>
 #include <sys/types.h>
 
 #include "viralloc.h"
@@ -334,6 +335,27 @@ bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
 }
 
 
+static void
+bhyveProbeCapsRctl(unsigned int *caps)
+{
+    bool racct_enable;
+    size_t racct_enable_len;
+    g_autofree char *rctl = NULL;
+
+    if (!(rctl = virFindFileInPath("rctl")))
+        return;
+
+    racct_enable_len = sizeof(racct_enable);
+    if (sysctlbyname("kern.racct.enable", &racct_enable,
+                     &racct_enable_len, NULL, 0) < 0)
+        return;
+
+    if (racct_enable)
+        *caps |= BHYVE_CAP_RCTL;
+
+    return;
+}
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -356,6 +378,7 @@ virBhyveProbeCaps(unsigned int *caps)
     if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
         goto out;
 
+    bhyveProbeCapsRctl(caps);
 
  out:
     VIR_FREE(binary);

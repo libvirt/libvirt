@@ -34,6 +34,7 @@
 
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
+#include "bhyve_capabilities.h"
 #include "bhyve_command.h"
 #include "bhyve_firmware.h"
 #include "bhyve_monitor.h"
@@ -130,6 +131,44 @@ bhyveProcessStopHook(struct _bhyveConn *driver,
 
     virHookCall(VIR_HOOK_DRIVER_BHYVE, vm->def->name, op,
                 VIR_HOOK_SUBOP_END, NULL, xml, NULL);
+}
+
+static int
+bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
+{
+    virBlkioDevice *device;
+
+    if (vm->def->blkio.ndevices != 1)
+        return 0;
+
+    if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RCTL) == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Cannot set resource limits: RACCT/RCTL is either not supported or not enabled"));
+        return -1;
+    }
+
+    device = &vm->def->blkio.devices[0];
+
+#define BHYVE_APPLY_RCTL_RULE(field, type, format) \
+    do { \
+        if ((field)) { \
+            g_autofree char *rule = NULL; \
+            g_autoptr(virCommand) cmd = virCommandNewArgList("rctl", "-a", NULL); \
+            virCommandAddArgFormat(cmd, "process:%d:" type ":throttle=" format, \
+                                   vm->pid, (field)); \
+            if (virCommandRun(cmd, NULL) < 0) \
+                return -1; \
+         } \
+    } while (0)
+
+    BHYVE_APPLY_RCTL_RULE(device->riops, "readiops", "%u");
+    BHYVE_APPLY_RCTL_RULE(device->wiops, "writeiops", "%u");
+    BHYVE_APPLY_RCTL_RULE(device->rbps, "readbps", "%llu");
+    BHYVE_APPLY_RCTL_RULE(device->wbps, "writebps", "%llu");
+
+#undef BHYVE_APPLY_RCTL_RULE
+
+    return 0;
 }
 
 static int
@@ -256,6 +295,9 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
 
     if (virDomainObjSave(vm, driver->xmlopt,
                          BHYVE_STATE_DIR) < 0)
+        goto cleanup;
+
+    if (bhyveSetResourceLimits(driver, vm) < 0)
         goto cleanup;
 
     if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_STARTED) < 0)

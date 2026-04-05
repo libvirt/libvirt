@@ -133,6 +133,10 @@ mymain(void)
     DO_TEST_DIFFERENT("slirp");
     DO_TEST_DIFFERENT("virtio-scsi");
     DO_TEST_DIFFERENT("numa");
+    DO_TEST_DIFFERENT("blkiotune");
+    DO_TEST_FAILURE("blkiotune-invalid-device");
+    DO_TEST_FAILURE("blkiotune-weight");
+    DO_TEST_FAILURE("blkiotune-multiple-devices");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");

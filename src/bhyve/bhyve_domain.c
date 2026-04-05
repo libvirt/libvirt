@@ -464,6 +464,26 @@ bhyveDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    if (def->blkio.ndevices > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Per device I/O tuning is not supported"));
+        return -1;
+    } else if (def->blkio.ndevices == 1) {
+        virBlkioDevice *device = &def->blkio.devices[0];
+
+        if (STRNEQ(device->path, "*")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Per device I/O tuning is not supported"));
+            return -1;
+        }
+
+        if (device->weight != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The 'weight' I/O tuning setting does not make sense with '*'"));
+            return -1;
+        }
+    }
+
     if (!def->os.loader)
         return 0;
 

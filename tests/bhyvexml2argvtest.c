@@ -289,6 +289,10 @@ mymain(void)
     DO_TEST_FAILURE("slirp-ip");
     DO_TEST("virtio-scsi");
     DO_TEST("vcpupin");
+    DO_TEST("blkiotune");
+    DO_TEST_FAILURE("blkiotune-invalid-device");
+    DO_TEST_FAILURE("blkiotune-multiple-devices");
+    DO_TEST_FAILURE("blkiotune-weight");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
