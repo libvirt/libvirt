@@ -343,4 +343,19 @@ if conf.has('WITH_SASL')
   )
 endif
 
+# The monolithic libvirt daemon only attempts to load the
+# secrets encryption credentials if the secret driver is enabled
+if conf.has('WITH_SECRETS')
+  secret_dropin_conf = configuration_data({
+    'localstatedir': localstatedir,
+  })
+
+  configure_file(
+    input: 'libvirtd-secret.conf.in',
+    output: '10-secret.conf',
+    configuration: secret_dropin_conf,
+    install_dir: unitdir / 'libvirtd.service.d',
+  )
+endif
+
 remote_inc_dir = include_directories('.')
