@@ -50,9 +50,9 @@ if conf.has('WITH_SECRETS')
     'name': 'virtsecretd',
   }
 
-  virt_secret_init_encryption_conf = configuration_data()
-
-  virt_secret_init_encryption_conf.set('localstatedir', localstatedir)
+  virt_secret_init_encryption_conf = configuration_data({
+    'localstatedir': localstatedir,
+  })
 
   if init_script == 'systemd'
     configure_file(
