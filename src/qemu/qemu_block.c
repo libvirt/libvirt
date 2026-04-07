@@ -433,7 +433,7 @@ static virJSONValue *
 qemuBlockStorageSourceGetNFSProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) server = NULL;
-    virJSONValue *ret = NULL;
+    g_autoptr(virJSONValue) ret = NULL;
 
     if (!(server = qemuBlockStorageSourceBuildJSONNFSServer(&src->hosts[0])))
         return NULL;
@@ -458,7 +458,7 @@ qemuBlockStorageSourceGetNFSProps(virStorageSource *src)
         virJSONValueObjectAdd(&ret, "i:group", src->nfs_gid, NULL) < 0)
         return NULL;
 
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 
