@@ -539,6 +539,43 @@ virLogToOneTarget(virLogSource *source,
                                   g_get_host_name(), (unsigned int)uid);
         virLogOneInitMsg(timestamp, hoststr, outputFunc, data);
 
+        /* This info is only relevant when running as something other than root */
+        if (uid != 0) {
+            g_autofree char *envHOME = NULL;
+            g_autofree char *envXDG_RUNTIME_DIR = NULL;
+            g_autofree char *envXDG_CONFIG_HOME = NULL;
+            g_autofree char *envXDG_CACHE_HOME = NULL;
+
+            g_autofree char *envstr1 = NULL;
+            g_autofree char *envstr2 = NULL;
+            g_autofree char *envstr3 = NULL;
+            g_autofree char *envstr4 = NULL;
+
+            if (!(envHOME = g_strdup(g_getenv("HOME"))))
+                envHOME = g_strdup("(unset)");
+            if (!(envXDG_RUNTIME_DIR = g_strdup(g_getenv("XDG_RUNTIME_DIR"))))
+                envXDG_RUNTIME_DIR = g_strdup("(unset)");
+            if (!(envXDG_CONFIG_HOME = g_strdup(g_getenv("XDG_CONFIG_HOME"))))
+                envXDG_CONFIG_HOME = g_strdup("(unset)");
+            if (!(envXDG_CACHE_HOME = g_strdup(g_getenv("XDG_CACHE_HOME"))))
+                envXDG_CACHE_HOME = g_strdup("(unset)");
+
+            envstr1 = g_strdup_printf("home dir: '%s' (HOME='%s')",
+                                      g_get_home_dir(), envHOME);
+            virLogOneInitMsg(timestamp, envstr1, outputFunc, data);
+
+            envstr2 = g_strdup_printf("runtime dir: '%s' (XDG_RUNTIME_DIR='%s')",
+                                      g_get_user_runtime_dir(), envXDG_RUNTIME_DIR);
+            virLogOneInitMsg(timestamp, envstr2, outputFunc, data);
+
+            envstr3 = g_strdup_printf("config dir: '%s' (XDG_CONFIG_HOME='%s')",
+                                      g_get_user_config_dir(), envXDG_CONFIG_HOME);
+            virLogOneInitMsg(timestamp, envstr3, outputFunc, data);
+
+            envstr4 = g_strdup_printf("log dir: '%s' (XDG_CACHE_HOME='%s')",
+                                      g_get_user_cache_dir(), envXDG_CACHE_HOME);
+            virLogOneInitMsg(timestamp, envstr4, outputFunc, data);
+        }
         *needInit = false;
     }
 
