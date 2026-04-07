@@ -183,7 +183,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(nodeDeviceEvent, nodeDeviceEventFree);
   */
 static int nodeDeviceEventSubmit(nodeDeviceEventType eventType, void *data, virFreeCallback dataFreeFunc)
 {
-    nodeDeviceEvent *event = g_new0(nodeDeviceEvent, 1);
+    nodeDeviceEvent *event = NULL;
     udevEventData *priv = NULL;
 
     if (!driver)
@@ -191,6 +191,7 @@ static int nodeDeviceEventSubmit(nodeDeviceEventType eventType, void *data, virF
 
     priv = driver->privateData;
 
+    event = g_new0(nodeDeviceEvent, 1);
     event->eventType = eventType;
     event->data = data;
     event->dataFreeFunc = dataFreeFunc;
