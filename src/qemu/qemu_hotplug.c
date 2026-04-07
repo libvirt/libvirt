@@ -3808,6 +3808,12 @@ qemuDomainChangeNet(virQEMUDriver *driver,
         goto cleanup;
     }
 
+    if (olddev->backend.type != newdev->backend.type) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cannot change backend type of network interface"));
+        goto cleanup;
+    }
+
     /* Check individual attributes for changes that can't be done to a
      * live netdev. These checks *mostly* go in order of the
      * declarations in virDomainNetDef in order to assure nothing is
