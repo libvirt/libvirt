@@ -20579,6 +20579,8 @@ qemuDomainSetThrottleGroup(virDomainPtr dom,
     virDomainObjEndJob(vm);
 
  cleanup:
+    VIR_FREE(info.group_name);
+    VIR_FREE(conf_info.group_name);
     virDomainObjEndAPI(&vm);
     virTypedParamsFree(eventParams, eventNparams);
     return ret;
