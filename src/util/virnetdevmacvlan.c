@@ -160,7 +160,6 @@ virNetDevMacVLanTapOpen(const char *ifname,
                         int *tapfd,
                         size_t tapfdSize)
 {
-    int retries = 10;
     int ret = -1;
     int ifindex;
     size_t i = 0;
@@ -174,20 +173,13 @@ virNetDevMacVLanTapOpen(const char *ifname,
     for (i = 0; i < tapfdSize; i++) {
         int fd = -1;
 
-        while (fd < 0) {
-            if ((fd = open(tapname, O_RDWR)) >= 0) {
-                tapfd[i] = fd;
-            } else if (retries-- > 0) {
-                /* may need to wait for udev to be done */
-                g_usleep(20000);
-            } else {
-                /* However, if haven't succeeded, quit. */
-                virReportSystemError(errno,
-                                     _("cannot open macvtap tap device %1$s"),
-                                     tapname);
-                goto cleanup;
-            }
+        if ((fd = open(tapname, O_RDWR)) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot open macvtap tap device %1$s"),
+                                 tapname);
+            goto cleanup;
         }
+        tapfd[i] = fd;
     }
 
     ret = 0;
