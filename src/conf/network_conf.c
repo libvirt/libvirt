@@ -2065,8 +2065,8 @@ static int
 virNetworkIPDefFormat(virBuffer *buf,
                       const virNetworkIPDef *def)
 {
-    virBuffer ipAttrBuf = VIR_BUFFER_INITIALIZER;
-    virBuffer ipChildBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) ipAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) ipChildBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (def->family)
         virBufferAsprintf(&ipAttrBuf, " family='%s'", def->family);
@@ -2093,12 +2093,12 @@ virNetworkIPDefFormat(virBuffer *buf,
     virBufferEscapeString(&ipChildBuf, "<tftp root='%s'/>\n",
                           def->tftproot);
     if ((def->nranges || def->nhosts)) {
-        virBuffer dhcpChildBuf = VIR_BUFFER_INIT_CHILD(&ipChildBuf);
+        g_auto(virBuffer) dhcpChildBuf = VIR_BUFFER_INIT_CHILD(&ipChildBuf);
         size_t i;
 
         for (i = 0; i < def->nranges; i++) {
-            virBuffer rangeAttrBuf = VIR_BUFFER_INITIALIZER;
-            virBuffer rangeChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
+            g_auto(virBuffer) rangeAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) rangeChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
             virSocketAddrRange addr = def->ranges[i].addr;
             virNetworkDHCPLeaseTimeDef *lease = def->ranges[i].lease;
             g_autofree char *saddr = NULL;
@@ -2125,8 +2125,8 @@ virNetworkIPDefFormat(virBuffer *buf,
             virXMLFormatElement(&dhcpChildBuf, "range", &rangeAttrBuf, &rangeChildBuf);
         }
         for (i = 0; i < def->nhosts; i++) {
-            virBuffer hostAttrBuf = VIR_BUFFER_INITIALIZER;
-            virBuffer hostChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
+            g_auto(virBuffer) hostAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) hostChildBuf = VIR_BUFFER_INIT_CHILD(&dhcpChildBuf);
             virNetworkDHCPLeaseTimeDef *lease = def->hosts[i].lease;
 
             if (def->hosts[i].mac)
@@ -2155,7 +2155,7 @@ virNetworkIPDefFormat(virBuffer *buf,
             virXMLFormatElement(&dhcpChildBuf, "host", &hostAttrBuf, &hostChildBuf);
         }
         if (def->bootfile) {
-            virBuffer bootpAttrBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) bootpAttrBuf = VIR_BUFFER_INITIALIZER;
 
             virBufferEscapeString(&bootpAttrBuf, " file='%s'", def->bootfile);
             if (VIR_SOCKET_ADDR_VALID(&def->bootserver)) {
