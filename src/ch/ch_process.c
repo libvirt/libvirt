@@ -548,7 +548,7 @@ static char *
 chSocketRecv(int sock, bool use_timeout)
 {
     struct pollfd pfds[1];
-    char *buf = NULL;
+    g_autofree char *buf = NULL;
     size_t buf_len = 1024;
     int timeout = PKT_TIMEOUT_MS;
     int ret;
