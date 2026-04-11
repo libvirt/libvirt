@@ -16434,6 +16434,8 @@ qemuDomainGetHostnameLease(virDomainObj *vm,
     size_t i, j;
     int ret = -1;
 
+    *hostname = NULL;
+
     if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
         return -1;
 
@@ -16471,7 +16473,7 @@ qemuDomainGetHostnameLease(virDomainObj *vm,
         VIR_FREE(leases);
 
         if (*hostname)
-            goto endjob;
+            break;
     }
 
     ret = 0;
