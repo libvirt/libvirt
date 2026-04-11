@@ -1846,6 +1846,141 @@ bhyveDomainGetVcpuPinInfo(virDomainPtr domain,
     return ret;
 }
 
+
+static int
+bhyveDomainInterfaceAddresses(virDomainPtr domain,
+                              virDomainInterfacePtr **ifaces,
+                              unsigned int source,
+                              unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainInterfaceAddressesEnsureACL(domain->conn, vm->def, source) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    switch (source) {
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
+        ret = virDomainNetDHCPInterfaces(vm->def, ifaces);
+        break;
+
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unsupported IP address data source %1$d"),
+                       source);
+        break;
+
+    default:
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Unknown IP address data source %1$d"),
+                       source);
+        break;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
+bhyveDomainGetHostnameLease(virDomainObj *vm,
+                            char **hostname)
+{
+    char macaddr[VIR_MAC_STRING_BUFLEN];
+    g_autoptr(virConnect) conn = NULL;
+    virNetworkDHCPLeasePtr *leases = NULL;
+    int n_leases;
+    size_t i, j;
+    int ret = -1;
+
+    *hostname = NULL;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!(conn = virGetConnectNetwork()))
+        goto endjob;
+
+    for (i = 0; i < vm->def->nnets; i++) {
+        g_autoptr(virNetwork) network = NULL;
+        virDomainNetDef *net = vm->def->nets[i];
+
+        if (net->type != VIR_DOMAIN_NET_TYPE_NETWORK)
+            continue;
+
+        virMacAddrFormat(&net->mac, macaddr);
+        network = virNetworkLookupByName(conn, net->data.network.name);
+
+        if (!network)
+            goto endjob;
+
+        if ((n_leases = virNetworkGetDHCPLeases(network, macaddr,
+                                                &leases, 0)) < 0)
+            goto endjob;
+
+        for (j = 0; j < n_leases; j++) {
+            virNetworkDHCPLeasePtr lease = leases[j];
+            if (lease->hostname && !*hostname)
+                *hostname = g_strdup(lease->hostname);
+
+            virNetworkDHCPLeaseFree(lease);
+        }
+
+        VIR_FREE(leases);
+
+        if (*hostname)
+            break;
+    }
+
+    ret = 0;
+ endjob:
+    virDomainObjEndJob(vm);
+    return ret;
+}
+
+static char *
+bhyveDomainGetHostname(virDomainPtr domain,
+                       unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    char *hostname = NULL;
+
+    virCheckFlags(VIR_DOMAIN_GET_HOSTNAME_LEASE, NULL);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return NULL;
+
+    if (virDomainGetHostnameEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (bhyveDomainGetHostnameLease(vm, &hostname) < 0)
+        goto cleanup;
+
+    if (!hostname) {
+        virReportError(VIR_ERR_NO_HOSTNAME,
+                       _("no hostname found for domain %1$s"),
+                       vm->def->name);
+        goto cleanup;
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return hostname;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -1912,6 +2047,8 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetVcpusFlags = bhyveDomainGetVcpusFlags, /* 12.1.0 */
     .domainGetMaxVcpus = bhyveDomainGetMaxVcpus, /* 12.1.0 */
     .domainGetVcpuPinInfo = bhyveDomainGetVcpuPinInfo, /* 12.1.0 */
+    .domainInterfaceAddresses = bhyveDomainInterfaceAddresses, /* 12.3.0 */
+    .domainGetHostname = bhyveDomainGetHostname, /* 12.3.0 */
 };
 
 
