@@ -1192,6 +1192,11 @@ get_files(vahControl * ctl)
                                      vhu->type) != 0)
                 return -1;
         }
+
+        if (net->tapfdpath) {
+            if (vah_add_file(&buf, net->tapfdpath, "rwk") != 0)
+                return -1;
+        }
     }
 
     for (i = 0; i < ctl->def->nmems; i++) {
