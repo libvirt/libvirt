@@ -156,6 +156,7 @@ load_profile(virSecurityManager *mgr G_GNUC_UNUSED,
 
     if (virDomainDefFormatInternal(def, NULL, &buf,
                                    VIR_DOMAIN_DEF_FORMAT_SECURE |
+                                   VIR_DOMAIN_DEF_FORMAT_STATUS |
                                    VIR_DOMAIN_DEF_FORMAT_VOLUME_TRANSLATED) < 0)
         return -1;
 
