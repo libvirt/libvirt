@@ -158,25 +158,25 @@ int virNetDevMacVLanDelete(const char *ifname)
 int
 virNetDevMacVLanTapOpen(const char *ifname,
                         int *tapfd,
-                        size_t tapfdSize)
+                        size_t tapfdSize,
+                        char **tapname)
 {
     int ret = -1;
     int ifindex;
     size_t i = 0;
-    g_autofree char *tapname = NULL;
 
     if (virNetDevGetIndex(ifname, &ifindex) < 0)
         return -1;
 
-    tapname = g_strdup_printf("/dev/tap%d", ifindex);
+    *tapname = g_strdup_printf("/dev/tap%d", ifindex);
 
     for (i = 0; i < tapfdSize; i++) {
         int fd = -1;
 
-        if ((fd = open(tapname, O_RDWR)) < 0) {
+        if ((fd = open(*tapname, O_RDWR)) < 0) {
             virReportSystemError(errno,
                                  _("cannot open macvtap tap device %1$s"),
-                                 tapname);
+                                 *tapname);
             goto cleanup;
         }
         tapfd[i] = fd;
@@ -186,6 +186,7 @@ virNetDevMacVLanTapOpen(const char *ifname,
 
  cleanup:
     if (ret < 0) {
+        g_clear_pointer(tapname, g_free);
         while (i--)
             VIR_FORCE_CLOSE(tapfd[i]);
     }
@@ -657,6 +658,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
                                        char *stateDir,
                                        int *tapfd,
                                        size_t tapfdSize,
+                                       char **tapfdpath,
                                        unsigned int flags)
 {
     g_autofree char *ifname = NULL;
@@ -727,7 +729,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(ifname, tapfd, tapfdSize) < 0)
+        if (virNetDevMacVLanTapOpen(ifname, tapfd, tapfdSize, tapfdpath) < 0)
             goto disassociate_exit;
 
         if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0)
@@ -886,7 +888,8 @@ int virNetDevMacVLanDelete(const char *ifname G_GNUC_UNUSED)
 int
 virNetDevMacVLanTapOpen(const char *ifname G_GNUC_UNUSED,
                         int *tapfd G_GNUC_UNUSED,
-                        size_t tapfdSize G_GNUC_UNUSED)
+                        size_t tapfdSize G_GNUC_UNUSED,
+                        char **tapname G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
@@ -915,6 +918,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname G_GNUC_UNUSED,
                                            char *stateDir G_GNUC_UNUSED,
                                            int *tapfd G_GNUC_UNUSED,
                                            size_t tapfdSize G_GNUC_UNUSED,
+                                           char **tapfdpath G_GNUC_UNUSED,
                                            unsigned int unused_flags G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

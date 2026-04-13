@@ -1212,6 +1212,7 @@ struct _virDomainNetDef {
     char *downscript;
     char *domain_name; /* backend domain name */
     char *ifname; /* interface name on the host (<target dev='x'/>) */
+    char *tapfdpath; /* Path in /dev for macvtap (<tapfd path='/dev/tapXX'/>) */
     virTristateBool managed_tap;
     virNetDevIPInfo hostIP;
     char *ifname_guest_actual;

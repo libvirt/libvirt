@@ -81,6 +81,7 @@ qemuInterfaceDirectConnect(virDomainDef *def,
                                                &res_ifname,
                                                vmop, cfg->stateDir,
                                                tapfd, tapfdSize,
+                                               &net->tapfdpath,
                                                macvlan_create_flags) < 0)
         goto cleanup;
 

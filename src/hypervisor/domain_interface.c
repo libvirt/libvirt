@@ -111,7 +111,7 @@ virDomainInterfaceEthernetConnect(virDomainDef *def,
 
         if (virNetDevMacVLanIsMacvtap(net->ifname)) {
             auditdev = net->ifname;
-            if (virNetDevMacVLanTapOpen(net->ifname, tapfd, tapfdSize) < 0)
+            if (virNetDevMacVLanTapOpen(net->ifname, tapfd, tapfdSize, &net->tapfdpath) < 0)
                 goto cleanup;
             if (virNetDevMacVLanTapSetup(tapfd, tapfdSize,
                                          virDomainInterfaceIsVnetCompatModel(net)) < 0) {

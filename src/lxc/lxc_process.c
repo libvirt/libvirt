@@ -379,6 +379,7 @@ virLXCProcessSetupInterfaceDirect(virLXCDriver *driver,
             VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
             cfg->stateDir,
             NULL, 0,
+            &net->tapfdpath,
             macvlan_create_flags) < 0)
         return NULL;
 
