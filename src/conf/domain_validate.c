@@ -786,6 +786,14 @@ virDomainDiskDefValidate(const virDomainDef *def,
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         if (virDomainDiskDefSourceLUNValidate(disk->src) < 0)
             return -1;
+
+        if (disk->blockio.logical_block_size > 0 ||
+            disk->blockio.physical_block_size > 0 ||
+            disk->blockio.discard_granularity_specified) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("blockio is not supported with device='lun'"));
+            return -1;
+        }
     } else {
         if (disk->src->pr) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
