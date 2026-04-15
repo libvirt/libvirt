@@ -9834,7 +9834,7 @@ Example configuration:
    <domain>
      ...
      <launchSecurity type='tdx'>
-       <policy>0x10000001</policy>
+       <policy>0x10000000</policy>
        <mrConfigId>xxx</mrConfigId>
        <mrOwner>xxx</mrOwner>
        <mrOwnerConfig>xxx</mrOwnerConfig>
@@ -9855,7 +9855,9 @@ Example configuration:
    ====== ====================================================================================
    Bit(s) Description
    ====== ====================================================================================
-   0      Guest TD runs in off-TD debug mode when set
+   0      Activate off-TD debug when set, i.e., activate debug from outside the TD. Its VCPU
+          state and private memory are accessible by the host VMM.
+          Deactivate off-TD debug when clear, i.e., deactivate debug from outside the TD.
    1:27   reserved
    28     Disable EPT violation conversion to #VE on guest TD access of PENDING pages when set
    29:63  reserved
