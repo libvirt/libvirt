@@ -633,6 +633,8 @@ virNodeGetCPUStats(virConnectPtr conn,
  *     The buffers memory usage.(KB)
  * VIR_NODE_MEMORY_STATS_CACHED:
  *     The cached memory usage.(KB)
+ * VIR_NODE_MEMORY_STATS_AVAILABLE:
+ *     The available memory usage.(KB)
  *
  * Returns -1 in case of error, 0 in case of success.
  *

@@ -365,6 +365,16 @@ typedef enum {
 # define VIR_NODE_MEMORY_STATS_CACHED "cached"
 
 /**
+ * VIR_NODE_MEMORY_STATS_AVAILABLE:
+ *
+ * Macro for the available memory: On Linux, it is only returned in case of
+ * VIR_NODE_MEMORY_STATS_ALL_CELLS.
+ *
+ * Since: 12.3.0
+ */
+# define VIR_NODE_MEMORY_STATS_AVAILABLE "available"
+
+/**
  * virNodeMemoryStats:
  *
  * a virNodeMemoryStats is a structure filled by virNodeGetMemoryStats()

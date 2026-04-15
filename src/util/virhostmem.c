@@ -136,7 +136,7 @@ virHostMemGetStatsFreeBSD(virNodeMemoryStatsPtr params,
 # define SYSFS_MEMORY_SHARED_PATH "/sys/kernel/mm/ksm"
 # define SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX 8192
 
-# define LINUX_NB_MEMORY_STATS_ALL 4
+# define LINUX_NB_MEMORY_STATS_ALL 5
 # define LINUX_NB_MEMORY_STATS_CELL 2
 
 static int
@@ -159,6 +159,7 @@ virHostMemGetStatsLinux(FILE *meminfo,
         {"MemFree:",  VIR_NODE_MEMORY_STATS_FREE},
         {"Buffers:",  VIR_NODE_MEMORY_STATS_BUFFERS},
         {"Cached:",   VIR_NODE_MEMORY_STATS_CACHED},
+        {"MemAvailable:",   VIR_NODE_MEMORY_STATS_AVAILABLE},
         {NULL,        NULL}
     };
 
