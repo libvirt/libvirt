@@ -599,6 +599,7 @@ static int virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
 static int virVMXParseParallel(virVMXContext *ctx, virConf *conf, int port,
                                virDomainChrDef **def);
 static int virVMXParseSVGA(virConf *conf, virDomainVideoDef **def);
+static int virVMXParseTPM(virConf *conf, virDomainTPMDef **def);
 
 static int virVMXFormatVNC(virDomainGraphicsDef *def, virBuffer *buffer);
 static int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDef *def,
@@ -1403,6 +1404,7 @@ virVMXParseConfig(virVMXContext *ctx,
     char *guestOS = NULL;
     bool smbios_reflecthost = false;
     bool uefi_secureboot = false;
+    bool vtpm_present = false;
     int controller;
     int bus;
     int port;
@@ -1938,6 +1940,16 @@ virVMXParseConfig(virVMXContext *ctx,
 
     def->nvideos = 1;
 
+    /* def:tpms */
+    {
+        virDomainTPMDef *tpm = NULL;
+        if (virVMXParseTPM(conf, &tpm) < 0)
+            goto cleanup;
+
+        if (tpm)
+            VIR_APPEND_ELEMENT(def->tpms, def->ntpms, tpm);
+    }
+
     /* def:sounds */
     /* FIXME */
 
@@ -1999,6 +2011,18 @@ virVMXParseConfig(virVMXContext *ctx,
                            firmware);
             goto cleanup;
         }
+    }
+
+    /* vmx: vtpm.present (optional) */
+    if (virVMXGetConfigBoolean(conf, "vtpm.present", 
+        &vtpm_present, false, true) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                        _("Unable to parse vtpm.present"));
+        goto cleanup;
+    }
+    if (vtpm_present) {
+        VIR_DEBUG("Processing vtpm_present: %s", 
+            (vtpm_present == true) ? "yes" : "no");
     }
 
     /* vmx:uefi.secureBoot.enabled */
@@ -3367,6 +3391,32 @@ virVMXParseSVGA(virConf *conf, virDomainVideoDef **def)
     return result;
 }
 
+static int
+virVMXParseTPM(virConf *conf, virDomainTPMDef **def)
+{
+    bool vtpm_present = false;
+
+    if (def == NULL || *def != NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
+        return -1;
+    }
+
+    /* vmx:vtpm.present */
+    if (virVMXGetConfigBoolean(conf, "vtpm.present", &vtpm_present,
+                               false, true) < 0) {
+        return -1;
+    }
+
+    if (!vtpm_present)
+        return 0;
+
+    *def = g_new0(virDomainTPMDef, 1);
+    (*def)->type = VIR_DOMAIN_TPM_TYPE_EMULATOR;
+    (*def)->model = VIR_DOMAIN_TPM_MODEL_CRB;
+    (*def)->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
+
+    return 0;
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
