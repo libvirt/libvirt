@@ -871,7 +871,7 @@ hypervOutputParamReferenceId(WsXmlNodeH node)
 {
     WsXmlNodeH selector_set = NULL;
     WsXmlNodeH selector = NULL;
-    int i = 0;
+    size_t i = 0;
 
     if (node)
         selector_set = ws_xml_find_in_tree(node, XML_NS_WS_MAN, "SelectorSet", TRUE);
@@ -922,7 +922,7 @@ hypervResponseGetOutputParam(hypervPrivate *priv,
     char *provider_ns = NULL;
     const char *rv_str = NULL;
     int return_code;
-    int i = 0;
+    size_t i = 0;
 
     body = ws_xml_get_soap_body(response);
     if (!body) {
