@@ -243,6 +243,8 @@ mymain(void)
 
     DO_TEST("firmware-efi");
 
+    DO_TEST("vtpm");
+
     ctx.datacenterPath = "folder1/folder2/datacenter1";
 
     DO_TEST("datacenterpath");
