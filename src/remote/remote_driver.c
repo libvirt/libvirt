@@ -1394,15 +1394,16 @@ remoteConnectOpen(virConnectPtr conn,
             return VIR_DRV_OPEN_DECLINED;
 
         /* Handle deferring to local drivers if we are dealing with a default
-         * local URI. (Unknown local socket paths may be proxied to a remote
-         * host so they are treated as remote too).
+         * local URI. (Unknown local socket paths and commands may be proxied
+         * to a remote host so they are treated as remote too).
          *
          * Deferring to a local driver is needed if:
          * - the driver is registered in the current daemon
          * - if we are running monolithic libvirtd, in which case we consider
          *   even un-registered drivers as local
          */
-        if (!conn->uri->server && !virURICheckUnixSocket(conn->uri)) {
+        if (!conn->uri->server && !virURICheckUnixSocket(conn->uri) &&
+            !virURICheckExtCommand(conn->uri)) {
             if (virHasDriverForURIScheme(driver))
                 return VIR_DRV_OPEN_DECLINED;
 

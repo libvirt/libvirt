@@ -421,6 +421,38 @@ virURICheckUnixSocket(virURI *uri)
 }
 
 
+/**
+ * virURICheckExtCommand:
+ * @uri: URI to check
+ *
+ * Check if the URI looks like it refers to a user specified command. In such
+ * scenario the command might do proxying to a remote server even though the URI
+ * looks like it is only local.
+ *
+ * The "command" parameter is looked for in case insensitive manner, by design.
+ *
+ * Returns: true if the URI might be proxied to a remote server
+ */
+bool
+virURICheckExtCommand(virURI *uri)
+{
+    size_t i = 0;
+
+    if (!uri->scheme)
+        return false;
+
+    if (STRNEQ_NULLABLE(strchr(uri->scheme, '+'), "+ext"))
+        return false;
+
+    for (i = 0; i < uri->paramsCount; i++) {
+        if (STRCASEEQ(uri->params[i].name, "command"))
+            return true;
+    }
+
+    return false;
+}
+
+
 void
 virURIParamsSetIgnore(virURI *uri,
                       bool ignore,

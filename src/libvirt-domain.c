@@ -3605,11 +3605,13 @@ virDomainMigrateCheckNotLocal(const char *dconnuri)
         return -1;
 
     /*
-     * If someone migrates explicitly to a unix socket, then they have to know
-     * what they are doing and it most probably was not a mistake.
+     * If someone migrates explicitly to a unix socket or an ext command, then
+     * they have to know what they are doing and it most probably was not
+     * a mistake.
      */
     if ((tempuri->server && STRPREFIX(tempuri->server, "localhost")) ||
-        (!tempuri->server && !virURICheckUnixSocket(tempuri))) {
+        (!tempuri->server && !virURICheckUnixSocket(tempuri) &&
+         !virURICheckExtCommand(tempuri))) {
         virReportInvalidArg(dconnuri, "%s",
                             _("Attempt to migrate guest to the same host"));
         return -1;

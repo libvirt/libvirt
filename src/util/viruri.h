@@ -61,6 +61,8 @@ const char *virURIGetParam(virURI *uri, const char *name);
 
 bool virURICheckUnixSocket(virURI *uri);
 
+bool virURICheckExtCommand(virURI *uri);
+
 void virURIParamsSetIgnore(virURI *uri, bool ignore, const char *names[]);
 
 #define VIR_URI_SERVER(uri) ((uri) && (uri)->server ? (uri)->server : "localhost")
