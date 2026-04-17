@@ -822,6 +822,7 @@ static int
 doRemoteOpenExtractURIArgs(virConnectPtr conn,
                            char **name,
                            char **command,
+                           GPtrArray **extArgs,
                            char **sockname,
                            char **authtype,
                            char **sshauth,
@@ -846,6 +847,13 @@ doRemoteOpenExtractURIArgs(virConnectPtr conn,
 
         EXTRACT_URI_ARG_STR("name", *name);
         EXTRACT_URI_ARG_STR("command", *command);
+        if (STRCASEEQ(var->name, "argv")) {
+            if (!*extArgs)
+                *extArgs = g_ptr_array_new_with_free_func(g_free);
+            g_ptr_array_add(*extArgs, g_strdup(var->value));
+            var->ignore = 1;
+            continue;
+        }
         EXTRACT_URI_ARG_STR("socket", *sockname);
         EXTRACT_URI_ARG_STR("auth", *authtype);
         EXTRACT_URI_ARG_STR("sshauth", *sshauth);
@@ -912,6 +920,7 @@ doRemoteOpen(virConnectPtr conn,
     g_autofree char *tls_priority = NULL;
     g_autofree char *name = NULL;
     g_autofree char *command = NULL;
+    g_autoptr(GPtrArray) extArgs = NULL;
     g_autofree char *sockname = NULL;
     g_autofree char *netcat = NULL;
     g_autofree char *port = NULL;
@@ -962,6 +971,7 @@ doRemoteOpen(virConnectPtr conn,
         if (doRemoteOpenExtractURIArgs(conn,
                                        &name,
                                        &command,
+                                       &extArgs,
                                        &sockname,
                                        &authtype,
                                        &sshauth,
@@ -1212,7 +1222,18 @@ doRemoteOpen(virConnectPtr conn,
         break;
 
     case REMOTE_DRIVER_TRANSPORT_EXT: {
-        char const *cmd_argv[] = { command, NULL };
+        size_t nExtArgs = extArgs ? extArgs->len : 0;
+        g_autofree const char **cmd_argv = NULL;
+        size_t idx;
+
+        if (!(cmd_argv = g_new0(const char *, nExtArgs + 2)))
+            goto error;
+
+        cmd_argv[0] = command;
+
+        for (idx = 0; idx < nExtArgs; idx++)
+            cmd_argv[idx + 1] = g_ptr_array_index(extArgs, idx);
+
         if (!(priv->client = virNetClientNewExternal(cmd_argv)))
             goto error;
 
