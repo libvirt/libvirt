@@ -1051,13 +1051,13 @@ struct remote_domain_get_block_io_tune_ret {
         int                        nparams;
 };
 struct remote_domain_set_throttle_group_args {
-	remote_nonnull_domain      dom;
-	remote_nonnull_string      group;
-	struct {
-		u_int              params_len;
-		remote_typed_param * params_val;
-	} params;
-	u_int                      flags;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      group;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
 };
 struct remote_domain_del_throttle_group_args {
         remote_nonnull_domain      dom;
