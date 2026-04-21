@@ -323,6 +323,8 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
         if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA &&
             controller->idx != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Bhyve ISA controller can only have index '0'"));
             return -1;
         } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
             if (controller->opts.vioserial.ports > 16) {
