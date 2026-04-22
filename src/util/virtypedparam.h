@@ -138,8 +138,6 @@ virTypedParamsSerialize(virTypedParameterPtr params,
                         unsigned int *remote_params_len,
                         unsigned int flags);
 
-VIR_ENUM_DECL(virTypedParameter);
-
 char *
 virTypedParamDebugstr(virTypedParameterPtr param);
 

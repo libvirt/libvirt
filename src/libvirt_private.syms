@@ -3657,8 +3657,6 @@ virTPMSwtpmSetupFeatureTypeFromString;
 virTypedParamDebugstr;
 virTypedParameterAssign;
 virTypedParameterToString;
-virTypedParameterTypeFromString;
-virTypedParameterTypeToString;
 virTypedParamListAddBoolean;
 virTypedParamListAddDouble;
 virTypedParamListAddInt;
