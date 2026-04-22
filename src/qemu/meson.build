@@ -42,6 +42,7 @@ qemu_driver_sources = [
   'qemu_vhost_user.c',
   'qemu_vhost_user_gpu.c',
   'qemu_virtiofs.c',
+  'qemu_vnc.c',
 ]
 
 driver_source_files += files(qemu_driver_sources)
