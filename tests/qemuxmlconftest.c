@@ -1832,6 +1832,10 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("graphics-rdp");
 
+    DO_TEST_CAPS_LATEST("graphics-vnc-standalone");
+    DO_TEST_CAPS_LATEST("graphics-vnc-standalone-socket");
+    DO_TEST_CAPS_LATEST("graphics-vnc-standalone-p2p");
+
     DO_TEST_CAPS_LATEST("input-usbmouse");
     DO_TEST_CAPS_LATEST("input-usbtablet");
 
