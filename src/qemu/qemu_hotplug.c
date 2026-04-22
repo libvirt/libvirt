@@ -4542,6 +4542,18 @@ qemuDomainChangeGraphicsPasswords(virDomainObj *vm,
         return qemuRdpSetCredentials(vm, username, password, "");
     }
 
+    if (type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        size_t i;
+
+        for (i = 0; i < vm->def->ngraphics; i++) {
+            virDomainGraphicsDef *gfx = vm->def->graphics[i];
+
+            if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+                QEMU_DOMAIN_GRAPHICS_PRIVATE(gfx)->vnc)
+                return qemuVncSetPassword(vm, password);
+        }
+    }
+
     if (auth->connected)
         connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
 

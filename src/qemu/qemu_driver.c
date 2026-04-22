@@ -41,6 +41,7 @@
 #include "qemu_hotplug.h"
 #include "qemu_monitor.h"
 #include "qemu_passt.h"
+#include "qemu_vnc.h"
 #include "qemu_process.h"
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
@@ -15095,6 +15096,11 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     }
     switch (vm->def->graphics[idx]->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if (QEMU_DOMAIN_GRAPHICS_PRIVATE(vm->def->graphics[idx])->vnc) {
+            ret = qemuVncAddClient(vm, fd,
+                                   (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH) != 0);
+            goto endjob;
+        }
         protocol = "vnc";
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
@@ -15134,6 +15140,25 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     return ret;
 }
 
+
+static int
+qemuSocketPair(int pair[2],
+               virSecurityManager *mgr,
+               virDomainDef *vm)
+{
+    if (qemuSecuritySetSocketLabel(mgr, vm) < 0)
+        return -1;
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) < 0)
+        return -1;
+
+    if (qemuSecurityClearSocketLabel(mgr, vm) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 static int
 qemuDomainOpenGraphicsFD(virDomainPtr dom,
                          unsigned int idx,
@@ -15166,6 +15191,18 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     }
     switch (vm->def->graphics[idx]->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if (QEMU_DOMAIN_GRAPHICS_PRIVATE(vm->def->graphics[idx])->vnc) {
+            if (qemuSocketPair(pair, driver->securityManager, vm->def) < 0)
+                goto cleanup;
+
+            if (qemuVncAddClient(vm, pair[1],
+                                 (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH) != 0) < 0)
+                goto cleanup;
+
+            ret = pair[0];
+            pair[0] = -1;
+            goto cleanup;
+        }
         protocol = "vnc";
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
@@ -15189,13 +15226,7 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (qemuSecuritySetSocketLabel(driver->securityManager, vm->def) < 0)
-        goto cleanup;
-
-    if (socketpair(PF_UNIX, SOCK_STREAM, 0, pair) < 0)
-        goto cleanup;
-
-    if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSocketPair(pair, driver->securityManager, vm->def) < 0)
         goto cleanup;
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
@@ -20578,6 +20609,7 @@ qemuDomainGraphicsReload(virDomainPtr domain,
     int ret = -1;
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
+    size_t j;
 
     virCheckFlagsGoto(0, cleanup);
 
@@ -20618,6 +20650,16 @@ qemuDomainGraphicsReload(virDomainPtr domain,
     }
 
     priv = vm->privateData;
+
+    for (j = 0; j < vm->def->ngraphics; j++) {
+        virDomainGraphicsDef *gfx = vm->def->graphics[j];
+
+        if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            QEMU_DOMAIN_GRAPHICS_PRIVATE(gfx)->vnc) {
+            ret = qemuVncReloadCertificates(vm);
+            goto endjob;
+        }
+    }
 
     qemuDomainObjEnterMonitor(vm);
 
