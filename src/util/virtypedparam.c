@@ -33,7 +33,7 @@
 VIR_ENUM_DECL(virTypedParameter);
 
 VIR_ENUM_IMPL(virTypedParameter,
-              VIR_TYPED_PARAM_LAST,
+              VIR_TYPED_PARAM_UNSIGNED + 1,
               "unknown",
               "int",
               "uint",
@@ -42,6 +42,8 @@ VIR_ENUM_IMPL(virTypedParameter,
               "double",
               "boolean",
               "string",
+              "", /* VIR_TYPED_PARAM_LAST */
+              "uint, ullong", /* VIR_TYPED_PARAM_UNSIGNED */
 );
 
 
@@ -50,7 +52,9 @@ VIR_ENUM_IMPL(virTypedParameter,
  * @param: typed parameter to validate
  * @expected_type: type to look for
  *
- * Validates that @param is a parameter of @expected type.
+ * Validates that @param is a parameter of @expected type. If @expected_type is
+ * VIR_TYPED_PARAM_UNSIGNED, both VIR_TYPED_PARAM_UINT and VIR_TYPED_PARAM_ULLONG
+ * are accepted.
  *
  * Returns 0 on success; -1 on error and reports an error.
  */
@@ -65,7 +69,10 @@ virTypedParamValidateType(virTypedParameterPtr param,
         return -1;
     }
 
-    if (param->type != expected_type) {
+    if (!(param->type == expected_type ||
+          (expected_type == VIR_TYPED_PARAM_UNSIGNED &&
+           (param->type == VIR_TYPED_PARAM_UINT ||
+            param->type == VIR_TYPED_PARAM_ULLONG)))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
                        virTypedParameterTypeToString(expected_type),
@@ -147,9 +154,6 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
         if (STRNEQ(sorted[i].field, keys[j].field)) {
             j++;
         } else {
-            const char *expecttype = virTypedParameterTypeToString(keys[j].type);
-            int type = sorted[i].type;
-
             if (STREQ_NULLABLE(last_name, sorted[i].field) &&
                 !(keys[j].value.i & VIR_TYPED_PARAM_MULTIPLE)) {
                 virReportError(VIR_ERR_INVALID_ARG,
@@ -158,24 +162,9 @@ virTypedParamsValidate(virTypedParameterPtr params, int nparams, ...)
                 return -1;
             }
 
-            if (keys[j].type == VIR_TYPED_PARAM_UNSIGNED &&
-                (type == VIR_TYPED_PARAM_UINT ||
-                 type == VIR_TYPED_PARAM_ULLONG)) {
-                type = VIR_TYPED_PARAM_UNSIGNED;
-                expecttype = "uint, ullong";
-            }
-
-            if (type != keys[j].type) {
-                const char *badtype;
-
-                badtype = virTypedParameterTypeToString(sorted[i].type);
-                if (!badtype)
-                    badtype = virTypedParameterTypeToString(0);
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
-                               badtype, sorted[i].field, expecttype);
+            if (virTypedParamValidateType(sorted + i, keys[j].type) < 0)
                 return -1;
-            }
+
             last_name = sorted[i].field;
             i++;
         }
