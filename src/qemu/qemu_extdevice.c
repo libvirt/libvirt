@@ -247,8 +247,14 @@ qemuExtDevicesStart(virQEMUDriver *driver,
                 return -1;
             continue;
         }
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC: {
+            if (QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics)->vnc) {
+                if (qemuVncStart(vm, graphics) < 0)
+                    return -1;
+            }
+            continue;
+        }
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
@@ -327,9 +333,12 @@ qemuExtDevicesStop(virQEMUDriver *driver,
             qemuRdpStop(vm, graphics);
             continue;
         }
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC: {
+            qemuVncStop(vm, graphics);
+            continue;
+        }
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:

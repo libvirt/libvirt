@@ -8806,6 +8806,8 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics)->vnc)
+                break;
             if (qemuBuildGraphicsVNCCommandLine(cfg, def, cmd,
                                                 graphics) < 0)
                 return -1;

@@ -5601,6 +5601,41 @@ qemuProcessGraphicsSetupRenderNode(virDomainGraphicsDef *graphics,
 }
 
 
+static bool
+qemuHasNonP2PDbusGraphics(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDef *g = def->graphics[i];
+
+        if (g->type == VIR_DOMAIN_GRAPHICS_TYPE_DBUS && !g->data.dbus.p2p)
+            return true;
+    }
+
+    return false;
+}
+
+
+static int
+qemuPrepareGraphicsVnc(virQEMUDriver *driver,
+                       virDomainDef *def,
+                       virDomainGraphicsDef *gfx)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    if (!qemuHasNonP2PDbusGraphics(def))
+        return 0;
+
+    if (!qemuVncAvailable(cfg->qemuVncName))
+        return 0;
+
+    QEMU_DOMAIN_GRAPHICS_PRIVATE(gfx)->vnc = qemuVncNew();
+
+    return 0;
+}
+
+
 static int
 qemuProcessSetupGraphics(virQEMUDriver *driver,
                          virDomainObj *vm,
@@ -5621,6 +5656,10 @@ qemuProcessSetupGraphics(virQEMUDriver *driver,
             return -1;
 
         if (qemuProcessGraphicsSetupDBus(driver, graphics, vm) < 0)
+            return -1;
+
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            qemuPrepareGraphicsVnc(driver, vm->def, graphics) < 0)
             return -1;
     }
 
@@ -6186,7 +6225,6 @@ qemuProcessPrepareGraphics(virDomainObj *vm)
         if (gfx->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP &&
             qemuPrepareGraphicsRdp(priv->driver, gfx) < 0)
             return -1;
-
     }
 
     return 0;
