@@ -56,6 +56,13 @@ int
 virTypedParamValidateType(virTypedParameterPtr param,
                           unsigned int expected_type)
 {
+    if (param->type <= 0 || param->type >= VIR_TYPED_PARAM_LAST) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown type ('%1$d') of parameter '%2$s'"),
+                       param->type, param->field);
+        return -1;
+    }
+
     if (param->type != expected_type) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
