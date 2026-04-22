@@ -129,6 +129,7 @@ module Test_libvirtd_qemu =
 { "pr_helper" = "qemu-pr-helper" }
 { "slirp_helper" = "/usr/bin/slirp-helper" }
 { "qemu_rdp" = "qemu-rdp" }
+{ "qemu_vnc" = "qemu-vnc" }
 { "dbus_daemon" = "dbus-daemon" }
 { "swtpm_user" = "tss" }
 { "swtpm_group" = "tss" }

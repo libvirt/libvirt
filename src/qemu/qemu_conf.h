@@ -199,6 +199,7 @@ struct _virQEMUDriverConfig {
     char *slirpHelperName;
     char *dbusDaemonName;
     char *qemuRdpName;
+    char *qemuVncName;
 
     bool macFilter;
 

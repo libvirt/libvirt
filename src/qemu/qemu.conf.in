@@ -1094,6 +1094,14 @@
 #qemu_rdp = "qemu-rdp"
 
 
+# Path to the standalone qemu-vnc VNC server.
+# When available and both <graphics type='dbus'/> and <graphics type='vnc'/>
+# are configured, libvirt will use qemu-vnc instead of QEMU's built-in VNC.
+# If this is not an absolute path, the program will be searched for
+# in $PATH.
+#qemu_vnc = "qemu-vnc"
+
+
 # Path to the dbus-daemon
 # If this is not an absolute path, the program will be searched for
 # in $PATH.
