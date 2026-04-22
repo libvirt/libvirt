@@ -68,6 +68,17 @@ virTypedParamValidateType(virTypedParameterPtr param,
                           unsigned int expected_type)
     G_GNUC_WARN_UNUSED_RESULT;
 
+struct _virTypedParamValidationTemplate {
+    const char name[VIR_TYPED_PARAM_FIELD_LENGTH];  /* parameter name */
+    unsigned int typeflags;
+};
+typedef struct _virTypedParamValidationTemplate virTypedParamValidationTemplate;
+
+int
+virTypedParamsValidateTemplate(virTypedParameterPtr params,
+                               int nparams,
+                               const virTypedParamValidationTemplate *templates)
+    G_GNUC_WARN_UNUSED_RESULT;
 int
 virTypedParamsValidate(virTypedParameterPtr params,
                        int nparams,
