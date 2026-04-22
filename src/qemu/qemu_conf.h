@@ -112,6 +112,7 @@ struct _virQEMUDriverConfig {
     char *passtStateDir;
     char *dbusStateDir;
     char *rdpStateDir;
+    char *vncStateDir;
     /* These two directories are ones QEMU processes use (so must match
      * the QEMU user/group */
     char *libDir;

@@ -658,6 +658,11 @@ qemuStateInitialize(bool privileged,
                              cfg->rdpStateDir);
         goto error;
     }
+    if (g_mkdir_with_parents(cfg->vncStateDir, 0777) < 0) {
+        virReportSystemError(errno, _("Failed to create vnc state dir %1$s"),
+                             cfg->vncStateDir);
+        goto error;
+    }
 
     qemu_driver->inhibitor = virInhibitorNew(
         VIR_INHIBITOR_WHAT_SHUTDOWN,
@@ -827,6 +832,13 @@ qemuStateInitialize(bool privileged,
             virReportSystemError(errno,
                                  _("unable to set ownership of '%1$s' to %2$d:%3$d"),
                                  cfg->rdpStateDir, (int)cfg->user,
+                                 (int)cfg->group);
+            goto error;
+        }
+        if (chown(cfg->vncStateDir, cfg->user, cfg->group) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to set ownership of '%1$s' to %2$d:%3$d"),
+                                 cfg->vncStateDir, (int)cfg->user,
                                  (int)cfg->group);
             goto error;
         }
