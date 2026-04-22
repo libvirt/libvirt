@@ -140,18 +140,17 @@ virTypedParamsSerialize(virTypedParameterPtr params,
 
 VIR_ENUM_DECL(virTypedParameter);
 
+char *
+virTypedParamDebugstr(virTypedParameterPtr param);
+
 #define VIR_TYPED_PARAMS_DEBUG(params, nparams) \
     do { \
         int _i; \
         if (!params) \
             break; \
         for (_i = 0; _i < (nparams); _i++) { \
-            char *_value = virTypedParameterToString((params) + _i); \
-            VIR_DEBUG("params[\"%s\"]=(%s)%s", \
-                      (params)[_i].field, \
-                      virTypedParameterTypeToString((params)[_i].type), \
-                      NULLSTR(_value)); \
-            VIR_FREE(_value); \
+            g_autofree char *_debugstr = virTypedParamDebugstr((params) + _i); \
+            VIR_DEBUG("%s", _debugstr); \
         } \
     } while (0)
 

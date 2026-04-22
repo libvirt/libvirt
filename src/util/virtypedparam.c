@@ -1109,3 +1109,28 @@ virTypedParamListAddDouble(virTypedParamList *list,
     virTypedParamSetNameVPrintf(list, par, namefmt, ap);
     va_end(ap);
 }
+
+
+/**
+ * virTypedParamDebugstr:
+ * @param: typed parameter
+ *
+ * Format @param into a string used for debug prints in public API handlers.
+ * This must make sure to work on unknown typed parameter types.
+ *
+ * Returns the formatted string; caller must free it.
+ */
+char *
+virTypedParamDebugstr(virTypedParameterPtr param)
+{
+    g_autofree char *value = virTypedParameterToString(param);
+    int type = param->type;
+
+    if (type < 0 || type > VIR_TYPED_PARAM_LAST)
+        type = 0;
+
+    return g_strdup_printf("params[\"%s\"]=(%s)%s",
+                           param->field,
+                           virTypedParameterTypeToString(type),
+                           NULLSTR(value));
+}
