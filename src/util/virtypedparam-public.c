@@ -147,18 +147,6 @@ virTypedParamsGet(virTypedParameterPtr params,
 }
 
 
-#define VIR_TYPED_PARAM_CHECK_TYPE(check_type) \
-    do { if (param->type != check_type) { \
-        virReportError(VIR_ERR_INVALID_ARG, \
-                       _("Invalid type '%1$s' requested for parameter '%2$s', actual type is '%3$s'"), \
-                       virTypedParameterTypeToString(check_type), \
-                       name, \
-                       virTypedParameterTypeToString(param->type)); \
-        virDispatchError(NULL); \
-        return -1; \
-    } } while (0)
-
-
 /**
  * virTypedParamsGetInt:
  * @params: array of typed parameters
@@ -189,7 +177,11 @@ virTypedParamsGetInt(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_INT);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_INT) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.i;
 
@@ -227,7 +219,11 @@ virTypedParamsGetUInt(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_UINT);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_UINT) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.ui;
 
@@ -265,7 +261,11 @@ virTypedParamsGetLLong(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_LLONG);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_LLONG) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.l;
 
@@ -303,7 +303,11 @@ virTypedParamsGetULLong(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_ULLONG);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_ULLONG) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.ul;
 
@@ -341,7 +345,11 @@ virTypedParamsGetDouble(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_DOUBLE);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_DOUBLE) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.d;
 
@@ -379,7 +387,11 @@ virTypedParamsGetBoolean(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_BOOLEAN);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_BOOLEAN) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = !!param->value.b;
 
@@ -419,7 +431,11 @@ virTypedParamsGetString(virTypedParameterPtr params,
     if (!(param = virTypedParamsGet(params, nparams, name)))
         return 0;
 
-    VIR_TYPED_PARAM_CHECK_TYPE(VIR_TYPED_PARAM_STRING);
+    if (virTypedParamValidateType(param, VIR_TYPED_PARAM_STRING) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
     if (value)
         *value = param->value.s;
 

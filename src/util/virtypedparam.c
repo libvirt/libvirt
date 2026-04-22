@@ -42,6 +42,33 @@ VIR_ENUM_IMPL(virTypedParameter,
               "string",
 );
 
+
+/**
+ * virTypedParamValidateType:
+ * @param: typed parameter to validate
+ * @expected_type: type to look for
+ *
+ * Validates that @param is a parameter of @expected type.
+ *
+ * Returns 0 on success; -1 on error and reports an error.
+ */
+int
+virTypedParamValidateType(virTypedParameterPtr param,
+                          unsigned int expected_type)
+{
+    if (param->type != expected_type) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid type '%1$s' for parameter '%2$s', expected '%3$s'"),
+                       virTypedParameterTypeToString(expected_type),
+                       param->field,
+                       virTypedParameterTypeToString(param->type));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 virTypedParamsSortName(const void *left,
                        const void *right,

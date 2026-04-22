@@ -63,6 +63,10 @@ struct _virTypedParameterRemote {
     virTypedParameterRemoteValue value;
 };
 
+int
+virTypedParamValidateType(virTypedParameterPtr param,
+                          unsigned int expected_type)
+    G_GNUC_WARN_UNUSED_RESULT;
 
 int
 virTypedParamsValidate(virTypedParameterPtr params,
