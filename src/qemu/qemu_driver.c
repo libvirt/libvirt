@@ -8996,6 +8996,20 @@ qemuSetIOThreadsBWLive(virDomainObj *vm, virCgroup *cgroup,
         goto endjob; \
     }
 
+
+const virTypedParamValidationTemplate qemuDomainSetSchedulerParametersValidation[] = {
+    { VIR_DOMAIN_SCHEDULER_CPU_SHARES, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_SCHEDULER_VCPU_PERIOD, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_SCHEDULER_VCPU_QUOTA, VIR_TYPED_PARAM_LLONG },
+    { VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA, VIR_TYPED_PARAM_LLONG },
+    { VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA, VIR_TYPED_PARAM_LLONG },
+    { VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA, VIR_TYPED_PARAM_LLONG },
+    { "", 0 }
+};
+
 static int
 qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                       virTypedParameterPtr params,
@@ -9021,26 +9035,9 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (virTypedParamsValidate(params, nparams,
-                               VIR_DOMAIN_SCHEDULER_CPU_SHARES,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
-                               VIR_TYPED_PARAM_LLONG,
-                               VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
-                               VIR_TYPED_PARAM_LLONG,
-                               VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
-                               VIR_TYPED_PARAM_LLONG,
-                               VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA,
-                               VIR_TYPED_PARAM_LLONG,
-                               NULL) < 0)
+
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       qemuDomainSetSchedulerParametersValidation) < 0)
         return -1;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -9302,6 +9299,10 @@ qemuDomainSetSchedulerParameters(virDomainPtr dom,
                                  virTypedParameterPtr params,
                                  int nparams)
 {
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       qemuDomainSetSchedulerParametersValidation) < 0)
+        return -1;
+
     return qemuDomainSetSchedulerParametersFlags(dom,
                                                  params,
                                                  nparams,
