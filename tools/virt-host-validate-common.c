@@ -218,9 +218,17 @@ int virHostValidateCGroupControllers(const char *hvname,
 
         if (!virCgroupHasController(group, i)) {
             ret = VIR_VALIDATE_FAILURE(level);
-            virValidateFail(level, "Enable '%s' in kernel Kconfig file or "
-                            "mount/enable cgroup controller in your system",
-                            cg_name);
+
+            /* Ideally we would also verify that @group is CGroupsV2, but
+             * our internal APIs hide that fact away, intentionally.  */
+            if (i == VIR_CGROUP_CONTROLLER_DEVICES && geteuid() != 0) {
+                virValidateFail(level, "Controller '%s' not available for unprivileged users",
+                                cg_name);
+            } else {
+                virValidateFail(level, "Enable '%s' in kernel Kconfig file or "
+                                "mount/enable cgroup controller in your system",
+                                cg_name);
+            }
         } else {
             virValidatePass();
         }
