@@ -5323,20 +5323,6 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
 {
     int rc;
 
-    if (virTypedParamsValidate(params, nparams,
-                               VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_IOTHREAD_POLL_GROW,
-                               VIR_TYPED_PARAM_UNSIGNED,
-                               VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
-                               VIR_TYPED_PARAM_UNSIGNED,
-                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
-                               VIR_TYPED_PARAM_INT,
-                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,
-                               VIR_TYPED_PARAM_INT,
-                               NULL) < 0)
-        return -1;
-
     if ((rc = virTypedParamsGetULLong(params, nparams,
                                       VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
                                       &iothread->poll_max_ns)) < 0)
@@ -5678,6 +5664,20 @@ qemuDomainSetIOThreadParams(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                               VIR_TYPED_PARAM_UNSIGNED,
+                               VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                               VIR_TYPED_PARAM_UNSIGNED,
+                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
+                               VIR_TYPED_PARAM_INT,
+                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,
+                               VIR_TYPED_PARAM_INT,
+                               NULL) < 0)
+        return -1;
 
     if (iothread_id == 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
