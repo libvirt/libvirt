@@ -254,8 +254,16 @@ int virCgroupGetCpuacctPercpuUsage(virCgroup *group, char **usage);
 int virCgroupGetCpuacctStat(virCgroup *group, unsigned long long *user,
                             unsigned long long *sys);
 
-int virCgroupSetFreezerState(virCgroup *group, const char *state);
-int virCgroupGetFreezerState(virCgroup *group, char **state);
+typedef enum {
+    VIR_CGROUP_FREEZER_STATE_THAWED,
+    VIR_CGROUP_FREEZER_STATE_FROZEN,
+    VIR_CGROUP_FREEZER_STATE_FREEZING,
+
+    VIR_CGROUP_FREEZER_STATE_LAST
+} virCgroupFreezerState;
+
+int virCgroupSetFreezerState(virCgroup *group, virCgroupFreezerState state);
+int virCgroupGetFreezerState(virCgroup *group, virCgroupFreezerState *state);
 
 int virCgroupSetCpusetMems(virCgroup *group, const char *mems);
 int virCgroupGetCpusetMems(virCgroup *group, char **mems);

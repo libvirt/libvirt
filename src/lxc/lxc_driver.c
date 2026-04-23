@@ -2495,11 +2495,12 @@ static int lxcFreezeContainer(virDomainObj *vm)
     int check_interval = 1; /* In milliseconds */
     int exp = 10;
     int waited_time = 0;
-    g_autofree char *state = NULL;
     virLXCDomainObjPrivate *priv = vm->privateData;
 
     while (waited_time < timeout) {
+        virCgroupFreezerState state;
         int r;
+
         /*
          * Writing "FROZEN" to the "freezer.state" freezes the group,
          * i.e., the container, temporarily transiting "FREEZING" state.
@@ -2507,7 +2508,8 @@ static int lxcFreezeContainer(virDomainObj *vm)
          * to "FROZEN".
          * (see linux-2.6/Documentation/cgroups/freezer-subsystem.txt)
          */
-        r = virCgroupSetFreezerState(priv->cgroup, "FROZEN");
+        r = virCgroupSetFreezerState(priv->cgroup,
+                                     VIR_CGROUP_FREEZER_STATE_FROZEN);
 
         /*
          * Returning EBUSY explicitly indicates that the group is
@@ -2540,9 +2542,9 @@ static int lxcFreezeContainer(virDomainObj *vm)
             VIR_DEBUG("Reading freezer.state failed with errno: %d", r);
             goto error;
         }
-        VIR_DEBUG("Read freezer.state: %s", state);
+        VIR_DEBUG("Read freezer.state: %d", state);
 
-        if (STREQ(state, "FROZEN"))
+        if (state == VIR_CGROUP_FREEZER_STATE_FROZEN)
             return 0;
 
         waited_time += check_interval;
@@ -2563,7 +2565,7 @@ static int lxcFreezeContainer(virDomainObj *vm)
      * activate the group again and return an error.
      * This is likely to fall the group back again gracefully.
      */
-    virCgroupSetFreezerState(priv->cgroup, "THAWED");
+    virCgroupSetFreezerState(priv->cgroup, VIR_CGROUP_FREEZER_STATE_THAWED);
     return -1;
 }
 
@@ -2643,7 +2645,8 @@ static int lxcDomainResume(virDomainPtr dom)
                        "%s", _("domain is already running"));
         goto endjob;
     } else if (state == VIR_DOMAIN_PAUSED) {
-        if (virCgroupSetFreezerState(priv->cgroup, "THAWED") < 0) {
+        if (virCgroupSetFreezerState(priv->cgroup,
+                                     VIR_CGROUP_FREEZER_STATE_THAWED) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Resume operation failed"));
             goto endjob;

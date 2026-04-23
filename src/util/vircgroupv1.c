@@ -2049,23 +2049,49 @@ virCgroupV1GetCpuacctStat(virCgroup *group,
 }
 
 
+VIR_ENUM_DECL(virCgroupFreezerState);
+VIR_ENUM_IMPL(virCgroupFreezerState,
+              VIR_CGROUP_FREEZER_STATE_LAST,
+              "THAWED",
+              "FROZEN",
+              "FREEZING"
+);
+
 static int
 virCgroupV1SetFreezerState(virCgroup *group,
-                           const char *state)
+                           virCgroupFreezerState state)
 {
+    const char *stateStr = virCgroupFreezerStateTypeToString(state);
+
     return virCgroupSetValueStr(group,
                                 VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
+                                "freezer.state", stateStr);
 }
 
 
 static int
 virCgroupV1GetFreezerState(virCgroup *group,
-                           char **state)
+                           virCgroupFreezerState *state)
 {
-    return virCgroupGetValueStr(group,
-                                VIR_CGROUP_CONTROLLER_FREEZER,
-                                "freezer.state", state);
+    g_autofree char *stateStr = NULL;
+    int s;
+
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_FREEZER,
+                             "freezer.state", &stateStr) < 0) {
+        return -1;
+    }
+
+    s = virCgroupFreezerStateTypeFromString(stateStr);
+    if (s < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown value of freezer controller: %1$s"),
+                       stateStr);
+        return -1;
+    }
+
+    *state = s;
+    return 0;
 }
 
 

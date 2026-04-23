@@ -860,7 +860,8 @@ int virLXCProcessStop(virLXCDriver *driver,
             return -1;
         }
 
-        if (virCgroupSetFreezerState(priv->cgroup, "THAWED") < 0) {
+        if (virCgroupSetFreezerState(priv->cgroup,
+                                     VIR_CGROUP_FREEZER_STATE_THAWED) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("Unable to thaw all processes"));
 

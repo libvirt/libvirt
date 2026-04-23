@@ -2902,7 +2902,8 @@ virCgroupGetCpuacctStat(virCgroup *group, unsigned long long *user,
 
 
 int
-virCgroupSetFreezerState(virCgroup *group, const char *state)
+virCgroupSetFreezerState(virCgroup *group,
+                         virCgroupFreezerState state)
 {
     virCgroup *parent = virCgroupGetNested(group);
 
@@ -2912,7 +2913,8 @@ virCgroupSetFreezerState(virCgroup *group, const char *state)
 
 
 int
-virCgroupGetFreezerState(virCgroup *group, char **state)
+virCgroupGetFreezerState(virCgroup *group,
+                         virCgroupFreezerState *state)
 {
     virCgroup *parent = virCgroupGetNested(group);
 
@@ -3725,7 +3727,7 @@ virCgroupGetDomainTotalCpuStats(virCgroup *group G_GNUC_UNUSED,
 
 int
 virCgroupSetFreezerState(virCgroup *group G_GNUC_UNUSED,
-                         const char *state G_GNUC_UNUSED)
+                         virCgroupFreezerState state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
@@ -3735,7 +3737,7 @@ virCgroupSetFreezerState(virCgroup *group G_GNUC_UNUSED,
 
 int
 virCgroupGetFreezerState(virCgroup *group G_GNUC_UNUSED,
-                         char **state G_GNUC_UNUSED)
+                         virCgroupFreezerState **state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));

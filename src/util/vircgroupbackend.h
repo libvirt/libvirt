@@ -339,11 +339,11 @@ typedef int
 
 typedef int
 (*virCgroupSetFreezerStateCB)(virCgroup *group,
-                              const char *state);
+                              virCgroupFreezerState state);
 
 typedef int
 (*virCgroupGetFreezerStateCB)(virCgroup *group,
-                              char **state);
+                              virCgroupFreezerState *state);
 
 typedef int
 (*virCgroupSetCpusetMemsCB)(virCgroup *group,
