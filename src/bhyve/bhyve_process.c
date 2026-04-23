@@ -515,7 +515,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
                     virDomainObj *vm,
                     virDomainShutoffReason reason)
 {
-    int ret = -1;
+    int ret = 0;
     g_autoptr(virCommand) cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
 
@@ -531,14 +531,18 @@ virBhyveProcessStop(struct _bhyveConn *driver,
         return -1;
     }
 
-    if (!(cmd = virBhyveProcessBuildDestroyCmd(driver, vm->def)))
-        return -1;
-
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
+    /* Destroy monitor before running the actual destroy command to prevent
+     * it from detecting VM shutdown and entering this cleanup routine again */
     if ((priv != NULL) && (priv->mon != NULL))
          bhyveMonitorClose(priv->mon);
+
+    cmd = virBhyveProcessBuildDestroyCmd(driver, vm->def);
+    if (virCommandRun(cmd, NULL) < 0) {
+        /* Only failure of the actual destroy command warrants unsuccessful return code,
+         * other failures are not considered critical */
+        ret = -1;
+        VIR_WARN("Failed to run the domain destroy command");
+    }
 
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_STOPPED);
 
@@ -554,8 +558,6 @@ virBhyveProcessStop(struct _bhyveConn *driver,
         }
     }
 
-    ret = 0;
-
     virCloseCallbacksDomainRemove(vm, NULL, bhyveProcessAutoDestroy);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
@@ -563,8 +565,6 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     vm->def->id = -1;
 
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
-
- cleanup:
     virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
     bhyveProcessRemoveDomainStatus(BHYVE_STATE_DIR, vm->def->name);
 
