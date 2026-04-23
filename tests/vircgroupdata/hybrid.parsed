@@ -3,7 +3,7 @@ cpuacct      <null>
 cpuset       /not/really/sys/fs/cgroup/cpuset
 memory       <null>
 devices      <null>
-freezer      /not/really/sys/fs/cgroup/freezer
+freezer      <null>
 blkio        <null>
 net_cls      /not/really/sys/fs/cgroup/net_cls
 perf_event   /not/really/sys/fs/cgroup/perf_event

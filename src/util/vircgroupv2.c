@@ -319,6 +319,10 @@ virCgroupV2DetectControllers(virCgroup *group,
      * exists with usage stats. */
     group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_CPUACCT;
 
+    /* Similarly, the freezer controller is always available via cgroup.freeze
+     * file. */
+    group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_FREEZER;
+
     if (virCgroupV2DevicesAvailable(group))
         group->unified.controllers |= 1 << VIR_CGROUP_CONTROLLER_DEVICES;
 
@@ -480,6 +484,7 @@ virCgroupV2MakeGroup(virCgroup *parent,
 
                 /* Controllers that are implicitly enabled if available. */
                 if (i == VIR_CGROUP_CONTROLLER_CPUACCT ||
+                    i == VIR_CGROUP_CONTROLLER_FREEZER ||
                     i == VIR_CGROUP_CONTROLLER_DEVICES) {
                     continue;
                 }
