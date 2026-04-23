@@ -15350,57 +15350,29 @@ qemuDomainCheckBlockIoTuneReset(virDomainDiskDef *disk,
 }
 
 
-static int
-qemuDomainValidateBlockIoTune(virTypedParameterPtr params,
-                              int nparams)
-{
-    if (virTypedParamsValidate(params, nparams,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
-                               VIR_TYPED_PARAM_STRING,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH,
-                               VIR_TYPED_PARAM_ULLONG,
-                               NULL) < 0)
-        return -1;
-
-    return 0;
-}
-
+const virTypedParamValidationTemplate qemuDomainBlockIoTuneParametersValidation[] = {
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME, VIR_TYPED_PARAM_STRING },
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH, VIR_TYPED_PARAM_ULLONG },
+    { "", 0 }
+};
 
 static int
 qemuDomainSetBlockIoTuneFields(virDomainBlockIoTuneInfo *info,
@@ -15602,7 +15574,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
-    if (qemuDomainValidateBlockIoTune(params, nparams) < 0)
+
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       qemuDomainBlockIoTuneParametersValidation) < 0)
         return -1;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
@@ -20688,7 +20662,8 @@ qemuDomainSetThrottleGroup(virDomainPtr dom,
         return -1;
     }
 
-    if (qemuDomainValidateBlockIoTune(params, nparams) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       qemuDomainBlockIoTuneParametersValidation) < 0)
         return -1;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
