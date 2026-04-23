@@ -1907,6 +1907,94 @@ virCgroupV2DenyAllDevices(virCgroup *group)
 }
 
 
+static int
+virCgroupV2SetFreezerState(virCgroup *group,
+                           virCgroupFreezerState state)
+{
+    unsigned long long val;
+
+    switch (state) {
+    case VIR_CGROUP_FREEZER_STATE_THAWED:
+        val = 0;
+        break;
+    case VIR_CGROUP_FREEZER_STATE_FROZEN:
+        val = 1;
+        break;
+    case VIR_CGROUP_FREEZER_STATE_FREEZING:
+    case VIR_CGROUP_FREEZER_STATE_LAST:
+    default:
+        virReportEnumRangeError(virCgroupFreezerState, state);
+        return -1;
+    }
+
+    return virCgroupSetValueU64(group,
+                                VIR_CGROUP_CONTROLLER_FREEZER,
+                                "cgroup.freeze",
+                                val);
+}
+
+
+static int
+virCgroupV2GetFreezerState(virCgroup *group,
+                           virCgroupFreezerState *state)
+{
+    unsigned long long freezeReqested;
+    g_autofree char *eventsStr = NULL;
+    const char *frozenStr = "frozen ";
+    const char *tmp;
+
+    if (virCgroupGetValueU64(group,
+                             VIR_CGROUP_CONTROLLER_FREEZER,
+                             "cgroup.freeze", &freezeReqested) < 0) {
+
+        return -1;
+    }
+
+    if (freezeReqested == 0) {
+        /* No freeze is requested. */
+        *state = VIR_CGROUP_FREEZER_STATE_THAWED;
+        return 0;
+    }
+
+    if (freezeReqested != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown value of freezer controller: %1$llu"),
+                       freezeReqested);
+        return -1;
+    }
+
+    /* Now look at cgroup.events at 'frozen' state. If it's 0, then some
+     * processes inside the CGroup are still being frozen. If it's 1,
+     * then all processes are frozen. */
+    if (virCgroupGetValueStr(group,
+                             VIR_CGROUP_CONTROLLER_FREEZER,
+                             "cgroup.events", &eventsStr) < 0) {
+        return -1;
+    }
+
+    if (!eventsStr ||
+        !(tmp = strstr(eventsStr, frozenStr))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid format of cgroup.events file"));
+        return -1;
+    }
+
+    tmp += strlen(frozenStr);
+    if (*tmp == '0') {
+        *state = VIR_CGROUP_FREEZER_STATE_FREEZING;
+    } else if (*tmp == '1') {
+        *state = VIR_CGROUP_FREEZER_STATE_FROZEN;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown state of freezer controller: %1$s"),
+                       tmp);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virCgroupBackend virCgroupV2Backend = {
     .type = VIR_CGROUP_BACKEND_TYPE_V2,
 
@@ -1980,6 +2068,9 @@ virCgroupBackend virCgroupV2Backend = {
     .getCpusetMemoryMigrate = virCgroupV2GetCpusetMemoryMigrate,
     .setCpusetCpus = virCgroupV2SetCpusetCpus,
     .getCpusetCpus = virCgroupV2GetCpusetCpus,
+
+    .setFreezerState = virCgroupV2SetFreezerState,
+    .getFreezerState = virCgroupV2GetFreezerState,
 };
 
 
