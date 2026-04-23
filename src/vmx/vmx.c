@@ -599,6 +599,7 @@ static int virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
 static int virVMXParseParallel(virVMXContext *ctx, virConf *conf, int port,
                                virDomainChrDef **def);
 static int virVMXParseSVGA(virConf *conf, virDomainVideoDef **def);
+static int virVMXParseTPM(virConf *conf, virDomainTPMDef **def);
 
 static int virVMXFormatVNC(virDomainGraphicsDef *def, virBuffer *buffer);
 static int virVMXFormatDisk(virVMXContext *ctx, virDomainDiskDef *def,
@@ -1937,6 +1938,15 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
 
     def->nvideos = 1;
+
+    /* def:tpms */
+    {
+        virDomainTPMDef *tpm = NULL;
+        if (virVMXParseTPM(conf, &tpm) < 0)
+            goto cleanup;
+        if (tpm)
+            VIR_APPEND_ELEMENT(def->tpms, def->ntpms, tpm);
+    }
 
     /* def:sounds */
     /* FIXME */
@@ -3367,6 +3377,27 @@ virVMXParseSVGA(virConf *conf, virDomainVideoDef **def)
     return result;
 }
 
+static int
+virVMXParseTPM(virConf *conf, virDomainTPMDef **def)
+{
+    bool vtpm_present = false;
+
+    /* vmx:vtpm.present */
+    if (virVMXGetConfigBoolean(conf, "vtpm.present", &vtpm_present,
+                               false, true) < 0) {
+        return -1;
+    }
+
+    if (!vtpm_present)
+        return 0;
+
+    *def = g_new0(virDomainTPMDef, 1);
+    (*def)->type = VIR_DOMAIN_TPM_TYPE_EMULATOR;
+    (*def)->model = VIR_DOMAIN_TPM_MODEL_CRB;
+    (*def)->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
+
+    return 0;
+}
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -3699,6 +3730,39 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
     for (i = 0; i < def->nnets; ++i) {
         if (virVMXFormatEthernet(def->nets[i], i, &buffer, virtualHW_version) < 0)
             goto cleanup;
+    }
+
+    /* def:vTPM */
+    if (def->ntpms > 0) {
+        /* Validate TPM requirements */
+        if (def->ntpms > 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("VMware only supports a single TPM device"));
+            goto cleanup;
+        }
+
+        if (virtualHW_version < 14) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vTPM requires virtual hardware version 14 or higher"));
+            goto cleanup;
+        }
+
+        if (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vTPM requires EFI firmware"));
+            goto cleanup;
+        }
+
+        /* VMware vTPM specifically requires TPM 2.0 */
+        if (def->tpms[0]->model != VIR_DOMAIN_TPM_MODEL_CRB ||
+            def->tpms[0]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR ||
+            def->tpms[0]->data.emulator.version != VIR_DOMAIN_TPM_VERSION_2_0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("VMware driver only supports TPM 2.0 with the CRB model"));
+            goto cleanup;
+        }
+
+        virBufferAddLit(&buffer, "vtpm.present = \"TRUE\"\n");
     }
 
     /* def:inputs */
@@ -4229,7 +4293,6 @@ virVMXFormatEthernet(virDomainNetDef *def, int controller,
 
     return 0;
 }
-
 
 
 static int

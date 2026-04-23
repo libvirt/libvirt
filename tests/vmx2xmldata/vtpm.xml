@@ -1,0 +1,32 @@
+<domain type='vmware'>
+  <name>test-vtpm</name>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>4194304</memory>
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/test_disk.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='scsi' index='0' model='lsisas1068'/>
+    <interface type='user'>
+      <mac address='00:00:00:00:00:00' type='generated'/>
+      <model type='e1000e'/>
+    </interface>
+    <tpm model='tpm-crb'>
+      <backend type='emulator' version='2.0'/>
+    </tpm>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>
