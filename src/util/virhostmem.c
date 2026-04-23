@@ -351,21 +351,24 @@ virHostMemParametersAreAllSupported(virTypedParameterPtr params,
 }
 #endif
 
+
 #ifdef __linux__
+const virTypedParamValidationTemplate virHostMemSetParametersValidation[] =
+{
+    { VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN, VIR_TYPED_PARAM_UINT },
+    { VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS, VIR_TYPED_PARAM_UINT },
+    { VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES, VIR_TYPED_PARAM_UINT },
+    { "", 0 }
+};
+
 int
 virHostMemSetParameters(virTypedParameterPtr params,
                         int nparams)
 {
     size_t i;
 
-    if (virTypedParamsValidate(params, nparams,
-                               VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN,
-                               VIR_TYPED_PARAM_UINT,
-                               VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS,
-                               VIR_TYPED_PARAM_UINT,
-                               VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES,
-                               VIR_TYPED_PARAM_UINT,
-                               NULL) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       virHostMemSetParametersValidation) < 0)
         return -1;
 
     if (!virHostMemParametersAreAllSupported(params, nparams))
@@ -379,6 +382,11 @@ virHostMemSetParameters(virTypedParameterPtr params,
     return 0;
 }
 #else
+const virTypedParamValidationTemplate virHostMemSetParametersValidation[] =
+{
+    { "", 0 }
+};
+
 int
 virHostMemSetParameters(virTypedParameterPtr params G_GNUC_UNUSED,
                         int nparams G_GNUC_UNUSED)

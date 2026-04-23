@@ -22,6 +22,7 @@
 #pragma once
 
 #include "internal.h"
+#include "virtypedparam.h"
 
 int virHostMemGetStats(int cellNum,
                        virNodeMemoryStatsPtr params,
@@ -35,6 +36,7 @@ int virHostMemGetInfo(unsigned long long *mem,
 int virHostMemGetParameters(virTypedParameterPtr params,
                             int *nparams);
 
+extern const virTypedParamValidationTemplate virHostMemSetParametersValidation[];
 int virHostMemSetParameters(virTypedParameterPtr params,
                             int nparams);
 

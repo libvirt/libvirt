@@ -16507,6 +16507,10 @@ qemuNodeSetMemoryParameters(virConnectPtr conn,
 {
     virCheckFlags(0, -1);
 
+    if (virTypedParamsValidateTemplate(params, nparams,
+                                       virHostMemSetParametersValidation) < 0)
+        return -1;
+
     if (virNodeSetMemoryParametersEnsureACL(conn) < 0)
         return -1;
 

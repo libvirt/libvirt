@@ -2607,6 +2607,7 @@ virHostMemGetParameters;
 virHostMemGetStats;
 virHostMemGetTHPSize;
 virHostMemSetParameters;
+virHostMemSetParametersValidation;
 
 
 # util/virhostuptime.h
