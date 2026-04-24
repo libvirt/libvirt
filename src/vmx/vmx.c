@@ -1416,6 +1416,7 @@ virVMXParseConfig(virVMXContext *ctx,
     long long coresPerSocket = 0;
     virCPUDef *cpu = NULL;
     char *firmware = NULL;
+    g_autofree char *nvram = NULL;
     size_t saved_ndisks = 0;
 
     if (ctx->parseFileName == NULL) {
@@ -2030,6 +2031,22 @@ virVMXParseConfig(virVMXContext *ctx,
         features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] =
             features[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] =
             VIR_TRISTATE_BOOL_YES;
+    }
+
+    /* vmx:nvram */
+    if (virVMXGetConfigString(conf, "nvram", &nvram, true) < 0) {
+        goto cleanup;
+    }
+
+    if (nvram != NULL) {
+        g_autoptr(virStorageSource) n = virStorageSourceNew();
+
+        def->os.loader = virDomainLoaderDefNew();
+
+        n->type = VIR_STORAGE_TYPE_FILE;
+        if (ctx->parseFileName(nvram, ctx->opaque, &(n->path), false) < 0)
+            goto cleanup;
+        def->os.loader->nvram = g_steal_pointer(&n);
     }
 
     if (virDomainDefPostParse(def, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
@@ -3801,6 +3818,16 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
     /* vmx:firmware */
     if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_EFI)
         virBufferAddLit(&buffer, "firmware = \"efi\"\n");
+
+    /* vmx:nvram */
+    if (def->os.loader && def->os.loader->nvram && def->os.loader->nvram->path) {
+        g_autofree char *nvramPath = NULL;
+
+        nvramPath = ctx->formatFileName(def->os.loader->nvram->path, ctx->opaque);
+        if (nvramPath != NULL) {
+            virBufferAsprintf(&buffer, "nvram = \"%s\"\n", nvramPath);
+        }
+    }
 
     if (virtualHW_version >= 7) {
         if (hasSCSI) {

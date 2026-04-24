@@ -6,6 +6,7 @@
   <vcpu placement='static' cpuset='0-2,5-7'>4</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/Debian1.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

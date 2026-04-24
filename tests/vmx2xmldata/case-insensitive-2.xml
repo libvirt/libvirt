@@ -9,6 +9,7 @@
   </cputune>
   <os>
     <type arch='i686'>hvm</type>
+    <nvram>[datastore] directory/fedora11.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

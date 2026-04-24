@@ -10,6 +10,7 @@
   </cputune>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/esx8.0-win11-with-second-disk-in-subfolder.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

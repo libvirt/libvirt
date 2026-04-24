@@ -454,6 +454,9 @@
           <group>
             <ref name="diskSource"/>
           </group>
+          <group>
+            <ref name="vmwarePath"/>
+          </group>
         </choice>
       </optional>
     </element>

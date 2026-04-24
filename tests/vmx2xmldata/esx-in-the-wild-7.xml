@@ -6,6 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/esx-rhel6-mini.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

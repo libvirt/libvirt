@@ -13,6 +13,7 @@
       <feature enabled='yes' name='enrolled-keys'/>
       <feature enabled='yes' name='secure-boot'/>
     </firmware>
+    <nvram>[datastore] directory/Auto-esx8.0-rhel9.4-efi-nvme-disk.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

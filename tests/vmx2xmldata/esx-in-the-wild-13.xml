@@ -23,6 +23,7 @@ package:20.6.2
   </cputune>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/Test-Mig-VM-1 (01ce57d0-4e20-41a5-8b6c-bcbf49a032ec).nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

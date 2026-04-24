@@ -9,6 +9,7 @@
   </cputune>
   <os>
     <type arch='i686'>hvm</type>
+    <nvram>[datastore] directory/FEDORA11.NVRAM</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

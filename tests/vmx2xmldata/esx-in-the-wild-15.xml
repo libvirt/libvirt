@@ -9,6 +9,7 @@
   </cputune>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/dokuwiki.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>

@@ -10,6 +10,7 @@
   </cputune>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/windows2019biosvmware.nvram</nvram>
   </os>
   <cpu>
     <topology sockets='1' dies='1' clusters='1' cores='2' threads='1'/>

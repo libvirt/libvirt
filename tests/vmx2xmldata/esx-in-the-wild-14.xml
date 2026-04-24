@@ -7,6 +7,7 @@
   <vcpu placement='static'>12</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>
+    <nvram>[datastore] directory/wild14.nvram</nvram>
   </os>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
