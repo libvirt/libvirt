@@ -11148,7 +11148,7 @@ qemuDomainMigrateBegin3Params(virDomainPtr domain,
     virDomainObj *vm;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return NULL;
 
     if (virTypedParamsGetString(params, nparams,
@@ -11257,7 +11257,7 @@ qemuDomainMigratePrepare3Params(virConnectPtr dconn,
     const char *nbdURI = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return -1;
 
     if (virTypedParamsGetString(params, nparams,
@@ -11395,7 +11395,7 @@ qemuDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
     g_autoptr(qemuMigrationParams) migParams = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return -1;
 
     if (virTypedParamsGetString(params, nparams,
@@ -11499,7 +11499,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
     int ret = -1;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return ret;
 
     if (virTypedParamsGetString(params, nparams,
@@ -11645,7 +11645,7 @@ qemuDomainMigrateFinish3Params(virConnectPtr dconn,
     const char *dname = NULL;
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, NULL);
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return NULL;
 
     if (virTypedParamsGetString(params, nparams,
@@ -11714,7 +11714,7 @@ qemuDomainMigrateConfirm3Params(virDomainPtr domain,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    if (virTypedParamsValidate(params, nparams, QEMU_MIGRATION_PARAMETERS) < 0)
+    if (virTypedParamsValidateTemplate(params, nparams, qemuMigrationParametersValidation) < 0)
         return -1;
 
     if (!(vm = qemuDomainObjFromDomain(domain)))
