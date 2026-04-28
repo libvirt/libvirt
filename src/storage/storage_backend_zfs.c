@@ -132,8 +132,10 @@ virStorageBackendZFSParseVol(virStoragePoolObj *pool,
 
     if (vol == NULL)
         volume = virStorageVolDefFindByName(pool, vol_name);
-    else
+    else if (STREQ(vol_name, vol->name))
         volume = vol;
+    else
+        return 0;
 
     if (volume == NULL) {
         volume = g_new0(virStorageVolDef, 1);
