@@ -403,8 +403,8 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
         STREQ_NULLABLE(output, "")) {
         /* no ovs-vsctl or interface 'ifname' doesn't exists in ovs */
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Interface not found: %1$s"),
-                       NULLSTR(errbuf));
+                       _("Interface '%1$s' not found: %2$s"),
+                       ifname, NULLSTR(errbuf));
         return -1;
     }
 
@@ -419,8 +419,9 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
         stats->tx_packets == -1 &&
         stats->tx_errs == -1 &&
         stats->tx_drop == -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Interface doesn't have any statistics"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Interface '%1$s' doesn't have any statistics"),
+                       ifname);
         return -1;
     }
 
