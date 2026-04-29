@@ -773,6 +773,10 @@ int virNetClientStreamEventRemoveCallback(virNetClientStream *st)
     int ret = -1;
 
     virObjectLock(st);
+
+    VIR_DEBUG("st=%p, cbDispatch=%u, cbOpaque=%p, cbFree=%p",
+              st, st->cbDispatch, st->cbOpaque, st->cbFree);
+
     if (!st->cb) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no stream callback registered"));
