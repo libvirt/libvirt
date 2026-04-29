@@ -1808,6 +1808,11 @@ void remoteClientFree(void *data)
 {
     struct daemonClientPrivate *priv = data;
 
+    VIR_DEBUG("priv=%p, conn=%p, interfaceConn=%p, networkConn=%p, nodedevConn=%p, nwfilterConn=%p, secretConn=%p, storageConn=%p",
+              priv, priv->conn, priv->interfaceConn, priv->networkConn,
+              priv->nodedevConn, priv->nwfilterConn, priv->secretConn,
+              priv->storageConn);
+
     if (priv->conn)
         virConnectClose(priv->conn);
     if (priv->interfaceConn)
