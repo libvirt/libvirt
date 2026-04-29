@@ -4267,6 +4267,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     virDomainObj *vm = NULL;
     virDomainDef *def;
     virDomainDef *persistentDef;
+    bool async_unplug = !!(flags & VIR_DOMAIN_VCPU_ASYNC_UNPLUG);
     bool hotpluggable = !!(flags & VIR_DOMAIN_VCPU_HOTPLUGGABLE);
     bool useAgent = !!(flags & VIR_DOMAIN_VCPU_GUEST);
     int ret = -1;
@@ -4275,7 +4276,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM |
                   VIR_DOMAIN_VCPU_GUEST |
-                  VIR_DOMAIN_VCPU_HOTPLUGGABLE, -1);
+                  VIR_DOMAIN_VCPU_HOTPLUGGABLE |
+                  VIR_DOMAIN_VCPU_ASYNC_UNPLUG, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
@@ -4295,13 +4297,19 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
+    if (async_unplug && useAgent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("asynchronous mode is unsupported with VIR_DOMAIN_VCPU_GUEST"));
+        goto endjob;
+    }
+
     if (useAgent)
         ret = qemuDomainSetVcpusAgent(vm, nvcpus);
     else if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
         ret = qemuDomainSetVcpusMax(driver, vm, def, persistentDef, nvcpus);
     else
         ret = qemuDomainSetVcpusInternal(driver, vm, def, persistentDef,
-                                         nvcpus, hotpluggable, false);
+                                         nvcpus, hotpluggable, async_unplug);
 
  endjob:
     if (useAgent)

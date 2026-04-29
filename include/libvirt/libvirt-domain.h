@@ -2605,6 +2605,7 @@ typedef enum {
     VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count (Since: 0.8.5) */
     VIR_DOMAIN_VCPU_GUEST   = (1 << 3), /* Modify state of the cpu in the guest (Since: 1.1.0) */
     VIR_DOMAIN_VCPU_HOTPLUGGABLE = (1 << 4), /* Make vcpus added hot(un)pluggable (Since: 2.4.0) */
+    VIR_DOMAIN_VCPU_ASYNC_UNPLUG = (1 << 5), /* Don't wait for the guest to comply with unplug request(s) (Since: 12.4.0) */
 } virDomainVcpuFlags;
 
 int                     virDomainSetVcpus       (virDomainPtr domain,

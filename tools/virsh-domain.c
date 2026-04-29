@@ -7667,6 +7667,10 @@ static const vshCmdOptDef opts_setvcpus[] = {
      .type = VSH_OT_BOOL,
      .help = N_("make added vcpus hot(un)pluggable")
     },
+    {.name = "async",
+     .type = VSH_OT_BOOL,
+     .help = N_("return after firing vcpu unplug request(s)")
+    },
     {.name = NULL}
 };
 
@@ -7681,11 +7685,13 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     bool current = vshCommandOptBool(cmd, "current");
     bool guest = vshCommandOptBool(cmd, "guest");
     bool hotpluggable = vshCommandOptBool(cmd, "hotpluggable");
+    bool async = vshCommandOptBool(cmd, "async");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
     VSH_EXCLUSIVE_OPTIONS_VAR(guest, config);
+    VSH_EXCLUSIVE_OPTIONS_VAR(async, guest);
 
     VSH_REQUIRE_OPTION_VAR(maximum, config);
 
@@ -7699,6 +7705,8 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_VCPU_MAXIMUM;
     if (hotpluggable)
         flags |= VIR_DOMAIN_VCPU_HOTPLUGGABLE;
+    if (async)
+        flags |= VIR_DOMAIN_VCPU_ASYNC_UNPLUG;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;

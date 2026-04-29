@@ -4810,7 +4810,7 @@ setvcpus
 
 ::
 
-   setvcpus domain count [--maximum] [[--config] [--live] | [--current]] [--guest] [--hotpluggable]
+   setvcpus domain count [--maximum] [[--config] [--live] | [--current]] [--guest] [--hotpluggable] [--async]
 
 Change the number of virtual CPUs active in a guest domain.  By default,
 this command works on active guest domains.  To change the settings for an
@@ -4838,6 +4838,11 @@ flag is assumed and the guest domain must be active.  In this situation it
 is up to the hypervisor whether the *--config* flag is also assumed, and
 therefore whether the XML configuration is adjusted to make the change
 persistent.
+
+If *--async* is specified, live vCPU unplug requests are fired without waiting
+for the guest to comply. Final completion is reported by the ``vcpu-removed``
+domain event, while rejected unplug requests continue to be reported by
+``device-removal-failed``. This flag cannot be combined with *--guest*.
 
 If *--guest* is specified, then the count of cpus is modified in the guest
 instead of the hypervisor. This flag is usable only for live domains
