@@ -1808,8 +1808,8 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
         *vm_rss = rss * pagesize;
 
 
-    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%lld",
-              (int) pid, tid, utime, stime, cpu, rss);
+    VIR_DEBUG("Got process stats for pid=%d tid=%d: user=%llu sys=%llu cpu=%d rss=%lld",
+              (int) pid, (int) tid, utime, stime, cpu, rss);
 
     return 0;
 }
