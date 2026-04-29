@@ -6727,6 +6727,7 @@ qemuDomainRemoveVcpu(virDomainObj *vm,
     unsigned int nvcpus = vcpupriv->vcpus;
     size_t i;
     ssize_t offlineVcpuWithTid = -1;
+    virObjectEvent *event = NULL;
 
     if (qemuDomainRefreshVcpuInfo(vm, VIR_ASYNC_JOB_NONE, false) < 0)
         return -1;
@@ -6744,6 +6745,10 @@ qemuDomainRemoveVcpu(virDomainObj *vm,
             if (offlineVcpuWithTid == -1)
                 offlineVcpuWithTid = i;
         }
+
+        /* fire the `vcpu-removed` event for each removed vcpu */
+        event = virDomainEventVcpuRemovedNewFromObj(vm, i);
+        virObjectEventStateQueue(priv->driver->domainEventState, event);
     }
 
     if (offlineVcpuWithTid != -1) {
