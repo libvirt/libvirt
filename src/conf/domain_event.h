@@ -192,6 +192,12 @@ virDomainEventDeviceRemovalFailedNewFromObj(virDomainObj *obj,
 virObjectEvent *
 virDomainEventDeviceRemovalFailedNewFromDom(virDomainPtr dom,
                                             const char *devAlias);
+virObjectEvent *
+virDomainEventVcpuRemovedNewFromObj(virDomainObj *obj,
+                                    unsigned int vcpuid);
+virObjectEvent *
+virDomainEventVcpuRemovedNewFromDom(virDomainPtr dom,
+                                    unsigned int vcpuid);
 
 virObjectEvent *
 virDomainEventTunableNewFromObj(virDomainObj *obj,

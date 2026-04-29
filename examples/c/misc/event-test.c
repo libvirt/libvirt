@@ -1039,6 +1039,17 @@ myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn G_GNUC_UNUSED,
     return 0;
 }
 
+static int
+myDomainEventVcpuRemovedCallback(virConnectPtr conn G_GNUC_UNUSED,
+                                 virDomainPtr dom,
+                                 unsigned int vcpuid,
+                                 void *opaque G_GNUC_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) vcpu removed: %u\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), vcpuid);
+    return 0;
+}
+
 
 static const char *
 metadataTypeToStr(int status)
@@ -1183,6 +1194,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE, myDomainEventMemoryFailureCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE, myDomainEventMemoryDeviceSizeChangeCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE, myDomainEventNICMACChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_VCPU_REMOVED, myDomainEventVcpuRemovedCallback),
 };
 
 struct storagePoolEventData {

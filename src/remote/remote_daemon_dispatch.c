@@ -1322,6 +1322,31 @@ remoteRelayDomainEventMemoryDeviceSizeChange(virConnectPtr conn,
     return 0;
 }
 
+static int
+remoteRelayDomainEventVcpuRemoved(virConnectPtr conn,
+                                  virDomainPtr dom,
+                                  unsigned int vcpuid,
+                                  void *opaque)
+{
+    daemonClientEventCallback *callback = opaque;
+    remote_domain_event_vcpu_removed_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    data.vcpuid = vcpuid;
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED,
+                                  (xdrproc_t)xdr_remote_domain_event_vcpu_removed_msg,
+                                  &data);
+    return 0;
+}
+
 
 static int
 remoteRelayDomainEventNICMACChange(virConnectPtr conn,
@@ -1383,6 +1408,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMemoryFailure),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMemoryDeviceSizeChange),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventNICMACChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventVcpuRemoved),
 };
 
 G_STATIC_ASSERT(G_N_ELEMENTS(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

@@ -811,6 +811,8 @@ virDomainEventTrayChangeNewFromDom;
 virDomainEventTrayChangeNewFromObj;
 virDomainEventTunableNewFromDom;
 virDomainEventTunableNewFromObj;
+virDomainEventVcpuRemovedNewFromDom;
+virDomainEventVcpuRemovedNewFromObj;
 virDomainEventWatchdogNewFromDom;
 virDomainEventWatchdogNewFromObj;
 virDomainQemuMonitorEventNew;

@@ -6966,6 +6966,27 @@ typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr c
                                                                  void *opaque);
 
 /**
+ * virConnectDomainEventVcpuRemovedCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @vcpuid: libvirt XML vCPU id
+ * @opaque: application specified data
+ *
+ * This callback occurs when a vCPU is removed from the domain.
+ *
+ * The @vcpuid value matches the ``<vcpu id='...'>`` value from the domain XML.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_VCPU_REMOVED with virConnectDomainEventRegisterAny().
+ *
+ * Since: 12.4.0
+ */
+typedef void (*virConnectDomainEventVcpuRemovedCallback)(virConnectPtr conn,
+                                                         virDomainPtr dom,
+                                                         unsigned int vcpuid,
+                                                         void *opaque);
+
+/**
  * virConnectDomainEventMetadataChangeCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
@@ -7617,6 +7638,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback (Since: 6.9.0) */
     VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback (Since: 7.9.0) */
     VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE = 27, /* virConnectDomainEventNICMACChangeCallback (Since: 11.2.0) */
+    VIR_DOMAIN_EVENT_ID_VCPU_REMOVED = 28, /* virConnectDomainEventVcpuRemovedCallback (Since: 12.4.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

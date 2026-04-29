@@ -428,6 +428,10 @@ remoteDomainBuildEventMemoryDeviceSizeChange(virNetClientProgram *prog,
                                              virNetClient *client,
                                              void *evdata, void *opaque);
 static void
+remoteDomainBuildEventVcpuRemoved(virNetClientProgram *prog,
+                                  virNetClient *client,
+                                  void *evdata, void *opaque);
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgram *prog G_GNUC_UNUSED,
                                          virNetClient *client G_GNUC_UNUSED,
                                          void *evdata, void *opaque);
@@ -659,6 +663,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventNICMACChange,
       sizeof(remote_domain_event_nic_mac_change_msg),
       (xdrproc_t)xdr_remote_domain_event_nic_mac_change_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED,
+      remoteDomainBuildEventVcpuRemoved,
+      sizeof(remote_domain_event_vcpu_removed_msg),
+      (xdrproc_t)xdr_remote_domain_event_vcpu_removed_msg },
 };
 
 static void
@@ -5131,6 +5139,27 @@ remoteDomainBuildEventMemoryDeviceSizeChange(virNetClientProgram *prog G_GNUC_UN
     event = virDomainEventMemoryDeviceSizeChangeNewFromDom(dom,
                                                            msg->alias,
                                                            msg->size);
+
+    virObjectUnref(dom);
+
+    virObjectEventStateQueueRemote(priv->eventState, event, msg->callbackID);
+}
+
+static void
+remoteDomainBuildEventVcpuRemoved(virNetClientProgram *prog G_GNUC_UNUSED,
+                                  virNetClient *client G_GNUC_UNUSED,
+                                  void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_vcpu_removed_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEvent *event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventVcpuRemovedNewFromDom(dom, msg->vcpuid);
 
     virObjectUnref(dom);
 

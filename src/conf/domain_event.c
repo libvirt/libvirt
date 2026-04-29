@@ -53,6 +53,7 @@ static virClass *virDomainEventDeviceAddedClass;
 static virClass *virDomainEventMigrationIterationClass;
 static virClass *virDomainEventJobCompletedClass;
 static virClass *virDomainEventDeviceRemovalFailedClass;
+static virClass *virDomainEventVcpuRemovedClass;
 static virClass *virDomainEventMetadataChangeClass;
 static virClass *virDomainEventBlockThresholdClass;
 static virClass *virDomainEventMemoryFailureClass;
@@ -78,6 +79,7 @@ static void virDomainEventDeviceAddedDispose(void *obj);
 static void virDomainEventMigrationIterationDispose(void *obj);
 static void virDomainEventJobCompletedDispose(void *obj);
 static void virDomainEventDeviceRemovalFailedDispose(void *obj);
+static void virDomainEventVcpuRemovedDispose(void *obj);
 static void virDomainEventMetadataChangeDispose(void *obj);
 static void virDomainEventBlockThresholdDispose(void *obj);
 static void virDomainEventMemoryFailureDispose(void *obj);
@@ -251,6 +253,13 @@ struct _virDomainEventDeviceRemovalFailed {
 };
 typedef struct _virDomainEventDeviceRemovalFailed virDomainEventDeviceRemovalFailed;
 
+struct _virDomainEventVcpuRemoved {
+    virDomainEvent parent;
+
+    unsigned int vcpuid;
+};
+typedef struct _virDomainEventVcpuRemoved virDomainEventVcpuRemoved;
+
 struct _virDomainEventMetadataChange {
     virDomainEvent parent;
 
@@ -336,6 +345,8 @@ virDomainEventsOnceInit(void)
     if (!VIR_CLASS_NEW(virDomainEventJobCompleted, virDomainEventClass))
         return -1;
     if (!VIR_CLASS_NEW(virDomainEventDeviceRemovalFailed, virDomainEventClass))
+        return -1;
+    if (!VIR_CLASS_NEW(virDomainEventVcpuRemoved, virDomainEventClass))
         return -1;
     if (!VIR_CLASS_NEW(virDomainEventMetadataChange, virDomainEventClass))
         return -1;
@@ -482,6 +493,13 @@ virDomainEventDeviceRemovalFailedDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     g_free(event->devAlias);
+}
+
+static void
+virDomainEventVcpuRemovedDispose(void *obj)
+{
+    virDomainEventVcpuRemoved *event = obj;
+    VIR_DEBUG("obj=%p", event);
 }
 
 
@@ -1382,6 +1400,43 @@ virDomainEventDeviceRemovalFailedNewFromDom(virDomainPtr dom,
                                                 devAlias);
 }
 
+static virObjectEvent *
+virDomainEventVcpuRemovedNew(int id,
+                             const char *name,
+                             unsigned char *uuid,
+                             unsigned int vcpuid)
+{
+    virDomainEventVcpuRemoved *ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventVcpuRemovedClass,
+                                 VIR_DOMAIN_EVENT_ID_VCPU_REMOVED,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->vcpuid = vcpuid;
+
+    return (virObjectEvent *)ev;
+}
+
+virObjectEvent *
+virDomainEventVcpuRemovedNewFromObj(virDomainObj *obj,
+                                    unsigned int vcpuid)
+{
+    return virDomainEventVcpuRemovedNew(obj->def->id, obj->def->name,
+                                        obj->def->uuid, vcpuid);
+}
+
+virObjectEvent *
+virDomainEventVcpuRemovedNewFromDom(virDomainPtr dom,
+                                    unsigned int vcpuid)
+{
+    return virDomainEventVcpuRemovedNew(dom->id, dom->name, dom->uuid,
+                                        vcpuid);
+}
+
 
 static virObjectEvent *
 virDomainEventAgentLifecycleNew(int id,
@@ -2131,6 +2186,17 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                                             nicMacChangeEvent->newMAC,
                                                             cbopaque);
 
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_VCPU_REMOVED:
+        {
+            virDomainEventVcpuRemoved *vcpuRemovedEvent;
+
+            vcpuRemovedEvent = (virDomainEventVcpuRemoved *)event;
+            ((virConnectDomainEventVcpuRemovedCallback)cb)(conn, dom,
+                                                           vcpuRemovedEvent->vcpuid,
+                                                           cbopaque);
             goto cleanup;
         }
 

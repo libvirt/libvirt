@@ -705,6 +705,20 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn G_GNUC_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
+static void
+virshEventVcpuRemovedPrint(virConnectPtr conn G_GNUC_UNUSED,
+                           virDomainPtr dom,
+                           unsigned int vcpuid,
+                           void *opaque)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf,
+                      _("event 'vcpu-removed' for domain '%1$s': vcpu %2$u\n"),
+                      virDomainGetName(dom), vcpuid);
+    virshEventPrint(opaque, &buf);
+}
+
 VIR_ENUM_DECL(virshEventMetadataChangeType);
 VIR_ENUM_IMPL(virshEventMetadataChangeType,
               VIR_DOMAIN_METADATA_LAST,
@@ -873,6 +887,8 @@ virshDomainEventCallback virshDomainEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMemoryDeviceSizeChangePrint), },
     { "nic-mac-change",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventNICMACChangePrint), },
+    { "vcpu-removed",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventVcpuRemovedPrint), },
 };
 G_STATIC_ASSERT(VIR_DOMAIN_EVENT_ID_LAST == G_N_ELEMENTS(virshDomainEventCallbacks));
 
