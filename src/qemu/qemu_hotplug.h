@@ -106,7 +106,8 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
                            virDomainDef *def,
                            virDomainDef *persistentDef,
                            unsigned int nvcpus,
-                           bool hotpluggable);
+                           bool hotpluggable,
+                           bool async_unplug);
 
 int
 qemuDomainSetVcpuInternal(virQEMUDriver *driver,
@@ -114,7 +115,8 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
                           virDomainDef *def,
                           virDomainDef *persistentDef,
                           virBitmap *vcpus,
-                          bool state);
+                          bool state,
+                          bool async_unplug);
 
 unsigned long long
 qemuDomainGetUnplugTimeout(virDomainObj *vm) ATTRIBUTE_MOCKABLE;

@@ -6792,7 +6792,8 @@ static int
 qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
                          virQEMUDriverConfig *cfg,
                          virDomainObj *vm,
-                         unsigned int vcpu)
+                         unsigned int vcpu,
+                         bool async_unplug)
 {
     virDomainVcpuDef *vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
     qemuDomainVcpuPrivate *vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
@@ -6807,7 +6808,8 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
         return -1;
     }
 
-    qemuDomainMarkDeviceAliasForRemoval(vm, vcpupriv->alias);
+    if (!async_unplug)
+        qemuDomainMarkDeviceAliasForRemoval(vm, vcpupriv->alias);
 
     rc = qemuDomainDeleteDevice(vm, vcpupriv->alias);
     if (rc < 0) {
@@ -6816,6 +6818,12 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
                 virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
             goto cleanup;
         }
+    } else if (async_unplug) {
+        /*
+         * Let DEVICE_DELETED finish the unplug asynchronously when qemu
+         * accepted the delete request.
+         */
+        return 0;
     } else {
         if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
             if (rc == 0)
@@ -6836,7 +6844,8 @@ qemuDomainHotplugDelVcpu(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    qemuDomainResetDeviceRemoval(vm);
+    if (!async_unplug)
+        qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
 
@@ -7007,7 +7016,8 @@ qemuDomainSetVcpusLive(virQEMUDriver *driver,
                        virQEMUDriverConfig *cfg,
                        virDomainObj *vm,
                        virBitmap *vcpumap,
-                       bool enable)
+                       bool enable,
+                       bool async)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
@@ -7027,7 +7037,7 @@ qemuDomainSetVcpusLive(virQEMUDriver *driver,
             if (!virBitmapIsBitSet(vcpumap, nextvcpu))
                 continue;
 
-            if (qemuDomainHotplugDelVcpu(driver, cfg, vm, nextvcpu) < 0)
+            if (qemuDomainHotplugDelVcpu(driver, cfg, vm, nextvcpu, async) < 0)
                 goto cleanup;
         }
     }
@@ -7118,7 +7128,8 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
                            virDomainDef *def,
                            virDomainDef *persistentDef,
                            unsigned int nvcpus,
-                           bool hotpluggable)
+                           bool hotpluggable,
+                           bool async_unplug)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virBitmap) vcpumap = NULL;
@@ -7143,7 +7154,8 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
                                                             &enable)))
             return -1;
 
-        if (qemuDomainSetVcpusLive(driver, cfg, vm, vcpumap, enable) < 0)
+        if (qemuDomainSetVcpusLive(driver, cfg, vm, vcpumap, enable,
+                                   async_unplug) < 0)
             return -1;
     }
 
@@ -7287,13 +7299,33 @@ qemuDomainVcpuValidateConfig(virDomainDef *def,
 }
 
 
+/**
+ * qemuDomainSetVcpuInternal:
+ * @driver: the QEMU driver object
+ * @vm: the domain object
+ * @def: the live domain definition
+ * @persistentDef: the persistent (config) domain definition
+ * @map: a bitmap of cpus to be set to state @state
+ * @state: enable/disable the vcpus marked in @map
+ * @async_unplug: only used in case of unplug (i.e. @state=false)
+ *
+ * When @async_unplug is set to true, libvirt will not wait for
+ * the guest to comply with the unplug request but instead return
+ * immediately after receiving the acknowledgement from QEMU. Otherwise,
+ * libvirt will wait for a brief moment (defined by qemuDomainGetUnplugTimeout)
+ * before giving up and returning control to the caller.
+ *
+ * If the request results in adding a vcpu, this parameter is ignored.
+ *
+ */
 int
 qemuDomainSetVcpuInternal(virQEMUDriver *driver,
                           virDomainObj *vm,
                           virDomainDef *def,
                           virDomainDef *persistentDef,
                           virBitmap *map,
-                          bool state)
+                          bool state,
+                          bool async_unplug)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virBitmap) livevcpus = NULL;
@@ -7325,7 +7357,8 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
     }
 
     if (livevcpus &&
-        qemuDomainSetVcpusLive(driver, cfg, vm, livevcpus, state) < 0)
+        qemuDomainSetVcpusLive(driver, cfg, vm, livevcpus, state,
+                               async_unplug) < 0)
         return -1;
 
     if (persistentDef) {

@@ -4301,7 +4301,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
         ret = qemuDomainSetVcpusMax(driver, vm, def, persistentDef, nvcpus);
     else
         ret = qemuDomainSetVcpusInternal(driver, vm, def, persistentDef,
-                                         nvcpus, hotpluggable);
+                                         nvcpus, hotpluggable, false);
 
  endjob:
     if (useAgent)
@@ -19221,7 +19221,8 @@ qemuDomainSetVcpu(virDomainPtr dom,
         }
     }
 
-    ret = qemuDomainSetVcpuInternal(driver, vm, def, persistentDef, map, !!state);
+    ret = qemuDomainSetVcpuInternal(driver, vm, def, persistentDef, map,
+                                    !!state, false);
 
  endjob:
     virDomainObjEndJob(vm);

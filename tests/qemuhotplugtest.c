@@ -420,7 +420,7 @@ testQemuHotplugCpuGroup(const void *opaque)
 
     rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
                                     data->vm->newDef, params->newcpus,
-                                    true);
+                                    true, false);
 
     if (params->fail) {
         if (rc == 0)
@@ -458,7 +458,8 @@ testQemuHotplugCpuIndividual(const void *opaque)
         goto cleanup;
 
     rc = qemuDomainSetVcpuInternal(&driver, data->vm, data->vm->def,
-                                   data->vm->newDef, map, params->state);
+                                   data->vm->newDef, map, params->state,
+                                   false);
 
     if (params->fail) {
         if (rc == 0)
