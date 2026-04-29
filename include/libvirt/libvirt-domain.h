@@ -330,6 +330,24 @@ typedef enum {
 } virDomainModificationImpact;
 
 /**
+ * virDomainSetVcpuFlags:
+ *
+ * These flags must be used when calling the `virDomainSetVcpu` API.
+ *
+ * Since: 12.4.0
+ */
+typedef enum {
+    /* Alias of VIR_DOMAIN_AFFECT_CURRENT. (Since: 12.4.0)  */
+    VIR_DOMAIN_SETVCPU_AFFECT_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
+    /* Alias of VIR_DOMAIN_AFFECT_LIVE. (Since: 12.4.0)  */
+    VIR_DOMAIN_SETVCPU_AFFECT_LIVE = VIR_DOMAIN_AFFECT_LIVE,
+    /* Alias of VIR_DOMAIN_AFFECT_CONFIG. (Since: 12.4.0)  */
+    VIR_DOMAIN_SETVCPU_AFFECT_CONFIG = VIR_DOMAIN_AFFECT_CONFIG,
+    /* Do not wait for the guest to comply with the request (Since: 12.4.0) */
+    VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG = 1 << 2
+} virDomainSetVcpuFlags;
+
+/**
  * virDomainInfo:
  *
  * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting

@@ -7837,6 +7837,10 @@ static const vshCmdOptDef opts_setvcpu[] = {
      .type = VSH_OT_BOOL,
      .help = N_("disable cpus specified by cpumap")
     },
+    {.name = "async",
+     .type = VSH_OT_BOOL,
+     .help = N_("return after firing vcpu unplug request")
+    },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
@@ -7851,6 +7855,7 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
     bool disable = vshCommandOptBool(cmd, "disable");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
+    bool async = vshCommandOptBool(cmd, "async");
     const char *vcpulist = NULL;
     int state = 0;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
@@ -7859,11 +7864,14 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
 
     VSH_EXCLUSIVE_OPTIONS("current", "live");
     VSH_EXCLUSIVE_OPTIONS("current", "config");
+    VSH_EXCLUSIVE_OPTIONS("async", "enable");
 
     if (config)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (async)
+        flags |= VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG;
 
     if (!(enable || disable)) {
         vshError(ctl, "%s", _("one of --enable, --disable is required"));

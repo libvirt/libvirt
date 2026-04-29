@@ -19178,12 +19178,14 @@ qemuDomainSetVcpu(virDomainPtr dom,
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
+    bool async_unplug = !!(flags & VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG);
     g_autoptr(virBitmap) map = NULL;
     ssize_t lastvcpu;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG, -1);
 
     if (state != 0 && state != 1) {
         virReportInvalidArg(state, "%s", _("unsupported state value"));
@@ -19230,7 +19232,7 @@ qemuDomainSetVcpu(virDomainPtr dom,
     }
 
     ret = qemuDomainSetVcpuInternal(driver, vm, def, persistentDef, map,
-                                    !!state, false);
+                                    !!state, async_unplug);
 
  endjob:
     virDomainObjEndJob(vm);

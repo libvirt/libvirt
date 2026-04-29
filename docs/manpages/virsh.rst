@@ -4867,7 +4867,7 @@ setvcpu
 
 ::
 
-   setvcpu domain vcpulist [--enable] | [--disable]
+   setvcpu domain vcpulist [--enable] | [--disable] [--async]
       [[--live] [--config] | [--current]]
 
 Change state of individual vCPUs using hot(un)plug mechanism.
@@ -4886,6 +4886,11 @@ If *--current* is specified, it is equivalent to either *--live* or
 *--config*, depending on the current state of the guest.  This is the
 default. Both *--live* and *--config* flags may be given, but
 *--current* is exclusive.
+
+If *--async* is specified with *--disable*, live vCPU unplug requests are fired
+without waiting for the guest to comply. Final completion of this operation is
+reported by the ``vcpu-removed`` domain event, while rejected unplug requests
+continue to be reported by ``device-removal-failed``.
 
 
 shutdown
