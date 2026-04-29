@@ -3584,8 +3584,11 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
         ctl->stderr_closed = true;
     }
 
-    if (!(hooks && hooks->connHandler && hooks->connHandler(ctl)))
-        return false;
+    /* Attempt connecting so that we can also do completions based on e.g.
+     * object names work. Failure to connect is not fatal because we want
+     * at least argument completion */
+    if (hooks && hooks->connHandler)
+        ignore_value(hooks->connHandler(ctl));
 
     vshReadlineInit(ctl);
 
