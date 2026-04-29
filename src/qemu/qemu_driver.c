@@ -17156,6 +17156,9 @@ qemuDomainGetStatsCpuProc(virDomainObj *vm,
     unsigned long long userTime = 0;
     unsigned long long sysTime = 0;
 
+    if (!virDomainObjIsActive(vm))
+        return;
+
     if (virProcessGetStatInfo(&cpuTime, &userTime, &sysTime,
                               NULL, NULL, vm->pid, 0) < 0) {
         /* ignore error */
