@@ -225,6 +225,8 @@ struct _vshControl {
 
     const vshClientHooks *hooks;/* mandatory client specific hooks */
     void *privData;             /* client specific data */
+
+    bool stderr_closed;         /* stderr was closed for the 'complete' command */
 };
 
 typedef void *
