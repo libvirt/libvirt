@@ -220,6 +220,7 @@ def translate_feature(name, model):
         "CPUID_SVM_PFTHRESHOLD": "pfthreshold",
         "CPUID_SVM_V_VMSAVE_VMLOAD": "v-vmsave-vmload",
         "CPUID_SVM_VGIF": "vgif",
+        "CPUID_SVM_GMET": "gmet",
         "CPUID_TSC": "tsc",
         "CPUID_VME": "vme",
         "CPUID_XSAVE_XGETBV1": "xgetbv1",
@@ -287,6 +288,7 @@ def translate_feature(name, model):
         "VMX_SECONDARY_EXEC_XSAVES": "vmx-xsaves",
         "VMX_SECONDARY_EXEC_TSC_SCALING": "vmx-tsc-scaling",
         "VMX_SECONDARY_EXEC_ENABLE_USER_WAIT_PAUSE": "vmx-enable-user-wait-pause",
+        "VMX_SECONDARY_EXEC_MODE_BASED_EPT_EXEC": "vmx-mbec",
 
         # FEAT_VMX_PINBASED_CTLS
         "VMX_PIN_BASED_EXT_INTR_MASK": "vmx-intr-exit",
