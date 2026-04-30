@@ -13,12 +13,12 @@ provider libvirt {
 	probe event_glib_remove_timeout_idle(int timer, void *ff, void *opaque);
 	probe event_glib_dispatch_timeout(int timer, void *cb, void *opaque);
 
-        # file: src/util/virobject.c
-        # prefix: object
-        probe object_new(void *obj, const char *klassname);
-        probe object_ref(void *obj);
-        probe object_unref(void *obj);
-        probe object_dispose(void *obj);
+    # file: src/util/virobject.c
+    # prefix: object
+    probe object_new(void *obj, const char *klassname);
+    probe object_ref(void *obj);
+    probe object_unref(void *obj);
+    probe object_dispose(void *obj);
 
 	# file: src/rpc/virnetsocket.c
 	# prefix: rpc
