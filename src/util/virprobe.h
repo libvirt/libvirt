@@ -90,6 +90,15 @@
                      VIR_ADD_CASTS(__VA_ARGS__)); \
     }
 
+# define PROBE_DEBUG(NAME, FMT, ...) \
+    VIR_DEBUG_INT(&virLogSelf, \
+                  __FILE__, __LINE__, __func__, \
+                  #NAME ": " FMT, __VA_ARGS__); \
+    if (LIBVIRT_ ## NAME ## _ENABLED()) { \
+        PROBE_EXPAND(LIBVIRT_ ## NAME, \
+                     VIR_ADD_CASTS(__VA_ARGS__)); \
+    }
+
 # define PROBE_QUIET(NAME, FMT, ...) \
     if (LIBVIRT_ ## NAME ## _ENABLED()) { \
         PROBE_EXPAND(LIBVIRT_ ## NAME, \
@@ -100,6 +109,11 @@
     VIR_INFO_INT(&virLogSelf, \
                  __FILE__, __LINE__, __func__, \
                  #NAME ": " FMT, __VA_ARGS__);
+
+# define PROBE_DEBUG(NAME, FMT, ...) \
+    VIR_DEBUG_INT(&virLogSelf, \
+                  __FILE__, __LINE__, __func__, \
+                  #NAME ": " FMT, __VA_ARGS__); \
 
 # define PROBE_QUIET(NAME, FMT, ...)
 #endif
