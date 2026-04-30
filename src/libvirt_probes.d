@@ -16,8 +16,8 @@ provider libvirt {
     # file: src/util/virobject.c
     # prefix: object
     probe object_new(void *obj, const char *klassname);
-    probe object_ref(void *obj, const char *klassname);
-    probe object_unref(void *obj, const char *klassname);
+    probe object_ref(void *obj, const char *klassname, int refs);
+    probe object_unref(void *obj, const char *klassname, int refs);
     probe object_dispose(void *obj, const char *klassname);
 
 	# file: src/rpc/virnetsocket.c
