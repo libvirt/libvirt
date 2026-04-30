@@ -253,7 +253,7 @@ virObjectNew(virClass *klass)
 
     priv = vir_object_get_instance_private(obj);
     priv->klass = klass;
-    PROBE(OBJECT_NEW, "obj=%p classname=%s", obj, priv->klass->name);
+    PROBE_DEBUG(OBJECT_NEW, "obj=%p classname=%s", obj, priv->klass->name);
 
     return obj;
 }
@@ -316,7 +316,7 @@ static void vir_object_finalize(GObject *gobj)
     virObjectPrivate *priv = vir_object_get_instance_private(obj);
     virClass *klass = priv->klass;
 
-    PROBE(OBJECT_DISPOSE, "obj=%p", gobj);
+    PROBE_DEBUG(OBJECT_DISPOSE, "obj=%p", gobj);
 
     while (klass) {
         if (klass->dispose)
@@ -375,7 +375,7 @@ virObjectUnref(void *anyobj)
         return;
 
     g_object_unref(anyobj);
-    PROBE(OBJECT_UNREF, "obj=%p", obj);
+    PROBE_DEBUG(OBJECT_UNREF, "obj=%p", obj);
 }
 
 
@@ -397,7 +397,7 @@ virObjectRef(void *anyobj)
         return NULL;
 
     g_object_ref(obj);
-    PROBE(OBJECT_REF, "obj=%p", obj);
+    PROBE_DEBUG(OBJECT_REF, "obj=%p", obj);
     return anyobj;
 }
 
