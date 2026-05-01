@@ -38,6 +38,7 @@ profile virt-aa-helper @libexecdir@/virt-aa-helper {
   deny /dev/dm-* r,
   deny /dev/drbd[0-9]* r,
   deny /dev/dasd* r,
+  deny /dev/etherd/e*.* r,
   deny /dev/nvme* r,
   deny /dev/zd[0-9]* r,
   deny /dev/mapper/ r,
