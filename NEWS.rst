@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v12.3.0 (unreleased)
+v12.3.0 (2026-05-02)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
