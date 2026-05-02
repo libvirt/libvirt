@@ -819,6 +819,44 @@ Example:
 Every NUMA domain must have `memory` and `cpus` specified.
 Bhyve allows configuring up to 8 NUMA domains.
 
+Virtio-console device
+~~~~~~~~~~~~~~~~~~~~~
+
+:since:`Since 12.4.0`, it is possible to use the virtio console device.
+Example::
+
+  <devices>
+    <channel type='unix'>
+      <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent'/>
+      <target type='virtio' name='org.qemu.guest_agent.0'/>
+      <address type='virtio-serial' controller='0' bus='0' port='1'/>
+    </channel>
+  </devices>
+
+Bhyve supports up to 16 ports per console.
+
+Block I/O Tuning
+~~~~~~~~~~~~~~~~
+:since:`Since 12.3.0`, it is possible to tune domain I/O.
+This works on top of the
+`rctl(4) <https://man.freebsd.org/cgi/man.cgi?query=rctl&sektion=4>`__
+framework.
+Sample configuration::
+
+  <blkiotune>
+    <device>
+      <path>*</path>
+      <read_iops_sec>20000</read_iops_sec>
+      <write_iops_sec>20000</write_iops_sec>
+      <read_bytes_sec>10000</read_bytes_sec>
+      <write_bytes_sec>10000</write_bytes_sec>
+    </device>
+  </blkiotune>
+
+The ``*`` path here means that the limits are applied to the domain
+as a whole. Currently, it is not possible to apply limits to the
+individual devices of the domain.
+
 Guest-specific considerations
 -----------------------------
 
