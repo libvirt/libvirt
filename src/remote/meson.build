@@ -345,7 +345,7 @@ endif
 
 # The monolithic libvirt daemon only attempts to load the
 # secrets encryption credentials if the secret driver is enabled
-if conf.has('WITH_SECRETS')
+if conf.has('WITH_SECRETS') and init_script == 'systemd'
   secret_dropin_conf = configuration_data({
     'localstatedir': localstatedir,
   })
