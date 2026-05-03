@@ -2776,6 +2776,84 @@ testQemuMonitorJSONGetSEVInfo(const void *opaque)
 }
 
 
+static int
+testQemuMonitorJSONAnnounceInterface(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    g_autoptr(qemuMonitorTest) test = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
+        return -1;
+
+    /* Test 1 - all parameters are default */
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{"
+                                       "  \"execute\": \"announce-self\","
+                                       "  \"arguments\": {"
+                                       "    \"initial\": 50,"
+                                       "    \"max\": 550,"
+                                       "    \"rounds\": 5,"
+                                       "    \"step\": 50"
+                                       "  },"
+                                       "  \"id\":\"libvirt-1\""
+                                       "}",
+                                       NULL,
+                                       "{\"return\":{}}") < 0) {
+        return -1;
+    }
+
+
+    if (qemuMonitorJSONAnnounceSelf(qemuMonitorTestGetMonitor(test), NULL, 0, 0, 0, 0) < 0)
+        return -1;
+
+    /* Test 2 - interface device set, everything else default */
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{"
+                                       "  \"execute\": \"announce-self\","
+                                       "  \"arguments\": {"
+                                       "    \"interfaces\":[\"net0\"],"
+                                       "    \"initial\": 50,"
+                                       "    \"max\": 550,"
+                                       "    \"rounds\": 5,"
+                                       "    \"step\": 50"
+                                       "  },"
+                                       "  \"id\":\"libvirt-2\""
+                                       "}",
+                                       NULL,
+                                       "{\"return\":{}}") < 0) {
+        return -1;
+    }
+
+
+    if (qemuMonitorJSONAnnounceSelf(qemuMonitorTestGetMonitor(test), "net0", 0, 0, 0, 0) < 0)
+        return -1;
+
+    /* Test 3 - all parameters explicitly set */
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                       "{"
+                                       "  \"execute\": \"announce-self\","
+                                       "  \"arguments\": {"
+                                       "    \"interfaces\":[\"skid00\"],"
+                                       "    \"initial\": 23,"
+                                       "    \"max\": 54,"
+                                       "    \"rounds\": 867,"
+                                       "    \"step\": 5309"
+                                       "  },"
+                                       "  \"id\":\"libvirt-3\""
+                                       "}",
+                                       NULL,
+                                       "{\"return\":{}}") < 0) {
+        return -1;
+    }
+
+
+    if (qemuMonitorJSONAnnounceSelf(qemuMonitorTestGetMonitor(test), "skid00", 23, 54, 867, 5309) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct testQemuMonitorJSONGetGuestCPUData {
     const char *name;
     bool qomListGet;
@@ -2940,6 +3018,7 @@ mymain(void)
     DO_TEST(Transaction);
     DO_TEST(BlockExportAdd);
     DO_TEST(BlockdevReopen);
+    DO_TEST(AnnounceInterface);
     DO_TEST_SIMPLE("qmp_capabilities", qemuMonitorJSONSetCapabilities);
     DO_TEST_SIMPLE("system_powerdown", qemuMonitorJSONSystemPowerdown);
     DO_TEST_SIMPLE("system_reset", qemuMonitorJSONSystemReset);

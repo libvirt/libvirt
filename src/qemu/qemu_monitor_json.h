@@ -828,3 +828,11 @@ qemuMonitorJSONBlockLatencyHistogramSet(qemuMonitor *mon,
                                         unsigned int *boundaries_write,
                                         unsigned int *boundaries_zone,
                                         unsigned int *boundaries_flush);
+
+int
+qemuMonitorJSONAnnounceSelf(qemuMonitor *mon,
+                            const char *device,
+                            unsigned int initial,
+                            unsigned int max,
+                            unsigned int rounds,
+                            unsigned int step);

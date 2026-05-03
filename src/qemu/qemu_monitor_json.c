@@ -9237,3 +9237,58 @@ qemuMonitorJSONBlockLatencyHistogramSet(qemuMonitor *mon,
 
     return qemuMonitorJSONCheckError(cmd, reply);
 }
+
+
+int
+qemuMonitorJSONAnnounceSelf(qemuMonitor *mon,
+                            const char *device,
+                            unsigned int initial,
+                            unsigned int max,
+                            unsigned int rounds,
+                            unsigned int step)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) devlist = NULL;
+
+    /* announce-self optionally accepts a list of device names, but we
+     * only support a single device name (or none), so we make a
+     * NULL-terminated list with a single item
+     */
+    if (device) {
+        devlist = virJSONValueNewArray();
+        if (virJSONValueArrayAppendString(devlist, device) < 0)
+            return -1;
+    }
+
+    /* all the other parameters are mandatory for QEMU, but we make
+     * them optional to simplify using the API. Since the value 0
+     * would be nonsensical for any of these, we make that the "use a
+     * default value" sentinel. The values we use as default are the
+     * values QEMU will use internally when it does an announce-self
+     * at the end of a migration.
+     */
+    if (!initial)
+        initial = 50;
+    if (!max)
+        max = 550;
+    if (!rounds)
+        rounds = 5;
+    if (!step)
+        step = 50;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("announce-self",
+                                           "A:interfaces", &devlist,
+                                           "u:initial", initial,
+                                           "u:max", max,
+                                           "u:rounds", rounds,
+                                           "u:step", step,
+                                           NULL))) {
+        return -1;
+    }
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    return qemuMonitorJSONCheckError(cmd, reply);
+}

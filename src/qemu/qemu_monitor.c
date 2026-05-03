@@ -4592,3 +4592,16 @@ qemuMonitorBlockLatencyHistogramSet(qemuMonitor *mon,
                                                    boundaries_zone,
                                                    boundaries_flush);
 }
+
+int
+qemuMonitorAnnounceSelf(qemuMonitor *mon,
+                        const char *device,
+                        unsigned int initial,
+                        unsigned int max,
+                        unsigned int rounds,
+                        unsigned int step)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONAnnounceSelf(mon, device, initial, max, rounds, step);
+}
