@@ -3737,7 +3737,7 @@ virCgroupSetFreezerState(virCgroup *group G_GNUC_UNUSED,
 
 int
 virCgroupGetFreezerState(virCgroup *group G_GNUC_UNUSED,
-                         virCgroupFreezerState **state G_GNUC_UNUSED)
+                         virCgroupFreezerState *state G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Control groups not supported on this platform"));
