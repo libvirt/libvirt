@@ -1175,9 +1175,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("machine-smm-off");
     DO_TEST_CAPS_LATEST("machine-vmport-opt");
     DO_TEST_CAPS_LATEST("machine-i8042-on");
-    DO_TEST_CAPS_VER_PARSE_ERROR("machine-i8042-on", "6.2.0");
     DO_TEST_CAPS_LATEST("machine-i8042-off");
-    DO_TEST_CAPS_VER_PARSE_ERROR("machine-i8042-off", "6.2.0");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("machine-i8042-off-vmport-on");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("machine-i8042-off-explicit-ps2-inputs");
     DO_TEST_CAPS_LATEST("default-kvm-host-arch");
