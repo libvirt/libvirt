@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static'>6</vcpu>
   <os>
-    <type arch='x86_64' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc-i440fx-11.0'>hvm</type>
     <boot dev='network'/>
   </os>
   <cpu mode='host-model' check='partial'/>
