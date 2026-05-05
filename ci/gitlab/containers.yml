@@ -63,18 +63,18 @@ x86_64-debian-sid-container:
     NAME: debian-sid
 
 
-x86_64-fedora-42-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: fedora-42
-
-
 x86_64-fedora-43-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: fedora-43
+
+
+x86_64-fedora-44-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-44
 
 
 x86_64-fedora-rawhide-container:
@@ -98,18 +98,18 @@ x86_64-opensuse-tumbleweed-container:
     NAME: opensuse-tumbleweed
 
 
-x86_64-ubuntu-2204-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: ubuntu-2204
-
-
 x86_64-ubuntu-2404-container:
   extends: .container_job
   allow_failure: false
   variables:
     NAME: ubuntu-2404
+
+
+x86_64-ubuntu-2604-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2604
 
 
 
@@ -234,19 +234,19 @@ s390x-debian-sid-container:
     NAME: debian-sid-cross-s390x
 
 
-mingw32-fedora-43-container:
+mingw32-fedora-44-container:
   extends: .container_job
   allow_failure: false
   variables:
     JOB_OPTIONAL: 1
-    NAME: fedora-43-cross-mingw32
+    NAME: fedora-44-cross-mingw32
 
 
-mingw64-fedora-43-container:
+mingw64-fedora-44-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: fedora-43-cross-mingw64
+    NAME: fedora-44-cross-mingw64
 
 
 mingw32-fedora-rawhide-container:

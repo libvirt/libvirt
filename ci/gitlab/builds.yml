@@ -144,21 +144,6 @@ x86_64-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-x86_64-fedora-42:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-fedora-42-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: fedora-42
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:42
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
-
-
 x86_64-fedora-43:
   extends: .native_build_job
   needs:
@@ -168,6 +153,21 @@ x86_64-fedora-43:
   variables:
     NAME: fedora-43
     TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:43
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
+
+
+x86_64-fedora-44:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-fedora-44-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-44
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:44
   artifacts:
     expire_in: 1 day
     paths:
@@ -223,17 +223,6 @@ x86_64-opensuse-tumbleweed:
     TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/tumbleweed:latest
 
 
-x86_64-ubuntu-2204:
-  extends: .native_build_job
-  needs:
-    - job: x86_64-ubuntu-2204-container
-      optional: true
-  allow_failure: false
-  variables:
-    NAME: ubuntu-2204
-    TARGET_BASE_IMAGE: docker.io/library/ubuntu:22.04
-
-
 x86_64-ubuntu-2404:
   extends: .native_build_job
   needs:
@@ -241,22 +230,33 @@ x86_64-ubuntu-2404:
       optional: true
   allow_failure: false
   variables:
-    JOB_OPTIONAL: 1
     NAME: ubuntu-2404
     TARGET_BASE_IMAGE: docker.io/library/ubuntu:24.04
 
 
-x86_64-ubuntu-2404-clang:
+x86_64-ubuntu-2604:
   extends: .native_build_job
   needs:
-    - job: x86_64-ubuntu-2404-container
+    - job: x86_64-ubuntu-2604-container
+      optional: true
+  allow_failure: false
+  variables:
+    JOB_OPTIONAL: 1
+    NAME: ubuntu-2604
+    TARGET_BASE_IMAGE: docker.io/library/ubuntu:26.04
+
+
+x86_64-ubuntu-2604-clang:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-ubuntu-2604-container
       optional: true
   allow_failure: false
   variables:
     CC: clang
     MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
-    NAME: ubuntu-2404
-    TARGET_BASE_IMAGE: docker.io/library/ubuntu:24.04
+    NAME: ubuntu-2604
+    TARGET_BASE_IMAGE: docker.io/library/ubuntu:26.04
     UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 
@@ -457,29 +457,29 @@ s390x-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-mingw32-fedora-43:
+mingw32-fedora-44:
   extends: .cross_build_job
   needs:
-    - job: mingw32-fedora-43-container
+    - job: mingw32-fedora-44-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw32
     JOB_OPTIONAL: 1
-    NAME: fedora-43
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:43
+    NAME: fedora-44
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:44
 
 
-mingw64-fedora-43:
+mingw64-fedora-44:
   extends: .cross_build_job
   needs:
-    - job: mingw64-fedora-43-container
+    - job: mingw64-fedora-44-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw64
-    NAME: fedora-43
-    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:43
+    NAME: fedora-44
+    TARGET_BASE_IMAGE: registry.fedoraproject.org/fedora:44
 
 
 mingw32-fedora-rawhide:
@@ -509,21 +509,6 @@ mingw64-fedora-rawhide:
 
 # Native cirrus build jobs
 
-x86_64-freebsd-13:
-  extends: .cirrus_build_job
-  needs: []
-  allow_failure:
-    exit_codes: 3
-  variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-13-5
-    CIRRUS_VM_IMAGE_SELECTOR: image_family
-    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
-    INSTALL_COMMAND: pkg install -y
-    NAME: freebsd-13
-    UPDATE_COMMAND: pkg update
-    UPGRADE_COMMAND: pkg upgrade -y
-
-
 x86_64-freebsd-14:
   extends: .cirrus_build_job
   needs: []
@@ -535,6 +520,21 @@ x86_64-freebsd-14:
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y
     NAME: freebsd-14
+    UPDATE_COMMAND: pkg update
+    UPGRADE_COMMAND: pkg upgrade -y
+
+
+x86_64-freebsd-15:
+  extends: .cirrus_build_job
+  needs: []
+  allow_failure:
+    exit_codes: 3
+  variables:
+    CIRRUS_VM_IMAGE_NAME: freebsd-15-0
+    CIRRUS_VM_IMAGE_SELECTOR: image_family
+    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    INSTALL_COMMAND: pkg install -y
+    NAME: freebsd-15
     UPDATE_COMMAND: pkg update
     UPGRADE_COMMAND: pkg upgrade -y
 

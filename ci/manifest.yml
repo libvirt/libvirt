@@ -125,7 +125,7 @@ targets:
         containers: false
         builds: false
 
-  fedora-42:
+  fedora-43:
     jobs:
       - arch: x86_64
         artifacts:
@@ -133,7 +133,7 @@ targets:
           paths:
             - libvirt-rpms
 
-  fedora-43:
+  fedora-44:
     jobs:
       - arch: x86_64
         artifacts:
@@ -165,9 +165,9 @@ targets:
         allow-failure: true
         builds: false
 
-  freebsd-13: x86_64
-
   freebsd-14: x86_64
+
+  freebsd-15: x86_64
 
   opensuse-leap-15:
     jobs:
@@ -191,11 +191,11 @@ targets:
           PATH_EXTRA: /usr/local/opt/ccache/libexec:/usr/local/opt/gettext/bin:/usr/local/opt/libpcap/bin:/usr/local/opt/libxslt/bin
           PKG_CONFIG_PATH: /usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libpcap/lib/pkgconfig:/usr/local/opt/libxml2/lib/pkgconfig:/usr/local/opt/ncurses/lib/pkgconfig:/usr/local/opt/readline/lib/pkgconfig
 
-  ubuntu-2204:
+  ubuntu-2404:
     jobs:
       - arch: x86_64
 
-  ubuntu-2404:
+  ubuntu-2604:
     jobs:
       - arch: x86_64
         builds: false

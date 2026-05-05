@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/ubuntu:22.04
+FROM docker.io/library/ubuntu:26.04
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -35,7 +35,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libblkid-dev \
                       libc6-dev \
                       libcap-ng-dev \
-                      libclang-dev \
+                      libclang-rt-dev \
                       libcurl4-gnutls-dev \
                       libdevmapper-dev \
                       libfuse3-dev \
