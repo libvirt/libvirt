@@ -41,6 +41,7 @@ bhyveDomainObjPrivateAlloc(void *opaque)
 {
     bhyveDomainObjPrivate *priv = g_new0(bhyveDomainObjPrivate, 1);
 
+    priv->agentTimeout = 30;
     priv->driver = opaque;
 
     return priv;
@@ -663,3 +664,34 @@ virXMLNamespace virBhyveDriverDomainXMLNamespace = {
     .uri = "http://libvirt.org/schemas/domain/bhyve/1.0",
 
 };
+
+
+int
+virBhyveDomainObjStartWorker(virDomainObj *dom)
+{
+    bhyveDomainObjPrivate *priv = dom->privateData;
+
+    if (!priv->eventThread) {
+        g_autofree char *threadName = g_strdup_printf("vm-%s", dom->def->name);
+        if (!(priv->eventThread = virEventThreadNew(threadName)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+void
+virBhyveDomainObjStopWorker(virDomainObj *dom)
+{
+    bhyveDomainObjPrivate *priv = dom->privateData;
+    virEventThread *eventThread;
+
+    if (!priv->eventThread)
+        return;
+
+    eventThread = g_steal_pointer(&priv->eventThread);
+    virObjectUnlock(dom);
+    g_object_unref(eventThread);
+    virObjectLock(dom);
+}

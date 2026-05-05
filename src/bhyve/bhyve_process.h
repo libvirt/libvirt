@@ -56,6 +56,10 @@ int virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
 
 void virBhyveProcessReconnectAll(struct _bhyveConn *driver);
 
+int bhyveConnectAgent(struct _bhyveConn *driver, virDomainObj *vm);
+
+virDomainChrDef *bhyveFindAgentConfig(virDomainDef *def);
+
 typedef enum {
     VIR_BHYVE_PROCESS_START_AUTODESTROY = 1 << 0,
 } bhyveProcessStartFlags;

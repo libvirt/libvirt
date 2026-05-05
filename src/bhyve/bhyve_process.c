@@ -171,6 +171,118 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
     return 0;
 }
 
+virDomainChrDef *
+bhyveFindAgentConfig(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDef *channel = def->channels[i];
+
+        if (channel->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)
+            continue;
+
+
+        if (STREQ_NULLABLE(channel->target.name, "org.qemu.guest_agent.0")) {
+            return channel;
+        }
+    }
+
+    return NULL;
+}
+
+static void
+bhyveProcessHandleAgentEOF(qemuAgent *agent,
+                           virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv;
+
+    virObjectLock(vm);
+    VIR_INFO("Received EOF from agent on %p '%s'", vm, vm->def->name);
+
+    priv = vm->privateData;
+
+    if (!priv->agent) {
+        VIR_DEBUG("Agent freed already");
+        goto unlock;
+    }
+
+    qemuAgentClose(agent);
+    priv->agent = NULL;
+    priv->agentError = false;
+
+    virObjectUnlock(vm);
+    return;
+
+ unlock:
+    virObjectUnlock(vm);
+    return;
+}
+
+/*
+ * This is invoked when there is some kind of error
+ * parsing data to/from the agent. The VM can continue
+ * to run, but no further agent commands will be
+ * allowed
+ */
+static void
+bhyveProcessHandleAgentError(qemuAgent *agent G_GNUC_UNUSED,
+                             virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv;
+
+    virObjectLock(vm);
+    VIR_INFO("Received error from agent on %p '%s'", vm, vm->def->name);
+
+    priv = vm->privateData;
+
+    priv->agentError = true;
+
+    virObjectUnlock(vm);
+}
+
+static qemuAgentCallbacks agentCallbacks = {
+    .eofNotify = bhyveProcessHandleAgentEOF,
+    .errorNotify = bhyveProcessHandleAgentError,
+};
+
+int
+bhyveConnectAgent(struct _bhyveConn *driver G_GNUC_UNUSED, virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+    qemuAgent *agent = NULL;
+    virDomainChrDef *config = bhyveFindAgentConfig(vm->def);
+
+    if (!config)
+        return 0;
+
+    if (priv->agent)
+        return 0;
+
+    agent = qemuAgentOpen(vm,
+                          config->source,
+                          virEventThreadGetContext(priv->eventThread),
+                          &agentCallbacks,
+                          BHYVE_DOMAIN_PRIVATE(vm)->agentTimeout);
+
+    if (!virDomainObjIsActive(vm)) {
+        qemuAgentClose(agent);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest crashed while connecting to the guest agent"));
+        return -1;
+    }
+
+    priv->agent = agent;
+    if (!priv->agent) {
+        VIR_WARN("Cannot connect to QEMU guest agent for %s", vm->def->name);
+        priv->agentError = true;
+        virResetLastError();
+    }
+
+    return 0;
+}
+
+
 static int
 virBhyveProcessStartImpl(struct _bhyveConn *driver,
                          virDomainObj *vm,
@@ -292,6 +404,9 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
     priv->mon = bhyveMonitorOpen(vm, driver);
+
+    if (virBhyveDomainObjStartWorker(vm) < 0)
+        goto cleanup;
 
     if (virDomainObjSave(vm, driver->xmlopt,
                          BHYVE_STATE_DIR) < 0)
@@ -713,6 +828,9 @@ virBhyveProcessReconnect(virDomainObj *vm,
 
         virDomainNetNotifyActualDevice(conn, vm->def, net);
     }
+
+    if (virBhyveDomainObjStartWorker(vm) < 0)
+        goto cleanup;
 
  cleanup:
     if (ret < 0) {

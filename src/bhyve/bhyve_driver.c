@@ -53,6 +53,7 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "viraccessapicheck.h"
+#include "viraccessapicheckqemu.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
 #include "virportallocator.h"
@@ -1905,6 +1906,165 @@ bhyveDomainInterfaceAddresses(virDomainPtr domain,
 }
 
 
+static qemuAgent *
+bhyveDomainObjEnterAgent(virDomainObj *obj)
+{
+    bhyveDomainObjPrivate *priv = obj->privateData;
+    qemuAgent *agent = priv->agent;
+
+    VIR_DEBUG("Entering agent (agent=%p vm=%p name=%s)",
+              priv->agent, obj, obj->def->name);
+
+    virObjectLock(agent);
+    virObjectRef(agent);
+    virObjectUnlock(obj);
+
+    return agent;
+}
+
+
+static void
+bhyveDomainObjExitAgent(virDomainObj *obj, qemuAgent *agent)
+{
+    virObjectUnlock(agent);
+    virObjectUnref(agent);
+    virObjectLock(obj);
+
+    VIR_DEBUG("Exited agent (agent=%p vm=%p name=%s)",
+              agent, obj, obj->def->name);
+}
+
+
+static bool
+bhyveDomainAgentAvailable(virDomainObj *vm,
+                          bool reportError)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        if (reportError) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+        }
+        return false;
+    }
+
+    if (!priv->agent) {
+        if (bhyveFindAgentConfig(vm->def)) {
+            if (reportError) {
+                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                               _("QEMU guest agent is not connected"));
+            }
+            return false;
+        } else {
+            if (reportError) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("QEMU guest agent is not configured"));
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
+
+static int
+bhyveDomainEnsureAgent(virDomainObj *vm,
+                       bool reportError)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        if (reportError) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("domain is not running"));
+        }
+        return -1;
+    }
+
+    if (priv->agent)
+        return 0;
+
+    if (!priv->eventThread &&
+        virBhyveDomainObjStartWorker(vm) < 0)
+        return -1;
+
+    if (bhyveConnectAgent(NULL, vm) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+bhyveDomainGetHostnameAgent(virDomainObj *vm,
+                            char **hostname)
+{
+    qemuAgent *agent;
+    int ret = -1;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_QUERY) < 0)
+        return -1;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    ret = qemuAgentGetHostname(agent, hostname, true);
+    bhyveDomainObjExitAgent(vm, agent);
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+
+static char *
+bhyveDomainQemuAgentCommand(virDomainPtr domain,
+                            const char *cmd,
+                            int timeout,
+                            unsigned int flags)
+{
+    virDomainObj *vm;
+    int ret = -1;
+    char *result = NULL;
+    qemuAgent *agent;
+
+    virCheckFlags(0, NULL);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainQemuAgentCommandEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (!bhyveDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    ret = qemuAgentArbitraryCommand(agent, cmd, &result, timeout);
+    bhyveDomainObjExitAgent(vm, agent);
+    if (ret < 0)
+        VIR_FREE(result);
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return result;
+}
+
+
 static int
 bhyveDomainGetHostnameLease(virDomainObj *vm,
                             char **hostname)
@@ -1971,7 +2131,15 @@ bhyveDomainGetHostname(virDomainPtr domain,
     virDomainObj *vm = NULL;
     char *hostname = NULL;
 
-    virCheckFlags(VIR_DOMAIN_GET_HOSTNAME_LEASE, NULL);
+    virCheckFlags(VIR_DOMAIN_GET_HOSTNAME_LEASE |
+                  VIR_DOMAIN_GET_HOSTNAME_AGENT, NULL);
+
+    VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_GET_HOSTNAME_LEASE,
+                            VIR_DOMAIN_GET_HOSTNAME_AGENT,
+                            NULL);
+
+    if (!(flags & VIR_DOMAIN_GET_HOSTNAME_AGENT))
+        flags |= VIR_DOMAIN_GET_HOSTNAME_LEASE;
 
     if (!(vm = bhyveDomObjFromDomain(domain)))
         return NULL;
@@ -1979,8 +2147,13 @@ bhyveDomainGetHostname(virDomainPtr domain,
     if (virDomainGetHostnameEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (bhyveDomainGetHostnameLease(vm, &hostname) < 0)
-        goto cleanup;
+    if (flags & VIR_DOMAIN_GET_HOSTNAME_LEASE) {
+        if (bhyveDomainGetHostnameLease(vm, &hostname) < 0)
+            goto cleanup;
+    } else if (flags & VIR_DOMAIN_GET_HOSTNAME_AGENT) {
+        if (bhyveDomainGetHostnameAgent(vm, &hostname) < 0)
+            goto cleanup;
+    }
 
     if (!hostname) {
         virReportError(VIR_ERR_NO_HOSTNAME,
@@ -2062,6 +2235,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetVcpuPinInfo = bhyveDomainGetVcpuPinInfo, /* 12.1.0 */
     .domainInterfaceAddresses = bhyveDomainInterfaceAddresses, /* 12.3.0 */
     .domainGetHostname = bhyveDomainGetHostname, /* 12.3.0 */
+    .domainQemuAgentCommand = bhyveDomainQemuAgentCommand, /* 12.4.0 */
 };
 
 

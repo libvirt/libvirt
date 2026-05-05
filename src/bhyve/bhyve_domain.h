@@ -22,6 +22,8 @@
 
 #include "domain_addr.h"
 #include "domain_conf.h"
+#include "vireventthread.h"
+#include "hypervisor/qemu_agent.h"
 
 #include "bhyve_monitor.h"
 
@@ -33,10 +35,22 @@ struct _bhyveDomainObjPrivate {
     bool persistentAddrs;
 
     bhyveMonitor *mon;
+
+    qemuAgent *agent;
+    bool agentError;
+    int agentTimeout;
+
+    virEventThread *eventThread;
 };
+
+#define BHYVE_DOMAIN_PRIVATE(vm) \
+    ((bhyveDomainObjPrivate *) (vm)->privateData)
 
 virDomainXMLOption *virBhyveDriverCreateXMLConf(struct _bhyveConn *);
 
 extern virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virBhyveDriverDomainDefParserConfig;
 extern virXMLNamespace virBhyveDriverDomainXMLNamespace;
+
+int virBhyveDomainObjStartWorker(virDomainObj *dom);
+void virBhyveDomainObjStopWorker(virDomainObj *dom);
