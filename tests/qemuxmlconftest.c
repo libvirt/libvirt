@@ -1508,7 +1508,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-nfs");
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
-    DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-tlsx509-nbd-hostname", "6.2.0");
     driver.config->nbdTLSpriority = g_strdup("@SYSTEM:-VERS-TLS1.3");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
     VIR_FREE(driver.config->nbdTLSpriority);
