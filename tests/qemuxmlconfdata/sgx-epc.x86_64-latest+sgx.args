@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/var/lib/libvirt/qemu/domain--1-QEMUGuest1/master-key.aes"}' \
--machine pc-q35-7.0,usb=off,dump-guest-core=off,sgx-epc.0.memdev=memepc0,sgx-epc.0.node=0,sgx-epc.1.memdev=memepc1,sgx-epc.1.node=1 \
+-machine pc-q35-7.0,usb=off,dump-guest-core=off,sgx-epc.0.memdev=memepc0,sgx-epc.0.node=0,sgx-epc.1.memdev=memepc1,sgx-epc.1.node=1,acpi=off \
 -accel tcg \
 -cpu qemu64 \
 -m size=1048576k,slots=16,maxmem=1130496k \
@@ -28,12 +28,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
--no-acpi \
 -boot strict=on \
 -device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
--object '{"qom-type":"memory-backend-epc","id":"memepc0","prealloc":true,"size":67108864,"host-nodes":[0,1],"policy":"bind"}' \
--object '{"qom-type":"memory-backend-epc","id":"memepc1","prealloc":true,"size":16777216,"host-nodes":[0,1],"policy":"bind"}' \
+-object '{"qom-type":"thread-context","id":"tc-memepc0","node-affinity":[0,1]}' \
+-object '{"qom-type":"memory-backend-epc","id":"memepc0","prealloc":true,"size":67108864,"host-nodes":[0,1],"policy":"bind","prealloc-context":"tc-memepc0"}' \
+-object '{"qom-type":"thread-context","id":"tc-memepc1","node-affinity":[0,1]}' \
+-object '{"qom-type":"memory-backend-epc","id":"memepc1","prealloc":true,"size":16777216,"host-nodes":[0,1],"policy":"bind","prealloc-context":"tc-memepc1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global ICH9-LPC.noreboot=off \
 -watchdog-action reset \

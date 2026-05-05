@@ -2997,7 +2997,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-phys-bits-limit");
     DO_TEST_CAPS_LATEST("cpu-phys-bits-emulate-bare");
 
-    DO_TEST_CAPS_VER("sgx-epc", "7.0.0");
+    DO_TEST_CAPS_ARCH_LATEST_FULL("sgx-epc", "x86_64",
+                                  ARG_CAPS_VARIANT, "+sgx", ARG_END);
 
     DO_TEST_CAPS_LATEST("crypto-builtin");
 
