@@ -2209,9 +2209,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-kvm", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "8.1.0");
@@ -2224,9 +2221,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "10.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-kvm", "11.0.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-tcg", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "8.1.0");
@@ -2239,9 +2233,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "10.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-tcg", "11.0.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "8.1.0");
@@ -2254,9 +2245,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "10.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-kvm", "11.0.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "8.1.0");
@@ -2269,9 +2257,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "10.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-fallback-tcg", "11.0.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "8.1.0");
@@ -2284,9 +2269,6 @@ mymain(void)
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "10.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-kvm", "11.0.0");
 
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "6.2.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "7.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "7.1.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "7.2.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "8.0.0");
     DO_TEST_CAPS_VER("cpu-host-model-nofallback-tcg", "8.1.0");
