@@ -530,7 +530,7 @@ x86_64-freebsd-15:
   allow_failure:
     exit_codes: 3
   variables:
-    CIRRUS_VM_IMAGE_NAME: freebsd-15-0
+    CIRRUS_VM_IMAGE_NAME: freebsd-15-0-amd64-ufs
     CIRRUS_VM_IMAGE_SELECTOR: image_family
     CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
     INSTALL_COMMAND: pkg install -y
