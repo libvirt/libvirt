@@ -8004,6 +8004,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGraphicsReload = remoteDomainGraphicsReload, /* 10.2.0 */
     .domainSetThrottleGroup = remoteDomainSetThrottleGroup, /* 11.2.0 */
     .domainDelThrottleGroup = remoteDomainDelThrottleGroup, /* 11.2.0 */
+    .domainAnnounceInterface = remoteDomainAnnounceInterface, /* 12.5.0 */
 };
 
 static virNetworkDriver network_driver = {

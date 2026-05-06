@@ -293,6 +293,10 @@ const REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX = 2048;
 /* Upper limit on number of messages */
 const REMOTE_DOMAIN_MESSAGES_MAX = 2048;
 
+/*
+ * Upper limit on number of domain announce interface parameters
+ */
+const REMOTE_DOMAIN_ANNOUNCE_INTERFACE_PARAMS_MAX = 16;
 
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
@@ -4023,6 +4027,13 @@ struct remote_domain_event_callback_channel_lifecycle_msg {
     int reason;
 };
 
+struct remote_domain_announce_interface_args {
+    remote_nonnull_domain dom;
+    remote_string device;
+    remote_typed_param params<REMOTE_DOMAIN_ANNOUNCE_INTERFACE_PARAMS_MAX>;
+    unsigned int flags;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -7146,5 +7157,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CHANNEL_LIFECYCLE = 455
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CHANNEL_LIFECYCLE = 455,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_ANNOUNCE_INTERFACE = 456
 };

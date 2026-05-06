@@ -3349,6 +3349,15 @@ struct remote_domain_event_callback_channel_lifecycle_msg {
         int                        state;
         int                        reason;
 };
+struct remote_domain_announce_interface_args {
+        remote_nonnull_domain      dom;
+        remote_string              device;
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3805,4 +3814,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_EVENT_NIC_MAC_CHANGE = 453,
         REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED = 454,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CHANNEL_LIFECYCLE = 455,
+        REMOTE_PROC_DOMAIN_ANNOUNCE_INTERFACE = 456,
 };

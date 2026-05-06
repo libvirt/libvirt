@@ -956,4 +956,9 @@ LIBVIRT_11.2.0 {
         virDomainDelThrottleGroup;
 } LIBVIRT_10.2.0;
 
+LIBVIRT_12.5.0 {
+    global:
+        virDomainAnnounceInterface;
+} LIBVIRT_11.2.0;
+
 # .... define new API here using predicted next version number ....

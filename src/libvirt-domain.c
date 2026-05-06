@@ -14316,3 +14316,68 @@ virDomainDelThrottleGroup(virDomainPtr dom,
     virDispatchError(dom->conn);
     return -1;
 }
+
+
+/**
+ * virDomainAnnounceInterface:
+ * @dom: pointer to domain object
+ * @device: the interface name or mac address, or NULL to announce all interfaces
+ * @params: pointer to typed parameters object
+ * @nparams: number of parameters in @params
+ * @flags: currently unused, pass 0
+ *
+ * Cause this domain to "announce" its network interfaces by injecting
+ * a series of "gratuitous ARP" packets into the outgoing data stream
+ * for the interface matching @device (or all interfaces). This should
+ * cause local switches to direct traffic for that MAC address
+ * correctly after a topology change.
+ *
+ * See VIR_DOMAIN_ANNOUNCE_INTERFACE_* for detailed descriptions of
+ * accepted parameters.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ *
+ * Since: 12.5.0
+ */
+int
+virDomainAnnounceInterface(virDomainPtr dom,
+                           const char *device,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DEBUG("dom=%p, device='%s' params=%p nparams=%d flags=0x%x",
+              dom, NULLSTR(device), params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(dom, -1);
+
+    conn = dom->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+    if (nparams != 0)
+        virCheckNonNullArgGoto(params, error);
+    else
+        virCheckNullArgGoto(params, error);
+
+    if (virTypedParameterValidateSet(conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->domainAnnounceInterface) {
+        int ret = conn->driver->domainAnnounceInterface(dom, device, params, nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}

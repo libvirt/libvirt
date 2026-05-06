@@ -1473,6 +1473,13 @@ typedef int
                                 const char *groupname,
                                 unsigned int flags);
 
+typedef int
+(*virDrvDomainAnnounceInterface)(virDomainPtr dom,
+                                 const char *device,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 
 /**
@@ -1750,4 +1757,5 @@ struct _virHypervisorDriver {
     virDrvDomainGraphicsReload domainGraphicsReload;
     virDrvDomainSetThrottleGroup domainSetThrottleGroup;
     virDrvDomainDelThrottleGroup domainDelThrottleGroup;
+    virDrvDomainAnnounceInterface domainAnnounceInterface;
 };
