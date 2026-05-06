@@ -192,3 +192,17 @@ virTestStablePath(const char *path);
 #ifdef __linux__
 int virCreateAnonymousFile(const uint8_t *data, size_t len);
 #endif
+
+typedef bool (*virTestEnumerateTestCasesCB)(struct dirent *);
+
+int
+virTestEnumerateTestCases(const char *path,
+                          virTestEnumerateTestCasesCB cb,
+                          GHashTable **existingTestCases);
+
+void
+virTestCaseMarkUsed(GHashTable *existingTestCases,
+                    const char *file);
+
+int
+virTestCheckUnusedTestCases(GHashTable *existingTestCases);

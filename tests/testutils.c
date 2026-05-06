@@ -1245,3 +1245,61 @@ virCreateAnonymousFile(const uint8_t *data, size_t len)
     return -1;
 }
 #endif
+
+int
+virTestEnumerateTestCases(const char *path,
+                          virTestEnumerateTestCasesCB cb,
+                          GHashTable **existingTestCases)
+{
+    g_autoptr(GHashTable) etc = virHashNew(NULL);
+    struct dirent *ent;
+    g_autoptr(DIR) dir = NULL;
+    int rc;
+
+    /* If VIR_TEST_RANGE is in use don't bother filling in the data. */
+    if (virTestHasRangeBitmap())
+        return 0;
+
+    if (virDirOpen(&dir, path) < 0)
+        return -1;
+
+    while ((rc = virDirRead(dir, &ent, path)) > 0) {
+        if (cb(ent)) {
+            g_hash_table_insert(etc,
+                                g_strdup_printf("%s/%s", path, ent->d_name),
+                                NULL);
+        }
+    }
+
+    if (rc == 0)
+        *existingTestCases = g_steal_pointer(&etc);
+
+    return rc;
+}
+
+void
+virTestCaseMarkUsed(GHashTable *existingTestCases,
+                    const char *file)
+{
+    if (existingTestCases && file)
+        g_hash_table_remove(existingTestCases, file);
+}
+
+int
+virTestCheckUnusedTestCases(GHashTable *existingTestCases)
+{
+    g_autofree virHashKeyValuePair *items = virHashGetItems(existingTestCases, NULL, true);
+    size_t i;
+    int ret = 0;
+
+    for (i = 0; items && items[i].key; i++) {
+        if (ret == 0) {
+            fprintf(stderr, "\n");
+            ret = -1;
+        }
+
+        fprintf(stderr, "unused file: %s\n", (const char *) items[i].key);
+    }
+
+    return ret;
+}
