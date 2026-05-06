@@ -35,6 +35,7 @@ struct _testInfo {
     char *outxml;
     char *outconf;
     char *outhostsfile;
+    GHashTable *existingTestCases;
 };
 
 typedef struct _testInfo testInfo;
@@ -63,6 +64,7 @@ testCompareXMLToXMLFiles(const void *data)
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     g_autoptr(virNetworkDef) def = NULL;
 
+    virTestCaseMarkUsed(info->existingTestCases, info->inxml);
     if (!(def = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false))) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_PARSE;
         goto cleanup;
@@ -84,6 +86,7 @@ testCompareXMLToXMLFiles(const void *data)
     if (info->expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT)
         goto cleanup;
 
+    virTestCaseMarkUsed(info->existingTestCases, info->outxml);
     if (virTestCompareToFile(actual, info->outxml) < 0) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE;
         goto cleanup;
@@ -129,6 +132,7 @@ testCompareXMLToConfFiles(const void *data)
 
     if (!(def = g_steal_pointer(&info->def))) {
         /* Previous test wasn't executed. */
+        virTestCaseMarkUsed(info->existingTestCases, info->inxml);
         if (!(def = virNetworkDefParse(NULL, info->inxml, info->xmlopt, false)))
             goto cleanup;
 
@@ -168,10 +172,12 @@ testCompareXMLToConfFiles(const void *data)
     }
 #endif
 
+    virTestCaseMarkUsed(info->existingTestCases, info->outconf);
     if (virTestCompareToFile(confactual, info->outconf) < 0)
         compareFailed = true;
 
     if (hostsfileactual) {
+        virTestCaseMarkUsed(info->existingTestCases, info->outhostsfile);
         if (virTestCompareToFile(hostsfileactual, info->outhostsfile) < 0) {
             compareFailed = true;
         }
@@ -232,6 +238,7 @@ testRun(const char *name,
         virNetworkXMLOption *xmlopt,
         dnsmasqCaps *caps,
         testCompareNetXML2XMLResult expectResult,
+        GHashTable *existingTestCases,
         unsigned int flags)
 {
     g_autofree char *name_xml2xml = g_strdup_printf("Network XML-2-XML %s", name);
@@ -247,6 +254,7 @@ testRun(const char *name,
     info->outxml = g_strdup_printf("%s/networkxmlconfdata/%s.expect.xml", abs_srcdir, name);
     info->outconf = g_strdup_printf("%s/networkxmlconfdata/%s.conf", abs_srcdir, name);
     info->outhostsfile = g_strdup_printf("%s/networkxmlconfdata/%s.hostsfile", abs_srcdir, name);
+    info->existingTestCases = existingTestCases;
 
     virTestRunLog(ret, name_xml2xml, testCompareXMLToXMLFiles, info);
 
@@ -254,12 +262,34 @@ testRun(const char *name,
         virTestRunLog(ret, name_xml2conf, testCompareXMLToConfFiles, info);
 }
 
+
+static bool
+testCaseEnumerate(struct dirent *ent)
+{
+#ifndef __linux__
+    /* This test case is ran only on Linux. See comment in mymain(). */
+    if (STREQ(ent->d_name, "hostdev.expect.xml"))
+        return false;
+#endif
+    return virStringHasSuffix(ent->d_name, ".xml") ||
+        virStringHasSuffix(ent->d_name, ".conf") ||
+        virStringHasSuffix(ent->d_name, ".hostsfile");
+}
+
+
 static int
 mymain(void)
 {
     g_autoptr(virNetworkXMLOption) xmlopt = NULL;
     g_autoptr(dnsmasqCaps) caps = NULL;
+    g_autoptr(GHashTable) existingTestCases = NULL;
     int ret = 0;
+
+    if (virTestEnumerateTestCases(abs_srcdir "/networkxmlconfdata",
+                                  testCaseEnumerate,
+                                  &existingTestCases) < 0) {
+        return -1;
+    }
 
     if (!(xmlopt = networkDnsmasqCreateXMLConf()))
         return -1;
@@ -268,7 +298,7 @@ mymain(void)
         return -1;
 
 #define DO_TEST_FULL(name, flags, expectResult) \
-    testRun(name, &ret, xmlopt, caps, expectResult, flags)
+    testRun(name, &ret, xmlopt, caps, expectResult, existingTestCases, flags)
 #define DO_TEST(name) \
     DO_TEST_FULL(name, 0, TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS)
 #define DO_TEST_FLAGS(name, flags) \
@@ -339,6 +369,9 @@ mymain(void)
     DO_TEST("leasetime-hours");
     DO_TEST("leasetime-infinite");
     DO_TEST("isolated-ports");
+
+    if (virTestCheckUnusedTestCases(existingTestCases) < 0)
+        ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
