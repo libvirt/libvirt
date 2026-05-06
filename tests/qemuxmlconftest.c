@@ -372,15 +372,6 @@ testInfoCheckDuplicate(testQemuInfo *info)
 }
 
 
-static void
-testQemuConfMarkUsed(testQemuInfo *info,
-                     const char *file)
-{
-    if (file)
-        ignore_value(g_hash_table_remove(info->conf->existingTestCases, file));
-}
-
-
 /**
  * testQemuConfXMLCommon: Prepare common test data (e.g. parse input XML)
  * for a test case.
@@ -413,10 +404,10 @@ testQemuConfXMLCommon(testQemuInfo *info,
     if (info->prepared)
         goto cleanup;
 
-    testQemuConfMarkUsed(info, info->infile);
-    testQemuConfMarkUsed(info, info->outfile);
-    testQemuConfMarkUsed(info, info->errfile);
-    testQemuConfMarkUsed(info, info->out_xml_inactive);
+    virTestCaseMarkUsed(info->conf->existingTestCases, info->infile);
+    virTestCaseMarkUsed(info->conf->existingTestCases, info->outfile);
+    virTestCaseMarkUsed(info->conf->existingTestCases, info->errfile);
+    virTestCaseMarkUsed(info->conf->existingTestCases, info->out_xml_inactive);
 
     if (testQemuInfoInitArgs((testQemuInfo *) info) < 0)
         goto cleanup;
@@ -591,7 +582,7 @@ testExtDeviceArgv(testQemuInfo *info,
     outfile = g_strdup_printf("%s/qemuxmlconfdata/%s%s%s.%s%zu.args",
                               abs_srcdir, info->name, info->suffix,
                               info->args.capsvariant, helper, idx);
-    testQemuConfMarkUsed(info, outfile);
+    virTestCaseMarkUsed(info->conf->existingTestCases, outfile);
 
     if (!cmd) {
         err = virGetLastError();
@@ -787,51 +778,12 @@ testCompareXMLToArgv(const void *data)
 }
 
 
-static int
-testConfXMLCheck(GHashTable *existingTestCases)
+static bool
+testConfXMLEnumerate(struct dirent *ent)
 {
-    g_autofree virHashKeyValuePair *items = virHashGetItems(existingTestCases, NULL, true);
-    size_t i;
-    int ret = 0;
-
-    for (i = 0; items[i].key; i++) {
-        if (ret == 0)
-            fprintf(stderr, "\n");
-
-        fprintf(stderr, "unused file: %s\n", (const char *) items[i].key);
-        ret = -1;
-    }
-
-    return ret;
-}
-
-
-static int
-testConfXMLEnumerate(GHashTable *existingTestCases)
-{
-    struct dirent *ent;
-    g_autoptr(DIR) dir = NULL;
-    int rc;
-
-    /* If VIR_TEST_RANGE is in use don't bother filling in the data, which
-     * also makes testConfXMLCheck succeed. */
-    if (virTestHasRangeBitmap())
-        return 0;
-
-    if (virDirOpen(&dir, abs_srcdir "/qemuxmlconfdata") < 0)
-        return -1;
-
-    while ((rc = virDirRead(dir, &ent, abs_srcdir "/qemuxmlconfdata")) > 0) {
-        if (virStringHasSuffix(ent->d_name, ".xml") ||
-            virStringHasSuffix(ent->d_name, ".args") ||
-            virStringHasSuffix(ent->d_name, ".err")) {
-            g_hash_table_insert(existingTestCases,
-                                g_strdup_printf(abs_srcdir "/qemuxmlconfdata/%s", ent->d_name),
-                                NULL);
-        }
-    }
-
-    return rc;
+    return virStringHasSuffix(ent->d_name, ".xml") ||
+        virStringHasSuffix(ent->d_name, ".args") ||
+        virStringHasSuffix(ent->d_name, ".err");
 }
 
 
@@ -902,23 +854,27 @@ mymain(void)
     int ret = 0;
     g_autoptr(virConnect) conn = NULL;
     g_autoptr(GHashTable) duplicateTests = virHashNew(NULL);
-    g_autoptr(GHashTable) existingTestCases = virHashNew(NULL);
+    g_autoptr(GHashTable) existingTestCases = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
     g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) g_hash_table_unref);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
                                      .qapiSchemaCache = qapiSchemaCache,
-                                     .duplicateTests = duplicateTests,
-                                     .existingTestCases = existingTestCases };
+                                     .duplicateTests = duplicateTests };
 
     if (!capslatest)
         return EXIT_FAILURE;
 
     /* enumerate and store all available test cases to verify at the end that
      * all of them were invoked */
-    if (testConfXMLEnumerate(existingTestCases) < 0)
+    if (virTestEnumerateTestCases(abs_srcdir "/qemuxmlconfdata",
+                                  testConfXMLEnumerate,
+                                  &existingTestCases) < 0) {
         return EXIT_FAILURE;
+    }
+
+    testConf.existingTestCases = existingTestCases;
 
     /* Set the timezone because we are mocking the time() function.
      * If we don't do that, then localtime() may return unpredictable
@@ -3078,7 +3034,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("aarch64-virt-virtualization", "aarch64");
 
     /* check that all input files were actually used here */
-    if (testConfXMLCheck(existingTestCases) < 0)
+    if (virTestCheckUnusedTestCases(existingTestCases) < 0)
         ret = -1;
 
     qemuTestDriverFree(&driver);
