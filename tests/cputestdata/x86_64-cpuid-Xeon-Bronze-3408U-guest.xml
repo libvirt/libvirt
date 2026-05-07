@@ -25,6 +25,7 @@
   <feature policy='require' name='intel-pt'/>
   <feature policy='require' name='ospke'/>
   <feature policy='require' name='waitpkg'/>
+  <feature policy='require' name='cet-ss'/>
   <feature policy='require' name='cldemote'/>
   <feature policy='require' name='movdiri'/>
   <feature policy='require' name='movdir64b'/>
@@ -33,6 +34,7 @@
   <feature policy='require' name='md-clear'/>
   <feature policy='require' name='pconfig'/>
   <feature policy='require' name='arch-lbr'/>
+  <feature policy='require' name='cet-ibt'/>
   <feature policy='require' name='stibp'/>
   <feature policy='require' name='flush-l1d'/>
   <feature policy='require' name='core-capability'/>

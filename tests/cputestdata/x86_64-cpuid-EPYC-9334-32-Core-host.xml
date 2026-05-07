@@ -9,6 +9,7 @@
   <feature name='ht'/>
   <feature name='cmt'/>
   <feature name='ospke'/>
+  <feature name='cet-ss'/>
   <feature name='flush-l1d'/>
   <feature name='mbm_total'/>
   <feature name='mbm_local'/>

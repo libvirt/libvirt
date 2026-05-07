@@ -7,6 +7,7 @@
   <feature policy='require' name='ht'/>
   <feature policy='require' name='cmt'/>
   <feature policy='require' name='ospke'/>
+  <feature policy='require' name='cet-ss'/>
   <feature policy='require' name='flush-l1d'/>
   <feature policy='require' name='mbm_total'/>
   <feature policy='require' name='mbm_local'/>

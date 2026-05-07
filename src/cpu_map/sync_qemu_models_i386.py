@@ -83,6 +83,8 @@ def translate_feature(name, model):
         "CPUID_7_0_EDX_STIBP": "stibp",
         "CPUID_7_0_EDX_TSX_LDTRK": "tsx-ldtrk",
         "CPUID_7_0_EDX_AVX512_VP2INTERSECT": "avx512-vp2intersect",
+        "CPUID_7_0_ECX_CET_SHSTK": "cet-ss",
+        "CPUID_7_0_EDX_CET_IBT": "cet-ibt",
         "CPUID_7_1_EAX_AMX_FP16": "amx-fp16",
         "CPUID_7_1_EAX_AVX512_BF16": "avx512-bf16",
         "CPUID_7_1_EAX_AVX_IFMA": "avx-ifma",
@@ -317,6 +319,7 @@ def translate_feature(name, model):
         "VMX_VM_EXIT_CLEAR_BNDCFGS": "vmx-exit-clear-bndcfgs",
         "VMX_VM_EXIT_CLEAR_IA32_RTIT_CTL": "vmx-exit-clear-rtit-ctl",
         "VMX_VM_EXIT_LOAD_IA32_PKRS": "vmx-exit-load-pkrs",
+        "VMX_VM_EXIT_SAVE_CET": "vmx-exit-save-cet",
 
         # FEAT_VMX_ENTRY_CTLS
         "VMX_VM_ENTRY_LOAD_DEBUG_CONTROLS": "vmx-entry-noload-debugctl",
@@ -327,6 +330,7 @@ def translate_feature(name, model):
         "VMX_VM_ENTRY_LOAD_BNDCFGS": "vmx-entry-load-bndcfgs",
         "VMX_VM_ENTRY_LOAD_IA32_RTIT_CTL": "vmx-entry-load-rtit-ctl",
         "VMX_VM_ENTRY_LOAD_IA32_PKRS": "vmx-entry-load-pkrs",
+        "VMX_VM_ENTRY_LOAD_CET": "vmx-entry-load-cet",
 
         # FEAT_VMX_MISC
         "MSR_VMX_MISC_STORE_LMA": "vmx-store-lma",

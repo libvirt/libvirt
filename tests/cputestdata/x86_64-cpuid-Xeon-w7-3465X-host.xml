@@ -29,6 +29,7 @@
   <feature name='sha-ni'/>
   <feature name='ospke'/>
   <feature name='waitpkg'/>
+  <feature name='cet-ss'/>
   <feature name='rdpid'/>
   <feature name='bus-lock-detect'/>
   <feature name='cldemote'/>
@@ -41,6 +42,7 @@
   <feature name='tsx-ldtrk'/>
   <feature name='pconfig'/>
   <feature name='arch-lbr'/>
+  <feature name='cet-ibt'/>
   <feature name='amx-bf16'/>
   <feature name='avx512-fp16'/>
   <feature name='amx-tile'/>

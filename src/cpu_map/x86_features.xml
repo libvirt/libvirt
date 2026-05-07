@@ -317,6 +317,9 @@
   <feature name='avx512vbmi2'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ecx='0x00000040'/>
   </feature>
+  <feature name='cet-ss'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000000' ecx='0x00000080'/>
+  </feature>
   <feature name='gfni'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' ecx='0x00000100'/>
   </feature>
@@ -388,6 +391,9 @@
   </feature>
   <feature name='arch-lbr'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' edx='0x00080000'/>
+  </feature>
+  <feature name='cet-ibt'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000000' edx='0x00100000'/>
   </feature>
   <feature name='amx-bf16'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000000' edx='0x00400000'/>
@@ -1244,6 +1250,9 @@
   <feature name='vmx-exit-clear-rtit-ctl'>
     <msr index='0x0000048f' edx='0x02000000' eax='0x00000000'/>
   </feature>
+  <feature name='vmx-exit-save-cet'>
+    <msr index='0x0000048f' edx='0x10000000' eax='0x00000000'/>
+  </feature>
   <feature name='vmx-exit-load-pkrs'>
     <msr index='0x0000048f' edx='0x20000000' eax='0x00000000'/>
   </feature>
@@ -1272,6 +1281,9 @@
   </feature>
   <feature name='vmx-entry-load-rtit-ctl'>
     <msr index='0x00000490' edx='0x00040000' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-entry-load-cet'>
+    <msr index='0x00000490' edx='0x00100000' eax='0x00000000'/>
   </feature>
   <feature name='vmx-entry-load-pkrs'>
     <msr index='0x00000490' edx='0x00400000' eax='0x00000000'/>

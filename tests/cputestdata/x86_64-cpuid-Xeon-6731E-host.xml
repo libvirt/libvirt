@@ -38,6 +38,7 @@
   <feature name='pku'/>
   <feature name='ospke'/>
   <feature name='waitpkg'/>
+  <feature name='cet-ss'/>
   <feature name='vaes'/>
   <feature name='vpclmulqdq'/>
   <feature name='rdpid'/>
@@ -49,6 +50,7 @@
   <feature name='serialize'/>
   <feature name='pconfig'/>
   <feature name='arch-lbr'/>
+  <feature name='cet-ibt'/>
   <feature name='stibp'/>
   <feature name='flush-l1d'/>
   <feature name='avx-vnni'/>

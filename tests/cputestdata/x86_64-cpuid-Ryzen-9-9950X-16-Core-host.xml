@@ -20,6 +20,7 @@
   <feature name='pku'/>
   <feature name='ospke'/>
   <feature name='avx512vbmi2'/>
+  <feature name='cet-ss'/>
   <feature name='gfni'/>
   <feature name='vaes'/>
   <feature name='vpclmulqdq'/>

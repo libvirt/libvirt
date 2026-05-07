@@ -59,6 +59,7 @@
       <feature policy='require' name='tsc-deadline'/>
       <feature policy='require' name='hypervisor'/>
       <feature policy='require' name='tsc_adjust'/>
+      <feature policy='require' name='cet-ss'/>
       <feature policy='require' name='spec-ctrl'/>
       <feature policy='require' name='stibp'/>
       <feature policy='require' name='flush-l1d'/>
