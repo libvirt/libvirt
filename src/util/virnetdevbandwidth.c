@@ -287,13 +287,13 @@ virNetDevBandwidthSet(const char *ifname,
         tx = bandwidth->out;
     }
 
-    /* Only if the caller requests, clear everything including root
-     * qdisc and all filters before adding everything.
-     */
-    if (flags & VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL)
-        virNetDevBandwidthClear(ifname);
-
     if (tx && tx->average) {
+        /* Only if the caller requests, clear the root qdisc and all filters
+         * before adding everything.
+         */
+        if (flags & VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL)
+            virNetDevBandwidthClearRoot(ifname);
+
         average = g_strdup_printf("%llukbps", tx->average);
         if (tx->peak)
             peak = g_strdup_printf("%llukbps", tx->peak);
@@ -417,6 +417,12 @@ virNetDevBandwidthSet(const char *ifname,
     }
 
     if (rx) {
+        /* Only if the caller requests, clear the ingress qdisc and all
+         * filters before adding everything.
+         */
+        if (flags & VIR_NETDEV_BANDWIDTH_SET_CLEAR_ALL)
+            virNetDevBandwidthClearIngress(ifname);
+
         average = g_strdup_printf("%llukbps", rx->average);
 
         if (rx->burst) {

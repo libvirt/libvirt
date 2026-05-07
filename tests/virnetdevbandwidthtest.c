@@ -146,7 +146,6 @@ mymain(void)
                 "  <inbound average='1024'/>"
                 "</bandwidth>",
                 "tc qdisc del dev eth0 root\n"
-                "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc show dev eth0 handle 1:\n"
                 "tc qdisc add dev eth0 root handle 1: htb default 1\n"
                 "tc class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps quantum 87\n"
@@ -163,7 +162,6 @@ mymain(void)
     DO_TEST_SET("<bandwidth>"
                 "  <outbound average='1024'/>"
                 "</bandwidth>",
-                "tc qdisc del dev eth0 root\n"
                 "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc add dev eth0 ingress\n"
                 "tc filter add dev eth0 parent ffff: protocol all u32 match u32 0 0"
@@ -177,12 +175,12 @@ mymain(void)
                 "  <outbound average='5' peak='6' burst='7'/>"
                 "</bandwidth>",
                 "tc qdisc del dev eth0 root\n"
-                "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc show dev eth0 handle 1:\n"
                 "tc qdisc add dev eth0 root handle 1: htb default 1\n"
                 "tc class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb quantum 1\n"
                 "tc qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
                 "tc filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
+                "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc add dev eth0 ingress\n"
                 "tc filter add dev eth0 parent ffff: protocol all u32 match u32 0 0"
                    " police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n",
@@ -200,12 +198,12 @@ mymain(void)
                 "  <outbound average='4294967295'/>"
                 "</bandwidth>",
                 "tc qdisc del dev eth0 root\n"
-                "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc show dev eth0 handle 1:\n"
                 "tc qdisc add dev eth0 root handle 1: htb default 1\n"
                 "tc class add dev eth0 parent 1: classid 1:1 htb rate 4294967295kbps quantum 366503875\n"
                 "tc qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
                 "tc filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
+                "tc qdisc del dev eth0 ingress\n"
                 "tc qdisc add dev eth0 ingress\n"
                 "tc filter add dev eth0 parent ffff: protocol all u32 match"
                    " u32 0 0 police rate 4294967295kbps burst 4194303kb mtu 64kb"
