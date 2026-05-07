@@ -60,6 +60,7 @@ struct data {
     int ncpus;
     unsigned int flags;
     int result;
+    GHashTable *existingTestCases;
 };
 
 #if WITH_QEMU
@@ -68,7 +69,9 @@ static virQEMUDriver driver;
 
 
 static virCPUDef *
-cpuTestLoadXML(virArch arch, const char *name)
+cpuTestLoadXML(virArch arch,
+               const char *name,
+               GHashTable *existingTestCases)
 {
     g_autofree char *xml = NULL;
     g_autoptr(xmlDoc) doc = NULL;
@@ -77,6 +80,8 @@ cpuTestLoadXML(virArch arch, const char *name)
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
                           virArchToString(arch), name);
+
+    virTestCaseMarkUsed(existingTestCases, xml);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         return NULL;
@@ -90,6 +95,7 @@ cpuTestLoadXML(virArch arch, const char *name)
 static virCPUDef **
 cpuTestLoadMultiXML(virArch arch,
                     const char *name,
+                    GHashTable *existingTestCases,
                     unsigned int *count)
 {
     g_autofree char *xml = NULL;
@@ -102,6 +108,8 @@ cpuTestLoadMultiXML(virArch arch,
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
                           virArchToString(arch), name);
+
+    virTestCaseMarkUsed(existingTestCases, xml);
 
     if (!(doc = virXMLParseFileCtxt(xml, &ctxt)))
         return NULL;
@@ -136,13 +144,16 @@ cpuTestLoadMultiXML(virArch arch,
 static int
 cpuTestCompareXML(virArch arch,
                   virCPUDef *cpu,
-                  const char *name)
+                  const char *name,
+                  GHashTable *existingTestCases)
 {
     g_autofree char *xml = NULL;
     g_autofree char *actual = NULL;
 
     xml = g_strdup_printf("%s/cputestdata/%s-%s.xml", abs_srcdir,
                           virArchToString(arch), name);
+
+    virTestCaseMarkUsed(existingTestCases, xml);
 
     if (!(actual = virCPUDefFormat(cpu, NULL)))
         return -1;
@@ -190,9 +201,12 @@ cpuTestCompare(const void *arg)
     g_autoptr(virCPUDef) cpu = NULL;
     virCPUCompareResult result;
 
-    if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
-        !(cpu = cpuTestLoadXML(data->arch, data->name)))
+    if (!(host = cpuTestLoadXML(data->arch, data->host,
+                                data->existingTestCases)) ||
+        !(cpu = cpuTestLoadXML(data->arch, data->name,
+                               data->existingTestCases))) {
         return -1;
+    }
 
     result = virCPUCompare(host->arch, host, cpu, false);
     if (data->result == VIR_CPU_COMPARE_ERROR)
@@ -222,9 +236,12 @@ cpuTestGuestCPU(const void *arg)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *result = NULL;
 
-    if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
-        !(cpu = cpuTestLoadXML(data->arch, data->name)))
+    if (!(host = cpuTestLoadXML(data->arch, data->host,
+                                data->existingTestCases)) ||
+        !(cpu = cpuTestLoadXML(data->arch, data->name,
+                               data->existingTestCases))) {
         goto cleanup;
+    }
 
     if (virCPUConvertLegacy(host->arch, cpu) < 0)
         goto cleanup;
@@ -249,7 +266,7 @@ cpuTestGuestCPU(const void *arg)
 
     result = virBufferContentAndReset(&buf);
 
-    if (cpuTestCompareXML(data->arch, cpu, result) < 0)
+    if (cpuTestCompareXML(data->arch, cpu, result, data->existingTestCases) < 0)
         goto cleanup;
 
     ret = 0;
@@ -284,8 +301,10 @@ cpuTestBaseline(const void *arg)
     const char *suffix;
     size_t i;
 
-    if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
+    if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name,
+                                     data->existingTestCases, &ncpus))) {
         goto cleanup;
+    }
 
     baseline = virCPUBaseline(data->arch, cpus, ncpus, NULL, NULL,
                               !!(data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE));
@@ -317,8 +336,10 @@ cpuTestBaseline(const void *arg)
         suffix = "result";
     result = g_strdup_printf("%s-%s", data->name, suffix);
 
-    if (cpuTestCompareXML(data->arch, baseline, result) < 0)
+    if (cpuTestCompareXML(data->arch, baseline, result,
+                          data->existingTestCases) < 0) {
         goto cleanup;
+    }
 
     for (i = 0; i < ncpus; i++) {
         virCPUCompareResult cmp;
@@ -356,9 +377,12 @@ cpuTestUpdate(const void *arg)
     g_autoptr(virCPUDef) cpu = NULL;
     g_autofree char *result = NULL;
 
-    if (!(host = cpuTestLoadXML(data->arch, data->host)) ||
-        !(cpu = cpuTestLoadXML(data->arch, data->name)))
+    if (!(host = cpuTestLoadXML(data->arch, data->host,
+                                data->existingTestCases)) ||
+        !(cpu = cpuTestLoadXML(data->arch, data->name,
+                               data->existingTestCases))) {
         return -1;
+    }
 
     if (!(migHost = virCPUCopyMigratable(data->arch, host)))
         return -1;
@@ -368,7 +392,7 @@ cpuTestUpdate(const void *arg)
 
     result = g_strdup_printf("%s+%s", data->host, data->name);
 
-    return cpuTestCompareXML(data->arch, cpu, result);
+    return cpuTestCompareXML(data->arch, cpu, result, data->existingTestCases);
 }
 
 
@@ -380,7 +404,7 @@ cpuTestHasFeature(const void *arg)
     g_autoptr(virCPUData) hostData = NULL;
     int result;
 
-    if (!(host = cpuTestLoadXML(data->arch, data->host)))
+    if (!(host = cpuTestLoadXML(data->arch, data->host, data->existingTestCases)))
         return -1;
 
     if (cpuEncode(host->arch, host, NULL, &hostData,
@@ -415,7 +439,7 @@ cpuTestValidateFeatures(const void *arg)
     g_autoptr(virCPUDef) cpu = NULL;
     int result;
 
-    if (!(cpu = cpuTestLoadXML(data->arch, data->name)))
+    if (!(cpu = cpuTestLoadXML(data->arch, data->name, data->existingTestCases)))
         return -1;
 
     result = virCPUValidateFeatures(data->arch, cpu);
@@ -468,6 +492,8 @@ cpuTestMakeQEMUCaps(const struct data *data)
 
     json = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.json", abs_srcdir,
                            virArchToString(data->arch), data->host);
+
+    virTestCaseMarkUsed(data->existingTestCases, json);
 
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
         return NULL;
@@ -556,6 +582,8 @@ cpuTestCPUID(bool guest, const void *arg)
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
                                virArchToString(data->arch), data->host);
 
+    virTestCaseMarkUsed(data->existingTestCases, hostFile);
+
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
         return -1;
@@ -583,7 +611,7 @@ cpuTestCPUID(bool guest, const void *arg)
 
     result = g_strdup_printf("cpuid-%s-%s", data->host, guest ? "guest" : "host");
 
-    return cpuTestCompareXML(data->arch, cpu, result);
+    return cpuTestCompareXML(data->arch, cpu, result, data->existingTestCases);
 }
 
 
@@ -602,8 +630,10 @@ cpuTestCPUIDBaseline(const void *arg)
         g_autofree char *name = NULL;
 
         name = g_strdup_printf("cpuid-%s-json", data->cpus[i]);
-        if (!(cpus[i] = cpuTestLoadXML(data->arch, name)))
+        if (!(cpus[i] = cpuTestLoadXML(data->arch, name,
+                                       data->existingTestCases))) {
             goto cleanup;
+        }
     }
 
     baseline = virCPUBaseline(data->arch, cpus, data->ncpus, NULL, NULL, false);
@@ -612,8 +642,10 @@ cpuTestCPUIDBaseline(const void *arg)
 
     result = g_strdup_printf("cpuid-baseline-%s", data->name);
 
-    if (cpuTestCompareXML(data->arch, baseline, result) < 0)
+    if (cpuTestCompareXML(data->arch, baseline, result,
+                          data->existingTestCases) < 0) {
         goto cleanup;
+    }
 
     for (i = 0; i < data->ncpus; i++) {
         virCPUCompareResult cmp;
@@ -675,6 +707,7 @@ cpuTestCompareSignature(const struct data *data,
                              "model:    %3$3u (0x%3$02x)\n" "stepping: %4$3u (0x%4$02x)\n",
                              signature, family, model, stepping);
 
+    virTestCaseMarkUsed(data->existingTestCases, result);
     return virTestCompareToFile(sigStr, result);
 }
 
@@ -689,6 +722,8 @@ cpuTestCPUIDSignature(const void *arg)
 
     hostFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s.xml", abs_srcdir,
                                virArchToString(data->arch), data->host);
+
+    virTestCaseMarkUsed(data->existingTestCases, hostFile);
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
@@ -805,24 +840,28 @@ cpuTestUpdateLive(const void *arg)
     g_autoptr(virDomainCapsCPUModels) models = NULL;
 
     cpuFile = g_strdup_printf("cpuid-%s-guest", data->host);
-    if (!(cpu = cpuTestLoadXML(data->arch, cpuFile)))
+    if (!(cpu = cpuTestLoadXML(data->arch, cpuFile, data->existingTestCases)))
         return -1;
 
     enabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-enabled.xml",
                                   abs_srcdir, virArchToString(data->arch), data->host);
+    virTestCaseMarkUsed(data->existingTestCases, enabledFile);
     if (virTestLoadFile(enabledFile, &enabled) < 0 ||
         !(enabledData = virCPUDataParse(enabled)))
         return -1;
 
     disabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-disabled.xml",
                                    abs_srcdir, virArchToString(data->arch), data->host);
+    virTestCaseMarkUsed(data->existingTestCases, disabledFile);
     if (virTestLoadFile(disabledFile, &disabled) < 0 ||
         !(disabledData = virCPUDataParse(disabled)))
         return -1;
 
     expectedFile = g_strdup_printf("cpuid-%s-json", data->host);
-    if (!(expected = cpuTestLoadXML(data->arch, expectedFile)))
+    if (!(expected = cpuTestLoadXML(data->arch, expectedFile,
+                                    data->existingTestCases))) {
         return -1;
+    }
 
     /* In case the host CPU signature does not exactly match any CPU model in
      * src/cpu_map, the CPU model we detect from CPUID may differ from the one
@@ -889,7 +928,7 @@ cpuTestJSONCPUID(const void *arg)
     if (virQEMUCapsInitCPUModel(qemuCaps, VIR_DOMAIN_VIRT_KVM, cpu, false) != 0)
         return -1;
 
-    return cpuTestCompareXML(data->arch, cpu, result);
+    return cpuTestCompareXML(data->arch, cpu, result, data->existingTestCases);
 }
 
 
@@ -938,15 +977,33 @@ cpuTestInitModels(const char **list)
 }
 
 
+static bool
+testCaseEnumerate(struct dirent *ent)
+{
+    return virStringHasSuffix(ent->d_name, ".xml") ||
+#if WITH_QEMU
+        virStringHasSuffix(ent->d_name, ".json") ||
+#endif
+        0;
+}
+
+
 static int
 mymain(void)
 {
+    g_autoptr(GHashTable) existingTestCases = NULL;
     virDomainCapsCPUModels *model486 = NULL;
     virDomainCapsCPUModels *nomodel = NULL;
     virDomainCapsCPUModels *models = NULL;
     virDomainCapsCPUModels *haswell = NULL;
     virDomainCapsCPUModels *ppc_models = NULL;
     int ret = 0;
+
+    if (virTestEnumerateTestCases(abs_srcdir "/cputestdata",
+                                  testCaseEnumerate,
+                                  &existingTestCases) < 0) {
+        return EXIT_FAILURE;
+    }
 
 #if WITH_QEMU
     if (qemuTestDriverInit(&driver) < 0)
@@ -970,7 +1027,8 @@ mymain(void)
         struct data data = { \
             arch, host, cpu, models, \
             models == NULL ? NULL : #models, \
-            cpus, ncpus, flags, result \
+            cpus, ncpus, flags, result, \
+            existingTestCases \
         }; \
         g_autofree char *testLabel = NULL; \
  \
@@ -1295,6 +1353,9 @@ mymain(void)
     virObjectUnref(models);
     virObjectUnref(haswell);
     virObjectUnref(ppc_models);
+
+    if (virTestCheckUnusedTestCases(existingTestCases) < 0)
+        ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
