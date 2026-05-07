@@ -24,6 +24,7 @@
   <feature name='svm-lock'/>
   <feature name='decodeassists'/>
   <feature name='avic'/>
+  <feature name='gmet'/>
   <feature name='rdctl-no'/>
   <feature name='skip-l1dfl-vmentry'/>
   <feature name='mds-no'/>

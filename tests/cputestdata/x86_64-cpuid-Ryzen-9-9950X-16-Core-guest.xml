@@ -23,6 +23,7 @@
   <feature policy='require' name='svm-lock'/>
   <feature policy='require' name='decodeassists'/>
   <feature policy='require' name='avic'/>
+  <feature policy='require' name='gmet'/>
   <feature policy='require' name='eraps'/>
   <feature policy='require' name='rdctl-no'/>
   <feature policy='require' name='skip-l1dfl-vmentry'/>

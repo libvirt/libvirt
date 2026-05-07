@@ -792,6 +792,9 @@
   <feature name='vgif'>
     <cpuid eax_in='0x8000000a' edx='0x00010000'/>
   </feature>
+  <feature name='gmet'>
+    <cpuid eax_in='0x8000000a' edx='0x00020000'/>
+  </feature>
   <feature name='vnmi'>
     <cpuid eax_in='0x8000000a' edx='0x02000000'/>
   </feature>
@@ -1037,6 +1040,9 @@
   </feature>
   <feature name='vmx-xsaves'>
     <msr index='0x0000048b' edx='0x00100000' eax='0x00000000'/>
+  </feature>
+  <feature name='vmx-mbec'>
+    <msr index='0x0000048b' edx='0x00400000' eax='0x00000000'/>
   </feature>
   <feature name='vmx-tsc-scaling'>
     <msr index='0x0000048b' edx='0x02000000' eax='0x00000000'/>
