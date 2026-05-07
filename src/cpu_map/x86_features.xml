@@ -501,6 +501,9 @@
   <feature name='avx10'>
     <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00080000'/>
   </feature>
+  <feature name='apxf'>
+    <cpuid eax_in='0x00000007' ecx_in='0x00000001' edx='0x00200000'/>
+  </feature>
 
   <!-- cpuid level 0x00000007, 0x0002 (edx) -->
   <feature name='intel-psfd'>
@@ -628,6 +631,11 @@
   <!-- cpuid level 0x00000024, 0x0001 (ecx) -->
   <feature name='avx10-vnni-int'>
     <cpuid eax_in='0x00000024' ecx_in='0x00000001' ecx='0x00000004'/>
+  </feature>
+
+  <!-- cpuid level 0x00000029, 0x0000 (ebx) -->
+  <feature name='apx-nci-ndd-nf'>
+    <cpuid eax_in='0x00000029' ecx_in='0x00000000' ebx='0x00000001'/>
   </feature>
 
   <!-- cpuid level 0x80000001 (ecx) -->
