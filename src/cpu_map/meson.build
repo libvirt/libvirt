@@ -67,6 +67,8 @@ cpumap_data = [
   'x86_Dhyana-v1.xml',
   'x86_Dhyana-v2.xml',
   'x86_Dhyana.xml',
+  'x86_DiamondRapids-v1.xml',
+  'x86_DiamondRapids.xml',
   'x86_EPYC-Genoa-v1.xml',
   'x86_EPYC-Genoa-v2.xml',
   'x86_EPYC-Genoa.xml',

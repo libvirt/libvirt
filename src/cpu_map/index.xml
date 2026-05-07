@@ -144,6 +144,8 @@
       <include filename='x86_Denverton-v3.xml'/>
       <include filename='x86_KnightsMill.xml'/>
       <include filename='x86_KnightsMill-v1.xml'/>
+      <include filename='x86_DiamondRapids.xml'/>
+      <include filename='x86_DiamondRapids-v1.xml'/>
     </group>
 
     <group name='AMD CPU models'>
