@@ -625,6 +625,11 @@
     <cpuid eax_in='0x00000024' ecx_in='0x00000000' ebx='0x00040000'/>
   </feature>
 
+  <!-- cpuid level 0x00000024, 0x0001 (ecx) -->
+  <feature name='avx10-vnni-int'>
+    <cpuid eax_in='0x00000024' ecx_in='0x00000001' ecx='0x00000004'/>
+  </feature>
+
   <!-- cpuid level 0x80000001 (ecx) -->
   <feature name='lahf_lm'>
     <alias name='lahf-lm' source='qemu'/>

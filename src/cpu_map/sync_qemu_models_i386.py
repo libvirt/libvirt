@@ -122,6 +122,7 @@ def translate_feature(name, model):
         "CPUID_24_0_EBX_AVX10_128": "avx10-128",
         "CPUID_24_0_EBX_AVX10_256": "avx10-256",
         "CPUID_24_0_EBX_AVX10_512": "avx10-512",
+        "CPUID_24_1_ECX_AVX10_VNNI_INT": "avx10-vnni-int",
         "CPUID_APM_INVTSC": "invtsc",
         "CPUID_8000_0007_EBX_OVERFLOW_RECOV": "overflow-recov",
         "CPUID_8000_0007_EBX_SUCCOR": "succor",
