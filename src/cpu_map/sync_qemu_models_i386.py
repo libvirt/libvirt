@@ -638,7 +638,7 @@ def update_index(outdir, models):
         group = groups[-1]
         children = group.getchildren()
         if children:
-            last = children()[-1]
+            last = children[-1]
             group_indent = last.tail
             indent = f"{group_indent}  "
             last.tail = indent
