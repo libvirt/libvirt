@@ -959,6 +959,58 @@
         <feature name='serialize'/>
         <feature name='ss'/>
       </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v4</model>
+      <blockers model='SierraForest-v4'>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cet-ibt'/>
+        <feature name='cldemote'/>
+        <feature name='cmpccxadd'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrs'/>
+        <feature name='ibrs-all'/>
+        <feature name='intel-psfd'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='pcid'/>
+        <feature name='psdp-no'/>
+        <feature name='rdseed'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='ss'/>
+      </blockers>
+      <model usable='no' vendor='Intel'>SierraForest-v5</model>
+      <blockers model='SierraForest-v5'>
+        <feature name='avx-ifma'/>
+        <feature name='avx-ne-convert'/>
+        <feature name='avx-vnni-int8'/>
+        <feature name='bhi-ctrl'/>
+        <feature name='bus-lock-detect'/>
+        <feature name='cet-ibt'/>
+        <feature name='cldemote'/>
+        <feature name='cmpccxadd'/>
+        <feature name='fbsdp-no'/>
+        <feature name='fsrs'/>
+        <feature name='ibrs-all'/>
+        <feature name='intel-psfd'/>
+        <feature name='ipred-ctrl'/>
+        <feature name='lam'/>
+        <feature name='mcdt-no'/>
+        <feature name='pbrsb-no'/>
+        <feature name='pcid'/>
+        <feature name='psdp-no'/>
+        <feature name='rdseed'/>
+        <feature name='rrsba-ctrl'/>
+        <feature name='sbdr-ssdp-no'/>
+        <feature name='serialize'/>
+        <feature name='ss'/>
+      </blockers>
       <model usable='no' vendor='Intel' canonical='Skylake-Client-v1'>Skylake-Client</model>
       <blockers model='Skylake-Client'>
         <feature name='hle'/>

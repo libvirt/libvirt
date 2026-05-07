@@ -128,6 +128,8 @@
       <include filename='x86_SierraForest.xml'/>
       <include filename='x86_SierraForest-v1.xml'/>
       <include filename='x86_SierraForest-v2.xml'/>
+      <include filename='x86_SierraForest-v4.xml'/>
+      <include filename='x86_SierraForest-v5.xml'/>
       <include filename='x86_ClearwaterForest.xml'/>
       <include filename='x86_ClearwaterForest-v1.xml'/>
       <include filename='x86_ClearwaterForest-v2.xml'/>
