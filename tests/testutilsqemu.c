@@ -727,7 +727,7 @@ testQemuInfoSetArgs(testQemuInfo *info,
                 new->testfds[i] = va_arg(argptr, unsigned int);
 
                 if (fcntl(new->testfds[i], F_GETFD) != -1) {
-                    fprintf(stderr, "fd '%d' is already in use\n", new->fds[i]);
+                    fprintf(stderr, "fd '%d' is already in use\n", new->testfds[i]);
                     abort();
                 }
 
