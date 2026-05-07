@@ -579,6 +579,32 @@
     <cpuid eax_in='0x00000014' ecx_in='0x00000000' ecx='0x80000000'/>
   </feature>
 
+  <!-- cpuid level 0x0000001e, 0x0001 (eax) -->
+  <feature name='amx-int8-alias'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000001'/>
+  </feature>
+  <feature name='amx-bf16-alias'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000002'/>
+  </feature>
+  <feature name='amx-complex-alias'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000004'/>
+  </feature>
+  <feature name='amx-fp16-alias'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000008'/>
+  </feature>
+  <feature name='amx-fp8'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000010'/>
+  </feature>
+  <feature name='amx-tf32'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000040'/>
+  </feature>
+  <feature name='amx-avx512'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000080'/>
+  </feature>
+  <feature name='amx-movrs'>
+    <cpuid eax_in='0x0000001e' ecx_in='0x00000001' eax='0x00000100'/>
+  </feature>
+
   <!-- cpuid level 0x00000024, 0x0000 (ebx) -->
   <feature name='avx10-128'>
     <cpuid eax_in='0x00000024' ecx_in='0x00000000' ebx='0x00010000'/>
