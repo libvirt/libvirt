@@ -98,6 +98,7 @@ def translate_feature(name, model):
         "CPUID_7_1_EAX_SM3": "sm3",
         "CPUID_7_1_EAX_SM4": "sm4",
         "CPUID_7_1_EAX_AVX_VNNI": "avx-vnni",
+        "CPUID_7_1_EAX_MOVRS": "movrs",
         "CPUID_7_1_ECX_MSR_IMM": "msr-imm",
         "CPUID_7_1_EDX_AVX_NE_CONVERT": "avx-ne-convert",
         "CPUID_7_1_EDX_AVX_VNNI_INT8": "avx-vnni-int8",
