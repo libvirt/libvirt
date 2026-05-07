@@ -1,3 +1,0 @@
-<cpu mode='host-model'>
-  <model fallback='allow'/>
-</cpu>
