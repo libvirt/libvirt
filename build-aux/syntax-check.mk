@@ -478,6 +478,14 @@ sc_prohibit_error_message_on_multiple_lines:
 	halt='found error message on multiple lines' \
 	$(_sc_search_regexp)
 
+# Disallow VIR_WARN and other messagess on multiple lines, except when
+# they end with '\n'.
+sc_prohibit_warnings_on_multiple_lines:
+	@prohibit='VIR_WARN\("[^"]*"$$' \
+    exclude='\\n"$$' \
+	halt='found error message on multiple lines' \
+	$(_sc_search_regexp)
+
 # Look for diagnostics that lack a % in the format string, except that we
 # allow VIR_ERROR to do this, and ignore functions that take a single
 # string rather than a format argument.
