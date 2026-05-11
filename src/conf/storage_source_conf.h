@@ -326,6 +326,8 @@ struct _virStorageSource {
 
     virStoragePerms *perms;
     virStorageTimestamps *timestamps;
+
+    /* Cached, unreliable. Refresh before use. */
     unsigned long long capacity; /* in bytes, 0 if unknown */
     unsigned long long allocation; /* in bytes, 0 if unknown */
     unsigned long long physical; /* in bytes, 0 if unknown */
