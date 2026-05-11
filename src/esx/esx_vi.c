@@ -2478,8 +2478,7 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
         } else {
             memset(uuid, 0, VIR_UUID_BUFLEN);
 
-            VIR_WARN("Cannot access UUID, because 'configStatus' property "
-                      "indicates a config problem");
+            VIR_WARN("Cannot access UUID, because 'configStatus' property indicates a config problem");
         }
     }
 

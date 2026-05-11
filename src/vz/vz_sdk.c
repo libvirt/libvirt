@@ -3218,8 +3218,7 @@ static int prlsdkConfigureNet(struct _vzDriver *driver G_GNUC_UNUSED,
 
     if (isCt) {
         if (net->model != VIR_DOMAIN_NET_MODEL_UNKNOWN)
-            VIR_WARN("Setting network adapter for containers is not "
-                     "supported by vz driver.");
+            VIR_WARN("Setting network adapter for containers is not supported by vz driver.");
     } else {
         if (net->model == VIR_DOMAIN_NET_MODEL_RTL8139) {
             pret = PrlVmDevNet_SetAdapterType(sdknet, PNT_RTL);

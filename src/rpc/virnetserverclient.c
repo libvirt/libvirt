@@ -1266,9 +1266,8 @@ static virNetMessage *virNetServerClientDispatchRead(virNetServerClient *client)
         } else if (!client->nrequests_warning &&
                    client->nrequests_max > 1) {
             client->nrequests_warning = true;
-            VIR_WARN("Client hit max requests limit %zd. This may result "
-                     "in keep-alive timeouts. Consider tuning the "
-                     "max_client_requests server parameter", client->nrequests);
+            VIR_WARN("Client hit max requests limit %zd. This may result in keep-alive timeouts. Consider tuning the max_client_requests server parameter",
+                     client->nrequests);
         }
         virNetServerClientUpdateEvent(client);
 

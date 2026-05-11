@@ -550,9 +550,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
         }
 
         if (def->cpu && def->cpu->mode == VIR_CPU_MODE_CUSTOM) {
-            VIR_WARN("Ignoring CPU with mode=custom, update your config to "
-                     "mode=host-passthrough to avoid risk of changed guest "
-                     "semantics when mode=custom is supported in the future");
+            VIR_WARN("Ignoring CPU with mode=custom, update your config to mode=host-passthrough to avoid risk of changed guest semantics when mode=custom is supported in the future");
         }
     }
 

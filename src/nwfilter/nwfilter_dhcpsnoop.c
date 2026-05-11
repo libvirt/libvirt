@@ -1331,8 +1331,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                     pcapConf[i].maxQSize) {
                     if (last_displayed_queue - time(0) > 10) {
                         last_displayed_queue = time(0);
-                        VIR_WARN("Worker thread for interface '%s' has a "
-                                 "job queue that is too long",
+                        VIR_WARN("Worker thread for interface '%s' has a job queue that is too long",
                                  req->binding->portdevname);
                     }
                     continue;

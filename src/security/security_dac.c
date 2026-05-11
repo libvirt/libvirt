@@ -807,8 +807,7 @@ virSecurityDACSetOwnership(virSecurityManager *mgr,
      * not much we can do. XATTRs refcounting is fubar'ed and
      * the only option we have is warn users. */
     if (virSecurityDACRestoreFileLabelInternal(mgr, src, path, remember) < 0)
-        VIR_WARN("Unable to restore label on '%s'. "
-                 "XATTRs might have been left in inconsistent state.",
+        VIR_WARN("Unable to restore label on '%s'. XATTRs might have been left in inconsistent state.",
                  NULLSTR(src ? src->path : path));
 
     virErrorRestore(&origerr);

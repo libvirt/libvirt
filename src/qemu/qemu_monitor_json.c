@@ -1437,8 +1437,8 @@ qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitor *mon,
     }
 
     if (virJSONValueObjectGetBoolean(data, "connected", &connected) < 0) {
-        VIR_WARN("missing connected state for %s "
-                 "in PR_MANAGER_STATUS_CHANGED event", name);
+        VIR_WARN("missing connected state for %s in PR_MANAGER_STATUS_CHANGED event",
+                 name);
         return;
     }
 

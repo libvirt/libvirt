@@ -69,8 +69,7 @@ virStorageBackendZFSVolModeNeeded(void)
 
     ret = virCommandRun(cmd, &exit_code);
     if ((ret < 0) || (exit_code != 2)) {
-        VIR_WARN("Command 'zfs get' either failed "
-                 "to run or exited with unexpected status");
+        VIR_WARN("Command 'zfs get' either failed to run or exited with unexpected status");
         return ret;
     }
 

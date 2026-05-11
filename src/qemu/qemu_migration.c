@@ -1867,8 +1867,8 @@ qemuMigrationSrcPostcopyFailed(virDomainObj *vm)
         virDomainObjIsFailedPostcopy(vm, vm->job))
         return;
 
-    VIR_WARN("Migration of domain %s failed during post-copy; "
-             "leaving the domain paused", vm->def->name);
+    VIR_WARN("Migration of domain %s failed during post-copy; leaving the domain paused",
+             vm->def->name);
 
     vm->job->asyncPaused = true;
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
@@ -1899,8 +1899,8 @@ qemuMigrationDstPostcopyFailed(virDomainObj *vm)
         virDomainObjIsFailedPostcopy(vm, vm->job))
         return;
 
-    VIR_WARN("Incoming migration of domain '%s' failed during post-copy; "
-             "leaving the domain running", vm->def->name);
+    VIR_WARN("Incoming migration of domain '%s' failed during post-copy; leaving the domain running",
+             vm->def->name);
 
     vm->job->asyncPaused = true;
     if (state == VIR_DOMAIN_RUNNING) {
@@ -2532,8 +2532,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
             VIR_DEBUG("Migration protocol interrupted in post-copy mode");
             postcopy = true;
         } else {
-            VIR_WARN("Migration of domain %s finished but we don't know if the "
-                     "domain was successfully started on destination or not",
+            VIR_WARN("Migration of domain %s finished but we don't know if the domain was successfully started on destination or not",
                      vm->def->name);
         }
         break;

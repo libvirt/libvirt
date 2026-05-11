@@ -1154,9 +1154,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
     if (def->namespaceData) {
         bhyveDomainCmdlineDef *bhyvecmd;
 
-        VIR_WARN("Booting the guest using command line pass-through feature, "
-                 "which could potentially cause inconsistent state and "
-                 "upgrade issues");
+        VIR_WARN("Booting the guest using command line pass-through feature, which could potentially cause inconsistent state and upgrade issues");
 
         bhyvecmd = def->namespaceData;
         for (i = 0; i < bhyvecmd->num_args; i++)

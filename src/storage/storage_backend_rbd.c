@@ -331,8 +331,8 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
         }
 
         virUUIDFormat(def->uuid, uuidstr);
-        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom "
-                 "config_opts from XML", def->name, uuidstr);
+        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom config_opts from XML",
+                 def->name, uuidstr);
     }
 
     ptr->starttime = time(0);

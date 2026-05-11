@@ -2099,8 +2099,8 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
         if (NS_SUCCEEDED(rc))
             gVBoxAPI.deleteConfig(machine);
         else
-            VIR_WARN("Could not cleanup partially created VM after failure, "
-                     "rc=%08x", rc);
+            VIR_WARN("Could not cleanup partially created VM after failure, rc=%08x",
+                     rc);
     }
 
     VBOX_RELEASE(machine);

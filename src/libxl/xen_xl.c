@@ -1255,8 +1255,8 @@ xenFormatXLCPUID(virConf *conf, virDomainDef *def)
         return 0;
 
     if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
-        VIR_WARN("ignoring CPU mode '%s', only host-passthrough mode "
-                 "is supported", virCPUModeTypeToString(def->cpu->mode));
+        VIR_WARN("ignoring CPU mode '%s', only host-passthrough mode is supported",
+                 virCPUModeTypeToString(def->cpu->mode));
         return 0;
     }
 

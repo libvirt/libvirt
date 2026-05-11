@@ -2110,8 +2110,7 @@ virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def)
     VIR_FREE(listenAddr);
 
     if (port < 0) {
-        VIR_WARN("VNC is enabled but VMX entry 'RemoteDisplay.vnc.port' "
-                  "is missing, the VNC port is unknown");
+        VIR_WARN("VNC is enabled but VMX entry 'RemoteDisplay.vnc.port' is missing, the VNC port is unknown");
 
         (*def)->data.vnc.port = 0;
         (*def)->data.vnc.autoport = true;
@@ -3879,8 +3878,7 @@ virVMXFormatVNC(virDomainGraphicsDef *def, virBuffer *buffer)
     virBufferAddLit(buffer, "RemoteDisplay.vnc.enabled = \"true\"\n");
 
     if (def->data.vnc.autoport) {
-        VIR_WARN("VNC autoport is enabled, but the automatically assigned "
-                  "VNC port cannot be read back");
+        VIR_WARN("VNC autoport is enabled, but the automatically assigned VNC port cannot be read back");
     } else {
         if (def->data.vnc.port < 5900 || def->data.vnc.port > 5964) {
             VIR_WARN("VNC port %d it out of [5900..5964] range",

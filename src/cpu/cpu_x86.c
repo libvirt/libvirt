@@ -2326,9 +2326,8 @@ x86Decode(virCPUDef *cpu,
                                    preferred[0]);
                     return -1;
                 } else {
-                    VIR_WARN("Preferred CPU model %s not allowed by"
-                             " hypervisor; closest supported model will be"
-                             " used", preferred[0]);
+                    VIR_WARN("Preferred CPU model %s not allowed by hypervisor; closest supported model will be used",
+                             preferred[0]);
                 }
             } else {
                 VIR_DEBUG("CPU model %s not allowed by hypervisor; ignoring",

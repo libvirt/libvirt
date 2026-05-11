@@ -4042,8 +4042,8 @@ virStorageBackendFileSystemMountAddOptions(virCommand *cmd,
             virBufferAsprintf(&buf, "%s,", opts->options[i]);
 
         virUUIDFormat(def->uuid, uuidstr);
-        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom "
-                 "mount_opts from XML", def->name, uuidstr);
+        VIR_WARN("Storage Pool name='%s' uuid='%s' is tainted by custom mount_opts from XML",
+                 def->name, uuidstr);
     }
 
     virBufferTrim(&buf, ",");

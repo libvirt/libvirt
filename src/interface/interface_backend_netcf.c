@@ -396,8 +396,8 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
                  * deleted by other management apps (e.g. virt-manager).
                  */
-                VIR_WARN("couldn't find interface named '%s', might be "
-                         "deleted by other process", names[i]);
+                VIR_WARN("couldn't find interface named '%s', might be deleted by other process",
+                         names[i]);
                 continue;
             }
         }
@@ -487,8 +487,8 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
                  * deleted by other management apps (e.g. virt-manager).
                  */
-                VIR_WARN("couldn't find interface named '%s', might be "
-                         "deleted by other process", allnames[i]);
+                VIR_WARN("couldn't find interface named '%s', might be deleted by other process",
+                         allnames[i]);
                 continue;
             }
         }
@@ -669,8 +669,8 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
                 /* Ignore the NETCF_NOERROR, as the interface is very likely
                  * deleted by other management apps (e.g. virt-manager).
                  */
-                VIR_WARN("couldn't find interface named '%s', might be "
-                         "deleted by other process", names[i]);
+                VIR_WARN("couldn't find interface named '%s', might be deleted by other process",
+                         names[i]);
                 continue;
             }
         }

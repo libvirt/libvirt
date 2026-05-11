@@ -1358,8 +1358,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                     goto cleanup;
             }
         } else {
-            VIR_WARN("setting bandwidth on interfaces of "
-                     "type '%s' is not implemented yet",
+            VIR_WARN("setting bandwidth on interfaces of type '%s' is not implemented yet",
                      virDomainNetTypeToString(actualType));
         }
     }

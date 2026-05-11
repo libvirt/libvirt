@@ -1708,8 +1708,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
     if (!isConfidential &&
         !usesUefiVarsDevice &&
         supportsSecureBoot != requiresSMM) {
-        VIR_WARN("Firmware description '%s' has invalid set of features: "
-                 "%s = %d, %s = %d, %s = %d (isConfidential = %d)",
+        VIR_WARN("Firmware description '%s' has invalid set of features: %s = %d, %s = %d, %s = %d (isConfidential = %d)",
                  filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_REQUIRES_SMM),
                  requiresSMM,
@@ -1720,8 +1719,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
                  isConfidential);
     }
     if (hasEnrolledKeys && !supportsSecureBoot) {
-        VIR_WARN("Firmware description '%s' has invalid set of features: "
-                 "%s = %d, %s = %d",
+        VIR_WARN("Firmware description '%s' has invalid set of features: %s = %d, %s = %d",
                  filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
                  supportsSecureBoot,

@@ -2869,8 +2869,7 @@ qemuBlockRemoveImageMetadata(virQEMUDriver *driver,
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuSecurityMoveImageMetadata(driver, vm, n, NULL) < 0) {
-            VIR_WARN("Unable to remove disk metadata on "
-                     "vm %s from %s (disk target %s)",
+            VIR_WARN("Unable to remove disk metadata on vm %s from %s (disk target %s)",
                      vm->def->name,
                      NULLSTR(n->path),
                      diskTarget);

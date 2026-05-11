@@ -1318,8 +1318,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDef *def,
         tmp = virPCIDeviceAddressGetIOMMUGroupNum(hostAddr);
 
         if (tmp < 0) {
-            VIR_WARN("Can't look up isolation group for host device "
-                     "%04x:%02x:%02x.%x, device won't be isolated",
+            VIR_WARN("Can't look up isolation group for host device %04x:%02x:%02x.%x, device won't be isolated",
                      hostAddr->domain, hostAddr->bus,
                      hostAddr->slot, hostAddr->function);
             return;
@@ -1362,9 +1361,7 @@ qemuDomainFillDeviceIsolationGroup(virDomainDef *def,
         tmp = qemuDomainFindUnusedIsolationGroup(def);
 
         if (tmp == 0) {
-            VIR_WARN("Can't obtain usable isolation group for interface "
-                     "configured to use hostdev-backed network '%s', "
-                     "device won't be isolated",
+            VIR_WARN("Can't obtain usable isolation group for interface configured to use hostdev-backed network '%s', device won't be isolated",
                      iface->data.network.name);
             return;
         }
@@ -1564,8 +1561,7 @@ qemuDomainCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
     if (!info->pciConnectFlags) {
         g_autofree char *addrStr = virPCIDeviceAddressAsString(&info->addr.pci);
 
-        VIR_WARN("qemuDomainDeviceCalculatePCIConnectFlags() thinks that the "
-                 "device with PCI address %s should not have a PCI address",
+        VIR_WARN("qemuDomainDeviceCalculatePCIConnectFlags() thinks that the device with PCI address %s should not have a PCI address",
                  addrStr ? addrStr : "(unknown)");
 
         info->pciConnectFlags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;

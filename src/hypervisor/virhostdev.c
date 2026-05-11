@@ -1839,8 +1839,7 @@ virHostdevReAttachUSBDevices(virHostdevManager *mgr,
         tmp = virUSBDeviceListFind(mgr->activeUSBHostdevs, usb);
 
         if (!tmp) {
-            VIR_WARN("Unable to find device %03d.%03d "
-                     "in list of active USB devices",
+            VIR_WARN("Unable to find device %03d.%03d in list of active USB devices",
                      usbsrc->bus, usbsrc->device);
             continue;
         }
@@ -1881,8 +1880,7 @@ virHostdevReAttachSCSIHostDevices(virHostdevManager *mgr,
      * because qemuProcessStart could fail half way through. */
 
     if (!(tmp = virSCSIDeviceListFind(mgr->activeSCSIHostdevs, scsi))) {
-        VIR_WARN("Unable to find device %s:%u:%u:%llu "
-                 "in list of active SCSI devices",
+        VIR_WARN("Unable to find device %s:%u:%u:%llu in list of active SCSI devices",
                  scsihostsrc->adapter, scsihostsrc->bus,
                  scsihostsrc->target, scsihostsrc->unit);
         return;
@@ -1965,8 +1963,7 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManager *mgr,
 
         if (!(tmp = virSCSIVHostDeviceListFind(mgr->activeSCSIVHostHostdevs,
                                                host))) {
-            VIR_WARN("Unable to find device %s "
-                     "in list of active SCSI_host devices",
+            VIR_WARN("Unable to find device %s in list of active SCSI_host devices",
                      hostsrc->wwpn);
             virObjectUnlock(mgr->activeSCSIVHostHostdevs);
             return;
@@ -2311,8 +2308,7 @@ virHostdevPrepareOneNVMeDevice(virHostdevManager *hostdev_mgr,
         if (drvType == VIR_PCI_STUB_DRIVER_VFIO || STREQ_NULLABLE(drvName, "nvme"))
             continue;
 
-        VIR_WARN("Suspicious NVMe disk assignment. PCI device "
-                 "%s is not an NVMe disk, it has %s driver",
+        VIR_WARN("Suspicious NVMe disk assignment. PCI device %s is not an NVMe disk, it has %s driver",
                  virPCIDeviceGetName(pci), NULLSTR(drvName));
     }
 

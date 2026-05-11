@@ -432,10 +432,7 @@ virDomainObjBeginJobInternal(virDomainObj *obj,
     if (jobObj->asyncJob && jobObj->asyncStarted)
         asyncDuration = now - jobObj->asyncStarted;
 
-    VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; "
-             "current job is (%s, %s, %s) "
-             "owned by (%llu %s, %llu %s, %llu %s (flags=0x%x)) "
-             "for (%llus, %llus, %llus)",
+    VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; current job is (%s, %s, %s) owned by (%llu %s, %llu %s, %llu %s (flags=0x%x)) for (%llus, %llus, %llus)",
              virDomainJobTypeToString(job),
              virDomainAgentJobTypeToString(agentJob),
              virDomainAsyncJobTypeToString(asyncJob),

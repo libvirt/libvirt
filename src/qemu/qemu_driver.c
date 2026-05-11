@@ -3740,14 +3740,12 @@ processNicRxFilterChangedEvent(virQEMUDriver *driver,
     }
 
     if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0) {
-        VIR_WARN("NIC_RX_FILTER_CHANGED event received for "
-                 "non-existent device %s in domain %s",
+        VIR_WARN("NIC_RX_FILTER_CHANGED event received for non-existent device %s in domain %s",
                  devAlias, vm->def->name);
         goto endjob;
     }
     if (dev.type != VIR_DOMAIN_DEVICE_NET) {
-        VIR_WARN("NIC_RX_FILTER_CHANGED event received for "
-                 "non-network device %s in domain %s",
+        VIR_WARN("NIC_RX_FILTER_CHANGED event received for non-network device %s in domain %s",
                  devAlias, vm->def->name);
         goto endjob;
     }
@@ -6390,8 +6388,8 @@ qemuDomainObjStart(virConnectPtr conn,
 
                 return ret;
             } else if (ret < 0) {
-                VIR_WARN("Unable to restore from managed state %s. "
-                         "Maybe the file is corrupted?", managed_save);
+                VIR_WARN("Unable to restore from managed state %s. Maybe the file is corrupted?",
+                         managed_save);
                 return ret;
             } else {
                 VIR_WARN("Ignoring incomplete managed state %s", managed_save);

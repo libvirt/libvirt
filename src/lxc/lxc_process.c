@@ -617,8 +617,7 @@ virLXCProcessSetupInterfaces(virLXCDriver *driver,
                 if (virNetDevBandwidthSet(net->ifname, actualBandwidth, flags) < 0)
                     goto cleanup;
             } else {
-                VIR_WARN("setting bandwidth on interfaces of "
-                         "type '%s' is not implemented yet",
+                VIR_WARN("setting bandwidth on interfaces of type '%s' is not implemented yet",
                          virDomainNetTypeToString(type));
             }
         }

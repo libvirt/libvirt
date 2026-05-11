@@ -3852,8 +3852,7 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
             goto cleanup;
         }
         if (ssf < SSF_WARNING_LEVEL) {
-            VIR_WARN("negotiation SSF %d lower than %d will be deprecated. "
-                     "Please upgrade your ciphers.",
+            VIR_WARN("negotiation SSF %d lower than %d will be deprecated. Please upgrade your ciphers.",
                      ssf, SSF_WARNING_LEVEL);
         }
         priv->is_secure = 1;

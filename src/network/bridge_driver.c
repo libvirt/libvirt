@@ -714,8 +714,8 @@ networkStateInitialize(bool privileged,
 #ifdef WITH_FIREWALLD
     if (!virGDBusHasSystemBus() ||
         !(sysbus = virGDBusGetSystemBus())) {
-        VIR_WARN("DBus not available, disabling firewalld support "
-                 "in bridge_network_driver: %s", virGetLastErrorMessage());
+        VIR_WARN("DBus not available, disabling firewalld support in bridge_network_driver: %s",
+                 virGetLastErrorMessage());
     } else {
         g_dbus_connection_signal_subscribe(sysbus,
                                            NULL,
@@ -1389,12 +1389,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     }
 
     if (ipv6def && ipv6SLAAC) {
-        VIR_WARN("For IPv6, when DHCP is specified for one address, then "
-                 "state-full Router Advertising will occur.  The additional "
-                 "IPv6 addresses specified require manually configured guest "
-                 "network to work properly since both state-full (DHCP) "
-                 "and state-less (SLAAC) addressing are not supported "
-                 "on the same network interface.");
+        VIR_WARN("For IPv6, when DHCP is specified for one address, then state-full Router Advertising will occur.  The additional IPv6 addresses specified require manually configured guest network to work properly since both state-full (DHCP) and state-less (SLAAC) addressing are not supported on the same network interface.");
     }
 
     if (networkDnsmasqConfDHCP(&configbuf, ipv4def, def->bridge, &nbleases, dctx) < 0 ||
@@ -2291,9 +2286,7 @@ networkCreateInterfacePool(virNetworkDef *netdef)
                 thisIf->type = VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV;
                 netdef->forward.nifs++;
             } else {
-                VIR_WARN("VF %zu of SRIOV PF %s couldn't be added to the "
-                         "interface pool because it isn't bound "
-                         "to a network driver - possibly in use elsewhere",
+                VIR_WARN("VF %zu of SRIOV PF %s couldn't be added to the interface pool because it isn't bound to a network driver - possibly in use elsewhere",
                          i, netdef->forward.pfs->dev);
             }
             break;

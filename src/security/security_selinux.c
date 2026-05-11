@@ -953,9 +953,7 @@ virSecuritySELinuxGenLabel(virSecurityManager *mgr,
                 if (data->alt_domain_context == NULL) {
                     static bool warned;
                     if (!warned) {
-                        VIR_WARN("SELinux policy does not define a domain type for QEMU TCG. "
-                                 "Guest startup may be denied due to missing 'execmem' privilege "
-                                 "unless the 'virt_use_execmem' policy boolean is enabled");
+                        VIR_WARN("SELinux policy does not define a domain type for QEMU TCG. Guest startup may be denied due to missing 'execmem' privilege unless the 'virt_use_execmem' policy boolean is enabled");
                         warned = true;
                     }
                     baselabel = data->domain_context;
@@ -1454,8 +1452,7 @@ virSecuritySELinuxSetFilecon(virSecurityManager *mgr,
          * not much we can do. XATTRs refcounting is fubar'ed and
          * the only option we have is warn users. */
         if (virSecuritySELinuxRestoreFileLabel(mgr, path, remember, false) < 0)
-            VIR_WARN("Unable to restore label on '%s'. "
-                     "XATTRs might have been left in inconsistent state.",
+            VIR_WARN("Unable to restore label on '%s'. XATTRs might have been left in inconsistent state.",
                      path);
 
         virErrorRestore(&origerr);

@@ -1071,9 +1071,7 @@ virQEMUDriverConfigLoadNVRAMEntry(virQEMUDriverConfig *cfg,
             return -1;
 
         if (fwList) {
-            VIR_WARN("Obsolete nvram variable is set while firmware metadata "
-                     "files found. Note that the nvram config file variable is "
-                     "going to be ignored.");
+            VIR_WARN("Obsolete nvram variable is set while firmware metadata files found. Note that the nvram config file variable is going to be ignored.");
             return 0;
         }
 
