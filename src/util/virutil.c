@@ -1223,7 +1223,9 @@ virGetSubIDs(virSubID **retval, const char *file)
 
     *retval = NULL;
 
-    if (virFileReadAll(file, BUFSIZ, &buf) < 0)
+    /* We trust the source of the file so we set the limit absurdly high.
+     * For smaller files, the helper function will not allocate as much space */
+    if (virFileReadAll(file, INT_MAX, &buf) < 0)
         return -1;
 
     lines = g_strsplit(buf, "\n", 0);
