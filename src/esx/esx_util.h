@@ -46,6 +46,7 @@ struct _esxUtil_ParsedUri {
     int proxy_port;
     char *path;
     char *cacert;
+    bool legacy_uuid;
 };
 
 int esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri);

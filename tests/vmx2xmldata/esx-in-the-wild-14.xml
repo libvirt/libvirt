@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>wild14</name>
-  <uuid>421b223a-f2c1-c7c9-a399-34d2d9fde26d</uuid>
+  <uuid>501b831e-75d8-15f8-36fa-b9e225f395aa</uuid>
+  <hwuuid>421b223a-f2c1-c7c9-a399-34d2d9fde26d</hwuuid>
   <description>execution env sandbox automation platform</description>
   <memory unit='KiB'>33554432</memory>
   <currentMemory unit='KiB'>33554432</currentMemory>

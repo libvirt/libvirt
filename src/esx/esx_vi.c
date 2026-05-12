@@ -301,6 +301,17 @@ esxVI_CURL_Connect(esxVI_CURL *curl, esxUtil_ParsedUri *parsedUri)
                                       "Content-Type: text/xml; charset=UTF-8");
 
     /*
+     * Testing showed that the 4.0 version is most close to our current types in
+     * esx_vi_generator.input data.  We could update the version if new method
+     * parameters or object properties are needed.
+     *
+     * The other option is to drop the "/x.y" suffix completely once
+     * https://gitlab.com/libvirt/libvirt/-/work_items/878 is implemented since
+     * that will not limit the version at all.
+     */
+    curl->headers = curl_slist_append(curl->headers, "SOAPAction: urn:vim25/4.0");
+
+    /*
      * Add an empty expect header to stop CURL from waiting for a response code
      * 100 (Continue) from the server before continuing the POST operation.
      * Waiting for this response would slowdown each communication with the
@@ -933,7 +944,8 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     if (ctx->productLine == esxVI_ProductLine_VPX)
         ctx->hasSessionIsActive = true;
 
-
+    ctx->legacy_uuid = parsedUri->legacy_uuid;
+    ctx->uuid_key = ctx->legacy_uuid ? "config.uuid" : "config.instanceUuid";
 
     if (esxVI_Login(ctx, username, escapedPassword, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
@@ -2386,6 +2398,7 @@ esxVI_LookupNumberOfDomainsByPowerState(esxVI_Context *ctx,
 
 int
 esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
+                                const char *uuid_key,
                                 int *id, char **name, unsigned char *uuid)
 {
     const char *uuid_string = NULL;
@@ -2443,6 +2456,12 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
     }
 
     if (uuid) {
+        if (!uuid_key) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Cannot get VM's UUID without supplying a VM UUID key"));
+            goto failure;
+        }
+
         if (esxVI_GetManagedEntityStatus(virtualMachine, "configStatus",
                                          &configStatus) < 0) {
             goto failure;
@@ -2452,7 +2471,8 @@ esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
             for (dynamicProperty = virtualMachine->propSet;
                  dynamicProperty;
                  dynamicProperty = dynamicProperty->_next) {
-                if (STREQ(dynamicProperty->name, "config.uuid")) {
+
+                if (STREQ(dynamicProperty->name, uuid_key)) {
                     if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                                  esxVI_Type_String) < 0) {
                         goto failure;
@@ -2676,13 +2696,17 @@ esxVI_LookupVirtualMachineByUuid(esxVI_Context *ctx, const unsigned char *uuid,
     int result = -1;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
+    esxVI_Boolean instanceUuid = esxVI_Boolean_True;
+
+    if (ctx->legacy_uuid)
+        instanceUuid = esxVI_Boolean_Undefined;
 
     ESX_VI_CHECK_ARG_LIST(virtualMachine);
 
     virUUIDFormat(uuid, uuid_string);
 
     if (esxVI_FindByUuid(ctx, ctx->datacenter->_reference, uuid_string,
-                         esxVI_Boolean_True, esxVI_Boolean_Undefined,
+                         esxVI_Boolean_True, instanceUuid,
                          &managedObjectReference) < 0) {
         return -1;
     }
@@ -2742,7 +2766,7 @@ esxVI_LookupVirtualMachineByName(esxVI_Context *ctx, const char *name,
          candidate = candidate->_next) {
         g_autofree char *name_candidate = NULL;
 
-        if (esxVI_GetVirtualMachineIdentity(candidate, NULL, &name_candidate,
+        if (esxVI_GetVirtualMachineIdentity(candidate, NULL, NULL, &name_candidate,
                                             NULL) < 0) {
             goto cleanup;
         }

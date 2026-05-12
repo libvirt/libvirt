@@ -1418,8 +1418,9 @@ esxDomainLookupByID(virConnectPtr conn, int id)
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "configStatus\0"
                                            "name\0"
-                                           "runtime.powerState\0"
-                                           "config.uuid\0") < 0 ||
+                                           "runtime.powerState\0") < 0 ||
+        esxVI_String_AppendValueToList(&propertyNameList,
+                                       priv->primary->uuid_key) < 0 ||
         esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
                                        &virtualMachineList) < 0) {
         goto cleanup;
@@ -1439,6 +1440,7 @@ esxDomainLookupByID(virConnectPtr conn, int id)
             continue;
 
         if (esxVI_GetVirtualMachineIdentity(virtualMachine,
+                                            priv->primary->uuid_key,
                                             &id_candidate, &name_candidate,
                                             uuid_candidate) < 0) {
             goto cleanup;
@@ -1486,7 +1488,7 @@ esxDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         esxVI_LookupVirtualMachineByUuid(priv->primary, uuid, propertyNameList,
                                          &virtualMachine,
                                          esxVI_Occurrence_RequiredItem) < 0 ||
-        esxVI_GetVirtualMachineIdentity(virtualMachine, &id, &name, NULL) < 0 ||
+        esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, &id, &name, NULL) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
         goto cleanup;
     }
@@ -1521,15 +1523,17 @@ esxDomainLookupByName(virConnectPtr conn, const char *name)
 
     if (esxVI_String_AppendValueListToList(&propertyNameList,
                                            "configStatus\0"
-                                           "runtime.powerState\0"
-                                           "config.uuid\0") < 0 ||
+                                           "runtime.powerState\0") < 0 ||
+        esxVI_String_AppendValueToList(&propertyNameList,
+                                       priv->primary->uuid_key) < 0 ||
         esxVI_LookupVirtualMachineByName(priv->primary, name, propertyNameList,
                                          &virtualMachine,
                                          esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
     }
 
-    if (esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, uuid) < 0 ||
+    if (esxVI_GetVirtualMachineIdentity(virtualMachine, priv->primary->uuid_key,
+                                        &id, NULL, uuid) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0) {
         goto cleanup;
     }
@@ -2583,7 +2587,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
                                          esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetVirtualMachineMORef(virtualMachine, &moref) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0 ||
-        esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, NULL) < 0 ||
+        esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, &id, NULL, NULL) < 0 ||
         esxVI_GetStringValue(virtualMachine, "config.files.vmPathName",
                              &vmPathName, esxVI_Occurrence_RequiredItem) < 0) {
         goto cleanup;
@@ -2629,6 +2633,9 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (def) {
         if (powerState != esxVI_VirtualMachinePowerState_PoweredOff)
             def->id = id;
+
+        if (priv->primary->legacy_uuid)
+            memcpy(def->uuid, def->hw_uuid, VIR_UUID_BUFLEN);
 
         xml = virDomainDefFormat(def, priv->xmlopt,
                                  virDomainDefFormatConvertXMLFlags(flags));
@@ -2771,7 +2778,7 @@ esxConnectListDefinedDomains(virConnectPtr conn, char **const names, int maxname
 
         names[count] = NULL;
 
-        if (esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, &names[count],
+        if (esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, NULL, &names[count],
                                             NULL) < 0) {
             goto cleanup;
         }
@@ -2838,7 +2845,7 @@ esxDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
           (priv->primary, domain->uuid, propertyNameList, &virtualMachine,
            priv->parsedUri->autoAnswer) < 0 ||
         esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0 ||
-        esxVI_GetVirtualMachineIdentity(virtualMachine, &id, NULL, NULL) < 0) {
+        esxVI_GetVirtualMachineIdentity(virtualMachine, NULL, &id, NULL, NULL) < 0) {
         goto cleanup;
     }
 
@@ -4787,8 +4794,9 @@ esxConnectListAllDomains(virConnectPtr conn,
         /* Request required data for esxVI_GetVirtualMachineIdentity */
         if (esxVI_String_AppendValueListToList(&propertyNameList,
                                                "configStatus\0"
-                                               "name\0"
-                                               "config.uuid\0") < 0) {
+                                               "name\0") < 0 ||
+            esxVI_String_AppendValueToList(&propertyNameList,
+                                           priv->primary->uuid_key) < 0) {
             goto cleanup;
         }
     }
@@ -4827,8 +4835,11 @@ esxConnectListAllDomains(virConnectPtr conn,
         /* If the lookup of the required properties fails for some of the machines
          * in the list it's preferrable to return the valid objects instead of
          * failing outright */
-        if ((needIdentity && esxVI_GetVirtualMachineIdentity(virtualMachine, &id, &name, uuid) < 0) ||
-            (needPowerState && esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0)) {
+        if ((needIdentity &&
+             esxVI_GetVirtualMachineIdentity(virtualMachine, priv->primary->uuid_key,
+                                             &id, &name, uuid) < 0) ||
+            (needPowerState &&
+             esxVI_GetVirtualMachinePowerState(virtualMachine, &powerState) < 0)) {
 
             /* Raise error only if we didn't successfuly fill any domain */
             if (count == 0 && !virtualMachine->_next)
@@ -4960,8 +4971,12 @@ esxDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
     esxPrivate *priv = domain->conn->privateData;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
     char uuid_string[VIR_UUID_STRING_BUFLEN] = "";
+    esxVI_Boolean instanceUuid = esxVI_Boolean_True;
 
     virCheckFlags(0, -1);
+
+    if (priv->primary->legacy_uuid)
+        instanceUuid = esxVI_Boolean_Undefined;
 
     if (esxVI_EnsureSession(priv->primary) < 0)
         return -1;
@@ -4970,7 +4985,7 @@ esxDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
 
     if (esxVI_FindByUuid(priv->primary, priv->primary->datacenter->_reference,
                          uuid_string, esxVI_Boolean_True,
-                         esxVI_Boolean_Undefined,
+                         instanceUuid,
                          &managedObjectReference) < 0) {
         return -1;
     }

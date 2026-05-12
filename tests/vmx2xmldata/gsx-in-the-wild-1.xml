@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>Server1</name>
   <uuid>564d1223-f835-c4b1-bbf6-e32390d62bd3</uuid>
+  <hwuuid>564d1223-f835-c4b1-bbf6-e32390d62bd3</hwuuid>
   <memory unit='KiB'>32768</memory>
   <currentMemory unit='KiB'>32768</currentMemory>
   <vcpu placement='static'>1</vcpu>

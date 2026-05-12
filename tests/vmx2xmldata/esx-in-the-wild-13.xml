@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>Test-Mig-VM-1 (01ce57d0-4e20-41a5-8b6c-bcbf49a032ec)</name>
-  <uuid>421eb458-5448-fc12-2074-83d5e419e138</uuid>
+  <uuid>01ce57d0-4e20-41a5-8b6c-bcbf49a032ec</uuid>
+  <hwuuid>421eb458-5448-fc12-2074-83d5e419e138</hwuuid>
   <description>name:Test-Mig-VM-1
 userid:962314ba515c48388a0e95c0961709ff
 username:admin

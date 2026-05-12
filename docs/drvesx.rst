@@ -156,6 +156,15 @@ The driver understands the extra parameters shown below.
 |                 |                             | ``no_verify`` is set        |
 |                 |                             | to ``1``.                   |
 +-----------------+-----------------------------+-----------------------------+
+| ``legacy_uuid`` | ``0`` or ``1``              | If set to ``1``, the driver |
+|                 |                             | will track VMs based on     |
+|                 |                             | their "Host-unique" UUID.   |
+|                 |                             | If set to ``0`` it will use |
+|                 |                             | the "Cluster-unique" UUID   |
+|                 |                             | instead. The default value  |
+|                 |                             | is ``0``.                   |
+|                 |                             | :since:`Since 12.4.0`.      |
++-----------------+-----------------------------+-----------------------------+
 
 Authentication
 ~~~~~~~~~~~~~~
@@ -171,6 +180,21 @@ distinguish between requests for ESX server and vCenter.
 **Note**: During the ongoing driver development, testing is done using an
 unrestricted ``root`` account. Problems may occur if you use a restricted
 account. Detailed testing with restricted accounts has not been done yet.
+
+UUID Stability
+~~~~~~~~~~~~~~
+
+:since:`Since 12.4.0` there is a change to which UUIDs a domain can be
+identified with.  Before this version there was a possible clash of UUIDs even
+on the same host, leading to unexpected issues.  In order to fix this libvirt
+started using a different UUID which might cause issues if any user has a domain
+UUID saved anywhere.  The older UUID is still available under ``<hwuuid>`` in
+the `General metadata <formatdomain.html#general-metadata>`__ section of the
+domain XML.
+
+In order to restore the previous behaviour parameter ``legacy_uuid=1`` (see
+`Extra parameters`_) can be appended to the URI, but only if needed as it may
+cause the aforementioned issues.
 
 Certificates for HTTPS
 ~~~~~~~~~~~~~~~~~~~~~~

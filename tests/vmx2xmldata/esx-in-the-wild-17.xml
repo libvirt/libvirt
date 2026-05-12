@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>esx8.0-win11-with-second-disk-in-subfolder</name>
-  <uuid>42256ec1-e066-9364-3dd1-36a0b75263dd</uuid>
+  <uuid>50250f27-538b-5091-a43b-a50ce95f2382</uuid>
+  <hwuuid>42256ec1-e066-9364-3dd1-36a0b75263dd</hwuuid>
   <genid>3191ed70-eb21-9c71-2478-373fb27fed9b</genid>
   <memory unit='KiB'>4194304</memory>
   <currentMemory unit='KiB'>4194304</currentMemory>

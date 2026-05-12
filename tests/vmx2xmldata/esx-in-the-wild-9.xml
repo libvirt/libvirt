@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>v2v-windows-kkulkarn</name>
-  <uuid>42009372-17da-be73-779d-007ccf1bd228</uuid>
+  <uuid>5000d2b0-616e-6129-8c06-82b07440a871</uuid>
+  <hwuuid>42009372-17da-be73-779d-007ccf1bd228</hwuuid>
   <description>MIQ GUID=b55c806d-99b9-4fa5-bbcc-a4de04f822e5</description>
   <memory unit='KiB'>16777216</memory>
   <currentMemory unit='KiB'>16777216</currentMemory>

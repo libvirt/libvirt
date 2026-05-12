@@ -1492,10 +1492,18 @@ virVMXParseConfig(virVMXContext *ctx,
         def->scsiBusMaxUnit = SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT;
     }
 
-    /* vmx:uuid.bios -> def:uuid */
+    /* vmx:uuid.bios -> def:hwuuid */
     /* FIXME: Need to handle 'uuid.action = "create"' */
-    if (virVMXGetConfigUUID(conf, "uuid.bios", def->uuid, true) < 0)
+    if (virVMXGetConfigUUID(conf, "uuid.bios", def->hw_uuid, true) < 0)
         goto cleanup;
+
+    /* vmx:vc.uuid -> def:uuid */
+    if (virVMXGetConfigUUID(conf, "vc.uuid", def->uuid, true) < 0)
+        goto cleanup;
+
+    /* Fallback to legacy behaviour if there is no vc.uuid */
+    if (!virUUIDIsValid(def->uuid))
+        memcpy(def->uuid, def->hw_uuid, VIR_UUID_BUFLEN);
 
     /* vmx:displayName -> def:name */
     if (virVMXGetConfigString(conf, "displayName", &def->name, true) < 0)

@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>el6-test</name>
-  <uuid>564d15d4-d062-fe9a-80f5-eb8e1a2c3afc</uuid>
+  <uuid>5200b69b-8d88-7bdf-a14a-02705d653772</uuid>
+  <hwuuid>564d15d4-d062-fe9a-80f5-eb8e1a2c3afc</hwuuid>
   <memory unit='KiB'>1048576</memory>
   <currentMemory unit='KiB'>1048576</currentMemory>
   <vcpu placement='static'>1</vcpu>

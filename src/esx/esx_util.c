@@ -43,6 +43,7 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
     size_t i;
     int noVerify;
     int autoAnswer;
+    int legacy_uuid;
     char *tmp;
 
     ESX_VI_CHECK_ARG_LIST(parsedUri);
@@ -88,6 +89,16 @@ esxUtil_ParseUri(esxUtil_ParsedUri **parsedUri, virURI *uri)
             }
 
             (*parsedUri)->autoAnswer = autoAnswer != 0;
+        } else if (STRCASEEQ(queryParam->name, "legacy_uuid")) {
+            if (virStrToLong_i(queryParam->value, NULL, 10, &legacy_uuid) < 0 ||
+                (legacy_uuid != 0 && legacy_uuid != 1)) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("Query parameter 'legacy_uuid' has unexpected value '%1$s' (should be 0 or 1)"),
+                               queryParam->value);
+                goto cleanup;
+            }
+
+            (*parsedUri)->legacy_uuid = legacy_uuid != 0;
         } else if (STRCASEEQ(queryParam->name, "proxy")) {
             /* Expected format: [<type>://]<hostname>[:<port>] */
             (*parsedUri)->proxy = true;

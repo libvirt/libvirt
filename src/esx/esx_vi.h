@@ -199,6 +199,8 @@ struct _esxVI_Context {
     esxVI_SelectionSpec *selectSet_datacenterToNetwork;
     bool hasQueryVirtualDiskUuid;
     bool hasSessionIsActive;
+    bool legacy_uuid;
+    const char *uuid_key;
 };
 
 int esxVI_Context_Alloc(esxVI_Context **ctx);
@@ -351,6 +353,7 @@ int esxVI_LookupNumberOfDomainsByPowerState
        bool inverse);
 
 int esxVI_GetVirtualMachineIdentity(esxVI_ObjectContent *virtualMachine,
+                                    const char *uuid_key,
                                     int *id, char **name, unsigned char *uuid);
 
 int esxVI_GetNumberOfSnapshotTrees

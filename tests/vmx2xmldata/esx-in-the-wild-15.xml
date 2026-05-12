@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>dokuwiki</name>
-  <uuid>420338bd-1c9e-ad50-99a2-59e92ddda8b6</uuid>
+  <uuid>500341d5-fe23-ac46-8cb3-77a8e5a1143d</uuid>
+  <hwuuid>420338bd-1c9e-ad50-99a2-59e92ddda8b6</hwuuid>
   <memory unit='KiB'>2097152</memory>
   <currentMemory unit='KiB'>2097152</currentMemory>
   <vcpu placement='static'>2</vcpu>

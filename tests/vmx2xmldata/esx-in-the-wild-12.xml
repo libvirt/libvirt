@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>Auto-esx8.0-rhell9.3-efi-with-empty-cdrom</name>
-  <uuid>4220fca7-11dd-d67e-19cc-fcad0a37c342</uuid>
+  <uuid>5020ca5b-7ac1-5c44-cfa1-9e762e2f933b</uuid>
+  <hwuuid>4220fca7-11dd-d67e-19cc-fcad0a37c342</hwuuid>
   <memory unit='KiB'>2097152</memory>
   <currentMemory unit='KiB'>2097152</currentMemory>
   <vcpu placement='static'>1</vcpu>

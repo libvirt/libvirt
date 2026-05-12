@@ -1,6 +1,7 @@
 <domain type='vmware'>
   <name>ATTM_VM</name>
   <uuid>564d7088-01a1-9832-e72b-6790c73b64ea</uuid>
+  <hwuuid>564d7088-01a1-9832-e72b-6790c73b64ea</hwuuid>
   <memory unit='KiB'>3657728</memory>
   <currentMemory unit='KiB'>3657728</currentMemory>
   <vcpu placement='static'>2</vcpu>
