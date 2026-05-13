@@ -905,6 +905,30 @@ virJSONValueObjectRemoveKey(virJSONValue *object,
 }
 
 
+/* Replace value for key-value pair @key.
+ * Returns 1 on success, 0 if no key was found, and -1 on error.  */
+int
+virJSONValueObjectReplaceKey(virJSONValue *object,
+                             const char *key,
+                             virJSONValue **newvalue)
+{
+    size_t i;
+
+    if (object->type != VIR_JSON_TYPE_OBJECT)
+        return -1;
+
+    for (i = 0; i < object->data.object.npairs; i++) {
+        if (STREQ(object->data.object.pairs[i].key, key)) {
+            virJSONValueFree(object->data.object.pairs[i].value);
+            object->data.object.pairs[i].value = g_steal_pointer(newvalue);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
 virJSONValue *
 virJSONValueObjectGetValue(virJSONValue *object,
                            unsigned int n)

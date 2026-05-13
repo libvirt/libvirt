@@ -2774,6 +2774,7 @@ virJSONValueObjectHasKey;
 virJSONValueObjectKeysNumber;
 virJSONValueObjectPrependString;
 virJSONValueObjectRemoveKey;
+virJSONValueObjectReplaceKey;
 virJSONValueObjectStealArray;
 virJSONValueObjectStealObject;
 virJSONValueToBuffer;
