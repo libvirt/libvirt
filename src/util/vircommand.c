@@ -520,16 +520,12 @@ virCommandMassCloseGetFDs(virBitmap *fds)
 }
 
 static int
-virCommandMassCloseFrom(virCommand *cmd,
-                        int childin,
-                        int childout,
-                        int childerr)
+virCommandMassCloseFrom(virBitmap *keep)
 {
     g_autoptr(virBitmap) fds = NULL;
     int openmax = sysconf(_SC_OPEN_MAX);
-    int lastfd = -1;
+    int lastfd = virBitmapLastSetBit(keep);
     int fd = -1;
-    size_t i;
 
     /* In general, it is not safe to call malloc() between fork() and exec()
      * because the child might have forked at the worst possible time, i.e.
@@ -551,24 +547,14 @@ virCommandMassCloseFrom(virCommand *cmd,
     if (virCommandMassCloseGetFDs(fds) < 0)
         return -1;
 
-    lastfd = MAX(lastfd, childin);
-    lastfd = MAX(lastfd, childout);
-    lastfd = MAX(lastfd, childerr);
-
-    for (i = 0; i < cmd->npassfd; i++)
-        lastfd = MAX(lastfd, cmd->passfd[i].fd);
-
     fd = virBitmapNextSetBit(fds, 2);
     for (; fd >= 0 && fd <= lastfd; fd = virBitmapNextSetBit(fds, fd)) {
-        if (fd == childin || fd == childout || fd == childerr)
+        int tmpfd = fd;
+
+        if (virBitmapIsBitSet(keep, fd))
             continue;
-        if (!virCommandFDIsSet(cmd, fd)) {
-            int tmpfd = fd;
-            VIR_MASS_CLOSE(tmpfd);
-        } else if (virSetInherit(fd, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
-            return -1;
-        }
+
+        VIR_MASS_CLOSE(tmpfd);
     }
 
     if (virCloseFrom(lastfd + 1) < 0) {
@@ -588,33 +574,13 @@ virCommandMassCloseFrom(virCommand *cmd,
 
 
 static int
-virCommandMassCloseRange(virCommand *cmd,
-                         int childin,
-                         int childout,
-                         int childerr)
+virCommandMassCloseRange(virBitmap *keep)
 {
-    g_autoptr(virBitmap) fds = virBitmapNew(0);
     ssize_t first;
     ssize_t last;
-    size_t i;
-
-    virBitmapSetBitExpand(fds, childin);
-    virBitmapSetBitExpand(fds, childout);
-    virBitmapSetBitExpand(fds, childerr);
-
-    for (i = 0; i < cmd->npassfd; i++) {
-        int fd = cmd->passfd[i].fd;
-
-        virBitmapSetBitExpand(fds, fd);
-
-        if (virSetInherit(fd, true) < 0) {
-            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
-            return -1;
-        }
-    }
 
     first = 2;
-    while ((last = virBitmapNextSetBit(fds, first)) >= 0) {
+    while ((last = virBitmapNextSetBit(keep, first)) >= 0) {
         if (first + 1 == last) {
             first = last;
             continue;
@@ -642,17 +608,44 @@ virCommandMassCloseRange(virCommand *cmd,
 }
 
 
-
+/**
+ * virCommandMassClose:
+ * @cmd: command structure
+ * @childin: fd passed to child as stdin
+ * @childout: fd passed to child as stdout
+ * @childerr: fd passed to child as stderr
+ *
+ * Prepares FDs to be passed to the child process spawned by @cmd and closes
+ * every other FD.
+ */
 static int
 virCommandMassClose(virCommand *cmd,
                     int childin,
                     int childout,
                     int childerr)
 {
-    if (virCloseRangeIsSupported())
-        return virCommandMassCloseRange(cmd, childin, childout, childerr);
+    g_autoptr(virBitmap) fds = virBitmapNew(0);
+    size_t i;
 
-    return virCommandMassCloseFrom(cmd, childin, childout, childerr);
+    virBitmapSetBitExpand(fds, childin);
+    virBitmapSetBitExpand(fds, childout);
+    virBitmapSetBitExpand(fds, childerr);
+
+    for (i = 0; i < cmd->npassfd; i++) {
+        int fd = cmd->passfd[i].fd;
+
+        virBitmapSetBitExpand(fds, fd);
+
+        if (virSetInherit(fd, true) < 0) {
+            virReportSystemError(errno, _("failed to preserve fd %1$d"), fd);
+            return -1;
+        }
+    }
+
+    if (virCloseRangeIsSupported())
+        return virCommandMassCloseRange(fds);
+
+    return virCommandMassCloseFrom(fds);
 }
 
 
