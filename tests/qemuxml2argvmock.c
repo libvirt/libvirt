@@ -237,23 +237,6 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
 
 
 int
-qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev G_GNUC_UNUSED)
-
-{
-    /* We need to return an FD number for a UNIX listener socket,
-     * which will be given to QEMU via a CLI arg. We need a fixed
-     * number to get stable tests. This is obviously not a real
-     * FD number, so when virCommand closes the FD in the parent
-     * it will get EINVAL, but that's (hopefully) not going to
-     * be a problem....
-     */
-    if (fcntl(1729, F_GETFD) != -1)
-        abort();
-    return 1729;
-}
-
-
-int
 qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
                            int *tpmfd,
                            int *cancelfd)

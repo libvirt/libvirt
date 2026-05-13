@@ -74,8 +74,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 
 /* Open a UNIX socket for chardev FD passing */
 int
-qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
-    ATTRIBUTE_MOCKABLE;
+qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev);
 
 virJSONValue *
 qemuBuildChrDeviceProps(const virDomainDef *vmdef,
