@@ -1707,6 +1707,38 @@ virDomainInterfaceStopDevice;
 virDomainInterfaceStopDevices;
 virDomainInterfaceVportRemove;
 
+# hypervisor/qemu_agent.h
+qemuAgentArbitraryCommand;
+qemuAgentClose;
+qemuAgentDiskInfoFree;
+qemuAgentFSFreeze;
+qemuAgentFSInfoFree;
+qemuAgentFSThaw;
+qemuAgentFSTrim;
+qemuAgentGetDisks;
+qemuAgentGetFSInfo;
+qemuAgentGetHostname;
+qemuAgentGetInterfaces;
+qemuAgentGetLoadAvg;
+qemuAgentGetOSInfo;
+qemuAgentGetTime;
+qemuAgentGetTimezone;
+qemuAgentGetUsers;
+qemuAgentGetVCPUs;
+qemuAgentNotifyClose;
+qemuAgentNotifyEvent;
+qemuAgentOpen;
+qemuAgentSetResponseTimeout;
+qemuAgentSetTime;
+qemuAgentSetUserPassword;
+qemuAgentSetVCPUs;
+qemuAgentShutdown;
+qemuAgentSSHAddAuthorizedKeys;
+qemuAgentSSHGetAuthorizedKeys;
+qemuAgentSSHRemoveAuthorizedKeys;
+qemuAgentSuspend;
+qemuAgentUpdateCPUInfo;
+
 # hypervisor/virclosecallbacks.h
 virCloseCallbacksDomainAdd;
 virCloseCallbacksDomainAlloc;

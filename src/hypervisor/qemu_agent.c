@@ -21,14 +21,15 @@
 
 #include <config.h>
 
-#include <poll.h>
+#ifndef WIN32
+# include <poll.h>
+#endif
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/time.h>
 #include <gio/gio.h>
 
 #include "qemu_agent.h"
-#include "qemu_domain.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -146,6 +147,7 @@ static void qemuAgentDispose(void *obj)
     virResetError(&agent->lastError);
 }
 
+#ifndef WIN32
 static int
 qemuAgentOpenUnix(const char *socketpath)
 {
@@ -183,6 +185,15 @@ qemuAgentOpenUnix(const char *socketpath)
     VIR_FORCE_CLOSE(agentfd);
     return -1;
 }
+#else /* WIN32 */
+static int
+qemuAgentOpenUnix(const char *socketpath G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Opening UNIX sockets is not supported on Win32 platform"));
+    return -1;
+}
+#endif /* WIN32 */
 
 
 static int
@@ -584,7 +595,8 @@ qemuAgent *
 qemuAgentOpen(virDomainObj *vm,
               const virDomainChrSourceDef *config,
               GMainContext *context,
-              qemuAgentCallbacks *cb)
+              qemuAgentCallbacks *cb,
+              int timeout)
 {
     qemuAgent *agent;
     g_autoptr(GError) gerr = NULL;
@@ -601,7 +613,7 @@ qemuAgentOpen(virDomainObj *vm,
     if (!(agent = virObjectLockableNew(qemuAgentClass)))
         return NULL;
 
-    agent->timeout = QEMU_DOMAIN_PRIVATE(vm)->agentTimeout;
+    agent->timeout = timeout;
     agent->fd = -1;
     if (virCondInit(&agent->notify) < 0) {
         virReportSystemError(errno, "%s",

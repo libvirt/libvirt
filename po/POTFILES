@@ -100,6 +100,7 @@ src/hypervisor/domain_cgroup.c
 src/hypervisor/domain_driver.c
 src/hypervisor/domain_logcontext.c
 src/hypervisor/domain_interface.c
+src/hypervisor/qemu_agent.c
 src/hypervisor/virhostdev.c
 src/interface/interface_backend_netcf.c
 src/interface/interface_backend_udev.c
@@ -166,7 +167,6 @@ src/nwfilter/nwfilter_tech_driver.c
 src/openvz/openvz_conf.c
 src/openvz/openvz_driver.c
 src/openvz/openvz_util.c
-src/qemu/qemu_agent.c
 src/qemu/qemu_alias.c
 src/qemu/qemu_backup.c
 src/qemu/qemu_block.c

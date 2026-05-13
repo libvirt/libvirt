@@ -21,7 +21,7 @@
 
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_monitor.h"
-#include "qemu/qemu_agent.h"
+#include "hypervisor/qemu_agent.h"
 
 typedef struct _qemuMonitorTest qemuMonitorTest;
 

@@ -27,9 +27,10 @@
 
 #include "virthread.h"
 #define LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW
+#include "hypervisor/qemu_agent.h"
+#include "qemu/qemu_domain.h"
 #include "qemu/qemu_processpriv.h"
 #include "qemu/qemu_monitor.h"
-#include "qemu/qemu_agent.h"
 #include "rpc/virnetsocket.h"
 #include "viralloc.h"
 #include "virlog.h"
@@ -1201,7 +1202,8 @@ qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt)
     if (!(test->agent = qemuAgentOpen(test->vm,
                                       &src,
                                       virEventThreadGetContext(test->eventThread),
-                                      &qemuMonitorTestAgentCallbacks)))
+                                      &qemuMonitorTestAgentCallbacks,
+                                      QEMU_DOMAIN_PRIVATE(test->vm)->agentTimeout)))
         goto error;
 
     virObjectLock(test->agent);

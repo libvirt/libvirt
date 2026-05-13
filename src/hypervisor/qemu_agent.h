@@ -38,7 +38,8 @@ struct _qemuAgentCallbacks {
 qemuAgent *qemuAgentOpen(virDomainObj *vm,
                            const virDomainChrSourceDef *config,
                            GMainContext *context,
-                           qemuAgentCallbacks *cb);
+                           qemuAgentCallbacks *cb,
+                           int timeout);
 
 void qemuAgentClose(qemuAgent *mon);
 

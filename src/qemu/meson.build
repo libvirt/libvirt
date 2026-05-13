@@ -1,5 +1,4 @@
 qemu_driver_sources = [
-  'qemu_agent.c',
   'qemu_alias.c',
   'qemu_backup.c',
   'qemu_block.c',

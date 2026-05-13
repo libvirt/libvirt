@@ -236,7 +236,8 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
     agent = qemuAgentOpen(vm,
                           config->source,
                           virEventThreadGetContext(priv->eventThread),
-                          &agentCallbacks);
+                          &agentCallbacks,
+                          QEMU_DOMAIN_PRIVATE(vm)->agentTimeout);
 
     if (!virDomainObjIsActive(vm)) {
         qemuAgentClose(agent);
