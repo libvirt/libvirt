@@ -27,8 +27,8 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-TPM-VM/.config \
 -no-shutdown \
 -boot menu=on,strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--add-fd set=0,fd=1730,opaque=tpm0-tpm \
--add-fd set=1,fd=1731,opaque=tpm0-cancel \
+-add-fd set=0,fd=XXXXXXX,opaque=tpm0-tpm \
+-add-fd set=1,fd=XXXXXXX,opaque=tpm0-cancel \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/fdset/0,cancel-path=/dev/fdset/1 \
 -device '{"driver":"tpm-crb","tpmdev":"tpm-tpm0","id":"tpm0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \

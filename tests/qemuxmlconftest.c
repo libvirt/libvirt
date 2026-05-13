@@ -40,6 +40,10 @@
 
 static virQEMUDriver driver;
 
+/* this test case uses virTestDummyFDContextNew so we want to mock dup() to
+ * track FD hints properly */
+#include "virmock.h"
+VIR_TEST_MAKE_DUMMY_FD_INSTALL_DUP_MOCK
 
 static void
 testQemuPrepareHostdevPCI(virDomainHostdevDef *hostdev)
@@ -341,6 +345,191 @@ testCompareXMLToArgvValidateSchema(virCommand *cmd,
     }
 
     return 0;
+}
+
+
+struct testCompareXMLToArgvStabilizeOneFindJSONObjectIterData {
+    const char *field;
+    bool recurse;
+    virJSONValue *ret;
+};
+
+static int
+testCompareXMLToArgvStabilizeOneFindJSONObjectIter(const char *key,
+                                                   virJSONValue *value,
+                                                   void *opaque)
+{
+    struct testCompareXMLToArgvStabilizeOneFindJSONObjectIterData *data = opaque;
+
+    /* negative value breaks iteration and returns specific return value */
+    if (STREQ(data->field, key))
+        return -1;
+
+    if (!data->recurse)
+        return 0;
+
+    if (!virJSONValueIsObject(value))
+        return 0;
+
+    if (virJSONValueObjectForeachKeyValue(value,
+                                          testCompareXMLToArgvStabilizeOneFindJSONObjectIter,
+                                          data) == -2) {
+        /* -2 means that the callback found something; now if it was the above
+         * call that found the key we need to fill the pointer to what we've
+         * called it with */
+        if (data->ret == NULL)
+            data->ret = value;
+
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * testCompareXMLToArgvStabilizeOne:
+ * @arg: argument to modify (may be replaced by other memory)
+ * @field: field to replace
+ * @substitutions: optional hash-table to look up value of @field and replace
+ *                 it with the stored string
+ *
+ * Takes one qemu argument @arg and replaces the value of '@field' by a stable
+ * string, either 'XXXXXXX' if @substitutions is NULL or the value of @field
+ * wasn't found in @substitutions, or with the string from @substitutions if
+ * found.
+ *
+ * Works both on JSON and normal arguments.
+ */
+static void
+testCompareXMLToArgvStabilizeOne(char **arg,
+                                 const char *field,
+                                 GHashTable *substitutions,
+                                 bool recurseJSON)
+{
+    g_autofree char *oldarg = g_steal_pointer(arg);
+
+    if (*oldarg == '{') {
+        g_autoptr(virJSONValue) j = virJSONValueFromString(oldarg);
+        struct testCompareXMLToArgvStabilizeOneFindJSONObjectIterData data = {
+            .field = field,
+            .recurse = recurseJSON,
+        };
+        const char *curstr = NULL;
+
+        /* Any JSON args will be validated so this ought not to happen */
+        if (!j) {
+            *arg = g_steal_pointer(&oldarg);
+            return;
+        }
+
+        if (virJSONValueObjectForeachKeyValue(j,
+                                              testCompareXMLToArgvStabilizeOneFindJSONObjectIter,
+                                              &data) == -2) {
+            /* -2 means that the callback found something; now if it was the above
+             * call that found the key we need to fill the pointer to what we've
+             * called it with */
+            if (data.ret == NULL)
+                data.ret = j;
+        }
+
+        if (data.ret) {
+            virJSONValue *cur = virJSONValueObjectGet(data.ret, field);
+
+            if (cur) {
+                switch (virJSONValueGetType(cur)) {
+                case VIR_JSON_TYPE_STRING:
+                    curstr = virJSONValueGetString(cur);
+                    break;
+
+                case VIR_JSON_TYPE_NUMBER:
+                    curstr = virJSONValueGetNumberString(cur);
+                    break;
+
+                case VIR_JSON_TYPE_OBJECT:
+                case VIR_JSON_TYPE_ARRAY:
+                case VIR_JSON_TYPE_BOOLEAN:
+                case VIR_JSON_TYPE_NULL:
+                    break;
+                }
+            }
+        }
+
+        if (curstr) {
+            g_autoptr(virJSONValue) newval = NULL;
+            const char *subst = NULL;
+
+            if (substitutions)
+                subst = g_hash_table_lookup(substitutions, curstr);
+
+            if (!subst)
+                subst = "XXXXXXX";
+
+            newval = virJSONValueNewString(g_strdup(subst));
+
+            ignore_value(virJSONValueObjectReplaceKey(data.ret, field, &newval));
+
+            *arg = virJSONValueToString(j, false);
+            return;
+        } else {
+            *arg = g_steal_pointer(&oldarg);
+            return;
+        }
+    } else {
+        g_autofree char *fieldmatch = g_strdup_printf("%s=", field);
+        char *match;
+        char *val;
+        char *rest;
+        const char *subst = NULL;
+
+        if (!(match = strstr(oldarg, fieldmatch))) {
+            *arg = g_steal_pointer(&oldarg);
+            return;
+        }
+
+        if ((rest = strchr(match, ',')))
+            *rest = '\0';
+
+        *match = '\0';
+
+        val = match + strlen(fieldmatch);
+
+        if (substitutions)
+            subst = g_hash_table_lookup(substitutions, val);
+
+        if (!subst)
+            subst = "XXXXXXX";
+
+        if (rest)
+            *rest = ',';
+
+        *arg = g_strdup_printf("%s%s%s%s", oldarg, fieldmatch, subst, NULLSTR_EMPTY(rest));
+    }
+}
+
+
+static void
+testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
+                                  GHashTable *fdsubsts)
+{
+    char **args;
+    size_t nargs;
+    size_t a;
+
+    virCommandArgListAccess(cmd, &args, &nargs);
+
+    for (a = 0; a < nargs; a++) {
+        /* Any following replacements want also an argument for an option so
+         * so we guarantee that there's at least one extra arg */
+        if (a + 1 >= nargs)
+            break;
+
+        if (STREQ(args[a], "-add-fd")) {
+            testCompareXMLToArgvStabilizeOne(&args[a + 1], "fd", fdsubsts, false);
+
+            a++;
+        }
+    }
 }
 
 
@@ -724,6 +913,8 @@ testCompareXMLToArgv(const void *data)
     if (testCompareXMLToArgvValidateSchema(cmd, info) < 0)
         goto cleanup;
 
+    testCompareXMLToArgvStabilizeArgs(cmd, info->fdsubsts);
+
     if (virCommandToStringBuf(cmd, &actualBuf, true, false) < 0)
         goto cleanup;
 
@@ -801,10 +992,12 @@ testRun(const char *name,
     g_autofree char *name_argv = g_strdup_printf("QEMU XML def -> ARGV %s%s", name, suffix);
     g_autoptr(testQemuInfo) info = g_new0(testQemuInfo, 1);
     va_list ap;
+    g_autoptr(virTestDummyFDContext) fdsubsts = virTestDummyFDContextNew();
 
     info->name = name;
     info->suffix = suffix;
     info->conf = testConf;
+    info->fdsubsts = fdsubsts;
 
     va_start(ap, testConf);
     testQemuInfoSetArgs(info, ap);

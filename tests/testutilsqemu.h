@@ -120,6 +120,8 @@ struct _testQemuInfo {
 
     struct testQemuArgs args;
     struct testQemuConf *conf;
+
+    GHashTable *fdsubsts;
 };
 
 typedef struct _testQemuInfo testQemuInfo;

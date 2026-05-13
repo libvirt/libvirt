@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-machine/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--add-fd set=0,fd=1750,opaque=serial0-source \
+-add-fd set=0,fd=XXXXXXX,opaque=serial0-source \
 -chardev file,id=charserial0,path=/dev/fdset/0,append=on \
 -device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
 -chardev socket,id=charserial1,path=/tmp/serial.sock \
