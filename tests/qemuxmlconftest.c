@@ -659,7 +659,6 @@ testCompareXMLToArgv(const void *data)
     unsigned int flags = info->flags;
     int ret = -1;
     virDomainObj *vm = NULL;
-    virDomainChrSourceDef monitor_chr = { 0 };
     virError *err = NULL;
     g_autofree char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -706,9 +705,6 @@ testCompareXMLToArgv(const void *data)
     }
 
     vm->def->id = -1;
-
-    if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
-        goto cleanup;
 
     virResetLastError();
 
@@ -765,7 +761,6 @@ testCompareXMLToArgv(const void *data)
     /* clear overriden host cpu */
     if (info->args.capsHostCPUModel)
         qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
-    virDomainChrSourceDefClear(&monitor_chr);
     if (vm) {
         vm->def = NULL;
         virObjectUnref(vm);
