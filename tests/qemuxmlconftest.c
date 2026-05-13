@@ -1749,12 +1749,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
     DO_TEST_CAPS_LATEST("disk-qcow2-datafile-store");
     DO_TEST_CAPS_ARCH_LATEST_FULL("disk-source-fd", "x86_64",
-                                  ARG_FD_GROUP, "testgroup2", false, 2, 200, 205,
-                                  ARG_FD_GROUP, "testgroup5", false, 1, 204,
-                                  ARG_FD_GROUP, "cdimage-ro", false, 1, 207,
-                                  ARG_FD_GROUP, "cdimage-rw", true, 1, 208,
-                                  ARG_FD_GROUP, "raw-rw-base", true, 1, 209,
-                                  ARG_FD_GROUP, "testgroup6", false, 2, 247, 248);
+                                  ARG_FD_GROUP, "testgroup2", false, 2,
+                                  ARG_FD_GROUP, "testgroup5", false, 1,
+                                  ARG_FD_GROUP, "cdimage-ro", false, 1,
+                                  ARG_FD_GROUP, "cdimage-rw", true, 1,
+                                  ARG_FD_GROUP, "raw-rw-base", true, 1,
+                                  ARG_FD_GROUP, "testgroup6", false, 2);
 
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");
@@ -2978,7 +2978,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iommufd");
     DO_TEST_CAPS_LATEST("iommufd-q35");
     DO_TEST_CAPS_ARCH_LATEST_FULL("iommufd-q35-fd", "x86_64",
-                                  ARG_FD_GROUP, "iommu", false, 1, 20);
+                                  ARG_FD_GROUP, "iommu", false, 1);
     DO_TEST_CAPS_ARCH_LATEST("iommufd-virt", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("iommufd-virt-pci-bus-single", "aarch64");
 

@@ -714,28 +714,15 @@ testQemuInfoSetArgs(testQemuInfo *info,
         case ARG_FD_GROUP: {
             virDomainFDTuple *new = virDomainFDTupleNew();
             const char *fdname = va_arg(argptr, char *);
-            VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
             bool writable = va_arg(argptr, int);
             size_t i;
 
             new->nfds = va_arg(argptr, unsigned int);
             new->fds = g_new0(int, new->nfds);
-            new->testfds = g_new0(int, new->nfds);
             new->writable = writable;
 
             for (i = 0; i < new->nfds; i++) {
-                new->testfds[i] = va_arg(argptr, unsigned int);
-
-                if (fcntl(new->testfds[i], F_GETFD) != -1) {
-                    fprintf(stderr, "fd '%d' is already in use\n", new->testfds[i]);
-                    abort();
-                }
-
-                if ((new->fds[i] = dup(fakefd)) < 0) {
-                    fprintf(stderr, "failed to duplicate fake fd: %s",
-                            g_strerror(errno));
-                    abort();
-                }
+                new->fds[i] = virTestMakeDummyFD(g_strdup_printf("@%s-%zu@", fdname, i));
             }
 
             if (!info->args.fds)
