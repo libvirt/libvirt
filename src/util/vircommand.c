@@ -2152,26 +2152,6 @@ virCommandToString(virCommand *cmd,
 }
 
 
-int
-virCommandGetArgList(virCommand *cmd,
-                     char ***args)
-{
-    size_t i;
-
-    if (virCommandHasError(cmd)) {
-        virCommandRaiseError(cmd);
-        return -1;
-    }
-
-    *args = g_new0(char *, cmd->nargs);
-
-    for (i = 1; i < cmd->nargs; i++)
-        (*args)[i - 1] = g_strdup(cmd->args[i]);
-
-    return 0;
-}
-
-
 /**
  * virCommandArgListAccess:
  * @cmd: command struct

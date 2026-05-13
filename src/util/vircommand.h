@@ -179,7 +179,6 @@ int virCommandToStringBuf(virCommand *cmd,
                           bool stripCommandPath);
 
 const char *virCommandGetBinaryPath(virCommand *cmd);
-int virCommandGetArgList(virCommand *cmd, char ***args);
 
 int virCommandExec(virCommand *cmd, gid_t *groups, int ngroups) G_GNUC_WARN_UNUSED_RESULT;
 
