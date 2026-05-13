@@ -2210,6 +2210,7 @@ virCommandAddEnvPassCommon;
 virCommandAddEnvString;
 virCommandAddEnvXDG;
 virCommandAllowCap;
+virCommandArgListAccess;
 virCommandClearCaps;
 virCommandDaemonize;
 virCommandDoAsyncIO;

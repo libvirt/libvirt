@@ -51,3 +51,7 @@ void virCommandSetDryRun(virCommandDryRunToken *tok,
 void virCommandPeekSendBuffers(virCommand *cmd,
                                virCommandSendBuffer **buffers,
                                int *nbuffers);
+
+void virCommandArgListAccess(virCommand *cmd,
+                             char ***args,
+                             size_t *nargs);

@@ -2172,6 +2172,26 @@ virCommandGetArgList(virCommand *cmd,
 }
 
 
+/**
+ * virCommandArgListAccess:
+ * @cmd: command struct
+ * @args: filled with pointer to list of args of @cmd
+ * @nargs: filled with number of arguments
+ *
+ * For use only in tests.
+ *
+ * Allows access to the arguments, including modification.
+ */
+void
+virCommandArgListAccess(virCommand *cmd,
+                        char ***args,
+                        size_t *nargs)
+{
+    *args = cmd->args;
+    *nargs = cmd->nargs;
+}
+
+
 /*
  * virCommandGetBinaryPath:
  * @cmd: virCommand* containing all information about the program
