@@ -293,6 +293,119 @@ virTestLoadFileGetPath(const char *p,
 }
 
 
+static virTestDummyFDContext *dummyFDContext;
+
+void
+virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
+{
+    g_clear_pointer(&dummyFDContext, g_hash_table_unref);
+}
+
+
+/**
+ * virTestDummyFDContextNew:
+ *
+ * Create a new context for marking dummy FDs so that they can be later
+ * cross-referenced and stripped from test output. Marked FDs are recorded
+ * in the returned GHashTable (virTestDummyFDContext type is a direct alias
+ * of GHashTable, allowing for registering custom autoptr cleanup function
+ * so that the context can be properly disposed), where keys are stringified
+ * FD numbers and the passed 'hint' strings are recorded as values.
+ *
+ * The context uses a global variable 'dummyFDContext' so that mocked functions
+ * which don't allow custom data can use this infrastructure.
+ *
+ * Note that in order to be able to track FDs across duplication via dup(), any
+ * test program must install a mock for dup() which calls virTestMakeDummyMarkDup.
+ * VIR_TEST_MAKE_DUMMY_FD_INSTALL_DUP_MOCK macro can be used to install one.
+ */
+virTestDummyFDContext *
+virTestDummyFDContextNew(void)
+{
+    return dummyFDContext = virHashNew(g_free);
+}
+
+
+/**
+ * virTestDummyFDContextMarkFD:
+ * @fd: file descriptor to mark
+ * @hint: allocated buffer containing the name of @fd; the pointer is stolen and freed later
+ *
+ * Records @hint as a reference to @fd in the global 'dummyFDContext' table.
+ */
+void
+virTestDummyFDContextMarkFD(int fd,
+                            char *hint)
+{
+    if (!dummyFDContext) {
+        g_free(hint);
+        return;
+    }
+
+    g_hash_table_insert(dummyFDContext, g_strdup_printf("%d", fd), hint);
+}
+
+
+/**
+ * virTestMakeDummyMarkDup:
+ * @newfd: new fd number
+ * @oldfd: old fd number
+ *
+ * Mark @newfd as a duplicate of @oldfd, e.g. when dup() is mocked. Transfers
+ * the hint from @oldfd to @newfd with a suffix marking that it's a dup'd fd.
+ */
+void
+virTestMakeDummyMarkDup(int newfd,
+                        int oldfd)
+{
+    const char *oldhint;
+    g_autofree char *oldlabel = NULL;
+
+    if (!dummyFDContext)
+        return;
+
+    oldlabel = g_strdup_printf("%d", oldfd);
+
+    if (!(oldhint = g_hash_table_lookup(dummyFDContext, oldlabel)))
+        return;
+
+    virTestDummyFDContextMarkFD(newfd, g_strdup_printf("%s-dup", oldhint));
+}
+
+
+/**
+ * virTestMakeDummyFD:
+ * @hint: name for the FD to record into @hints
+ *
+ * Create a dummy file and return FD to it. The file is removed directly. This
+ * is useful for code where FDs are needed but will not be actually used.
+ *
+ * If 'virTestMakeDummyFDContextNew' was called @hint is recorded in the hash
+ * table corresponding to the contex. @hint is used as-is, caller must pass
+ * an allocated string which will be onwned by the context, or NULL.
+ */
+int
+virTestMakeDummyFD(char *hint)
+{
+    int fd = -1;
+    char path[] = abs_builddir "dummyfd.XXXXXXXX";
+
+    if ((fd = g_mkstemp_full(path, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0) {
+        VIR_TEST_VERBOSE("failed create dummy file/fd at '%s'", path);
+        abort();
+    }
+
+    if (unlink(path) < 0) {
+        VIR_TEST_VERBOSE("failed to unlink dummy file '%s' used for fd", path);
+        abort();
+    }
+
+    virTestDummyFDContextMarkFD(fd, hint);
+
+    return fd;
+}
+
+
 /**
  * virTestLoadFilePath:
  * @...: file name components terminated with a NULL

@@ -106,6 +106,38 @@ const char *virTestCounterNext(void);
 char *virTestFakeRootDirInit(void);
 void virTestFakeRootDirCleanup(char *fakerootdir);
 
+
+typedef GHashTable virTestDummyFDContext;
+
+void virTestDummyFDContextFree(virTestDummyFDContext *ctxt);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virTestDummyFDContext, virTestDummyFDContextFree);
+
+virTestDummyFDContext *virTestDummyFDContextNew(void);
+
+void virTestDummyFDContextMarkFD(int fd,
+                                 char *hint);
+
+void virTestMakeDummyMarkDup(int newfd,
+                             int oldfd);
+
+int virTestMakeDummyFD(char *hint);
+
+/* VIR_TEST_MAKE_DUMMY_FD_INSTALL_DUP_MOCK installs a mock for dup() that
+ * marks duplicated FDs via virTestMakeDummyFD */
+#define VIR_TEST_MAKE_DUMMY_FD_INSTALL_DUP_MOCK \
+    static int (*real_dup)(int oldfd); \
+    int \
+    dup(int oldfd) \
+    { \
+        int newfd; \
+        if (!real_dup) \
+            VIR_MOCK_REAL_INIT(dup); \
+        newfd = real_dup(oldfd); \
+        virTestMakeDummyMarkDup(newfd, oldfd); \
+        return newfd; \
+    }
+
+
 /**
  * The @func shall return  EXIT_FAILURE or EXIT_SUCCESS or
  * EXIT_AM_SKIP or EXIT_AM_HARDFAIL.
