@@ -31,6 +31,9 @@
 #define LIBVIRT_QEMU_PROCESSPRIV_H_ALLOW
 #include "qemu/qemu_processpriv.h"
 
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
+#include "util/vircommandpriv.h"
+
 #include "testutilsqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
@@ -282,15 +285,25 @@ static const struct testValidateSchemaCommandData commands[] = {
 };
 
 static int
-testCompareXMLToArgvValidateSchemaCommand(GStrv args,
-                                          GHashTable *schema)
+testCompareXMLToArgvValidateSchema(virCommand *cmd,
+                                   testQemuInfo *info)
 {
-    GStrv arg;
+    char **args;
+    size_t nargs;
+    size_t a;
 
-    for (arg = args; *arg; arg++) {
-        const char *curcommand = *arg;
-        const char *curargs = *(arg + 1);
+    if (!info->qmpSchema)
+        return 0;
+
+    virCommandArgListAccess(cmd, &args, &nargs);
+
+    for (a = 0; a < nargs; a++) {
+        const char *curcommand = args[a];
+        const char *curargs = NULL;
         size_t i;
+
+        if (a + 1 < nargs)
+            curargs = args[a + 1];
 
         for (i = 0; i < G_N_ELEMENTS(commands); i++) {
             const struct testValidateSchemaCommandData *command = commands + i;
@@ -307,7 +320,7 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
             }
 
             if (*curargs != '{') {
-                arg++;
+                a++;
                 break;
             }
 
@@ -315,7 +328,7 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
                 return -1;
 
             if (testQEMUSchemaValidateCommand(command->schema, jsonargs,
-                                              schema, false, false,
+                                              info->qmpSchema, false, false,
                                               command->allowIncomplete,
                                               &debug) < 0) {
                 VIR_TEST_VERBOSE("failed to validate '%s %s' against QAPI schema: %s",
@@ -323,28 +336,9 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
                 return -1;
             }
 
-            arg++;
+            a++;
         }
     }
-
-    return 0;
-}
-
-
-static int
-testCompareXMLToArgvValidateSchema(virCommand *cmd,
-                                   testQemuInfo *info)
-{
-    g_auto(GStrv) args = NULL;
-
-    if (!info->qmpSchema)
-        return 0;
-
-    if (virCommandGetArgList(cmd, &args) < 0)
-        return -1;
-
-    if (testCompareXMLToArgvValidateSchemaCommand(args, info->qmpSchema) < 0)
-        return -1;
 
     return 0;
 }
