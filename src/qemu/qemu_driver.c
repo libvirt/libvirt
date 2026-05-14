@@ -17051,11 +17051,11 @@ qemuDomainFreeResctrlMonData(virQEMUResctrlMonData *resdata)
  *            returns an error, the caller is also required to call
  *            qemuDomainFreeResctrlMonData to free each element in the
  *            *@resdata array and then the array itself.
- * @tag: Could be VIR_RESCTRL_MONITOR_TYPE_CACHE for getting cache statistics
- *       from @dom cache monitors. VIR_RESCTRL_MONITOR_TYPE_MEMBW for
- *       getting memory bandwidth statistics from memory bandwidth monitors.
+ * @tag: VIR_RESCTRL_MONITOR_TYPE_CACHE for getting cache statistics.
+ *       VIR_RESCTRL_MONITOR_TYPE_MEMBW for getting memory bandwidth statistics.
+ *       VIR_RESCTRL_MONITOR_TYPE_ENERGY for getting energy statistics.
  *
- * Get cache or memory bandwidth statistics from @dom monitors.
+ * Get cache, memory bandwidth or energy statistics from @dom monitors.
  *
  * Returns -1 on failure, or 0 on success.
  */
@@ -17195,6 +17195,63 @@ qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
                         params, resdata[i]->stats[j]->vals[k],
                         VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_SUFFIX_BYTES_TOTAL, i, j);
                 }
+            }
+        }
+    }
+
+    for (i = 0; i < nresdata; i++)
+        qemuDomainFreeResctrlMonData(resdata[i]);
+}
+
+
+static void
+qemuDomainGetStatsEnergy(virQEMUDriver *driver,
+                         virDomainObj *dom,
+                         virTypedParamList *params)
+{
+    g_autofree virQEMUResctrlMonData **resdata = NULL;
+    size_t nresdata = 0;
+    size_t i = 0;
+
+    if (!virDomainObjIsActive(dom))
+        return;
+
+    if (qemuDomainGetResctrlMonData(driver, dom, &resdata, &nresdata,
+                                    VIR_RESCTRL_MONITOR_TYPE_ENERGY) < 0) {
+        virResetLastError();
+        return;
+    }
+
+    if (nresdata == 0)
+        return;
+
+    virTypedParamListAddUInt(params, nresdata,
+                             VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_COUNT);
+
+    for (i = 0; i < nresdata; i++) {
+        size_t j = 0;
+
+        virTypedParamListAddString(params, resdata[i]->name,
+                                   VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_NAME, i);
+        virTypedParamListAddString(params, resdata[i]->vcpus,
+                                   VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_VCPUS, i);
+        virTypedParamListAddUInt(params, resdata[i]->nstats,
+                                 VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_COUNT, i);
+
+        for (j = 0; j < resdata[i]->nstats; j++) {
+            char **features = resdata[i]->stats[j]->features;
+            size_t k = 0;
+
+            virTypedParamListAddUInt(params, resdata[i]->stats[j]->id,
+                                     VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_SUFFIX_ID, i, j);
+
+            for (k = 0; features[k]; k++) {
+                if (k >= resdata[i]->stats[j]->ndvals)
+                    break;
+
+                virTypedParamListAddDouble(params, resdata[i]->stats[j]->dvals[k],
+                                           VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_PREFIX "%zu" ".%s", i, j,
+                                           features[k]);
             }
         }
     }
@@ -17414,6 +17471,8 @@ qemuDomainGetStatsCpu(virQEMUDriver *driver,
     }
 
     qemuDomainGetStatsCpuCache(driver, dom, params);
+
+    qemuDomainGetStatsEnergy(driver, dom, params);
 
     qemuDomainGetStatsCpuHaltPollTime(dom, params, privflags);
 }

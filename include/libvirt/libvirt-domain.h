@@ -4421,6 +4421,71 @@ struct _virDomainStatsRecord {
 
 
 /**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_COUNT:
+ *
+ * The number of energy monitors for this domain, as an unsigned int.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_COUNT "cpu.energy.monitor.count"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX:
+ *
+ * Prefix for an individual energy monitor group.  Concatenate
+ * with the monitor index and one of the "cpu.energy.monitor.<i>." suffix
+ * macros below to form a full parameter name.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "cpu.energy.monitor."
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_NAME:
+ *
+ * Name of the monitor group as a string.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_NAME ".name"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_VCPUS:
+ *
+ * vCPU set covered by the monitor group as a string.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_VCPUS ".vcpus"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_COUNT:
+ *
+ * Number of PERF_PKG nodes the monitor group exposes, as an unsigned int.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_COUNT ".pkg.count"
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_PREFIX:
+ *
+ * Prefix for a single mon_PERF_PKG node inside a monitor group.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_PREFIX ".pkg."
+
+/**
+ * VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_SUFFIX_ID:
+ *
+ * Kernel-assigned mon_PERF_PKG node id, as an unsigned int.
+ *
+ * Since: 12.4.0
+ */
+# define VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_SUFFIX_ID ".id"
+
+/**
  * VIR_DOMAIN_STATS_DIRTYRATE_CALC_STATUS:
  *
  * The status of last memory dirty rate calculation as an int from the
