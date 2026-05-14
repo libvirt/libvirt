@@ -52,6 +52,8 @@ typedef struct _virCapsHostMemBW virCapsHostMemBW;
 
 typedef struct _virCapsHostMemBWNode virCapsHostMemBWNode;
 
+typedef struct _virCapsHostEnergy virCapsHostEnergy;
+
 typedef struct _virCapsHostNUMA virCapsHostNUMA;
 
 typedef struct _virCapsHostNUMACell virCapsHostNUMACell;

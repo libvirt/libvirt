@@ -45,6 +45,9 @@
       <optional>
         <ref name="memory_bandwidth"/>
       </optional>
+      <optional>
+        <ref name="energy"/>
+      </optional>
       <zeroOrMore>
         <ref name="secmodel"/>
       </zeroOrMore>
@@ -331,6 +334,30 @@
     <data type="string">
       <param name="pattern">(llc_|mbm_)[a-zA-Z0-9\-_]+</param>
     </data>
+  </define>
+
+  <define name="energyMonitorFeature">
+    <choice>
+      <value>core_energy</value>
+      <value>activity</value>
+    </choice>
+  </define>
+
+  <define name="energy">
+    <element name="energy">
+      <element name="monitor">
+        <attribute name="maxMonitors">
+          <ref name="unsignedInt"/>
+        </attribute>
+        <oneOrMore>
+          <element name="feature">
+            <attribute name="name">
+              <ref name="energyMonitorFeature"/>
+            </attribute>
+          </element>
+        </oneOrMore>
+      </element>
+    </element>
   </define>
 
   <define name="guestcaps">

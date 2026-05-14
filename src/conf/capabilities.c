@@ -263,6 +263,8 @@ virCapsDispose(void *object)
     virResctrlInfoMonFree(caps->host.memBW.monitor);
     g_free(caps->host.memBW.nodes);
 
+    virResctrlInfoMonFree(caps->host.energy.monitor);
+
     g_free(caps->host.netprefix);
     g_free(caps->host.pagesSize);
     virCPUDefFree(caps->host.cpu);
@@ -1058,6 +1060,26 @@ virCapabilitiesFormatMemoryBandwidth(virBuffer *buf,
 
 
 static int
+virCapabilitiesFormatEnergy(virBuffer *buf,
+                            virCapsHostEnergy *energy)
+{
+    if (!energy->monitor)
+        return 0;
+
+    virBufferAddLit(buf, "<energy>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    if (virCapabilitiesFormatResctrlMonitor(buf, energy->monitor) < 0)
+        return -1;
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</energy>\n");
+
+    return 0;
+}
+
+
+static int
 virCapabilitiesFormatHostXML(virCapsHost *host,
                              virBuffer *buf)
 {
@@ -1154,6 +1176,9 @@ virCapabilitiesFormatHostXML(virCapsHost *host,
         return -1;
 
     if (virCapabilitiesFormatMemoryBandwidth(buf, &host->memBW) < 0)
+        return -1;
+
+    if (virCapabilitiesFormatEnergy(buf, &host->energy) < 0)
         return -1;
 
     for (i = 0; i < host->nsecModels; i++) {
@@ -2143,6 +2168,20 @@ virCapabilitiesInitResctrlMemory(virCaps *caps)
 }
 
 
+static int
+virCapabilitiesInitEnergy(virCaps *caps)
+{
+    const char *prefix = virResctrlMonitorPrefixTypeToString(
+        VIR_RESCTRL_MONITOR_TYPE_ENERGY);
+
+    if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
+                                       &caps->host.energy.monitor) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 virCapabilitiesInitCaches(virCaps *caps)
 {
@@ -2292,6 +2331,9 @@ virCapabilitiesInitCaches(virCaps *caps)
 
     if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
                                        &caps->host.cache.monitor) < 0)
+        return -1;
+
+    if (virCapabilitiesInitEnergy(caps) < 0)
         return -1;
 
     return 0;

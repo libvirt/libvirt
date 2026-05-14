@@ -162,6 +162,10 @@ struct _virCapsHostMemBW {
     virResctrlInfoMon *monitor;
 };
 
+struct _virCapsHostEnergy {
+    virResctrlInfoMon *monitor;
+};
+
 struct _virCapsHost {
     virArch arch;
     size_t nfeatures;
@@ -183,6 +187,8 @@ struct _virCapsHost {
     virCapsHostCache cache;
 
     virCapsHostMemBW memBW;
+
+    virCapsHostEnergy energy;
 
     size_t nsecModels;
     virCapsHostSecModel *secModels;

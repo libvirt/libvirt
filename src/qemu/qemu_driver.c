@@ -17086,6 +17086,9 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
             features = caps->host.memBW.monitor->features;
         break;
     case VIR_RESCTRL_MONITOR_TYPE_ENERGY:
+        if (caps->host.energy.monitor)
+            features = caps->host.energy.monitor->features;
+        break;
     case VIR_RESCTRL_MONITOR_TYPE_UNSUPPORT:
     case VIR_RESCTRL_MONITOR_TYPE_LAST:
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
