@@ -5363,8 +5363,12 @@ static void remoteStreamEventCallback(virNetClientStream *stream G_GNUC_UNUSED,
 static void remoteStreamCallbackFree(void *opaque)
 {
     struct remoteStreamCallbackData *cbdata = opaque;
+    virNetClientStream *privst = cbdata->st->privateData;
 
-    if (!cbdata->cb && cbdata->ff)
+    VIR_DEBUG("stream=%p, clientstream=%p, cb=%p, ff=%p, opaque=%p",
+              cbdata->st, privst, cbdata->cb, cbdata->ff, cbdata->opaque);
+
+    if (cbdata->ff)
         (cbdata->ff)(cbdata->opaque);
 
     virObjectUnref(cbdata->st);
@@ -5384,6 +5388,9 @@ remoteStreamEventAddCallback(virStreamPtr st,
     int ret = -1;
     struct remoteStreamCallbackData *cbdata;
     VIR_LOCK_GUARD lock = remoteDriverLock(priv);
+
+    VIR_DEBUG("st=%p, clientstream=%p, events=%d, cb=%p, opaque=%p, ff=%p",
+              st, privst, events, cb, opaque, ff);
 
     cbdata = g_new0(struct remoteStreamCallbackData, 1);
     cbdata->cb = cb;
