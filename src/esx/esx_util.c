@@ -165,13 +165,14 @@ esxUtil_FreeParsedUri(esxUtil_ParsedUri **parsedUri)
     if (!parsedUri || !(*parsedUri))
         return;
 
-    g_free((*parsedUri)->transport);
-    g_free((*parsedUri)->vCenter);
-    g_free((*parsedUri)->proxy_hostname);
-    g_free((*parsedUri)->path);
-    g_free((*parsedUri)->cacert);
 
-    g_free(*parsedUri);
+    VIR_FREE((*parsedUri)->transport);
+    VIR_FREE((*parsedUri)->vCenter);
+    VIR_FREE((*parsedUri)->proxy_hostname);
+    VIR_FREE((*parsedUri)->path);
+    VIR_FREE((*parsedUri)->cacert);
+
+    VIR_FREE(*parsedUri);
 }
 
 
