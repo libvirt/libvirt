@@ -17,6 +17,12 @@ v12.4.0 (unreleased)
 
 * **New features**
 
+  * resctrl: Add energy monitoring via resctrl's PERF_PKG_MON
+
+    Add support for Linux kernel 7.0 feature - energy monitoring via resctrl.
+    This allows to monitor per-VM energy consumption on supported platforms.
+    Implemented via ``energytune`` element in ``cputune`` .
+
 * **Improvements**
 
 * **Bug fixes**
