@@ -38,6 +38,7 @@ typedef enum {
     VIR_RESCTRL_MONITOR_TYPE_UNSUPPORT,
     VIR_RESCTRL_MONITOR_TYPE_CACHE,
     VIR_RESCTRL_MONITOR_TYPE_MEMBW,
+    VIR_RESCTRL_MONITOR_TYPE_ENERGY,
 
     VIR_RESCTRL_MONITOR_TYPE_LAST
 } virResctrlMonitorType;
@@ -196,11 +197,18 @@ struct _virResctrlMonitorStats {
     /* @features is a NULL terminal string list tracking the statistical record
      * name.*/
     char **features;
-    /* @vals store the statistical record values and @val[0] is the value for
-     * @features[0], @val[1] for@features[1] ... respectively */
+    /* @vals store the statistical record values for integer-valued resources.
+     * Entries correspond 1:1 with @features; empty when the resource reports
+     * floating-point data. */
     unsigned long long *vals;
     /* The length of @vals array */
     size_t nvals;
+    /* @dvals store double-precision values for floating-point resources.
+     * Entries correspond 1:1 with @features; empty when the resource reports
+     * integer data. */
+    double *dvals;
+    /* The length of @dvals array */
+    size_t ndvals;
 };
 
 virResctrlMonitor *

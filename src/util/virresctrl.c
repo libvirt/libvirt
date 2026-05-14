@@ -79,13 +79,22 @@ VIR_ENUM_IMPL(virResctrl,
               "DATA",
 );
 
-/* Monitor feature name prefix mapping for monitor naming */
+/* Monitor feature prefix/type mapping for monitor naming */
 VIR_ENUM_IMPL(virResctrlMonitorPrefix,
               VIR_RESCTRL_MONITOR_TYPE_LAST,
               "__unsupported__",
               "llc_",
               "mbm_",
+              "energy",
 );
+
+
+/* PERF_PKG_MON features that report energy data (floating-point) */
+static const char *virResctrlEnergyFeatures[] = {
+    "core_energy",
+    "activity",
+    NULL,
+};
 
 
 /* All private typedefs so that they exist for all later definitions.  This way
@@ -183,6 +192,8 @@ struct _virResctrlInfo {
     virResctrlInfoMemBW *membw_info;
 
     virResctrlInfoMongrp *monitor_info;
+
+    virResctrlInfoMongrp *perf_monitor_info;
 };
 
 static void
@@ -235,10 +246,14 @@ virResctrlInfoDispose(void *obj)
     if (resctrl->monitor_info)
         g_strfreev(resctrl->monitor_info->features);
 
+    if (resctrl->perf_monitor_info)
+        g_strfreev(resctrl->perf_monitor_info->features);
+
     virResctrlInfoMemBWFree(resctrl->membw_info);
 
     g_free(resctrl->levels);
     g_free(resctrl->monitor_info);
+    g_free(resctrl->perf_monitor_info);
 }
 
 
@@ -772,6 +787,52 @@ virResctrlGetMonitorInfo(virResctrlInfo *resctrl)
 
 
 static int
+virResctrlGetPerfMonitorInfo(virResctrlInfo *resctrl)
+{
+    int rv = -1;
+    g_autofree char *featurestr = NULL;
+    g_autofree virResctrlInfoMongrp *info_monitor = NULL;
+
+    info_monitor = g_new0(virResctrlInfoMongrp, 1);
+
+    rv = virFileReadValueUint(&info_monitor->max_monitor,
+                              SYSFS_RESCTRL_PATH
+                              "/info/PERF_PKG_MON/num_rmids");
+    if (rv == -2) {
+        VIR_DEBUG("The file '" SYSFS_RESCTRL_PATH "/info/PERF_PKG_MON/num_rmids' "
+                  "does not exist");
+        return 0;
+    } else if (rv < 0) {
+        return -1;
+    }
+
+    rv = virFileReadValueString(&featurestr,
+                                SYSFS_RESCTRL_PATH
+                                "/info/PERF_PKG_MON/mon_features");
+    if (rv == -2)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot get mon_features from resctrl PERF_PKG_MON"));
+    if (rv < 0)
+        return -1;
+
+    if (!*featurestr) {
+        VIR_DEBUG("Got empty feature list from PERF_PKG_MON; "
+                  "energy monitoring will not be available");
+        return 0;
+    }
+
+    info_monitor->features = g_strsplit(featurestr, "\n", 0);
+    info_monitor->nfeatures = g_strv_length(info_monitor->features);
+    VIR_DEBUG("Resctrl supported %zd PERF_PKG_MON monitoring features",
+              info_monitor->nfeatures);
+
+    resctrl->perf_monitor_info = g_steal_pointer(&info_monitor);
+
+    return 0;
+}
+
+
+static int
 virResctrlGetInfo(virResctrlInfo *resctrl)
 {
     g_autoptr(DIR) dirp = NULL;
@@ -788,6 +849,9 @@ virResctrlGetInfo(virResctrlInfo *resctrl)
         return -1;
 
     if ((ret = virResctrlGetMonitorInfo(resctrl)) < 0)
+        return -1;
+
+    if ((ret = virResctrlGetPerfMonitorInfo(resctrl)) < 0)
         return -1;
 
     return 0;
@@ -828,6 +892,9 @@ virResctrlInfoIsEmpty(virResctrlInfo *resctrl)
         return false;
 
     if (resctrl->monitor_info)
+        return false;
+
+    if (resctrl->perf_monitor_info)
         return false;
 
     for (i = 0; i < resctrl->nlevels; i++) {
@@ -986,13 +1053,6 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfo *resctrl,
     if (virResctrlInfoIsEmpty(resctrl))
         return 0;
 
-    mongrp_info = resctrl->monitor_info;
-
-    if (!mongrp_info) {
-        VIR_INFO("Monitor is not supported in host");
-        return 0;
-    }
-
     for (i = 0; i < VIR_RESCTRL_MONITOR_TYPE_LAST; i++) {
         if (STREQ(prefix, virResctrlMonitorPrefixTypeToString(i))) {
             mon = g_new0(virResctrlInfoMon, 1);
@@ -1008,6 +1068,19 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfo *resctrl,
         return -1;
     }
 
+    if (mon->type == VIR_RESCTRL_MONITOR_TYPE_ENERGY)
+        mongrp_info = resctrl->perf_monitor_info;
+    else
+        mongrp_info = resctrl->monitor_info;
+
+    if (!mongrp_info) {
+        VIR_DEBUG("Monitor prefix '%s' is not supported in host", prefix);
+        virResctrlInfoMonFree(*monitor);
+        *monitor = NULL;
+        ret = 0;
+        goto cleanup;
+    }
+
     mon->max_monitor = mongrp_info->max_monitor;
 
     if (mon->type == VIR_RESCTRL_MONITOR_TYPE_CACHE) {
@@ -1018,8 +1091,12 @@ virResctrlInfoGetMonitorPrefix(virResctrlInfo *resctrl,
     mon->features = g_new0(char *, mongrp_info->nfeatures + 1);
 
     for (i = 0; i < mongrp_info->nfeatures; i++) {
-        if (STRPREFIX(mongrp_info->features[i], prefix))
+        if (mon->type == VIR_RESCTRL_MONITOR_TYPE_ENERGY) {
+            if (g_strv_contains(virResctrlEnergyFeatures, mongrp_info->features[i]))
+                mon->features[mon->nfeatures++] = g_strdup(mongrp_info->features[i]);
+        } else if (STRPREFIX(mongrp_info->features[i], prefix)) {
             mon->features[mon->nfeatures++] = g_strdup(mongrp_info->features[i]);
+        }
     }
 
     mon->features = g_renew(char *, mon->features, mon->nfeatures + 1);
@@ -2558,7 +2635,7 @@ virResctrlMonitorStatsSorter(const void *a,
  * memory bandwidth usage data.
  * @nstats: A size_t pointer to hold the returned array length of @stats
  *
- * Get cache or memory bandwidth utilization information.
+ * Get cache, memory bandwidth or energy utilization information.
  *
  * Returns 0 on success, -1 on error.
  */
@@ -2593,6 +2670,7 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
     while (virDirRead(dirp, &ent, datapath) > 0) {
         g_autofree char *filepath = NULL;
         char *node_id = NULL;
+        bool is_energy = false;
 
         /* Looking for directory that contains resource utilization
          * information file. The directory name is arranged in format
@@ -2605,18 +2683,17 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
         if (!virFileIsDir(filepath))
             continue;
 
-        /* Looking for directory has a prefix 'mon_L' */
-        if (!(node_id = STRSKIP(ent->d_name, "mon_L")))
+        if ((node_id = STRSKIP(ent->d_name, "mon_PERF_PKG_"))) {
+            is_energy = true;
+        } else if ((node_id = STRSKIP(ent->d_name, "mon_L"))) {
+            node_id = strchr(node_id, '_');
+            if (!node_id)
+                continue;
+            if (!(node_id = STRSKIP(node_id, "_")))
+                continue;
+        } else {
             continue;
-
-        /* Looking for directory has another '_' */
-        node_id = strchr(node_id, '_');
-        if (!node_id)
-            continue;
-
-        /* Skip the character '_' */
-        if (!(node_id = STRSKIP(node_id, "_")))
-            continue;
+        }
 
         stat = g_new0(virResctrlMonitorStats, 1);
         stat->features = g_new0(char *, nresources + 1);
@@ -2626,19 +2703,59 @@ virResctrlMonitorGetStats(virResctrlMonitor *monitor,
             goto cleanup;
 
         for (i = 0; resources[i]; i++) {
-            rv = virFileReadValueUllong(&val, "%s/%s/%s", datapath,
-                                        ent->d_name, resources[i]);
-            if (rv == -2) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("File '%1$s/%2$s/%3$s' does not exist."),
-                               datapath, ent->d_name, resources[i]);
-            }
-            if (rv < 0)
-                goto cleanup;
+            if (is_energy) {
+                g_autofree char *valstr = NULL;
+                double dval = 0.0;
+                char *endp = NULL;
 
-            VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val);
+                rv = virFileReadValueString(&valstr, "%s/%s/%s", datapath,
+                                            ent->d_name, resources[i]);
+                if (rv == -2) {
+                    if (i == 0)
+                        break;
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("File '%1$s/%2$s/%3$s' does not exist."),
+                                   datapath, ent->d_name, resources[i]);
+                    goto cleanup;
+                }
+                if (rv < 0)
+                    goto cleanup;
+
+                g_strstrip(valstr);
+                errno = 0;
+                dval = g_ascii_strtod(valstr, &endp);
+                if (endp == valstr || *endp != '\0' || errno != 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Cannot parse resctrl monitor value '%1$s' from '%2$s/%3$s/%4$s'"),
+                                   valstr, datapath, ent->d_name, resources[i]);
+                    goto cleanup;
+                }
+
+                VIR_APPEND_ELEMENT(stat->dvals, stat->ndvals, dval);
+            } else {
+                rv = virFileReadValueUllong(&val, "%s/%s/%s", datapath,
+                                            ent->d_name, resources[i]);
+                if (rv == -2) {
+                    if (i == 0)
+                        break;
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("File '%1$s/%2$s/%3$s' does not exist."),
+                                   datapath, ent->d_name, resources[i]);
+                    goto cleanup;
+                }
+                if (rv < 0)
+                    goto cleanup;
+
+                VIR_APPEND_ELEMENT(stat->vals, stat->nvals, val);
+            }
 
             stat->features[i] = g_strdup(resources[i]);
+        }
+
+        if (resources[i]) {
+            virResctrlMonitorStatsFree(stat);
+            stat = NULL;
+            continue;
         }
 
         VIR_APPEND_ELEMENT(*stats, *nstats, stat);
@@ -2665,5 +2782,6 @@ virResctrlMonitorStatsFree(virResctrlMonitorStats *stat)
 
     g_strfreev(stat->features);
     g_free(stat->vals);
+    g_free(stat->dvals);
     g_free(stat);
 }
