@@ -480,8 +480,9 @@ daemonRemoveClientStream(virNetServerClient *client,
     daemonClientStream *curr = priv->streams;
     daemonClientStream *prev = NULL;
 
-    VIR_DEBUG("client=%p, proc=%d, serial=%u, st=%p",
-              client, stream->procedure, stream->serial, stream->st);
+    VIR_DEBUG("client=%p, proc=%d, serial=%u, st=%p, closed=%d",
+              client, stream->procedure, stream->serial, stream->st,
+              stream->closed);
 
     if (stream->filterID != -1) {
         virNetServerClientRemoveFilter(client,
