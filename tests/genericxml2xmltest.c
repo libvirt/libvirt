@@ -210,6 +210,7 @@ mymain(void)
     DO_TEST("cachetune-small");
     DO_TEST("cachetune-cdp");
     DO_TEST("cachetune");
+    DO_TEST("energytune");
     DO_TEST_DIFFERENT("cachetune-extra-tunes");
     DO_TEST_FAIL_INACTIVE("cachetune-colliding-allocs");
     DO_TEST_FAIL_INACTIVE("cachetune-colliding-tunes");

@@ -19468,6 +19468,57 @@ virDomainMemorytuneDefParse(virDomainDef *def,
 
 
 static int
+virDomainEnergytuneDefParse(virDomainDef *def,
+                            xmlXPathContextPtr ctxt,
+                            xmlNodePtr node,
+                            unsigned int flags)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    virDomainResctrlDef *resctrl = NULL;
+    virDomainResctrlDef *newresctrl = NULL;
+    g_autoptr(virBitmap) vcpus = NULL;
+    g_autoptr(virResctrlAlloc) alloc = NULL;
+    size_t nmons;
+    int ret = -1;
+
+    ctxt->node = node;
+
+    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
+        return -1;
+
+    if (virBitmapIsAllClear(vcpus))
+        return 0;
+
+    if (virDomainResctrlVcpuMatch(def, vcpus, &resctrl) < 0)
+        return -1;
+
+    if (resctrl) {
+        alloc = virObjectRef(resctrl->alloc);
+    } else {
+        if (!(alloc = virResctrlAllocNew()))
+            return -1;
+        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
+            return -1;
+        resctrl = newresctrl;
+    }
+
+    nmons = resctrl->nmonitors;
+    if (virDomainResctrlMonDefParse(def, ctxt, node,
+                                    VIR_RESCTRL_MONITOR_TYPE_ENERGY,
+                                    resctrl) < 0)
+        goto cleanup;
+
+    if (newresctrl && resctrl->nmonitors > nmons)
+        VIR_APPEND_ELEMENT(def->resctrls, def->nresctrls, newresctrl);
+
+    ret = 0;
+ cleanup:
+    virDomainResctrlDefFree(newresctrl);
+    return ret;
+}
+
+
+static int
 virDomainDefTunablesParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt,
                           virDomainXMLOption *xmlopt,
@@ -19667,6 +19718,15 @@ virDomainDefTunablesParse(virDomainDef *def,
 
     for (i = 0; i < n; i++) {
         if (virDomainMemorytuneDefParse(def, ctxt, nodes[i], flags) < 0)
+            return -1;
+    }
+    VIR_FREE(nodes);
+
+    if ((n = virXPathNodeSet("./cputune/energytune", ctxt, &nodes)) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        if (virDomainEnergytuneDefParse(def, ctxt, nodes[i], flags) < 0)
             return -1;
     }
     VIR_FREE(nodes);
@@ -28721,6 +28781,42 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
     return 0;
 }
 
+
+static int
+virDomainEnergytuneDefFormat(virBuffer *buf,
+                             virDomainResctrlDef *resctrl,
+                             unsigned int flags)
+{
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *vcpus = NULL;
+    size_t i;
+
+    for (i = 0; i < resctrl->nmonitors; i++) {
+        if (virDomainResctrlMonDefFormatHelper(resctrl->monitors[i],
+                                               VIR_RESCTRL_MONITOR_TYPE_ENERGY,
+                                               &childrenBuf) < 0)
+            return -1;
+    }
+
+    if (!virBufferUse(&childrenBuf))
+        return 0;
+
+    vcpus = virBitmapFormat(resctrl->vcpus);
+    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
+
+    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+        const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
+        if (!alloc_id)
+            return -1;
+
+        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+    }
+
+    virXMLFormatElement(buf, "energytune", &attrBuf, &childrenBuf);
+    return 0;
+}
+
 static int
 virDomainCputuneDefFormat(virBuffer *buf,
                           virDomainDef *def,
@@ -28820,6 +28916,9 @@ virDomainCputuneDefFormat(virBuffer *buf,
 
     for (i = 0; i < def->nresctrls; i++)
         virDomainMemorytuneDefFormat(&childrenBuf, def->resctrls[i], flags);
+
+    for (i = 0; i < def->nresctrls; i++)
+        virDomainEnergytuneDefFormat(&childrenBuf, def->resctrls[i], flags);
 
     virXMLFormatElement(buf, "cputune", NULL, &childrenBuf);
 

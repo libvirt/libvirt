@@ -900,6 +900,9 @@ CPU Tuning
        <memorytune vcpus='0-3'>
          <node id='0' bandwidth='60'/>
        </memorytune>
+       <energytune vcpus='0-3'>
+         <monitor vcpus='0-3'/>
+       </energytune>
 
      </cputune>
      ...
@@ -1083,6 +1086,23 @@ CPU Tuning
          the ``mba_MBps`` option) or in 1/8 GB/s increments (AMD).  The user is
          responsible for making sure the value makes sense on their system and
          configuration.
+
+``energytune`` :since:`Since 12.4.0`
+   Optional ``energytune`` element allows to monitor energy consumption using the
+   resctrl filesystem on the host. Whether or not is this supported can be
+   gathered from capabilities where number of monitors and available features are
+   reported. The required attribute ``vcpus`` specifies to which allocation group
+   this monitor belongs. A vCPU can only be member of one allocation group and monitor
+   group. The ``vcpus`` specified by ``energytune`` can be identical to those
+   specified by ``cachetune`` or ``memorytune``. However they are not allowed to
+   overlap each other. Supported subelements are:
+
+   ``monitor``
+      The optional element ``monitor`` creates the energy monitor for
+      this allocation group and has the following required attribute:
+
+      ``vcpus``
+         vCPU list the monitor applies to.
 
 
 Memory Allocation

@@ -1293,6 +1293,25 @@
             </oneOrMore>
           </element>
         </zeroOrMore>
+        <zeroOrMore>
+          <element name="energytune">
+            <attribute name="vcpus">
+              <ref name="cpuset"/>
+            </attribute>
+            <optional>
+              <attribute name="id">
+                <data type="string"/>
+              </attribute>
+            </optional>
+            <oneOrMore>
+              <element name="monitor">
+                <attribute name="vcpus">
+                  <ref name="cpuset"/>
+                </attribute>
+              </element>
+            </oneOrMore>
+          </element>
+        </zeroOrMore>
       </interleave>
     </element>
   </define>
