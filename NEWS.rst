@@ -27,6 +27,16 @@ v12.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * esx/vmware: VMs are tracked under different UUIDs by default
+
+    The VMWare-related drivers were using allegedly unique IDs for domains, but
+    it turned out they were not completely unique, even for the same host.  That
+    caused an issue where a different domain could have been acted upon then
+    requested.  Unfortunately, to make this work, the UUIDs of all
+    VMWare-related domains will change from this release.  In order to use the
+    pre-v12.4.0 behaviour there is a new URI query parameter ``legacy_uuid``
+    which, if set to ``1``, will revert to the older way of working.
+
 
 v12.3.0 (2026-05-02)
 ====================
