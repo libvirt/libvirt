@@ -124,8 +124,16 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
 
     do {
         virErrorPtr err;
+        virConnectAuthPtr auth = virConnectAuthPtrDefault;
 
-        if ((c = virConnectOpenAuth(uri, virConnectAuthPtrDefault,
+        if (ctl->cmd->def->handler == cmdComplete) {
+            /* When running from a bash completer we need to avoid any kind of
+             * keyboard input (e.g. ssh asking for a password). To achieve
+             * this, provide no authentication callbacks. */
+            auth = NULL;
+        }
+
+        if ((c = virConnectOpenAuth(uri, auth,
                                     readonly ? VIR_CONNECT_RO : 0)))
             break;
 
