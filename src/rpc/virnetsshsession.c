@@ -661,13 +661,6 @@ virNetSSHAuthenticatePassword(virNetSSHSession *sess)
 
     VIR_DEBUG("sess=%p", sess);
 
-    /* password authentication with interactive password request */
-    if (!sess->cred || !sess->cred->cb) {
-        virReportError(VIR_ERR_SSH, "%s",
-                       _("Can't perform authentication: Authentication callback not provided"));
-        goto cleanup;
-    }
-
     /* Try the authenticating the set amount of times. The server breaks the
      * connection if maximum number of bad auth tries is exceeded */
     while (true) {
