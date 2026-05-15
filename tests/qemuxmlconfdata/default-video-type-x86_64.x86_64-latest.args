@@ -20,7 +20,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-default-video-type-x/.config \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-chardev socket,id=charmonitor,fd=@mon-fd@,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

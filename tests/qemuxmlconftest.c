@@ -524,8 +524,16 @@ testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
         if (a + 1 >= nargs)
             break;
 
-        if (STREQ(args[a], "-add-fd")) {
+        if (STREQ(args[a], "-add-fd") ||
+            STREQ(args[a], "-chardev")) {
             testCompareXMLToArgvStabilizeOne(&args[a + 1], "fd", fdsubsts, false);
+
+            /* qemuxmlconftest also tests the JSON syntax which isn't supported via
+             * -chardev upstream. The syntax is weird so we need to make sure to
+             *  apply the substitution only on JSON with -chardev */
+            if (STREQ(args[a], "-chardev") && STRPREFIX(args[a + 1], "{")) {
+                testCompareXMLToArgvStabilizeOne(&args[a + 1], "str", fdsubsts, true);
+            }
 
             a++;
         }

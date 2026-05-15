@@ -22,7 +22,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-chardev socket,id=charmonitor,fd=@mon-fd@,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -45,7 +45,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-tablet-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input2","bus":"pci.0","addr":"0x11"}' \
 -device '{"driver":"virtio-input-host-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input3","evdev":"/dev/input/event1234","bus":"pci.0","addr":"0x12"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--chardev socket,id=chr-vu-video0,fd=1729 \
+-chardev socket,id=chr-vu-video0,fd=XXXXXXX \
 -device '{"driver":"vhost-user-vga","id":"video0","max_outputs":1,"chardev":"chr-vu-video0","bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"virtio-balloon-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"balloon0","bus":"pci.0","addr":"0xc"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/random"}' \

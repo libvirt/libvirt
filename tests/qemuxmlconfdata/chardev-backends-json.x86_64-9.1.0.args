@@ -20,7 +20,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -no-user-config \
 -nodefaults \
--chardev '{"id":"charmonitor","backend":{"type":"socket","data":{"addr":{"type":"fd","data":{"str":"1729"}},"server":true,"wait":false}}}' \
+-chardev '{"id":"charmonitor","backend":{"type":"socket","data":{"addr":{"type":"fd","data":{"str":"@mon-fd@"}},"server":true,"wait":false}}}' \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
@@ -46,7 +46,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":6,"chardev":"charchannel5","id":"channel5","name":"chardev-pipe"}' \
 -chardev '{"id":"charchannel6","backend":{"type":"serial","data":{"device":"/path/to/device"}}}' \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":7,"chardev":"charchannel6","id":"channel6","name":"chardev-dev"}' \
--chardev '{"id":"charchannel7","backend":{"type":"socket","data":{"addr":{"type":"fd","data":{"str":"1729"}},"server":true,"wait":false}}}' \
+-chardev '{"id":"charchannel7","backend":{"type":"socket","data":{"addr":{"type":"fd","data":{"str":"XXXXXXX"}},"server":true,"wait":false}}}' \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":8,"chardev":"charchannel7","id":"channel7","name":"chardev-unix-listen"}' \
 -chardev '{"id":"charchannel8","backend":{"type":"socket","data":{"addr":{"type":"unix","data":{"path":"/path/to/unix-listen"}},"server":false,"reconnect":2}}}' \
 -device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":9,"chardev":"charchannel8","id":"channel8","name":"chardev-unix-connect"}' \

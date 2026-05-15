@@ -21,13 +21,13 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -display none \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-chardev socket,id=charmonitor,fd=@mon-fd@,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--chardev socket,id=charchannel0,fd=1729,server=on,wait=off \
+-chardev socket,id=charchannel0,fd=XXXXXXX,server=on,wait=off \
 -netdev '{"type":"user","guestfwd":[{"str":"tcp:10.0.2.1:4600-chardev:charchannel0"}],"id":"channel0"}' \
 -chardev socket,id=charchannel1,path=/tmp/guestfwd-connect.socket \
 -netdev '{"type":"user","guestfwd":[{"str":"tcp:10.0.2.1:4601-chardev:charchannel1"}],"id":"channel1"}' \

@@ -1037,6 +1037,8 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
             return 0;
     } else {
         devalias = "monitor";
+        fakesourcefd = 1764;
+        virTestDummyFDContextMarkFD(fakesourcefd, g_strdup("@mon-fd@"));
     }
 
     switch ((virDomainChrType) chardev->type) {
@@ -1067,7 +1069,8 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (chardev->data.nix.listen) {
             g_autofree char *name = g_strdup_printf("%s-source", devalias);
-            fakesourcefd = 1729;
+            if (fakesourcefd == -1)
+                fakesourcefd = 1729;
 
             charpriv->directfd = qemuFDPassDirectNew(name, &fakesourcefd);
         }
