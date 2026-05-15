@@ -517,13 +517,6 @@ virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
 
     VIR_DEBUG("sess=%p", sess);
 
-    /* password authentication with interactive password request */
-    if (!sess->cred || !sess->cred->cb) {
-        virReportError(VIR_ERR_LIBSSH, "%s",
-                       _("Can't perform authentication: Authentication callback not provided"));
-        return SSH_AUTH_ERROR;
-    }
-
     /* first try to get password from config */
     if (virAuthGetCredential("ssh", sess->hostname, "password", sess->authPath,
                              &password) < 0)
@@ -537,6 +530,13 @@ virNetLibsshAuthenticatePassword(virNetLibsshSession *sess)
             return SSH_AUTH_SUCCESS;
         else if (rc != SSH_AUTH_DENIED)
             goto error;
+    }
+
+    /* password authentication with interactive password request */
+    if (!sess->cred || !sess->cred->cb) {
+        virReportError(VIR_ERR_LIBSSH, "%s",
+                       _("Can't perform authentication: Authentication callback not provided"));
+        return SSH_AUTH_ERROR;
     }
 
     /* Try the authenticating the set amount of times. The server breaks the
