@@ -916,6 +916,16 @@ testCompareXMLToArgv(const void *data)
         goto cleanup;
     }
 
+    if (info->fdsubsts->errors) {
+        GSList *n;
+
+        for (n = info->fdsubsts->errors; n; n = n->next) {
+            VIR_TEST_VERBOSE("%s", (char *) n->data);
+        }
+
+        goto cleanup;
+    }
+
     if (testCompareXMLToArgvValidateSchema(cmd, info) < 0)
         goto cleanup;
 

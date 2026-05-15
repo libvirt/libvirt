@@ -193,6 +193,7 @@ virCommandPassFD(virCommand *cmd,
     if (fd == STDIN_FILENO ||
         fd == STDOUT_FILENO ||
         fd == STDERR_FILENO) {
+        virTestDummyFDContextMarkError(g_strdup("test case tried to pass stdio FDs to virCommandPassFD"));
         return;
     }
 
@@ -200,6 +201,8 @@ virCommandPassFD(virCommand *cmd,
      * operations on those since they cause errors in e.g. valgrind.
      */
     if (fcntl(fd, F_GETFD) == -1) {
+        virTestDummyFDContextMarkError(g_strdup_printf("test case tried to pass invalid FD '%d' to virCommandPassFD",
+                                                       fd));
         return;
     }
 
