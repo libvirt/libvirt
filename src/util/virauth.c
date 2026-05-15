@@ -229,6 +229,12 @@ virAuthGetPasswordPath(const char *path,
         return NULL;
     }
 
+    if (!auth->cb) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Missing authentication callback"));
+        return NULL;
+    }
+
     prompt = g_strdup_printf(_("Enter %1$s's password for %2$s"), username, hostname);
 
     if (!(cred = virAuthAskCredential(auth, prompt, false)))
