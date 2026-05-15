@@ -53,6 +53,7 @@
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "virtime.h"
+#include "virutil.h"
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
 
@@ -138,7 +139,8 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
 {
     virBlkioDevice *device;
 
-    if (vm->def->blkio.ndevices != 1)
+    if ((vm->def->blkio.ndevices != 1) &&
+        !virMemoryLimitIsSet(vm->def->mem.hard_limit))
         return 0;
 
     if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RCTL) == 0) {
@@ -147,24 +149,30 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
         return -1;
     }
 
-    device = &vm->def->blkio.devices[0];
-
-#define BHYVE_APPLY_RCTL_RULE(field, type, format) \
+#define BHYVE_APPLY_RCTL_RULE(field, type, action, format) \
     do { \
         if ((field)) { \
             g_autofree char *rule = NULL; \
             g_autoptr(virCommand) cmd = virCommandNewArgList("rctl", "-a", NULL); \
-            virCommandAddArgFormat(cmd, "process:%d:" type ":throttle=" format, \
+            virCommandAddArgFormat(cmd, "process:%d:" type ":" action "=" format, \
                                    vm->pid, (field)); \
             if (virCommandRun(cmd, NULL) < 0) \
                 return -1; \
          } \
     } while (0)
 
-    BHYVE_APPLY_RCTL_RULE(device->riops, "readiops", "%u");
-    BHYVE_APPLY_RCTL_RULE(device->wiops, "writeiops", "%u");
-    BHYVE_APPLY_RCTL_RULE(device->rbps, "readbps", "%llu");
-    BHYVE_APPLY_RCTL_RULE(device->wbps, "writebps", "%llu");
+    if (vm->def->blkio.ndevices == 1) {
+        device = &vm->def->blkio.devices[0];
+
+        BHYVE_APPLY_RCTL_RULE(device->riops, "readiops", "throttle", "%u");
+        BHYVE_APPLY_RCTL_RULE(device->wiops, "writeiops", "throttle", "%u");
+        BHYVE_APPLY_RCTL_RULE(device->rbps, "readbps", "throttle", "%llu");
+        BHYVE_APPLY_RCTL_RULE(device->wbps, "writebps", "throttle", "%llu");
+    }
+
+    /* rctl(8) uses bytes for these values and def->mem.* uses kibibytes */
+    if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
+        BHYVE_APPLY_RCTL_RULE(vm->def->mem.hard_limit * 1024, "memoryuse", "deny", "%llu");
 
 #undef BHYVE_APPLY_RCTL_RULE
 
