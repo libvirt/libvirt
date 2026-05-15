@@ -180,24 +180,32 @@ virHostGetDRMRenderNode(void)
 
 static void (*real_virCommandPassFD)(virCommand *cmd, int fd, unsigned int flags);
 
-static const int testCommandPassSafeFDs[] = { 1730, 1731, 1732 };
 
 void
 virCommandPassFD(virCommand *cmd,
                  int fd,
                  unsigned int flags)
 {
-    size_t i;
-
-    for (i = 0; i < G_N_ELEMENTS(testCommandPassSafeFDs); i++) {
-        if (testCommandPassSafeFDs[i] == fd) {
-            if (!real_virCommandPassFD)
-                VIR_MOCK_REAL_INIT(virCommandPassFD);
-
-            real_virCommandPassFD(cmd, fd, flags);
-            return;
-        }
+    /* Test cases run in the context of the test program, so attempting to use
+     * the STDIO fds with virCommand could break/close them and thus break
+     * output of the test itself. */
+    if (fd == STDIN_FILENO ||
+        fd == STDOUT_FILENO ||
+        fd == STDERR_FILENO) {
+        return;
     }
+
+    /* Some test scenarios pass invalid FDs to virCommand. We want to skip
+     * operations on those since they cause errors in e.g. valgrind.
+     */
+    if (fcntl(fd, F_GETFD) == -1) {
+        return;
+    }
+
+    if (!real_virCommandPassFD)
+        VIR_MOCK_REAL_INIT(virCommandPassFD);
+
+    real_virCommandPassFD(cmd, fd, flags);
 }
 
 int
