@@ -70,6 +70,7 @@
 #include "bhyve_domain.h"
 #include "bhyve_process.h"
 #include "bhyve_capabilities.h"
+#include "bhyve_rctl.h"
 
 #define VIR_FROM_THIS   VIR_FROM_BHYVE
 
@@ -2167,6 +2168,63 @@ bhyveDomainGetHostname(virDomainPtr domain,
     return hostname;
 }
 
+
+#define BHYVE_NB_MEM_PARAM  1
+#define BHYVE_ASSIGN_MEM_PARAM(index, name, value) \
+    if (index < *nparams && \
+        virTypedParameterAssign(&params[index], name, VIR_TYPED_PARAM_ULLONG, \
+                                value) < 0) \
+        goto cleanup
+
+static int
+bhyveDomainGetMemoryParameters(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               int *nparams,
+                               unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    virDomainDef *persistentDef = NULL;
+    int ret = -1;
+    unsigned long long mem_hard_limit;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainGetMemoryParametersEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, NULL, &persistentDef) < 0)
+        goto cleanup;
+
+    if ((*nparams) == 0) {
+        *nparams = BHYVE_NB_MEM_PARAM;
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (persistentDef) {
+        mem_hard_limit = persistentDef->mem.hard_limit;
+    } else {
+        if (bhyveRctlGetMemoryHardLimit(vm->pid, &mem_hard_limit) < 0)
+            goto cleanup;
+    }
+
+    BHYVE_ASSIGN_MEM_PARAM(0, VIR_DOMAIN_MEMORY_HARD_LIMIT, mem_hard_limit);
+
+    if (BHYVE_NB_MEM_PARAM < *nparams)
+        *nparams = BHYVE_NB_MEM_PARAM;
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+#undef BHYVE_ASSIGN_MEM_PARAM
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2236,6 +2294,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainInterfaceAddresses = bhyveDomainInterfaceAddresses, /* 12.3.0 */
     .domainGetHostname = bhyveDomainGetHostname, /* 12.3.0 */
     .domainQemuAgentCommand = bhyveDomainQemuAgentCommand, /* 12.4.0 */
+    .domainGetMemoryParameters = bhyveDomainGetMemoryParameters, /* 12.4.0 */
 };
 
 

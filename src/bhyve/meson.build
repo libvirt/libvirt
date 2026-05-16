@@ -9,6 +9,7 @@ bhyve_sources = files(
   'bhyve_driver.c',
   'bhyve_monitor.c',
   'bhyve_process.c',
+  'bhyve_rctl.c',
 )
 
 driver_source_files += bhyve_sources
