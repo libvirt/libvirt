@@ -213,8 +213,8 @@ virTypedParamsValidateTemplate(virTypedParameterPtr params,
 
     /* we need to copy the list of templates because
      * 'virTypedParamsValidateInternal' will need to sort it */
-    while (*templates[ntemplates++].name == '\0')
-        ;
+    while (*templates[ntemplates].name != '\0')
+        ntemplates++;
 
     templ_copy = g_new0(virTypedParamValidationTemplate, ntemplates);
     memcpy(templ_copy, templates, sizeof(*templates) * ntemplates);
