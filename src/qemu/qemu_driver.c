@@ -20909,6 +20909,84 @@ qemuDomainDelThrottleGroup(virDomainPtr dom,
 }
 
 
+
+
+static int
+qemuDomainAnnounceInterface(virDomainPtr dom,
+                            const char *device,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    int ret = -1;
+    qemuDomainObjPrivate *priv;
+    const char *alias = NULL;
+    unsigned int initial = 0;
+    unsigned int max = 0;
+    unsigned int rounds = 0;
+    unsigned int step = 0;
+
+    /* no flags supported */
+    virCheckFlags(0, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_ANNOUNCE_INTERFACE_INITIAL, VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_ANNOUNCE_INTERFACE_MAX, VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_ANNOUNCE_INTERFACE_ROUNDS, VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_ANNOUNCE_INTERFACE_STEP, VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if (params && nparams) {
+        virTypedParamsGetUInt(params, nparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_INITIAL, &initial);
+        virTypedParamsGetUInt(params, nparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_MAX, &max);
+        virTypedParamsGetUInt(params, nparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_ROUNDS, &rounds);
+        virTypedParamsGetUInt(params, nparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_STEP, &step);
+    }
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        return -1;
+    priv = vm->privateData;
+
+    if (virDomainAnnounceInterfaceEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    /* the user is sending either the interface MAC address or the
+     * name of the tap device (because that's how other APIs are
+     * implemented), but qemu's announce-self command expects the
+     * device id (known in libvirt as the "alias id"), so we need to
+     * find the <interface> and grab the alias from there
+     */
+
+    if (device) {
+        virDomainNetDef *net = NULL;
+
+        if (!(net = virDomainNetFind(vm->def, device)))
+            goto endjob;
+
+        alias = net->info.alias;
+    }
+
+    qemuDomainObjEnterMonitor(vm);
+    ret = qemuMonitorAnnounceSelf(priv->mon, alias, initial, max, rounds, step);
+    qemuDomainObjExitMonitor(vm);
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -21163,6 +21241,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetAutostartOnce = qemuDomainSetAutostartOnce, /* 11.2.0 */
     .domainSetThrottleGroup = qemuDomainSetThrottleGroup, /* 11.2.0 */
     .domainDelThrottleGroup = qemuDomainDelThrottleGroup, /* 11.2.0 */
+    .domainAnnounceInterface = qemuDomainAnnounceInterface /* 12.5.0 */
 };
 
 
