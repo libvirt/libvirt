@@ -25,6 +25,8 @@
 #include "virfile.h"
 #include "virlog.h"
 
+#include <fcntl.h>
+
 /* Used strictly for logging selinux context of passed FD */
 #ifdef WITH_SECDRIVER_SELINUX
 # include <selinux/selinux.h>
@@ -59,40 +61,43 @@ qemuFDPassLogFDInfo(const char *name,
     g_autofree char *selinux = NULL;
     g_autofree char *tmp = NULL;
 
-    if (fstat(fd, &st) == 0) {
-        switch (st.st_mode & S_IFMT) {
-           case S_IFBLK:
-               type = "block";
-               break;
-           case S_IFCHR:
-               type = "char";
-               break;
-           case S_IFDIR:
-               type = "directory";
-               break;
-           case S_IFIFO:
-               type = "pipe";
-               break;
-           case S_IFLNK:
-               type = "symlink";
-               break;
-           case S_IFREG:
-               type = "file";
-               break;
-           case S_IFSOCK:
-               type = "socket";
-               break;
-           default:
-               type = tmp = g_strdup_printf("unknown:'0x%x')", st.st_mode & S_IFMT);
-               break;
+    if (fcntl(fd, F_GETFD) != -1) {
+        if (fstat(fd, &st) == 0) {
+            switch (st.st_mode & S_IFMT) {
+            case S_IFBLK:
+                type = "block";
+                break;
+            case S_IFCHR:
+                type = "char";
+                break;
+            case S_IFDIR:
+                type = "directory";
+                break;
+            case S_IFIFO:
+                type = "pipe";
+                break;
+            case S_IFLNK:
+                type = "symlink";
+                break;
+            case S_IFREG:
+                type = "file";
+                break;
+            case S_IFSOCK:
+                type = "socket";
+                break;
+            default:
+                type = tmp = g_strdup_printf("unknown:'0x%x')", st.st_mode & S_IFMT);
+                break;
+            }
         }
-    }
 
 #ifdef WITH_SECDRIVER_SELINUX
-    ignore_value(fgetfilecon_raw(fd, &selinux));
-#else
-    selinux = g_strdup("N/A");
+        ignore_value(fgetfilecon_raw(fd, &selinux));
 #endif
+    }
+
+    if (!selinux)
+        selinux = g_strdup("N/A");
 
     VIR_DEBUG("passing fd:'%i', name:'%s'(%zu) type:'%s' selinux:'%s'",
               fd, name, idx, type, selinux);
