@@ -2225,6 +2225,76 @@ bhyveDomainGetMemoryParameters(virDomainPtr domain,
 }
 #undef BHYVE_ASSIGN_MEM_PARAM
 
+static int
+bhyveDomainSetMemoryParameters(virDomainPtr domain,
+                               virTypedParameterPtr params,
+                               int nparams,
+                               unsigned int flags)
+{
+    struct _bhyveConn *privconn = domain->conn->privateData;
+    virDomainDef *def = NULL;
+    virDomainDef *persistentDef = NULL;
+    virDomainObj *vm = NULL;
+    int ret = -1;
+    unsigned long long hard_limit = 0;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_MEMORY_HARD_LIMIT,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
+        return -1;
+
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainSetMemoryParametersEnsureACL(domain->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    if (virTypedParamsGetULLong(params, nparams, VIR_DOMAIN_MEMORY_HARD_LIMIT, &hard_limit) < 0)
+        return -1;
+
+    if (def) {
+        if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_RCTL) == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Cannot set resource limits: RACCT/RCTL is either not supported or not enabled"));
+            goto endjob;
+        }
+
+        if (bhyveRctlSetMemoryHardLimit(vm->pid, hard_limit) < 0)
+            goto endjob;
+
+        def->mem.hard_limit = hard_limit;
+        if (virDomainObjSave(vm, privconn->xmlopt, BHYVE_STATE_DIR) < 0)
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+    }
+
+    if (persistentDef) {
+        persistentDef->mem.hard_limit = hard_limit;
+
+        if (virDomainDefSave(persistentDef, privconn->xmlopt, BHYVE_CONFIG_DIR) < 0)
+            goto endjob;
+    }
+
+    ret = 0;
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2295,6 +2365,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetHostname = bhyveDomainGetHostname, /* 12.3.0 */
     .domainQemuAgentCommand = bhyveDomainQemuAgentCommand, /* 12.4.0 */
     .domainGetMemoryParameters = bhyveDomainGetMemoryParameters, /* 12.4.0 */
+    .domainSetMemoryParameters = bhyveDomainSetMemoryParameters, /* 12.4.0 */
 };
 
 
