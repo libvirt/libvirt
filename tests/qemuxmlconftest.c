@@ -525,7 +525,8 @@ testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
             break;
 
         if (STREQ(args[a], "-add-fd") ||
-            STREQ(args[a], "-chardev")) {
+            STREQ(args[a], "-chardev") ||
+            (STREQ(args[a], "-object") && STRPREFIX(args[a + 1], "{\"qom-type\":\"iommufd\""))) {
             testCompareXMLToArgvStabilizeOne(&args[a + 1], "fd", fdsubsts, false);
 
             /* qemuxmlconftest also tests the JSON syntax which isn't supported via
