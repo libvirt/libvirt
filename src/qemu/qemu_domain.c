@@ -9860,15 +9860,7 @@ qemuDomainPrepareStorageSourceFDs(virStorageSource *src,
 
     for (i = 0; i < fdt->nfds; i++) {
         g_autofree char *idx = g_strdup_printf("%zu", i);
-        int tmpfd;
-
-        if (fdt->testfds) {
-            /* when testing we want to use stable FD numbers provided by the test
-             * case */
-            tmpfd = dup2(fdt->fds[i], fdt->testfds[i]);
-        } else {
-            tmpfd = dup(fdt->fds[i]);
-        }
+        int tmpfd = dup(fdt->fds[i]);
 
         if (tmpfd < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

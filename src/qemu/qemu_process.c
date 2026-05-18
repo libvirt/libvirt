@@ -7785,14 +7785,10 @@ qemuProcessGetPassedIommuFd(virDomainObj *vm)
         return -1;
     }
 
-    if (fdt->testfds) {
-        iommufd = dup2(fdt->fds[0], fdt->testfds[0]);
-    } else {
-        iommufd = dup(fdt->fds[0]);
+    iommufd = dup(fdt->fds[0]);
 
-        if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
-            return -1;
-    }
+    if (qemuSecuritySetImageFDLabel(priv->driver->securityManager, vm->def, iommufd) < 0)
+        return -1;
 
     priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
 

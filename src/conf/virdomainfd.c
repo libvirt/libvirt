@@ -30,7 +30,6 @@ virDomainFDTupleFinalize(GObject *object)
         VIR_FORCE_CLOSE(fdt->fds[i]);
 
     g_free(fdt->fds);
-    g_free(fdt->testfds);
     g_free(fdt->selinuxLabel);
     G_OBJECT_CLASS(vir_domain_fd_tuple_parent_class)->finalize(object);
 }
