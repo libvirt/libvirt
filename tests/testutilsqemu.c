@@ -1037,8 +1037,7 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
             return 0;
     } else {
         devalias = "monitor";
-        fakesourcefd = 1764;
-        virTestDummyFDContextMarkFD(fakesourcefd, g_strdup("@mon-fd@"));
+        fakesourcefd = virTestMakeDummyFD(g_strdup("@mon-fd@"));
     }
 
     switch ((virDomainChrType) chardev->type) {
