@@ -39,13 +39,13 @@
 #include "bhyve_firmware.h"
 #include "bhyve_monitor.h"
 #include "bhyve_process.h"
+#include "bhyve_rctl.h"
 #include "datatypes.h"
 #include "virerror.h"
 #include "virhook.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "vircommand.h"
 #include "virstring.h"
 #include "virpidfile.h"
 #include "virprocess.h"
@@ -149,32 +149,16 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
         return -1;
     }
 
-#define BHYVE_APPLY_RCTL_RULE(field, type, action, format) \
-    do { \
-        if ((field)) { \
-            g_autofree char *rule = NULL; \
-            g_autoptr(virCommand) cmd = virCommandNewArgList("rctl", "-a", NULL); \
-            virCommandAddArgFormat(cmd, "process:%d:" type ":" action "=" format, \
-                                   vm->pid, (field)); \
-            if (virCommandRun(cmd, NULL) < 0) \
-                return -1; \
-         } \
-    } while (0)
-
     if (vm->def->blkio.ndevices == 1) {
         device = &vm->def->blkio.devices[0];
 
-        BHYVE_APPLY_RCTL_RULE(device->riops, "readiops", "throttle", "%u");
-        BHYVE_APPLY_RCTL_RULE(device->wiops, "writeiops", "throttle", "%u");
-        BHYVE_APPLY_RCTL_RULE(device->rbps, "readbps", "throttle", "%llu");
-        BHYVE_APPLY_RCTL_RULE(device->wbps, "writebps", "throttle", "%llu");
+        bhyveRctlSetIoLimits(vm->pid, device);
     }
 
     /* rctl(8) uses bytes for these values and def->mem.* uses kibibytes */
     if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
-        BHYVE_APPLY_RCTL_RULE(vm->def->mem.hard_limit * 1024, "memoryuse", "deny", "%llu");
-
-#undef BHYVE_APPLY_RCTL_RULE
+        if (bhyveRctlSetMemoryHardLimit(vm->pid, vm->def->mem.hard_limit) < 0)
+            return -1;
 
     return 0;
 }

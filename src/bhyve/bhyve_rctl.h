@@ -20,5 +20,13 @@
 
 #pragma once
 
+#include "domain_conf.h"
+
 int
 bhyveRctlGetMemoryHardLimit(pid_t pid, unsigned long long *kb);
+
+int
+bhyveRctlSetMemoryHardLimit(pid_t pid, unsigned long long kb);
+
+int
+bhyveRctlSetIoLimits(pid_t pid, const virBlkioDevice *device);

@@ -99,3 +99,37 @@ bhyveRctlGetMemoryHardLimit(pid_t pid, unsigned long long *kb)
 
     return -1;
 }
+
+#define BHYVE_APPLY_RCTL_RULE(pid, field, type, action, format) \
+    do { \
+        if ((field)) { \
+            g_autofree char *rule = NULL; \
+            g_autoptr(virCommand) cmd = virCommandNewArgList("rctl", "-a", NULL); \
+            virCommandAddArgFormat(cmd, "process:%d:" type ":" action "=" format, \
+                                   pid, (field)); \
+            if (virCommandRun(cmd, NULL) < 0) \
+                return -1; \
+         } \
+    } while (0)
+
+int
+bhyveRctlSetMemoryHardLimit(pid_t pid, unsigned long long kb)
+{
+    /* rctl(8) uses bytes for these values and def->mem.* uses kibibytes */
+    BHYVE_APPLY_RCTL_RULE(pid, kb * 1024, "memoryuse", "deny", "%llu");
+
+    return 0;
+}
+
+int
+bhyveRctlSetIoLimits(pid_t pid, const virBlkioDevice *device)
+{
+    BHYVE_APPLY_RCTL_RULE(pid, device->riops, "readiops", "throttle", "%u");
+    BHYVE_APPLY_RCTL_RULE(pid, device->wiops, "writeiops", "throttle", "%u");
+    BHYVE_APPLY_RCTL_RULE(pid, device->rbps, "readbps", "throttle", "%llu");
+    BHYVE_APPLY_RCTL_RULE(pid, device->wbps, "writebps", "throttle", "%llu");
+
+    return 0;
+}
+
+#undef BHYVE_APPLY_RCTL_RULE
