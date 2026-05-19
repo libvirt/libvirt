@@ -45,7 +45,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-tablet-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input2","bus":"pci.0","addr":"0x11"}' \
 -device '{"driver":"virtio-input-host-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input3","evdev":"/dev/input/event1234","bus":"pci.0","addr":"0x12"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--chardev socket,id=chr-vu-video0,fd=XXXXXXX \
+-chardev socket,id=chr-vu-video0,fd=@vhost-user-video-fd@ \
 -device '{"driver":"vhost-user-vga","id":"video0","max_outputs":1,"chardev":"chr-vu-video0","bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"virtio-balloon-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"balloon0","bus":"pci.0","addr":"0xc"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/random"}' \

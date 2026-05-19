@@ -249,7 +249,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
             qemuDomainVideoPrivate *vpriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
 
-            vpriv->vhost_user_fd = 1729;
+            vpriv->vhost_user_fd = virTestMakeDummyFD(g_strdup("@vhost-user-video-fd@"));
         }
     }
 
