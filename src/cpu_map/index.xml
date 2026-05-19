@@ -220,6 +220,7 @@
       <include filename='arm_Neoverse-N1.xml'/>
       <include filename='arm_Neoverse-N2.xml'/>
       <include filename='arm_Neoverse-V1.xml'/>
+      <include filename='arm_Neoverse-V2.xml'/>
     </group>
 
     <group name='Qualcomm-based CPU models'>
