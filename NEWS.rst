@@ -27,6 +27,12 @@ v12.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * storage: ZFS: Fix incorrect volsize and refreservation on zvol creation
+
+    When creating a zvol, the ZFS driver listed all volumes in the pool and
+    updated the new volume's size with data from the last volume in the list
+    rather than the matching one. Now it correctly returns on valid one.
+
   * esx/vmware: VMs are tracked under different UUIDs by default
 
     The VMWare-related drivers were using allegedly unique IDs for domains, but
