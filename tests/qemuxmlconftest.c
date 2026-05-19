@@ -543,6 +543,16 @@ testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
             }
 
             a++;
+        } else if (STREQ(args[a], "-netdev")) {
+            /* Stabiilize both the singular and plural forms. For the plural
+             * forms we don't bother splitting the colon separated lists into
+             * individual FDs so they will stay censored */
+            testCompareXMLToArgvStabilizeOne(&args[a + 1], "fd", fdsubsts, false);
+            testCompareXMLToArgvStabilizeOne(&args[a + 1], "fds", fdsubsts, false);
+            testCompareXMLToArgvStabilizeOne(&args[a + 1], "vhostfd", fdsubsts, false);
+            testCompareXMLToArgvStabilizeOne(&args[a + 1], "vhostfds", fdsubsts, false);
+
+            a++;
         }
     }
 }
