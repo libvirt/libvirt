@@ -3815,6 +3815,88 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
     goto cleanup;
 }
 
+
+/* "domifannounce" command
+ */
+static const vshCmdInfo info_domifannounce = {
+    .help = N_("trigger domain to announce virtual interface to network"),
+    .desc = N_("trigger a live domain to announce one or more virtual interfaces to their attached networks"),
+
+};
+
+static const vshCmdOptDef opts_domifannounce[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "interface",
+     .type = VSH_OT_STRING,
+     .positional = true,
+     .completer = virshDomainInterfaceCompleter,
+     .help = N_("interface device (MAC Address)")
+    },
+    {.name = VIR_DOMAIN_ANNOUNCE_INTERFACE_INITIAL,
+     .type = VSH_OT_INT,
+     .help = N_("initial delay before first announcement (milliseconds)")},
+    {.name = VIR_DOMAIN_ANNOUNCE_INTERFACE_MAX,
+     .type = VSH_OT_INT,
+     .help = N_("maximum delay between announcements (milliseconds)")},
+    {.name = VIR_DOMAIN_ANNOUNCE_INTERFACE_ROUNDS,
+     .type = VSH_OT_INT,
+     .help = N_("total number of announcements")},
+    {.name = VIR_DOMAIN_ANNOUNCE_INTERFACE_STEP,
+     .type = VSH_OT_INT,
+     .help = N_("increment added to delay (milliseconds) after each announcement")},
+    {.name = NULL}
+};
+
+static bool
+cmdDomIfAnnounce(vshControl *ctl, const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    const char *name = NULL;
+    const char *device = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    unsigned int val;
+    bool ret = false;
+    int rv;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
+        return false;
+
+    if (vshCommandOptString(ctl, cmd, "interface", &device) < 0)
+        return false;
+
+    if ((rv = vshCommandOptUInt(ctl, cmd, VIR_DOMAIN_ANNOUNCE_INTERFACE_INITIAL, &val)) < 0)
+        goto cleanup;
+    else if (rv > 0 && virTypedParamsAddUInt(&params, &nparams, &maxparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_INITIAL, val) < 0)
+        goto cleanup;
+
+    if ((rv = vshCommandOptUInt(ctl, cmd, VIR_DOMAIN_ANNOUNCE_INTERFACE_MAX, &val)) < 0)
+        goto cleanup;
+    else if (rv > 0 && virTypedParamsAddUInt(&params, &nparams, &maxparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_MAX, val) < 0)
+        goto cleanup;
+
+    if ((rv = vshCommandOptUInt(ctl, cmd, VIR_DOMAIN_ANNOUNCE_INTERFACE_ROUNDS, &val)) < 0)
+        goto cleanup;
+    else if (rv > 0 && virTypedParamsAddUInt(&params, &nparams, &maxparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_ROUNDS, val) < 0)
+        goto cleanup;
+
+    if ((rv = vshCommandOptUInt(ctl, cmd, VIR_DOMAIN_ANNOUNCE_INTERFACE_STEP, &val)) < 0)
+        goto cleanup;
+    else if (rv > 0 && virTypedParamsAddUInt(&params, &nparams, &maxparams, VIR_DOMAIN_ANNOUNCE_INTERFACE_STEP, val) < 0)
+        goto cleanup;
+
+    if (virDomainAnnounceInterface(dom, device, params, nparams, 0) < 0)
+        goto cleanup;
+
+    vshPrintExtra(ctl, _("Interface announcement sent for domain '%1$s'"), name);
+    ret = true;
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+}
+
+
 /*
  * "suspend" command
  */
@@ -14168,6 +14250,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomid,
      .opts = opts_domid,
      .info = &info_domid,
+     .flags = 0
+    },
+    {.name = "domifannounce",
+     .handler = cmdDomIfAnnounce,
+     .opts = opts_domifannounce,
+     .info = &info_domifannounce,
      .flags = 0
     },
     {.name = "domif-setlink",

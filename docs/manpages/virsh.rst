@@ -2328,6 +2328,47 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 
+domifannounce
+-------------
+
+**Syntax**
+
+::
+
+   domifannounce domain [interface-device] [parameters]
+
+
+Request that a domain inject "gratuitous" ARP responses into the
+outbound data stream of a specific network interface of the domain (or
+if no interface-device is given, inject ARP responses on the outbound
+data stream of all interfaces of the domain). This can be helpful to
+re-sync network switches in the broadcast domain of said interfaces
+when the network topology has changed. This is usually done
+automatically when a domain is started, or after it has migrated (for
+example, that is the behavior of QEMU), but a more complicated setup
+where the topology changes around an already active domain (or
+possibly all the plumbing isn't yet connected and passing traffic at
+the time the automatic announcement takes place) might benefit from a
+manually triggered announce.
+
+The optional parameters are:
+
+- *--initial n*
+
+  initial delay before first announcement (milliseconds) default: 50
+
+- *--max n*
+
+  maximum delay between announcements (milliseconds) default: 550
+
+- *--rounds n*
+
+  total number of announcements default: 5
+
+- *--step n*
+
+  increment added to delay (milliseconds) after each announcement default 50
+
 dominfo
 -------
 
