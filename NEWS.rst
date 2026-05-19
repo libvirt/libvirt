@@ -635,6 +635,12 @@ v11.7.0 (2025-09-01)
     The bhyve driver now supports querying domain block, interface,
     and memory statistics. Not all statistics fields are supported though.
 
+  * storage: ZFS: Implement native volume resizing
+
+    The ZFS storage driver now supports ``resizeVol`` allowing online
+    resizing of zvols via ``zfs set volsize``. Since ZFS is always
+    thin-provisioned, resize is essentially a size limit change.
+
 * **Improvements**
 
   * bhyve: improve 'efi' configuration autofill
