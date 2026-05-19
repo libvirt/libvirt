@@ -1043,20 +1043,18 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        fakesourcefd = 1750;
-
-        if (fcntl(fakesourcefd, F_GETFD) != -1)
-            abort();
-
         charpriv->sourcefd = qemuFDPassNew(devalias, priv);
+        if (fakesourcefd == -1)
+            fakesourcefd = virTestMakeDummyFD(g_strdup_printf("@%s-fd@", devalias));
         qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (chardev->data.nix.listen) {
             g_autofree char *name = g_strdup_printf("%s-source", devalias);
+
             if (fakesourcefd == -1)
-                fakesourcefd = 1729;
+                fakesourcefd = virTestMakeDummyFD(g_strdup_printf("@%s-fd@", devalias));
 
             charpriv->directfd = qemuFDPassDirectNew(name, &fakesourcefd);
         }
@@ -1069,13 +1067,9 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     }
 
     if (chardev->logfile) {
-        int fd = 1751;
-
-        if (fcntl(fd, F_GETFD) != -1)
-            abort();
+        int fd = virTestMakeDummyFD(g_strdup_printf("@%s-log-fd@", devalias));
 
         charpriv->logfd = qemuFDPassNew(devalias, priv);
-
         qemuFDPassAddFD(charpriv->logfd, &fd, "-log");
     }
 

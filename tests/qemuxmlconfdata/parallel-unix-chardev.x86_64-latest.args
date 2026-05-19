@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--chardev socket,id=charparallel0,fd=XXXXXXX,server=on,wait=off \
+-chardev socket,id=charparallel0,fd=@parallel0-fd@,server=on,wait=off \
 -device '{"driver":"isa-parallel","chardev":"charparallel0","id":"parallel0"}' \
 -chardev socket,id=charparallel1,path=/tmp/parport1.socket \
 -device '{"driver":"isa-parallel","chardev":"charparallel1","id":"parallel1"}' \

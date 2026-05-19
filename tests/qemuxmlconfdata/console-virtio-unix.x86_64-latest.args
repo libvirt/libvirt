@@ -28,7 +28,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x2"}' \
--chardev socket,id=charconsole0,fd=XXXXXXX,server=on,wait=off \
+-chardev socket,id=charconsole0,fd=@console0-fd@,server=on,wait=off \
 -device '{"driver":"virtconsole","chardev":"charconsole0","id":"console0"}' \
 -chardev socket,id=charconsole1,path=/tmp/connect.socket \
 -device '{"driver":"virtconsole","chardev":"charconsole1","id":"console1"}' \
