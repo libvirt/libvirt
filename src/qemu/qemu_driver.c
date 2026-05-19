@@ -3891,6 +3891,7 @@ processSerialChangedEvent(virQEMUDriver *driver,
     qemuDomainSaveStatus(vm);
 
     if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
+        virObjectEvent *agentEvent = NULL;
         if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
             if (qemuConnectAgent(driver, vm) < 0)
                 goto endjob;
@@ -3901,10 +3902,18 @@ processSerialChangedEvent(virQEMUDriver *driver,
             priv->agentError = false;
         }
 
-        event = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
-                                                       VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL);
-        virObjectEventStateQueue(driver->domainEventState, event);
+        agentEvent = virDomainEventAgentLifecycleNewFromObj(vm, newstate,
+                                                            VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL);
+        virObjectEventStateQueue(driver->domainEventState, agentEvent);
     }
+
+    /* we deliberately allow for goto endjob to skip generic event emission
+     * to ensure identical semantics for "org.qemu.guest_agent.0" */
+    event = virDomainEventChannelLifecycleNewFromObj(vm,
+                                                     dev.data.chr->target.name,
+                                                     newstate,
+                                                     VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_CHANNEL);
+    virObjectEventStateQueue(driver->domainEventState, event);
 
  endjob:
     virDomainObjEndJob(vm);
