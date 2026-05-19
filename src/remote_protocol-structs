@@ -3342,6 +3342,13 @@ struct remote_domain_event_nic_mac_change_msg {
         remote_nonnull_string      oldMAC;
         remote_nonnull_string      newMAC;
 };
+struct remote_domain_event_callback_channel_lifecycle_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      channelName;
+        int                        state;
+        int                        reason;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3797,4 +3804,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_DEL_THROTTLE_GROUP = 452,
         REMOTE_PROC_DOMAIN_EVENT_NIC_MAC_CHANGE = 453,
         REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED = 454,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CHANNEL_LIFECYCLE = 455,
 };

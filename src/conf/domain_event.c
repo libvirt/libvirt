@@ -59,6 +59,7 @@ static virClass *virDomainEventBlockThresholdClass;
 static virClass *virDomainEventMemoryFailureClass;
 static virClass *virDomainEventMemoryDeviceSizeChangeClass;
 static virClass *virDomainEventNICMACChangeClass;
+static virClass *virDomainEventChannelLifecycleClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -85,6 +86,7 @@ static void virDomainEventBlockThresholdDispose(void *obj);
 static void virDomainEventMemoryFailureDispose(void *obj);
 static void virDomainEventMemoryDeviceSizeChangeDispose(void *obj);
 static void virDomainEventNICMACChangeDispose(void *obj);
+static void virDomainEventChannelLifecycleDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -305,6 +307,27 @@ struct _virDomainEventNICMACChange {
 };
 typedef struct _virDomainEventNICMACChange virDomainEventNICMACChange;
 
+struct _virDomainEventChannelLifecycle {
+    virDomainEvent parent;
+
+    char *channelName;
+    int state;
+    int reason;
+};
+typedef struct _virDomainEventChannelLifecycle virDomainEventChannelLifecycle;
+
+/* Make sure the AGENT and CHANNEL lifecycle enums stay in sync with each other. */
+G_STATIC_ASSERT((int)VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED ==
+                (int)VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_DOMAIN_STARTED);
+G_STATIC_ASSERT((int)VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL ==
+                (int)VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_CHANNEL);
+G_STATIC_ASSERT((int)VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST ==
+                (int)VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_LAST);
+G_STATIC_ASSERT((int)VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED ==
+                (int)VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_CONNECTED);
+G_STATIC_ASSERT((int)VIR_DOMAIN_CHR_DEVICE_STATE_DISCONNECTED ==
+                (int)VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_DISCONNECTED);
+
 static int
 virDomainEventsOnceInit(void)
 {
@@ -357,6 +380,8 @@ virDomainEventsOnceInit(void)
     if (!VIR_CLASS_NEW(virDomainEventMemoryDeviceSizeChange, virDomainEventClass))
         return -1;
     if (!VIR_CLASS_NEW(virDomainEventNICMACChange, virDomainEventClass))
+        return -1;
+    if (!VIR_CLASS_NEW(virDomainEventChannelLifecycle, virDomainEventClass))
         return -1;
     return 0;
 }
@@ -598,6 +623,14 @@ virDomainEventNICMACChangeDispose(void *obj)
     g_free(event->alias);
     g_free(event->oldMAC);
     g_free(event->newMAC);
+}
+
+static void
+virDomainEventChannelLifecycleDispose(void *obj)
+{
+    virDomainEventChannelLifecycle *event = obj;
+
+    g_free(event->channelName);
 }
 
 static void *
@@ -1867,6 +1900,61 @@ virDomainEventNICMACChangeNewFromDom(virDomainPtr dom,
 
 }
 
+
+static virObjectEvent *
+virDomainEventChannelLifecycleNew(int id,
+                                  const char *name,
+                                  const unsigned char *uuid,
+                                  const char *channelName,
+                                  int state,
+                                  int reason)
+{
+    virDomainEventChannelLifecycle *ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventChannelLifecycleClass,
+                                 VIR_DOMAIN_EVENT_ID_CHANNEL_LIFECYCLE,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->channelName = g_strdup(channelName);
+    ev->state = state;
+    ev->reason = reason;
+
+    return (virObjectEvent *)ev;
+}
+
+
+virObjectEvent *
+virDomainEventChannelLifecycleNewFromObj(virDomainObj *obj,
+                                         const char *channelName,
+                                         int state,
+                                         int reason)
+{
+    return virDomainEventChannelLifecycleNew(obj->def->id,
+                                             obj->def->name,
+                                             obj->def->uuid,
+                                             channelName,
+                                             state,
+                                             reason);
+}
+
+virObjectEvent *
+virDomainEventChannelLifecycleNewFromDom(virDomainPtr dom,
+                                         const char *channelName,
+                                         int state,
+                                         int reason)
+{
+    return virDomainEventChannelLifecycleNew(dom->id,
+                                             dom->name,
+                                             dom->uuid,
+                                             channelName,
+                                             state,
+                                             reason);
+}
+
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virObjectEvent *event,
@@ -2197,6 +2285,19 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
             ((virConnectDomainEventVcpuRemovedCallback)cb)(conn, dom,
                                                            vcpuRemovedEvent->vcpuid,
                                                            cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_CHANNEL_LIFECYCLE:
+        {
+            virDomainEventChannelLifecycle *channelLifecycleEvent;
+
+            channelLifecycleEvent = (virDomainEventChannelLifecycle *)event;
+            ((virConnectDomainEventChannelLifecycleCallback)cb)(conn, dom,
+                                                                channelLifecycleEvent->channelName,
+                                                                channelLifecycleEvent->state,
+                                                                channelLifecycleEvent->reason,
+                                                                cbopaque);
             goto cleanup;
         }
 

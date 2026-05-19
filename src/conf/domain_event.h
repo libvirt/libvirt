@@ -295,6 +295,18 @@ virDomainEventNICMACChangeNewFromDom(virDomainPtr dom,
                                      const char *oldMAC,
                                      const char *newMAC);
 
+virObjectEvent *
+virDomainEventChannelLifecycleNewFromObj(virDomainObj *obj,
+                                         const char *channelName,
+                                         int state,
+                                         int reason);
+
+virObjectEvent *
+virDomainEventChannelLifecycleNewFromDom(virDomainPtr dom,
+                                         const char *channelName,
+                                         int state,
+                                         int reason);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventState *state,

@@ -4015,6 +4015,14 @@ struct remote_domain_event_nic_mac_change_msg {
     remote_nonnull_string newMAC;
 };
 
+struct remote_domain_event_callback_channel_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string channelName;
+    int state;
+    int reason;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -7132,5 +7140,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED = 454
+    REMOTE_PROC_DOMAIN_EVENT_VCPU_REMOVED = 454,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_CHANNEL_LIFECYCLE = 455
 };

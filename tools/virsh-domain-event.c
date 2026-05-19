@@ -655,6 +655,39 @@ virshEventAgentLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
+VIR_ENUM_DECL(virshEventChannelLifecycleState);
+VIR_ENUM_IMPL(virshEventChannelLifecycleState,
+              VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_LAST,
+              N_("unknown"),
+              N_("connected"),
+              N_("disconnected"));
+
+VIR_ENUM_DECL(virshEventChannelLifecycleReason);
+VIR_ENUM_IMPL(virshEventChannelLifecycleReason,
+              VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_LAST,
+              N_("unknown"),
+              N_("domain started"),
+              N_("channel event"));
+
+static void
+virshEventChannelLifecyclePrint(virConnectPtr conn G_GNUC_UNUSED,
+                                virDomainPtr dom,
+                                const char *channelName,
+                                int state,
+                                int reason,
+                                void *opaque)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf,
+                      _("event 'channel-lifecycle' for domain '%1$s': channel name: '%2$s' state: '%3$s' reason: '%4$s'\n"),
+                      virDomainGetName(dom),
+                      channelName,
+                      UNKNOWNSTR(virshEventChannelLifecycleStateTypeToString(state)),
+                      UNKNOWNSTR(virshEventChannelLifecycleReasonTypeToString(reason)));
+    virshEventPrint(opaque, &buf);
+}
+
 static void
 virshEventMigrationIterationPrint(virConnectPtr conn G_GNUC_UNUSED,
                                   virDomainPtr dom,
@@ -889,6 +922,8 @@ virshDomainEventCallback virshDomainEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventNICMACChangePrint), },
     { "vcpu-removed",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventVcpuRemovedPrint), },
+    { "channel-lifecycle",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventChannelLifecyclePrint), },
 };
 G_STATIC_ASSERT(VIR_DOMAIN_EVENT_ID_LAST == G_N_ELEMENTS(virshDomainEventCallbacks));
 

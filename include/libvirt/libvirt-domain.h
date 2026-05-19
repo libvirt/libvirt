@@ -7673,6 +7673,66 @@ typedef void (*virConnectDomainEventNICMACChangeCallback)(virConnectPtr conn,
                                                           const char *newMAC,
                                                           void *opaque);
 
+
+/**
+ * virConnectDomainEventChannelLifecycleState:
+ *
+ * Since: 12.4.0
+ */
+typedef enum {
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_CONNECTED = 1, /* channel connected (Since: 12.4.0) */
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_DISCONNECTED = 2, /* channel disconnected (Since: 12.4.0) */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_STATE_LAST /* (Since: 12.4.0) */
+# endif
+} virConnectDomainEventChannelLifecycleState;
+
+/**
+ * virConnectDomainEventChannelLifecycleReason:
+ *
+ * Since: 12.4.0
+ */
+typedef enum {
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_UNKNOWN = 0, /* unknown state change reason (Since: 12.4.0) */
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_DOMAIN_STARTED = 1, /* state changed due to domain start (Since: 12.4.0) */
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_CHANNEL = 2, /* channel state changed (Since: 12.4.0) */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_CONNECT_DOMAIN_EVENT_CHANNEL_LIFECYCLE_REASON_LAST /* (Since: 12.4.0) */
+# endif
+} virConnectDomainEventChannelLifecycleReason;
+
+/**
+ * virConnectDomainEventChannelLifecycleCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @channelName: the name of the channel on which the event occurred
+ * @state: new state of the guest channel, one of virConnectDomainEventChannelLifecycleState
+ * @reason: reason for state change, one of virConnectDomainEventChannelLifecycleReason
+ * @opaque: application specified data
+ *
+ * This callback occurs when libvirt detects a change in the state of a guest
+ * virtio-serial channel. Unlike VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE which is
+ * tied to the QEMU guest agent channel ("org.qemu.guest_agent.0"), this event
+ * is emitted for every virtio-serial channel attached to the domain,
+ * including the guest agent channel.
+ *
+ * The hypervisor must support virtio-serial port state notifications for the
+ * event to be delivered.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_CHANNEL_LIFECYCLE with virConnectDomainEventRegisterAny()
+ *
+ * Since: 12.4.0
+ */
+typedef void (*virConnectDomainEventChannelLifecycleCallback)(virConnectPtr conn,
+                                                              virDomainPtr dom,
+                                                              const char *channelName,
+                                                              int state,
+                                                              int reason,
+                                                              void *opaque);
+
 /**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
@@ -7723,6 +7783,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback (Since: 7.9.0) */
     VIR_DOMAIN_EVENT_ID_NIC_MAC_CHANGE = 27, /* virConnectDomainEventNICMACChangeCallback (Since: 11.2.0) */
     VIR_DOMAIN_EVENT_ID_VCPU_REMOVED = 28, /* virConnectDomainEventVcpuRemovedCallback (Since: 12.4.0) */
+    VIR_DOMAIN_EVENT_ID_CHANNEL_LIFECYCLE = 29, /* virConnectDomainEventChannelLifecycleCallback (Since: 12.4.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST
