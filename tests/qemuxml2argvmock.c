@@ -40,6 +40,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "testutils.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 long virGetSystemPageSize(void)
@@ -245,16 +247,12 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
 
 
 int
-qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
+qemuBuildTPMOpenBackendFDs(const char *tpmdev,
                            int *tpmfd,
                            int *cancelfd)
 {
-    if (fcntl(1730, F_GETFD) != -1 ||
-        fcntl(1731, F_GETFD) != -1)
-        abort();
-
-    *tpmfd = 1730;
-    *cancelfd = 1731;
+    *tpmfd = virTestMakeDummyFD(g_strdup_printf("@tpm-%s-fd@", tpmdev));
+    *cancelfd = virTestMakeDummyFD(g_strdup_printf("@tpm-%s-cancelfd@", tpmdev));
     return 0;
 }
 
