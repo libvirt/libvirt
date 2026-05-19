@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","read-only":false}' \
 -device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-storage","id":"ide0-0-0","bootindex":1}' \
--netdev '{"type":"tap","fd":"XXXXXXX","vhost":true,"vhostfd":"XXXXXXX","id":"hostua-backup0"}' \
+-netdev '{"type":"tap","fd":"@iface-ua-backup0-fd@","vhost":true,"vhostfd":"@vhostfd-ua-backup0-fd@","id":"hostua-backup0"}' \
 -device '{"driver":"virtio-net-pci","failover":true,"netdev":"hostua-backup0","id":"ua-backup0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"vfio-pci","host":"0000:06:12.2","id":"hostdev0","failover_pair_id":"ua-backup0","bus":"pci.0","addr":"0x3"}' \

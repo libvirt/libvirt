@@ -105,22 +105,21 @@ virNetDevTapCreate(char **ifname,
 {
     size_t i;
 
-    for (i = 0; i < tapfdSize; i++)
-        tapfd[i] = 2900 + i;
-
-    if (STREQ_NULLABLE(*ifname, "mytap0")) {
-        return 0;
-    } else {
+    if (STRNEQ_NULLABLE(*ifname, "mytap0")) {
         VIR_FREE(*ifname);
         *ifname = g_strdup("vnet0");
-        return 0;
     }
+
+    for (i = 0; i < tapfdSize; i++)
+        tapfd[i] = virTestMakeDummyFD(g_strdup_printf("@tap-%s-fd@", *ifname));
+
+    return 0;
 }
 
 
 int
 virDomainInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
-                                virDomainNetDef *net G_GNUC_UNUSED,
+                                virDomainNetDef *net,
                                 int *tapfd,
                                 size_t *tapfdSize,
                                 bool privileged G_GNUC_UNUSED,
@@ -131,7 +130,7 @@ virDomainInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
     size_t i;
 
     for (i = 0; i < *tapfdSize; i++)
-        tapfd[i] = 2800 + i;
+        tapfd[i] = virTestMakeDummyFD(g_strdup_printf("@iface-%s-fd@", net->info.alias));
 
     return 0;
 }
@@ -235,7 +234,7 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
 
     for (i = 0; i < vhostfdSize; i++) {
         g_autofree char *name = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
-        int fd = 2200 + i;
+        int fd = virTestMakeDummyFD(g_strdup_printf("@vhostfd-%s-fd@", net->info.alias));
 
         netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, qemuFDPassDirectNew(name, &fd));
     }

@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
 -netdev '{"type":"tap","fds":"XXXXXXX","vhost":true,"vhostfds":"XXXXXXX","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","mq":true,"vectors":12,"netdev":"hostnet0","id":"net0","mac":"52:54:00:e5:48:58","bus":"pci.0","addr":"0x2"}' \
--netdev '{"type":"tap","fd":"XXXXXXX","vhost":true,"vhostfd":"XXXXXXX","id":"hostnet1"}' \
+-netdev '{"type":"tap","fd":"@tap-vnet0-fd@","vhost":true,"vhostfd":"@vhostfd-net1-fd@","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","ioeventfd":true,"netdev":"hostnet1","id":"net1","mac":"52:54:00:e5:48:59","bus":"pci.0","addr":"0x3"}' \
 -netdev '{"type":"tap","fds":"XXXXXXX","vhost":true,"vhostfds":"XXXXXXX","id":"hostnet2"}' \
 -device '{"driver":"virtio-net-pci","ioeventfd":true,"mq":true,"vectors":12,"netdev":"hostnet2","id":"net2","mac":"52:54:00:e5:48:5a","bus":"pci.0","addr":"0x4"}' \
