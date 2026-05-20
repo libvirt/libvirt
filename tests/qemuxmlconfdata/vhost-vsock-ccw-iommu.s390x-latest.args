@@ -31,5 +31,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-ccw","id":"balloon0","devno":"fe.0.0001"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device '{"driver":"vhost-vsock-ccw","iommu_platform":true,"id":"vsock0","guest-cid":4,"vhostfd":"XXXXXXX","devno":"fe.0.0002"}' \
+-device '{"driver":"vhost-vsock-ccw","iommu_platform":true,"id":"vsock0","guest-cid":4,"vhostfd":"@vsock-vhost-fd@","devno":"fe.0.0002"}' \
 -msg timestamp=on

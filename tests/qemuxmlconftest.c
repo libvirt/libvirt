@@ -193,7 +193,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         if (vsock->auto_cid == VIR_TRISTATE_BOOL_YES)
             vsock->guest_cid = 42;
 
-        vsockPriv->vhostfd = 6789;
+        vsockPriv->vhostfd = virTestMakeDummyFD(g_strdup("@vsock-vhost-fd@"));
     }
 
     for (i = 0; i < vm->def->nfss; i++) {
