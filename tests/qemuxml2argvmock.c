@@ -104,7 +104,7 @@ virNetDevTapCreate(char **ifname,
     size_t i;
 
     for (i = 0; i < tapfdSize; i++)
-        tapfd[i] = STDERR_FILENO + 1 + i;
+        tapfd[i] = 2900 + i;
 
     if (STREQ_NULLABLE(*ifname, "mytap0")) {
         return 0;
@@ -129,7 +129,7 @@ virDomainInterfaceBridgeConnect(virDomainDef *def G_GNUC_UNUSED,
     size_t i;
 
     for (i = 0; i < *tapfdSize; i++)
-        tapfd[i] = STDERR_FILENO + 100 + i;
+        tapfd[i] = 2800 + i;
 
     return 0;
 }
@@ -233,7 +233,7 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
 
     for (i = 0; i < vhostfdSize; i++) {
         g_autofree char *name = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
-        int fd = STDERR_FILENO + 42 + i;
+        int fd = 2200 + i;
 
         netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, qemuFDPassDirectNew(name, &fd));
     }

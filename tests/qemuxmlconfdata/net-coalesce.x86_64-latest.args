@@ -33,11 +33,11 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -device '{"driver":"virtio-blk-pci","event_idx":true,"bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk0","bootindex":2}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso","node-name":"libvirt-1-storage","read-only":true}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-1-storage","id":"ide0-1-0","bootindex":1}' \
--netdev '{"type":"tap","fd":"102","vhost":true,"vhostfd":"44","id":"hostnet0"}' \
+-netdev '{"type":"tap","fd":"2800","vhost":true,"vhostfd":"2200","id":"hostnet0"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:e5:48:58","bus":"pci.0","addr":"0x2"}' \
--netdev '{"type":"tap","fd":"102","vhost":true,"vhostfd":"44","id":"hostnet1"}' \
+-netdev '{"type":"tap","fd":"2800","vhost":true,"vhostfd":"2200","id":"hostnet1"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:e5:48:59","bus":"pci.0","addr":"0x3"}' \
--netdev '{"type":"tap","fd":"102","vhost":true,"vhostfd":"44","id":"hostnet2"}' \
+-netdev '{"type":"tap","fd":"2800","vhost":true,"vhostfd":"2200","id":"hostnet2"}' \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet2","id":"net2","mac":"52:54:00:e5:48:60","bus":"pci.0","addr":"0x5"}' \
 -chardev pty,id=charserial0 \
 -device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
