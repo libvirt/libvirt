@@ -4352,8 +4352,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom,
     bool useAgent = !!(flags & VIR_DOMAIN_VCPU_GUEST);
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG |
+    virCheckFlags(VIR_DOMAIN_VCPU_LIVE |
+                  VIR_DOMAIN_VCPU_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM |
                   VIR_DOMAIN_VCPU_GUEST |
                   VIR_DOMAIN_VCPU_HOTPLUGGABLE |
@@ -19348,8 +19348,8 @@ qemuDomainSetVcpu(virDomainPtr dom,
     ssize_t lastvcpu;
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
-                  VIR_DOMAIN_AFFECT_CONFIG |
+    virCheckFlags(VIR_DOMAIN_SETVCPU_AFFECT_LIVE |
+                  VIR_DOMAIN_SETVCPU_AFFECT_CONFIG |
                   VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG, -1);
 
     if (state != 0 && state != 1) {

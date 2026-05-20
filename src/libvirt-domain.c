@@ -7805,11 +7805,11 @@ virDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
     virCheckReadOnlyGoto(domain->conn->flags, error);
 
     VIR_REQUIRE_FLAG_GOTO(VIR_DOMAIN_VCPU_MAXIMUM,
-                          VIR_DOMAIN_AFFECT_CONFIG,
+                          VIR_DOMAIN_VCPU_CONFIG,
                           error);
 
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_VCPU_GUEST,
-                             VIR_DOMAIN_AFFECT_CONFIG,
+                             VIR_DOMAIN_VCPU_CONFIG,
                              error);
 
     virCheckNonZeroArgGoto(nvcpus, error);

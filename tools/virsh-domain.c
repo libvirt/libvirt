@@ -7778,9 +7778,9 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     VSH_REQUIRE_OPTION_VAR(maximum, config);
 
     if (config)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        flags |= VIR_DOMAIN_VCPU_CONFIG;
     if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
+        flags |= VIR_DOMAIN_VCPU_LIVE;
     if (guest)
         flags |= VIR_DOMAIN_VCPU_GUEST;
     if (maximum)
@@ -7949,9 +7949,9 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS("async", "enable");
 
     if (config)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        flags |= VIR_DOMAIN_SETVCPU_AFFECT_CONFIG;
     if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
+        flags |= VIR_DOMAIN_SETVCPU_AFFECT_LIVE;
     if (async)
         flags |= VIR_DOMAIN_SETVCPU_ASYNC_UNPLUG;
 
