@@ -522,8 +522,8 @@ def expand_model(outdir, model):
     }
 
     if ".family" in model and ".model" in model:
-        result["signature"].append((model.pop(".family"),
-                                    model.pop(".model"),
+        result["signature"].append((str(int(model.pop(".family"), base=0)),
+                                    str(int(model.pop(".model"), base=0)),
                                     None))
 
     for k in [k for k in model if k.startswith(".features")]:
