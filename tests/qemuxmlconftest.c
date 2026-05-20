@@ -540,6 +540,8 @@ testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
         } else if (STREQ(args[a], "-device")) {
             if (STRPREFIX(args[a + 1], "{\"driver\":\"vhost-vsock-")) {
                 testCompareXMLToArgvStabilizeOne(&args[a + 1], "vhostfd", fdsubsts, false);
+            } else if (STRPREFIX(args[a + 1], "{\"driver\":\"vfio-pci\"")) {
+                testCompareXMLToArgvStabilizeOne(&args[a + 1], "fd", fdsubsts, false);
             }
 
             a++;
