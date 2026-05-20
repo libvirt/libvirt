@@ -7773,7 +7773,6 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
     VSH_EXCLUSIVE_OPTIONS_VAR(guest, config);
-    VSH_EXCLUSIVE_OPTIONS_VAR(async, guest);
 
     VSH_REQUIRE_OPTION_VAR(maximum, config);
 
@@ -7946,7 +7945,6 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
 
     VSH_EXCLUSIVE_OPTIONS("current", "live");
     VSH_EXCLUSIVE_OPTIONS("current", "config");
-    VSH_EXCLUSIVE_OPTIONS("async", "enable");
 
     if (config)
         flags |= VIR_DOMAIN_SETVCPU_AFFECT_CONFIG;
