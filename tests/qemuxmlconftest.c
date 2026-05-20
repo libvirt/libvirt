@@ -1664,8 +1664,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-target-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
-    DO_TEST_CAPS_ARCH_LATEST_FULL("disk-vhostvdpa", "x86_64",
-                                  ARG_VDPA_FD, "/dev/vhost-vdpa-0", 201);
+    DO_TEST_CAPS_LATEST("disk-vhostvdpa");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
     DO_TEST_CAPS_LATEST("disk-usb-device");

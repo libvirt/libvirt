@@ -732,17 +732,6 @@ testQemuInfoSetArgs(testQemuInfo *info,
             break;
         }
 
-        case ARG_VDPA_FD: {
-            const char *vdpadev = va_arg(argptr, char *);
-            int vdpafd = va_arg(argptr, unsigned int);
-
-            if (!info->args.vdpafds)
-                info->args.vdpafds = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-
-            g_hash_table_insert(info->args.vdpafds, g_strdup(vdpadev), GINT_TO_POINTER(vdpafd));
-            break;
-        }
-
         case ARG_END:
         default:
             info->args.invalidarg = true;
@@ -973,7 +962,6 @@ testQemuInfoFree(testQemuInfo *info)
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);
     g_clear_pointer(&info->args.fakeCapsDel, virBitmapFree);
     g_clear_pointer(&info->args.fds, g_hash_table_unref);
-    g_clear_pointer(&info->args.vdpafds, g_hash_table_unref);
     g_clear_object(&info->nbdkitCaps);
     g_clear_pointer(&info->args.fakeNbdkitCaps, virBitmapFree);
     g_free(info);
