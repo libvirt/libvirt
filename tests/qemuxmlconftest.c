@@ -110,7 +110,7 @@ testQemuPrepareHostdev(virDomainObj *vm)
     if (vm->def->iommufd_fdgroup) {
         ignore_value(qemuProcessGetPassedIommuFd(vm));
     } else if (virDomainDefHasPCIHostdevWithIOMMUFD(vm->def)) {
-        int iommufd = 0;
+        int iommufd = virTestMakeDummyFD(g_strdup("@iommufd-fd@"));
         priv->iommufd = qemuFDPassDirectNew("iommufd", &iommufd);
     }
 }

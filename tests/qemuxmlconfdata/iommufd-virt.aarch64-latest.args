@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-foo/.config \
 -device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
 -device '{"driver":"pcie-root-port","port":10,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--object '{"qom-type":"iommufd","id":"iommufd0","fd":"XXXXXXX"}' \
+-object '{"qom-type":"iommufd","id":"iommufd0","fd":"@iommufd-fd@"}' \
 -device '{"driver":"vfio-pci","id":"hostdev0","iommufd":"iommufd0","fd":"@hostdev-hostdev0-fd@","bus":"pci.1","addr":"0x0"}' \
 -device '{"driver":"vfio-pci","id":"hostdev1","iommufd":"iommufd0","fd":"@hostdev-hostdev1-fd@","bus":"pci.2","addr":"0x0"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
