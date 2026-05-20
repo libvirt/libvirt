@@ -80,3 +80,22 @@ Daniel P. Berrangé <berrange@redhat.com> <dan@berrange.com>
 Michal Prívozník <mprivozn@redhat.com>
 Michal Prívozník <mprivozn@redhat.com> <miso.privoznik@gmail.com>
 Marco Bozzolan <bozzolan@gmail.com> <redshift@gmx.com>
+
+# Mailing list 'via Devel' From-munging:
+# devel@lists.libvirt.org rewrites the From: header for DMARC reasons,
+# producing commits attributed to '<Real Name> via Devel <devel@lists.libvirt.org>'.
+# Map each such mangled identity back to the author's real address taken
+# from their Signed-off-by trailer.
+Achill Gilgenast <achill@achill.org> Achill Gilgenast via Devel <devel@lists.libvirt.org>
+Akash Kulhalli <akash.kulhalli@oracle.com> Akash Kulhalli via Devel <devel@lists.libvirt.org>
+Enrique Llorente <ellorent@redhat.com> Enrique Llorente via Devel <devel@lists.libvirt.org>
+Han Han <hhan@redhat.com> Han Han via Devel <devel@lists.libvirt.org>
+Jim Fehlig <jfehlig@suse.com> Jim Fehlig via Devel <devel@lists.libvirt.org>
+Kirill Shchetiniuk <kshcheti@redhat.com> Kirill Shchetiniuk via Devel <devel@lists.libvirt.org>
+Miroslav Los <mirlos@cisco.com> Miroslav Los via Devel <devel@lists.libvirt.org>
+Nathan Chen <nathanc@nvidia.com> Nathan Chen via Devel <devel@lists.libvirt.org>
+Nikolai Barybin <nikolai.barybin@virtuozzo.com> Nikolai Barybin via Devel <devel@lists.libvirt.org>
+Radoslaw Smigielski <rsmigiel@redhat.com> Radoslaw Smigielski via Devel <devel@lists.libvirt.org>
+Srihari Parimi <sparimi@redhat.com> Srihari Parimi via Devel <devel@lists.libvirt.org>
+Surya Gupta <surygupt@redhat.com> Surya Gupta via Devel <devel@lists.libvirt.org>
+Wesley Hershberger <wesley.hershberger@canonical.com> Wesley Hershberger via Devel <devel@lists.libvirt.org>
