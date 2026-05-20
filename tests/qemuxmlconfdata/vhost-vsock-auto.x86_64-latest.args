@@ -30,5 +30,5 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-test/.config \
 -device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device '{"driver":"vhost-vsock-pci","id":"vsock0","guest-cid":42,"vhostfd":"6789","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"vhost-vsock-pci","id":"vsock0","guest-cid":42,"vhostfd":"XXXXXXX","bus":"pci.0","addr":"0x2"}' \
 -msg timestamp=on

@@ -537,6 +537,12 @@ testCompareXMLToArgvStabilizeArgs(virCommand *cmd,
             }
 
             a++;
+        } else if (STREQ(args[a], "-device")) {
+            if (STRPREFIX(args[a + 1], "{\"driver\":\"vhost-vsock-")) {
+                testCompareXMLToArgvStabilizeOne(&args[a + 1], "vhostfd", fdsubsts, false);
+            }
+
+            a++;
         }
     }
 }
