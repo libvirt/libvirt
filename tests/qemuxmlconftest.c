@@ -173,34 +173,14 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
             STREQ(disk->src->path, "/dev/cdrom"))
             disk->src->hostcdrom = true;
 
-        if (info->args.vdpafds) {
-            for (src = disk->src; virStorageSourceIsBacking(src); src = src->backingStore) {
-                gpointer value;
+        for (src = disk->src; virStorageSourceIsBacking(src); src = src->backingStore) {
+            if (src->type == VIR_STORAGE_TYPE_VHOST_VDPA) {
+                qemuDomainStorageSourcePrivate *srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+                int fd = virTestMakeDummyFD(g_strdup_printf("@vdpa-%s-fd@",
+                                                            qemuBlockStorageSourceGetStorageNodename(src)));
 
-                if (src->type != VIR_STORAGE_TYPE_VHOST_VDPA)
-                    continue;
-
-                if ((value = g_hash_table_lookup(info->args.vdpafds, src->vdpadev))) {
-                    int fd = GPOINTER_TO_INT(value);
-                    qemuDomainStorageSourcePrivate *srcpriv;
-                    VIR_AUTOCLOSE fakefd = open("/dev/zero", O_RDWR);
-
-                    if (fcntl(fd, F_GETFD) != -1) {
-                        fprintf(stderr, "fd '%d' is already in use\n", fd);
-                        abort();
-                    }
-
-                    if (dup2(fakefd, fd) < 0) {
-                        fprintf(stderr, "failed to duplicate fake fd: %s",
-                                g_strerror(errno));
-                        abort();
-                    }
-
-                    srcpriv = qemuDomainStorageSourcePrivateFetch(src);
-
-                    srcpriv->fdpass = qemuFDPassNew(qemuBlockStorageSourceGetStorageNodename(src), priv);
-                    qemuFDPassAddFD(srcpriv->fdpass, &fd, "-vdpa");
-                }
+                srcpriv->fdpass = qemuFDPassNew(qemuBlockStorageSourceGetStorageNodename(src), priv);
+                qemuFDPassAddFD(srcpriv->fdpass, &fd, "-vdpa");
             }
         }
     }
