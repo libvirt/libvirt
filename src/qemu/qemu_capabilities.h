@@ -795,6 +795,9 @@ typedef enum {
      * combined with features reported by QEMU. This is used for backward
      * compatible comparison between a guest CPU and a host CPU. */
     VIR_QEMU_CAPS_HOST_CPU_FULL,
+    /* Expanded host CPU definition with features that are implicitly enabled
+     * by the selected CPU model. */
+    VIR_QEMU_CAPS_HOST_CPU_EXPANDED,
 } virQEMUCapsHostCPUType;
 
 virCPUDef *virQEMUCapsGetHostModel(virQEMUCaps *qemuCaps,
