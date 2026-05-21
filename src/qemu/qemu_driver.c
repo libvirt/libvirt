@@ -16982,20 +16982,9 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
     if (!(domCaps = virQEMUDriverGetDomainCapabilities(driver,
                                                        qemuCaps, machine,
-                                                       arch, virttype)))
+                                                       arch, virttype,
+                                                       flags)))
         return NULL;
-
-    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES) {
-        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, virttype,
-                                               domCaps->cpu.hostModel,
-                                               VIR_CPU_FEATURE_DISABLE);
-    }
-
-    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES) {
-        virCPUDef *cpu = domCaps->cpu.hostModel;
-        if (cpu && virCPUExpandFeatures(arch, cpu) < 0)
-            return NULL;
-    }
 
     return virDomainCapsFormat(domCaps);
 }

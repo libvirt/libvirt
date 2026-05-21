@@ -6637,14 +6637,26 @@ virQEMUCapsFillDomainCPUMaximum(virDomainCaps *domCaps)
 
 static void
 virQEMUCapsFillDomainCPUHostModel(virQEMUCaps *qemuCaps,
-                                  virDomainCaps *domCaps)
+                                  virDomainCaps *domCaps,
+                                  unsigned int flags)
 {
-    virCPUDef *cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
-                                             VIR_QEMU_CAPS_HOST_CPU_REPORTED);
+    virQEMUCapsHostCPUType cpuType = VIR_QEMU_CAPS_HOST_CPU_REPORTED;
+    virCPUDef *cpu;
 
-    domCaps->cpu.hostModel = virCPUDefCopy(cpu);
-    domCaps->cpu.hostModel->addr = virQEMUCapsGetHostPhysAddr(qemuCaps,
-                                                              domCaps->virttype);
+    cpu = virCPUDefCopy(virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
+                                                cpuType));
+
+    cpu->addr = virQEMUCapsGetHostPhysAddr(qemuCaps, domCaps->virttype);
+
+    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES) {
+        virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, domCaps->virttype,
+                                               cpu, VIR_CPU_FEATURE_DISABLE);
+    }
+
+    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES)
+        virCPUExpandFeatures(domCaps->arch, cpu);
+
+    domCaps->cpu.hostModel = cpu;
 }
 
 
@@ -6669,7 +6681,8 @@ virQEMUCapsFillDomainCPUCustom(virQEMUCaps *qemuCaps,
 static void
 virQEMUCapsFillDomainCPUCaps(virQEMUCaps *qemuCaps,
                              virArch hostarch,
-                             virDomainCaps *domCaps)
+                             virDomainCaps *domCaps,
+                             unsigned int flags)
 {
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_PASSTHROUGH,
@@ -6686,7 +6699,7 @@ virQEMUCapsFillDomainCPUCaps(virQEMUCaps *qemuCaps,
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_MODEL,
                                       domCaps->machine)) {
-        virQEMUCapsFillDomainCPUHostModel(qemuCaps, domCaps);
+        virQEMUCapsFillDomainCPUHostModel(qemuCaps, domCaps, flags);
     }
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, hostarch, domCaps->virttype,
@@ -7315,7 +7328,8 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
                           virQEMUCaps *qemuCaps,
                           virArch hostarch,
                           virDomainCaps *domCaps,
-                          bool privileged)
+                          bool privileged,
+                          unsigned int flags)
 {
     virDomainCapsOS *os = &domCaps->os;
     virDomainCapsDeviceDisk *disk = &domCaps->disk;
@@ -7358,7 +7372,7 @@ virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
                                     firmwares, nfirmwares) < 0)
         return -1;
 
-    virQEMUCapsFillDomainCPUCaps(qemuCaps, hostarch, domCaps);
+    virQEMUCapsFillDomainCPUCaps(qemuCaps, hostarch, domCaps, flags);
     virQEMUCapsFillDomainMemoryBackingCaps(qemuCaps, memoryBacking);
     virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk);
     virQEMUCapsFillDomainDeviceGraphicsCaps(cfg, qemuCaps, graphics);

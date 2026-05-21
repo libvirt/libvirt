@@ -1753,7 +1753,8 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
                                    virQEMUCaps *qemuCaps,
                                    const char *machine,
                                    virArch arch,
-                                   virDomainVirtType virttype)
+                                   virDomainVirtType virttype,
+                                   unsigned int flags)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainCaps) domCaps = NULL;
@@ -1787,7 +1788,8 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
                                   qemuCaps,
                                   driver->hostarch,
                                   domCaps,
-                                  driver->privileged) < 0)
+                                  driver->privileged,
+                                  flags) < 0)
         return NULL;
 
     return g_steal_pointer(&domCaps);

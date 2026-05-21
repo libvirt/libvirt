@@ -101,7 +101,7 @@ fillQemuCaps(virDomainCaps *domCaps,
 
     if (virQEMUCapsFillDomainCaps(cfg,
                                   qemuCaps, domCaps->arch, domCaps,
-                                  false) < 0)
+                                  false, 0) < 0)
         return -1;
 
     /* As of f05b6a918e28 we are expecting to see OVMF_CODE.fd file which

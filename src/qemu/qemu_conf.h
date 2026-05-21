@@ -383,7 +383,8 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
                                    virQEMUCaps *qemuCaps,
                                    const char *machine,
                                    virArch arch,
-                                   virDomainVirtType virttype);
+                                   virDomainVirtType virttype,
+                                   unsigned int flags);
 
 int qemuDriverAllocateID(virQEMUDriver *driver);
 virDomainXMLOption *virQEMUDriverCreateXMLConf(virQEMUDriver *driver,

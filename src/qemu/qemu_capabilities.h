@@ -903,7 +903,8 @@ int virQEMUCapsFillDomainCaps(virQEMUDriverConfig *cfg,
                               virQEMUCaps *qemuCaps,
                               virArch hostarch,
                               virDomainCaps *domCaps,
-                              bool privileged);
+                              bool privileged,
+                              unsigned int flags);
 
 void virQEMUCapsFillDomainMemoryBackingCaps(virQEMUCaps *qemuCaps,
                                             virDomainCapsMemoryBacking *memoryBacking);
