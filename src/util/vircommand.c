@@ -3270,7 +3270,7 @@ virCommandRunRegex(virCommand *cmd,
 
     for (i = 0; i < nregex; i++) {
         g_autoptr(GError) err = NULL;
-        reg[i] = g_regex_new(regex[i], G_REGEX_OPTIMIZE, 0, &err); /* see sc_G_REGEX_OPTIMIZE */
+        reg[i] = g_regex_new(regex[i], 0, 0, &err);
         if (!reg[i]) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to compile regex %1$s"), err->message);

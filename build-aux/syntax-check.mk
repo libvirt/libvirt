@@ -1390,7 +1390,8 @@ sc_prohibit_inline_functions:
 # glib's G_REGEX_OPTIMIZE instructs the PCRE library to use JIT optimization
 # of the regexes, which requires executable memory to work. Security mechanisms
 # such as SELinux may disallow it. glib gracefully falls back to un-optimized
-# code. This check serves as a warning to not rely on G_REGEX_OPTIMIZE:
+# code. This check serves as a warning to not rely on G_REGEX_OPTIMIZE.
+# Currently we avoid use of G_REGEX_OPTIMIZE anywhere.
 sc_G_REGEX_OPTIMIZE:
 	@prohibit='G_REGEX_OPTIMIZE' \
 	exclude='see sc_G_REGEX_OPTIMIZE' \
