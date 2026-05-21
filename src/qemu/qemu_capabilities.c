@@ -4100,11 +4100,11 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
                             virArch hostArch,
                             virDomainVirtType type)
 {
-    virCPUDef *cpu = NULL;
-    virCPUDef *cpuExpanded = NULL;
-    virCPUDef *migCPU = NULL;
-    virCPUDef *hostCPU = NULL;
-    virCPUDef *fullCPU = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
+    g_autoptr(virCPUDef) cpuExpanded = NULL;
+    g_autoptr(virCPUDef) migCPU = NULL;
+    g_autoptr(virCPUDef) hostCPU = NULL;
+    g_autoptr(virCPUDef) fullCPU = NULL;
     unsigned int physAddrSize = 0;
     size_t i;
     int rc;
@@ -4178,19 +4178,15 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
     if (virQEMUCapsTypeIsAccelerated(type))
         virHostCPUGetPhysAddrSize(hostArch, &physAddrSize);
 
-    virQEMUCapsSetHostModel(qemuCaps, type, physAddrSize, cpu, migCPU, fullCPU);
+    virQEMUCapsSetHostModel(qemuCaps, type, physAddrSize,
+                            g_steal_pointer(&cpu),
+                            g_steal_pointer(&migCPU),
+                            g_steal_pointer(&fullCPU));
 
- cleanup:
-    virCPUDefFree(cpuExpanded);
-    virCPUDefFree(hostCPU);
     return;
 
  error:
-    virCPUDefFree(cpu);
-    virCPUDefFree(migCPU);
-    virCPUDefFree(fullCPU);
     virResetLastError();
-    goto cleanup;
 }
 
 
