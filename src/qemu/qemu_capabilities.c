@@ -4115,9 +4115,17 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
     if (!(cpu = virQEMUCapsNewHostCPUModel()))
         goto error;
 
-    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, cpu, false)) < 0) {
+    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, cpu, false)) < 0)
         goto error;
-    } else if (rc == 1) {
+
+    if (rc == 2) {
+        VIR_DEBUG("QEMU does not provide CPU model for arch=%s virttype=%s",
+                  virArchToString(qemuCaps->arch),
+                  virDomainVirtTypeToString(type));
+        goto error;
+    }
+
+    if (rc == 1) {
         g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
 
         VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
@@ -4128,11 +4136,6 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
 
         virCPUDefCopyModelFilter(cpu, hostCPU, true, virQEMUCapsCPUFilterFeatures,
                                  &qemuCaps->arch);
-    } else if (rc == 2) {
-        VIR_DEBUG("QEMU does not provide CPU model for arch=%s virttype=%s",
-                  virArchToString(qemuCaps->arch),
-                  virDomainVirtTypeToString(type));
-        goto error;
     } else if (virQEMUCapsTypeIsAccelerated(type) &&
                virCPUGetHostIsSupported(qemuCaps->arch)) {
         if (!(fullCPU = virQEMUCapsProbeHostCPU(qemuCaps->arch, NULL)))
@@ -4153,9 +4156,10 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
     if (!(migCPU = virQEMUCapsNewHostCPUModel()))
         goto error;
 
-    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, migCPU, true)) < 0) {
+    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, migCPU, true)) < 0)
         goto error;
-    } else if (rc == 1) {
+
+    if (rc == 1) {
         VIR_DEBUG("CPU migratability not provided by QEMU");
 
         virCPUDefFree(migCPU);
