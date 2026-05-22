@@ -1957,6 +1957,7 @@ bhyveDomainInterfaceAddresses(virDomainPtr domain,
                               unsigned int flags)
 {
     virDomainObj *vm = NULL;
+    qemuAgent *agent;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1971,18 +1972,28 @@ bhyveDomainInterfaceAddresses(virDomainPtr domain,
         goto cleanup;
 
     switch (source) {
+    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
+        if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_QUERY) < 0)
+            goto cleanup;
+
+        if (bhyveDomainEnsureAgent(vm, true) < 0)
+            goto endjob;
+
+        agent = bhyveDomainObjEnterAgent(vm);
+        ret = qemuAgentGetInterfaces(agent, ifaces, true);
+        bhyveDomainObjExitAgent(vm, agent);
+
+    endjob:
+        virDomainObjEndAgentJob(vm);
+
+        break;
+
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP:
         ret = virDomainNetARPInterfaces(vm->def, ifaces);
         break;
 
     case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE:
         ret = virDomainNetDHCPInterfaces(vm->def, ifaces);
-        break;
-
-    case VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT:
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Unsupported IP address data source %1$d"),
-                       source);
         break;
 
     default:
