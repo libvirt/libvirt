@@ -2307,6 +2307,74 @@ bhyveDomainSetMemoryParameters(virDomainPtr domain,
     return ret;
 }
 
+static int
+bhyveDomainGetFSInfoAgent(virDomainObj *vm,
+                          qemuAgentFSInfo ***info)
+{
+    int ret = -1;
+    qemuAgent *agent;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_QUERY) < 0)
+        return ret;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    ret = qemuAgentGetFSInfo(agent, info, true);
+    bhyveDomainObjExitAgent(vm, agent);
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+static int
+bhyveDomainGetFSInfo(virDomainPtr dom,
+                     virDomainFSInfoPtr **info,
+                     unsigned int flags)
+{
+    virDomainObj *vm;
+    qemuAgentFSInfo **agentinfo = NULL;
+    int ret = -1;
+    int nfs = 0;
+
+    virCheckFlags(0, ret);
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        return ret;
+
+    if (virDomainGetFSInfoEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if ((nfs = bhyveDomainGetFSInfoAgent(vm, &agentinfo)) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginJob(vm, VIR_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    ret = qemuAgentFSInfoFormat(agentinfo, nfs, vm->def, info);
+
+ endjob:
+    virDomainObjEndJob(vm);
+
+ cleanup:
+    if (agentinfo) {
+        size_t i;
+        for (i = 0; i < nfs; i++)
+            qemuAgentFSInfoFree(agentinfo[i]);
+        g_free(agentinfo);
+    }
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2378,6 +2446,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainQemuAgentCommand = bhyveDomainQemuAgentCommand, /* 12.4.0 */
     .domainGetMemoryParameters = bhyveDomainGetMemoryParameters, /* 12.4.0 */
     .domainSetMemoryParameters = bhyveDomainSetMemoryParameters, /* 12.4.0 */
+    .domainGetFSInfo = bhyveDomainGetFSInfo, /* 12.5.0 */
 };
 
 
