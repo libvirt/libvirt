@@ -1714,6 +1714,7 @@ qemuAgentArbitraryCommand;
 qemuAgentClose;
 qemuAgentDiskInfoFree;
 qemuAgentFSFreeze;
+qemuAgentFSInfoFormat;
 qemuAgentFSInfoFree;
 qemuAgentFSThaw;
 qemuAgentFSTrim;

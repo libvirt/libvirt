@@ -18767,76 +18767,6 @@ qemuDomainGetFSInfoAgent(virDomainObj *vm,
     return ret;
 }
 
-static virDomainFSInfoPtr
-qemuAgentFSInfoToPublic(qemuAgentFSInfo *agent,
-                        virDomainDef *vmdef)
-{
-    virDomainFSInfoPtr ret = NULL;
-    size_t i;
-
-    ret = g_new0(virDomainFSInfo, 1);
-
-    ret->mountpoint = g_strdup(agent->mountpoint);
-    ret->name = g_strdup(agent->name);
-    ret->fstype = g_strdup(agent->fstype);
-
-    if (agent->disks)
-        ret->devAlias = g_new0(char *, agent->ndisks);
-
-    for (i = 0; i < agent->ndisks; i++) {
-        qemuAgentDiskAddress *agentdisk = agent->disks[i];
-        virDomainDiskDef *diskDef;
-
-        diskDef = virDomainDiskByAddress(vmdef,
-                                         &agentdisk->pci_controller,
-                                         agentdisk->ccw_addr,
-                                         agentdisk->bus,
-                                         agentdisk->target,
-                                         agentdisk->unit);
-        if (diskDef != NULL)
-            ret->devAlias[ret->ndevAlias++] = g_strdup(diskDef->dst);
-        else
-            VIR_DEBUG("Missing target name for '%s'.", ret->mountpoint);
-    }
-
-    return ret;
-}
-
-/* Returns: 0 on success
- *          -1 otherwise
- */
-static int
-virDomainFSInfoFormat(qemuAgentFSInfo **agentinfo,
-                      int nagentinfo,
-                      virDomainDef *vmdef,
-                      virDomainFSInfoPtr **info)
-{
-    int ret = -1;
-    virDomainFSInfoPtr *info_ret = NULL;
-    size_t i;
-
-    info_ret = g_new0(virDomainFSInfoPtr, nagentinfo);
-
-    for (i = 0; i < nagentinfo; i++) {
-        if (!(info_ret[i] = qemuAgentFSInfoToPublic(agentinfo[i], vmdef)))
-            goto cleanup;
-    }
-
-    *info = g_steal_pointer(&info_ret);
-    ret = nagentinfo;
-
- cleanup:
-    if (info_ret) {
-        for (i = 0; i < nagentinfo; i++) {
-            /* if there was an error, free any memory we've allocated for the
-             * return value */
-            virDomainFSInfoFree(info_ret[i]);
-        }
-        g_free(info_ret);
-    }
-    return ret;
-}
-
 static int
 qemuDomainGetFSInfo(virDomainPtr dom,
                     virDomainFSInfoPtr **info,
@@ -18864,7 +18794,7 @@ qemuDomainGetFSInfo(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    ret = virDomainFSInfoFormat(agentinfo, nfs, vm->def, info);
+    ret = qemuAgentFSInfoFormat(agentinfo, nfs, vm->def, info);
 
  endjob:
     virDomainObjEndJob(vm);

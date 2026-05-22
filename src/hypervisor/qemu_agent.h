@@ -196,3 +196,8 @@ int qemuAgentGetLoadAvg(qemuAgent *agent,
                         double *load5m,
                         double *load15m,
                         bool report_unsupported);
+
+int qemuAgentFSInfoFormat(qemuAgentFSInfo **agentinfo,
+                          int nagentinfo,
+                          virDomainDef *vmdef,
+                          virDomainFSInfoPtr **info);
