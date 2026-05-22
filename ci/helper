@@ -173,9 +173,6 @@ class Application:
                 "website": "run_website_build",
             }
 
-            if self._args.engine != "auto":
-                positional_args.extend(["--engine", self._args.engine])
-
             with open(Path(tmpdir.name, "script"), "w") as f:
                 script_path = f.name
                 contents = textwrap.dedent(f"""\
@@ -190,6 +187,8 @@ class Application:
                 f.write(contents)
 
             positional_args.append("run")
+            if self._args.engine != "auto":
+                opts.extend(["--engine", self._args.engine])
             opts.extend(["--script", script_path])
 
         opts.append(f"{self._args.image_prefix}{self._args.target}:{self._args.image_tag}")
