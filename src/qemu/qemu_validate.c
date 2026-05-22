@@ -740,7 +740,7 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
         return -1;
     }
 
-    if (src->backingStore) {
+    if (virStorageSourceHasBacking(src)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("backingStore is not supported with NVRAM"));
         return -1;
