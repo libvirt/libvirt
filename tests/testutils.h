@@ -108,6 +108,7 @@ void virTestFakeRootDirCleanup(char *fakerootdir);
 
 struct _virTestDummyFDContext {
     GHashTable *hints;
+    GSList *errors;
 };
 
 typedef struct _virTestDummyFDContext virTestDummyFDContext;
@@ -122,6 +123,8 @@ void virTestDummyFDContextMarkFD(int fd,
 
 void virTestMakeDummyMarkDup(int newfd,
                              int oldfd);
+
+void virTestDummyFDContextMarkError(char *error);
 
 int virTestMakeDummyFD(char *hint);
 

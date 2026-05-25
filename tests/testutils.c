@@ -302,6 +302,7 @@ virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
         return;
 
     g_clear_pointer(&dummyFDContext->hints, g_hash_table_unref);
+    g_slist_free_full(g_steal_pointer(&dummyFDContext->errors), g_free);
 
     g_clear_pointer(&dummyFDContext, g_free);
 }
@@ -314,6 +315,9 @@ virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
  * cross-referenced and stripped from test output. Marked FDs are recorded
  * in the returned context's 'hints' field, where keys are stringified
  * FD numbers and the passed 'hint' strings are recorded as values.
+ *
+ * The 'errors' GSList is a list of error strings that can be added if the test
+ * case notices invalid operations with FDs.
  *
  * The context uses a global variable 'dummyFDContext' so that mocked functions
  * which don't allow custom data can use this infrastructure.
@@ -380,6 +384,26 @@ virTestMakeDummyMarkDup(int newfd,
 
     virTestDummyFDContextMarkFD(newfd, g_strdup_printf("%s-dup", oldhint));
 }
+
+
+/**
+ * virTestDummyFDContextMarkError:
+ * @error: error message to record against the global 'dummyFDContext'
+ *
+ * Records @error in list of errors the global 'dummyFDContext' object
+ */
+void
+virTestDummyFDContextMarkError(char *error)
+{
+    if (!dummyFDContext) {
+        g_free(error);
+        return;
+    }
+
+    dummyFDContext->errors = g_slist_prepend(dummyFDContext->errors, error);
+}
+
+void virTestDummyFDContextMarkError(char *error);
 
 
 /**
