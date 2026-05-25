@@ -22,6 +22,8 @@
 #include "qemu/qemu_capabilities.h"
 #include "qemu/qemu_conf.h"
 
+#include "testutils.h"
+
 #define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
 #define TEST_TPM_ENV_VAR "VIR_TEST_MOCK_FAKE_TPM_VERSION"
 #define TPM_VER_1_2 "1.2"
@@ -119,7 +121,7 @@ struct _testQemuInfo {
     struct testQemuArgs args;
     struct testQemuConf *conf;
 
-    GHashTable *fdsubsts;
+    virTestDummyFDContext *fdsubsts;
 };
 
 typedef struct _testQemuInfo testQemuInfo;

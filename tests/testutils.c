@@ -298,7 +298,12 @@ static virTestDummyFDContext *dummyFDContext;
 void
 virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
 {
-    g_clear_pointer(&dummyFDContext, g_hash_table_unref);
+    if (!dummyFDContext)
+        return;
+
+    g_clear_pointer(&dummyFDContext->hints, g_hash_table_unref);
+
+    g_clear_pointer(&dummyFDContext, g_free);
 }
 
 
@@ -307,9 +312,7 @@ virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
  *
  * Create a new context for marking dummy FDs so that they can be later
  * cross-referenced and stripped from test output. Marked FDs are recorded
- * in the returned GHashTable (virTestDummyFDContext type is a direct alias
- * of GHashTable, allowing for registering custom autoptr cleanup function
- * so that the context can be properly disposed), where keys are stringified
+ * in the returned context's 'hints' field, where keys are stringified
  * FD numbers and the passed 'hint' strings are recorded as values.
  *
  * The context uses a global variable 'dummyFDContext' so that mocked functions
@@ -322,7 +325,13 @@ virTestDummyFDContextFree(virTestDummyFDContext *ctxt G_GNUC_UNUSED)
 virTestDummyFDContext *
 virTestDummyFDContextNew(void)
 {
-    return dummyFDContext = virHashNew(g_free);
+    if (dummyFDContext)
+        return dummyFDContext;
+
+    dummyFDContext = g_new0(virTestDummyFDContext, 1);
+    dummyFDContext->hints = virHashNew(g_free);
+
+    return dummyFDContext;
 }
 
 
@@ -342,7 +351,7 @@ virTestDummyFDContextMarkFD(int fd,
         return;
     }
 
-    g_hash_table_insert(dummyFDContext, g_strdup_printf("%d", fd), hint);
+    g_hash_table_insert(dummyFDContext->hints, g_strdup_printf("%d", fd), hint);
 }
 
 
@@ -366,7 +375,7 @@ virTestMakeDummyMarkDup(int newfd,
 
     oldlabel = g_strdup_printf("%d", oldfd);
 
-    if (!(oldhint = g_hash_table_lookup(dummyFDContext, oldlabel)))
+    if (!(oldhint = g_hash_table_lookup(dummyFDContext->hints, oldlabel)))
         return;
 
     virTestDummyFDContextMarkFD(newfd, g_strdup_printf("%s-dup", oldhint));

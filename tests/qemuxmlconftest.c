@@ -919,7 +919,7 @@ testCompareXMLToArgv(const void *data)
     if (testCompareXMLToArgvValidateSchema(cmd, info) < 0)
         goto cleanup;
 
-    testCompareXMLToArgvStabilizeArgs(cmd, info->fdsubsts);
+    testCompareXMLToArgvStabilizeArgs(cmd, info->fdsubsts->hints);
 
     if (virCommandToStringBuf(cmd, &actualBuf, true, false) < 0)
         goto cleanup;
