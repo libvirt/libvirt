@@ -16965,7 +16965,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     g_autoptr(virDomainCaps) domCaps = NULL;
 
     virCheckFlags(VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES |
-                  VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES,
+                  VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES |
+                  VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES,
                   NULL);
 
     if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)

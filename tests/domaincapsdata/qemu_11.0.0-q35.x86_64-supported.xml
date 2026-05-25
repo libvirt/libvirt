@@ -55,14 +55,21 @@
       <model fallback='forbid'>EPYC-Turin</model>
       <vendor>AMD</vendor>
       <maxphysaddr mode='passthrough' limit='64'/>
+      <feature policy='require' name='arch-capabilities'/>
       <feature policy='require' name='cet-ss'/>
       <feature policy='require' name='cmp_legacy'/>
       <feature policy='require' name='flush-l1d'/>
+      <feature policy='require' name='gds-no'/>
       <feature policy='require' name='hypervisor'/>
       <feature policy='require' name='invtsc'/>
       <feature policy='disable' name='la57'/>
+      <feature policy='require' name='mds-no'/>
       <feature policy='disable' name='pcid'/>
+      <feature policy='require' name='pschange-mc-no'/>
+      <feature policy='require' name='rdctl-no'/>
       <feature policy='disable' name='rdseed'/>
+      <feature policy='require' name='rfds-no'/>
+      <feature policy='require' name='skip-l1dfl-vmentry'/>
       <feature policy='require' name='spec-ctrl'/>
       <feature policy='require' name='ssbd'/>
       <feature policy='require' name='stibp'/>

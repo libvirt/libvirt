@@ -6657,6 +6657,7 @@ virQEMUCapsFillDomainCPUHostModel(virQEMUCaps *qemuCaps,
 {
     virQEMUCapsHostCPUType cpuType;
     virCPUDef *cpu;
+    virArch arch = domCaps->arch;
 
     if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES)
         cpuType = VIR_QEMU_CAPS_HOST_CPU_EXPANDED;
@@ -6671,6 +6672,29 @@ virQEMUCapsFillDomainCPUHostModel(virQEMUCaps *qemuCaps,
     if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES) {
         virQEMUCapsUpdateCPUDeprecatedFeatures(qemuCaps, domCaps->virttype,
                                                cpu, VIR_CPU_FEATURE_DISABLE);
+    }
+
+    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES) {
+        uint32_t index = 0x10a; /* arch-capabilities MSR */
+        uint64_t msr = 0;
+
+        /* While the arch-capabilities MSR is not defined on AMD CPUs, KVM has
+         * always been emulating them. Unfortunately, this may cause some
+         * Windows version to crash so QEMU decided to mask the MSR by default.
+         * When asked for all CPU features supported on a host we need to add
+         * the affected features to the host-model.
+         */
+        if (ARCH_IS_X86(arch) &&
+            STREQ_NULLABLE(cpu->vendor, "AMD") &&
+            virCPUCheckFeature(arch, cpu, "arch-capabilities") == 0 &&
+            virHostCPUGetMSRFromKVM(index, &msr) == 0) {
+            g_autoptr(virCPUData) data = virCPUDataNew(arch);
+            virCPUFeaturePolicy policy = VIR_CPU_FEATURE_REQUIRE;
+
+            virCPUx86DataAddMSR(data, index, msr);
+            virCPUUpdateFeatures(arch, cpu, data, policy);
+            virCPUDefUpdateFeature(cpu, "arch-capabilities", policy);
+        }
     }
 
     virCPUDefSortFeatures(cpu);
