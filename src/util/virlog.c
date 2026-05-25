@@ -253,7 +253,7 @@ virLogOnceInit(void)
     virLogLock();
     virLogDefaultPriority = VIR_LOG_DEFAULT;
 
-    virLogRegex = g_regex_new(VIR_LOG_REGEX, G_REGEX_OPTIMIZE, 0, NULL);
+    virLogRegex = g_regex_new(VIR_LOG_REGEX, G_REGEX_OPTIMIZE, 0, NULL); /* see sc_G_REGEX_OPTIMIZE */
 
     /* GLib caches the hostname using a one time thread initializer.
      * We want to prime this cache early though, because at later time

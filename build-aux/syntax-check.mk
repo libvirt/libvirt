@@ -1387,6 +1387,15 @@ sc_prohibit_inline_functions:
 	halt='avoid inline functions in .c files' \
 	  $(_sc_search_regexp)
 
+# glib's G_REGEX_OPTIMIZE instructs the PCRE library to use JIT optimization
+# of the regexes, which requires executable memory to work. Security mechanisms
+# such as SELinux may disallow it. glib gracefully falls back to un-optimized
+# code. This check serves as a warning to not rely on G_REGEX_OPTIMIZE:
+sc_G_REGEX_OPTIMIZE:
+	@prohibit='G_REGEX_OPTIMIZE' \
+	exclude='see sc_G_REGEX_OPTIMIZE' \
+	halt='Optimizations may not work everywhere. Read the warning in build-aux/syntax-check.mk' \
+	  $(_sc_search_regexp)
 
 ## ---------- ##
 ## Exceptions ##
@@ -1549,6 +1558,9 @@ exclude_file_name_regexp--sc_spacing-check = \
 
 exclude_file_name_regexp--sc_prohibit_inline_functions = \
   ^src/storage_file/storage_source.*.c$$
+
+exclude_file_name_regexp--sc_G_REGEX_OPTIMIZE = \
+	^build-aux/syntax-check\.mk$$
 
 ## -------------- ##
 ## Implementation ##

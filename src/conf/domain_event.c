@@ -2643,7 +2643,7 @@ virDomainQemuMonitorEventStateRegisterID(virConnectPtr conn,
     data->flags = flags;
     if (event && flags != -1) {
         if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX) {
-            int cflags = G_REGEX_OPTIMIZE;
+            int cflags = G_REGEX_OPTIMIZE; /* see sc_G_REGEX_OPTIMIZE */
             g_autoptr(GError) err = NULL;
 
             if (flags & VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE)
