@@ -2621,6 +2621,7 @@ virHostCPUGetKVMMaxVCPUs;
 virHostCPUGetMap;
 virHostCPUGetMicrocodeVersion;
 virHostCPUGetMSR;
+virHostCPUGetMSRFromKVM;
 virHostCPUGetOnline;
 virHostCPUGetOnlineBitmap;
 virHostCPUGetPhysAddrSize;

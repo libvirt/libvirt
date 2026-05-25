@@ -23,6 +23,7 @@
 #include "qemu/qemu_capspriv.h"
 #include "testutilshostcpus.h"
 #include "virarch.h"
+#include "util/virhostcpu.h"
 
 
 virCPUDef *
@@ -32,4 +33,25 @@ virQEMUCapsProbeHostCPU(virArch hostArch G_GNUC_UNUSED,
     const char *model = g_getenv("VIR_TEST_MOCK_FAKE_HOST_CPU");
 
     return testUtilsHostCpusGetDefForModel(model);
+}
+
+
+int
+virHostCPUGetMSRFromKVM(unsigned long index,
+                        uint64_t *result)
+{
+    if (index == 0x10a) {
+        /* Return some arbitrary bits in arch-capabilities MSR */
+        *result =
+            0x00000001 | /* rdctl-no */
+            0x00000008 | /* skip-l1dfl-vmentry */
+            0x00000020 | /* mds-no */
+            0x00000040 | /* pschange-mc-no */
+            0x04000000 | /* gds-no */
+            0x08000000;  /* rfds-no */
+        return 0;
+    }
+
+    errno = ENOTSUP;
+    return -1;
 }

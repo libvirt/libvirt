@@ -78,6 +78,9 @@ int virHostCPUGetOnline(unsigned int cpu, bool *online);
 unsigned int
 virHostCPUGetMicrocodeVersion(virArch hostArch) ATTRIBUTE_MOCKABLE;
 
+int virHostCPUGetMSRFromKVM(unsigned long index,
+                            uint64_t *result) ATTRIBUTE_MOCKABLE;
+
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
 

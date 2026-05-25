@@ -1376,7 +1376,18 @@ virHostCPUGetMicrocodeVersion(virArch hostArch G_GNUC_UNUSED)
 
 #if WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
     (defined(__i386__) || defined(__x86_64__))
-static int
+/**
+ * virHostCPUGetMSRFromKVM:
+ * @index: MSR to read
+ * @result: where to store the content of the @index register
+ *
+ * Reads the 64b content of the specified register via KVM_GET_MSRS ioctl.
+ *
+ * Returns 0 on success,
+ *         1 when the MSR is not supported by the host CPU,
+ *        -1 on error.
+ */
+int
 virHostCPUGetMSRFromKVM(unsigned long index,
                         uint64_t *result)
 {
@@ -1611,6 +1622,15 @@ virHostCPUGetCPUID(void)
     virReportSystemError(ENOSYS, "%s",
                          _("Reading CPUID is not supported on this platform"));
     return NULL;
+}
+
+int
+virHostCPUGetMSRFromKVM(unsigned long index G_GNUC_UNUSED,
+                        uint64_t *result G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Reading MSRs is not supported on this platform"));
+    return -1;
 }
 
 int
