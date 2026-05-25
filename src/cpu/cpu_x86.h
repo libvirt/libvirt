@@ -28,6 +28,10 @@ extern struct cpuArchDriver cpuDriverX86;
 void virCPUx86DataAdd(virCPUData *cpuData,
                       const virCPUx86DataItem *cpuid);
 
+void virCPUx86DataAddMSR(virCPUData *cpuData,
+                         uint32_t index,
+                         uint64_t value);
+
 void virCPUx86DataSetSignature(virCPUData *cpuData,
                                unsigned int family,
                                unsigned int model,

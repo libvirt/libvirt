@@ -2911,18 +2911,8 @@ virCPUx86GetHost(virCPUDef *cpu,
     /* This is best effort since there might be no way to read the MSR
      * when we are not running as root. */
     for (i = 0; i < nmsrs; i++) {
-        if (virHostCPUGetMSR(msrs[i], &msr) == 0) {
-            virCPUx86DataItem item = {
-                .type = VIR_CPU_X86_DATA_MSR,
-                .data.msr = {
-                    .index = msrs[i],
-                    .eax = msr & 0xffffffff,
-                    .edx = msr >> 32,
-                },
-            };
-
-            virCPUx86DataAdd(cpuData, &item);
-        }
+        if (virHostCPUGetMSR(msrs[i], &msr) == 0)
+            virCPUx86DataAddMSR(cpuData, msrs[i], msr);
     }
 
     ret = x86DecodeCPUData(cpu, cpuData, models);
@@ -3457,6 +3447,32 @@ virCPUx86DataAdd(virCPUData *cpuData,
                  const virCPUx86DataItem *item)
 {
     virCPUx86DataAddItem(&cpuData->data.x86, item);
+}
+
+
+/**
+ * virCPUx86DataAddMSR:
+ * @cpuData: CPU data to update
+ * @index: MSR index
+ * @value: content of the @index MSR
+ *
+ * Adds the specified MSR content to CPU data.
+ */
+void
+virCPUx86DataAddMSR(virCPUData *cpuData,
+                    uint32_t index,
+                    uint64_t value)
+{
+    virCPUx86DataItem item = {
+        .type = VIR_CPU_X86_DATA_MSR,
+        .data.msr = {
+            .index = index,
+            .eax = value & 0xffffffff,
+            .edx = value >> 32,
+        },
+    };
+
+    virCPUx86DataAdd(cpuData, &item);
 }
 
 
