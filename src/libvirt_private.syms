@@ -1593,6 +1593,7 @@ virCPUGetVendorForModel;
 virCPUProbeHost;
 virCPUTranslate;
 virCPUUpdate;
+virCPUUpdateFeatures;
 virCPUUpdateLive;
 virCPUValidateFeatures;
 

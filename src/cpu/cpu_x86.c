@@ -3789,6 +3789,28 @@ virCPUx86GetCanonicalModel(const char *modelName)
 }
 
 
+static int
+virCPUx86UpdateFeatures(virCPUDef *cpu,
+                        virCPUData *cpuData,
+                        virCPUFeaturePolicy policy)
+{
+    virCPUx86Data *data = &cpuData->data.x86;
+    virCPUx86Map *map;
+    size_t i;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86Feature *feature = map->features[i];
+        if (x86DataIsSubset(data, &feature->data))
+            virCPUDefUpdateFeature(cpu, feature->name, policy);
+    }
+
+    return 0;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -3823,4 +3845,5 @@ struct cpuArchDriver cpuDriverX86 = {
 #endif
     .getCheckMode = virCPUx86GetCheckMode,
     .getCanonicalModel = virCPUx86GetCanonicalModel,
+    .updateFeatures = virCPUx86UpdateFeatures,
 };
