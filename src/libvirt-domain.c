@@ -12353,9 +12353,9 @@ virDomainSetUserPassword(virDomainPtr dom,
  * passthrough and so on.
  *
  * If @flags includes VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES,
- * libvirt will explicitly list all CPU features (in host-model CPU definition)
- * that are supported on the host. Without this flag features that are part of
- * the CPU model itself will not be listed.
+ * libvirt will explicitly list all CPU features that will be enabled for
+ * host-model CPU mode. Without this flag features that are part of the CPU
+ * model itself will not be listed.
  *
  * Returns NULL in case of error or an XML string
  * defining the capabilities.

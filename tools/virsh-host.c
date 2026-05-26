@@ -121,7 +121,7 @@ static const vshCmdOptDef opts_domcapabilities[] = {
     },
     {.name = "expand-cpu-features",
      .type = VSH_OT_BOOL,
-     .help = N_("show all features in host CPU model"),
+     .help = N_("expand 'host-model' CPU to also show features enabled by the CPU model"),
     },
     {.name = NULL}
 };

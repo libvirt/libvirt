@@ -640,8 +640,9 @@ flagged as deprecated for the CPU model by the hypervisor. These
 features will be paired with the "disable" policy.
 
 The **--expand-cpu-features** option will cause the host-model CPU definition
-to contain all CPU features supported on the host including those implicitly
-enabled by the selected CPU model.
+to contain all required CPU features including those implicitly enabled by the
+selected CPU model. Without this flag features that are part of the CPU model
+itself will not be listed.
 
 
 pool-capabilities
