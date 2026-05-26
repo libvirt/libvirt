@@ -6385,7 +6385,7 @@ virQEMUCapsCacheLookupDefault(virFileCache *cache,
     if (!binary) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unable to find any emulator to serve '%1$s' architecture"),
-                       archStr);
+                       virArchToString(arch));
         return NULL;
     }
 
