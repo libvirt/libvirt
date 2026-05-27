@@ -32,6 +32,37 @@ v12.4.0 (unreleased)
     Add support for a new domain event which can be used to track the state of
     any virtio channel. It is similar to guest agent lifecycle event.
 
+  * bhyve: Add memory tuning support
+
+    The bhyve driver now allows setting a domain's memory hard limit using the
+    following syntax::
+
+     <memtune>
+       <hard_limit unit='G'>1</hard_limit>
+     </memtune>
+
+    It also implements the ``virDomainGetMemoryParameters()`` and
+    ``virDomainSetMemoryParameters()`` APIs for controlling
+    the memory hard limit of a running domain.
+
+  * bhyve: Add virtio-console device support
+
+    Domain XML can now use ``virtio-console`` devices. Among other things,
+    these devices can be used to configure a QEMU Guest Agent::
+
+     <devices>
+       <channel type='unix'>
+         <source mode='bind' path='/var/run/libvirt/bhyve/bhyve.agent'/>
+         <target type='virtio' name='org.qemu.guest_agent.0'/>
+         <address type='virtio-serial' controller='0' bus='0' port='1'/>
+       </channel>
+     </devices>
+
+    Additionally, the ``virDomainQemuAgentCommand()`` API which allows
+    running arbitrary guest agent commands is now supported.
+
+    The ``virDomainGetHostname()`` API, used to query the hostname of a guest,
+    now supports using the guest agent as a source of information.
 
 * **Improvements**
 
