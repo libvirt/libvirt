@@ -15,6 +15,10 @@ v12.4.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Bump minimum version to QEMU-7.2
+
+    The minimal required version of QEMU was bumped to 7.2.0.
+
 * **New features**
 
   * resctrl: Add energy monitoring via resctrl's PERF_PKG_MON
@@ -23,7 +27,24 @@ v12.4.0 (unreleased)
     This allows to monitor per-VM energy consumption on supported platforms.
     Implemented via ``energytune`` element in ``cputune`` .
 
+  * Add channel lifecycle domain event
+
+    Add support for a new domain event which can be used to track the state of
+    any virtio channel. It is similar to guest agent lifecycle event.
+
+
 * **Improvements**
+
+  * vircgroupv2: Implement freezer controller
+
+    The CGroupV2 code now supports freezer controller which allows suspending
+    and resuming of LXC domains.
+
+  * virnetdevbandwidth: Only clear qdisc for defined directions
+
+    Setting a QoS on a vNIC no longer leads to clearing (preconfigured) root
+    queuing discipline ('qdisc`) in both directions (egress, ingress), only the
+    affected one.
 
 * **Bug fixes**
 
@@ -42,6 +63,18 @@ v12.4.0 (unreleased)
     VMWare-related domains will change from this release.  In order to use the
     pre-v12.4.0 behaviour there is a new URI query parameter ``legacy_uuid``
     which, if set to ``1``, will revert to the older way of working.
+
+  * virsh: Provide no auth callbacks for bash completer
+
+    The bash completer script calls virsh to provide completions. In some cases
+    the underlying virsh might get stuck waiting on input (e.g. password for
+    SSH session). Not anymore.
+
+  * virauth: Verify virConnectAuth::cb is set in virAuthGetPasswordPath()
+
+    A check was missing in ``virAuthGetPasswordPath()`` which might lead to
+    crash of the client library when NULL callback was provided. This is now
+    fixed.
 
 
 v12.3.0 (2026-05-02)
