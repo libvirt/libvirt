@@ -773,26 +773,6 @@ Example:
 Please refer to ``cam(4)``, ``ctl(4)``, and ``ctld(8)`` manual pages
 for more details on CAM and CTL.
 
-vCPU pinning
-~~~~~~~~~~~~
-
-:since:`Since 12.1.0`, it is possible to pin domain vCPUs
-to the specific host CPUs.
-
-Example:
-
-::
-
-  <domain type='bhyve'>
-    ...
-    <vcpu>2</vcpu>
-    <cputune>
-      <vcpupin vcpu="0" cpuset="1-4,^2"/>
-      <vcpupin vcpu="1" cpuset="0,4"/>
-    </cputune>
-    ...
-  </domain>
-
 NUMA domains configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -835,13 +815,43 @@ Example::
 
 Bhyve supports up to 16 ports per console.
 
-Block I/O Tuning
-~~~~~~~~~~~~~~~~
-:since:`Since 12.3.0`, it is possible to tune domain I/O.
-This works on top of the
+Resource tuning and limiting
+----------------------------
+The libvirt bhyve driver supports tuning and limiting resources such as
+CPU, memory, and I/O.
+
+For managing the memory and I/O limits, the bhyve driver uses the
 `rctl(4) <https://man.freebsd.org/cgi/man.cgi?query=rctl&sektion=4>`__
 framework.
-Sample configuration::
+
+As of `FreeBSD 15.0-RELEASE`, rctl is not enabled by default.
+Please refer to the manual page above and the
+`FreeBSD Handbook <https://docs.freebsd.org/en/books/handbook/book/#security-rctl>`__
+on how to enable it.
+
+CPU tuning does not require any additional configuration.
+
+vCPU pinning
+~~~~~~~~~~~~
+Pinning domain vCPUs to the specific host CPUs is supported :since:`since 12.1.0`.
+
+Example:
+
+::
+
+  <domain type='bhyve'>
+    ...
+    <vcpu>2</vcpu>
+    <cputune>
+      <vcpupin vcpu="0" cpuset="1-4,^2"/>
+      <vcpupin vcpu="1" cpuset="0,4"/>
+    </cputune>
+    ...
+  </domain>
+
+Block I/O tuning
+~~~~~~~~~~~~~~~~
+Block I/O tuning is supported :since:`since 12.3.0`. Sample configuration::
 
   <blkiotune>
     <device>
@@ -856,6 +866,21 @@ Sample configuration::
 The ``*`` path here means that the limits are applied to the domain
 as a whole. Currently, it is not possible to apply limits to the
 individual devices of the domain.
+
+Memory limitation
+~~~~~~~~~~~~~~~~~
+Setting a memory hard limit for a domain is supported :since:`since 12.4.0`.
+Example::
+
+  <memtune>
+    <hard_limit unit='M'>512</hard_limit>
+  </memtune>
+
+Please refer to the `format domain <formatdomain.html#memory-tuning>`__ page
+for considerations on setting ``hard_limit``.
+
+Currently, other memory tuning options (``soft_limit``, ``swap_hard_limit``,
+and ``min_guarantee``) are not supported.
 
 Guest-specific considerations
 -----------------------------
