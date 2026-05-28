@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <libvirt/libvirt.h>
 #include <libvirt/virterror.h>
 
@@ -46,9 +47,32 @@ showHypervisorInfo(virConnectPtr conn)
 
 
 static int
+longestDomain(virDomainPtr *nameList, int numNames)
+{
+    int longestDomainLength = 0;
+    size_t i;
+
+    for (i = 0; i < numNames; i++) {
+        const char *currentDomain = virDomainGetName(nameList[i]);
+
+        if (currentDomain != NULL) {
+            int currentDomainLength = strlen(currentDomain);
+
+            if (currentDomainLength > longestDomainLength) {
+                longestDomainLength = currentDomainLength;
+            }
+        }
+    }
+
+    return longestDomainLength;
+
+}
+
+
+static int
 showDomains(virConnectPtr conn)
 {
-    int numNames, numInactiveDomains, numActiveDomains;
+    int numNames, numInactiveDomains, numActiveDomains, longestDomainLength;
     ssize_t i;
     int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                 VIR_CONNECT_LIST_DOMAINS_INACTIVE;
@@ -88,9 +112,12 @@ showDomains(virConnectPtr conn)
         return 1;
     }
 
+    longestDomainLength = longestDomain(nameList, numNames);
+
     for (i = 0; i < numNames; i++) {
         int active = virDomainIsActive(nameList[i]);
-        printf("  %8s (%s)\n",
+        printf("  %-*s (%s)\n",
+               longestDomainLength,
                virDomainGetName(nameList[i]),
                (active == 1 ? "active" : "non-active"));
         /* must free the returned named per the API documentation */
