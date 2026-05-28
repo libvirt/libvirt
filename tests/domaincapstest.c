@@ -72,7 +72,8 @@ fillQemuCaps(virDomainCaps *domCaps,
              const char *arch,
              const char *variant,
              const char *machine,
-             virQEMUDriverConfig *cfg)
+             virQEMUDriverConfig *cfg,
+             unsigned int flags)
 {
     g_autofree char *path = NULL;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
@@ -101,7 +102,7 @@ fillQemuCaps(virDomainCaps *domCaps,
 
     if (virQEMUCapsFillDomainCaps(cfg,
                                   qemuCaps, domCaps->arch, domCaps,
-                                  false, 0) < 0)
+                                  false, flags) < 0)
         return -1;
 
     /* As of f05b6a918e28 we are expecting to see OVMF_CODE.fd file which
@@ -176,6 +177,7 @@ struct testData {
     const char *arch;
     const char *variant;
     virDomainVirtType type;
+    unsigned int flags;
     enum testCapsType capsType;
     const char *capsName;
     void *capsOpaque;
@@ -203,7 +205,7 @@ test_virDomainCapsFormat(const void *opaque)
     case CAPS_QEMU:
 #if WITH_QEMU
         if (fillQemuCaps(domCaps, data->capsName, data->arch, data->variant,
-                         data->machine, data->capsOpaque) < 0)
+                         data->machine, data->capsOpaque, data->flags) < 0)
             return -1;
 #endif
         break;
@@ -240,12 +242,14 @@ doTestQemuInternal(const char *version,
                    const char *arch,
                    const char *variant,
                    virDomainVirtType type,
+                   unsigned int flags,
                    void *opaque)
 {
     g_autofree char *name = NULL;
     g_autofree char *capsName = g_strdup_printf("caps_%s", version);
     g_autofree char *emulator = g_strdup_printf("/usr/bin/qemu-system-%s", arch);
     const char *typestr = NULL;
+    const char *flag = NULL;
     g_autofree char *mach = NULL;
     int rc;
     struct testData data = {
@@ -254,6 +258,7 @@ doTestQemuInternal(const char *version,
         .arch = arch,
         .variant = variant,
         .type = type,
+        .flags = flags,
         .capsType = CAPS_QEMU,
         .capsName = capsName,
         .capsOpaque = opaque,
@@ -282,8 +287,14 @@ doTestQemuInternal(const char *version,
     else
         mach = g_strdup("");
 
-    data.name = name = g_strdup_printf("qemu_%s%s%s.%s%s",
-                                       version, typestr, mach, arch, variant);
+    if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES)
+        flag = "-expanded";
+    else
+        flag = "";
+
+    data.name = name = g_strdup_printf("qemu_%s%s%s.%s%s%s",
+                                       version, typestr, mach, arch, variant,
+                                       flag);
 
     if (STRPREFIX(version, "3.") ||
         STRPREFIX(version, "4.") ||
@@ -333,21 +344,28 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
          */
         if (hvf) {
             if (doTestQemuInternal(version, NULL, arch, variant,
-                                   VIR_DOMAIN_VIRT_HVF, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_HVF, 0, opaque) < 0)
                 ret = -1;
         } else {
             if (doTestQemuInternal(version, NULL, arch, variant,
-                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
                 ret = -1;
 
             if (doTestQemuInternal(version, "q35", arch, variant,
-                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
+                ret = -1;
+
+            if (doTestQemuInternal(version, "q35", arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM,
+                                   VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES,
+                                   opaque) < 0)
                 ret = -1;
         }
 
         if (doTestQemuInternal(version, NULL, arch, variant,
-                               VIR_DOMAIN_VIRT_QEMU, opaque) < 0)
+                               VIR_DOMAIN_VIRT_QEMU, 0, opaque) < 0)
             ret = -1;
+
     } else if (STREQ(arch, "aarch64")) {
         /* For aarch64 based on the test variant we test:
          *
@@ -360,15 +378,15 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
          */
         if (hvf) {
             if (doTestQemuInternal(version, NULL, arch, variant,
-                                   VIR_DOMAIN_VIRT_HVF, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_HVF, 0, opaque) < 0)
                 ret = -1;
         } else {
             if (doTestQemuInternal(version, NULL, arch, variant,
-                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
                 ret = -1;
 
             if (doTestQemuInternal(version, "virt", arch, variant,
-                                   VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                                   VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
                 ret = -1;
         }
     } else if (STRPREFIX(arch, "riscv") || STRPREFIX(arch, "loongarch64")) {
@@ -379,15 +397,15 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
          *   - TCG with virt machine
          */
         if (doTestQemuInternal(version, "virt", arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                               VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
             ret = -1;
 
         if (doTestQemuInternal(version, "virt", arch, variant,
-                               VIR_DOMAIN_VIRT_QEMU, opaque) < 0)
+                               VIR_DOMAIN_VIRT_QEMU, 0, opaque) < 0)
             ret = -1;
     } else {
         if (doTestQemuInternal(version, NULL, arch, variant,
-                               VIR_DOMAIN_VIRT_KVM, opaque) < 0)
+                               VIR_DOMAIN_VIRT_KVM, 0, opaque) < 0)
             ret = -1;
     }
 
