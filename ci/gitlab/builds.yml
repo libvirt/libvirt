@@ -111,26 +111,26 @@ x86_64-centos-stream-10:
       - libvirt-rpms
 
 
-x86_64-debian-12:
+x86_64-debian-13:
   extends: .native_build_job
   needs:
-    - job: x86_64-debian-12-container
+    - job: x86_64-debian-13-container
       optional: true
   allow_failure: false
   variables:
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-x86_64-debian-12-clang:
+x86_64-debian-13-clang:
   extends: .native_build_job
   needs:
-    - job: x86_64-debian-12-container
+    - job: x86_64-debian-13-container
       optional: true
   allow_failure: false
   variables:
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
 x86_64-debian-sid:
@@ -263,107 +263,94 @@ x86_64-ubuntu-2604-clang:
 
 # Cross build jobs
 
-aarch64-debian-12:
+aarch64-debian-13:
   extends: .cross_build_job
   needs:
-    - job: aarch64-debian-12-container
+    - job: aarch64-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: aarch64
     JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-armv6l-debian-12:
+armv6l-debian-13:
   extends: .cross_build_job
   needs:
-    - job: armv6l-debian-12-container
+    - job: armv6l-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: armv6l
     JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-armv7l-debian-12:
+armv7l-debian-13:
   extends: .cross_build_job
   needs:
-    - job: armv7l-debian-12-container
+    - job: armv7l-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: armv7l
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-i686-debian-12:
+i686-debian-13:
   extends: .cross_build_job
   needs:
-    - job: i686-debian-12-container
+    - job: i686-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: i686
     JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-mips64el-debian-12:
+ppc64le-debian-13:
   extends: .cross_build_job
   needs:
-    - job: mips64el-debian-12-container
-      optional: true
-  allow_failure: false
-  variables:
-    CROSS: mips64el
-    JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
-
-
-mipsel-debian-12:
-  extends: .cross_build_job
-  needs:
-    - job: mipsel-debian-12-container
-      optional: true
-  allow_failure: false
-  variables:
-    CROSS: mipsel
-    JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
-
-
-ppc64le-debian-12:
-  extends: .cross_build_job
-  needs:
-    - job: ppc64le-debian-12-container
+    - job: ppc64le-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: ppc64le
     JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
-s390x-debian-12:
+riscv64-debian-13:
   extends: .cross_build_job
   needs:
-    - job: s390x-debian-12-container
+    - job: riscv64-debian-13-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: riscv64
+    JOB_OPTIONAL: 1
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
+
+
+s390x-debian-13:
+  extends: .cross_build_job
+  needs:
+    - job: s390x-debian-13-container
       optional: true
   allow_failure: false
   variables:
     CROSS: s390x
     JOB_OPTIONAL: 1
-    NAME: debian-12
-    TARGET_BASE_IMAGE: docker.io/library/debian:12-slim
+    NAME: debian-13
+    TARGET_BASE_IMAGE: docker.io/library/debian:13-slim
 
 
 aarch64-debian-sid:
@@ -418,19 +405,6 @@ i686-debian-sid:
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
 
 
-mips64el-debian-sid:
-  extends: .cross_build_job
-  needs:
-    - job: mips64el-debian-sid-container
-      optional: true
-  allow_failure: true
-  variables:
-    CROSS: mips64el
-    JOB_OPTIONAL: 1
-    NAME: debian-sid
-    TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
-
-
 ppc64le-debian-sid:
   extends: .cross_build_job
   needs:
@@ -439,6 +413,19 @@ ppc64le-debian-sid:
   allow_failure: true
   variables:
     CROSS: ppc64le
+    JOB_OPTIONAL: 1
+    NAME: debian-sid
+    TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim
+
+
+riscv64-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: riscv64-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: riscv64
     JOB_OPTIONAL: 1
     NAME: debian-sid
     TARGET_BASE_IMAGE: docker.io/library/debian:sid-slim

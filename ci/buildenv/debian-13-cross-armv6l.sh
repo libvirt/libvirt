@@ -43,60 +43,58 @@ function install_buildenv() {
     dpkg-reconfigure locales
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     export DEBIAN_FRONTEND=noninteractive
-    dpkg --add-architecture mipsel
+    dpkg --add-architecture armel
     apt-get update
     apt-get dist-upgrade -y
     apt-get install --no-install-recommends -y dpkg-dev
     apt-get install --no-install-recommends -y \
-            gcc-mipsel-linux-gnu \
-            libacl1-dev:mipsel \
-            libapparmor-dev:mipsel \
-            libattr1-dev:mipsel \
-            libaudit-dev:mipsel \
-            libblkid-dev:mipsel \
-            libc6-dev:mipsel \
-            libcap-ng-dev:mipsel \
-            libcurl4-gnutls-dev:mipsel \
-            libdevmapper-dev:mipsel \
-            libfuse3-dev:mipsel \
-            libglib2.0-dev:mipsel \
-            libglusterfs-dev:mipsel \
-            libgnutls28-dev:mipsel \
-            libiscsi-dev:mipsel \
-            libjson-c-dev:mipsel \
-            libnl-3-dev:mipsel \
-            libnl-route-3-dev:mipsel \
-            libnuma-dev:mipsel \
-            libparted-dev:mipsel \
-            libpcap0.8-dev:mipsel \
-            libpciaccess-dev:mipsel \
-            librbd-dev:mipsel \
-            libreadline-dev:mipsel \
-            libsanlock-dev:mipsel \
-            libsasl2-dev:mipsel \
-            libselinux1-dev:mipsel \
-            libssh-dev:mipsel \
-            libssh2-1-dev:mipsel \
-            libtirpc-dev:mipsel \
-            libudev-dev:mipsel \
-            libxml2-dev:mipsel \
-            systemtap-sdt-dev:mipsel
+            gcc-arm-linux-gnueabi \
+            libacl1-dev:armel \
+            libapparmor-dev:armel \
+            libattr1-dev:armel \
+            libaudit-dev:armel \
+            libblkid-dev:armel \
+            libc6-dev:armel \
+            libcap-ng-dev:armel \
+            libcurl4-gnutls-dev:armel \
+            libdevmapper-dev:armel \
+            libfuse3-dev:armel \
+            libglib2.0-dev:armel \
+            libgnutls28-dev:armel \
+            libiscsi-dev:armel \
+            libjson-c-dev:armel \
+            libnl-3-dev:armel \
+            libnl-route-3-dev:armel \
+            libnuma-dev:armel \
+            libparted-dev:armel \
+            libpcap0.8-dev:armel \
+            libpciaccess-dev:armel \
+            libreadline-dev:armel \
+            libsanlock-dev:armel \
+            libsasl2-dev:armel \
+            libselinux1-dev:armel \
+            libssh-dev:armel \
+            libssh2-1-dev:armel \
+            libtirpc-dev:armel \
+            libudev-dev:armel \
+            libxml2-dev:armel \
+            systemtap-sdt-dev:armel
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\
-c = '/usr/bin/mipsel-linux-gnu-gcc'\n\
-ar = '/usr/bin/mipsel-linux-gnu-gcc-ar'\n\
-strip = '/usr/bin/mipsel-linux-gnu-strip'\n\
-pkgconfig = '/usr/bin/mipsel-linux-gnu-pkg-config'\n\
+c = '/usr/bin/arm-linux-gnueabi-gcc'\n\
+ar = '/usr/bin/arm-linux-gnueabi-gcc-ar'\n\
+strip = '/usr/bin/arm-linux-gnueabi-strip'\n\
+pkgconfig = '/usr/bin/arm-linux-gnueabi-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
-cpu_family = 'mips'\n\
-cpu = 'mipsel'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/mipsel-linux-gnu
+cpu_family = 'arm'\n\
+cpu = 'arm'\n\
+endian = 'little'\n" > /usr/local/share/meson/cross/arm-linux-gnueabi
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mipsel-linux-gnu-cc
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mipsel-linux-gnu-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabi-cc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabi-gcc
 }
 
 export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
@@ -105,5 +103,5 @@ export MAKE="/usr/bin/make"
 export NINJA="/usr/bin/ninja"
 export PYTHON="/usr/bin/python3"
 
-export ABI="mipsel-linux-gnu"
-export MESON_OPTS="--cross-file=mipsel-linux-gnu"
+export ABI="arm-linux-gnueabi"
+export MESON_OPTS="--cross-file=arm-linux-gnueabi"

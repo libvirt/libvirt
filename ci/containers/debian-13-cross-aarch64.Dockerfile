@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:12-slim
+FROM docker.io/library/debian:13-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -54,62 +54,63 @@ ENV NINJA="/usr/bin/ninja"
 ENV PYTHON="/usr/bin/python3"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    dpkg --add-architecture mips64el && \
+    dpkg --add-architecture arm64 && \
     eatmydata apt-get update && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
     eatmydata apt-get install --no-install-recommends -y \
-                      gcc-mips64el-linux-gnuabi64 \
-                      libacl1-dev:mips64el \
-                      libapparmor-dev:mips64el \
-                      libattr1-dev:mips64el \
-                      libaudit-dev:mips64el \
-                      libblkid-dev:mips64el \
-                      libc6-dev:mips64el \
-                      libcap-ng-dev:mips64el \
-                      libcurl4-gnutls-dev:mips64el \
-                      libdevmapper-dev:mips64el \
-                      libfuse3-dev:mips64el \
-                      libglib2.0-dev:mips64el \
-                      libglusterfs-dev:mips64el \
-                      libgnutls28-dev:mips64el \
-                      libiscsi-dev:mips64el \
-                      libjson-c-dev:mips64el \
-                      libnl-3-dev:mips64el \
-                      libnl-route-3-dev:mips64el \
-                      libnuma-dev:mips64el \
-                      libparted-dev:mips64el \
-                      libpcap0.8-dev:mips64el \
-                      libpciaccess-dev:mips64el \
-                      librbd-dev:mips64el \
-                      libreadline-dev:mips64el \
-                      libsanlock-dev:mips64el \
-                      libsasl2-dev:mips64el \
-                      libselinux1-dev:mips64el \
-                      libssh-dev:mips64el \
-                      libssh2-1-dev:mips64el \
-                      libtirpc-dev:mips64el \
-                      libudev-dev:mips64el \
-                      libxml2-dev:mips64el \
-                      systemtap-sdt-dev:mips64el && \
+                      gcc-aarch64-linux-gnu \
+                      libacl1-dev:arm64 \
+                      libapparmor-dev:arm64 \
+                      libattr1-dev:arm64 \
+                      libaudit-dev:arm64 \
+                      libblkid-dev:arm64 \
+                      libc6-dev:arm64 \
+                      libcap-ng-dev:arm64 \
+                      libcurl4-gnutls-dev:arm64 \
+                      libdevmapper-dev:arm64 \
+                      libfuse3-dev:arm64 \
+                      libglib2.0-dev:arm64 \
+                      libglusterfs-dev:arm64 \
+                      libgnutls28-dev:arm64 \
+                      libiscsi-dev:arm64 \
+                      libjson-c-dev:arm64 \
+                      libnl-3-dev:arm64 \
+                      libnl-route-3-dev:arm64 \
+                      libnuma-dev:arm64 \
+                      libparted-dev:arm64 \
+                      libpcap0.8-dev:arm64 \
+                      libpciaccess-dev:arm64 \
+                      librbd-dev:arm64 \
+                      libreadline-dev:arm64 \
+                      libsanlock-dev:arm64 \
+                      libsasl2-dev:arm64 \
+                      libselinux1-dev:arm64 \
+                      libssh-dev:arm64 \
+                      libssh2-1-dev:arm64 \
+                      libtirpc-dev:arm64 \
+                      libudev-dev:arm64 \
+                      libxen-dev:arm64 \
+                      libxml2-dev:arm64 \
+                      systemtap-sdt-dev:arm64 && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \
     printf "[binaries]\n\
-c = '/usr/bin/mips64el-linux-gnuabi64-gcc'\n\
-ar = '/usr/bin/mips64el-linux-gnuabi64-gcc-ar'\n\
-strip = '/usr/bin/mips64el-linux-gnuabi64-strip'\n\
-pkgconfig = '/usr/bin/mips64el-linux-gnuabi64-pkg-config'\n\
+c = '/usr/bin/aarch64-linux-gnu-gcc'\n\
+ar = '/usr/bin/aarch64-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/aarch64-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/aarch64-linux-gnu-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
-cpu_family = 'mips64'\n\
-cpu = 'mips64el'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/mips64el-linux-gnuabi64 && \
+cpu_family = 'aarch64'\n\
+cpu = 'aarch64'\n\
+endian = 'little'\n" > /usr/local/share/meson/cross/aarch64-linux-gnu && \
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mips64el-linux-gnuabi64-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/aarch64-linux-gnu-cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/aarch64-linux-gnu-gcc
 
-ENV ABI="mips64el-linux-gnuabi64"
-ENV MESON_OPTS="--cross-file=mips64el-linux-gnuabi64"
+ENV ABI="aarch64-linux-gnu"
+ENV MESON_OPTS="--cross-file=aarch64-linux-gnu"

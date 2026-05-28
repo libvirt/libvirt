@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:12-slim
+FROM docker.io/library/debian:13-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -54,62 +54,62 @@ ENV NINJA="/usr/bin/ninja"
 ENV PYTHON="/usr/bin/python3"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    dpkg --add-architecture mipsel && \
+    dpkg --add-architecture riscv64 && \
     eatmydata apt-get update && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
     eatmydata apt-get install --no-install-recommends -y \
-                      gcc-mipsel-linux-gnu \
-                      libacl1-dev:mipsel \
-                      libapparmor-dev:mipsel \
-                      libattr1-dev:mipsel \
-                      libaudit-dev:mipsel \
-                      libblkid-dev:mipsel \
-                      libc6-dev:mipsel \
-                      libcap-ng-dev:mipsel \
-                      libcurl4-gnutls-dev:mipsel \
-                      libdevmapper-dev:mipsel \
-                      libfuse3-dev:mipsel \
-                      libglib2.0-dev:mipsel \
-                      libglusterfs-dev:mipsel \
-                      libgnutls28-dev:mipsel \
-                      libiscsi-dev:mipsel \
-                      libjson-c-dev:mipsel \
-                      libnl-3-dev:mipsel \
-                      libnl-route-3-dev:mipsel \
-                      libnuma-dev:mipsel \
-                      libparted-dev:mipsel \
-                      libpcap0.8-dev:mipsel \
-                      libpciaccess-dev:mipsel \
-                      librbd-dev:mipsel \
-                      libreadline-dev:mipsel \
-                      libsanlock-dev:mipsel \
-                      libsasl2-dev:mipsel \
-                      libselinux1-dev:mipsel \
-                      libssh-dev:mipsel \
-                      libssh2-1-dev:mipsel \
-                      libtirpc-dev:mipsel \
-                      libudev-dev:mipsel \
-                      libxml2-dev:mipsel \
-                      systemtap-sdt-dev:mipsel && \
+                      gcc-riscv64-linux-gnu \
+                      libacl1-dev:riscv64 \
+                      libapparmor-dev:riscv64 \
+                      libattr1-dev:riscv64 \
+                      libaudit-dev:riscv64 \
+                      libblkid-dev:riscv64 \
+                      libc6-dev:riscv64 \
+                      libcap-ng-dev:riscv64 \
+                      libcurl4-gnutls-dev:riscv64 \
+                      libdevmapper-dev:riscv64 \
+                      libfuse3-dev:riscv64 \
+                      libglib2.0-dev:riscv64 \
+                      libglusterfs-dev:riscv64 \
+                      libgnutls28-dev:riscv64 \
+                      libiscsi-dev:riscv64 \
+                      libjson-c-dev:riscv64 \
+                      libnl-3-dev:riscv64 \
+                      libnl-route-3-dev:riscv64 \
+                      libnuma-dev:riscv64 \
+                      libparted-dev:riscv64 \
+                      libpcap0.8-dev:riscv64 \
+                      libpciaccess-dev:riscv64 \
+                      librbd-dev:riscv64 \
+                      libreadline-dev:riscv64 \
+                      libsanlock-dev:riscv64 \
+                      libsasl2-dev:riscv64 \
+                      libselinux1-dev:riscv64 \
+                      libssh-dev:riscv64 \
+                      libssh2-1-dev:riscv64 \
+                      libtirpc-dev:riscv64 \
+                      libudev-dev:riscv64 \
+                      libxml2-dev:riscv64 \
+                      systemtap-sdt-dev:riscv64 && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \
     printf "[binaries]\n\
-c = '/usr/bin/mipsel-linux-gnu-gcc'\n\
-ar = '/usr/bin/mipsel-linux-gnu-gcc-ar'\n\
-strip = '/usr/bin/mipsel-linux-gnu-strip'\n\
-pkgconfig = '/usr/bin/mipsel-linux-gnu-pkg-config'\n\
+c = '/usr/bin/riscv64-linux-gnu-gcc'\n\
+ar = '/usr/bin/riscv64-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/riscv64-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/riscv64-linux-gnu-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
-cpu_family = 'mips'\n\
-cpu = 'mipsel'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/mipsel-linux-gnu && \
+cpu_family = 'riscv64'\n\
+cpu = 'riscv64'\n\
+endian = 'little'\n" > /usr/local/share/meson/cross/riscv64-linux-gnu && \
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mipsel-linux-gnu-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/mipsel-linux-gnu-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/riscv64-linux-gnu-cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/riscv64-linux-gnu-gcc
 
-ENV ABI="mipsel-linux-gnu"
-ENV MESON_OPTS="--cross-file=mipsel-linux-gnu"
+ENV ABI="riscv64-linux-gnu"
+ENV MESON_OPTS="--cross-file=riscv64-linux-gnu"

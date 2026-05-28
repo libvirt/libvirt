@@ -55,7 +55,7 @@ targets:
           paths:
             - libvirt-rpms
 
-  debian-12:
+  debian-13:
     jobs:
       - arch: x86_64
 
@@ -76,15 +76,11 @@ targets:
         containers: false
         builds: false
 
-      - arch: mips64el
-        containers: false
-        builds: false
-
-      - arch: mipsel
-        containers: false
-        builds: false
-
       - arch: ppc64le
+        containers: false
+        builds: false
+
+      - arch: riscv64
         containers: false
         builds: false
 
@@ -113,11 +109,11 @@ targets:
         containers: false
         builds: false
 
-      - arch: mips64el
+      - arch: ppc64le
         containers: false
         builds: false
 
-      - arch: ppc64le
+      - arch: riscv64
         containers: false
         builds: false
 

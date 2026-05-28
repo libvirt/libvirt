@@ -43,61 +43,58 @@ function install_buildenv() {
     dpkg-reconfigure locales
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     export DEBIAN_FRONTEND=noninteractive
-    dpkg --add-architecture armhf
+    dpkg --add-architecture i386
     apt-get update
     apt-get dist-upgrade -y
     apt-get install --no-install-recommends -y dpkg-dev
     apt-get install --no-install-recommends -y \
-            gcc-arm-linux-gnueabihf \
-            libacl1-dev:armhf \
-            libapparmor-dev:armhf \
-            libattr1-dev:armhf \
-            libaudit-dev:armhf \
-            libblkid-dev:armhf \
-            libc6-dev:armhf \
-            libcap-ng-dev:armhf \
-            libcurl4-gnutls-dev:armhf \
-            libdevmapper-dev:armhf \
-            libfuse3-dev:armhf \
-            libglib2.0-dev:armhf \
-            libglusterfs-dev:armhf \
-            libgnutls28-dev:armhf \
-            libiscsi-dev:armhf \
-            libjson-c-dev:armhf \
-            libnl-3-dev:armhf \
-            libnl-route-3-dev:armhf \
-            libnuma-dev:armhf \
-            libparted-dev:armhf \
-            libpcap0.8-dev:armhf \
-            libpciaccess-dev:armhf \
-            librbd-dev:armhf \
-            libreadline-dev:armhf \
-            libsanlock-dev:armhf \
-            libsasl2-dev:armhf \
-            libselinux1-dev:armhf \
-            libssh-dev:armhf \
-            libssh2-1-dev:armhf \
-            libtirpc-dev:armhf \
-            libudev-dev:armhf \
-            libxen-dev:armhf \
-            libxml2-dev:armhf \
-            systemtap-sdt-dev:armhf
+            gcc-i686-linux-gnu \
+            libacl1-dev:i386 \
+            libapparmor-dev:i386 \
+            libattr1-dev:i386 \
+            libaudit-dev:i386 \
+            libblkid-dev:i386 \
+            libc6-dev:i386 \
+            libcap-ng-dev:i386 \
+            libcurl4-gnutls-dev:i386 \
+            libdevmapper-dev:i386 \
+            libfuse3-dev:i386 \
+            libglib2.0-dev:i386 \
+            libgnutls28-dev:i386 \
+            libiscsi-dev:i386 \
+            libjson-c-dev:i386 \
+            libnl-3-dev:i386 \
+            libnl-route-3-dev:i386 \
+            libnuma-dev:i386 \
+            libparted-dev:i386 \
+            libpcap0.8-dev:i386 \
+            libpciaccess-dev:i386 \
+            libreadline-dev:i386 \
+            libsanlock-dev:i386 \
+            libsasl2-dev:i386 \
+            libselinux1-dev:i386 \
+            libssh-dev:i386 \
+            libssh2-1-dev:i386 \
+            libtirpc-dev:i386 \
+            libudev-dev:i386 \
+            libxml2-dev:i386 \
+            systemtap-sdt-dev:i386
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\
-c = '/usr/bin/arm-linux-gnueabihf-gcc'\n\
-ar = '/usr/bin/arm-linux-gnueabihf-gcc-ar'\n\
-strip = '/usr/bin/arm-linux-gnueabihf-strip'\n\
-pkgconfig = '/usr/bin/arm-linux-gnueabihf-pkg-config'\n\
+c = '/usr/bin/i686-linux-gnu-gcc'\n\
+ar = '/usr/bin/i686-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/i686-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/i686-linux-gnu-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
-cpu_family = 'arm'\n\
-cpu = 'armhf'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/arm-linux-gnueabihf
+cpu_family = 'x86'\n\
+cpu = 'i686'\n\
+endian = 'little'\n" > /usr/local/share/meson/cross/i686-linux-gnu
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabihf-cc
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabihf-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-linux-gnu-cc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-linux-gnu-gcc
 }
 
 export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
@@ -106,5 +103,5 @@ export MAKE="/usr/bin/make"
 export NINJA="/usr/bin/ninja"
 export PYTHON="/usr/bin/python3"
 
-export ABI="arm-linux-gnueabihf"
-export MESON_OPTS="--cross-file=arm-linux-gnueabihf"
+export ABI="i686-linux-gnu"
+export MESON_OPTS="--cross-file=i686-linux-gnu"

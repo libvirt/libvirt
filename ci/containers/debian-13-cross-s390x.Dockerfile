@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:12-slim
+FROM docker.io/library/debian:13-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -54,62 +54,62 @@ ENV NINJA="/usr/bin/ninja"
 ENV PYTHON="/usr/bin/python3"
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    dpkg --add-architecture ppc64el && \
+    dpkg --add-architecture s390x && \
     eatmydata apt-get update && \
     eatmydata apt-get dist-upgrade -y && \
     eatmydata apt-get install --no-install-recommends -y dpkg-dev && \
     eatmydata apt-get install --no-install-recommends -y \
-                      gcc-powerpc64le-linux-gnu \
-                      libacl1-dev:ppc64el \
-                      libapparmor-dev:ppc64el \
-                      libattr1-dev:ppc64el \
-                      libaudit-dev:ppc64el \
-                      libblkid-dev:ppc64el \
-                      libc6-dev:ppc64el \
-                      libcap-ng-dev:ppc64el \
-                      libcurl4-gnutls-dev:ppc64el \
-                      libdevmapper-dev:ppc64el \
-                      libfuse3-dev:ppc64el \
-                      libglib2.0-dev:ppc64el \
-                      libglusterfs-dev:ppc64el \
-                      libgnutls28-dev:ppc64el \
-                      libiscsi-dev:ppc64el \
-                      libjson-c-dev:ppc64el \
-                      libnl-3-dev:ppc64el \
-                      libnl-route-3-dev:ppc64el \
-                      libnuma-dev:ppc64el \
-                      libparted-dev:ppc64el \
-                      libpcap0.8-dev:ppc64el \
-                      libpciaccess-dev:ppc64el \
-                      librbd-dev:ppc64el \
-                      libreadline-dev:ppc64el \
-                      libsanlock-dev:ppc64el \
-                      libsasl2-dev:ppc64el \
-                      libselinux1-dev:ppc64el \
-                      libssh-dev:ppc64el \
-                      libssh2-1-dev:ppc64el \
-                      libtirpc-dev:ppc64el \
-                      libudev-dev:ppc64el \
-                      libxml2-dev:ppc64el \
-                      systemtap-sdt-dev:ppc64el && \
+                      gcc-s390x-linux-gnu \
+                      libacl1-dev:s390x \
+                      libapparmor-dev:s390x \
+                      libattr1-dev:s390x \
+                      libaudit-dev:s390x \
+                      libblkid-dev:s390x \
+                      libc6-dev:s390x \
+                      libcap-ng-dev:s390x \
+                      libcurl4-gnutls-dev:s390x \
+                      libdevmapper-dev:s390x \
+                      libfuse3-dev:s390x \
+                      libglib2.0-dev:s390x \
+                      libglusterfs-dev:s390x \
+                      libgnutls28-dev:s390x \
+                      libiscsi-dev:s390x \
+                      libjson-c-dev:s390x \
+                      libnl-3-dev:s390x \
+                      libnl-route-3-dev:s390x \
+                      libnuma-dev:s390x \
+                      libparted-dev:s390x \
+                      libpcap0.8-dev:s390x \
+                      libpciaccess-dev:s390x \
+                      librbd-dev:s390x \
+                      libreadline-dev:s390x \
+                      libsanlock-dev:s390x \
+                      libsasl2-dev:s390x \
+                      libselinux1-dev:s390x \
+                      libssh-dev:s390x \
+                      libssh2-1-dev:s390x \
+                      libtirpc-dev:s390x \
+                      libudev-dev:s390x \
+                      libxml2-dev:s390x \
+                      systemtap-sdt-dev:s390x && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \
     printf "[binaries]\n\
-c = '/usr/bin/powerpc64le-linux-gnu-gcc'\n\
-ar = '/usr/bin/powerpc64le-linux-gnu-gcc-ar'\n\
-strip = '/usr/bin/powerpc64le-linux-gnu-strip'\n\
-pkgconfig = '/usr/bin/powerpc64le-linux-gnu-pkg-config'\n\
+c = '/usr/bin/s390x-linux-gnu-gcc'\n\
+ar = '/usr/bin/s390x-linux-gnu-gcc-ar'\n\
+strip = '/usr/bin/s390x-linux-gnu-strip'\n\
+pkgconfig = '/usr/bin/s390x-linux-gnu-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
-cpu_family = 'ppc64'\n\
-cpu = 'powerpc64le'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/powerpc64le-linux-gnu && \
+cpu_family = 's390x'\n\
+cpu = 's390x'\n\
+endian = 'big'\n" > /usr/local/share/meson/cross/s390x-linux-gnu && \
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/powerpc64le-linux-gnu-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/powerpc64le-linux-gnu-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/s390x-linux-gnu-cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/s390x-linux-gnu-gcc
 
-ENV ABI="powerpc64le-linux-gnu"
-ENV MESON_OPTS="--cross-file=powerpc64le-linux-gnu"
+ENV ABI="s390x-linux-gnu"
+ENV MESON_OPTS="--cross-file=s390x-linux-gnu"

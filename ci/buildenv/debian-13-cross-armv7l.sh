@@ -43,60 +43,58 @@ function install_buildenv() {
     dpkg-reconfigure locales
     rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
     export DEBIAN_FRONTEND=noninteractive
-    dpkg --add-architecture armel
+    dpkg --add-architecture armhf
     apt-get update
     apt-get dist-upgrade -y
     apt-get install --no-install-recommends -y dpkg-dev
     apt-get install --no-install-recommends -y \
-            gcc-arm-linux-gnueabi \
-            libacl1-dev:armel \
-            libapparmor-dev:armel \
-            libattr1-dev:armel \
-            libaudit-dev:armel \
-            libblkid-dev:armel \
-            libc6-dev:armel \
-            libcap-ng-dev:armel \
-            libcurl4-gnutls-dev:armel \
-            libdevmapper-dev:armel \
-            libfuse3-dev:armel \
-            libglib2.0-dev:armel \
-            libglusterfs-dev:armel \
-            libgnutls28-dev:armel \
-            libiscsi-dev:armel \
-            libjson-c-dev:armel \
-            libnl-3-dev:armel \
-            libnl-route-3-dev:armel \
-            libnuma-dev:armel \
-            libparted-dev:armel \
-            libpcap0.8-dev:armel \
-            libpciaccess-dev:armel \
-            librbd-dev:armel \
-            libreadline-dev:armel \
-            libsanlock-dev:armel \
-            libsasl2-dev:armel \
-            libselinux1-dev:armel \
-            libssh-dev:armel \
-            libssh2-1-dev:armel \
-            libtirpc-dev:armel \
-            libudev-dev:armel \
-            libxml2-dev:armel \
-            systemtap-sdt-dev:armel
+            gcc-arm-linux-gnueabihf \
+            libacl1-dev:armhf \
+            libapparmor-dev:armhf \
+            libattr1-dev:armhf \
+            libaudit-dev:armhf \
+            libblkid-dev:armhf \
+            libc6-dev:armhf \
+            libcap-ng-dev:armhf \
+            libcurl4-gnutls-dev:armhf \
+            libdevmapper-dev:armhf \
+            libfuse3-dev:armhf \
+            libglib2.0-dev:armhf \
+            libgnutls28-dev:armhf \
+            libiscsi-dev:armhf \
+            libjson-c-dev:armhf \
+            libnl-3-dev:armhf \
+            libnl-route-3-dev:armhf \
+            libnuma-dev:armhf \
+            libparted-dev:armhf \
+            libpcap0.8-dev:armhf \
+            libpciaccess-dev:armhf \
+            libreadline-dev:armhf \
+            libsanlock-dev:armhf \
+            libsasl2-dev:armhf \
+            libselinux1-dev:armhf \
+            libssh-dev:armhf \
+            libssh2-1-dev:armhf \
+            libtirpc-dev:armhf \
+            libudev-dev:armhf \
+            libxml2-dev:armhf \
+            systemtap-sdt-dev:armhf
     mkdir -p /usr/local/share/meson/cross
     printf "[binaries]\n\
-c = '/usr/bin/arm-linux-gnueabi-gcc'\n\
-ar = '/usr/bin/arm-linux-gnueabi-gcc-ar'\n\
-strip = '/usr/bin/arm-linux-gnueabi-strip'\n\
-pkgconfig = '/usr/bin/arm-linux-gnueabi-pkg-config'\n\
+c = '/usr/bin/arm-linux-gnueabihf-gcc'\n\
+ar = '/usr/bin/arm-linux-gnueabihf-gcc-ar'\n\
+strip = '/usr/bin/arm-linux-gnueabihf-strip'\n\
+pkgconfig = '/usr/bin/arm-linux-gnueabihf-pkg-config'\n\
 \n\
 [host_machine]\n\
 system = 'linux'\n\
 cpu_family = 'arm'\n\
-cpu = 'arm'\n\
-endian = 'little'\n" > /usr/local/share/meson/cross/arm-linux-gnueabi
+cpu = 'armhf'\n\
+endian = 'little'\n" > /usr/local/share/meson/cross/arm-linux-gnueabihf
     dpkg-query --showformat '${Package}_${Version}_${Architecture}\n' --show > /packages.txt
     mkdir -p /usr/libexec/ccache-wrappers
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabi-cc
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabi-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabihf-cc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/arm-linux-gnueabihf-gcc
 }
 
 export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
@@ -105,5 +103,5 @@ export MAKE="/usr/bin/make"
 export NINJA="/usr/bin/ninja"
 export PYTHON="/usr/bin/python3"
 
-export ABI="arm-linux-gnueabi"
-export MESON_OPTS="--cross-file=arm-linux-gnueabi"
+export ABI="arm-linux-gnueabihf"
+export MESON_OPTS="--cross-file=arm-linux-gnueabihf"
