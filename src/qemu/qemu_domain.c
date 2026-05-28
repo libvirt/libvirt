@@ -4290,6 +4290,8 @@ virDomainControllerModelSCSI
 qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
                                      virQEMUCaps *qemuCaps)
 {
+    size_t i;
+
     /* For machine types with built-in SCSI controllers, the choice
      * of model is obvious */
     if (qemuDomainHasBuiltinESP(def))
@@ -4305,6 +4307,19 @@ qemuDomainDefaultSCSIControllerModel(const virDomainDef *def,
     /* pSeries has its own special default */
     if (qemuDomainIsPSeries(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
+
+    /* Inherit the model from any peer SCSI controller already
+     * resolved on this domain. */
+    for (i = 0; i < def->ncontrollers; i++) {
+        const virDomainControllerDef *peer = def->controllers[i];
+
+        if (peer->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+            continue;
+        if (peer->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT ||
+            peer->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO)
+            continue;
+        return peer->model;
+    }
 
     /* If there is no preference, base the choice on device
      * availability. In this case, lsilogic is favored over

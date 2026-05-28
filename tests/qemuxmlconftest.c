@@ -1690,6 +1690,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-product-length");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST_CAPS_LATEST("controller-scsi-auto");
+    DO_TEST_CAPS_LATEST("controller-scsi-inherit-model");
     DO_TEST_FULL("controller-scsi-default-unavailable", ".x86_64-latest",
                  ARG_CAPS_ARCH, "x86_64",
                  ARG_CAPS_VER, "latest",
