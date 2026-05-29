@@ -12357,6 +12357,14 @@ virDomainSetUserPassword(virDomainPtr dom,
  * host-model CPU mode. Without this flag features that are part of the CPU
  * model itself will not be listed.
  *
+ * Adding VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES to @flags
+ * tells libvirt to update the host-model CPU definition with features that are
+ * supported on the host, but will not be enabled by default when starting a
+ * domain with host-model CPU. Use both
+ * VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES and
+ * VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES flags to get a
+ * complete list of features that can be enabled on the host.
+ *
  * Returns NULL in case of error or an XML string
  * defining the capabilities.
  *

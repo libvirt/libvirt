@@ -1549,6 +1549,9 @@ typedef enum {
     VIR_CONNECT_GET_DOMAIN_CAPABILITIES_DISABLE_DEPRECATED_FEATURES = (1 << 0),
     /* Report all host model CPU features. (Since: 12.2.0) */
     VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES = (1 << 1),
+    /* Report all CPU features supported on the host, even those that will not
+     * be enabled by host-model CPU mode. (Since: 12.5.0) */
+    VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES = (1 << 2),
 } virConnectGetDomainCapabilitiesFlags;
 
 char * virConnectGetDomainCapabilities(virConnectPtr conn,
