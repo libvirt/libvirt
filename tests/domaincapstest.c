@@ -289,6 +289,8 @@ doTestQemuInternal(const char *version,
 
     if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES)
         flag = "-expanded";
+    else if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES)
+        flag = "-supported";
     else
         flag = "";
 
@@ -358,6 +360,12 @@ doTestQemu(const char *inputDir G_GNUC_UNUSED,
             if (doTestQemuInternal(version, "q35", arch, variant,
                                    VIR_DOMAIN_VIRT_KVM,
                                    VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES,
+                                   opaque) < 0)
+                ret = -1;
+
+            if (doTestQemuInternal(version, "q35", arch, variant,
+                                   VIR_DOMAIN_VIRT_KVM,
+                                   VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES,
                                    opaque) < 0)
                 ret = -1;
         }
