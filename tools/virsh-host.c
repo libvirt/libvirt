@@ -123,6 +123,10 @@ static const vshCmdOptDef opts_domcapabilities[] = {
      .type = VSH_OT_BOOL,
      .help = N_("expand 'host-model' CPU to also show features enabled by the CPU model"),
     },
+    {.name = "supported-cpu-features",
+     .type = VSH_OT_BOOL,
+     .help = N_("include all supported CPU features in 'host-model' mode, not only those enabled by default"),
+    },
     {.name = NULL}
 };
 
@@ -144,6 +148,9 @@ cmdDomCapabilities(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "expand-cpu-features"))
         flags |= VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES;
+
+    if (vshCommandOptBool(cmd, "supported-cpu-features"))
+        flags |= VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES;
 
     if (vshCommandOptString(ctl, cmd, "virttype", &virttype) < 0 ||
         vshCommandOptString(ctl, cmd, "emulatorbin", &emulatorbin) < 0 ||

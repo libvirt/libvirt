@@ -592,7 +592,7 @@ domcapabilities
    domcapabilities [virttype] [emulatorbin] [arch] [machine]
                    [--xpath EXPRESSION] [--wrap]
                    [--disable-deprecated-features]
-                   [--expand-cpu-features]
+                   [--expand-cpu-features] [--supported-cpu-features]
 
 
 Print an XML document describing the domain capabilities for the
@@ -643,6 +643,12 @@ The **--expand-cpu-features** option will cause the host-model CPU definition
 to contain all required CPU features including those implicitly enabled by the
 selected CPU model. Without this flag features that are part of the CPU model
 itself will not be listed.
+
+The **--supported-cpu-features** option will update the host-model CPU
+definition with features that are supported on the host, but will not be
+enabled by default when starting a domain with host-model CPU. Using both
+**--supported-cpu-features** and **--expand-cpu-features** will provide a
+complete list of features that can be enabled on the host.
 
 
 pool-capabilities
