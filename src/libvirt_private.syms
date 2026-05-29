@@ -118,6 +118,7 @@ virCPUDefNew;
 virCPUDefParseXML;
 virCPUDefParseXMLString;
 virCPUDefRef;
+virCPUDefSortFeatures;
 virCPUDefStealModel;
 virCPUDefUpdateFeature;
 virCPUMaxPhysAddrModeTypeFromString;

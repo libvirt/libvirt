@@ -1277,3 +1277,23 @@ virCPUDefListFree(virCPUDef **cpus)
 
     g_free(cpus);
 }
+
+
+static int
+virCPUFeatureDefCompare(const void *p1,
+                        const void *p2,
+                        void *opaque G_GNUC_UNUSED)
+{
+    const virCPUFeatureDef *f1 = p1;
+    const virCPUFeatureDef *f2 = p2;
+
+    return strcmp(f1->name, f2->name);
+}
+
+
+void
+virCPUDefSortFeatures(virCPUDef *cpu)
+{
+    g_qsort_with_data(cpu->features, cpu->nfeatures, sizeof(*cpu->features),
+                      virCPUFeatureDefCompare, NULL);
+}

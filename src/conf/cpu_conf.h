@@ -280,3 +280,6 @@ virCPUDefListParse(const char **xmlCPUs,
                    virCPUType cpuType);
 void
 virCPUDefListFree(virCPUDef **cpus);
+
+void
+virCPUDefSortFeatures(virCPUDef *cpu);
