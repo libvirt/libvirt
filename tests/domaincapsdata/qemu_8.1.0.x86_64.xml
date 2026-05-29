@@ -52,31 +52,31 @@
       <model fallback='forbid'>EPYC-Rome</model>
       <vendor>AMD</vendor>
       <maxphysaddr mode='passthrough' limit='64'/>
-      <feature policy='require' name='x2apic'/>
-      <feature policy='require' name='tsc-deadline'/>
-      <feature policy='require' name='hypervisor'/>
-      <feature policy='require' name='tsc_adjust'/>
-      <feature policy='require' name='stibp'/>
-      <feature policy='require' name='arch-capabilities'/>
-      <feature policy='require' name='ssbd'/>
-      <feature policy='require' name='cmp_legacy'/>
-      <feature policy='require' name='invtsc'/>
       <feature policy='require' name='amd-ssbd'/>
-      <feature policy='require' name='virt-ssbd'/>
+      <feature policy='require' name='arch-capabilities'/>
+      <feature policy='require' name='cmp_legacy'/>
+      <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='invtsc'/>
       <feature policy='require' name='lbrv'/>
-      <feature policy='require' name='tsc-scale'/>
-      <feature policy='require' name='vmcb-clean'/>
+      <feature policy='require' name='lfence-always-serializing'/>
+      <feature policy='require' name='mds-no'/>
+      <feature policy='require' name='null-sel-clr-base'/>
       <feature policy='require' name='pause-filter'/>
       <feature policy='require' name='pfthreshold'/>
-      <feature policy='require' name='v-vmsave-vmload'/>
-      <feature policy='require' name='vgif'/>
-      <feature policy='require' name='svme-addr-chk'/>
-      <feature policy='require' name='lfence-always-serializing'/>
-      <feature policy='require' name='null-sel-clr-base'/>
+      <feature policy='require' name='pschange-mc-no'/>
       <feature policy='require' name='rdctl-no'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
-      <feature policy='require' name='mds-no'/>
-      <feature policy='require' name='pschange-mc-no'/>
+      <feature policy='require' name='ssbd'/>
+      <feature policy='require' name='stibp'/>
+      <feature policy='require' name='svme-addr-chk'/>
+      <feature policy='require' name='tsc-deadline'/>
+      <feature policy='require' name='tsc-scale'/>
+      <feature policy='require' name='tsc_adjust'/>
+      <feature policy='require' name='v-vmsave-vmload'/>
+      <feature policy='require' name='vgif'/>
+      <feature policy='require' name='virt-ssbd'/>
+      <feature policy='require' name='vmcb-clean'/>
+      <feature policy='require' name='x2apic'/>
       <feature policy='disable' name='xsaves'/>
     </mode>
     <mode name='custom' supported='yes'>

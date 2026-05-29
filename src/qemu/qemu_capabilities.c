@@ -6656,6 +6656,7 @@ virQEMUCapsFillDomainCPUHostModel(virQEMUCaps *qemuCaps,
     if (flags & VIR_CONNECT_GET_DOMAIN_CAPABILITIES_EXPAND_CPU_FEATURES)
         virCPUExpandFeatures(domCaps->arch, cpu);
 
+    virCPUDefSortFeatures(cpu);
     domCaps->cpu.hostModel = cpu;
 }
 

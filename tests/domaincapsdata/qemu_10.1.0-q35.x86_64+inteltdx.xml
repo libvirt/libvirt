@@ -55,42 +55,42 @@
       <model fallback='forbid'>GraniteRapids</model>
       <vendor>Intel</vendor>
       <maxphysaddr mode='passthrough' limit='64'/>
-      <feature policy='require' name='dtes64'/>
-      <feature policy='require' name='vmx'/>
-      <feature policy='require' name='pdcm'/>
-      <feature policy='require' name='hypervisor'/>
-      <feature policy='require' name='ds'/>
-      <feature policy='require' name='ss'/>
-      <feature policy='require' name='tsc_adjust'/>
-      <feature policy='require' name='fdp-excptn-only'/>
-      <feature policy='require' name='zero-fcs-fds'/>
-      <feature policy='require' name='waitpkg'/>
+      <feature policy='require' name='amd-ssbd'/>
+      <feature policy='require' name='amd-stibp'/>
       <feature policy='require' name='cldemote'/>
-      <feature policy='require' name='movdiri'/>
-      <feature policy='require' name='movdir64b'/>
-      <feature policy='require' name='md-clear'/>
-      <feature policy='require' name='stibp'/>
+      <feature policy='require' name='ds'/>
+      <feature policy='require' name='dtes64'/>
+      <feature policy='disable' name='fbsdp-no'/>
+      <feature policy='require' name='fdp-excptn-only'/>
       <feature policy='require' name='flush-l1d'/>
-      <feature policy='require' name='intel-psfd'/>
-      <feature policy='require' name='invtsc'/>
+      <feature policy='require' name='gds-no'/>
+      <feature policy='require' name='hypervisor'/>
       <feature policy='require' name='ibpb'/>
       <feature policy='require' name='ibrs'/>
-      <feature policy='require' name='amd-stibp'/>
-      <feature policy='require' name='amd-ssbd'/>
-      <feature policy='require' name='tsx-ctrl'/>
-      <feature policy='require' name='gds-no'/>
-      <feature policy='require' name='rfds-no'/>
+      <feature policy='require' name='intel-psfd'/>
+      <feature policy='require' name='invtsc'/>
       <feature policy='require' name='its-no'/>
-      <feature policy='require' name='vmx-any-errcode'/>
+      <feature policy='disable' name='mcdt-no'/>
+      <feature policy='require' name='md-clear'/>
+      <feature policy='require' name='movdir64b'/>
+      <feature policy='require' name='movdiri'/>
+      <feature policy='disable' name='pbrsb-no'/>
+      <feature policy='require' name='pdcm'/>
+      <feature policy='disable' name='psdp-no'/>
+      <feature policy='require' name='rfds-no'/>
+      <feature policy='disable' name='sbdr-ssdp-no'/>
+      <feature policy='require' name='ss'/>
+      <feature policy='require' name='stibp'/>
+      <feature policy='require' name='tsc_adjust'/>
+      <feature policy='require' name='tsx-ctrl'/>
+      <feature policy='require' name='vmx'/>
       <feature policy='require' name='vmx-activity-wait-sipi'/>
+      <feature policy='require' name='vmx-any-errcode'/>
+      <feature policy='require' name='vmx-enable-user-wait-pause'/>
       <feature policy='require' name='vmx-encls-exit'/>
       <feature policy='require' name='vmx-tsc-scaling'/>
-      <feature policy='require' name='vmx-enable-user-wait-pause'/>
-      <feature policy='disable' name='mcdt-no'/>
-      <feature policy='disable' name='sbdr-ssdp-no'/>
-      <feature policy='disable' name='fbsdp-no'/>
-      <feature policy='disable' name='psdp-no'/>
-      <feature policy='disable' name='pbrsb-no'/>
+      <feature policy='require' name='waitpkg'/>
+      <feature policy='require' name='zero-fcs-fds'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes' vendor='unknown' canonical='486-v1'>486</model>
