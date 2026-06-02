@@ -40,7 +40,8 @@ VIR_LOG_INIT("tests.storagetest");
 struct testBackingXMLjsonXMLdata {
     int type;
     const char *xml;
-    bool deprecated;
+    bool deprecated; /* deprecated in latest qemu */
+    bool removed; /* removed from latest qemu (skip schema validation) */
     GHashTable *schema;
     virJSONValue *schemaroot;
 };
@@ -80,7 +81,8 @@ testBackingXMLjsonXML(const void *args)
         return -1;
     }
 
-    if (testQEMUSchemaValidate(backendprops, data->schemaroot,
+    if (!data->removed &&
+        testQEMUSchemaValidate(backendprops, data->schemaroot,
                                data->schema, data->deprecated, &debug) < 0) {
         g_autofree char *debugmsg = virBufferContentAndReset(&debug);
         g_autofree char *debugprops = virJSONValueToString(backendprops, true);
@@ -457,7 +459,8 @@ struct testQemuImageCreateData {
     virQEMUDriver *driver;
     virQEMUCaps *qemuCaps;
 
-    bool deprecated;
+    bool deprecated; /* deprecated by lastest qemu */
+    bool removed; /* removed from latest qemu (skip schema validation) */
 };
 
 static const char *testQemuImageCreatePath = abs_srcdir "/qemublocktestdata/imagecreate/";
@@ -533,7 +536,8 @@ testQemuImageCreate(const void *opaque)
         if (!(jsonformat = virJSONValueToString(formatprops, true)))
             return -1;
 
-        if (testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
+        if (!data->removed &&
+            testQEMUSchemaValidate(formatprops, data->schemaroot, data->schema,
                                    data->deprecated, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create format json does not conform to QAPI schema");
@@ -548,7 +552,8 @@ testQemuImageCreate(const void *opaque)
         if (!(jsonprotocol = virJSONValueToString(protocolprops, true)))
             return -1;
 
-        if (testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
+        if (!data->removed &&
+            testQEMUSchemaValidate(protocolprops, data->schemaroot, data->schema,
                                    data->deprecated, &debug) < 0) {
             g_autofree char *debugmsg = virBufferContentAndReset(&debug);
             VIR_TEST_VERBOSE("blockdev-create protocol json does not conform to QAPI schema");
@@ -1074,8 +1079,10 @@ mymain(void)
                          "  <readahead size='1024'/>\n"
                          "  <timeout seconds='1337'/>\n"
                          "</source>\n");
-    /* 'gluster' is deprecated as of qemu-9.2, once removed this tests can be dropped too */
-    xmljsonxmldata.deprecated = true;
+    /* 'gluster' is deprecated as of qemu-9.2, removed as of qemu-11.1. Schema
+     * validation no longer happens on these tests, but we keep them since
+     * older qemu versions are still supported */
+    xmljsonxmldata.removed = true;
     TEST_JSON_FORMAT_NET("<source protocol='gluster' name='vol/file'>\n"
                          "  <host name='example.com' port='24007'/>\n"
                          "</source>\n");
@@ -1084,7 +1091,7 @@ mymain(void)
                          "  <host transport='unix' socket='/path/socket'/>\n"
                          "  <host name='example.com' port='24007'/>\n"
                          "</source>\n");
-    xmljsonxmldata.deprecated = false;
+    xmljsonxmldata.removed = false;
     TEST_JSON_FORMAT_NET("<source protocol='nbd'>\n"
                          "  <host transport='unix' socket='/path/to/socket'/>\n"
                          "</source>\n");
@@ -1230,10 +1237,12 @@ mymain(void)
     TEST_IMAGE_CREATE("qcow2-backing-raw-slice", "raw-slice");
     TEST_IMAGE_CREATE("qcow2-backing-qcow2-slice", "qcow2-slice");
 
-    /* 'gluster' is deprecated as of qemu-9.2, once removed this tests can be dropped too */
-    imagecreatedata.deprecated = true;
+    /* 'gluster' is deprecated as of qemu-9.2, removed as of qemu-11.1. Schema
+     * validation no longer happens on these tests, but we keep them since
+     * older qemu versions are still supported */
+    imagecreatedata.removed = true;
     TEST_IMAGE_CREATE("network-gluster-qcow2", NULL);
-    imagecreatedata.deprecated = false;
+    imagecreatedata.removed = false;
     TEST_IMAGE_CREATE("network-rbd-qcow2", NULL);
     TEST_IMAGE_CREATE("network-ssh-qcow2", NULL);
 
