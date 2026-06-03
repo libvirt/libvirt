@@ -1040,11 +1040,24 @@ bhyveDomainDestroy(virDomainPtr dom)
 }
 
 static int
+bhyveDomainShutdownSignal(virDomainObj *vm,
+                          bool isReboot)
+{
+    bhyveDomainObjPrivate *priv;
+
+    if (isReboot) {
+        priv = vm->privateData;
+        bhyveMonitorSetReboot(priv->mon);
+    }
+
+    return virBhyveProcessShutdown(vm);
+}
+
+static int
 bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     virDomainObj *vm;
     int ret = -1;
-    bhyveDomainObjPrivate *priv;
     bool isReboot = false;
 
     virCheckFlags(0, -1);
@@ -1064,11 +1077,7 @@ bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    if (isReboot) {
-        priv = vm->privateData;
-        bhyveMonitorSetReboot(priv->mon);
-    }
-    ret = virBhyveProcessShutdown(vm);
+    ret = bhyveDomainShutdownSignal(vm, isReboot);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1086,7 +1095,7 @@ bhyveDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn = dom->conn;
     virDomainObj *vm;
-    bhyveDomainObjPrivate *priv;
+    bool isReboot = true;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN, -1);
@@ -1094,16 +1103,19 @@ bhyveDomainReboot(virDomainPtr dom, unsigned int flags)
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
 
+    if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
+        vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE) {
+        isReboot = false;
+        VIR_INFO("Domain on_reboot setting overridden, shutting down");
+    }
+
     if (virDomainRebootEnsureACL(conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
-    bhyveMonitorSetReboot(priv->mon);
-
-    ret = virBhyveProcessShutdown(vm);
+    ret = bhyveDomainShutdownSignal(vm, isReboot);
 
  cleanup:
     virDomainObjEndAPI(&vm);
