@@ -243,13 +243,16 @@ bhyveConnectAgent(struct _bhyveConn *driver G_GNUC_UNUSED, virDomainObj *vm)
 {
     bhyveDomainObjPrivate *priv = vm->privateData;
     qemuAgent *agent = NULL;
-    virDomainChrDef *config = bhyveFindAgentConfig(vm->def);
-
-    if (!config)
-        return 0;
+    virDomainChrDef *config = NULL;
 
     if (priv->agent)
         return 0;
+
+    if (!(config = bhyveFindAgentConfig(vm->def))) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("QEMU guest agent is not configured"));
+        return -1;
+    }
 
     agent = qemuAgentOpen(vm,
                           config->source,
