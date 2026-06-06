@@ -123,39 +123,6 @@ bhyveDomainObjExitAgent(virDomainObj *obj, qemuAgent *agent)
 }
 
 
-static bool
-bhyveDomainAgentAvailable(virDomainObj *vm,
-                          bool reportError)
-{
-    bhyveDomainObjPrivate *priv = vm->privateData;
-
-    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
-        if (reportError) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
-        }
-        return false;
-    }
-
-    if (!priv->agent) {
-        if (bhyveFindAgentConfig(vm->def)) {
-            if (reportError) {
-                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                               _("QEMU guest agent is not connected"));
-            }
-            return false;
-        } else {
-            if (reportError) {
-                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                               _("QEMU guest agent is not configured"));
-            }
-            return false;
-        }
-    }
-    return true;
-}
-
-
 static int
 bhyveDomainEnsureAgent(virDomainObj *vm,
                        bool reportError)
@@ -2060,7 +2027,7 @@ bhyveDomainQemuAgentCommand(virDomainPtr domain,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!bhyveDomainAgentAvailable(vm, true))
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
         goto endjob;
 
     agent = bhyveDomainObjEnterAgent(vm);
