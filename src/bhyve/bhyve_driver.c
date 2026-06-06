@@ -2479,6 +2479,89 @@ bhyveDomainSetUserPassword(virDomainPtr domain,
     return ret;
 }
 
+static int
+bhyveDomainAuthorizedSSHKeysGet(virDomainPtr domain,
+                                const char *user,
+                                char ***keys,
+                                unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    qemuAgent *agent;
+    int rv = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainAuthorizedSshKeysGetEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    rv = qemuAgentSSHGetAuthorizedKeys(agent, user, keys);
+    bhyveDomainObjExitAgent(vm, agent);
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return rv;
+}
+
+static int
+bhyveDomainAuthorizedSSHKeysSet(virDomainPtr domain,
+                                const char *user,
+                                const char **keys,
+                                unsigned int nkeys,
+                                unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    qemuAgent *agent;
+    const bool append = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND;
+    const bool remove = flags & VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE;
+    int rv = -1;
+
+    virCheckFlags(VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND |
+                  VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainAuthorizedSshKeysSetEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    if (remove)
+        rv = qemuAgentSSHRemoveAuthorizedKeys(agent, user, keys, nkeys);
+    else
+        rv = qemuAgentSSHAddAuthorizedKeys(agent, user, keys, nkeys, !append);
+    bhyveDomainObjExitAgent(vm, agent);
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return rv;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2554,6 +2637,8 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetTime = bhyveDomainGetTime, /* 12.6.0 */
     .domainSetTime = bhyveDomainSetTime, /* 12.6.0 */
     .domainSetUserPassword = bhyveDomainSetUserPassword, /* 12.6.0 */
+    .domainAuthorizedSSHKeysGet = bhyveDomainAuthorizedSSHKeysGet, /* 12.6.0 */
+    .domainAuthorizedSSHKeysSet = bhyveDomainAuthorizedSSHKeysSet, /* 12.6.0 */
 };
 
 
