@@ -2433,6 +2433,52 @@ bhyveDomainSetTime(virDomainPtr domain,
     return ret;
 }
 
+static int
+bhyveDomainSetUserPassword(virDomainPtr domain,
+                           const char *user,
+                           const char *password,
+                           unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    qemuAgent *agent;
+    int ret = -1;
+    int rv;
+
+    virCheckFlags(VIR_DOMAIN_PASSWORD_ENCRYPTED, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return ret;
+
+    if (virDomainSetUserPasswordEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    if (bhyveDomainEnsureAgent(vm, true) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    rv = qemuAgentSetUserPassword(agent, user, password,
+                                  flags & VIR_DOMAIN_PASSWORD_ENCRYPTED);
+    bhyveDomainObjExitAgent(vm, agent);
+
+    if (rv < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2507,6 +2553,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetFSInfo = bhyveDomainGetFSInfo, /* 12.5.0 */
     .domainGetTime = bhyveDomainGetTime, /* 12.6.0 */
     .domainSetTime = bhyveDomainSetTime, /* 12.6.0 */
+    .domainSetUserPassword = bhyveDomainSetUserPassword, /* 12.6.0 */
 };
 
 
