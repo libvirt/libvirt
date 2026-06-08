@@ -1377,8 +1377,21 @@ virPCIDeviceFindDriver(virPCIDevice *dev)
 
     moduleDriversDir = g_strdup_printf("/sys/module/%s/drivers", moduleName);
 
-    if (virDirOpen(&dir, moduleDriversDir) < 0)
+    if (virDirOpenQuiet(&dir, moduleDriversDir) < 0) {
+        /* with monolithic kernels this directory will not exist: ENOENT
+         * with hardened system like grsecurity or any MAC frameowrk it might be be accessible:
+         * EACCESS or EPERM.
+         */
+        if (errno == ENOENT || errno == EACCES || errno == EPERM) {
+            VIR_DEBUG("driver directory not available (%s), using module name as driver name",
+                     moduleDriversDir);
+            g_free(dev->stubDriverName);
+            dev->stubDriverName = g_steal_pointer(&moduleName);
+            return 0;
+        }
+        virReportSystemError(errno, _("cannot open directory '%1$s'"), moduleDriversDir);
         return -1;
+    }
 
     while (virDirRead(dir, &ent, moduleDriversDir) > 0) {
 
