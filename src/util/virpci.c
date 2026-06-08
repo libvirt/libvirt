@@ -1549,6 +1549,12 @@ virPCIDeviceFindBestVFIOVariant(virPCIDevice *dev,
 
     uname(&unameInfo);
     modulesAliasPath = g_strdup_printf("/lib/modules/%s/modules.alias", unameInfo.release);
+    if (!virFileExists(modulesAliasPath)) {
+        /* on monolithic kernel this file does not exist */
+        VIR_DEBUG("modules.alias not available (%s), skipping VFIO variant detection",
+                 modulesAliasPath);
+        return 0;
+    }
     if (virFileReadAll(modulesAliasPath, 8 * 1024 * 1024, &modulesAliasContent) < 0)
         return -1;
 
