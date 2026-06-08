@@ -42,7 +42,7 @@
     <audio id='1' type='none'/>
     <video>
       <driver name='vhostuser'/>
-      <model type='virtio' heads='1' primary='yes'/>
+      <model type='virtio' heads='1' primary='yes' device='vhost-user-vga'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <memballoon model='virtio'>

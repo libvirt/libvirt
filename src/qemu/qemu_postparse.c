@@ -308,7 +308,8 @@ qemuDomainDefaultVideoDevice(const virDomainDef *def,
 static int
 qemuDomainDeviceVideoDefPostParse(virDomainVideoDef *video,
                                   const virDomainDef *def,
-                                  virQEMUCaps *qemuCaps)
+                                  virQEMUCaps *qemuCaps,
+                                  unsigned int parseFlags)
 {
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_DEFAULT)
         video->type = qemuDomainDefaultVideoDevice(def, qemuCaps);
@@ -316,6 +317,98 @@ qemuDomainDeviceVideoDefPostParse(virDomainVideoDef *video,
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
         !video->vgamem) {
         video->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
+    }
+
+    /* Fill in 'virtiodevice' (device='%s' attribute in XML.
+     *
+     * Historically for <video><model type='virtio' ...  the selection of the
+     * actual device type (virtio-vga, virtio-vga-gl, virtio-gpu, virtio-gpu-gl)
+     * was done when formatting commandline based on capabilities.
+     *
+     * Unfortunately neither of the aforementioned models are ABI/migration
+     * compatible. We must thus record the selcted model in the XML and that
+     * possibly retroactively based on the capabilities.
+     *
+     * For non accelerated video devices the logic is as follows:
+     *  - for any secondary video device 'virtio-gpu' is always picked
+     *  - for 'primary' video device 'virtio-vga' is used if available. If not
+     *    'virtio-gpu' is picked instead.
+     *
+     * We want to use the above logic both for existing VMs and new VMs since
+     * this is currently the proper configuration.
+     *
+     * For accelerated video devices the logic is slightly more broken as the
+     * fallbacks depended both on which of 'virtio-vga', 'virtio-vga-gl',
+     * 'virtio-gpu-gl', modules was actually found (see code below).
+     *
+     * For new VMs we do not want to fall back to non-gl versions since that
+     * disables acceleration.
+     */
+    if (qemuCaps &&
+        video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+        video->virtiodevice == VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT) {
+        /* in certain cases video->primary was not yet assigned */
+        bool primary = video->primary || (video == def->videos[0]);
+
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            /* primary device is 'vhost-user-vga' if available */
+            if (primary &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_VGA)) {
+                video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_VGA;
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_GPU)) {
+                video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_GPU;
+            } else {
+                /* Don't fill in default; let validation reject the config */
+            }
+        } else {
+            if (video->accel &&
+                video->accel->accel3d == VIR_TRISTATE_BOOL_YES) {
+                /* if starting a new config don't downgrade to the non '-gl' vriants,
+                 * allow downgrade only to preserve migration/ABI compatibility */
+                if (parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) {
+                    if (primary &&
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL)) {
+                        video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA_GL;
+                    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI)) {
+                        video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU_GL;
+                    } else {
+                        /* Don't fill in default; let validation reject the config */
+                    }
+                } else {
+                    /* This logic is wrong, but faithfully represents the device
+                     * the qemu driver would pick for an accelerated video device */
+                    if (primary &&
+                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_VGA)) {
+                        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL)) {
+                            video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA_GL;
+                        } else {
+                            /* based on the above check we know this one exists */
+                            video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA;
+                        }
+                    } else {
+                        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI)) {
+                            video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU_GL;
+                        } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) {
+                            video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU;
+                        } else {
+                            /* this branch isn't a faithful representation of
+                             * the old logic, but the VM wouldn't start anyway
+                             * so we might as well make validation reject it */
+                        }
+                    }
+                }
+            } else {
+                /* primary device is 'virtio-vga' if available */
+                if (primary &&
+                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_VGA)) {
+                    video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA;
+                } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)) {
+                    video->virtiodevice = VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU;
+                } else {
+                    /* Don't fill in default; let validation reject the config */
+                }
+            }
+        }
     }
 
     return 0;
@@ -867,7 +960,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = qemuDomainDeviceVideoDefPostParse(dev->data.video, def, qemuCaps);
+        ret = qemuDomainDeviceVideoDefPostParse(dev->data.video, def, qemuCaps, parseFlags);
         break;
 
     case VIR_DOMAIN_DEVICE_PANIC:

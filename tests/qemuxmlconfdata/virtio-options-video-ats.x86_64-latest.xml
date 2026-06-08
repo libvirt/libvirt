@@ -26,14 +26,14 @@
     <audio id='1' type='none'/>
     <video>
       <driver ats='on' name='vhostuser'/>
-      <model type='virtio' heads='1' primary='yes'>
+      <model type='virtio' heads='1' primary='yes' device='vhost-user-vga'>
         <acceleration accel3d='yes' rendernode='/dev/dri/test'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <video>
       <driver ats='off' name='vhostuser'/>
-      <model type='virtio' heads='1'>
+      <model type='virtio' heads='1' device='vhost-user-gpu'>
         <acceleration accel3d='yes' rendernode='/dev/dri/test'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>

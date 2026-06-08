@@ -28,13 +28,13 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <video>
-      <model type='virtio' heads='1' primary='yes'>
+      <model type='virtio' heads='1' primary='yes' device='virtio-vga'>
         <acceleration accel3d='yes'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <video>
-      <model type='virtio' heads='1'>
+      <model type='virtio' heads='1' device='virtio-gpu-gl'>
         <acceleration accel3d='yes'/>
       </model>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

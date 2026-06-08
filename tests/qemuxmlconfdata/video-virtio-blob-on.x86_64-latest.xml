@@ -37,11 +37,11 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <video>
-      <model type='virtio' heads='1' primary='yes' blob='on'/>
+      <model type='virtio' heads='1' primary='yes' blob='on' device='virtio-vga'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </video>
     <video>
-      <model type='virtio' heads='1' blob='on'/>
+      <model type='virtio' heads='1' blob='on' device='virtio-gpu'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </video>
     <memballoon model='virtio'>

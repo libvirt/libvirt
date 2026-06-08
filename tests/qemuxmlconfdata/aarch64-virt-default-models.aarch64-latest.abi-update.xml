@@ -67,7 +67,7 @@
     </tpm>
     <audio id='1' type='none'/>
     <video>
-      <model type='virtio' heads='1' primary='yes'/>
+      <model type='virtio' heads='1' primary='yes' device='virtio-gpu'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </video>
     <memballoon model='none'/>

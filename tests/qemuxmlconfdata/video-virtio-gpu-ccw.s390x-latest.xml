@@ -29,11 +29,11 @@
     </graphics>
     <audio id='1' type='none'/>
     <video>
-      <model type='virtio' heads='1' primary='yes'/>
+      <model type='virtio' heads='1' primary='yes' device='virtio-gpu'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0002'/>
     </video>
     <video>
-      <model type='virtio' heads='1'/>
+      <model type='virtio' heads='1' device='virtio-gpu'/>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0003'/>
     </video>
     <memballoon model='virtio'>
