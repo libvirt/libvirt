@@ -1885,6 +1885,20 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainVideoVGAConf);
 
+typedef enum {
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT = 0,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA_GL,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU_GL,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_VGA,
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_GPU,
+
+    VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_LAST
+} virDomainVideoVirtioDevice;
+
+VIR_ENUM_DECL(virDomainVideoVirtioDevice);
+
 struct _virDomainVideoAccelDef {
     virTristateBool accel2d;
     virTristateBool accel3d;
@@ -1915,6 +1929,7 @@ struct _virDomainVideoDef {
     virDomainVideoResolutionDef *res;
     virTristateSwitch blob;
     virDomainVideoDriverDef *driver;
+    virDomainVideoVirtioDevice virtiodevice; /* virtio device frontend */
     virDomainDeviceInfo info;
     virDomainVirtioOptions *virtio;
     virDomainVideoBackendType backend;

@@ -731,6 +731,7 @@ virDomainVideoTypeFromString;
 virDomainVideoTypeToString;
 virDomainVideoVGAConfTypeFromString;
 virDomainVideoVGAConfTypeToString;
+virDomainVideoVirtioDeviceTypeToString;
 virDomainVirtTypeFromString;
 virDomainVirtTypeToString;
 virDomainVsockDefEquals;

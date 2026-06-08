@@ -4874,7 +4874,6 @@
                   <value>vmvga</value>
                   <value>xen</value>
                   <value>vbox</value>
-                  <value>virtio</value>
                   <value>gop</value>
                   <value>none</value>
                   <value>bochs</value>
@@ -4898,6 +4897,23 @@
                 <optional>
                   <attribute name="vram64">
                     <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </group>
+              <group>
+                <attribute name="type">
+                  <value>virtio</value>
+                </attribute>
+                <optional>
+                  <attribute name="device">
+                    <choice>
+                      <value>virtio-vga</value>
+                      <value>virtio-vga-gl</value>
+                      <value>virtio-gpu</value>
+                      <value>virtio-gpu-gl</value>
+                      <value>vhost-user-vga</value>
+                      <value>vhost-user-gpu</value>
+                    </choice>
                   </attribute>
                 </optional>
               </group>

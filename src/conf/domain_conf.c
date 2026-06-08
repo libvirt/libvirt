@@ -910,6 +910,17 @@ VIR_ENUM_IMPL(virDomainVideoVGAConf,
               "off",
 );
 
+VIR_ENUM_IMPL(virDomainVideoVirtioDevice,
+              VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_LAST,
+              "",
+              "virtio-vga",
+              "virtio-gpu",
+              "virtio-vga-gl",
+              "virtio-gpu-gl",
+              "vhost-user-vga",
+              "vhost-user-gpu",
+);
+
 VIR_ENUM_IMPL(virDomainInput,
               VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
@@ -13816,6 +13827,14 @@ virDomainVideoModelDefParseXML(virDomainVideoDef *def,
                               VIR_DOMAIN_VIDEO_TYPE_DEFAULT) < 0)
         return -1;
 
+    if (def->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+        if (virXMLPropEnumDefault(node, "device",
+                                  virDomainVideoVirtioDeviceTypeFromString,
+                                  VIR_XML_PROP_NONZERO, &def->virtiodevice,
+                                  VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT) < 0)
+            return -1;
+    }
+
     if (virXMLPropUInt(node, "ram", 10, VIR_XML_PROP_NONE, &def->ram) < 0)
         return -1;
 
@@ -21694,6 +21713,18 @@ virDomainVideoDefCheckABIStability(virDomainVideoDef *src,
         return false;
     }
 
+    /* While 'src->virtiodevice' vs 'dst->virtiodevice' match is considered
+     * guest ABI (both the device looks different to the guest OS and qemu
+     * refuses to migrate into wrong device) we deliberately omit the check
+     * here due to historical reasons.
+     *
+     * The actual values were not recorded in the XML after picking a device
+     * based on capabilities and thus, if the host configuration changes
+     * different defaults can be picked. Users might want to fix their
+     * saveimage or migration by specifying the proper model which will differ
+     * from the one that will be auto-picked via post-parse callback when the
+     * XML is loaded for the first time */
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 
@@ -27394,6 +27425,10 @@ virDomainVideoDefFormat(virBuffer *buf,
         virBufferAsprintf(&modelAttrBuf, " blob='%s'", virTristateSwitchTypeToString(def->blob));
     if (def->edid != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(&modelAttrBuf, " edid='%s'", virTristateSwitchTypeToString(def->edid));
+
+    if (def->virtiodevice != VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT)
+        virBufferAsprintf(&modelAttrBuf, " device='%s'",
+                          virDomainVideoVirtioDeviceTypeToString(def->virtiodevice));
 
     virDomainVideoAccelDefFormat(&modelChildBuf, def->accel);
     virDomainVideoResolutionDefFormat(&modelChildBuf, def->res);

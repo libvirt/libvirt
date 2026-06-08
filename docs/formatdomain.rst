@@ -7365,6 +7365,14 @@ A video device.
    guest. The ``edid`` attribute is only valid for model types ``vga``, ``bochs``,
    and ``virtio``.
 
+   :since:`Since 12.5.0` the ``virtio`` video model has an additional attribute
+   ``device``, which records the specific virtio device model which was picked
+   for the configuration, to preserve guest ABI and migration compatibility.
+   Users do not need to set this attribute as aprropriate value is picked and
+   filled in automatically. Accepted values are ``virtio-vga``, ``virtio-gpu``,
+   ``virtio-vga-gl``, and ``virtio-gpu-gl``, but not all combinations of config
+   and this field make sense.
+
 ``acceleration``
    Configure if video acceleration should be enabled.
 
