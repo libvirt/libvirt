@@ -928,6 +928,148 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
     return 0;
 }
 
+static void
+bhyveBuildSysinfoBiosArgStr(virSysinfoBIOSDef *def,
+                            virCommand *cmd)
+{
+    if (def->vendor) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "bios.vendor", def->vendor);
+    }
+
+    if (def->version) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "bios.version", def->version);
+    }
+
+    if (def->date) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "bios.release_date", def->date);
+    }
+}
+
+static void
+bhyveBuildSysinfoSystemArgStr(virSysinfoSystemDef *def,
+                              virCommand *cmd)
+{
+    if (def->manufacturer) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "system.manufacturer", def->manufacturer);
+    }
+
+    if (def->product) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "system.product_name", def->product);
+    }
+
+    if (def->serial) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "system.serial_number", def->serial);
+    }
+
+    if (def->sku) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "system.sku", def->sku);
+    }
+
+    if (def->version) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "system.version", def->version);
+    }
+}
+
+static void
+bhyveBuildSysinfoBaseBoardArgStr(virSysinfoBaseBoardDef *def,
+                                 virCommand *cmd)
+{
+    if (def->manufacturer) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.manufacturer", def->manufacturer);
+    }
+
+    if (def->product) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.product_name", def->product);
+    }
+
+    if (def->version) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.version", def->version);
+    }
+
+    if (def->serial) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.serial_number", def->serial);
+    }
+
+    if (def->asset) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.asset_tag", def->asset);
+    }
+
+    if (def->location) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "board.location", def->location);
+    }
+}
+
+static void
+bhyveBuildSysinfoChassisArgStr(virSysinfoChassisDef *def,
+                               virCommand *cmd)
+{
+    if (def->manufacturer) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "chassis.manufacturer", def->manufacturer);
+    }
+
+    if (def->version) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "chassis.version", def->version);
+    }
+
+    if (def->serial) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "chassis.serial_number", def->serial);
+    }
+
+    if (def->asset) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "chassis.asset_tag", def->asset);
+    }
+
+    if (def->sku) {
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgPair(cmd, "chassis.sku", def->sku);
+    }
+}
+
+static int
+bhyveBuildSysinfoArgStr(virSysinfoDef *sysinfo,
+                        virCommand *cmd)
+{
+    size_t i;
+
+    if (sysinfo->bios)
+        bhyveBuildSysinfoBiosArgStr(sysinfo->bios, cmd);
+
+    if (sysinfo->system)
+        bhyveBuildSysinfoSystemArgStr(sysinfo->system, cmd);
+
+    if (sysinfo->nbaseBoard > 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("bhyve does not support more than one entry to Type 2 in SMBIOS table"));
+        return -1;
+    }
+
+    for (i = 0; i < sysinfo->nbaseBoard; i++)
+        bhyveBuildSysinfoBaseBoardArgStr(&sysinfo->baseBoard[i], cmd);
+
+    if (sysinfo->chassis)
+        bhyveBuildSysinfoChassisArgStr(sysinfo->chassis, cmd);
+
+    return 0;
+}
+
 virCommand *
 virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
                              bool dryRun)
@@ -1163,6 +1305,11 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     if (bhyveBuildHostdevArgStr(def, cmd) < 0)
         return NULL;
+
+    for (i = 0; i < def->nsysinfo; i++)
+        if (def->sysinfo[i]->type == VIR_SYSINFO_SMBIOS)
+            if (bhyveBuildSysinfoArgStr(def->sysinfo[i], cmd) < 0)
+                return NULL;
 
     virCommandAddArg(cmd, def->name);
 

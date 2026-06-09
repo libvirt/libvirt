@@ -303,6 +303,7 @@ mymain(void)
     DO_TEST_FAILURE("virtio-console-invalid-path");
     DO_TEST("memtune");
     DO_TEST_FAILURE("memtune-unsupported-params");
+    DO_TEST("sysinfo-smbios");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
