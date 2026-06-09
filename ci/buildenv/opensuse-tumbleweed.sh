@@ -6,7 +6,7 @@
 
 function install_buildenv() {
     zypper dist-upgrade -y
-    zypper install -y \
+    zypper install -y --allow-downgrade \
            audit-devel \
            augeas \
            augeas-lenses \
