@@ -703,9 +703,25 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 }
 
 
+struct qemuDeviceVideoModelVirtioOpts {
+    bool virtio;
+    bool virtioBusSuffix;
+};
+
+struct qemuDeviceVideoModelVirtioOpts qemuDeviceVideoGetModelVirtioOptsTable[] = {
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT] =        { .virtio = false, .virtioBusSuffix = false },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA] =            { .virtio = true,  .virtioBusSuffix = false },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU] =            { .virtio = true,  .virtioBusSuffix = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA_GL] =         { .virtio = true,  .virtioBusSuffix = false },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU_GL] =         { .virtio = true,  .virtioBusSuffix = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_VGA] = { .virtio = false, .virtioBusSuffix = false },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_GPU] = { .virtio = true,  .virtioBusSuffix = true },
+};
+G_STATIC_ASSERT(G_N_ELEMENTS(qemuDeviceVideoGetModelVirtioOptsTable) == VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_LAST);
+
+
 /**
  * qemuDeviceVideoGetModel:
- * @qemuCaps: qemu capabilities
  * @video: video device definition
  * @virtio: the returned video device is a 'virtio' device
  * @virtioBusSuffix: the returned device needs to get the bus-suffix
@@ -714,37 +730,23 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
  * @virtioBusSuffix are filled with the corresponding flags.
  */
 static const char *
-qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
-                        const virDomainVideoDef *video,
+qemuDeviceVideoGetModel(const virDomainVideoDef *video,
                         bool *virtio,
                         bool *virtioBusSuffix)
 {
-    bool primaryVga = false;
-    virTristateBool accel3d = VIR_TRISTATE_BOOL_ABSENT;
-
     *virtio = false;
     *virtioBusSuffix = false;
 
-    if (video->accel)
-        accel3d = video->accel->accel3d;
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+        struct qemuDeviceVideoModelVirtioOpts *opts = &qemuDeviceVideoGetModelVirtioOptsTable[video->virtiodevice];
 
-    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
-        primaryVga = true;
+        *virtio = opts->virtio;
+        *virtioBusSuffix = opts->virtioBusSuffix;
 
-    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-        if (primaryVga)
-            return "vhost-user-vga";
-
-        *virtio = true;
-        *virtioBusSuffix = true;
-        return "vhost-user-gpu";
+        return virDomainVideoVirtioDeviceTypeToString(video->virtiodevice);
     }
 
-    /* We try to chose the best model for primary video device by preferring
-     * model with VGA compatibility mode.  For some video devices on some
-     * architectures there might not be such model so fallback to one
-     * without VGA compatibility mode. */
-    if (primaryVga) {
+    if (video->primary) {
         switch ((virDomainVideoType) video->type) {
         case VIR_DOMAIN_VIDEO_TYPE_VGA:
             return "VGA";
@@ -758,22 +760,12 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
         case VIR_DOMAIN_VIDEO_TYPE_QXL:
             return "qxl-vga";
 
-        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-            *virtio = true;
-            *virtioBusSuffix = false;
-
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
-                accel3d == VIR_TRISTATE_BOOL_YES)
-                return "virtio-vga-gl";
-
-            return "virtio-vga";
-
         case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
             return "bochs-display";
 
         case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
             return "ramfb";
-
+        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
         case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
         case VIR_DOMAIN_VIDEO_TYPE_XEN:
         case VIR_DOMAIN_VIDEO_TYPE_VBOX:
@@ -789,15 +781,6 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
             return "qxl";
 
         case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-            *virtio = true;
-            *virtioBusSuffix = true;
-
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
-                accel3d == VIR_TRISTATE_BOOL_YES)
-                return "virtio-gpu-gl";
-
-            return "virtio-gpu";
-
         case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
         case VIR_DOMAIN_VIDEO_TYPE_VGA:
         case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
@@ -823,7 +806,6 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 
 static void
 qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
-                               virQEMUCaps *qemuCaps,
                                const char **baseName,
                                virDomainVirtioOptions **virtioOptions,
                                bool *has_tmodel,
@@ -948,8 +930,7 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
             bool virtio;
             bool virtioBusSuffix;
 
-            if (!(*baseName = qemuDeviceVideoGetModel(qemuCaps,
-                                                      device->data.video,
+            if (!(*baseName = qemuDeviceVideoGetModel(device->data.video,
                                                       &virtio,
                                                       &virtioBusSuffix)))
                 return;
@@ -1028,7 +1009,7 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
     bool has_ntmodel = false;
     bool useBusSuffix = true;
 
-    qemuBuildVirtioDevGetConfigDev(device, qemuCaps, &baseName,
+    qemuBuildVirtioDevGetConfigDev(device, &baseName,
                                    virtioOptions, &has_tmodel,
                                    &has_ntmodel, &useBusSuffix);
 
@@ -4610,7 +4591,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
     g_autoptr(virJSONValue) props = NULL;
     unsigned int max_outputs = 0;
 
-    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio, &virtioBusSuffix)))
+    if (!(model = qemuDeviceVideoGetModel(video, &virtio, &virtioBusSuffix)))
         return -1;
 
     if (virtio) {
