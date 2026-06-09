@@ -9272,23 +9272,6 @@ qemuDomainVcpuPersistOrder(virDomainDef *def)
 }
 
 
-bool
-qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
-                           virQEMUCaps *qemuCaps)
-{
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_VGA))
-                return false;
-        } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_VGA)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
 /**
  * qemuDomainNeedsVFIO:
  * @def: domain definition to check
