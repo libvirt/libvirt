@@ -2642,6 +2642,16 @@ mymain(void)
     DO_TEST_CAPS_LATEST("video-virtio-blob-on");
     DO_TEST_CAPS_LATEST("video-virtio-blob-off");
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
+    DO_TEST_FULL("video-virtio-vga-gpu-gl", ".x86_64-latest.QEMU_CAPS_VIRTIO_VGA_GL-disabled",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_VIRTIO_VGA_GL, QEMU_CAPS_LAST,
+                 ARG_END);
+    DO_TEST_FULL("video-virtio-vga-gpu-gl", ".x86_64-latest.QEMU_CAPS_VIRTIO_GPU_GL_PCI-disabled",
+                 ARG_CAPS_ARCH, "x86_64",
+                 ARG_CAPS_VER, "latest",
+                 ARG_QEMU_CAPS_DEL, QEMU_CAPS_VIRTIO_GPU_GL_PCI, QEMU_CAPS_LAST,
+                 ARG_END);
     DO_TEST_CAPS_LATEST("video-virtio-edid-none");
     DO_TEST_CAPS_LATEST("video-virtio-edid-off");
     DO_TEST_CAPS_LATEST("video-virtio-edid-on");
