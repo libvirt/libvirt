@@ -737,7 +737,32 @@ qemuDeviceVideoGetModel(const virDomainVideoDef *video,
     *virtio = false;
     *virtioBusSuffix = false;
 
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+    /* 'qemuValidateDomainDeviceDefVideo' ensures that only supported models
+     * are used as well as that only 'QXL' and 'virtio' graphics can be
+     * secondary */
+    switch ((virDomainVideoType) video->type) {
+    case VIR_DOMAIN_VIDEO_TYPE_VGA:
+        return "VGA";
+
+    case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+        return "cirrus-vga";
+
+    case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        return "vmware-svga";
+
+    case VIR_DOMAIN_VIDEO_TYPE_QXL:
+        if (video->primary)
+            return "qxl-vga";
+
+        return "qxl";
+
+    case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+        return "bochs-display";
+
+    case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+        return "ramfb";
+
+    case VIR_DOMAIN_VIDEO_TYPE_VIRTIO: {
         struct qemuDeviceVideoModelVirtioOpts *opts = &qemuDeviceVideoGetModelVirtioOptsTable[video->virtiodevice];
 
         *virtio = opts->virtio;
@@ -746,61 +771,22 @@ qemuDeviceVideoGetModel(const virDomainVideoDef *video,
         return virDomainVideoVirtioDeviceTypeToString(video->virtiodevice);
     }
 
-    if (video->primary) {
-        switch ((virDomainVideoType) video->type) {
-        case VIR_DOMAIN_VIDEO_TYPE_VGA:
-            return "VGA";
+    case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+    case VIR_DOMAIN_VIDEO_TYPE_XEN:
+    case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+    case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+    case VIR_DOMAIN_VIDEO_TYPE_GOP:
+    case VIR_DOMAIN_VIDEO_TYPE_NONE:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid model for video type '%1$s'"),
+                       virDomainVideoTypeToString(video->type));
+        return NULL;
 
-        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-            return "cirrus-vga";
-
-        case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-            return "vmware-svga";
-
-        case VIR_DOMAIN_VIDEO_TYPE_QXL:
-            return "qxl-vga";
-
-        case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
-            return "bochs-display";
-
-        case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
-            return "ramfb";
-        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-        case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
-        case VIR_DOMAIN_VIDEO_TYPE_XEN:
-        case VIR_DOMAIN_VIDEO_TYPE_VBOX:
-        case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
-        case VIR_DOMAIN_VIDEO_TYPE_GOP:
-        case VIR_DOMAIN_VIDEO_TYPE_NONE:
-        case VIR_DOMAIN_VIDEO_TYPE_LAST:
-            break;
-        }
-    } else {
-        switch ((virDomainVideoType) video->type) {
-        case VIR_DOMAIN_VIDEO_TYPE_QXL:
-            return "qxl";
-
-        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-        case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
-        case VIR_DOMAIN_VIDEO_TYPE_VGA:
-        case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-        case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-        case VIR_DOMAIN_VIDEO_TYPE_XEN:
-        case VIR_DOMAIN_VIDEO_TYPE_VBOX:
-        case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
-        case VIR_DOMAIN_VIDEO_TYPE_GOP:
-        case VIR_DOMAIN_VIDEO_TYPE_NONE:
-        case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
-        case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
-        case VIR_DOMAIN_VIDEO_TYPE_LAST:
-            break;
-        }
+    case VIR_DOMAIN_VIDEO_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainVideoType, video->type);
+        return NULL;
     }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("invalid model for video type '%1$s'"),
-                   virDomainVideoTypeToString(video->type));
-    return NULL;
 }
 
 
