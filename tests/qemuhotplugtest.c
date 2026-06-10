@@ -758,7 +758,7 @@ testQemuHotplugCpuAsync(const struct testQemuHotplugCpuAsyncParams *async,
 }
 
 
-static int G_GNUC_UNUSED
+static int
 testQemuHotplugCpuGroupAsync(const void *opaque)
 {
     return testQemuHotplugCpuAsync(opaque, true);
@@ -1179,6 +1179,26 @@ mymain(void)
     DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "17", true, true);
     DO_TEST_CPU_INDIVIDUAL_ASYNC("ppc64", "ppc64-modern-individual-del-async",
                                  "16-23", "vcpu16", "16-23");
+
+    do {
+        const char *aliases[] = { "vcpu7", "vcpu6", "vcpu5", "vcpu4" };
+        const struct testQemuHotplugCpuAsyncParams async = {
+            .test = "x86-modern-bulk-downscale-async",
+            .newcpus = 4,
+            .conn = conn,
+            .deviceDeletedAliases = aliases,
+            .ndeviceDeletedAliases = G_N_ELEMENTS(aliases),
+            .removedVcpus = "4-7",
+            .arch = "x86_64",
+            .capsLatestFiles = capsLatestFiles,
+            .capsCache = capsCache,
+            .schemaCache = schemaCache,
+        };
+
+        if (virTestRun("hotplug vcpus group async x86-modern-bulk-downscale-async",
+                       testQemuHotplugCpuGroupAsync, &async) < 0)
+            ret = -1;
+    } while (0);
 
     qemuTestDriverFree(&driver);
     virObjectUnref(data.vm);
