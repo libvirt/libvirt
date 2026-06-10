@@ -2853,6 +2853,26 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
 }
 
 
+struct qemuValidateDeviceVideoVirtioData {
+    virQEMUCapsFlags cap; /* capability for the device */
+    bool primary; /* this device can be only the primary device */
+    bool vhostuser; /* uses the vhostuser protocol */
+    bool gl; /* supports 3d accel */
+};
+
+
+struct qemuValidateDeviceVideoVirtioData qemuValidateDeviceVideoVirtioTable[] = {
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_DEFAULT] = { .cap = QEMU_CAPS_LAST },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA] = { .cap = QEMU_CAPS_DEVICE_VIRTIO_VGA, .primary = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU] = { .cap = QEMU_CAPS_DEVICE_VIRTIO_GPU },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VGA_GL] = { .cap = QEMU_CAPS_VIRTIO_VGA_GL, .gl = true, .primary = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_GPU_GL] = { .cap = QEMU_CAPS_VIRTIO_GPU_GL_PCI, .gl = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_VGA] = { .cap = QEMU_CAPS_DEVICE_VHOST_USER_VGA, .vhostuser = true, .primary = true },
+    [VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_VHOST_USER_GPU] = { .cap = QEMU_CAPS_DEVICE_VHOST_USER_GPU, .vhostuser = true },
+};
+G_STATIC_ASSERT(G_N_ELEMENTS(qemuValidateDeviceVideoVirtioTable) == VIR_DOMAIN_VIDEO_VIRTIO_DEVICE_LAST);
+
+
 static int
 qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
                                  const virDomainDef *def,
@@ -2871,6 +2891,49 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
                        _("domain configuration does not support video model '%1$s'"),
                        virDomainVideoTypeToString(video->type));
         return -1;
+    }
+
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+        struct qemuValidateDeviceVideoVirtioData *data = &qemuValidateDeviceVideoVirtioTable[video->virtiodevice];
+
+        if (data->cap == QEMU_CAPS_LAST) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU binary lacks any suitable 'virtio' video device frontend"));
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, data->cap)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("this QEMU doesn't support the '%1$s' virtio video device frontend"),
+                           virDomainVideoVirtioDeviceTypeToString(video->virtiodevice));
+            return -1;
+        }
+
+        if (data->primary && !video->primary) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("the '%1$s' virtio video device frontend can be only used as primary video device"),
+                           virDomainVideoVirtioDeviceTypeToString(video->virtiodevice));
+            return -1;
+        }
+
+        /* this check deliberately allows downgrade to the non-gl frontend as
+         * that was possible due to a bug in capability checking and the
+         * commandline formatter. More details are explained in
+         * 'qemuDomainDeviceVideoDefPostParse' which selects the frontend */
+        if (data->gl &&
+            !(video->accel && video->accel->accel3d == VIR_TRISTATE_BOOL_YES)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("the '%1$s' virtio video device frontend can be only with enabled 3d acceleration"),
+                           virDomainVideoVirtioDeviceTypeToString(video->virtiodevice));
+            return -1;
+        }
+
+        if (data->vhostuser != (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("the '%1$s' virtio video device doesn't match the selected vhostuser backend"),
+                           virDomainVideoVirtioDeviceTypeToString(video->virtiodevice));
+            return -1;
+        }
     }
 
     if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&
@@ -2941,31 +3004,6 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("value for 'vram' must be at least 1 MiB (1024 KiB)"));
             return -1;
-        }
-    }
-
-    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-        if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_USER_GPU)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU does not support 'vhost-user' video device"));
-            return -1;
-        }
-    } else if (video->accel) {
-        if (video->accel->accel3d == VIR_TRISTATE_BOOL_YES) {
-            if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("3d acceleration is supported only with 'virtio' video device"));
-                return -1;
-            }
-
-            if (!(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) ||
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) ||
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL))) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("3d acceleration is not supported by this QEMU binary"));
-                return -1;
-            }
         }
     }
 

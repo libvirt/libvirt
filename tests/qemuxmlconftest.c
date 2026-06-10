@@ -2664,6 +2664,7 @@ mymain(void)
                  ARG_CAPS_VER, "latest",
                  ARG_QEMU_CAPS_DEL, QEMU_CAPS_VIRTIO_GPU_GL_PCI, QEMU_CAPS_LAST,
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
+                 ARG_FLAGS, FLAG_EXPECT_PARSE_ERROR,
                  ARG_END);
     DO_TEST_CAPS_LATEST("video-virtio-edid-none");
     DO_TEST_CAPS_LATEST("video-virtio-edid-off");
