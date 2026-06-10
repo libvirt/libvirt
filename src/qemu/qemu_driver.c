@@ -31,6 +31,8 @@
 #include <sys/ioctl.h>
 
 #include "qemu_driver.h"
+#define LIBVIRT_QEMU_DRIVERPRIV_H_ALLOW
+#include "qemu_driverpriv.h"
 #include "qemu_agent.h"
 #include "qemu_alias.h"
 #include "qemu_block.h"
@@ -139,9 +141,6 @@ VIR_ENUM_IMPL(qemuDumpFormat,
               "kdump-snappy",
               "win-dmp",
 );
-
-
-static void qemuProcessEventHandler(void *data, void *opaque);
 
 static int qemuStateCleanup(void);
 
@@ -4192,7 +4191,9 @@ processShutdownCompletedEvent(virDomainObj *vm)
 }
 
 
-static void qemuProcessEventHandler(void *data, void *opaque)
+void
+qemuProcessEventHandler(void *data,
+                        void *opaque)
 {
     struct qemuProcessEvent *processEvent = data;
     virDomainObj *vm = processEvent->vm;
