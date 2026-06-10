@@ -109,5 +109,8 @@ qemuAgent *
 qemuMonitorTestGetAgent(qemuMonitorTest *test);
 virDomainObj *
 qemuMonitorTestGetDomainObj(qemuMonitorTest *test);
+void
+qemuMonitorTestEmitDeviceDeleted(qemuMonitorTest *test,
+                                 const char *alias);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorTest, qemuMonitorTestFree);

@@ -1240,3 +1240,12 @@ qemuMonitorTestGetDomainObj(qemuMonitorTest *test)
 {
     return test->vm;
 }
+
+void
+qemuMonitorTestEmitDeviceDeleted(qemuMonitorTest *test,
+                                 const char *alias)
+{
+    virObjectLock(test->mon);
+    qemuMonitorEmitDeviceDeleted(test->mon, alias);
+    virObjectUnlock(test->mon);
+}
