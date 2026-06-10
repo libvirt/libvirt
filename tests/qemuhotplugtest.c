@@ -19,8 +19,11 @@
 
 #include <config.h>
 
+#include "domain_event.h"
 #include "qemu/qemu_alias.h"
 #include "qemu/qemu_conf.h"
+#define LIBVIRT_QEMU_DRIVERPRIV_H_ALLOW
+#include "qemu/qemu_driverpriv.h"
 #include "qemu/qemu_hotplug.h"
 #include "qemumonitortestutils.h"
 #include "testutils.h"
@@ -28,6 +31,9 @@
 #include "testutilsqemuschema.h"
 #include "virhostdev.h"
 #include "virfile.h"
+#include "virthread.h"
+#include "virthreadpool.h"
+#include "virtime.h"
 #include "qemufakedrivers.h"
 
 #define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
@@ -44,6 +50,7 @@ enum {
 };
 
 #define QEMU_HOTPLUG_TEST_DOMAIN_ID 7
+#define QEMU_HOTPLUG_TEST_DOMAIN_PID 12345
 
 struct qemuHotplugTestData {
     const char *domain_filename;
@@ -325,6 +332,146 @@ struct testQemuHotplugCpuParams {
 };
 
 
+struct testQemuHotplugCpuAsyncParams {
+    const char *test;
+    int newcpus;
+    const char *cpumap;
+    virConnectPtr conn;
+    const char **deviceDeletedAliases;
+    size_t ndeviceDeletedAliases;
+    const char *removedVcpus;
+    const char *arch;
+    GHashTable *capsLatestFiles;
+    GHashTable *capsCache;
+    GHashTable *schemaCache;
+};
+
+
+struct testQemuHotplugCpuAsyncData {
+    int eventCallbackID;
+    virMutex lock;
+    virCond cond;
+    bool lockInitialized;
+    bool condInitialized;
+    virBitmap *removedVcpusExpected;
+    virBitmap *removedVcpusActual;
+    bool removedVcpusInvalid;
+    bool removedVcpusDuplicate;
+    bool ownsWorkerPool;
+};
+
+
+static int
+testQemuHotplugCpuAsyncDataInit(struct testQemuHotplugCpuAsyncData *asyncData,
+                                const char *test)
+{
+    asyncData->eventCallbackID = -1;
+
+    if (driver.workerPool) {
+        VIR_TEST_VERBOSE("stale qemu worker pool in async cpu test '%s'",
+                         test);
+        return -1;
+    }
+
+    if (virMutexInit(&asyncData->lock) < 0)
+        return -1;
+    asyncData->lockInitialized = true;
+
+    if (virCondInit(&asyncData->cond) < 0)
+        return -1;
+    asyncData->condInitialized = true;
+
+    if (!(driver.workerPool = virThreadPoolNewFull(0, 1, 0,
+                                                   qemuProcessEventHandler,
+                                                   "qemuProcessEventHandler",
+                                                   NULL, &driver)))
+        return -1;
+
+    asyncData->ownsWorkerPool = true;
+
+    return 0;
+}
+
+
+static void
+testQemuHotplugCpuAsyncDataClear(struct testQemuHotplugCpuAsyncData *asyncData,
+                                 virConnectPtr conn)
+{
+    if (asyncData->eventCallbackID >= 0)
+        virObjectEventStateDeregisterID(conn, driver.domainEventState,
+                                        asyncData->eventCallbackID, true);
+
+    if (asyncData->ownsWorkerPool)
+        g_clear_pointer(&driver.workerPool, virThreadPoolFree);
+
+    if (asyncData->condInitialized)
+        virCondDestroy(&asyncData->cond);
+    if (asyncData->lockInitialized)
+        virMutexDestroy(&asyncData->lock);
+
+    g_clear_pointer(&asyncData->removedVcpusExpected, virBitmapFree);
+    g_clear_pointer(&asyncData->removedVcpusActual, virBitmapFree);
+}
+
+
+static int
+testQemuHotplugCpuWaitVcpuRemoved(struct testQemuHotplugCpuAsyncData *asyncData)
+{
+    g_autofree char *expected = NULL;
+    g_autofree char *actual = NULL;
+    unsigned long long now;
+    unsigned long long deadline;
+    size_t expectedCount = virBitmapCountBits(asyncData->removedVcpusExpected);
+    size_t actualCount;
+    int ret = -1;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+    deadline = now + 1000;
+
+    virMutexLock(&asyncData->lock);
+    while (virBitmapCountBits(asyncData->removedVcpusActual) < expectedCount) {
+        if (virCondWaitUntil(&asyncData->cond, &asyncData->lock, deadline) < 0)
+            break;
+    }
+
+    actualCount = virBitmapCountBits(asyncData->removedVcpusActual);
+
+    if (asyncData->removedVcpusInvalid) {
+        VIR_TEST_VERBOSE("async cpu test reported an unexpected vCPU id");
+        goto cleanup;
+    }
+
+    if (asyncData->removedVcpusDuplicate) {
+        VIR_TEST_VERBOSE("async cpu test received duplicate vcpu-removed events");
+        goto cleanup;
+    }
+
+    if (actualCount < expectedCount) {
+        VIR_TEST_VERBOSE("timed out waiting for vcpu-removed events"
+                         " (%zu/%zu received)",
+                         actualCount, expectedCount);
+        goto cleanup;
+    }
+
+    if (!virBitmapEqual(asyncData->removedVcpusExpected,
+                        asyncData->removedVcpusActual)) {
+        expected = virBitmapFormat(asyncData->removedVcpusExpected);
+        actual = virBitmapFormat(asyncData->removedVcpusActual);
+        VIR_TEST_VERBOSE("expected removed vCPUs '%s', got '%s'",
+                         NULLSTR(expected), NULLSTR(actual));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virMutexUnlock(&asyncData->lock);
+
+    return ret;
+}
+
+
 static struct testQemuHotplugCpuData *
 testQemuHotplugCpuPrepare(const struct testQemuHotplugCpuParams *params)
 {
@@ -407,6 +554,124 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
 }
 
 
+static void
+testQemuHotplugCpuVcpuRemoved(virConnectPtr conn G_GNUC_UNUSED,
+                              virDomainPtr dom G_GNUC_UNUSED,
+                              unsigned int vcpuid,
+                              void *opaque)
+{
+    struct testQemuHotplugCpuAsyncData *asyncData = opaque;
+
+    virMutexLock(&asyncData->lock);
+
+    if (virBitmapIsBitSet(asyncData->removedVcpusActual, vcpuid))
+        asyncData->removedVcpusDuplicate = true;
+
+    if (virBitmapSetBit(asyncData->removedVcpusActual, vcpuid) < 0)
+        asyncData->removedVcpusInvalid = true;
+
+    virCondBroadcast(&asyncData->cond);
+    virMutexUnlock(&asyncData->lock);
+}
+
+
+static int
+testQemuHotplugCpuRegisterVcpuRemoved(struct testQemuHotplugCpuData *data,
+                                      const struct testQemuHotplugCpuAsyncParams *async,
+                                      struct testQemuHotplugCpuAsyncData *asyncData)
+{
+    g_autoptr(virBitmap) expected = NULL;
+    size_t maxvcpus = virDomainDefGetVcpusMax(data->vm->def);
+
+    if (!async->removedVcpus) {
+        VIR_TEST_VERBOSE("async cpu test '%s' is missing expected removed vCPUs",
+                         async->test);
+        return -1;
+    }
+
+    if (virBitmapParse(async->removedVcpus, &expected, maxvcpus) < 0)
+        return -1;
+
+    if (!(asyncData->removedVcpusActual = virBitmapNew(maxvcpus)))
+        return -1;
+
+    asyncData->removedVcpusExpected = g_steal_pointer(&expected);
+
+    if (virDomainEventStateRegisterID(async->conn,
+                                      driver.domainEventState,
+                                      NULL,
+                                      VIR_DOMAIN_EVENT_ID_VCPU_REMOVED,
+                                      VIR_DOMAIN_EVENT_CALLBACK(testQemuHotplugCpuVcpuRemoved),
+                                      asyncData,
+                                      NULL,
+                                      &asyncData->eventCallbackID) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testQemuHotplugCpuCompleteAsync(struct testQemuHotplugCpuData *data,
+                                const struct testQemuHotplugCpuAsyncParams *async,
+                                struct testQemuHotplugCpuAsyncData *asyncData)
+{
+    g_autofree char *activeXML = NULL;
+    g_autofree char *pendingLiveFile = NULL;
+    size_t i;
+    bool vmUnlocked = false;
+    int ret = -1;
+
+    if (!async->deviceDeletedAliases ||
+        async->ndeviceDeletedAliases == 0) {
+        VIR_TEST_VERBOSE("async cpu test '%s' is missing DEVICE_DELETED aliases",
+                         async->test);
+        return -1;
+    }
+
+    if (!(activeXML = virDomainDefFormat(data->vm->def, driver.xmlopt,
+                                         VIR_DOMAIN_DEF_FORMAT_SECURE)))
+        return -1;
+
+    pendingLiveFile = g_strdup_printf("%s/qemuhotplugtestcpus/%s-result-pending-live.xml",
+                                      abs_srcdir, async->test);
+
+    if (virTestCompareToFile(activeXML, pendingLiveFile) < 0)
+        return -1;
+
+    if (testQemuHotplugCpuRegisterVcpuRemoved(data, async, asyncData) < 0)
+        return -1;
+
+    /* qemuDomainRefreshVcpuInfo() validates vCPU TIDs against the emulator
+     * PID. A running QEMU process always has a non-zero PID, so mirror that
+     * before DEVICE_DELETED processing reports unplugged vCPUs with tid == 0. */
+    data->vm->pid = QEMU_HOTPLUG_TEST_DOMAIN_PID;
+
+    virObjectUnlock(data->vm);
+    vmUnlocked = true;
+
+    for (i = 0; i < async->ndeviceDeletedAliases; i++)
+        qemuMonitorTestEmitDeviceDeleted(data->mon,
+                                         async->deviceDeletedAliases[i]);
+
+    if (testQemuHotplugCpuWaitVcpuRemoved(asyncData) < 0)
+        goto cleanup;
+
+    virThreadPoolDrain(driver.workerPool);
+
+    virObjectLock(data->vm);
+    vmUnlocked = false;
+
+    ret = 0;
+
+ cleanup:
+    if (vmUnlocked)
+        virObjectLock(data->vm);
+
+    return ret;
+}
+
+
 static int
 testQemuHotplugCpuGroup(const void *opaque)
 {
@@ -439,6 +704,71 @@ testQemuHotplugCpuGroup(const void *opaque)
  cleanup:
     testQemuHotplugCpuDataFree(data);
     return ret;
+}
+
+
+static int
+testQemuHotplugCpuAsync(const struct testQemuHotplugCpuAsyncParams *async,
+                        bool group)
+{
+    struct testQemuHotplugCpuData *data = NULL;
+    struct testQemuHotplugCpuAsyncData asyncData = { .eventCallbackID = -1 };
+    struct testQemuHotplugCpuParams params = {
+        .test = async->test,
+        .arch = async->arch,
+        .capsLatestFiles = async->capsLatestFiles,
+        .capsCache = async->capsCache,
+        .schemaCache = async->schemaCache,
+    };
+    g_autoptr(virBitmap) map = NULL;
+    int ret = -1;
+    int rc;
+
+    if (!(data = testQemuHotplugCpuPrepare(&params)))
+        return -1;
+
+    if (testQemuHotplugCpuAsyncDataInit(&asyncData, async->test) < 0)
+        goto cleanup;
+
+    if (group) {
+        rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
+                                        data->vm->newDef, async->newcpus,
+                                        true, true);
+    } else {
+        if (virBitmapParse(async->cpumap, &map, 128) < 0)
+            goto cleanup;
+
+        rc = qemuDomainSetVcpuInternal(&driver, data->vm, data->vm->def,
+                                       data->vm->newDef, map, false,
+                                       true);
+    }
+
+    if (rc < 0)
+        goto cleanup;
+
+    if (testQemuHotplugCpuCompleteAsync(data, async, &asyncData) < 0)
+        goto cleanup;
+
+    ret = testQemuHotplugCpuFinalize(data);
+
+ cleanup:
+    testQemuHotplugCpuAsyncDataClear(&asyncData, async->conn);
+    testQemuHotplugCpuDataFree(data);
+    return ret;
+}
+
+
+static int G_GNUC_UNUSED
+testQemuHotplugCpuGroupAsync(const void *opaque)
+{
+    return testQemuHotplugCpuAsync(opaque, true);
+}
+
+
+static int G_GNUC_UNUSED
+testQemuHotplugCpuIndividualAsync(const void *opaque)
+{
+    return testQemuHotplugCpuAsync(opaque, false);
 }
 
 
@@ -815,6 +1145,26 @@ mymain(void)
         cpudata.fail = expectfail; \
         if (virTestRun("hotplug vcpus group " prefix, \
                        testQemuHotplugCpuIndividual, &cpudata) < 0) \
+            ret = -1; \
+    } while (0)
+
+#define DO_TEST_CPU_INDIVIDUAL_ASYNC(archname, prefix, mapstr, alias, removed) \
+    do { \
+        const char *aliases[] = { alias }; \
+        const struct testQemuHotplugCpuAsyncParams async = { \
+            .test = prefix, \
+            .cpumap = mapstr, \
+            .conn = conn, \
+            .deviceDeletedAliases = aliases, \
+            .ndeviceDeletedAliases = G_N_ELEMENTS(aliases), \
+            .removedVcpus = removed, \
+            .arch = archname, \
+            .capsLatestFiles = capsLatestFiles, \
+            .capsCache = capsCache, \
+            .schemaCache = schemaCache, \
+        }; \
+        if (virTestRun("hotplug vcpus individual async " prefix, \
+                       testQemuHotplugCpuIndividualAsync, &async) < 0) \
             ret = -1; \
     } while (0)
 
