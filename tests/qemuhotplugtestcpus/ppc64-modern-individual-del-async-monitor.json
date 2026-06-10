@@ -1,0 +1,227 @@
+{"execute":"query-hotpluggable-cpus","id":"libvirt-1"}
+
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 24
+      },
+      "vcpus-count": 8,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 16
+      },
+      "vcpus-count": 8,
+      "qom-path": "/machine/peripheral/vcpu16",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 8
+      },
+      "vcpus-count": 8,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 0
+      },
+      "vcpus-count": 8,
+      "qom-path": "/machine/unattached/device[1]",
+      "type": "host-spapr-cpu-core"
+    }
+  ],
+  "id": "libvirt-15"
+}
+
+{"execute":"query-cpus-fast","id":"libvirt-2"}
+
+{
+  "return": [
+    {
+      "target": "ppc",
+      "current": true,
+      "cpu-index": 0,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[0]",
+      "halted": false,
+      "thread-id": 21925
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 1,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[1]",
+      "halted": false,
+      "thread-id": 21926
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 2,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[2]",
+      "halted": false,
+      "thread-id": 21927
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 3,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[3]",
+      "halted": false,
+      "thread-id": 21928
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 4,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[4]",
+      "halted": false,
+      "thread-id": 21930
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 5,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[5]",
+      "halted": false,
+      "thread-id": 21931
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 6,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[6]",
+      "halted": false,
+      "thread-id": 21932
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 7,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/unattached/device[1]/thread[7]",
+      "halted": false,
+      "thread-id": 21933
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 8,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[0]",
+      "halted": false,
+      "thread-id": 22131
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 9,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[1]",
+      "halted": false,
+      "thread-id": 22132
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 10,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[2]",
+      "halted": false,
+      "thread-id": 22133
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 11,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[3]",
+      "halted": false,
+      "thread-id": 22134
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 12,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[4]",
+      "halted": false,
+      "thread-id": 22135
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 13,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[5]",
+      "halted": false,
+      "thread-id": 22136
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 14,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[6]",
+      "halted": false,
+      "thread-id": 22137
+    },
+    {
+      "target": "ppc",
+      "current": false,
+      "cpu-index": 15,
+      "nip": -4611686018426772172,
+      "qom-path": "/machine/peripheral/vcpu16/thread[7]",
+      "halted": false,
+      "thread-id": 22138
+    }
+  ],
+  "id": "libvirt-14"
+}
+
+{
+    "execute": "device_del",
+    "arguments": {
+        "id": "vcpu16"
+    },
+    "id": "libvirt-3"
+}
+
+{"return": {}}
+
+{"execute":"query-hotpluggable-cpus","id":"libvirt-4"}
+
+{
+  "return": [
+    {"props":{"core-id":0},"vcpus-count":8,"qom-path":"/machine/unattached/device[1]","type":"host-spapr-cpu-core"},
+    {"props":{"core-id":8},"vcpus-count":8,"type":"host-spapr-cpu-core"},
+    {"props":{"core-id":16},"vcpus-count":8,"type":"host-spapr-cpu-core"},
+    {"props":{"core-id":24},"vcpus-count":8,"type":"host-spapr-cpu-core"}
+  ],
+  "id": "libvirt-4"
+}
+
+{"execute":"query-cpus-fast","id":"libvirt-5"}
+
+{
+  "return": [
+    {"target":"ppc","current":true,"cpu-index":0,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[0]","halted":false,"thread-id":21925},
+    {"target":"ppc","current":false,"cpu-index":1,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[1]","halted":false,"thread-id":21926},
+    {"target":"ppc","current":false,"cpu-index":2,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[2]","halted":false,"thread-id":21927},
+    {"target":"ppc","current":false,"cpu-index":3,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[3]","halted":false,"thread-id":21928},
+    {"target":"ppc","current":false,"cpu-index":4,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[4]","halted":false,"thread-id":21930},
+    {"target":"ppc","current":false,"cpu-index":5,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[5]","halted":false,"thread-id":21931},
+    {"target":"ppc","current":false,"cpu-index":6,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[6]","halted":false,"thread-id":21932},
+    {"target":"ppc","current":false,"cpu-index":7,"nip":-4611686018426772172,"qom-path":"/machine/unattached/device[1]/thread[7]","halted":false,"thread-id":21933}
+  ],
+  "id": "libvirt-5"
+}

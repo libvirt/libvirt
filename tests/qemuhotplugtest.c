@@ -765,7 +765,7 @@ testQemuHotplugCpuGroupAsync(const void *opaque)
 }
 
 
-static int G_GNUC_UNUSED
+static int
 testQemuHotplugCpuIndividualAsync(const void *opaque)
 {
     return testQemuHotplugCpuAsync(opaque, false);
@@ -1171,10 +1171,14 @@ mymain(void)
     DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", true, false);
     DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "6,7", true, true);
     DO_TEST_CPU_INDIVIDUAL("x86_64", "x86-modern-individual-add", "7", false, true);
+    DO_TEST_CPU_INDIVIDUAL_ASYNC("x86_64", "x86-modern-individual-del-async",
+                                 "7", "vcpu7", "7");
 
     DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-23", true, false);
     DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "16-22", true, true);
     DO_TEST_CPU_INDIVIDUAL("ppc64", "ppc64-modern-individual", "17", true, true);
+    DO_TEST_CPU_INDIVIDUAL_ASYNC("ppc64", "ppc64-modern-individual-del-async",
+                                 "16-23", "vcpu16", "16-23");
 
     qemuTestDriverFree(&driver);
     virObjectUnref(data.vm);
