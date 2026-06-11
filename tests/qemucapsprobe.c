@@ -79,7 +79,8 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
 
     if (!(caps = virQEMUCapsNewForBinaryInternal(VIR_ARCH_NONE, argv[1], "/tmp",
-                                                 -1, -1, NULL, 0, NULL, NULL)))
+                                                 -1, -1, NULL, 0, NULL, NULL,
+                                                 NULL)))
         return EXIT_FAILURE;
 
     host = virArchFromHost();

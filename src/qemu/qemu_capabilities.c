@@ -4551,6 +4551,11 @@ struct _virQEMUCapsCachePriv {
     /* cache whether /dev/kvm is usable as runUid:runGuid */
     virTristateBool kvmUsable;
     time_t kvmCtime;
+
+    /* qemu.conf allows masking out supported capabilities via
+     * 'capabilities_filter' configuration. 'maskedCaps' if non-NULL
+     * maps out which bits are to be removed */
+    virBitmap *maskedCaps;
 };
 typedef struct _virQEMUCapsCachePriv virQEMUCapsCachePriv;
 
@@ -4564,6 +4569,7 @@ virQEMUCapsCachePrivFree(void *privData)
     g_free(priv->kernelVersion);
     virCPUDataFree(priv->cpuData);
     g_free(priv->hostCPUSignature);
+    virBitmapFree(priv->maskedCaps);
     g_free(priv);
 }
 
@@ -6123,7 +6129,8 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *hostCPUSignature,
                                 unsigned int microcodeVersion,
                                 const char *kernelVersion,
-                                virCPUData* cpuData)
+                                virCPUData* cpuData,
+                                virBitmap *maskedCaps)
 {
     g_autoptr(virQEMUCaps) qemuCaps = virQEMUCapsNewBinary(binary);
     struct stat sb;
@@ -6161,6 +6168,10 @@ virQEMUCapsNewForBinaryInternal(virArch hostArch,
 
     qemuCaps->libvirtCtime = virGetSelfLastChanged();
     qemuCaps->libvirtVersion = LIBVIR_VERSION_NUMBER;
+
+    /* If we have capabilities masked out via qemu.conf apply them here */
+    if (maskedCaps)
+        virBitmapSubtract(qemuCaps->flags, maskedCaps);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
         virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
@@ -6202,7 +6213,8 @@ virQEMUCapsNewData(const char *binary,
                                            priv->hostCPUSignature,
                                            virHostCPUGetMicrocodeVersion(priv->hostArch),
                                            priv->kernelVersion,
-                                           priv->cpuData);
+                                           priv->cpuData,
+                                           priv->maskedCaps);
 }
 
 
@@ -6241,7 +6253,8 @@ virFileCache *
 virQEMUCapsCacheNew(const char *libDir,
                     const char *cacheDir,
                     uid_t runUid,
-                    gid_t runGid)
+                    gid_t runGid,
+                    virBitmap *maskedCaps)
 {
     g_autofree char *capsCacheDir = NULL;
     virFileCache *cache = NULL;
@@ -6271,9 +6284,11 @@ virQEMUCapsCacheNew(const char *libDir,
         priv->kernelVersion = g_strdup_printf("%s %s", uts.release, uts.version);
 
     priv->cpuData = virCPUDataGetHost();
+    priv->maskedCaps = maskedCaps;
     return cache;
 
  error:
+    virBitmapFree(maskedCaps);
     virObjectUnref(cache);
     return NULL;
 }

@@ -868,7 +868,8 @@ char * virQEMUCapsGetDefaultEmulator(virArch hostarch,
 virFileCache *virQEMUCapsCacheNew(const char *libDir,
                                     const char *cacheDir,
                                     uid_t uid,
-                                    gid_t gid);
+                                    gid_t gid,
+                                    virBitmap *maskedCaps);
 virQEMUCaps *virQEMUCapsCacheLookup(virFileCache *cache,
                                       const char *binary);
 virQEMUCaps *virQEMUCapsCacheLookupCopy(virFileCache *cache,

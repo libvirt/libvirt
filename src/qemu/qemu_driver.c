@@ -539,6 +539,7 @@ qemuStateInitialize(bool privileged,
     const char *defsecmodel = NULL;
     g_autoptr(virIdentity) identity = virIdentityGetCurrent();
     virDomainDriverAutoStartConfig autostartCfg;
+    g_autoptr(virBitmap) maskedCaps = NULL;
 
     qemu_driver = g_new0(virQEMUDriver, 1);
 
@@ -848,10 +849,30 @@ qemuStateInitialize(bool privileged,
         run_gid = cfg->group;
     }
 
+    if (cfg->capabilityfilters) {
+        int tmp;
+        char **next;
+
+        maskedCaps = virBitmapNew(0);
+
+        for (next = cfg->capabilityfilters; *next; next++) {
+            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
+                virReportError(VIR_ERR_CONF_SYNTAX,
+                               _("invalid capability_filters capability '%1$s'"),
+                               *next);
+                return -1;
+            }
+
+            virBitmapSetBitExpand(maskedCaps, tmp);
+        }
+    }
+
+
     qemu_driver->qemuCapsCache = virQEMUCapsCacheNew(cfg->libDir,
                                                      cfg->cacheDir,
                                                      run_uid,
-                                                     run_gid);
+                                                     run_gid,
+                                                     g_steal_pointer(&maskedCaps));
     if (!qemu_driver->qemuCapsCache)
         goto error;
 

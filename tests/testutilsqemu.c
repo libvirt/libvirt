@@ -373,7 +373,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
 
     /* Using /dev/null for libDir and cacheDir automatically produces errors
      * upon attempt to use any of them */
-    driver->qemuCapsCache = virQEMUCapsCacheNew("/dev/null", "/dev/null", 0, 0);
+    driver->qemuCapsCache = virQEMUCapsCacheNew("/dev/null", "/dev/null",
+                                                0, 0, NULL);
     if (!driver->qemuCapsCache)
         goto error;
 

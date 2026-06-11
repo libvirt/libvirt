@@ -5915,25 +5915,12 @@ static int
 qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     qemuDomainXmlNsDef *nsdef = vm->def->namespaceData;
-    char **next;
-    int tmp;
-
-    if (cfg->capabilityfilters) {
-        for (next = cfg->capabilityfilters; *next; next++) {
-            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid capability_filters capability '%1$s'"),
-                               *next);
-                return -1;
-            }
-
-            virQEMUCapsClear(priv->qemuCaps, tmp);
-        }
-    }
 
     if (nsdef) {
+        char **next;
+        int tmp;
+
         for (next = nsdef->capsadd; next && *next; next++) {
             if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
