@@ -5911,43 +5911,6 @@ qemuProcessStartValidate(virQEMUDriver *driver,
 }
 
 
-static int
-qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainXmlNsDef *nsdef = vm->def->namespaceData;
-
-    if (nsdef) {
-        char **next;
-        int tmp;
-
-        for (next = nsdef->capsadd; next && *next; next++) {
-            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid qemu namespace capability '%1$s'"),
-                               *next);
-                return -1;
-            }
-
-            virQEMUCapsSet(priv->qemuCaps, tmp);
-        }
-
-        for (next = nsdef->capsdel; next && *next; next++) {
-            if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid qemu namespace capability '%1$s'"),
-                               *next);
-                return -1;
-            }
-
-            virQEMUCapsClear(priv->qemuCaps, tmp);
-        }
-    }
-
-    return 0;
-}
-
-
 /**
  * qemuProcessPrepareQEMUCaps:
  * @vm: domain object
@@ -5971,11 +5934,8 @@ qemuProcessPrepareQEMUCaps(virDomainObj *vm,
         return -1;
 
     /* Update qemu capabilities according to lists passed in via namespace */
-    if (qemuProcessStartUpdateCustomCaps(vm) < 0)
+    if (qemuDomainUpdateCustomCapabilities(vm->def, priv->qemuCaps, NULL) < 0)
         return -1;
-
-    /* re-process capability lockouts since we might have removed capabilities */
-    virQEMUCapsInitProcessCapsInterlock(priv->qemuCaps);
 
     return 0;
 }

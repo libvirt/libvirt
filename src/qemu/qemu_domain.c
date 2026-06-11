@@ -11754,3 +11754,82 @@ qemuDomainMachineSupportsFloppy(const char *machine,
 
     return true;
 }
+
+
+/**
+ * qemuDomainUpdateCustomCapabilities:
+ * @def: domain definition
+ * @qemuCaps: qemu capabilities
+ * @qemuCapsCopy: if non-NULL filled filled with a valid virQEMUCaps pointer (see below)
+ *
+ * Updates @qemuCaps based on the qemu namespace XML config for modifying
+ * capabilities:
+ *
+ *  <domain type='qemu' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+ *    <qemu:capabilities>
+ *      <qemu:add capability='blockdev'/>
+ *      <qemu:del capability='drive'/>
+ *    </qemu:capabilities>
+ *  </domain>
+ *
+ *  If @qemuCapsCopy is NULL, @qemuCaps is directly modified.
+ *
+ *  If @qemuCapsCopy is non-NULL, it's always filled with a virQEMUCaps instance
+ *  that the caller needs to unref. The following applies:
+ *   - no caps modification needed: @qemuCaps is ref'd and filled into @qemuCapsCopy
+ *   - caps modifications are needed: @qemuCaps is copied into @qemuCapsCopy and
+ *                                    modifications happen on the copy
+ *
+ *  Returns 0 on success (including when no modification was needed), -1 on
+ *  error and reports libvirt errors.
+ */
+int
+qemuDomainUpdateCustomCapabilities(const virDomainDef *def,
+                                   virQEMUCaps *qemuCaps,
+                                   virQEMUCaps **qemuCapsCopy)
+{
+    qemuDomainXmlNsDef *nsdef = def->namespaceData;
+    char **next;
+    int tmp;
+
+    if (!nsdef ||
+        (!nsdef->capsadd && !nsdef->capsdel)) {
+
+        if (qemuCapsCopy)
+            *qemuCapsCopy = virObjectRef(qemuCaps);
+
+        return 0;
+    }
+
+    if (qemuCapsCopy) {
+        *qemuCapsCopy = virQEMUCapsNewCopy(qemuCaps);
+
+        qemuCaps = *qemuCapsCopy;
+    }
+
+    for (next = nsdef->capsadd; next && *next; next++) {
+        if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid qemu namespace capability '%1$s'"),
+                           *next);
+            return -1;
+        }
+
+        virQEMUCapsSet(qemuCaps, tmp);
+    }
+
+    for (next = nsdef->capsdel; next && *next; next++) {
+        if ((tmp = virQEMUCapsTypeFromString(*next)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid qemu namespace capability '%1$s'"),
+                           *next);
+            return -1;
+        }
+
+        virQEMUCapsClear(qemuCaps, tmp);
+    }
+
+    virQEMUCapsInitProcessCapsInterlock(qemuCaps);
+
+    return 0;
+}
