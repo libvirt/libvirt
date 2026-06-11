@@ -25,8 +25,6 @@
 
 #pragma once
 
-virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps);
-
 virQEMUCaps *
 virQEMUCapsNewForBinaryInternal(virArch hostArch,
                                 const char *binary,

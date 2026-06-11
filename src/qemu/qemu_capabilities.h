@@ -883,6 +883,8 @@ virQEMUCaps *virQEMUCapsCacheLookupDefault(virFileCache *cache,
                                              virDomainVirtType *retVirttype,
                                              const char **retMachine);
 
+virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps);
+
 virCaps *virQEMUCapsInit(virFileCache *cache);
 
 int virQEMUCapsGetDefaultVersion(virCaps *caps,

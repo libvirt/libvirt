@@ -2095,7 +2095,8 @@ virQEMUCapsAccelCopy(virQEMUCapsAccel *dst,
 }
 
 
-virQEMUCaps *virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
+virQEMUCaps *
+virQEMUCapsNewCopy(virQEMUCaps *qemuCaps)
 {
     g_autoptr(virQEMUCaps) ret = virQEMUCapsNewBinary(qemuCaps->binary);
     size_t i;
