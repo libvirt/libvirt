@@ -1919,9 +1919,16 @@ qemuDomainPostParseDataAlloc(const virDomainDef *def,
                              void **parseOpaque)
 {
     virQEMUDriver *driver = opaque;
+    g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
 
-    if (!(*parseOpaque = virQEMUCapsCacheLookup(driver->qemuCapsCache,
-                                                def->emulator)))
+    *parseOpaque = NULL;
+
+    if (!(qemuCapsLocal = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+                                                 def->emulator)))
+        return 1;
+
+    if (qemuDomainUpdateCustomCapabilities(def, qemuCapsLocal,
+                                           (virQEMUCaps **) parseOpaque) < 0)
         return 1;
 
     return 0;
