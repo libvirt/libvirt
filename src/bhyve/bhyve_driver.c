@@ -1054,13 +1054,50 @@ bhyveDomainShutdownSignal(virDomainObj *vm,
 }
 
 static int
+bhyveDomainShutdownFlagsAgent(virDomainObj *vm,
+                              bool isReboot,
+                              bool reportError)
+{
+    int ret = -1;
+    qemuAgent *agent;
+    int agentFlag = isReboot ? QEMU_AGENT_SHUTDOWN_REBOOT :
+        QEMU_AGENT_SHUTDOWN_POWERDOWN;
+
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
+        return -1;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    if (bhyveDomainEnsureAgent(vm, reportError) < 0)
+        goto endjob;
+
+    agent = bhyveDomainObjEnterAgent(vm);
+    qemuAgentShutdown(agent, agentFlag);
+    bhyveDomainObjExitAgent(vm, agent);
+    ret = 0;
+
+ endjob:
+    virDomainObjEndAgentJob(vm);
+    return ret;
+}
+
+static int
 bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     virDomainObj *vm;
+    bhyveDomainObjPrivate *priv;
     int ret = -1;
     bool isReboot = false;
+    bool useAgent = false;
+    bool agentRequested, signalRequested;
+    bool agentForced;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_SHUTDOWN_SIGNAL |
+                  VIR_DOMAIN_SHUTDOWN_GUEST_AGENT, -1);
 
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
@@ -1071,13 +1108,41 @@ bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         VIR_INFO("Domain on_poweroff setting overridden, attempting reboot");
     }
 
+    priv = vm->privateData;
+    agentRequested = flags & VIR_DOMAIN_SHUTDOWN_GUEST_AGENT;
+    signalRequested = flags & VIR_DOMAIN_SHUTDOWN_SIGNAL;
+
+    /* Prefer agent unless we were requested to not to. */
+    if (agentRequested || !flags)
+        useAgent = true;
+
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    ret = bhyveDomainShutdownSignal(vm, isReboot);
+    agentForced = agentRequested && !signalRequested;
+    if (useAgent) {
+        ret = bhyveDomainShutdownFlagsAgent(vm, isReboot, agentForced);
+        if (((ret < 0) || (priv->agent != NULL)) && agentForced)
+            goto cleanup;
+    }
+
+    /* If we are not enforced to use just an agent, try signal
+     * shutdown as well in case agent did not succeed.
+     */
+    if (!useAgent || (((ret < 0) ||
+        (priv->agent != NULL)) && (signalRequested || !flags))) {
+        /* Even if agent failed, we have to check if guest went away
+         * by itself while our locks were down.  */
+        if (useAgent && !virDomainObjIsActive(vm)) {
+            ret = 0;
+            goto cleanup;
+        }
+
+        ret = bhyveDomainShutdownSignal(vm, isReboot);
+    }
 
  cleanup:
     virDomainObjEndAPI(&vm);
