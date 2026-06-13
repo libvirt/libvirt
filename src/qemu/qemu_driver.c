@@ -20396,7 +20396,7 @@ qemuDomainAuthorizedSSHKeysSet(virDomainPtr dom,
     if (virDomainAuthorizedSshKeysSetEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_QUERY) < 0)
+    if (virDomainObjBeginAgentJob(vm, VIR_AGENT_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (!qemuDomainAgentAvailable(vm, true))
