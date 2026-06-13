@@ -1086,6 +1086,12 @@ bhyveDomainShutdownFlagsAgent(virDomainObj *vm,
 }
 
 static int
+bhyveDomainRebootAgent(virDomainObj *vm, bool isReboot, bool reportError)
+{
+    return bhyveDomainShutdownFlagsAgent(vm, isReboot, reportError);
+}
+
+static int
 bhyveDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     virDomainObj *vm;
@@ -1160,10 +1166,15 @@ bhyveDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     virConnectPtr conn = dom->conn;
     virDomainObj *vm;
-    bool isReboot = true;
+    bhyveDomainObjPrivate *priv;
     int ret = -1;
+    bool isReboot = true;
+    bool useAgent = false;
+    bool agentRequested, signalRequested;
+    bool agentForced;
 
-    virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN, -1);
+    virCheckFlags(VIR_DOMAIN_REBOOT_SIGNAL |
+                  VIR_DOMAIN_REBOOT_GUEST_AGENT, -1);
 
     if (!(vm = bhyveDomObjFromDomain(dom)))
         goto cleanup;
@@ -1174,13 +1185,34 @@ bhyveDomainReboot(virDomainPtr dom, unsigned int flags)
         VIR_INFO("Domain on_reboot setting overridden, shutting down");
     }
 
+    priv = vm->privateData;
+    agentRequested = flags & VIR_DOMAIN_REBOOT_GUEST_AGENT;
+    signalRequested = flags & VIR_DOMAIN_REBOOT_SIGNAL;
+
+    /* Prefer agent unless we were requested to not to. */
+    if (agentRequested || !flags)
+        useAgent = true;
+
     if (virDomainRebootEnsureACL(conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto cleanup;
 
-    ret = bhyveDomainShutdownSignal(vm, isReboot);
+    agentForced = agentRequested && !signalRequested;
+    if (useAgent) {
+        ret = bhyveDomainRebootAgent(vm, isReboot, agentForced);
+        if (((ret < 0) || (priv->agent != NULL)) && agentForced)
+            goto cleanup;
+    }
+
+    /* If we are not enforced to use just an agent, try signal
+     * reboot as well in case agent did not succeed.
+     */
+    if (!useAgent || (((ret < 0) ||
+        (priv->agent != NULL)) && (signalRequested || !flags))) {
+        ret = bhyveDomainShutdownSignal(vm, isReboot);
+    }
 
  cleanup:
     virDomainObjEndAPI(&vm);
