@@ -4,9 +4,9 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-function install_buildenv() {
-    zypper update -y
-    zypper addrepo -fc https://download.opensuse.org/update/leap/15.6/backports/openSUSE:Backports:SLE-15-SP6:Update.repo
+FROM registry.opensuse.org/opensuse/leap:16.0
+
+RUN zypper update -y && \
     zypper install -y --allow-downgrade \
            audit-devel \
            augeas \
@@ -18,7 +18,6 @@ function install_buildenv() {
            clang-devel \
            codespell \
            cpp \
-           cppi \
            cyrus-sasl-devel \
            device-mapper-devel \
            diffutils \
@@ -64,32 +63,29 @@ function install_buildenv() {
            perl-base \
            pkgconfig \
            python3-base \
+           python3-black \
            python3-docutils \
            python3-flake8 \
-           python3-pip \
            python3-pytest \
-           python3-setuptools \
-           python3-wheel \
            qemu-tools \
            readline-devel \
            rpm-build \
-           sanlock-devel \
            sed \
            systemd-rpm-macros \
-           systemtap-sdt-devel \
+           systemtap-dtrace \
+           systemtap-headers \
            wireshark-devel \
-           xen-devel
-    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED
-    rpm -qa | sort > /packages.txt
-    mkdir -p /usr/libexec/ccache-wrappers
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang
+           xen-devel && \
+    zypper clean --all && \
+    rm -f /usr/lib*/python3*/EXTERNALLY-MANAGED && \
+    rpm -qa | sort > /packages.txt && \
+    mkdir -p /usr/libexec/ccache-wrappers && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
-    /usr/bin/pip3 install black
-}
 
-export CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
-export LANG="en_US.UTF-8"
-export MAKE="/usr/bin/make"
-export NINJA="/usr/bin/ninja"
-export PYTHON="/usr/bin/python3"
+ENV CCACHE_WRAPPERSDIR="/usr/libexec/ccache-wrappers"
+ENV LANG="en_US.UTF-8"
+ENV MAKE="/usr/bin/make"
+ENV NINJA="/usr/bin/ninja"
+ENV PYTHON="/usr/bin/python3"

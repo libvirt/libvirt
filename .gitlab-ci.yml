@@ -108,14 +108,14 @@ codestyle_job:
   stage: sanity_checks
   extends: .gitlab_native_build_job
   needs:
-    - job: x86_64-opensuse-leap-15-container
+    - job: x86_64-opensuse-leap-16-container
       optional: true
   script:
     - source ci/jobs.sh
     - run_codestyle
   variables:
-    NAME: opensuse-leap-15
-    TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/leap:15.5
+    NAME: opensuse-leap-16
+    TARGET_BASE_IMAGE: registry.opensuse.org/opensuse/leap:16.0
 
 # This artifact published by this job is downloaded to push to Weblate
 # for translation usage:
