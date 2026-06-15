@@ -6,6 +6,10 @@ Requires=virtlogd.socket
 Wants=virtlockd.socket
 After=virtlogd.socket
 After=virtlockd.socket
+# To ensure that our helper daemons are not shut down before the main daemon
+# shuts down we need also explicit ordering with the .service unit
+After=virtlogd.service
+After=virtlock.service
 Wants=systemd-machined.service
 After=systemd-machined.service
 After=remote-fs.target
