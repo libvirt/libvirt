@@ -29,7 +29,7 @@
     </disk>
     <disk type='file' device='disk'>
       <source file='[datastore] directory/esx6.7-rhel7.7-x86_64_4.vmdk'/>
-      <target dev='sdbl' bus='scsi'/>
+      <target dev='sdbm' bus='scsi'/>
       <address type='drive' controller='1' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='scsi' index='0' model='vmpvscsi'/>

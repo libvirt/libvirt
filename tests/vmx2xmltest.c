@@ -151,6 +151,8 @@ mymain(void)
     DO_TEST("graphics-vnc");
 
     DO_TEST("scsi-driver");
+    DO_TEST("scsi-driver-max");
+    DO_TEST("scsi-driver-superwide-max");
     DO_TEST("scsi-writethrough");
 
     DO_TEST("harddisk-scsi-file");

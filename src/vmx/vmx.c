@@ -2271,7 +2271,7 @@ virVMXGenerateDiskTarget(virDomainDiskDef *def,
             return -1;
         }
 
-        if (unit < 0 || unit > vmdef->scsiBusMaxUnit || unit == 7) {
+        if (unit < 0 || unit >= vmdef->scsiBusMaxUnit || unit == 7) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("SCSI unit index %1$d out of [0..6,8..%2$u] range"),
                            unit, vmdef->scsiBusMaxUnit);

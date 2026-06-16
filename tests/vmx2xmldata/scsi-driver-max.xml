@@ -1,0 +1,95 @@
+<domain type='vmware'>
+  <name>test</name>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk0.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk1.vmdk'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk2.vmdk'/>
+      <target dev='sdc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk3.vmdk'/>
+      <target dev='sdd' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='3'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk4.vmdk'/>
+      <target dev='sde' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk5.vmdk'/>
+      <target dev='sdf' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='5'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk6.vmdk'/>
+      <target dev='sdg' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='6'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk8.vmdk'/>
+      <target dev='sdh' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='8'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk9.vmdk'/>
+      <target dev='sdi' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='9'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk10.vmdk'/>
+      <target dev='sdj' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='10'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk11.vmdk'/>
+      <target dev='sdk' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='11'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk12.vmdk'/>
+      <target dev='sdl' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='12'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk13.vmdk'/>
+      <target dev='sdm' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='13'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk14.vmdk'/>
+      <target dev='sdn' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='14'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk15.vmdk'/>
+      <target dev='sdo' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='15'/>
+    </disk>
+    <controller type='scsi' index='0' model='vmpvscsi'/>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>

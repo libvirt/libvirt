@@ -1,0 +1,340 @@
+<domain type='vmware'>
+  <name>test</name>
+  <uuid>00000000-0000-0000-0000-000000000000</uuid>
+  <memory unit='KiB'>32768</memory>
+  <currentMemory unit='KiB'>32768</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686'>hvm</type>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk0.vmdk'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk1.vmdk'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk2.vmdk'/>
+      <target dev='sdc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk3.vmdk'/>
+      <target dev='sdd' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='3'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk4.vmdk'/>
+      <target dev='sde' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='4'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk5.vmdk'/>
+      <target dev='sdf' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='5'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk6.vmdk'/>
+      <target dev='sdg' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='6'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk8.vmdk'/>
+      <target dev='sdh' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='8'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk9.vmdk'/>
+      <target dev='sdi' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='9'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk10.vmdk'/>
+      <target dev='sdj' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='10'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk11.vmdk'/>
+      <target dev='sdk' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='11'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk12.vmdk'/>
+      <target dev='sdl' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='12'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk13.vmdk'/>
+      <target dev='sdm' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='13'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk14.vmdk'/>
+      <target dev='sdn' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='14'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk15.vmdk'/>
+      <target dev='sdo' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='15'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk16.vmdk'/>
+      <target dev='sdp' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='16'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk17.vmdk'/>
+      <target dev='sdq' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='17'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk18.vmdk'/>
+      <target dev='sdr' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='18'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk19.vmdk'/>
+      <target dev='sds' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='19'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk20.vmdk'/>
+      <target dev='sdt' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='20'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk21.vmdk'/>
+      <target dev='sdu' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='21'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk22.vmdk'/>
+      <target dev='sdv' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='22'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk23.vmdk'/>
+      <target dev='sdw' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='23'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk24.vmdk'/>
+      <target dev='sdx' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='24'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk25.vmdk'/>
+      <target dev='sdy' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='25'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk26.vmdk'/>
+      <target dev='sdz' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='26'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk27.vmdk'/>
+      <target dev='sdaa' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='27'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk28.vmdk'/>
+      <target dev='sdab' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='28'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk29.vmdk'/>
+      <target dev='sdac' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='29'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk30.vmdk'/>
+      <target dev='sdad' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='30'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk31.vmdk'/>
+      <target dev='sdae' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='31'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk32.vmdk'/>
+      <target dev='sdaf' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='32'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk33.vmdk'/>
+      <target dev='sdag' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='33'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk34.vmdk'/>
+      <target dev='sdah' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='34'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk35.vmdk'/>
+      <target dev='sdai' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='35'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk36.vmdk'/>
+      <target dev='sdaj' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='36'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk37.vmdk'/>
+      <target dev='sdak' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='37'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk38.vmdk'/>
+      <target dev='sdal' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='38'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk39.vmdk'/>
+      <target dev='sdam' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='39'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk40.vmdk'/>
+      <target dev='sdan' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='40'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk41.vmdk'/>
+      <target dev='sdao' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='41'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk42.vmdk'/>
+      <target dev='sdap' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='42'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk43.vmdk'/>
+      <target dev='sdaq' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='43'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk44.vmdk'/>
+      <target dev='sdar' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='44'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk45.vmdk'/>
+      <target dev='sdas' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='45'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk46.vmdk'/>
+      <target dev='sdat' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='46'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk47.vmdk'/>
+      <target dev='sdau' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='47'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk48.vmdk'/>
+      <target dev='sdav' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='48'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk49.vmdk'/>
+      <target dev='sdaw' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='49'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk50.vmdk'/>
+      <target dev='sdax' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='50'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk51.vmdk'/>
+      <target dev='sday' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='51'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk52.vmdk'/>
+      <target dev='sdaz' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='52'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk53.vmdk'/>
+      <target dev='sdba' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='53'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk54.vmdk'/>
+      <target dev='sdbb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='54'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk55.vmdk'/>
+      <target dev='sdbc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='55'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk56.vmdk'/>
+      <target dev='sdbd' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='56'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk57.vmdk'/>
+      <target dev='sdbe' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='57'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk58.vmdk'/>
+      <target dev='sdbf' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='58'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk59.vmdk'/>
+      <target dev='sdbg' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='59'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk60.vmdk'/>
+      <target dev='sdbh' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='60'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk61.vmdk'/>
+      <target dev='sdbi' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='61'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk62.vmdk'/>
+      <target dev='sdbj' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='62'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk63.vmdk'/>
+      <target dev='sdbk' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='63'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='[datastore] directory/harddisk63.vmdk'/>
+      <target dev='sdbl' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='64'/>
+    </disk>
+    <controller type='scsi' index='0' model='vmpvscsi'/>
+    <video>
+      <model type='vmvga' vram='4096' primary='yes'/>
+    </video>
+  </devices>
+</domain>

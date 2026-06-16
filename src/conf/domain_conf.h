@@ -3184,8 +3184,22 @@ struct _virDomainHypervFeatures {
     char *vendor_id;
 };
 
-#define SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT 64
+/*
+ * Beware, these numbers mean slightly different things.  Because the unit
+ * number 7 is reserved for the controller, any higher limits must account for
+ * that fact.  I.e. a super-wide bus can have at max 64 disks, but accounting
+ * for the controller occupying one of the units the number needs to be 65.
+ *
+ * The maximums are taken from the following page:
+ * https://configmax.broadcom.com/guest?vmwareproduct=vSphere
+ */
+#define SCSI_SUPER_WIDE_BUS_MAX_CONT_UNIT 65
 #define SCSI_WIDE_BUS_MAX_CONT_UNIT 16
+
+/*
+ * Since 7 unit numbers [0..7) do not interfere with the controller occupying
+ * unit number 7 it reflects the correct number of disks (targets).
+ */
 #define SCSI_NARROW_BUS_MAX_CONT_UNIT 7
 
 
