@@ -882,7 +882,7 @@ virHostCPUGetStatsLinux(FILE *procstat,
                 return -1;
 
             if (virHostCPUStatsAssign(&params[4], VIR_NODE_CPU_STATS_GUEST,
-                                      guest * TICK_TO_NSEC) < 0)
+                                      (guest + guest_nice) * TICK_TO_NSEC) < 0)
                 return -1;
             return 0;
         }

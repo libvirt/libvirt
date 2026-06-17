@@ -1,16 +1,16 @@
 cpu:
 kernel: 8751170
 user: 14128079
-idle: 1816344522
+idle: 1816344521
 iowait: 81323
-guest: 5880634
+guest: 5880635
 
 cpu0:
 kernel: 447603
 user: 749021
-idle: 75399242
+idle: 75399241
 iowait: 5295
-guest: 331814
+guest: 331815
 
 cpu1:
 kernel: 167215
