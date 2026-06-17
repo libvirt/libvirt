@@ -1346,7 +1346,6 @@ int virLXCProcessStart(virLXCDriver * driver,
         g_free(vm->def->consoles[i]->source->data.file.path);
         vm->def->consoles[i]->source->data.file.path = ttyPath;
 
-        g_free(vm->def->consoles[i]->info.alias);
         vm->def->consoles[i]->info.alias = g_strdup_printf("console%zu", i);
     }
 
