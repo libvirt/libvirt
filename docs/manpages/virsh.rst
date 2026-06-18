@@ -5586,14 +5586,18 @@ detach-interface
 
 ::
 
-   detach-interface domain type [--mac mac]
+   detach-interface domain [type] [--mac mac]
       [[[--live] [--config] | [--current]] | [--persistent]] [--print-xml]
 
 Detach a network interface from a domain.
-*type* can be either *network* to indicate a physical network device or
-*bridge* to indicate a bridge to a device. It is recommended to use the
-*mac* option to distinguish between the interfaces if more than one are
-present on the domain.
+
+In case when multiple interfaces are present in the *type* and/or
+*--mac* must be used to narrow down the selection to 1 interface.
+
+*type* can be either *network* to indicate a physical network device
+*bridge* to indicate a bridge to a device.
+
+*--mac* can select the interface based on the configured MAC address.
 
 If *--live* is specified, affect a running domain.
 If *--config* is specified, affect the next startup of a persistent guest.

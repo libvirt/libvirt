@@ -12782,7 +12782,6 @@ static const vshCmdOptDef opts_detach_interface[] = {
     {.name = "type",
      .type = VSH_OT_STRING,
      .positional = true,
-     .required = true,
      .help = N_("network interface type")
     },
     {.name = "mac",
@@ -12816,7 +12815,7 @@ virshDomainDetachInterface(char *doc,
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree char *detach_xml = NULL;
-    g_autofree char *xpath = g_strdup_printf("/domain/devices/interface[@type='%s']", type);
+    g_autofree char *xpath = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     ssize_t nnodes;
     xmlNodePtr matchNode = NULL;
@@ -12827,8 +12826,16 @@ virshDomainDetachInterface(char *doc,
         return false;
     }
 
+    if (type)
+        xpath = g_strdup_printf("/domain/devices/interface[@type='%s']", type);
+    else
+        xpath = g_strdup("/domain/devices/interface");
+
     if ((nnodes = virXPathNodeSet(xpath, ctxt, &nodes)) <= 0) {
-        vshError(ctl, _("No interface found whose type is %1$s"), type);
+        if (type)
+            vshError(ctl, _("No interface found whose type is %1$s"), type);
+        else
+            vshError(ctl, "%s", _("Domain has no interfaces"));
         return false;
     }
 
