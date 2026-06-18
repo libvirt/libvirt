@@ -5373,12 +5373,18 @@ qemuDomainMakeCPUMigratable(virArch arch,
         if (virCPUx86GetAddedFeatures(cpu->model, &data.added) < 0)
             return -1;
 
-        /* Drop features marked as added in a cpu model, but only
-         * when they are not mentioned in origCPU, i.e., when they were not
-         * explicitly mentioned by the user.
-         */
+        /* Drop features marked as added in a CPU model unless they were
+         * explicitly requested, so the migratable definition stays
+         * compatible with destinations that do not know them. For host-model
+         * the expanded definition is itself the requested CPU, so keep all of
+         * its features; for a custom CPU keep only those listed in origCPU. */
         if (data.added) {
-            g_auto(GStrv) keep = virCPUDefListExplicitFeatures(origCPU);
+            g_auto(GStrv) keep = NULL;
+
+            if (origCPU->mode == VIR_CPU_MODE_HOST_MODEL)
+                keep = virCPUDefListExplicitFeatures(cpu);
+            else
+                keep = virCPUDefListExplicitFeatures(origCPU);
             data.keep = keep;
 
             virCPUDefFilterFeatures(cpu, qemuDomainDropAddedCPUFeatures, &data);
