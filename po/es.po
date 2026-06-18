@@ -29,7 +29,7 @@ msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-04-07 13:55+0000\n"
+"PO-Revision-Date: 2026-04-21 21:58+0000\n"
 "Last-Translator: \"Fco. Javier F. Serrador\" <fserrador@gmail.com>\n"
 "Language-Team: Spanish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/es/>\n"
@@ -38,7 +38,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17\n"
 
 msgid ""
 "\n"
@@ -9386,7 +9386,7 @@ msgstr "Incorrecto al desorganizar réplica: %1$s"
 
 #, c-format
 msgid "Failed to unmarshall reportluns: %1$s"
-msgstr "Incorrecto al desorganizar informes de luns: %1$s"
+msgstr "Incorrecto al desorganizar partes de luns: %1$s"
 
 #, c-format
 msgid "Failed to unmount '%1$s' and could not detach subtree '%2$s'"
@@ -9860,7 +9860,7 @@ msgid "Get the CPU models for an arch."
 msgstr "Obtiene los modelos de CPU para una arquitectura."
 
 msgid "Get the CPU models reported by the hypervisor."
-msgstr "Obtiene los modelos de CPU informado por el hipervisor."
+msgstr "Obtiene los modelos de CPU reportados por el hipervisor."
 
 msgid "Get the launch security parameters for a guest domain"
 msgstr "Obtiene parámetros de seguridad lanzada para un dominio invitado"
@@ -10140,7 +10140,7 @@ msgstr ""
 "de máquina '%2$s'"
 
 msgid "Hypervisor reported CPU models"
-msgstr "Modelos de CPU informados por hipervisor"
+msgstr "Modelos de CPU reportados por hipervisor"
 
 msgid "I/O Error"
 msgstr "Error de E/S"
@@ -14880,7 +14880,7 @@ msgstr ""
 #, c-format
 msgid "QEMU '%1$s' does not support reporting CPU model for virttype '%2$s'"
 msgstr ""
-"El QEMU '%1$s' no admite informe del modelo de CPU para tipo virtual '%2$s'"
+"El QEMU '%1$s' no admite el parte del modelo de CPU para tipo virtual '%2$s'"
 
 msgid "QEMU Attach"
 msgstr "Anexo QEMU"
@@ -14943,11 +14943,11 @@ msgstr "Monitor de QEMU cerrado"
 msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
-"QEMU informa modelo «host» de CPU por defecto no válido para tipo virtual de "
+"QEMU reporta modelo «host» de CPU por defecto no válido para tipo virtual de "
 "dominio distinto de kvm"
 
 msgid "QEMU reports migration is still running"
-msgstr "QEMU informa migración aún está en ejecución"
+msgstr "QEMU reporta migración aún está en ejecución"
 
 #, c-format
 msgid "QEMU unexpectedly closed the monitor (vm='%1$s')"
@@ -28002,7 +28002,7 @@ msgid "error parsing IFLA_VF_INFO"
 msgstr "error al leer IFLA_VF_INFO"
 
 msgid "error parsing IFLA_VF_PORT during error reporting"
-msgstr "error al interpretar IFLA_VF_PORT durante informe de error"
+msgstr "error al interpretar IFLA_VF_PORT durante el parte de error"
 
 msgid "error parsing IFLA_VF_PORT part"
 msgstr "error al interpretar parte IFLA_VF_PORT"
@@ -28149,12 +28149,12 @@ msgstr ""
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report\n"
-msgstr "suceso 'io-error' para dominio '%1$s': %2$s (%3$s) informa\n"
+msgstr "suceso 'io-error' para dominio '%1$s': parte %2$s (%3$s)\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) report due to %4$s\n"
 msgstr ""
-"suceso 'io-error' para dominio '%1$s': %2$s (%3$s) informe debido a %4$s\n"
+"suceso 'io-error' para dominio '%1$s': el parte %2$s (%3$s) debido a %4$s\n"
 
 #, c-format
 msgid "event 'io-error' for domain '%1$s': %2$s (%3$s) unknown\n"
@@ -30381,7 +30381,7 @@ msgstr ""
 "%1$s"
 
 msgid "guest agent reports less cpu than requested"
-msgstr "agente invitado informa menos cpu que la solicitada"
+msgstr "agente invitado reporta menos cpu que la solicitada"
 
 msgid "guest agent returned malformed or invalid return value"
 msgstr "agente invitado devolvió malfomación o devolvió valor no válido"
@@ -32779,7 +32779,7 @@ msgid "malformed value '%1$s' of 'size' attribute of slice"
 msgstr "valor '%1$s' malformado del atributo 'size' de rebanada"
 
 msgid "malformed volsize reported"
-msgstr "tamaño reportado del volumen volsize malformado"
+msgstr "tamaño del volumen volsize malformado reportado"
 
 msgid "malformed volume allocation value"
 msgstr "valor de asignación del volumen malformado"
@@ -34334,8 +34334,8 @@ msgid ""
 "modprobe reported success loading module '%1$s', but module is missing from /"
 "sys/module"
 msgstr ""
-"modprobe informa logro al cargar módulo '%1$s', pero el módulo falta desde /"
-"sys/module"
+"modprobe reportado logrado al cargar módulo '%1$s', pero el módulo falta "
+"desde /sys/module"
 
 #, c-format
 msgid "module '%1$s' does not implement any pci driver"
@@ -36949,92 +36949,78 @@ msgstr "solicitud está admitida solo con protocolos HTTP(S)"
 msgid "query or modify state of vcpu in the guest (via agent)"
 msgstr "solicita o modifica estado de vcpu en el invitado (por agente)"
 
-#, fuzzy
 msgid "query-accelerators was missing 'enabled'"
-msgstr "solicitud-aceleradores fue 'habilitado' ausente"
+msgstr "query-accelerators faltaba el 'enabled' ausente"
 
-#, fuzzy
 msgid "query-block device entry was not in expected format"
 msgstr ""
-"la entrada del dispositivo de estadísticas de bloque no estaba con el "
-"formato esperado"
+"la entrada del dispositivo de solicitud de bloque no estaba con el formato "
+"esperado"
 
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "A la respuesta de definiciones query-cpu le faltan datos de 'name'"
 
-#, fuzzy
 msgid "query-cpu-model-comparison reply data was missing 'result'"
-msgstr "A la respuesta de definiciones query-cpu le faltan datos de 'name'"
+msgstr "a los datos de respuesta query-cpu-model le faltan 'result'"
 
-#, fuzzy
 msgid "query-dirty-rate parsing 'vcpu-dirty-rate' in failure"
 msgstr "query-dirty-rate interpretando 'vcpu-dirty-rate' en fallo"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'calc-time' data"
-msgstr "query-dirty-rate solicitado era datos 'calc-time' ausentes"
+msgstr "query-dirty-rate solicitado eran datos 'calc-time' ausentes"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'dirty-rate' data"
 msgstr "query-dirty-rate solicitado estaba ausente en los datos 'dirty-rate'"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'id' data"
 msgstr "query-dirty-rate solicitada estaba ausente en los datos de 'id'"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'return' data"
 msgstr "query-dirty-rate solicitado estaba ausente en datos 'return'"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'start-time' data"
 msgstr "query-dirty-rate solicitada estaba ausente en los datos 'start-time'"
 
-#, fuzzy
 msgid "query-dirty-rate reply was missing 'status' data"
 msgstr "query-dirty-rate solicitada estaba ausente en los datos de 'status'"
 
-#, fuzzy
 msgid "query-fdsets reply was missing 'fdset-id'"
 msgstr "query-fdsets de réplica estaba ausente en 'fdset-id'"
 
-#, fuzzy
 msgid "query-fdsets return data missing fd array element"
-msgstr "query-fdsets devuelve datos ausentes del elemento de formación del df"
+msgstr "query-fdsets devuelve datos ausentes en el elemento de formación fd"
 
-#, fuzzy
 msgid "query-fdsets return data missing fdset array element"
 msgstr "query-fdsets devuelve datos ausentes en elemento de formación fdset"
 
 msgid "query-hotpluggable-cpus didn't return device props"
-msgstr ""
+msgstr "Consulta-hotpluggable-cpus no devolvió dispositivo props"
 
 msgid "query-hotpluggable-cpus didn't return device type"
-msgstr ""
+msgstr "query-hotpluggable-cpus no devolvió tipo del dispositivo"
 
 msgid "query-hotpluggable-cpus didn't return vcpus-count"
-msgstr ""
+msgstr "query-hotpluggable-cpus no devolvió vcpus-count"
 
 msgid "query-hotpluggable-cpus entry doesn't report topology information"
 msgstr ""
+"query-hotpluggable-cpus de apunte no devuelve reporte de información "
+"topológica"
 
 msgid "query-iothreads reply data was missing 'id'"
 msgstr "Datos de réplica query-iothreads tenían ausente el 'id'"
 
-#, fuzzy
 msgid "query-iothreads reply has malformed 'thread-id' data"
-msgstr "Respuesta de query-machines tiene datos de 'alias' incorrectos"
+msgstr "query-iothreads cuya respuesta tiene datos de 'thread-id' mal formados"
 
 msgid "query-kvm replied unexpected data"
 msgstr "query-kvm entregó datos inesperados"
 
-#, fuzzy
 msgid "query-machines reply data was missing 'name'"
-msgstr "Responde query-machines con datos que le faltan 'name'"
+msgstr "query-machines cuya respuesta de datos les falta 'name'"
 
-#, fuzzy
 msgid "query-machines reply has malformed 'acpi data"
-msgstr "query-machines de respuesta tiene datos de 'acpi malformados"
+msgstr "query-machines cuya respuesta tiene datos malformados de 'acpi"
 
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "Respuesta de query-machines tiene datos de 'alias' incorrectos"
@@ -37042,71 +37028,72 @@ msgstr "Respuesta de query-machines tiene datos de 'alias' incorrectos"
 msgid "query-machines reply has malformed 'cpu-max' data"
 msgstr "Respuesta de query-machines tiene datos 'cpu-max' incorrectos"
 
-#, fuzzy
 msgid "query-machines reply has malformed 'default-cpu-type' data"
-msgstr "Respuesta de query-machines tiene datos de 'is-default' incorrectos"
+msgstr ""
+"query-machines cuya respuesta tiene datos de 'default-cpu-type' malformados"
 
 msgid "query-machines reply has malformed 'default-ram-id' data"
 msgstr ""
+"query-machines cuya respuesta tiene datos malformados de 'default-ram-id'"
 
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "Respuesta de query-machines tiene datos de 'is-default' incorrectos"
 
 msgid "query-machines reply has malformed 'numa-mem-supported' data"
 msgstr ""
+"query-machine cuya respuesta tiene datos malformados de 'numa-mem-suported'"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
-msgstr ""
+msgstr "query-memory-devices responde datos que no contienen datos enumerados"
 
 msgid "query-memory-devices reply data doesn't contain enum type discriminator"
 msgstr ""
+"query-memory-devices responde datos que no contienen discriminador de tipo "
+"enum"
 
-#, fuzzy
 msgid "query-named-block-nodes entry was not in expected format"
-msgstr "query-named-block-nodes de apunte no estaba con el formato esperado"
+msgstr "query-named-block-nodes cuyo apunte no estaba con el formato esperado"
 
 msgid "query-rx-filter return data missing array element"
 msgstr "query-rx-filter devolvió datos con elemento de formación ausuente"
 
 msgid "query-sev reply was missing some data"
-msgstr ""
+msgstr "query-sev cuya respuesta le falta algún dato"
 
-#, fuzzy
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
-msgstr "A la respuesta query-version le falta la versión 'micro'"
+msgstr "a la respuesta query-sev-capabilities le falta el campo 'cbitpos'"
 
-#, fuzzy
 msgid "query-sev-capabilities reply was missing 'cert-chain' field"
-msgstr "A la respuesta query-status le faltaba el estado en ejecución"
+msgstr "a la respuesta query-sev-capabilities le faltaba el campo 'cert-chain'"
 
-#, fuzzy
 msgid "query-sev-capabilities reply was missing 'pdh' field"
-msgstr "A la respuesta query-version le faltan datos de 'qemu'"
+msgstr "a la respuesta query-sev-capabilities le falta el campo 'pdh'"
 
-#, fuzzy
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
-msgstr "A la respuesta query-version le faltan datos de 'qemu'"
+msgstr ""
+"a la respuesta query-sev-capability le falta el campo 'reduced-phys-bits'"
 
 msgid "query-sev-launch-measure reply was missing 'data'"
-msgstr ""
+msgstr "a la respuesta query-sev-launch-measure le faltaba 'data'"
 
 msgid "query-sgx-capabilities reply was missing 'flc' field"
-msgstr ""
+msgstr "a la respuesta de query-sgx-capabilities le faltaba el campo 'flc'"
 
 msgid "query-sgx-capabilities reply was missing 'node' field"
-msgstr ""
+msgstr "a la respuesta query-sgx-capabilities le faltaba el campo 'node'"
 
 msgid "query-sgx-capabilities reply was missing 'section-size' field"
 msgstr ""
+"a la respuesta de query-sgx-capabilities le faltaba el campo 'section-size'"
 
 msgid "query-sgx-capabilities reply was missing 'sgx1' field"
-msgstr ""
+msgstr "a la respuesta de query-sgx-capabilities le faltaba el campo 'sgx1'"
 
 msgid "query-sgx-capabilities reply was missing 'sgx2' field"
-msgstr ""
+msgstr "a la respuesta de query-sgx-capabilities le faltaba el campo 'sgx2'"
 
 msgid "query-sgx-capabilities reply was missing 'size' field"
-msgstr ""
+msgstr "a la respuesta de query-sgx-capabilities le falta el campo 'size'"
 
 msgid "query-status reply was missing running state"
 msgstr "A la respuesta query-status le faltaba el estado en ejecución"
@@ -37129,23 +37116,28 @@ msgstr "A la respuesta query-version le falta versión de 'package'"
 msgid "query-version reply was missing 'qemu' data"
 msgstr "A la respuesta query-version le faltan datos de 'qemu'"
 
-#, fuzzy
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
-msgstr "Binario QEMU no admite migración comprimida"
+msgstr ""
+"solicitando la velocidad máxima de migración post-copia no está admitida por "
+"el binario QEMU"
 
 msgid "queue configuration is only valid for NVMe bus"
-msgstr ""
+msgstr "la configuración de la cola solo es válida para el bus NVMe"
 
 msgid "queue-size property isn't supported by this QEMU binary"
-msgstr ""
+msgstr "la propiedad de queue-size no es admitida por este QEMU binario"
 
 msgid "queue_size attribute in disk driver is only supported for virtio bus"
 msgstr ""
+"el atributo queue_size dentro de la unidad de disco solo está admitido para "
+"el bus virtio"
 
 msgid ""
 "queues attribute in disk driver element is only supported for virtio bus"
 msgstr ""
+"el atributo de colas dentro de elemento de unidad de disco solo está "
+"admitido para el bus virtio"
 
 msgid "quiesce guest's file systems"
 msgstr "Los sistemas de archivos del huésped quiesce"
@@ -37154,41 +37146,40 @@ msgid "quit this interactive terminal"
 msgstr "abandonar esta terminal interactiva"
 
 msgid "ram attribute only supported for video type qxl"
-msgstr ""
+msgstr "el atributo ram solo es admitido para vídeo de tipo qxl"
 
 #, c-format
 msgid "range %1$s - %2$s is not entirely within network %3$s/%4$d"
-msgstr ""
+msgstr "intervalo %1$s - %2$s no es enteramente dentro de la red %3$s/%4$d"
 
 #, c-format
 msgid "range %1$s - %2$s is reversed "
-msgstr ""
+msgstr "el intervalo %1$s - %2$s está revertido "
 
 #, c-format
 msgid "range %1$s - %2$s is too large (> 65535)"
-msgstr ""
+msgstr "el rango %1$s - %2$s es demasiado grande (> 65 535)"
 
 #, c-format
 msgid "range %1$s - %2$s start larger than end"
-msgstr ""
+msgstr "el rango %1$s - %2$s inicia más grande que el final"
 
 msgid "ras feature is not available with this QEMU binary"
-msgstr ""
+msgstr "la prestación ras no está disponible con este QEMU binario"
 
 msgid "ras feature is only supported with ARM Virt machines"
-msgstr ""
+msgstr "la prestación ras solo está admitida con máquinas Virt de ARM"
 
 msgid "rawio can be used only with device='lun'"
-msgstr ""
+msgstr "la E/S en sin formato puede ser utilizada solo con device='lun'"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "rawio solo está mantenido para dispositivo host scsi"
 
-#, fuzzy
 msgid "rdp"
 msgstr "rdp"
 
-#, c-format, fuzzy
+#, c-format
 msgid "rdp_tls_x509_cert_dir directory '%1$s' does not exist"
 msgstr "rdp_tls_x509_cert_dir con directorio '%1$s' no existente"
 
@@ -37198,58 +37189,55 @@ msgstr ""
 msgid "read I/O operations limit per second"
 msgstr "Límite de operaciones de E/S de lectura por segundo"
 
-#, fuzzy
 msgid "read I/O operations max"
-msgstr "Límite de operaciones de E/S de lectura por segundo"
+msgstr "lectura máxima de operaciones de E/S"
 
 msgid "read error on pipe"
 msgstr "Error de lectura en tubería"
 
-#, fuzzy
 msgid "read max, as scaled integer (default bytes)"
-msgstr "Tamaño del volumen, como entero escalado (bytes predeterminados)"
+msgstr "lee el max, como entero escalado (bytes por defecto)"
 
 #, c-format
 msgid "read only access prevents %1$s"
 msgstr "acceso de sólo lectura impide: %1$s"
 
-#, fuzzy
 msgid "read secret from file"
-msgstr "Desmontar un dispositivo de un archivo XML"
+msgstr "lee secreto desde archvio"
 
 msgid "read the secret from file without converting from base64"
-msgstr ""
+msgstr "lee el secreto desde el archivo sin convertir desde base64"
 
-#, fuzzy
 msgid "read the secret from the terminal"
-msgstr "No se pudo desconectar del hipervisor"
+msgstr "lee el secreto desde la terminal"
 
-#, fuzzy
 msgid "read throughput limit, as scaled integer (default bytes)"
-msgstr "Tamaño del volumen, como entero escalado (bytes predeterminados)"
+msgstr ""
+"límite de rendimiento de lectura, como entero escalado (bytes por defecto)"
 
 msgid "read-only connection"
 msgstr "conexión de sólo lectura"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
 msgstr ""
+"la lectura anticipada solo es admitida con los protocolos HTTP(S)/FTP(s)"
 
-#, fuzzy
 msgid "readonly ide disks are not supported"
-msgstr "Discos transitorios aún no tienen soporte"
+msgstr "los discos IDE de solo lectura no son compatibles"
 
 msgid "readonly is not supported with vhostuser disk"
-msgstr ""
+msgstr "solo lectura no es compatible con discos vhostuser"
 
 msgid "readonly mode cannot be set for externally started virtiofsd"
 msgstr ""
+"el modo de solo lectura no puede ser establecido para virtiofsd iniciado "
+"externamente"
 
-#, fuzzy
 msgid "readonly sata disks are not supported"
-msgstr "Discos transitorios aún no tienen soporte"
+msgstr "los discos sata de solo lectura no están admitidos"
 
 msgid "ready"
-msgstr ""
+msgstr "preparado"
 
 msgid "reattach node device to its device driver"
 msgstr "asociar nuevamente el dispositivo de nodo con su controlador"
@@ -37258,10 +37246,10 @@ msgid "reboot a domain"
 msgstr "reinicia un dominio"
 
 msgid "received error event on socket"
-msgstr ""
+msgstr "error de evento en socket recibido"
 
 msgid "received hangup event on socket"
-msgstr ""
+msgstr "cuelgue de evento recibido en el zócalo"
 
 msgid "received malformed monitor, check the XML definition"
 msgstr "Recibió monitor erróneo, revise la definición XML"
@@ -37270,7 +37258,7 @@ msgid "received unexpected cookie with P2P migration"
 msgstr "Se recibió una cookie inesperada con migración P2P"
 
 msgid "reconnect delay is supported only with NBD protocol"
-msgstr ""
+msgstr "está admitido el retraso de reconexión solo con el protocolo NBD"
 
 msgid "recv handler failed"
 msgstr "manipulador recv incorrecto"
@@ -37280,29 +37268,26 @@ msgstr "recv holeHander incorrecto"
 
 #, c-format
 msgid "recv on sock %1$d failed"
-msgstr ""
+msgstr "recv en zócalo %1$d incorrecto"
 
-#, fuzzy
 msgid "redefine metadata for existing checkpoint"
-msgstr "Redefinir metadatos para instantánea existente"
+msgstr "redefinir metadatos para punto de control existente"
 
 msgid "redefine metadata for existing snapshot"
 msgstr "Redefinir metadatos para instantánea existente"
 
-#, fuzzy
 msgid "redefine the XML for a domain's managed save state file"
 msgstr ""
-"redefinir el XML para un archivo de estado de guardado administrado del "
-"dominio"
+"redefinir el XML para un archivo de estado guardado gestionado del dominio"
 
 msgid "redefine the XML for a domain's saved state file"
 msgstr "Redefinir el XML para un archivo de estado almacenado de dominio"
 
 msgid "redefine the existing set of logging filters"
-msgstr ""
+msgstr "redefine el conjunto existente de filtros de bitácora"
 
 msgid "redefine the existing set of logging outputs"
-msgstr ""
+msgstr "redefine el conjunto existente de salidas de bitácora"
 
 #, c-format
 msgid "referenced filter '%1$s' is missing"
@@ -37311,9 +37296,9 @@ msgstr "no se encuentra el filtro referenciado '%1$s'"
 msgid "refresh a pool"
 msgstr "actualiza un grupo"
 
-#, fuzzy
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
-msgstr "actualiza bucle-p incorrada: no es capaz de eliminar DiskDescriptor.xml"
+msgstr ""
+"refresco de bucle‐p incorrecto: no es capaz de borrar el DiskDescriptor.xml"
 
 #, c-format
 msgid "refusing to generate file name for disk '%1$s'"
@@ -37353,12 +37338,14 @@ msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
 msgstr ""
+"remote_open: transporte en URL no reconocido (sería "
+"tls|unix|ssh|ext|tcp|libssh2|libssh)"
 
 msgid "removable is only valid for usb or scsi disks"
-msgstr ""
+msgstr "extraíble solo es válido para discos usb o scsi"
 
 msgid "remove TPM state"
-msgstr ""
+msgstr "extrae con estado TPM"
 
 msgid "remove all associated storage volumes (use with caution)"
 msgstr ""
@@ -37366,9 +37353,12 @@ msgstr ""
 
 msgid "remove all domain checkpoint metadata (vm must be inactive)"
 msgstr ""
+"extrae todos los metadatos de los puntos de control del dominio (vm debe "
+"estar inactiva)"
 
 msgid "remove all domain snapshot metadata (vm must be inactive)"
 msgstr ""
+"extrae todos los metadatos de captura del dominio (vm debe estar inactivo)"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
@@ -37378,19 +37368,19 @@ msgstr ""
 "origen) (ver domblklist)"
 
 msgid "remove domain logs"
-msgstr ""
+msgstr "extrae las bitácoras del dominio"
 
 msgid "remove domain managed state file"
 msgstr "Retira el archivo de estado administrado de domino"
 
 msgid "remove keys from the authorized keys file"
-msgstr ""
+msgstr "extrae claves desde el archivo de claves autorizadas"
 
 msgid "remove nvram file"
 msgstr ""
 
 msgid "remove the metadata corresponding to an uri"
-msgstr ""
+msgstr "extrae los metadatos correspondiente a una uri"
 
 #, c-format
 msgid "removing block or network volumes is not supported: %1$s"
@@ -37403,9 +37393,8 @@ msgstr ""
 "la eliminación de volúmenes ' %1$s' no es compatible con el backend de "
 "gluster: %2$s"
 
-#, fuzzy
 msgid "rename a domain"
-msgstr "reinicia un dominio"
+msgstr "renombre un dominio"
 
 msgid "rename to new name during migration (if supported)"
 msgstr "modificarle nombre durante la migración (si es admitido)"
@@ -37414,12 +37403,11 @@ msgstr "modificarle nombre durante la migración (si es admitido)"
 msgid "rename(\"%1$s\", \"%2$s\")"
 msgstr "rename(\"%1$s\", \"%2$s\")"
 
-#, fuzzy
 msgid "reply data was missing 'name'"
-msgstr "A los datos de qom-list les faltaba 'name'"
+msgstr "a los dato de solicitud les faltaba 'name'"
 
 msgid "reply data was missing 'option' name or parameters"
-msgstr ""
+msgstr "a los datos solicitados les faltaba el nombre 'option' o parámetros"
 
 msgid "reply data was missing 'properties' array"
 msgstr "solicitud de datos fue asuente en formación de 'properties'"
@@ -37428,89 +37416,77 @@ msgid "reply was missing return data"
 msgstr "A la respuesta le faltaban datos de retorno"
 
 msgid "report active users"
-msgstr ""
+msgstr "activa reporte de usuarios"
 
 msgid "report daemon version too"
-msgstr "Reportar versión de demonio también"
+msgstr "reporta versión de demonio también"
 
 msgid "report disk information"
-msgstr ""
+msgstr "parte de información del disco"
 
-#, fuzzy
 msgid "report domain IOThread information"
-msgstr "información de dominio"
+msgstr "parte de información IOThread del dominio"
 
-#, fuzzy
 msgid "report domain balloon statistics"
-msgstr "Mostrar estadísticas CPU de dominio"
+msgstr "parte de estadísticas de matraz del dominio"
 
-#, fuzzy
 msgid "report domain block device statistics"
-msgstr "Mostrar estadísticas CPU de dominio"
+msgstr "parte de estadísticas del dispositivo de bloque del dominio"
 
 msgid "report domain dirty rate information"
-msgstr ""
+msgstr "parte de información del tipo sucio del dominio"
 
-#, fuzzy
 msgid "report domain memory usage"
-msgstr "Vaciar la memoria de dominio únicamente"
+msgstr "parte de la utilización de memoria del dominio"
 
 msgid "report domain network interface information"
-msgstr "reporte de información de interfaz de red del dominio"
+msgstr "parte de información de interfaz de red del dominio"
 
-#, fuzzy
 msgid "report domain perf event statistics"
-msgstr "Mostrar estadísticas CPU de dominio"
+msgstr "parte de estadísticas de evento del perfil del dominio"
 
-#, fuzzy
 msgid "report domain physical cpu usage"
-msgstr "Restaurar el dominio al estado pausado"
+msgstr "parte del empleo de cpu física del dominio"
 
-#, fuzzy
 msgid "report domain state"
-msgstr "estado del dominio"
+msgstr "parte del estado del dominio"
 
-#, fuzzy
 msgid "report domain virtual cpu information"
-msgstr "Información detallada de dominio de VCPU"
+msgstr "parte de información de cpu del dominio virtual"
 
-#, fuzzy
 msgid "report error if CPUs are incompatible"
-msgstr "Las CPU son incompatibles"
+msgstr "parte de error si las CPU son incompatibles"
 
-#, fuzzy
 msgid "report filesystem information"
-msgstr "información del filtro de red en XML"
+msgstr "parte de información del sistema de archivos"
 
 msgid "report host CPU model with deprecated features disabled"
-msgstr ""
+msgstr "parte del modelo de CPU host con prestaciones obsoletas inhabilitadas"
 
 msgid "report hostname"
-msgstr "reporte de nombre de host"
+msgstr "parte de nombre de host"
 
 msgid "report hypervisor-specific statistics"
-msgstr ""
+msgstr "parte de estadísticas específicas del hipervisor"
 
 msgid "report interface information"
-msgstr ""
+msgstr "parte de información del interfaz"
 
 msgid "report load averages information"
-msgstr ""
+msgstr "parte de información de carga media"
 
 msgid "report only stats that are accessible instantly"
-msgstr ""
+msgstr "parte solamente de estadísticas que son accesibles instantánemente"
 
-#, fuzzy
 msgid "report operating system information"
-msgstr "falta información del sistema operativo"
+msgstr "parte de información del sistema operativo"
 
-#, fuzzy
 msgid "report timezone information"
-msgstr "información de dominio"
+msgstr "parte de información de zona horaria"
 
 #, c-format
 msgid "requested USB port %1$s not present on USB bus %2$u"
-msgstr ""
+msgstr "puerto %1$s USB solicitado no presente en el bus %2$u de USB"
 
 #, c-format
 msgid "requested authentication type %1$s rejected"
@@ -37526,14 +37502,14 @@ msgstr "solicitó la cantidad de CPU supere la cantidad máxima (%1$d > %2$d)"
 
 #, c-format
 msgid "requested firewall_backend '%1$s' is not available"
-msgstr ""
+msgstr "firewall_backend '%1$s' solicitado no está disponible"
 
 msgid "requested size must be an integer multiple of block size"
-msgstr ""
+msgstr "tamaño solicitado debe ser un entero múltiplo del tamaño de bloque"
 
 #, c-format
 msgid "requested size must be smaller than or equal to @size (%1$lluKiB)"
-msgstr ""
+msgstr "tamaño solicitado debe ser menor que o igual que el @size (%1$llu KiB)"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "Tamaño solicitado de cache (en bytes) usado para compresión"
@@ -37544,7 +37520,7 @@ msgstr "solicitó destino '%1$s' no coincide con destino '%2$s'"
 
 #, c-format
 msgid "requested vcpu '%1$d' is not present in the domain"
-msgstr ""
+msgstr "se solicitó vcpu '%1$d' que no está presente interno al dominio"
 
 #, c-format
 msgid ""
@@ -37586,16 +37562,17 @@ msgid ""
 "required positional argument '%1$s' declared after an optional positional "
 "argument '%2$s' of command '%3$s'"
 msgstr ""
+"se solicitó argumento '%1$s' posicional declarado tras un argumento '%2$s' "
+"posicional opcional del comando '%3$s'"
 
 msgid "resctrl locking is not supported on this platform"
-msgstr ""
+msgstr "resctrl bloqueado no está admitido en esta plataforma"
 
-#, fuzzy
 msgid "reservations not supported with this QEMU binary"
-msgstr "vhost-net no tiene soporte con este binario de QEMU"
+msgstr "reserva no admitida con este QEMU binario"
 
 msgid "reset"
-msgstr ""
+msgstr "restablecer"
 
 msgid "reset a domain"
 msgstr "Restablecer un dominio"
@@ -37609,6 +37586,8 @@ msgstr "resetear el dominio luego de volcado de memoria"
 #, c-format
 msgid "resetting of nvram is not supported with nvram device backed by '%1$s'"
 msgstr ""
+"restablecimiento de nvram no está admitido con el backend de dispositivo "
+"nvram por '%1$s'"
 
 msgid "resize a vol"
 msgstr "cambiar tamaño a un vol"
@@ -38858,7 +38837,7 @@ msgstr ""
 
 #, c-format
 msgid "swtpm died and reported: %1$s"
-msgstr ""
+msgstr "swtpm muerto y reportado: %1$s"
 
 msgid "swtpm died unexpectedly"
 msgstr ""
@@ -42060,7 +42039,7 @@ msgstr "la vcpu id '%1$u' está fuera del intervalo de cantidad máxima de vcpus
 
 #, c-format
 msgid "vcpu id '%1$u' reported by guest agent is out of range"
-msgstr ""
+msgstr "vcpu id '%1$u' reportado por agente invitado está fuera del intervalo"
 
 msgid "vcpu number"
 msgstr "número vcpu"
@@ -42315,6 +42294,7 @@ msgstr "Operación vport '%s' no se admite para host%d"
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr ""
+"reporte del hash rss de virtio no está admitido con este binario de QEMU"
 
 msgid "virtio rss is not supported with this QEMU binary"
 msgstr ""
