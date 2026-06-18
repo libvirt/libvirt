@@ -10239,6 +10239,8 @@ static qemuMonitorCallbacks callbacks = {
 static void
 qemuProcessQMPStop(qemuProcessQMP *proc)
 {
+    virErrorPtr err;
+
     if (proc->mon) {
         virObjectUnlock(proc->mon);
         g_clear_pointer(&proc->mon, qemuMonitorClose);
@@ -10255,10 +10257,12 @@ qemuProcessQMPStop(qemuProcessQMP *proc)
     virDomainObjEndAPI(&proc->vm);
 
     if (proc->pid != 0) {
+        virErrorPreserveLast(&err);
         VIR_DEBUG("Killing QMP caps process %lld", (long long)proc->pid);
         virProcessKillPainfully(proc->pid, true);
         virResetLastError();
         proc->pid = 0;
+        virErrorRestore(&err);
     }
 
     if (proc->pidfile)
