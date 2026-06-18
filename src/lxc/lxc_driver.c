@@ -3473,7 +3473,7 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
     int ret = -1;
     virDomainNetType actualType;
     const virNetDevBandwidth *actualBandwidth;
-    char *veth = NULL;
+    g_autofree char *veth = NULL;
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
