@@ -6065,6 +6065,10 @@ virQEMUCapsLogProbeFailure(const char *binary)
                   meta,
                   _("Failed to probe capabilities for %1$s: %2$s"),
                   binary, virGetLastErrorMessage());
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Failed to probe capabilities for %1$s: %2$s"),
+                   binary, virGetLastErrorMessage());
 }
 
 
