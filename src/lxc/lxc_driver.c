@@ -3470,7 +3470,6 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
                              virDomainNetDef *net)
 {
     virLXCDomainObjPrivate *priv = vm->privateData;
-    int ret = -1;
     virDomainNetType actualType;
     const virNetDevBandwidth *actualBandwidth;
     g_autofree char *veth = NULL;
@@ -3512,18 +3511,18 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
         if (!brname) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("No bridge name specified"));
-            goto cleanup;
+            return -1;
         }
         if (!(veth = virLXCProcessSetupInterfaceTap(vm->def, net, brname)))
-            goto cleanup;
+            return -1;
     }   break;
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (!(veth = virLXCProcessSetupInterfaceTap(vm->def, net, NULL)))
-            goto cleanup;
+            return -1;
         break;
     case VIR_DOMAIN_NET_TYPE_DIRECT: {
         if (!(veth = virLXCProcessSetupInterfaceDirect(driver, vm->def, net)))
-            goto cleanup;
+            return -1;
     }   break;
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -3538,11 +3537,11 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
     case VIR_DOMAIN_NET_TYPE_VDS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Network device type is not supported"));
-        goto cleanup;
+        return -1;
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainNetType, actualType);
-        goto cleanup;
+        return -1;
     }
     /* Set bandwidth or warn if requested and not supported. */
     actualBandwidth = virDomainNetGetActualBandwidth(net);
@@ -3554,7 +3553,7 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
                 flags |= VIR_NETDEV_BANDWIDTH_SET_DIR_SWAPPED;
 
             if (virNetDevBandwidthSet(net->ifname, actualBandwidth, flags) < 0)
-                goto cleanup;
+                goto error;
         } else {
             VIR_WARN("setting bandwidth on interfaces of type '%s' is not implemented yet: %s",
                      virDomainNetTypeToString(actualType), virGetLastErrorMessage());
@@ -3563,17 +3562,16 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
 
     if (virNetDevSetNamespace(veth, priv->initpid) < 0) {
         virDomainAuditNet(vm, NULL, net, "attach", false);
-        goto cleanup;
+        goto error;
     }
 
     virDomainAuditNet(vm, NULL, net, "attach", true);
 
-    ret = 0;
+    vm->def->nets[vm->def->nnets++] = net;
+    return 0;
 
- cleanup:
-    if (!ret) {
-        vm->def->nets[vm->def->nnets++] = net;
-    } else if (veth) {
+ error:
+    if (veth) {
         switch (actualType) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -3603,7 +3601,7 @@ lxcDomainAttachDeviceNetLive(virLXCDriver *driver,
         }
     }
 
-    return ret;
+    return -1;
 }
 
 
