@@ -837,6 +837,7 @@ static const vshCmdOptDef opts_attach_interface[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = virshDomainNetTypeCompleter,
      .help = N_("network interface type")
     },
     {.name = "source",

@@ -199,3 +199,8 @@ char **
 virshDomainDirtyRateCalcModeCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
+
+char **
+virshDomainNetTypeCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);

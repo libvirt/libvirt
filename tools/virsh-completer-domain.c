@@ -35,6 +35,7 @@
 #include "virkeynametable_linux.h"
 #include "virkeynametable_osx.h"
 #include "virkeynametable_win32.h"
+#include "conf/domain_conf.h"
 #include "conf/storage_conf.h"
 #include "conf/numa_conf.h"
 
@@ -1118,4 +1119,16 @@ virshDomainDirtyRateCalcModeCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return vshEnumComplete(VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_LAST,
                            virshDomainDirtyRateCalcModeTypeToString);
+}
+
+
+char **
+virshDomainNetTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                            const vshCmd *cmd G_GNUC_UNUSED,
+                            unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_NET_TYPE_LAST,
+                           virDomainNetTypeToString);
 }
