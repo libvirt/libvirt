@@ -314,11 +314,9 @@ hypervSetEmbeddedProperty(GHashTable *table,
  * Add a GHashTable containing object properties as an embedded param to
  * an invocation list.
  *
- * Upon successful return the @table is consumed and the pointer is cleared out.
- *
- * Returns -1 on failure, 0 on success.
+ * Upon return the @table is consumed and the pointer is cleared out.
  */
-int
+void
 hypervAddEmbeddedParam(hypervInvokeParamsList *params,
                        const char *name,
                        GHashTable **table,
@@ -334,8 +332,6 @@ hypervAddEmbeddedParam(hypervInvokeParamsList *params,
     p->embedded.table = g_steal_pointer(table);
     p->embedded.info = classInfo;
     params->nbParams++;
-
-    return 0;
 }
 
 
@@ -1731,10 +1727,7 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
     hypervAddEprParam(params, "AffectedConfiguration",
                       &eprQuery, Msvm_VirtualSystemSettingData_WmiInfo);
 
-    if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
-        hypervFreeEmbeddedParam(resourceSettings);
-        return -1;
-    }
+    hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo);
 
     if (hypervInvokeMethod(priv, &params, response) < 0)
         return -1;
@@ -1760,10 +1753,7 @@ hypervMsvmVSMSModifyResourceSettings(hypervPrivate *priv,
     if (!params)
         return -1;
 
-    if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
-        hypervFreeEmbeddedParam(resourceSettings);
-        return -1;
-    }
+    hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo);
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
         return -1;

@@ -155,10 +155,10 @@ int hypervSetEmbeddedProperty(GHashTable *table,
                               const char *name,
                               const char *value);
 
-int hypervAddEmbeddedParam(hypervInvokeParamsList *params,
-                           const char *name,
-                           GHashTable **table,
-                           hypervWmiClassInfo *info);
+void hypervAddEmbeddedParam(hypervInvokeParamsList *params,
+                            const char *name,
+                            GHashTable **table,
+                            hypervWmiClassInfo *info);
 
 void hypervFreeEmbeddedParam(GHashTable *p);
 

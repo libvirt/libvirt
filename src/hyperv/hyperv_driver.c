@@ -3054,9 +3054,8 @@ hypervDomainDefineXMLFlags(virConnectPtr conn,
         }
     }
 
-    if (hypervAddEmbeddedParam(params, "SystemSettings",
-                               &defineSystemParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        goto error;
+    hypervAddEmbeddedParam(params, "SystemSettings",
+                           &defineSystemParam, Msvm_VirtualSystemSettingData_WmiInfo);
 
     /* create the VM */
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
@@ -3312,9 +3311,8 @@ hypervDomainSetAutostart(virDomainPtr domain, int autostart)
     if (hypervSetEmbeddedProperty(autostartParam, "InstanceID", vssd->data->InstanceID) < 0)
         return -1;
 
-    if (hypervAddEmbeddedParam(params, "SystemSettings",
-                               &autostartParam, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        return -1;
+    hypervAddEmbeddedParam(params, "SystemSettings",
+                           &autostartParam, Msvm_VirtualSystemSettingData_WmiInfo);
 
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
         return -1;
@@ -4250,9 +4248,8 @@ hypervDomainSnapshotCreateXML(virDomainPtr domain,
                                   HYPERV_SNAPSHOT_CONSISTENCY_CRASH_CONSISTENT) < 0)
         return NULL;
 
-    if (hypervAddEmbeddedParam(params, "SnapshotSettings", &snapshotSettings,
-                               Msvm_VirtualSystemSnapshotSettingData_WmiInfo) < 0)
-        return NULL;
+    hypervAddEmbeddedParam(params, "SnapshotSettings", &snapshotSettings,
+                           Msvm_VirtualSystemSnapshotSettingData_WmiInfo);
 
     hypervAddSimpleParam(params, "SnapshotType", HYPERV_SNAPSHOT_TYPE_FULL);
 
