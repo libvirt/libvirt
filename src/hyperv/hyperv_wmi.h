@@ -141,8 +141,8 @@ hypervInvokeParamsList *hypervCreateInvokeParamsList(const char *method,
 void hypervFreeInvokeParams(hypervInvokeParamsList *params);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(hypervInvokeParamsList, hypervFreeInvokeParams);
 
-int hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
-                         const char *value);
+void hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
+                          const char *value);
 
 int hypervAddEprParam(hypervInvokeParamsList *params,
                       const char *name,

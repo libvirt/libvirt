@@ -204,10 +204,8 @@ hypervCheckParams(hypervInvokeParamsList *params)
  *
  * Add a param of type HYPERV_SIMPLE_PARAM, which is essentially a serialized
  * key/value pair.
- *
- * Returns -1 on failure, 0 on success.
  */
-int
+void
 hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
                      const char *value)
 {
@@ -222,8 +220,6 @@ hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
     p->simple.value = value;
 
     params->nbParams++;
-
-    return 0;
 }
 
 
@@ -1672,8 +1668,7 @@ hypervImageManagementServiceGetVHDSD(hypervPrivate *priv,
     params = hypervCreateInvokeParamsList("GetVirtualHardDiskSettingData",
                                           MSVM_IMAGEMANAGEMENTSERVICE_SELECTOR,
                                           Msvm_ImageManagementService_WmiInfo);
-    if (hypervAddSimpleParam(params, "Path", vhdPath) < 0)
-        return -1;
+    hypervAddSimpleParam(params, "Path", vhdPath);
 
     if (hypervInvokeMethod(priv, &params, &response) < 0)
         return -1;

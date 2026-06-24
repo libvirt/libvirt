@@ -3739,8 +3739,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         if (!params)
             return -1;
 
-        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
-            return -1;
+        hypervAddSimpleParam(params, "keyCode", keycodeStr);
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0)
             return -1;
@@ -3759,8 +3758,7 @@ hypervDomainSendKey(virDomainPtr domain, unsigned int codeset,
         if (!params)
             return -1;
 
-        if (hypervAddSimpleParam(params, "keyCode", keycodeStr) < 0)
-            return -1;
+        hypervAddSimpleParam(params, "keyCode", keycodeStr);
 
         if (hypervInvokeMethod(priv, &params, NULL) < 0)
             return -1;
