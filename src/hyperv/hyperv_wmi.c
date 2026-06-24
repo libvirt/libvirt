@@ -231,9 +231,9 @@ hypervAddSimpleParam(hypervInvokeParamsList *params, const char *name,
  * @query: WQL filter
  * @eprInfo: WmiInfo of the object being filtered
  *
- * Adds an EPR param to the params list. Returns -1 on failure, 0 on success.
+ * Adds an EPR param to the params list.
  */
-int
+void
 hypervAddEprParam(hypervInvokeParamsList *params,
                   const char *name,
                   virBuffer *query,
@@ -249,8 +249,6 @@ hypervAddEprParam(hypervInvokeParamsList *params,
     p->epr.query = query;
     p->epr.info = classInfo;
     params->nbParams++;
-
-    return 0;
 }
 
 
@@ -1730,9 +1728,8 @@ hypervMsvmVSMSAddResourceSettings(virDomainPtr domain,
     if (!params)
         return -1;
 
-    if (hypervAddEprParam(params, "AffectedConfiguration",
-                          &eprQuery, Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        return -1;
+    hypervAddEprParam(params, "AffectedConfiguration",
+                      &eprQuery, Msvm_VirtualSystemSettingData_WmiInfo);
 
     if (hypervAddEmbeddedParam(params, "ResourceSettings", &resourceSettings, wmiInfo) < 0) {
         hypervFreeEmbeddedParam(resourceSettings);

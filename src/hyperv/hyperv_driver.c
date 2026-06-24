@@ -2968,8 +2968,7 @@ hypervDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
 
     virBufferEscapeSQL(&eprQuery, MSVM_COMPUTERSYSTEM_WQL_SELECT "WHERE Name = '%s'", uuid_string);
 
-    if (hypervAddEprParam(params, "AffectedSystem", &eprQuery, Msvm_ComputerSystem_WmiInfo) < 0)
-        return -1;
+    hypervAddEprParam(params, "AffectedSystem", &eprQuery, Msvm_ComputerSystem_WmiInfo);
 
     /* actually destroy the VM */
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
@@ -4238,9 +4237,8 @@ hypervDomainSnapshotCreateXML(virDomainPtr domain,
     if (!params)
         return NULL;
 
-    if (hypervAddEprParam(params, "AffectedSystem", &eprQuery,
-                          Msvm_ComputerSystem_WmiInfo) < 0)
-        return NULL;
+    hypervAddEprParam(params, "AffectedSystem", &eprQuery,
+                      Msvm_ComputerSystem_WmiInfo);
 
     snapshotSettings = hypervCreateEmbeddedParam(Msvm_VirtualSystemSnapshotSettingData_WmiInfo);
     if (!snapshotSettings)
@@ -4304,9 +4302,8 @@ hypervDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
     if (!params)
         return -1;
 
-    if (hypervAddEprParam(params, "AffectedSnapshot", &eprQuery,
-                          Msvm_VirtualSystemSettingData_WmiInfo) < 0)
-        return -1;
+    hypervAddEprParam(params, "AffectedSnapshot", &eprQuery,
+                      Msvm_VirtualSystemSettingData_WmiInfo);
 
     /* Invoke the method */
     if (hypervInvokeMethod(priv, &params, NULL) < 0)
