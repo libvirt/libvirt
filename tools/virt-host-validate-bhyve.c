@@ -51,7 +51,7 @@ int virHostValidateBhyve(void)
     int fileid = 0;
     g_autofree struct kld_file_stat *stat = g_new0(struct kld_file_stat, 1);
     bool vmm_loaded = false;
-    bool if_tap_loaded = false;
+    bool pf_loaded = false;
     bool if_bridge_loaded = false;
     bool nmdm_loaded = false;
 
@@ -62,8 +62,8 @@ int virHostValidateBhyve(void)
 
         if (STREQ(stat->name, "vmm.ko"))
             vmm_loaded = true;
-        else if (STREQ(stat->name, "if_tap.ko"))
-            if_tap_loaded = true;
+        else if (STREQ(stat->name, "pf.ko"))
+            pf_loaded = true;
         else if (STREQ(stat->name, "if_bridge.ko"))
             if_bridge_loaded = true;
         else if (STREQ(stat->name, "nmdm.ko"))
@@ -71,7 +71,7 @@ int virHostValidateBhyve(void)
     }
 
     MODULE_STATUS_FAIL(vmm, "will not be able to start VMs");
-    MODULE_STATUS_WARN(if_tap, "networking will not work");
+    MODULE_STATUS_WARN(pf, "network driver will not work");
     MODULE_STATUS_WARN(if_bridge, "bridged networking will not work");
     MODULE_STATUS_WARN(nmdm, "nmdm console will not work");
 
