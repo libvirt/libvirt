@@ -21,6 +21,22 @@ v12.5.0 (unreleased)
 
 * **Bug fixes**
 
+  * Ensure proper shutdown ordering of ``virtlogd`` and ``virtlockd``
+
+    The logging and locking helper daemons now shutdown after the daemon running
+    the ``qemu`` hypervisor driver since their services may be needed to shutdown
+    the VMs run by the qemu driver.
+
+  * qemu: Record selected ``virtio`` video device model into the XML
+
+    The ``qemu`` driver may depending on platform and installed QEMU modules
+    pick one of two distinct virtio video device types for the primary device.
+
+    The choice was not recorded in the XML and since the devices are incompatible
+    it can cause failures on migration when the destination picks the wrong
+    device. This version thus records the picked device both for running VMs
+    on upgrade and for new devices to prevent this problem in the future.
+
 
 v12.4.0 (2026-06-01)
 ====================
