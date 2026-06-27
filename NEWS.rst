@@ -17,6 +17,27 @@ v12.5.0 (unreleased)
 
 * **New features**
 
+  * bhyve: Extend the guest agent support
+
+    The bhyve driver now supports several APIs on top of the guest agent:
+
+     * Getting and setting guest OS SSH keys
+     * Setting guest OS user's password
+     * Getting and setting guest OS time
+
+    Additionally, domain rebooting and shutting down using the agent
+    is now supported.
+
+  * bhyve: Support ``on_reboot`` and ``on_poweroff`` actions
+
+    The bhyve driver now respects the domain's
+    ``on_reboot`` and ``on_poweroff`` actions.
+
+  * bhyve: Support populating SMBIOS fields
+
+    Add support for populating the SMBIOS fields as defined
+    by the ``<sysinfo type='smbios'>`` section of the domain's XML.
+
 * **Improvements**
 
 * **Bug fixes**
@@ -36,6 +57,12 @@ v12.5.0 (unreleased)
     it can cause failures on migration when the destination picks the wrong
     device. This version thus records the picked device both for running VMs
     on upgrade and for new devices to prevent this problem in the future.
+
+  * bhyve: Guest agent related fixes
+
+    A few bugs related to the guest agent communication are fixed, from
+    not properly initializing an agent to crashing when the agent
+    socket cannot be opened.
 
 
 v12.4.0 (2026-06-01)
