@@ -38,7 +38,25 @@ v12.5.0 (unreleased)
     Add support for populating the SMBIOS fields as defined
     by the ``<sysinfo type='smbios'>`` section of the domain's XML.
 
+  * qemu: Add support for standalone VNC server
+
+    Starting with this release, libvirt might spawn a standalone
+    qemu-vnc process instead of QEMU's built-in VNC server, for
+    enhanced security.
+
 * **Improvements**
+
+  * Enable hyperv driver on RHEL
+
+    The spec file now enables the Hyper-V driver when building on
+    Red Hat Enterprise Linux.
+
+  * remote: allow passing argv to the ext transport
+
+    The ext transport not only allows spawning a process (via the
+    ``command`` attribute), but as of this release also
+    specifying additional arguments to it, via ``argv``
+    attribute.
 
 * **Bug fixes**
 
