@@ -102,6 +102,11 @@ v12.5.0 (unreleased)
     requested by ``VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES``
     flag.
 
+  * vmx: Properly show all 64 disks on a SCSI controller
+
+    Due to an off-by-one error a last, 64th disk was not shown in a domain XML,
+    which is now fixed.
+
 
 v12.4.0 (2026-06-01)
 ====================
