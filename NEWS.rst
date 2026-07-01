@@ -58,6 +58,14 @@ v12.5.0 (unreleased)
     specifying additional arguments to it, via ``argv``
     attribute.
 
+  * Introduce ``VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES`` flag
+
+    Some CPU features may be enabled explicitly, but should not automatically
+    become part of a host-model CPU and thus are not normally visible in domain
+    capabilities. Users can now request such features to be shown in the
+    host-model CPU in domain capabilities using the new flag. It is exposed as
+    ``--supported-cpu-features`` option for ``virsh domcapabilities``.
+
 * **Bug fixes**
 
   * Ensure proper shutdown ordering of ``virtlogd`` and ``virtlockd``
@@ -81,6 +89,18 @@ v12.5.0 (unreleased)
     A few bugs related to the guest agent communication are fixed, from
     not properly initializing an agent to crashing when the agent
     socket cannot be opened.
+
+  * Fix domain capabilities on AMD CPUs
+
+    QEMU 10.1 and newer does not automatically enable features from
+    arch-capabilities MSR on AMD CPUs as they are specific for Intel CPUs and
+    KVM is just emulating them on AMD. But advertising them on AMD CPUs can
+    cause Windows guest OS to crash so they are hidden by default now. But the
+    features are still supported and can be enabled explicitly, for example,
+    when migrating existing domains. Libvirt now detects this scenario and
+    properly shows the affected features as enabled in domain capabilities when
+    requested by ``VIR_CONNECT_GET_DOMAIN_CAPABILITIES_SUPPORTED_CPU_FEATURES``
+    flag.
 
 
 v12.4.0 (2026-06-01)
