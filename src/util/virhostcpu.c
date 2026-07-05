@@ -993,8 +993,8 @@ virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
 
     if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
         if (sysctlbyname("hw.clockrate", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
-            virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
-            return -1;
+            VIR_DEBUG("cannot obtain CPU freq, setting to 0");
+            cpu_freq = 0;
         }
     }
 
