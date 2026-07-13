@@ -5932,7 +5932,8 @@ qemuNodeGetSecurityModel(virConnectPtr conn,
 
 /**
  * qemuDomainRestoreInternal:
- * @conn: connection object
+ * @driver: QEMU driver
+ * @conn: connection object (optional if @ensureACL is NULL)
  * @vmRestore: Domain object (optional; see below)
  * @path: path to the save image file
  * @unlink_corrupt: remove corrupted save image file @path
@@ -5957,7 +5958,8 @@ qemuNodeGetSecurityModel(virConnectPtr conn,
  * corrupted image was removed 1 is returned.
  */
 static int
-qemuDomainRestoreInternal(virConnectPtr conn,
+qemuDomainRestoreInternal(virQEMUDriver *driver,
+                          virConnectPtr conn,
                           virDomainObj *vmRestore,
                           const char *path,
                           bool unlink_corrupt,
@@ -5968,7 +5970,6 @@ qemuDomainRestoreInternal(virConnectPtr conn,
                           int (*ensureACL)(virConnectPtr, virDomainDef *),
                           virDomainAsyncJob asyncJob)
 {
-    virQEMUDriver *driver = conn->privateData;
     qemuDomainObjPrivate *priv = NULL;
     g_autoptr(virDomainDef) def = NULL;
     virDomainObj *vm = NULL;
@@ -6127,7 +6128,8 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 {
     virCheckFlags(QEMU_DOMAIN_RESTORE_FLAGS, -1);
 
-    return qemuDomainRestoreInternal(conn, NULL, path, false, dxml, NULL, 0,
+    return qemuDomainRestoreInternal(conn->privateData, conn, NULL, path,
+                                     false, dxml, NULL, 0,
                                      flags, virDomainRestoreFlagsEnsureACL,
                                      VIR_ASYNC_JOB_START);
 }
@@ -6136,7 +6138,8 @@ static int
 qemuDomainRestore(virConnectPtr conn,
                   const char *path)
 {
-    return qemuDomainRestoreInternal(conn, NULL, path, false, NULL, NULL, 0,
+    return qemuDomainRestoreInternal(conn->privateData, conn, NULL, path,
+                                     false, NULL, NULL, 0,
                                      0, virDomainRestoreEnsureACL,
                                      VIR_ASYNC_JOB_START);
 }
@@ -6172,7 +6175,8 @@ qemuDomainRestoreParams(virConnectPtr conn,
         return -1;
     }
 
-    ret = qemuDomainRestoreInternal(conn, NULL, path, false, dxml, params, nparams,
+    ret = qemuDomainRestoreInternal(conn->privateData, conn, NULL, path,
+                                    false, dxml, params, nparams,
                                     flags, virDomainRestoreParamsEnsureACL,
                                     VIR_ASYNC_JOB_START);
     return ret;
@@ -6537,7 +6541,7 @@ qemuDomainObjStart(virConnectPtr conn,
             restore_flags |= bypass_cache ? VIR_DOMAIN_SAVE_BYPASS_CACHE : 0;
             restore_flags |= reset_nvram ? VIR_DOMAIN_SAVE_RESET_NVRAM : 0;
 
-            ret = qemuDomainRestoreInternal(conn, vm, managed_save, true, NULL, NULL, 0,
+            ret = qemuDomainRestoreInternal(driver, conn, vm, managed_save, true, NULL, NULL, 0,
                                             restore_flags, NULL,
                                             asyncJob);
 
