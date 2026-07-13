@@ -1132,3 +1132,15 @@ virshDomainNetTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
     return vshEnumComplete(VIR_DOMAIN_NET_TYPE_LAST,
                            virDomainNetTypeToString);
 }
+
+
+char **
+virshDomainDisplayTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                const vshCmd *cmd G_GNUC_UNUSED,
+                                unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_GRAPHICS_TYPE_LAST,
+                           virDomainGraphicsTypeToString);
+}

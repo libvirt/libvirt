@@ -204,3 +204,8 @@ char **
 virshDomainNetTypeCompleter(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags);
+
+char **
+virshDomainDisplayTypeCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags);
