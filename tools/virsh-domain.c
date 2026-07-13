@@ -435,6 +435,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "targetbus",
      .type = VSH_OT_STRING,
+     .completer = virshDomainDiskBusCompleter,
      .help = N_("target bus of disk device")
     },
     {.name = "driver",
@@ -443,6 +444,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "subdriver",
      .type = VSH_OT_STRING,
+     .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("subdriver of disk device")
     },
     {.name = "iothread",
@@ -452,14 +454,17 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "cache",
      .type = VSH_OT_STRING,
+     .completer = virshDomainDiskCacheCompleter,
      .help = N_("cache mode of disk device")
     },
     {.name = "io",
      .type = VSH_OT_STRING,
+     .completer = virshDomainDiskIoCompleter,
      .help = N_("io policy of disk device")
     },
     {.name = "type",
      .type = VSH_OT_STRING,
+     .completer = virshDomainDiskDeviceTypeCompleter,
      .help = N_("target device type")
     },
     {.name = "shareable",
@@ -468,10 +473,12 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "mode",
      .type = VSH_OT_STRING,
+     .completer = virshDomainAttachDiskModeCompleter,
      .help = N_("mode of device reading and writing")
     },
     {.name = "sourcetype",
      .type = VSH_OT_STRING,
+     .completer = virshDomainAttachDiskSourceTypeCompleter,
      .help = N_("type of source (block|file|network)")
     },
     {.name = "serial",
@@ -521,6 +528,7 @@ static const vshCmdOptDef opts_attach_disk[] = {
     },
     {.name = "source-host-socket",
      .type = VSH_OT_STRING,
+     .completer = vshCompletePathLocalExisting,
      .help = N_("host socket for source of disk device")
     },
     {.name = "throttle-groups",

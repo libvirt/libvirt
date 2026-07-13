@@ -1183,3 +1183,77 @@ virshDomainXMLNativeFormatCompleter(vshControl *ctl,
 
     return vshCommaStringListComplete(NULL, formats);
 }
+
+
+char **
+virshDomainDiskBusCompleter(vshControl *ctl G_GNUC_UNUSED,
+                            const vshCmd *cmd G_GNUC_UNUSED,
+                            unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_DISK_BUS_LAST,
+                           virDomainDiskBusTypeToString);
+}
+
+
+char **
+virshDomainDiskDeviceTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_DISK_DEVICE_LAST,
+                           virDomainDiskDeviceTypeToString);
+}
+
+
+char **
+virshDomainDiskCacheCompleter(vshControl *ctl G_GNUC_UNUSED,
+                              const vshCmd *cmd G_GNUC_UNUSED,
+                              unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_DISK_CACHE_LAST,
+                           virDomainDiskCacheTypeToString);
+}
+
+
+char **
+virshDomainDiskIoCompleter(vshControl *ctl G_GNUC_UNUSED,
+                           const vshCmd *cmd G_GNUC_UNUSED,
+                           unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return vshEnumComplete(VIR_DOMAIN_DISK_IO_LAST,
+                           virDomainDiskIoTypeToString);
+}
+
+
+char **
+virshDomainAttachDiskModeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    static const char *modes[] = {"readonly", "shareable", NULL};
+
+    virCheckFlags(0, NULL);
+
+    return vshCommaStringListComplete(NULL, modes);
+}
+
+
+char **
+virshDomainAttachDiskSourceTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                         const vshCmd *cmd G_GNUC_UNUSED,
+                                         unsigned int flags)
+{
+    static const char *types[] = {"file", "block", "network", NULL};
+
+    virCheckFlags(0, NULL);
+
+    return vshCommaStringListComplete(NULL, types);
+}
