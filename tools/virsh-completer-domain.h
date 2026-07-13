@@ -209,3 +209,8 @@ char **
 virshDomainDisplayTypeCompleter(vshControl *ctl,
                                 const vshCmd *cmd,
                                 unsigned int flags);
+
+char **
+virshDomainXMLNativeFormatCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);

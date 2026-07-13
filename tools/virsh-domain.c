@@ -10918,6 +10918,7 @@ static const vshCmdOptDef opts_domxmlfromnative[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = virshDomainXMLNativeFormatCompleter,
      .help = N_("source config data format")
     },
     {.name = "config",
@@ -10968,6 +10969,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = virshDomainXMLNativeFormatCompleter,
      .help = N_("target config data type format")
     },
     {.name = "domain",

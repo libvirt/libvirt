@@ -1144,3 +1144,42 @@ virshDomainDisplayTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
     return vshEnumComplete(VIR_DOMAIN_GRAPHICS_TYPE_LAST,
                            virDomainGraphicsTypeToString);
 }
+
+
+char **
+virshDomainXMLNativeFormatCompleter(vshControl *ctl,
+                                    const vshCmd *cmd G_GNUC_UNUSED,
+                                    unsigned int flags)
+{
+    virshControl *priv = ctl->privData;
+    const char *hvType = NULL;
+    const char **formats = NULL;
+    static const char *xenFormats[] = {"xen-xl", "xen-xm", NULL};
+    static const char *lxcFormats[] = {"lxc-tools", NULL};
+    static const char *vmxFormats[] = {"vmware-vmx", NULL};
+    static const char *bhyveFormats[] = {"bhyve-argv", NULL};
+    static const char *qemuFormats[] = {"qemu-argv", NULL};
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (!(hvType = virConnectGetType(priv->conn)))
+        return NULL;
+
+    if (STREQ(hvType, "Xen"))
+        formats = xenFormats;
+    else if (STREQ(hvType, "LXC"))
+        formats = lxcFormats;
+    else if (STREQ(hvType, "VMware") || STREQ(hvType, "ESX"))
+        formats = vmxFormats;
+    else if (STREQ(hvType, "BHYVE"))
+        formats = bhyveFormats;
+    else if (STREQ(hvType, "QEMU"))
+        formats = qemuFormats;
+    else
+        return NULL;
+
+    return vshCommaStringListComplete(NULL, formats);
+}
