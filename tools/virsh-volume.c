@@ -197,6 +197,7 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {.name = "format",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
+     .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("file format type raw,bochs,qcow,qcow2,qed,vmdk")
     },
     {.name = "backing-vol",
@@ -207,6 +208,7 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {.name = "backing-vol-format",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
+     .completer = virshDomainStorageFileFormatCompleter,
      .help = N_("format of backing volume if taking a snapshot")
     },
     {.name = "prealloc-metadata",
