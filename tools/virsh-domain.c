@@ -2629,6 +2629,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
     {.name = "dest",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
+     .completer = vshCompletePathLocalCreate,
      .help = N_("path of the copy to create")
     },
     {.name = "bandwidth",
@@ -4651,6 +4652,7 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalCreate,
      .help = N_("where to save the data")
     },
     {.name = "bypass-cache",
@@ -5911,6 +5913,7 @@ static const vshCmdOptDef opts_dump[] = {
      .type = VSH_OT_STRING,
      .positional = true,
      .required = true,
+     .completer = vshCompletePathLocalCreate,
      .help = N_("where to dump the core")
     },
     VIRSH_COMMON_OPT_LIVE(N_("perform a live core dump if supported")),
@@ -6081,7 +6084,7 @@ static const vshCmdOptDef opts_screenshot[] = {
     {.name = "file",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
-     .completer = vshCompletePathLocalExisting,
+     .completer = vshCompletePathLocalCreate,
      .help = N_("where to store the screenshot")
     },
     {.name = "screen",

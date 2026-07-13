@@ -36,6 +36,11 @@ vshCompletePathLocalExisting(vshControl *ctl,
                              unsigned int completerflags);
 
 char **
+vshCompletePathLocalCreate(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int completerflags);
+
+char **
 vshCompleteEmpty(vshControl *ctl,
                  const vshCmd *cmd,
                  unsigned int completerflags);

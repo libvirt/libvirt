@@ -173,6 +173,23 @@ vshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
 
 
 /**
+ * vshCompletePathLocalCreate:
+ *
+ * Complete a path to local file used as output.
+ * The outout file may not exist yet.
+ *
+ * Note: For now this is a no-op.
+ */
+char **
+vshCompletePathLocalCreate(vshControl *ctl G_GNUC_UNUSED,
+                           const vshCmd *cmd G_GNUC_UNUSED,
+                           unsigned int completerflags G_GNUC_UNUSED)
+{
+    return NULL;
+}
+
+
+/**
  * vshCompleteEmpty:
  *
  * Complete nothing. For cases where an user input is required and we can't
