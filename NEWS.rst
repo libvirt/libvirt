@@ -22,6 +22,17 @@ v12.6.0 (unreleased)
     The bhyve driver now implements the ``virDomainRename()`` API
     for renaming of a domain (``virsh domrename``).
 
+  * build: Add option to control building libvirtd
+
+    Meson option ``libvirtd`` has been added to control building the monolithic
+    libvirtd, independent from the stateful, daemon-based drivers.
+
+  * sanlock: Add option to check ownership of disk leases
+
+    The sanlock lock driver plugin now supports the ``check_disk_lease_owner``
+    setting in sanlock.conf. When enabled, the sanlock plugin will check that
+    leases are owned by the domain attempting to acquire them.
+
 * **Improvements**
 
 * **Bug fixes**
