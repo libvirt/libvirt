@@ -201,3 +201,20 @@ int qemuAgentFSInfoFormat(qemuAgentFSInfo **agentinfo,
                           int nagentinfo,
                           virDomainDef *vmdef,
                           virDomainFSInfoPtr **info);
+
+void
+qemuAgentDiskInfoFormatParams(qemuAgentDiskInfo **info,
+                              int ndisks,
+                              virDomainDef *vmdef,
+                              virTypedParamList *list);
+
+void
+qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
+                            int nfs,
+                            virDomainDef *vmdef,
+                            virTypedParamList *list);
+
+void
+qemuAgentInterfaceFormatParams(virDomainInterfacePtr *ifaces,
+                               int nifaces,
+                               virTypedParamList *list);
