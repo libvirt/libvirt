@@ -612,6 +612,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virStorageSource *oldsrc = disk->src;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    bool releaseSeclabel = false;
     int rc;
 
     if (diskPriv->blockjob && qemuBlockJobIsRunning(diskPriv->blockjob)) {
@@ -625,17 +626,21 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto rollback;
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
-        goto rollback;
+    if (!virStorageSourceIsEmpty(newsrc)) {
+        if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL) < 0)
+            goto rollback;
 
-    if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
-        goto rollback;
+        if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
+            goto rollback;
 
-    if (qemuDomainStorageSourceChainAccessAllow(driver, vm, newsrc) < 0)
-        goto rollback;
+        if (qemuDomainStorageSourceChainAccessAllow(driver, vm, newsrc) < 0)
+            goto rollback;
 
-    if (qemuHotplugAttachManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE) < 0)
-        goto rollback;
+        releaseSeclabel = true;
+
+        if (qemuHotplugAttachManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE) < 0)
+            goto rollback;
+    }
 
     rc = qemuDomainChangeMediaBlockdev(vm, disk, oldsrc, newsrc, force);
 
@@ -653,7 +658,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     return 0;
 
  rollback:
-    ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
+    if (releaseSeclabel)
+        ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
 
     qemuHotplugRemoveManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE);
 
