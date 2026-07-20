@@ -3061,7 +3061,7 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
     if (vm->def->nwatchdogs) {
         /* Domain already has a watchdog and all must have the same action. */
         rv = 0;
-    } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
+    } else {
         /* QEMU doesn't have a 'dump' action; we tell qemu to 'pause', then
            libvirt listens for the watchdog event, and we perform the dump
            ourselves. so convert 'dump' to 'pause' for the qemu cli */
@@ -3103,14 +3103,6 @@ qemuDomainAttachWatchdog(virDomainObj *vm,
                                   QEMU_MONITOR_ACTION_REBOOT_KEEP,
                                   watchdogaction,
                                   QEMU_MONITOR_ACTION_PANIC_KEEP);
-    } else {
-        virDomainWatchdogAction actualAction = watchdog->action;
-
-        if (actualAction == VIR_DOMAIN_WATCHDOG_ACTION_DUMP)
-            actualAction = VIR_DOMAIN_WATCHDOG_ACTION_PAUSE;
-
-        rv = qemuMonitorSetWatchdogAction(priv->mon,
-                                          virDomainWatchdogActionTypeToString(actualAction));
     }
 
     if (rv >= 0)

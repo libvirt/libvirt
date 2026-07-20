@@ -6184,16 +6184,9 @@ qemuBuildPMCommandLine(virCommand *cmd,
 {
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
-        /* with new qemu we always want '-no-shutdown' on startup and we set
-         * all the other behaviour later during startup */
-        virCommandAddArg(cmd, "-no-shutdown");
-    } else {
-        if (priv->allowReboot == VIR_TRISTATE_BOOL_NO)
-            virCommandAddArg(cmd, "-no-reboot");
-        else
-            virCommandAddArg(cmd, "-no-shutdown");
-    }
+    /* with new qemu we always want '-no-shutdown' on startup and we set
+     * all the other behaviour later during startup */
+    virCommandAddArg(cmd, "-no-shutdown");
 
     /* Use old syntax of -no-acpi only if qemu didn't report that it supports the
      * new syntax */

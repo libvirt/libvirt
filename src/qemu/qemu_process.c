@@ -6898,24 +6898,6 @@ qemuProcessRebootAllowed(const virDomainDef *def)
 }
 
 
-static void
-qemuProcessPrepareAllowReboot(virDomainObj *vm)
-{
-    virDomainDef *def = vm->def;
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    /* with 'set-action' QMP command we don't need to keep this around as
-     * we always update qemu with the proper state */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION))
-        return;
-
-    if (priv->allowReboot != VIR_TRISTATE_BOOL_ABSENT)
-        return;
-
-    priv->allowReboot = virTristateBoolFromBool(qemuProcessRebootAllowed(def));
-}
-
-
 static int
 qemuProcessUpdateSEVInfo(virDomainObj *vm)
 {
@@ -7086,8 +7068,6 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
 
     /* Track if this domain remembers original owner */
     priv->rememberOwner = cfg->rememberOwner;
-
-    qemuProcessPrepareAllowReboot(vm);
 
     /*
      * Normally PCI addresses are assigned in the virDomainCreate
@@ -8215,9 +8195,6 @@ qemuProcessSetupLifecycleActions(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
-
-    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)))
-        return 0;
 
     /* for now we handle only onReboot->destroy here as an alternative to
      * '-no-reboot' on the commandline */
@@ -9909,10 +9886,6 @@ qemuProcessReconnect(void *opaque)
     if (qemuExtDevicesInitPaths(cfg, obj->def) < 0)
         goto error;
 
-    /* If we are connecting to a guest started by old libvirt there is no
-     * allowReboot in status XML and we need to initialize it. */
-    qemuProcessPrepareAllowReboot(obj);
-
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
 
@@ -10147,9 +10120,7 @@ qemuProcessReconnect(void *opaque)
          * domain crashed; otherwise, if the monitor was started,
          * then we can blame ourselves, else we failed before the
          * monitor started so we don't really know. */
-        if (!priv->mon && tryMonReconn &&
-            (priv->allowReboot == VIR_TRISTATE_BOOL_YES ||
-             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)))
+        if (!priv->mon && tryMonReconn)
             state = VIR_DOMAIN_SHUTOFF_CRASHED;
         else if (priv->mon)
             state = VIR_DOMAIN_SHUTOFF_DAEMON;

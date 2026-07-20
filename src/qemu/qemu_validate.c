@@ -3658,10 +3658,7 @@ qemuValidateDomainDeviceDefDiskBlkdeviotune(const virDomainDiskDef *disk,
 
 
 static int
-qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
-                                         const virDomainDef *def,
-                                         virQEMUCaps *qemuCaps)
-
+qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk)
 {
     virStorageType actualType = virStorageSourceGetActualType(disk->src);
 
@@ -3695,13 +3692,6 @@ qemuValidateDomainDeviceDefDiskTransient(const virDomainDiskDef *disk,
     }
 
     if (disk->transientShareBacking == VIR_TRISTATE_BOOL_YES) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SET_ACTION) &&
-            !qemuProcessRebootAllowed(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("transient disk backing image sharing with destroy action of lifecycle isn't supported by this QEMU binary"));
-            return -1;
-        }
-
         /* sharing the backing file requires hotplug of the disk in the qemu driver */
         switch (disk->bus) {
         case VIR_DOMAIN_DISK_BUS_USB:
@@ -3747,7 +3737,7 @@ qemuValidateDomainDeviceDefDisk(const virDomainDiskDef *disk,
     if (qemuValidateDomainDeviceDefDiskBlkdeviotune(disk, def) < 0)
         return -1;
 
-    if (qemuValidateDomainDeviceDefDiskTransient(disk, def, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefDiskTransient(disk) < 0)
         return -1;
 
     if (disk->src->shared && !disk->src->readonly &&

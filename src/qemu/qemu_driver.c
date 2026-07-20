@@ -19548,9 +19548,6 @@ qemuDomainModifyLifecycleActionLive(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION))
-        return 0;
-
     /* For now we only update 'reboot' action here as we want to keep the
      * shutdown action as is (we're emulating the outcome anyways)) */
     if (type != VIR_DOMAIN_LIFECYCLE_REBOOT ||
@@ -19600,7 +19597,6 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
 {
     virQEMUDriver *driver = dom->conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivate *priv;
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
@@ -19617,8 +19613,6 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
-    priv = vm->privateData;
-
     if (virDomainSetLifecycleActionEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
@@ -19633,16 +19627,6 @@ qemuDomainSetLifecycleAction(virDomainPtr dom,
         goto endjob;
 
     if (def) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
-            if (priv->allowReboot == VIR_TRISTATE_BOOL_NO ||
-                (type == VIR_DOMAIN_LIFECYCLE_REBOOT &&
-                 def->onReboot != action)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("cannot update lifecycle action because QEMU was started with incompatible -no-reboot setting"));
-                goto endjob;
-            }
-        }
-
         if (qemuDomainModifyLifecycleActionLive(vm, type, action) < 0)
             goto endjob;
 
