@@ -7874,28 +7874,6 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitor *mon,
 
 
 int
-qemuMonitorJSONSetWatchdogAction(qemuMonitor *mon,
-                                 const char *action)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("watchdog-set-action",
-                                           "s:action", action,
-                                           NULL)))
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-int
 qemuMonitorJSONBlockdevCreate(qemuMonitor *mon,
                               const char *jobname,
                               virJSONValue **props)

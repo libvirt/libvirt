@@ -3965,18 +3965,6 @@ qemuMonitorMemoryDeviceSizeChangeFree(qemuMonitorMemoryDeviceSizeChangePtr info)
 }
 
 
-int
-qemuMonitorSetWatchdogAction(qemuMonitor *mon,
-                             const char *action)
-{
-    VIR_DEBUG("watchdogAction=%s", action);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONSetWatchdogAction(mon, action);
-}
-
-
 /**
  * qemuMonitorBlockdevCreate:
  * @mon: monitor object

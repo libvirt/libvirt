@@ -634,11 +634,6 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
-qemuMonitorJSONSetWatchdogAction(qemuMonitor *mon,
-                                 const char *action)
-    ATTRIBUTE_NONNULL(1);
-
-int
 qemuMonitorJSONBlockdevCreate(qemuMonitor *mon,
                               const char *jobname,
                               virJSONValue **props)

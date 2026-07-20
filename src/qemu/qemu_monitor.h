@@ -1641,10 +1641,6 @@ qemuMonitorSetBlockThreshold(qemuMonitor *mon,
                              unsigned long long threshold);
 
 int
-qemuMonitorSetWatchdogAction(qemuMonitor *mon,
-                             const char *action);
-
-int
 qemuMonitorBlockdevCreate(qemuMonitor *mon,
                           const char *jobname,
                           virJSONValue **props);
