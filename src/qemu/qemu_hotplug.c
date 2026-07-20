@@ -4853,7 +4853,8 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
             diskPriv->blockjob->disk = NULL;
             g_clear_pointer(&diskPriv->blockjob, virObjectUnref);
         } else {
-            if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
+            if (!virStorageSourceIsEmpty(disk->src) &&
+                !(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
                 goto cleanup;
         }
 
