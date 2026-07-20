@@ -8176,21 +8176,27 @@ qemuProcessSetupLifecycleActions(virDomainObj *vm,
                                  virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuMonitorActionShutdown shutdown = QEMU_MONITOR_ACTION_SHUTDOWN_KEEP;
+    qemuMonitorActionReboot reboot = QEMU_MONITOR_ACTION_REBOOT_KEEP;
+    qemuMonitorActionWatchdog watchdog = QEMU_MONITOR_ACTION_WATCHDOG_KEEP;
+    qemuMonitorActionPanic panic = QEMU_MONITOR_ACTION_PANIC_KEEP;
     int rc;
 
     /* for now we handle only onReboot->destroy here as an alternative to
      * '-no-reboot' on the commandline */
-    if (vm->def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
+    if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY)
+        reboot = QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN;
+
+    if (shutdown == QEMU_MONITOR_ACTION_SHUTDOWN_KEEP &&
+        reboot == QEMU_MONITOR_ACTION_REBOOT_KEEP &&
+        watchdog == QEMU_MONITOR_ACTION_WATCHDOG_KEEP &&
+        panic == QEMU_MONITOR_ACTION_PANIC_KEEP)
         return 0;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorSetAction(priv->mon,
-                              QEMU_MONITOR_ACTION_SHUTDOWN_KEEP,
-                              QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN,
-                              QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
-                              QEMU_MONITOR_ACTION_PANIC_KEEP);
+    rc = qemuMonitorSetAction(priv->mon, shutdown, reboot, watchdog, panic);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
