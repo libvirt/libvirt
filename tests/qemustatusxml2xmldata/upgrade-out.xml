@@ -258,7 +258,6 @@
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-upstream'/>
   <memoryBackingDir path='/var/lib/libvirt/qemu/ram/1-upstream'/>
   <chardevStdioLogd/>
-  <allowReboot value='yes'/>
   <nodename index='0'/>
   <fdset index='0'/>
   <blockjobs active='no'/>

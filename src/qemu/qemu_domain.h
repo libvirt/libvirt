@@ -134,15 +134,6 @@ struct _qemuDomainObjPrivate {
     bool fakeReboot;
     bool fakeReset;
     bool pausedShutdown;
-    /* allowReboot:
-     *
-     * Unused with new QEMU versions which have QEMU_CAPS_SET_ACTION.
-     *
-     * Otherwise if it's set to VIR_TRISTATE_BOOL_YES, QEMU was started with
-     * -no-shutdown, and if set to VIR_TRISTATE_BOOL_NO qemu was started with
-     * -no-reboot instead.
-     */
-    virTristateBool allowReboot;
 
     unsigned long migMaxBandwidth;
     char *origname;
@@ -1009,14 +1000,6 @@ qemuDomainFixupCPUs(virDomainObj *vm,
 
 char *
 qemuDomainGetMachineName(virDomainObj *vm);
-
-void
-qemuDomainObjPrivateXMLFormatAllowReboot(virBuffer *buf,
-                                         virTristateBool allowReboot);
-
-int
-qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
-                                        virTristateBool *allowReboot);
 
 void
 qemuDomainPrepareDiskSourceData(virDomainDiskDef *disk,

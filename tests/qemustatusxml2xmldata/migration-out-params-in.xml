@@ -270,7 +270,6 @@
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-7-nest'/>
   <memoryBackingDir path='/var/lib/libvirt/qemu/ram/7-nest'/>
   <chardevStdioLogd/>
-  <allowReboot value='yes'/>
   <nodename index='0'/>
   <fdset index='0'/>
   <blockjobs active='no'/>

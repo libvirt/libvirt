@@ -1946,8 +1946,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     priv->rememberOwner = false;
 
-    priv->allowReboot = VIR_TRISTATE_BOOL_ABSENT;
-
     g_clear_pointer(&priv->migrationCaps, virBitmapFree);
 
     virHashRemoveAll(priv->blockjobs);
@@ -2621,17 +2619,6 @@ qemuDomainObjPrivateXMLFormatBackups(virBuffer *buf,
 }
 
 
-void
-qemuDomainObjPrivateXMLFormatAllowReboot(virBuffer *buf,
-                                         virTristateBool allowReboot)
-{
-    if (allowReboot) {
-        virBufferAsprintf(buf, "<allowReboot value='%s'/>\n",
-                          virTristateBoolTypeToString(allowReboot));
-    }
-}
-
-
 static void
 qemuDomainObjPrivateXMLFormatPR(virBuffer *buf,
                                 qemuDomainObjPrivate *priv)
@@ -2811,8 +2798,6 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
 
     if (priv->rememberOwner)
         virBufferAddLit(buf, "<rememberOwner/>\n");
-
-    qemuDomainObjPrivateXMLFormatAllowReboot(buf, priv->allowReboot);
 
     qemuDomainObjPrivateXMLFormatPR(buf, priv);
 
@@ -3302,21 +3287,6 @@ qemuDomainObjPrivateXMLParseBackups(qemuDomainObjPrivate *priv,
 }
 
 
-int
-qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
-                                        virTristateBool *allowReboot)
-{
-    xmlNodePtr node = virXPathNode("./allowReboot", ctxt);
-
-    /* Allow value='default' as the input here, because old versions
-     * of libvirt produced that output and we need to be able to read
-     * it back to correctly handle running guests on daemon upgrade */
-    return virXMLPropTristateBoolAllowDefault(node, "value",
-                                              VIR_XML_PROP_NONE,
-                                              allowReboot);
-}
-
-
 static void
 qemuDomainObjPrivateXMLParsePR(xmlXPathContextPtr ctxt,
                                bool *prDaemonRunning)
@@ -3547,9 +3517,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
                                              ctxt) == 1;
-
-    if (qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &priv->allowReboot) < 0)
-        return -1;
 
     qemuDomainObjPrivateXMLParsePR(ctxt, &priv->prDaemonRunning);
 

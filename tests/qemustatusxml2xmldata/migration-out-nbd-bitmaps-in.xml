@@ -342,7 +342,6 @@
   </cpu>
   <chardevStdioLogd/>
   <rememberOwner/>
-  <allowReboot value='yes'/>
   <nodename index='3'/>
   <fdset index='0'/>
   <blockjobs active='yes'>
