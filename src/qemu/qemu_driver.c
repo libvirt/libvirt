@@ -3615,7 +3615,6 @@ qemuProcessGuestPanicEventInfo(virQEMUDriver *driver,
 static void
 processGuestPanicEvent(virQEMUDriver *driver,
                        virDomainObj *vm,
-                       int action,
                        qemuMonitorEventPanicInfo *info)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -3650,7 +3649,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
         VIR_WARN("Unable to release lease on %s", vm->def->name);
     VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-    switch (action) {
+    switch (vm->def->onCrash) {
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         if (doCoreDumpToAutoDumpPath(driver, vm, flags) < 0)
             goto endjob;
@@ -4208,8 +4207,7 @@ qemuProcessEventHandler(void *data,
         processWatchdogEvent(driver, vm, processEvent->action);
         break;
     case QEMU_PROCESS_EVENT_GUESTPANIC:
-        processGuestPanicEvent(driver, vm, processEvent->action,
-                               processEvent->data);
+        processGuestPanicEvent(driver, vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_DEVICE_DELETED:
         processDeviceDeletedEvent(driver, vm, processEvent->data);

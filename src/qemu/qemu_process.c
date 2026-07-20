@@ -1359,8 +1359,7 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
 {
     virObjectLock(vm);
 
-    qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_GUESTPANIC,
-                           vm->def->onCrash, 0, info);
+    qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_GUESTPANIC, 0, 0, info);
 
     virObjectUnlock(vm);
 }
