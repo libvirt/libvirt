@@ -6880,24 +6880,6 @@ qemuProcessPrepareDomainHostdevs(virDomainObj *vm,
 }
 
 
-/**
- * qemuProcessRebootAllowed:
- * @def: domain definition
- *
- * This function encapsulates the logic which dictated whether '-no-reboot' was
- * used instead of '-no-shutdown' which is used  QEMU versions which don't
- * support the 'set-action' QMP command.
- */
-bool
-qemuProcessRebootAllowed(const virDomainDef *def)
-{
-    return def->onReboot != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
-           def->onPoweroff != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
-           (def->onCrash != VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY &&
-            def->onCrash != VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY);
-}
-
-
 static int
 qemuProcessUpdateSEVInfo(virDomainObj *vm)
 {
