@@ -81,7 +81,6 @@
   <flag name='virtio-gpu-gl-pci'/>
   <flag name='confidential-guest-support'/>
   <flag name='s390-pv-guest'/>
-  <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='memory-backend-file.reserve'/>
   <flag name='netdev.json'/>

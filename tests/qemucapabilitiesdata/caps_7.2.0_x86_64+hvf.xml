@@ -146,7 +146,6 @@
   <flag name='virtio-gpu-gl-pci'/>
   <flag name='virtio-vga-gl'/>
   <flag name='confidential-guest-support'/>
-  <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='virtio-mem-pci'/>
   <flag name='memory-backend-file.reserve'/>

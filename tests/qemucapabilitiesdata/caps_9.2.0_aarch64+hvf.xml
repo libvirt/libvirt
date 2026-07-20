@@ -87,7 +87,6 @@
   <flag name='rotation-rate'/>
   <flag name='acpi-index'/>
   <flag name='confidential-guest-support'/>
-  <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='netdev.json'/>
   <flag name='query-dirty-rate'/>

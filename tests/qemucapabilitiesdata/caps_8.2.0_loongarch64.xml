@@ -108,7 +108,6 @@
   <flag name='acpi-index'/>
   <flag name='input-linux'/>
   <flag name='confidential-guest-support'/>
-  <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='memory-backend-file.reserve'/>
   <flag name='netdev.json'/>
