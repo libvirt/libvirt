@@ -3250,12 +3250,11 @@ struct _virDomainDef {
     virDomainResourceDef *resource;
     virDomainIdMapDef idmap;
 
-    /* These 3 are based on virDomainLifecycleAction enum flags */
-    int onReboot;
-    int onPoweroff;
-    int onCrash;
+    virDomainLifecycleAction onReboot;
+    virDomainLifecycleAction onPoweroff;
+    virDomainLifecycleAction onCrash;
 
-    int onLockFailure; /* enum virDomainLockFailureAction */
+    virDomainLockFailureAction onLockFailure;
 
     virDomainPowerManagement pm;
 

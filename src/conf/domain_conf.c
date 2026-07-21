@@ -14168,21 +14168,23 @@ static int
 virDomainEventActionParseXML(xmlXPathContextPtr ctxt,
                              const char *name,
                              const char *xpath,
-                             int *val,
-                             int defaultVal,
+                             unsigned int *val,
+                             unsigned int defaultVal,
                              virEventActionFromStringFunc convFunc)
 {
     g_autofree char *tmp = virXPathString(xpath, ctxt);
+    int tmpval;
 
     if (tmp == NULL) {
         *val = defaultVal;
     } else {
-        *val = convFunc(tmp);
-        if (*val < 0) {
+        tmpval = convFunc(tmp);
+        if (tmpval < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown %1$s action: %2$s"), name, tmp);
             return -1;
         }
+        *val = tmpval;
     }
     return 0;
 }

@@ -336,33 +336,37 @@ xenParseEventsActions(virConf *conf, virDomainDef *def)
     g_autofree char *on_poweroff = NULL;
     g_autofree char *on_reboot = NULL;
     g_autofree char *on_crash = NULL;
+    int tmp;
 
     if (xenConfigGetString(conf, "on_poweroff", &on_poweroff, "destroy") < 0)
         return -1;
 
-    if ((def->onPoweroff = virDomainLifecycleActionTypeFromString(on_poweroff)) < 0) {
+    if ((tmp = virDomainLifecycleActionTypeFromString(on_poweroff)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %1$s for on_poweroff"), on_poweroff);
         return -1;
     }
+    def->onPoweroff =  tmp;
 
     if (xenConfigGetString(conf, "on_reboot", &on_reboot, "restart") < 0)
         return -1;
 
-    if ((def->onReboot = virDomainLifecycleActionTypeFromString(on_reboot)) < 0) {
+    if ((tmp = virDomainLifecycleActionTypeFromString(on_reboot)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %1$s for on_reboot"), on_reboot);
         return -1;
     }
+    def->onReboot = tmp;
 
     if (xenConfigGetString(conf, "on_crash", &on_crash, "restart") < 0)
         return -1;
 
-    if ((def->onCrash = virDomainLifecycleActionTypeFromString(on_crash)) < 0) {
+    if ((tmp = virDomainLifecycleActionTypeFromString(on_crash)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected value %1$s for on_crash"), on_crash);
         return -1;
     }
+    def->onCrash = tmp;
 
     return 0;
 }
