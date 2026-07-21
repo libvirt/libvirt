@@ -3881,43 +3881,37 @@ qemuMonitorSetBlockThreshold(qemuMonitor *mon,
 char *
 qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfo *info)
 {
-    char *ret = NULL;
-
     switch (info->type) {
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV:
-        ret = g_strdup_printf("hyper-v: arg1='0x%llx', arg2='0x%llx', "
-                              "arg3='0x%llx', arg4='0x%llx', arg5='0x%llx'",
-                              info->data.hyperv.arg1, info->data.hyperv.arg2,
-                              info->data.hyperv.arg3, info->data.hyperv.arg4,
-                              info->data.hyperv.arg5);
+        return g_strdup_printf("hyper-v: arg1='0x%llx', arg2='0x%llx', arg3='0x%llx', arg4='0x%llx', arg5='0x%llx'",
+                               info->data.hyperv.arg1, info->data.hyperv.arg2,
+                               info->data.hyperv.arg3, info->data.hyperv.arg4,
+                               info->data.hyperv.arg5);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_S390:
-        ret = g_strdup_printf("s390: core='%d' psw-mask='0x%016llx' "
-                              "psw-addr='0x%016llx' reason='%s'",
-                              info->data.s390.core,
-                              info->data.s390.psw_mask,
-                              info->data.s390.psw_addr,
-                              info->data.s390.reason);
+        return g_strdup_printf("s390: core='%d' psw-mask='0x%016llx' psw-addr='0x%016llx' reason='%s'",
+                               info->data.s390.core,
+                               info->data.s390.psw_mask,
+                               info->data.s390.psw_addr,
+                               info->data.s390.reason);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_TDX:
         if (info->data.tdx.has_gpa)
-            ret = g_strdup_printf("tdx: error_code='0x%x' message='%s' "
-                                  "additional error information can be found "
-                                  "at gpa page: '0x%016llx'",
-                                  info->data.tdx.error_code,
-                                  info->data.tdx.message,
-                                  info->data.tdx.gpa);
+            return g_strdup_printf("tdx: error_code='0x%x' message='%s' additional error information can be found at gpa page: '0x%016llx'",
+                                   info->data.tdx.error_code,
+                                   info->data.tdx.message,
+                                   info->data.tdx.gpa);
         else
-            ret = g_strdup_printf("tdx: error_code='0x%x' message='%s'",
-                                  info->data.tdx.error_code,
-                                  info->data.tdx.message);
+            return g_strdup_printf("tdx: error_code='0x%x' message='%s'",
+                                   info->data.tdx.error_code,
+                                   info->data.tdx.message);
         break;
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
     case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST:
         break;
     }
 
-    return ret;
+    return NULL;
 }
 
 
