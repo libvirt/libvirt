@@ -3627,26 +3627,64 @@ processGuestPanicEvent(virQEMUDriver *driver,
             qemuDomainLogAppendMessage(driver, vm, "%s: panic %s\n", timestamp, msg);
     }
 
-    virDomainObjSetState(vm, VIR_DOMAIN_CRASHED, VIR_DOMAIN_CRASHED_PANICKED);
-
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_CRASHED,
                                               VIR_DOMAIN_EVENT_CRASHED_PANICKED);
-
     virObjectEventStateQueue(driver->domainEventState, event);
 
-    qemuDomainSaveStatus(vm);
-
-    if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
-        VIR_WARN("Unable to release lease on %s", vm->def->name);
-    VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
-
+    /* Update VM state */
     switch (vm->def->onCrash) {
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        virDomainObjSetState(vm, VIR_DOMAIN_CRASHED, VIR_DOMAIN_CRASHED_PANICKED);
+        qemuDomainSaveStatus(vm);
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+        break;
+    }
+
+    /* Handle state of leases/locks */
+    switch (vm->def->onCrash) {
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
+            VIR_WARN("Unable to release lease on %s", vm->def->name);
+        VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+        break;
+    }
+
+    /* create core dump */
+    switch (vm->def->onCrash) {
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         if (doCoreDumpToAutoDumpPath(driver, vm, flags) < 0)
             goto endjob;
-        G_GNUC_FALLTHROUGH;
 
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+        break;
+    }
+
+    /* final state update */
+    switch (vm->def->onCrash) {
+    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
     case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
         qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_CRASHED, VIR_ASYNC_JOB_DUMP, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -3659,22 +3697,14 @@ processGuestPanicEvent(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
-        if (doCoreDumpToAutoDumpPath(driver, vm, flags) < 0)
-            goto endjob;
-        G_GNUC_FALLTHROUGH;
-
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
         qemuDomainSetFakeReboot(vm, true);
         ignore_value(qemuProcessShutdownOrReboot(vm));
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
-        /* the VM is kept around for debugging */
-        break;
-
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
-    default:
         break;
     }
 
