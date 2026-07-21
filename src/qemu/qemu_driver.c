@@ -3600,19 +3600,6 @@ doCoreDumpToAutoDumpPath(virQEMUDriver *driver,
 
 
 static void
-qemuProcessGuestPanicEventInfo(virQEMUDriver *driver,
-                               virDomainObj *vm,
-                               qemuMonitorEventPanicInfo *info)
-{
-    g_autofree char *msg = qemuMonitorGuestPanicEventInfoFormatMsg(info);
-    g_autofree char *timestamp = virTimeStringNow();
-
-    if (msg && timestamp)
-        qemuDomainLogAppendMessage(driver, vm, "%s: panic %s\n", timestamp, msg);
-}
-
-
-static void
 processGuestPanicEvent(virQEMUDriver *driver,
                        virDomainObj *vm,
                        qemuMonitorEventPanicInfo *info)
@@ -3632,8 +3619,13 @@ processGuestPanicEvent(virQEMUDriver *driver,
         goto endjob;
     }
 
-    if (info)
-        qemuProcessGuestPanicEventInfo(driver, vm, info);
+    if (info) {
+        g_autofree char *msg = qemuMonitorGuestPanicEventInfoFormatMsg(info);
+        g_autofree char *timestamp = virTimeStringNow();
+
+        if (msg && timestamp)
+            qemuDomainLogAppendMessage(driver, vm, "%s: panic %s\n", timestamp, msg);
+    }
 
     virDomainObjSetState(vm, VIR_DOMAIN_CRASHED, VIR_DOMAIN_CRASHED_PANICKED);
 
