@@ -2044,6 +2044,9 @@ The ``on_crash`` event supports these additional actions :since:`since 0.8.4`.
 ``coredump-restart``
    The crashed domain's core will be dumped, and then the domain will be
    restarted with the same configuration
+``preserve-running``
+   The crashed domain will continue to run. This is useful if the guest OS can
+   do an internal crash dump and reboot itself. :since:`Since 12.6.0`
 
 :since:`Since 3.9.0`, the lifecycle events can be configured via the
 `virDomainSetLifecycleAction <html/libvirt-libvirt-domain.html#virDomainSetLifecycleAction>`__

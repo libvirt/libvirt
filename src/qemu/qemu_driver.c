@@ -3644,6 +3644,11 @@ processGuestPanicEvent(virQEMUDriver *driver,
         qemuDomainSaveStatus(vm);
         break;
 
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
+        virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_CRASHED);
+        qemuDomainSaveStatus(vm);
+        break;
+
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }
@@ -3661,6 +3666,8 @@ processGuestPanicEvent(virQEMUDriver *driver,
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
         break;
 
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
+        /* we need to keep resources locked */
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }
@@ -3678,6 +3685,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }
@@ -3704,6 +3712,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }
@@ -19591,13 +19600,36 @@ qemuDomainModifyLifecycleActionLive(virDomainObj *vm,
         case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+            break;
+        }
+        break;
+
+    case VIR_DOMAIN_LIFECYCLE_CRASH:
+        if (vm->def->onCrash == action)
+            break;
+
+        switch (vm->def->onCrash) {
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
+            panic = QEMU_MONITOR_ACTION_PANIC_NONE;
+            break;
+
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+            panic = QEMU_MONITOR_ACTION_PANIC_PAUSE;
+            break;
+
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             break;
         }
         break;
 
     case VIR_DOMAIN_LIFECYCLE_POWEROFF:
-    case VIR_DOMAIN_LIFECYCLE_CRASH:
     case VIR_DOMAIN_LIFECYCLE_LAST:
         break;
     }

@@ -6242,7 +6242,8 @@ VIR_ENUM_IMPL(virshDomainLifecycleAction,
               "rename-restart",
               "preserve",
               "coredump-destroy",
-              "coredump-restart");
+              "coredump-restart",
+              "none");
 
 static bool
 cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)

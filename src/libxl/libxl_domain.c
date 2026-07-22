@@ -509,6 +509,7 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }
@@ -529,6 +530,7 @@ libxlDomainShutdownThread(void *opaque)
             goto endjob;
         case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
             goto endjob;
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
             libxlDomainAutoCoreDump(driver, vm);
@@ -557,6 +559,7 @@ libxlDomainShutdownThread(void *opaque)
         case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
         case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
             goto endjob;
         }

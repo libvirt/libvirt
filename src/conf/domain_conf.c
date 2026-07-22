@@ -303,6 +303,7 @@ VIR_ENUM_IMPL(virDomainLifecycleAction,
               "preserve",
               "coredump-destroy",
               "coredump-restart",
+              "preserve-running",
 );
 
 VIR_ENUM_IMPL(virDomainLockFailure,
@@ -5534,6 +5535,7 @@ virDomainDefLifecycleActionAllowed(virDomainLifecycle type,
             return true;
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
         case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
             break;
         }
         break;

@@ -111,6 +111,7 @@ libxlActionFromVirLifecycle(virDomainLifecycleAction action)
     case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
         return LIBXL_ACTION_ON_SHUTDOWN_COREDUMP_RESTART;
 
+    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE_RUNNING:
     case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
         break;
     }

@@ -5035,6 +5035,7 @@
       destroy: The domain is cleaned up
       restart: A new domain is started in place of the old one
       preserve: The domain will remain in memory until it is destroyed manually
+      preserve-running: Keep the domain as is, let the guest handle the crash.
       rename-restart: a variant of the previous one but where the old domain is
                       renamed before being saved to allow a restart
       coredump-destroy: The crashed domain's core will be dumped, and then the
@@ -5051,6 +5052,7 @@
       <value>rename-restart</value>
       <value>coredump-destroy</value>
       <value>coredump-restart</value>
+      <value>preserve-running</value>
     </choice>
   </define>
   <!--
