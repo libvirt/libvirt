@@ -19544,42 +19544,51 @@ qemuDomainModifyLifecycleActionLive(virDomainObj *vm,
                                     virDomainLifecycle type,
                                     virDomainLifecycleAction action)
 {
-    qemuMonitorActionReboot monReboot = QEMU_MONITOR_ACTION_REBOOT_KEEP;
+    qemuMonitorActionShutdown shutdown = QEMU_MONITOR_ACTION_SHUTDOWN_KEEP;
+    qemuMonitorActionReboot reboot = QEMU_MONITOR_ACTION_REBOOT_KEEP;
+    qemuMonitorActionWatchdog watchdog = QEMU_MONITOR_ACTION_WATCHDOG_KEEP;
+    qemuMonitorActionPanic panic = QEMU_MONITOR_ACTION_PANIC_KEEP;
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
 
-    /* For now we only update 'reboot' action here as we want to keep the
-     * shutdown action as is (we're emulating the outcome anyways)) */
-    if (type != VIR_DOMAIN_LIFECYCLE_REBOOT ||
-        vm->def->onReboot == action)
-        return 0;
+    switch (type) {
+    case VIR_DOMAIN_LIFECYCLE_REBOOT:
+        if (vm->def->onReboot == action)
+            break;
 
+        switch (action) {
+        case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
+            reboot = QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN;
+            break;
 
-    switch (action) {
-    case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
-        monReboot = QEMU_MONITOR_ACTION_REBOOT_SHUTDOWN;
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
+            reboot = QEMU_MONITOR_ACTION_REBOOT_RESET;
+            break;
+
+        case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
+        case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
+            break;
+        }
         break;
 
-    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
-        monReboot = QEMU_MONITOR_ACTION_REBOOT_RESET;
+    case VIR_DOMAIN_LIFECYCLE_POWEROFF:
+    case VIR_DOMAIN_LIFECYCLE_CRASH:
+    case VIR_DOMAIN_LIFECYCLE_LAST:
         break;
-
-    case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
-    case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME:
-    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY:
-    case VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART:
-    case VIR_DOMAIN_LIFECYCLE_ACTION_LAST:
-        return 0;
     }
 
+    if (shutdown == QEMU_MONITOR_ACTION_SHUTDOWN_KEEP &&
+        reboot == QEMU_MONITOR_ACTION_REBOOT_KEEP &&
+        watchdog == QEMU_MONITOR_ACTION_WATCHDOG_KEEP &&
+        panic == QEMU_MONITOR_ACTION_PANIC_KEEP)
+        return 0;
 
     qemuDomainObjEnterMonitor(vm);
 
-    rc = qemuMonitorSetAction(priv->mon,
-                              QEMU_MONITOR_ACTION_SHUTDOWN_KEEP,
-                              monReboot,
-                              QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
-                              QEMU_MONITOR_ACTION_PANIC_KEEP);
+    rc = qemuMonitorSetAction(priv->mon, shutdown, reboot, watchdog, panic);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
