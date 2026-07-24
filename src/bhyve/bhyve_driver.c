@@ -1379,6 +1379,7 @@ bhyveStateCleanup(void)
         virPidFileRelease(BHYVE_STATE_DIR, "driver", bhyve_driver->lockFD);
 
     virMutexDestroy(&bhyve_driver->lock);
+    VIR_FREE(bhyve_driver->pidfile);
     VIR_FREE(bhyve_driver);
 
     return 0;
