@@ -171,6 +171,8 @@ pfAddNatFirewallRules(virNetworkDef *def,
     g_autoptr(virCommand) flush_cmd = virCommandNew(PFCTL);
     virPortRange *portRange = &def->forward.port;
     g_autofree char *portRangeStr = NULL;
+    g_autofree char *addr = NULL;
+    g_autofree char *pf_rules = NULL;
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -205,36 +207,39 @@ pfAddNatFirewallRules(virNetworkDef *def,
         }
     }
 
+    if (!(addr = virSocketAddrFormat(&ipdef->address)))
+        return -1;
+
     virBufferAsprintf(&pf_rules_buf,
                       "table <natdst> persist { 0.0.0.0/0, ! %s/%d, ! %s, ! %s }\n",
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix,
                       networkLocalMulticastIPv4,
                       networkLocalBroadcast);
     virBufferAsprintf(&pf_rules_buf,
                       "nat pass on %s from %s/%d to <natdst> -> (%s) port %s\n",
                       forwardIf,
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix,
                       forwardIf,
                       portRangeStr);
     virBufferAsprintf(&pf_rules_buf,
                       "pass quick on %s from %s/%d to %s/%d\n",
                       def->bridge,
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix,
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix);
     virBufferAsprintf(&pf_rules_buf,
                       "pass quick on %s from %s/%d to %s\n",
                       def->bridge,
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix,
                       networkLocalMulticastIPv4);
     virBufferAsprintf(&pf_rules_buf,
                       "pass quick on %s from %s/%d to %s\n",
                       def->bridge,
-                      virSocketAddrFormat(&ipdef->address),
+                      addr,
                       prefix,
                       networkLocalBroadcast);
     virBufferAsprintf(&pf_rules_buf,
@@ -246,7 +251,8 @@ pfAddNatFirewallRules(virNetworkDef *def,
     virCommandAddArgFormat(cmd, "libvirt/%s", def->name);
     virCommandAddArgList(cmd, "-f", "-", NULL);
 
-    virCommandSetInputBuffer(cmd, virBufferContentAndReset(&pf_rules_buf));
+    pf_rules = virBufferContentAndReset(&pf_rules_buf);
+    virCommandSetInputBuffer(cmd, pf_rules);
 
     /* pfctl -a libvirt/default -F all */
     /* Flush rules as a separate command, so when it fails, e.g. because the
