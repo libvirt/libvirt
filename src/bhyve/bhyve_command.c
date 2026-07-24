@@ -518,10 +518,12 @@ bhyveBuildVirtioSerialControllerArgStr(const virDomainDef *def,
     }
 
     if (virBufferUse(&opt) > 0) {
+        g_autofree char *console_opt = virBufferContentAndReset(&opt);
+
         virCommandAddArg(cmd, "-s");
         virCommandAddArgFormat(cmd, "%d:0,virtio-console%s",
                                controller->info.addr.pci.slot,
-                               virBufferContentAndReset(&opt));
+                               console_opt);
     }
 
     return 0;
