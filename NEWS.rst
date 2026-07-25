@@ -17,6 +17,11 @@ v12.6.0 (unreleased)
 
 * **New features**
 
+  * bhyve: implement ``virDomainRename()``
+
+    The bhyve driver now implements the ``virDomainRename()`` API
+    for renaming of a domain (``virsh domrename``).
+
 * **Improvements**
 
 * **Bug fixes**
