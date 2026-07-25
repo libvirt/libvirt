@@ -54,6 +54,11 @@ bhyveDomainObjPrivateFree(void *data)
 
     virDomainPCIAddressSetFree(priv->pciaddrs);
 
+    if (priv->eventThread) {
+        VIR_ERROR(_("Unexpected event thread still active during domain deletion"));
+        g_object_unref(priv->eventThread);
+    }
+
     g_free(priv);
 }
 

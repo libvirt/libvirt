@@ -675,6 +675,8 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     if ((priv != NULL) && (priv->mon != NULL))
          g_clear_pointer(&priv->mon, bhyveMonitorClose);
 
+    virBhyveDomainObjStopWorker(vm);
+
     cmd = virBhyveProcessBuildDestroyCmd(driver, vm->def);
     if (virCommandRun(cmd, NULL) < 0) {
         /* Only failure of the actual destroy command warrants unsuccessful return code,
