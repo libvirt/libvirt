@@ -387,10 +387,12 @@ bhyveDomainGetAutostart(virDomainPtr domain, int *autostart)
 static int
 bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
 {
+    struct _bhyveConn *privconn = domain->conn->privateData;
     virDomainObj *vm;
     char *configFile = NULL;
     char *autostartLink = NULL;
     int ret = -1;
+    g_autoptr(virBhyveDriverConfig) cfg = NULL;
 
     if (!(vm = bhyveDomObjFromDomain(domain)))
         goto cleanup;
@@ -406,15 +408,17 @@ bhyveDomainSetAutostart(virDomainPtr domain, int autostart)
 
     autostart = (autostart != 0);
 
+    cfg = virBhyveDriverGetConfig(privconn);
+
     if (vm->autostart != autostart) {
-        configFile = virDomainConfigFile(BHYVE_CONFIG_DIR, vm->def->name);
-        autostartLink = virDomainConfigFile(BHYVE_AUTOSTART_DIR, vm->def->name);
+        configFile = virDomainConfigFile(cfg->configDir, vm->def->name);
+        autostartLink = virDomainConfigFile(cfg->autostartDir, vm->def->name);
 
         if (autostart) {
-            if (g_mkdir_with_parents(BHYVE_AUTOSTART_DIR, 0777) < 0) {
+            if (g_mkdir_with_parents(cfg->autostartDir, 0777) < 0) {
                 virReportSystemError(errno,
                                      _("cannot create autostart directory %1$s"),
-                                     BHYVE_AUTOSTART_DIR);
+                                     cfg->autostartDir);
                 goto cleanup;
             }
 
@@ -541,6 +545,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     g_autoptr(virCaps) caps = NULL;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
@@ -579,7 +584,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     vm->persistent = 1;
 
     if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
-                         privconn->xmlopt, BHYVE_CONFIG_DIR) < 0) {
+                         privconn->xmlopt, cfg->configDir) < 0) {
         virDomainObjListRemove(privconn->domains, vm);
         goto cleanup;
     }
@@ -612,6 +617,7 @@ bhyveDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
     virObjectEvent *event = NULL;
     virDomainObj *vm;
     g_autofree char *nvram_path = NULL;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_NVRAM |
@@ -656,8 +662,8 @@ bhyveDomainUndefineFlags(virDomainPtr domain, unsigned int flags)
         }
     }
 
-    if (virDomainDeleteConfig(BHYVE_CONFIG_DIR,
-                              BHYVE_AUTOSTART_DIR,
+    if (virDomainDeleteConfig(cfg->configDir,
+                              cfg->autostartDir,
                               vm) < 0)
         goto cleanup;
 
@@ -1268,6 +1274,7 @@ bhyveDomainSetMetadata(virDomainPtr dom,
     virConnectPtr conn = dom->conn;
     struct _bhyveConn *privconn = conn->privateData;
     virDomainObj *vm;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -1280,8 +1287,8 @@ bhyveDomainSetMetadata(virDomainPtr dom,
         goto cleanup;
 
     ret = virDomainObjSetMetadata(vm, type, metadata, key, uri,
-                                  privconn->xmlopt, BHYVE_STATE_DIR,
-                                  BHYVE_CONFIG_DIR, flags);
+                                  privconn->xmlopt, cfg->stateDir,
+                                  cfg->configDir, flags);
 
     if (ret == 0) {
         virObjectEvent *ev = NULL;
@@ -1370,13 +1377,13 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->xmlopt);
     virSysinfoDefFree(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->domainEventState);
-    virObjectUnref(bhyve_driver->config);
     virPortAllocatorRangeFree(bhyve_driver->remotePorts);
 
     if (bhyve_driver->lockFD != -1)
-        virPidFileRelease(BHYVE_STATE_DIR, "driver", bhyve_driver->lockFD);
+        virPidFileRelease(bhyve_driver->config->stateDir, "driver", bhyve_driver->lockFD);
 
     virMutexDestroy(&bhyve_driver->lock);
+    virObjectUnref(bhyve_driver->config);
     VIR_FREE(bhyve_driver->pidfile);
     VIR_FREE(bhyve_driver);
 
@@ -1391,6 +1398,7 @@ bhyveStateInitialize(bool privileged,
                      void *opaque G_GNUC_UNUSED)
 {
     virDomainDriverAutoStartConfig autostartCfg;
+    virBhyveDriverConfig *cfg;
 
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1435,40 +1443,40 @@ bhyveStateInitialize(bool privileged,
 
     bhyve_driver->hostsysinfo = virSysinfoRead();
 
-    if (!(bhyve_driver->config = virBhyveDriverConfigNew()))
+    if (!(bhyve_driver->config = cfg = virBhyveDriverConfigNew()))
         goto cleanup;
 
     if (virBhyveLoadDriverConfig(bhyve_driver->config, SYSCONFDIR "/libvirt/bhyve.conf") < 0)
         goto cleanup;
 
-    if (g_mkdir_with_parents(BHYVE_LOG_DIR, 0777) < 0) {
+    if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %1$s"),
-                             BHYVE_LOG_DIR);
+                             cfg->logDir);
         goto cleanup;
     }
 
-    if (g_mkdir_with_parents(BHYVE_STATE_DIR, 0777) < 0) {
+    if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
         virReportSystemError(errno,
                              _("Failed to mkdir %1$s"),
-                             BHYVE_STATE_DIR);
+                             cfg->stateDir);
         goto cleanup;
     }
 
     if ((bhyve_driver->lockFD =
-         virPidFileAcquire(BHYVE_STATE_DIR, "driver", getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto cleanup;
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
-                                       BHYVE_STATE_DIR,
+                                       cfg->stateDir,
                                        NULL, true,
                                        bhyve_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto cleanup;
 
     if (virDomainObjListLoadAllConfigs(bhyve_driver->domains,
-                                       BHYVE_CONFIG_DIR,
-                                       BHYVE_AUTOSTART_DIR, false,
+                                       cfg->configDir,
+                                       cfg->autostartDir, false,
                                        bhyve_driver->xmlopt,
                                        NULL, NULL) < 0)
         goto cleanup;
@@ -1476,7 +1484,7 @@ bhyveStateInitialize(bool privileged,
     virBhyveProcessReconnectAll(bhyve_driver);
 
     autostartCfg = (virDomainDriverAutoStartConfig) {
-        .stateDir = BHYVE_STATE_DIR,
+        .stateDir = cfg->stateDir,
         .callback = bhyveAutostartDomain,
         .opaque = bhyve_driver,
     };
@@ -2335,6 +2343,7 @@ bhyveDomainSetMemoryParameters(virDomainPtr domain,
     virDomainDef *persistentDef = NULL;
     virDomainObj *vm = NULL;
     int ret = -1;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     unsigned long long hard_limit = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2373,14 +2382,14 @@ bhyveDomainSetMemoryParameters(virDomainPtr domain,
             goto endjob;
 
         def->mem.hard_limit = hard_limit;
-        if (virDomainObjSave(vm, privconn->xmlopt, BHYVE_STATE_DIR) < 0)
+        if (virDomainObjSave(vm, privconn->xmlopt, cfg->stateDir) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
 
     if (persistentDef) {
         persistentDef->mem.hard_limit = hard_limit;
 
-        if (virDomainDefSave(persistentDef, privconn->xmlopt, BHYVE_CONFIG_DIR) < 0)
+        if (virDomainDefSave(persistentDef, privconn->xmlopt, cfg->configDir) < 0)
             goto endjob;
     }
 
@@ -2697,6 +2706,7 @@ bhyveDomainRenameCallback(virDomainObj *vm,
     g_autofree char *old_dom_name = NULL;
     g_autofree char *new_dom_cfg_file = NULL;
     g_autofree char *new_dom_autostart_link = NULL;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
 
     virCheckFlags(0, ret);
 
@@ -2708,13 +2718,13 @@ bhyveDomainRenameCallback(virDomainObj *vm,
 
     new_dom_name = g_strdup(new_name);
 
-    new_dom_cfg_file = virDomainConfigFile(BHYVE_CONFIG_DIR, new_dom_name);
+    new_dom_cfg_file = virDomainConfigFile(cfg->configDir, new_dom_name);
 
-    if (bhyveDomainNamePathsCleanup(new_name, false) < 0)
+    if (bhyveDomainNamePathsCleanup(cfg, new_name, false) < 0)
         goto cleanup;
 
     if (vm->autostart) {
-        new_dom_autostart_link = virDomainConfigFile(BHYVE_AUTOSTART_DIR, new_dom_name);
+        new_dom_autostart_link = virDomainConfigFile(cfg->autostartDir, new_dom_name);
 
         if (symlink(new_dom_cfg_file, new_dom_autostart_link) < 0) {
             virReportSystemError(errno,
@@ -2728,7 +2738,7 @@ bhyveDomainRenameCallback(virDomainObj *vm,
     old_dom_name = g_steal_pointer(&vm->def->name);
     vm->def->name = g_steal_pointer(&new_dom_name);
 
-    if (virDomainDefSave(vm->def, privconn->xmlopt, BHYVE_CONFIG_DIR) < 0)
+    if (virDomainDefSave(vm->def, privconn->xmlopt, cfg->configDir) < 0)
         goto cleanup;
 
     event_old = virDomainEventLifecycleNew(vm->def->id, old_dom_name, vm->def->uuid,
@@ -2750,9 +2760,9 @@ bhyveDomainRenameCallback(virDomainObj *vm,
         }
 
         virErrorPreserveLast(&err);
-        bhyveDomainNamePathsCleanup(new_dom_name, true);
+        bhyveDomainNamePathsCleanup(cfg, new_dom_name, true);
     } else {
-        bhyveDomainNamePathsCleanup(old_dom_name, true);
+        bhyveDomainNamePathsCleanup(cfg, old_dom_name, true);
     }
 
     virErrorRestore(&err);
@@ -2865,6 +2875,7 @@ bhyveDomainSetLifecycleAction(virDomainPtr domain,
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2893,7 +2904,7 @@ bhyveDomainSetLifecycleAction(virDomainPtr domain,
         bhyveDomainModifyLifecycleAction(def, type, action);
 
         if (virDomainObjSave(vm, privconn->xmlopt,
-                             BHYVE_STATE_DIR) < 0)
+                             cfg->stateDir) < 0)
             goto endjob;
     }
 
@@ -2901,7 +2912,7 @@ bhyveDomainSetLifecycleAction(virDomainPtr domain,
         bhyveDomainModifyLifecycleAction(persistentDef, type, action);
 
         if (virDomainDefSave(persistentDef, privconn->xmlopt,
-                             BHYVE_CONFIG_DIR) < 0)
+                             cfg->configDir) < 0)
             goto endjob;
     }
 
@@ -2923,6 +2934,7 @@ bhyveDomainAgentSetResponseTimeout(virDomainPtr domain,
     virDomainObj *vm = NULL;
     bhyveDomainObjPrivate *priv = NULL;
     struct _bhyveConn *privconn = domain->conn->privateData;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(privconn);
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -2950,7 +2962,7 @@ bhyveDomainAgentSetResponseTimeout(virDomainPtr domain,
     priv->agentTimeout = timeout;
 
     if (virDomainObjIsActive(vm)) {
-        if (virDomainObjSave(vm, privconn->xmlopt, BHYVE_STATE_DIR) < 0)
+        if (virDomainObjSave(vm, privconn->xmlopt, cfg->stateDir) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
 

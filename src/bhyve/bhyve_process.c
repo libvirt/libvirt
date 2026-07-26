@@ -32,6 +32,7 @@
 #include <net/if.h>
 #include <net/if_tap.h>
 
+#include "bhyve_conf.h"
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
 #include "bhyve_capabilities.h"
@@ -98,9 +99,12 @@ bhyveNetCleanup(virDomainObj *vm)
 }
 
 static void
-virBhyveFormatDevMapFile(const char *vm_name, char **fn_out)
+virBhyveFormatDevMapFile(virBhyveDriverConfig *cfg,
+                         const char *vm_name,
+                         char **fn_out)
 {
-    *fn_out = g_strdup_printf("%s/grub_bhyve-%s-device.map", BHYVE_STATE_DIR, vm_name);
+    *fn_out = g_strdup_printf("%s/grub_bhyve-%s-device.map",
+                              cfg->stateDir, vm_name);
 }
 
 static int
@@ -307,8 +311,9 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     virTimeBackOffVar timebackoff;
     int ret = -1, rc;
     bool vmm_appeared = false;
+    g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(driver);
 
-    logfile = g_strdup_printf("%s/%s.log", BHYVE_LOG_DIR, vm->def->name);
+    logfile = g_strdup_printf("%s/%s.log", cfg->logDir, vm->def->name);
     if ((logfd = open(logfile, O_WRONLY | O_APPEND | O_CREAT,
                       S_IRUSR | S_IWUSR)) < 0) {
         virReportSystemError(errno,
@@ -318,7 +323,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     }
 
     VIR_FREE(driver->pidfile);
-    if (!(driver->pidfile = virPidFileBuildPath(BHYVE_STATE_DIR,
+    if (!(driver->pidfile = virPidFileBuildPath(cfg->stateDir,
                                                 vm->def->name))) {
         virReportSystemError(errno,
                              "%s", _("Failed to build pidfile path"));
@@ -351,7 +356,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
          * domain is ready to be started, so we can build
          * and execute bhyveload command */
 
-        virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
+        virBhyveFormatDevMapFile(cfg, vm->def->name, &devmap_file);
 
         if (!(load_cmd = virBhyveProcessBuildLoadCmd(driver, vm->def,
                                                      devmap_file, &devicemap)))
@@ -417,8 +422,7 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     if (virBhyveDomainObjStartWorker(vm) < 0)
         goto cleanup;
 
-    if (virDomainObjSave(vm, driver->xmlopt,
-                         BHYVE_STATE_DIR) < 0)
+    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         goto cleanup;
 
     if (bhyveSetResourceLimits(driver, vm) < 0)
@@ -737,8 +741,8 @@ virBhyveProcessStopImpl(struct _bhyveConn *driver,
 
     if (vm_started)
         bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
-    virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
-    bhyveProcessRemoveDomainStatus(BHYVE_STATE_DIR, vm->def->name);
+    virPidFileDelete(driver->config->stateDir, vm->def->name);
+    bhyveProcessRemoveDomainStatus(driver->config->stateDir, vm->def->name);
 
     if (restoreDef)
         virDomainObjRemoveTransientDef(vm);
@@ -901,7 +905,7 @@ virBhyveProcessReconnect(virDomainObj *vm,
                              VIR_DOMAIN_SHUTOFF_UNKNOWN);
         virDomainObjRemoveTransientDef(vm);
         ignore_value(virDomainObjSave(vm, data->driver->xmlopt,
-                                      BHYVE_STATE_DIR));
+                                      data->driver->config->stateDir));
     }
 
     virObjectUnlock(vm);

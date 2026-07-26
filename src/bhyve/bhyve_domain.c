@@ -808,14 +808,15 @@ virBhyveDomainObjStopWorker(virDomainObj *dom)
 }
 
 int
-bhyveDomainNamePathsCleanup(const char *name,
+bhyveDomainNamePathsCleanup(virBhyveDriverConfig *cfg,
+                            const char *name,
                             bool bestEffort)
 {
     g_autofree char *cfg_file = NULL;
     g_autofree char *autostart_link = NULL;
 
-    cfg_file = virDomainConfigFile(BHYVE_CONFIG_DIR, name);
-    autostart_link = virDomainConfigFile(BHYVE_AUTOSTART_DIR, name);
+    cfg_file = virDomainConfigFile(cfg->configDir, name);
+    autostart_link = virDomainConfigFile(cfg->autostartDir, name);
 
     if (virFileExists(cfg_file) &&
         unlink(cfg_file) < 0) {
