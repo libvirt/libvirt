@@ -2880,11 +2880,11 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainGetMemoryParameters = bhyveDomainGetMemoryParameters, /* 12.4.0 */
     .domainSetMemoryParameters = bhyveDomainSetMemoryParameters, /* 12.4.0 */
     .domainGetFSInfo = bhyveDomainGetFSInfo, /* 12.5.0 */
-    .domainGetTime = bhyveDomainGetTime, /* 12.6.0 */
-    .domainSetTime = bhyveDomainSetTime, /* 12.6.0 */
-    .domainSetUserPassword = bhyveDomainSetUserPassword, /* 12.6.0 */
-    .domainAuthorizedSSHKeysGet = bhyveDomainAuthorizedSSHKeysGet, /* 12.6.0 */
-    .domainAuthorizedSSHKeysSet = bhyveDomainAuthorizedSSHKeysSet, /* 12.6.0 */
+    .domainGetTime = bhyveDomainGetTime, /* 12.5.0 */
+    .domainSetTime = bhyveDomainSetTime, /* 12.5.0 */
+    .domainSetUserPassword = bhyveDomainSetUserPassword, /* 12.5.0 */
+    .domainAuthorizedSSHKeysGet = bhyveDomainAuthorizedSSHKeysGet, /* 12.5.0 */
+    .domainAuthorizedSSHKeysSet = bhyveDomainAuthorizedSSHKeysSet, /* 12.5.0 */
     .domainRename = bhyveDomainRename, /* 12.6.0 */
 };
 
