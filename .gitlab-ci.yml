@@ -127,6 +127,7 @@ potfile:
     NAME: almalinux-9
   before_script:
     - cat /packages.txt
+    - *script_variables
   needs:
     - job: x86_64-almalinux-9-container
       optional: true
@@ -134,8 +135,6 @@ potfile:
     - if: '$CI_PROJECT_NAMESPACE == $RUN_UPSTREAM_NAMESPACE && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: on_success
     - when: never
-  before_script:
-    - *script_variables
   script:
     - source ci/jobs.sh
     - run_potfile
