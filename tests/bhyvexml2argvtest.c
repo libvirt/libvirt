@@ -162,7 +162,7 @@ mymain(void)
     if (!(driver.remotePorts = virPortAllocatorRangeNew("display", 5900, 65535)))
         return EXIT_FAILURE;
 
-    if (!(driver.config = virBhyveDriverConfigNew()))
+    if (!(driver.config = virBhyveDriverConfigNew(true)))
         return EXIT_FAILURE;
 
     VIR_FREE(driver.config->firmwareDir);
@@ -173,6 +173,8 @@ mymain(void)
     driver.config->ubootPath = g_steal_pointer(&fakeubootpath);
     driver.config->bhyveloadTimeout = 0;
     driver.config->bhyveloadTimeoutKill = 0;
+
+    driver.privileged = true;
 
 # define DO_TEST_FULL(name, flags) \
     do { \

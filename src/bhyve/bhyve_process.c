@@ -537,7 +537,7 @@ bhyvePrepareNVRAMFile(bhyveConn *driver G_GNUC_UNUSED,
 
     if (virFileRewrite(loader->nvram->path,
                        S_IRUSR | S_IWUSR,
-                       0, 0,
+                       -1, -1,
                        bhyvePrepareNVRAMHelper,
                        &data) < 0) {
         return -1;

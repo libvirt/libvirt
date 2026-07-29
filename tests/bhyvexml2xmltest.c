@@ -67,7 +67,7 @@ mymain(void)
     if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
-    if (!(driver.config = virBhyveDriverConfigNew()))
+    if (!(driver.config = virBhyveDriverConfigNew(true)))
         return EXIT_FAILURE;
 
     VIR_FREE(driver.config->firmwareDir);
@@ -76,6 +76,8 @@ mymain(void)
     driver.config->firmwareDir = g_steal_pointer(&fakefirmwaredir);
     driver.config->nvramDir = g_steal_pointer(&fakenvramdir);
     driver.config->ubootPath = g_steal_pointer(&fakeubootpath);
+
+    driver.privileged = true;
 
 # define DO_TEST_FULL(name, flags) \
     do { \

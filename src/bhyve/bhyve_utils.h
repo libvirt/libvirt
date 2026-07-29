@@ -70,6 +70,8 @@ struct _bhyveConn {
 
     unsigned bhyvecaps;
     unsigned grubcaps;
+
+    bool privileged;
 };
 
 typedef struct _bhyveConn bhyveConn;

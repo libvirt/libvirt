@@ -564,9 +564,10 @@ bhyveValidateDomainLifecycleAction(const virDomainDef *def)
 
 static int
 bhyveDomainDefValidate(const virDomainDef *def,
-                       void *opaque G_GNUC_UNUSED,
+                       void *opaque,
                        void *parseOpaque G_GNUC_UNUSED)
 {
+    struct _bhyveConn *driver = opaque;
     size_t i;
     size_t ncells;
     virStorageSource *src = NULL;
@@ -647,6 +648,12 @@ bhyveDomainDefValidate(const virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 'hard_limit' memory tuning parameter is supported by bhyve"));
             return -1;
+    }
+
+    if (!driver->privileged && !def->os.loader) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only UEFI boot is supported in unprivileged mode"));
+        return -1;
     }
 
     if (bhyveValidateDomainLifecycleAction(def) < 0)

@@ -1108,6 +1108,13 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
     unsigned nvcpus = virDomainDefGetVcpus(def);
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
 
+    /* Monitor mode */
+    if (!driver->privileged) {
+        virCommandAddArg(cmd, "-M");
+        virCommandAddArg(cmd, "-o");
+        virCommandAddArgFormat(cmd, "rundir=%s", driver->config->stateDir);
+    }
+
     /* CPUs */
     virCommandAddArg(cmd, "-c");
     if (def->cpu && def->cpu->sockets) {

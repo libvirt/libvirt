@@ -211,7 +211,8 @@ bhyveConnectURIProbe(char **uri)
     if (bhyve_driver == NULL)
         return 0;
 
-    *uri = g_strdup("bhyve:///system");
+    *uri = g_strdup(bhyve_driver->privileged ?
+                    "bhyve:///system" : "bhyve:///session");
     return 1;
 }
 
@@ -224,18 +225,16 @@ bhyveConnectOpen(virConnectPtr conn,
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
-    if (STRNEQ(conn->uri->path, "/system")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected bhyve URI path '%1$s', try bhyve:///system"),
-                       conn->uri->path);
-        return VIR_DRV_OPEN_ERROR;
-    }
-
     if (bhyve_driver == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("bhyve state driver is not active"));
         return VIR_DRV_OPEN_ERROR;
     }
+
+    if (!virConnectValidateURIPath(conn->uri->path,
+                                   "bhyve",
+                                   bhyve_driver->privileged))
+        return VIR_DRV_OPEN_ERROR;
 
     if (virConnectOpenEnsureACL(conn) < 0)
         return VIR_DRV_OPEN_ERROR;
@@ -1398,6 +1397,7 @@ bhyveStateInitialize(bool privileged,
                      void *opaque G_GNUC_UNUSED)
 {
     virDomainDriverAutoStartConfig autostartCfg;
+    g_autofree char *configFile = NULL;
     virBhyveDriverConfig *cfg;
 
     if (root != NULL) {
@@ -1406,13 +1406,9 @@ bhyveStateInitialize(bool privileged,
         return -1;
     }
 
-    if (!privileged) {
-        VIR_INFO("Not running privileged, disabling driver");
-        return VIR_DRV_STATE_INIT_SKIPPED;
-    }
-
     bhyve_driver = g_new0(bhyveConn, 1);
 
+    bhyve_driver->privileged = privileged;
     bhyve_driver->lockFD = -1;
     if (virMutexInit(&bhyve_driver->lock) < 0) {
         VIR_FREE(bhyve_driver);
@@ -1424,6 +1420,18 @@ bhyveStateInitialize(bool privileged,
 
     if (virBhyveProbeCaps(&bhyve_driver->bhyvecaps) < 0)
         goto cleanup;
+
+    if (!privileged && !(bhyveDriverGetBhyveCaps(bhyve_driver) & BHYVE_CAP_MONITOR)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("bhyve does not support monitor mode, cannot run unprivileged"));
+        goto cleanup;
+    }
+
+    if (!privileged && !(bhyveDriverGetBhyveCaps(bhyve_driver) & BHYVE_CAP_GET_VMPID)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("bhyvectl does not support querying the VM PID, cannot run unprivileged"));
+        goto cleanup;
+    }
 
     if (virBhyveProbeGrubCaps(&bhyve_driver->grubcaps) < 0)
         goto cleanup;
@@ -1443,10 +1451,11 @@ bhyveStateInitialize(bool privileged,
 
     bhyve_driver->hostsysinfo = virSysinfoRead();
 
-    if (!(bhyve_driver->config = cfg = virBhyveDriverConfigNew()))
+    if (!(bhyve_driver->config = cfg = virBhyveDriverConfigNew(privileged)))
         goto cleanup;
 
-    if (virBhyveLoadDriverConfig(bhyve_driver->config, SYSCONFDIR "/libvirt/bhyve.conf") < 0)
+    configFile = g_build_filename(cfg->configBaseDir, "bhyve.conf", NULL);
+    if (virBhyveLoadDriverConfig(cfg, configFile) < 0)
         goto cleanup;
 
     if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
@@ -1460,6 +1469,13 @@ bhyveStateInitialize(bool privileged,
         virReportSystemError(errno,
                              _("Failed to mkdir %1$s"),
                              cfg->stateDir);
+        goto cleanup;
+    }
+
+    if (g_mkdir_with_parents(cfg->nvramDir, 0777) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mkdir %1$s"),
+                             cfg->nvramDir);
         goto cleanup;
     }
 

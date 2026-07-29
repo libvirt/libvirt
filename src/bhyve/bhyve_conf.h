@@ -23,7 +23,7 @@
 
 #include "bhyve_utils.h"
 
-struct _virBhyveDriverConfig *virBhyveDriverConfigNew(void);
+struct _virBhyveDriverConfig *virBhyveDriverConfigNew(bool privileged);
 struct _virBhyveDriverConfig *virBhyveDriverGetConfig(struct _bhyveConn *driver);
 int virBhyveLoadDriverConfig(struct _virBhyveDriverConfig *cfg,
                              const char *filename);
