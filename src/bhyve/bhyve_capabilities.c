@@ -263,6 +263,9 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
     if (strstr(help, "-n:") != NULL)
         *caps |= BHYVE_CAP_NUMA;
 
+    if (strstr(help, "-M:") != NULL)
+        *caps |= BHYVE_CAP_MONITOR;
+
     return 0;
 }
 
@@ -357,6 +360,29 @@ bhyveProbeCapsRctl(unsigned int *caps)
     return;
 }
 
+static int
+bhyveProbeCapsBhyvectl(unsigned int *caps)
+{
+    g_autofree char *binary = virFindFileInPath("bhyvectl");
+    g_autofree char *help = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    int exit;
+
+    if (!binary)
+        return 0;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArg(cmd, "--help");
+    virCommandSetErrorBuffer(cmd, &help);
+    if (virCommandRun(cmd, &exit) < 0)
+        return -1;
+
+    if (strstr(help, "--get-vm-pid") != NULL)
+        *caps |= BHYVE_CAP_GET_VMPID;
+
+    return 0;
+}
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -377,6 +403,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsBhyvectl(caps)))
         goto out;
 
     bhyveProbeCapsRctl(caps);
