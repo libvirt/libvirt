@@ -630,6 +630,7 @@ bhyveProcessRemoveDomainStatus(const char *statusDir,
  * @vm: domain object
  * @reason: shutoff reason
  * @forceCleanup: boolean controlling cleanup
+ * @restoreDef: whether to restore the persistent definition after cleanup
  *
  * Stops the domain and cleans up its resources.
  * It could be used whether as a direct call or as a cleanup routine.
@@ -641,11 +642,12 @@ bhyveProcessRemoveDomainStatus(const char *statusDir,
  *
  * Returns 0 on success, -1 on error.
  */
-int
-virBhyveProcessStop(struct _bhyveConn *driver,
-                    virDomainObj *vm,
-                    virDomainShutoffReason reason,
-                    bool forceCleanup)
+static int
+virBhyveProcessStopImpl(struct _bhyveConn *driver,
+                        virDomainObj *vm,
+                        virDomainShutoffReason reason,
+                        bool forceCleanup,
+                        bool restoreDef)
 {
     int ret = 0;
     size_t i = 0;
@@ -724,7 +726,19 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
     bhyveProcessRemoveDomainStatus(BHYVE_STATE_DIR, vm->def->name);
 
+    if (restoreDef)
+        virDomainObjRemoveTransientDef(vm);
+
     return ret;
+}
+
+int
+virBhyveProcessStop(struct _bhyveConn *driver,
+                    virDomainObj *vm,
+                    virDomainShutoffReason reason,
+                    bool forceCleanup)
+{
+    return virBhyveProcessStopImpl(driver, vm, reason, forceCleanup, true);
 }
 
 int
@@ -754,7 +768,8 @@ int
 virBhyveProcessRestart(struct _bhyveConn *driver,
                        virDomainObj *vm)
 {
-    if (virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN, false) < 0)
+    if (virBhyveProcessStopImpl(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN,
+                                false, false) < 0)
         return -1;
 
     if (virBhyveProcessStartImpl(driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0)
