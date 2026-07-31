@@ -333,6 +333,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         if (disk->rotation_rate)
             virBufferAsprintf(&device, ",nmrr=%u", disk->rotation_rate);
 
+        if (disk->serial)
+            virBufferAsprintf(&device, ",ser=%s", disk->serial);
+
         virBufferAddBuffer(&buf, &device);
     }
 

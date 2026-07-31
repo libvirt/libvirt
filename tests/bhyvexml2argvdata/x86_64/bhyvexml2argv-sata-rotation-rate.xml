@@ -8,16 +8,19 @@
   </os>
   <devices>
     <disk type='file'>
+      <serial>BHYVE-SER01-0001</serial>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd1.img'/>
       <target dev='hda' bus='sata' rotation_rate='7200'/>
     </disk>
     <disk type='file'>
+      <serial>BHYVE-SER02-0004</serial>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd2.img'/>
       <target dev='hdb' bus='sata' rotation_rate='5400'/>
     </disk>
     <disk type='file'>
+      <serial>BHYVE-SER03-1234</serial>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd3.img'/>
       <target dev='hdc' bus='sata' rotation_rate='1'/>
