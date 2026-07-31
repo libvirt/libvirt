@@ -3201,6 +3201,33 @@ bhyveDomainGetGuestInfo(virDomainPtr domain,
     goto cleanup;
 }
 
+
+static int
+bhyveDomainReset(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObj *vm;
+    struct _bhyveConn *privconn = domain->conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainResetEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    ret = virBhyveProcessReset(privconn, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -3282,6 +3309,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainAgentSetResponseTimeout = bhyveDomainAgentSetResponseTimeout, /* 12.7.0 */
     .domainGetGuestInfo = bhyveDomainGetGuestInfo, /* 12.7.0 */
     .domainSetLifecycleAction = bhyveDomainSetLifecycleAction, /* 12.8.0 */
+    .domainReset = bhyveDomainReset, /* 12.9.0 */
 };
 
 

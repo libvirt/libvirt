@@ -1355,6 +1355,18 @@ virBhyveProcessBuildDestroyCmd(struct _bhyveConn *driver G_GNUC_UNUSED,
     return cmd;
 }
 
+virCommand *
+virBhyveProcessBuildResetCmd(struct _bhyveConn *driver G_GNUC_UNUSED,
+                             virDomainDef *def)
+{
+    virCommand *cmd = virCommandNew("bhyvectl");
+
+    virCommandAddArg(cmd, "--force-reset");
+    virCommandAddArgPair(cmd, "--vm", def->name);
+
+    return cmd;
+}
+
 static void
 virAppendBootloaderArgs(virCommand *cmd, virDomainDef *def)
 {

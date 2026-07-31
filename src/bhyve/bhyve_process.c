@@ -799,6 +799,17 @@ virBhyveProcessRestart(struct _bhyveConn *driver,
 }
 
 int
+virBhyveProcessReset(struct _bhyveConn *driver, virDomainObj *vm)
+{
+    g_autoptr(virCommand) cmd = virBhyveProcessBuildResetCmd(driver, vm->def);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+int
 virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
                                unsigned long long *cpustats)
 {
