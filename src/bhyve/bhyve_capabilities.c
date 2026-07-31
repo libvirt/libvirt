@@ -48,13 +48,14 @@ virBhyveCapsBuild(void)
     virCaps *caps;
     virCapsGuest *guest;
     virArch hostarch = virArchFromHost();
+    g_autofree char *binary = virFindFileInPath("bhyve");
 
     if ((caps = virCapabilitiesNew(hostarch,
                                    false, false)) == NULL)
         return NULL;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
-                                    hostarch, "bhyve",
+                                    hostarch, binary ? binary : "/usr/sbin/bhyve",
                                     NULL, 0, NULL);
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_BHYVE,
