@@ -1,0 +1,1033 @@
+<capabilities>
+
+  <host>
+    <uuid>29fb382a-ac39-8995-b33c-bcfce7b79434</uuid>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>Opteron_G3-v1</model>
+      <vendor>AMD</vendor>
+      <microcode version='188760099'/>
+      <signature family='26' model='68' stepping='0'/>
+      <counter name='tsc' frequency='4299979000' scaling='yes'/>
+      <topology sockets='1' dies='1' clusters='1' cores='16' threads='2'/>
+      <maxphysaddr mode='emulate' bits='48'/>
+      <feature name='pclmuldq'/>
+      <feature name='monitor'/>
+      <feature name='ssse3'/>
+      <feature name='fma'/>
+      <feature name='sse4.1'/>
+      <feature name='sse4.2'/>
+      <feature name='movbe'/>
+      <feature name='aes'/>
+      <feature name='xsave'/>
+      <feature name='osxsave'/>
+      <feature name='avx'/>
+      <feature name='f16c'/>
+      <feature name='rdrand'/>
+      <feature name='vme'/>
+      <feature name='ht'/>
+      <feature name='arat'/>
+      <feature name='fsgsbase'/>
+      <feature name='tsc_adjust'/>
+      <feature name='bmi1'/>
+      <feature name='avx2'/>
+      <feature name='smep'/>
+      <feature name='bmi2'/>
+      <feature name='erms'/>
+      <feature name='invpcid'/>
+      <feature name='cmt'/>
+      <feature name='avx512f'/>
+      <feature name='avx512dq'/>
+      <feature name='adx'/>
+      <feature name='smap'/>
+      <feature name='avx512ifma'/>
+      <feature name='clflushopt'/>
+      <feature name='clwb'/>
+      <feature name='avx512cd'/>
+      <feature name='sha-ni'/>
+      <feature name='avx512bw'/>
+      <feature name='avx512vl'/>
+      <feature name='avx512vbmi'/>
+      <feature name='umip'/>
+      <feature name='pku'/>
+      <feature name='ospke'/>
+      <feature name='avx512vbmi2'/>
+      <feature name='cet-ss'/>
+      <feature name='gfni'/>
+      <feature name='vaes'/>
+      <feature name='vpclmulqdq'/>
+      <feature name='avx512vnni'/>
+      <feature name='avx512bitalg'/>
+      <feature name='avx512-vpopcntdq'/>
+      <feature name='rdpid'/>
+      <feature name='bus-lock-detect'/>
+      <feature name='movdiri'/>
+      <feature name='movdir64b'/>
+      <feature name='fsrm'/>
+      <feature name='avx512-vp2intersect'/>
+      <feature name='flush-l1d'/>
+      <feature name='avx-vnni'/>
+      <feature name='avx512-bf16'/>
+      <feature name='xsaveopt'/>
+      <feature name='xsavec'/>
+      <feature name='xgetbv1'/>
+      <feature name='xsaves'/>
+      <feature name='mbm_total'/>
+      <feature name='mbm_local'/>
+      <feature name='cmp_legacy'/>
+      <feature name='extapic'/>
+      <feature name='cr8legacy'/>
+      <feature name='3dnowprefetch'/>
+      <feature name='osvw'/>
+      <feature name='ibs'/>
+      <feature name='skinit'/>
+      <feature name='wdt'/>
+      <feature name='tce'/>
+      <feature name='topoext'/>
+      <feature name='perfctr_core'/>
+      <feature name='perfctr_nb'/>
+      <feature name='mmxext'/>
+      <feature name='fxsr_opt'/>
+      <feature name='pdpe1gb'/>
+      <feature name='overflow-recov'/>
+      <feature name='succor'/>
+      <feature name='invtsc'/>
+      <feature name='clzero'/>
+      <feature name='xsaveerptr'/>
+      <feature name='wbnoinvd'/>
+      <feature name='ibpb'/>
+      <feature name='ibrs'/>
+      <feature name='amd-stibp'/>
+      <feature name='stibp-always-on'/>
+      <feature name='amd-ssbd'/>
+      <feature name='amd-psfd'/>
+      <feature name='npt'/>
+      <feature name='lbrv'/>
+      <feature name='svm-lock'/>
+      <feature name='nrip-save'/>
+      <feature name='tsc-scale'/>
+      <feature name='vmcb-clean'/>
+      <feature name='flushbyasid'/>
+      <feature name='decodeassists'/>
+      <feature name='pause-filter'/>
+      <feature name='pfthreshold'/>
+      <feature name='avic'/>
+      <feature name='v-vmsave-vmload'/>
+      <feature name='vgif'/>
+      <feature name='gmet'/>
+      <feature name='vnmi'/>
+      <feature name='svme-addr-chk'/>
+      <feature name='no-nested-data-bp'/>
+      <feature name='fs-gs-base-ns'/>
+      <feature name='lfence-always-serializing'/>
+      <feature name='null-sel-clr-base'/>
+      <feature name='auto-ibrs'/>
+      <feature name='prefetchi'/>
+      <feature name='eraps'/>
+      <feature name='sbpb'/>
+      <feature name='ibpb-brtype'/>
+      <feature name='srso-user-kernel-no'/>
+      <feature name='perfmon-v2'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+      <pages unit='KiB' size='1048576'/>
+    </cpu>
+    <power_management>
+      <suspend_mem/>
+    </power_management>
+    <iommu support='yes'/>
+    <migration_features>
+      <live/>
+      <uri_transports>
+        <uri_transport>tcp</uri_transport>
+        <uri_transport>rdma</uri_transport>
+      </uri_transports>
+    </migration_features>
+    <topology>
+      <cells num='1'>
+        <cell id='0'>
+          <memory unit='KiB'>63393224</memory>
+          <pages unit='KiB' size='4'>15848306</pages>
+          <pages unit='KiB' size='2048'>0</pages>
+          <pages unit='KiB' size='1048576'>0</pages>
+          <distances>
+            <sibling id='0' value='10'/>
+          </distances>
+          <cpus num='32'>
+            <cpu id='0' socket_id='0' die_id='0' cluster_id='65535' core_id='0' siblings='0,16'/>
+            <cpu id='1' socket_id='0' die_id='0' cluster_id='65535' core_id='1' siblings='1,17'/>
+            <cpu id='2' socket_id='0' die_id='0' cluster_id='65535' core_id='2' siblings='2,18'/>
+            <cpu id='3' socket_id='0' die_id='0' cluster_id='65535' core_id='3' siblings='3,19'/>
+            <cpu id='4' socket_id='0' die_id='0' cluster_id='65535' core_id='4' siblings='4,20'/>
+            <cpu id='5' socket_id='0' die_id='0' cluster_id='65535' core_id='5' siblings='5,21'/>
+            <cpu id='6' socket_id='0' die_id='0' cluster_id='65535' core_id='6' siblings='6,22'/>
+            <cpu id='7' socket_id='0' die_id='0' cluster_id='65535' core_id='7' siblings='7,23'/>
+            <cpu id='8' socket_id='0' die_id='1' cluster_id='65535' core_id='8' siblings='8,24'/>
+            <cpu id='9' socket_id='0' die_id='1' cluster_id='65535' core_id='9' siblings='9,25'/>
+            <cpu id='10' socket_id='0' die_id='1' cluster_id='65535' core_id='10' siblings='10,26'/>
+            <cpu id='11' socket_id='0' die_id='1' cluster_id='65535' core_id='11' siblings='11,27'/>
+            <cpu id='12' socket_id='0' die_id='1' cluster_id='65535' core_id='12' siblings='12,28'/>
+            <cpu id='13' socket_id='0' die_id='1' cluster_id='65535' core_id='13' siblings='13,29'/>
+            <cpu id='14' socket_id='0' die_id='1' cluster_id='65535' core_id='14' siblings='14,30'/>
+            <cpu id='15' socket_id='0' die_id='1' cluster_id='65535' core_id='15' siblings='15,31'/>
+            <cpu id='16' socket_id='0' die_id='0' cluster_id='65535' core_id='0' siblings='0,16'/>
+            <cpu id='17' socket_id='0' die_id='0' cluster_id='65535' core_id='1' siblings='1,17'/>
+            <cpu id='18' socket_id='0' die_id='0' cluster_id='65535' core_id='2' siblings='2,18'/>
+            <cpu id='19' socket_id='0' die_id='0' cluster_id='65535' core_id='3' siblings='3,19'/>
+            <cpu id='20' socket_id='0' die_id='0' cluster_id='65535' core_id='4' siblings='4,20'/>
+            <cpu id='21' socket_id='0' die_id='0' cluster_id='65535' core_id='5' siblings='5,21'/>
+            <cpu id='22' socket_id='0' die_id='0' cluster_id='65535' core_id='6' siblings='6,22'/>
+            <cpu id='23' socket_id='0' die_id='0' cluster_id='65535' core_id='7' siblings='7,23'/>
+            <cpu id='24' socket_id='0' die_id='1' cluster_id='65535' core_id='8' siblings='8,24'/>
+            <cpu id='25' socket_id='0' die_id='1' cluster_id='65535' core_id='9' siblings='9,25'/>
+            <cpu id='26' socket_id='0' die_id='1' cluster_id='65535' core_id='10' siblings='10,26'/>
+            <cpu id='27' socket_id='0' die_id='1' cluster_id='65535' core_id='11' siblings='11,27'/>
+            <cpu id='28' socket_id='0' die_id='1' cluster_id='65535' core_id='12' siblings='12,28'/>
+            <cpu id='29' socket_id='0' die_id='1' cluster_id='65535' core_id='13' siblings='13,29'/>
+            <cpu id='30' socket_id='0' die_id='1' cluster_id='65535' core_id='14' siblings='14,30'/>
+            <cpu id='31' socket_id='0' die_id='1' cluster_id='65535' core_id='15' siblings='15,31'/>
+          </cpus>
+        </cell>
+      </cells>
+    </topology>
+    <cache>
+      <bank id='0' level='2' type='both' size='1' unit='MiB' cpus='0,16'/>
+      <bank id='1' level='2' type='both' size='1' unit='MiB' cpus='1,17'/>
+      <bank id='2' level='2' type='both' size='1' unit='MiB' cpus='2,18'/>
+      <bank id='3' level='2' type='both' size='1' unit='MiB' cpus='3,19'/>
+      <bank id='4' level='2' type='both' size='1' unit='MiB' cpus='4,20'/>
+      <bank id='5' level='2' type='both' size='1' unit='MiB' cpus='5,21'/>
+      <bank id='6' level='2' type='both' size='1' unit='MiB' cpus='6,22'/>
+      <bank id='7' level='2' type='both' size='1' unit='MiB' cpus='7,23'/>
+      <bank id='8' level='2' type='both' size='1' unit='MiB' cpus='8,24'/>
+      <bank id='9' level='2' type='both' size='1' unit='MiB' cpus='9,25'/>
+      <bank id='10' level='2' type='both' size='1' unit='MiB' cpus='10,26'/>
+      <bank id='11' level='2' type='both' size='1' unit='MiB' cpus='11,27'/>
+      <bank id='12' level='2' type='both' size='1' unit='MiB' cpus='12,28'/>
+      <bank id='13' level='2' type='both' size='1' unit='MiB' cpus='13,29'/>
+      <bank id='14' level='2' type='both' size='1' unit='MiB' cpus='14,30'/>
+      <bank id='15' level='2' type='both' size='1' unit='MiB' cpus='15,31'/>
+      <bank id='0' level='3' type='both' size='32' unit='MiB' cpus='0-7,16-23'/>
+      <bank id='1' level='3' type='both' size='32' unit='MiB' cpus='8-15,24-31'/>
+    </cache>
+    <secmodel>
+      <model>selinux</model>
+      <doi>0</doi>
+      <baselabel type='kvm'>system_u:system_r:svirt_t:s0</baselabel>
+      <baselabel type='qemu'>system_u:system_r:svirt_tcg_t:s0</baselabel>
+    </secmodel>
+    <secmodel>
+      <model>dac</model>
+      <doi>0</doi>
+      <baselabel type='kvm'>+107:+107</baselabel>
+      <baselabel type='qemu'>+107:+107</baselabel>
+    </secmodel>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='armv6l'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-arm</emulator>
+      <machine maxCpus='512'>virt-11.0</machine>
+      <machine canonical='virt-11.0' maxCpus='512'>virt</machine>
+      <machine maxCpus='2'>mori-bmc</machine>
+      <machine maxCpus='2'>ast2600-evb</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-dc-scm-v1-bmc</machine>
+      <machine maxCpus='1'>tiogapass-bmc</machine>
+      <machine maxCpus='2'>catalina-bmc</machine>
+      <machine maxCpus='2'>nuri</machine>
+      <machine maxCpus='2'>mcimx7d-sabre</machine>
+      <machine maxCpus='2'>mps3-an536</machine>
+      <machine maxCpus='1'>romulus-bmc</machine>
+      <machine maxCpus='2'>npcm750-evb</machine>
+      <machine maxCpus='2'>rainier-bmc</machine>
+      <machine maxCpus='1'>mps3-an547</machine>
+      <machine maxCpus='4'>realview-pbx-a9</machine>
+      <machine maxCpus='1'>kzm</machine>
+      <machine maxCpus='2'>musca-b1</machine>
+      <machine maxCpus='1'>versatileab</machine>
+      <machine maxCpus='1'>b-l475e-iot01a</machine>
+      <machine maxCpus='2'>fby35-bmc</machine>
+      <machine maxCpus='2'>musca-a</machine>
+      <machine maxCpus='1'>mcimx6ul-evk</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.1</machine>
+      <machine maxCpus='512'>virt-10.0</machine>
+      <machine maxCpus='2'>smdkc210</machine>
+      <machine maxCpus='1'>sx1</machine>
+      <machine maxCpus='1'>imx25-pdk</machine>
+      <machine maxCpus='1'>stm32vldiscovery</machine>
+      <machine maxCpus='4'>orangepi-pc</machine>
+      <machine maxCpus='1'>quanta-q71l-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.2</machine>
+      <machine maxCpus='512'>virt-10.1</machine>
+      <machine maxCpus='2'>xilinx-zynq-a9</machine>
+      <machine maxCpus='1'>mps2-an500</machine>
+      <machine maxCpus='2'>mps2-an521</machine>
+      <machine maxCpus='4'>sabrelite</machine>
+      <machine maxCpus='1'>mps2-an511</machine>
+      <machine maxCpus='1'>canon-a1100</machine>
+      <machine maxCpus='1'>realview-eb</machine>
+      <machine maxCpus='2'>quanta-gbs-bmc</machine>
+      <machine maxCpus='1'>emcraft-sf2</machine>
+      <machine maxCpus='512'>virt-10.2</machine>
+      <machine maxCpus='1'>realview-pb-a8</machine>
+      <machine maxCpus='1'>yosemitev2-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.0</machine>
+      <machine maxCpus='512'>virt-9.0</machine>
+      <machine maxCpus='1'>raspi1ap</machine>
+      <machine maxCpus='1'>palmetto-bmc</machine>
+      <machine maxCpus='1'>sx1-v1</machine>
+      <machine maxCpus='2'>gb200nvl-bmc</machine>
+      <machine maxCpus='1'>g220a-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.1</machine>
+      <machine maxCpus='512'>virt-9.1</machine>
+      <machine maxCpus='2'>bletchley-bmc</machine>
+      <machine maxCpus='2'>quanta-gsj</machine>
+      <machine maxCpus='1'>versatilepb</machine>
+      <machine maxCpus='4'>realview-eb-mpcore</machine>
+      <machine maxCpus='1'>integratorcp</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.2</machine>
+      <machine maxCpus='1'>supermicrox11-bmc</machine>
+      <machine maxCpus='512'>virt-9.2</machine>
+      <machine maxCpus='1'>witherspoon-bmc</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-firework-bmc</machine>
+      <machine maxCpus='2'>mps3-an524</machine>
+      <machine maxCpus='2'>kudo-bmc</machine>
+      <machine maxCpus='4'>vexpress-a9</machine>
+      <machine maxCpus='1'>musicpal</machine>
+      <machine maxCpus='1'>lm3s811evb</machine>
+      <machine maxCpus='1'>lm3s6965evb</machine>
+      <machine maxCpus='1'>supermicro-x11spi-bmc</machine>
+      <machine maxCpus='1'>microbit</machine>
+      <machine maxCpus='3' deprecated='yes'>fby35</machine>
+      <machine maxCpus='1'>mps2-an385</machine>
+      <machine maxCpus='1'>mps2-an505</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.0</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-8.0</machine>
+      <machine maxCpus='1'>cubieboard</machine>
+      <machine maxCpus='1'>ast1030-evb</machine>
+      <machine maxCpus='4'>bpim2u</machine>
+      <machine maxCpus='1'>netduino2</machine>
+      <machine maxCpus='1'>ast1060-evb</machine>
+      <machine maxCpus='1'>mps2-an386</machine>
+      <machine maxCpus='1'>olimex-stm32-h405</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.1</machine>
+      <machine maxCpus='512'>virt-8.1</machine>
+      <machine maxCpus='4'>raspi2b</machine>
+      <machine maxCpus='4'>vexpress-a15</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.2</machine>
+      <machine maxCpus='2'>fuji-bmc</machine>
+      <machine maxCpus='1'>max78000fthr</machine>
+      <machine maxCpus='512'>virt-8.2</machine>
+      <machine maxCpus='1' deprecated='yes'>sonorapass-bmc</machine>
+      <machine maxCpus='1'>ast2500-evb</machine>
+      <machine maxCpus='1'>netduinoplus2</machine>
+      <machine maxCpus='1'>collie</machine>
+      <machine maxCpus='1'>raspi0</machine>
+      <machine maxCpus='1' deprecated='yes'>fp5280g2-bmc</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='armv7l'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-arm</emulator>
+      <machine maxCpus='512'>virt-11.0</machine>
+      <machine canonical='virt-11.0' maxCpus='512'>virt</machine>
+      <machine maxCpus='2'>mori-bmc</machine>
+      <machine maxCpus='2'>ast2600-evb</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-dc-scm-v1-bmc</machine>
+      <machine maxCpus='1'>tiogapass-bmc</machine>
+      <machine maxCpus='2'>catalina-bmc</machine>
+      <machine maxCpus='2'>nuri</machine>
+      <machine maxCpus='2'>mcimx7d-sabre</machine>
+      <machine maxCpus='2'>mps3-an536</machine>
+      <machine maxCpus='1'>romulus-bmc</machine>
+      <machine maxCpus='2'>npcm750-evb</machine>
+      <machine maxCpus='2'>rainier-bmc</machine>
+      <machine maxCpus='1'>mps3-an547</machine>
+      <machine maxCpus='4'>realview-pbx-a9</machine>
+      <machine maxCpus='1'>kzm</machine>
+      <machine maxCpus='2'>musca-b1</machine>
+      <machine maxCpus='1'>versatileab</machine>
+      <machine maxCpus='1'>b-l475e-iot01a</machine>
+      <machine maxCpus='2'>fby35-bmc</machine>
+      <machine maxCpus='2'>musca-a</machine>
+      <machine maxCpus='1'>mcimx6ul-evk</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.1</machine>
+      <machine maxCpus='512'>virt-10.0</machine>
+      <machine maxCpus='2'>smdkc210</machine>
+      <machine maxCpus='1'>sx1</machine>
+      <machine maxCpus='1'>imx25-pdk</machine>
+      <machine maxCpus='1'>stm32vldiscovery</machine>
+      <machine maxCpus='4'>orangepi-pc</machine>
+      <machine maxCpus='1'>quanta-q71l-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.2</machine>
+      <machine maxCpus='512'>virt-10.1</machine>
+      <machine maxCpus='2'>xilinx-zynq-a9</machine>
+      <machine maxCpus='1'>mps2-an500</machine>
+      <machine maxCpus='2'>mps2-an521</machine>
+      <machine maxCpus='4'>sabrelite</machine>
+      <machine maxCpus='1'>mps2-an511</machine>
+      <machine maxCpus='1'>canon-a1100</machine>
+      <machine maxCpus='1'>realview-eb</machine>
+      <machine maxCpus='2'>quanta-gbs-bmc</machine>
+      <machine maxCpus='1'>emcraft-sf2</machine>
+      <machine maxCpus='512'>virt-10.2</machine>
+      <machine maxCpus='1'>realview-pb-a8</machine>
+      <machine maxCpus='1'>yosemitev2-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.0</machine>
+      <machine maxCpus='512'>virt-9.0</machine>
+      <machine maxCpus='1'>raspi1ap</machine>
+      <machine maxCpus='1'>palmetto-bmc</machine>
+      <machine maxCpus='1'>sx1-v1</machine>
+      <machine maxCpus='2'>gb200nvl-bmc</machine>
+      <machine maxCpus='1'>g220a-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.1</machine>
+      <machine maxCpus='512'>virt-9.1</machine>
+      <machine maxCpus='2'>bletchley-bmc</machine>
+      <machine maxCpus='2'>quanta-gsj</machine>
+      <machine maxCpus='1'>versatilepb</machine>
+      <machine maxCpus='4'>realview-eb-mpcore</machine>
+      <machine maxCpus='1'>integratorcp</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.2</machine>
+      <machine maxCpus='1'>supermicrox11-bmc</machine>
+      <machine maxCpus='512'>virt-9.2</machine>
+      <machine maxCpus='1'>witherspoon-bmc</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-firework-bmc</machine>
+      <machine maxCpus='2'>mps3-an524</machine>
+      <machine maxCpus='2'>kudo-bmc</machine>
+      <machine maxCpus='4'>vexpress-a9</machine>
+      <machine maxCpus='1'>musicpal</machine>
+      <machine maxCpus='1'>lm3s811evb</machine>
+      <machine maxCpus='1'>lm3s6965evb</machine>
+      <machine maxCpus='1'>supermicro-x11spi-bmc</machine>
+      <machine maxCpus='1'>microbit</machine>
+      <machine maxCpus='3' deprecated='yes'>fby35</machine>
+      <machine maxCpus='1'>mps2-an385</machine>
+      <machine maxCpus='1'>mps2-an505</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.0</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-8.0</machine>
+      <machine maxCpus='1'>cubieboard</machine>
+      <machine maxCpus='1'>ast1030-evb</machine>
+      <machine maxCpus='4'>bpim2u</machine>
+      <machine maxCpus='1'>netduino2</machine>
+      <machine maxCpus='1'>ast1060-evb</machine>
+      <machine maxCpus='1'>mps2-an386</machine>
+      <machine maxCpus='1'>olimex-stm32-h405</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.1</machine>
+      <machine maxCpus='512'>virt-8.1</machine>
+      <machine maxCpus='4'>raspi2b</machine>
+      <machine maxCpus='4'>vexpress-a15</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.2</machine>
+      <machine maxCpus='2'>fuji-bmc</machine>
+      <machine maxCpus='1'>max78000fthr</machine>
+      <machine maxCpus='512'>virt-8.2</machine>
+      <machine maxCpus='1' deprecated='yes'>sonorapass-bmc</machine>
+      <machine maxCpus='1'>ast2500-evb</machine>
+      <machine maxCpus='1'>netduinoplus2</machine>
+      <machine maxCpus='1'>collie</machine>
+      <machine maxCpus='1'>raspi0</machine>
+      <machine maxCpus='1' deprecated='yes'>fp5280g2-bmc</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='aarch64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-aarch64</emulator>
+      <machine maxCpus='512'>virt-11.0</machine>
+      <machine canonical='virt-11.0' maxCpus='512'>virt</machine>
+      <machine maxCpus='2'>mori-bmc</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-dc-scm-v1-bmc</machine>
+      <machine maxCpus='2'>ast2600-evb</machine>
+      <machine maxCpus='1'>tiogapass-bmc</machine>
+      <machine maxCpus='2'>catalina-bmc</machine>
+      <machine maxCpus='6'>ast2700fc</machine>
+      <machine maxCpus='2'>nuri</machine>
+      <machine maxCpus='2'>mcimx7d-sabre</machine>
+      <machine maxCpus='2'>mps3-an536</machine>
+      <machine maxCpus='1'>romulus-bmc</machine>
+      <machine maxCpus='2'>npcm750-evb</machine>
+      <machine maxCpus='2'>rainier-bmc</machine>
+      <machine maxCpus='1'>mps3-an547</machine>
+      <machine maxCpus='4'>realview-pbx-a9</machine>
+      <machine maxCpus='1'>kzm</machine>
+      <machine maxCpus='2'>musca-b1</machine>
+      <machine maxCpus='1'>versatileab</machine>
+      <machine maxCpus='1'>b-l475e-iot01a</machine>
+      <machine maxCpus='2'>fby35-bmc</machine>
+      <machine maxCpus='2'>musca-a</machine>
+      <machine maxCpus='1'>mcimx6ul-evk</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.1</machine>
+      <machine maxCpus='512'>virt-10.0</machine>
+      <machine maxCpus='2'>smdkc210</machine>
+      <machine maxCpus='1'>sx1</machine>
+      <machine maxCpus='1'>imx25-pdk</machine>
+      <machine maxCpus='4'>imx8mp-evk</machine>
+      <machine maxCpus='1'>stm32vldiscovery</machine>
+      <machine maxCpus='4'>orangepi-pc</machine>
+      <machine maxCpus='1'>quanta-q71l-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-5.2</machine>
+      <machine maxCpus='512'>virt-10.1</machine>
+      <machine maxCpus='2'>xilinx-zynq-a9</machine>
+      <machine maxCpus='6'>xlnx-zcu102</machine>
+      <machine maxCpus='1'>mps2-an500</machine>
+      <machine maxCpus='2'>mps2-an521</machine>
+      <machine maxCpus='4'>sabrelite</machine>
+      <machine maxCpus='1'>mps2-an511</machine>
+      <machine maxCpus='1'>canon-a1100</machine>
+      <machine maxCpus='1'>realview-eb</machine>
+      <machine maxCpus='2'>quanta-gbs-bmc</machine>
+      <machine maxCpus='1'>emcraft-sf2</machine>
+      <machine maxCpus='512'>virt-10.2</machine>
+      <machine maxCpus='1'>realview-pb-a8</machine>
+      <machine maxCpus='1'>yosemitev2-bmc</machine>
+      <machine maxCpus='512'>sbsa-ref</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.0</machine>
+      <machine maxCpus='512'>virt-9.0</machine>
+      <machine maxCpus='4'>amd-versal-virt</machine>
+      <machine canonical='amd-versal-virt' maxCpus='4'>xlnx-versal-virt</machine>
+      <machine maxCpus='1'>raspi1ap</machine>
+      <machine maxCpus='1'>palmetto-bmc</machine>
+      <machine maxCpus='1'>sx1-v1</machine>
+      <machine maxCpus='2'>gb200nvl-bmc</machine>
+      <machine maxCpus='1'>g220a-bmc</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.1</machine>
+      <machine maxCpus='512'>virt-9.1</machine>
+      <machine maxCpus='2'>bletchley-bmc</machine>
+      <machine maxCpus='2'>quanta-gsj</machine>
+      <machine maxCpus='1'>versatilepb</machine>
+      <machine maxCpus='4'>npcm845-evb</machine>
+      <machine maxCpus='4'>realview-eb-mpcore</machine>
+      <machine maxCpus='1'>integratorcp</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-7.2</machine>
+      <machine maxCpus='1'>supermicrox11-bmc</machine>
+      <machine maxCpus='512'>virt-9.2</machine>
+      <machine maxCpus='1'>witherspoon-bmc</machine>
+      <machine maxCpus='2' deprecated='yes'>qcom-firework-bmc</machine>
+      <machine maxCpus='2'>mps3-an524</machine>
+      <machine maxCpus='2'>kudo-bmc</machine>
+      <machine maxCpus='4'>vexpress-a9</machine>
+      <machine maxCpus='1'>musicpal</machine>
+      <machine maxCpus='1'>lm3s811evb</machine>
+      <machine maxCpus='1'>lm3s6965evb</machine>
+      <machine maxCpus='1'>supermicro-x11spi-bmc</machine>
+      <machine maxCpus='4'>ast2700a1-evb</machine>
+      <machine maxCpus='1'>microbit</machine>
+      <machine maxCpus='3' deprecated='yes'>fby35</machine>
+      <machine maxCpus='1'>mps2-an385</machine>
+      <machine maxCpus='1'>mps2-an505</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.0</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-8.0</machine>
+      <machine maxCpus='18'>amd-versal2-virt</machine>
+      <machine maxCpus='4'>raspi3ap</machine>
+      <machine maxCpus='1'>cubieboard</machine>
+      <machine maxCpus='4'>ast2700a2-evb</machine>
+      <machine canonical='ast2700a2-evb' maxCpus='4'>ast2700-evb</machine>
+      <machine maxCpus='1'>ast1030-evb</machine>
+      <machine maxCpus='4'>bpim2u</machine>
+      <machine maxCpus='1'>netduino2</machine>
+      <machine maxCpus='1'>ast1060-evb</machine>
+      <machine maxCpus='4'>raspi4b</machine>
+      <machine maxCpus='1'>mps2-an386</machine>
+      <machine maxCpus='1'>olimex-stm32-h405</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.1</machine>
+      <machine maxCpus='512'>virt-8.1</machine>
+      <machine maxCpus='4'>raspi3b</machine>
+      <machine maxCpus='4'>raspi2b</machine>
+      <machine maxCpus='4'>vexpress-a15</machine>
+      <machine maxCpus='512' deprecated='yes'>virt-6.2</machine>
+      <machine maxCpus='2'>fuji-bmc</machine>
+      <machine maxCpus='1'>max78000fthr</machine>
+      <machine maxCpus='512'>virt-8.2</machine>
+      <machine maxCpus='1' deprecated='yes'>sonorapass-bmc</machine>
+      <machine maxCpus='1'>ast2500-evb</machine>
+      <machine maxCpus='1'>netduinoplus2</machine>
+      <machine maxCpus='1'>collie</machine>
+      <machine maxCpus='1'>raspi0</machine>
+      <machine maxCpus='1' deprecated='yes'>fp5280g2-bmc</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <acpi default='on' toggle='yes'/>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='i686'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-i386</emulator>
+      <machine maxCpus='255'>pc-i440fx-11.0</machine>
+      <machine canonical='pc-i440fx-11.0' maxCpus='255'>pc</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-5.2</machine>
+      <machine maxCpus='255'>pc-i440fx-10.2</machine>
+      <machine maxCpus='1'>xenpv</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.2</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-5.2</machine>
+      <machine maxCpus='4096'>pc-q35-9.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.1</machine>
+      <machine maxCpus='1024'>pc-q35-8.1</machine>
+      <machine maxCpus='4096'>pc-q35-11.0</machine>
+      <machine canonical='pc-q35-11.0' maxCpus='4096'>q35</machine>
+      <machine maxCpus='255'>pc-i440fx-8.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.1</machine>
+      <machine maxCpus='255'>pc-i440fx-9.1</machine>
+      <machine maxCpus='4096'>pc-q35-10.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.1</machine>
+      <machine maxCpus='1'>x-remote</machine>
+      <machine maxCpus='255'>pc-i440fx-10.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-5.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-5.1</machine>
+      <machine maxCpus='1'>isapc</machine>
+      <machine maxCpus='4096'>pc-q35-9.0</machine>
+      <machine maxCpus='4096'>pc-q35-10.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.0</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-8.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-8.0</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.0</machine>
+      <machine maxCpus='255'>pc-i440fx-9.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.0</machine>
+      <machine maxCpus='288'>nitro-enclave</machine>
+      <machine maxCpus='128'>xenpvh</machine>
+      <machine maxCpus='255'>pc-i440fx-10.0</machine>
+      <machine maxCpus='4096'>pc-q35-9.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.2</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.0</machine>
+      <machine maxCpus='128'>xenfv-4.2</machine>
+      <machine maxCpus='288'>microvm</machine>
+      <machine maxCpus='1024'>pc-q35-8.2</machine>
+      <machine maxCpus='255'>pc-i440fx-8.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.2</machine>
+      <machine maxCpus='255'>pc-i440fx-9.2</machine>
+      <machine maxCpus='4096'>pc-q35-10.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.2</machine>
+      <domain type='qemu'/>
+      <domain type='kvm'/>
+    </arch>
+    <features>
+      <pae/>
+      <nonpae/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mips'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-mips</emulator>
+      <machine maxCpus='16'>malta</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mipsel'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-mipsel</emulator>
+      <machine maxCpus='16'>malta</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mips64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-mips64</emulator>
+      <machine maxCpus='16'>malta</machine>
+      <machine maxCpus='1'>pica61</machine>
+      <machine maxCpus='1'>magnum</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='mips64el'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-mips64el</emulator>
+      <machine maxCpus='16'>malta</machine>
+      <machine maxCpus='16'>loongson3-virt</machine>
+      <machine maxCpus='1'>pica61</machine>
+      <machine maxCpus='1'>magnum</machine>
+      <machine maxCpus='16'>boston</machine>
+      <machine maxCpus='1'>fuloong2e</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc</emulator>
+      <machine maxCpus='1'>g3beige</machine>
+      <machine maxCpus='1'>ppe42_machine</machine>
+      <machine maxCpus='1'>amigaone</machine>
+      <machine maxCpus='1'>virtex-ml507</machine>
+      <machine maxCpus='1'>mac99</machine>
+      <machine maxCpus='32'>ppce500</machine>
+      <machine maxCpus='1'>sam460ex</machine>
+      <machine maxCpus='1'>pegasos2</machine>
+      <machine maxCpus='1'>bamboo</machine>
+      <machine maxCpus='1'>40p</machine>
+      <machine maxCpus='1'>pegasos1</machine>
+      <machine maxCpus='15'>mpc8544ds</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc64</emulator>
+      <machine maxCpus='4096'>pseries-11.0</machine>
+      <machine canonical='pseries-11.0' maxCpus='4096'>pseries</machine>
+      <machine maxCpus='1'>amigaone</machine>
+      <machine maxCpus='2048'>powernv9</machine>
+      <machine maxCpus='15'>mpc8544ds</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.1</machine>
+      <machine maxCpus='1'>ppe42_machine</machine>
+      <machine maxCpus='2048'>powernv10</machine>
+      <machine canonical='powernv10' maxCpus='2048'>powernv</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.2</machine>
+      <machine maxCpus='2048'>powernv11</machine>
+      <machine maxCpus='32'>ppce500</machine>
+      <machine maxCpus='1'>pegasos1</machine>
+      <machine maxCpus='2048'>powernv10-rainier</machine>
+      <machine canonical='powernv10-rainier' maxCpus='2048'>powernv</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-8.0</machine>
+      <machine maxCpus='1'>40p</machine>
+      <machine maxCpus='1'>pegasos2</machine>
+      <machine maxCpus='4096'>pseries-8.1</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-5.1</machine>
+      <machine maxCpus='1'>bamboo</machine>
+      <machine maxCpus='1'>g3beige</machine>
+      <machine maxCpus='4096'>pseries-8.2</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-5.2</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.0</machine>
+      <machine maxCpus='1'>virtex-ml507</machine>
+      <machine maxCpus='4096'>pseries-9.0</machine>
+      <machine maxCpus='4096'>pseries-10.0</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.1</machine>
+      <machine maxCpus='4096'>pseries-9.1</machine>
+      <machine maxCpus='4096'>pseries-10.1</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.2</machine>
+      <machine maxCpus='1'>mac99</machine>
+      <machine maxCpus='4096'>pseries-9.2</machine>
+      <machine maxCpus='1'>sam460ex</machine>
+      <machine maxCpus='4096'>pseries-10.2</machine>
+      <machine maxCpus='2048'>powernv8</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.0</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='ppc64le'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-ppc64</emulator>
+      <machine maxCpus='4096'>pseries-11.0</machine>
+      <machine canonical='pseries-11.0' maxCpus='4096'>pseries</machine>
+      <machine maxCpus='1'>amigaone</machine>
+      <machine maxCpus='2048'>powernv9</machine>
+      <machine maxCpus='15'>mpc8544ds</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.1</machine>
+      <machine maxCpus='1'>ppe42_machine</machine>
+      <machine maxCpus='2048'>powernv10</machine>
+      <machine canonical='powernv10' maxCpus='2048'>powernv</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.2</machine>
+      <machine maxCpus='2048'>powernv11</machine>
+      <machine maxCpus='32'>ppce500</machine>
+      <machine maxCpus='1'>pegasos1</machine>
+      <machine maxCpus='2048'>powernv10-rainier</machine>
+      <machine canonical='powernv10-rainier' maxCpus='2048'>powernv</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-8.0</machine>
+      <machine maxCpus='1'>40p</machine>
+      <machine maxCpus='1'>pegasos2</machine>
+      <machine maxCpus='4096'>pseries-8.1</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-5.1</machine>
+      <machine maxCpus='1'>bamboo</machine>
+      <machine maxCpus='1'>g3beige</machine>
+      <machine maxCpus='4096'>pseries-8.2</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-5.2</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.0</machine>
+      <machine maxCpus='1'>virtex-ml507</machine>
+      <machine maxCpus='4096'>pseries-9.0</machine>
+      <machine maxCpus='4096'>pseries-10.0</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.1</machine>
+      <machine maxCpus='4096'>pseries-9.1</machine>
+      <machine maxCpus='4096'>pseries-10.1</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-7.2</machine>
+      <machine maxCpus='1'>mac99</machine>
+      <machine maxCpus='4096'>pseries-9.2</machine>
+      <machine maxCpus='1'>sam460ex</machine>
+      <machine maxCpus='4096'>pseries-10.2</machine>
+      <machine maxCpus='2048'>powernv8</machine>
+      <machine maxCpus='4096' deprecated='yes'>pseries-6.0</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv32'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv32</emulator>
+      <machine maxCpus='512'>virt</machine>
+      <machine maxCpus='8'>spike</machine>
+      <machine maxCpus='1'>opentitan</machine>
+      <machine maxCpus='5'>sifive_u</machine>
+      <machine maxCpus='1'>amd-microblaze-v-generic</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='riscv64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-riscv64</emulator>
+      <machine maxCpus='512'>virt</machine>
+      <machine maxCpus='8'>spike</machine>
+      <machine maxCpus='64'>boston-aia</machine>
+      <machine maxCpus='16'>xiangshan-kunminghu</machine>
+      <machine maxCpus='5'>sifive_u</machine>
+      <machine maxCpus='5'>microchip-icicle-kit</machine>
+      <machine maxCpus='1'>amd-microblaze-v-generic</machine>
+      <machine maxCpus='1'>shakti_c</machine>
+      <machine maxCpus='1'>sifive_e</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='s390x'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-s390x</emulator>
+      <machine maxCpus='248'>s390-ccw-virtio-11.0</machine>
+      <machine canonical='s390-ccw-virtio-11.0' maxCpus='248'>s390-ccw-virtio</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-8.0</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-6.0</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-7.0</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-9.2</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-10.1</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-8.2</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-6.2</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-7.2</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-5.2</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-9.1</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-10.0</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-8.1</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-6.1</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-7.1</machine>
+      <machine maxCpus='248' deprecated='yes'>s390-ccw-virtio-5.1</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-10.2</machine>
+      <machine maxCpus='248'>s390-ccw-virtio-9.0</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='sparc'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-sparc</emulator>
+      <machine maxCpus='1'>SS-5</machine>
+      <machine maxCpus='4'>SS-20</machine>
+      <machine maxCpus='1'>LX</machine>
+      <machine maxCpus='1'>SPARCClassic</machine>
+      <machine maxCpus='4'>leon3_generic</machine>
+      <machine maxCpus='1'>SPARCbook</machine>
+      <machine maxCpus='1'>SS-4</machine>
+      <machine maxCpus='4'>SS-600MP</machine>
+      <machine maxCpus='4'>SS-10</machine>
+      <machine maxCpus='1'>Voyager</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='sparc64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-sparc64</emulator>
+      <machine maxCpus='1'>sun4u</machine>
+      <machine maxCpus='1'>niagara</machine>
+      <machine maxCpus='1'>sun4v</machine>
+      <domain type='qemu'/>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='x86_64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <machine maxCpus='255'>pc-i440fx-11.0</machine>
+      <machine canonical='pc-i440fx-11.0' maxCpus='255'>pc</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-5.2</machine>
+      <machine maxCpus='255'>pc-i440fx-10.2</machine>
+      <machine maxCpus='1'>xenpv</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.2</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-5.2</machine>
+      <machine maxCpus='4096'>pc-q35-9.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.1</machine>
+      <machine maxCpus='1024'>pc-q35-8.1</machine>
+      <machine maxCpus='4096'>pc-q35-11.0</machine>
+      <machine canonical='pc-q35-11.0' maxCpus='4096'>q35</machine>
+      <machine maxCpus='255'>pc-i440fx-8.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.1</machine>
+      <machine maxCpus='4096'>nitro</machine>
+      <machine maxCpus='255'>pc-i440fx-9.1</machine>
+      <machine maxCpus='4096'>pc-q35-10.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.1</machine>
+      <machine maxCpus='1'>x-remote</machine>
+      <machine maxCpus='255'>pc-i440fx-10.1</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-5.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-5.1</machine>
+      <machine maxCpus='1'>isapc</machine>
+      <machine maxCpus='4096'>pc-q35-9.0</machine>
+      <machine maxCpus='4096'>pc-q35-10.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.0</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-8.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-8.0</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.0</machine>
+      <machine maxCpus='255'>pc-i440fx-9.0</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.0</machine>
+      <machine maxCpus='288'>nitro-enclave</machine>
+      <machine maxCpus='128'>xenpvh</machine>
+      <machine maxCpus='255'>pc-i440fx-10.0</machine>
+      <machine maxCpus='4096'>pc-q35-9.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-7.2</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-6.0</machine>
+      <machine maxCpus='128'>xenfv-4.2</machine>
+      <machine maxCpus='288'>microvm</machine>
+      <machine maxCpus='1024'>pc-q35-8.2</machine>
+      <machine maxCpus='255'>pc-i440fx-8.2</machine>
+      <machine maxCpus='288' deprecated='yes'>pc-q35-6.2</machine>
+      <machine maxCpus='255'>pc-i440fx-9.2</machine>
+      <machine maxCpus='4096'>pc-q35-10.1</machine>
+      <machine maxCpus='255' deprecated='yes'>pc-i440fx-7.2</machine>
+      <domain type='qemu'/>
+      <domain type='kvm'/>
+    </arch>
+    <features>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <externalSnapshot/>
+    </features>
+  </guest>
+
+</capabilities>
