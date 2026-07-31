@@ -367,6 +367,13 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                _("Bhyve virtio-serial controller supports up to 16 ports"));
                 return -1;
             }
+        } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_NVME &&
+                   controller->opts.nvmeopts.serial) {
+            if (strchr(controller->opts.nvmeopts.serial, ',')) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Serial number may not contain ',' character"));
+                return -1;
+            }
         }
         break;
     }
@@ -450,6 +457,14 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("queue configuration is only valid for NVMe bus"));
             return -1;
+        }
+
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_SATA && disk->serial) {
+            if (strchr(disk->serial, ',')) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Serial number may not contain ',' character"));
+                return -1;
+            }
         }
 
         break;

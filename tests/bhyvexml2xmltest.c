@@ -129,6 +129,7 @@ mymain(void)
     DO_TEST_DIFFERENT("4-consoles");
     DO_TEST_DIFFERENT("nvme");
     DO_TEST_DIFFERENT("2-nvme-2-controllers");
+    DO_TEST_FAILURE("nvme-invalid-serial");
     DO_TEST_DIFFERENT("passthru-multiple-devs");
     DO_TEST_DIFFERENT("slirp");
     DO_TEST_DIFFERENT("virtio-scsi");
@@ -145,6 +146,7 @@ mymain(void)
     DO_TEST_FAILURE("virtio-console-too-many-ports");
     DO_TEST_FAILURE("virtio-console-invalid-name");
     DO_TEST_FAILURE("virtio-console-invalid-path");
+    DO_TEST_FAILURE("sata-disk-invalid-serial");
 
     /* Address allocation tests */
     DO_TEST_DIFFERENT("addr-single-sata-disk");
