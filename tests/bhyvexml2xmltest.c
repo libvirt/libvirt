@@ -129,6 +129,7 @@ mymain(void)
     DO_TEST_DIFFERENT("4-consoles");
     DO_TEST_DIFFERENT("nvme");
     DO_TEST_DIFFERENT("2-nvme-2-controllers");
+    DO_TEST_DIFFERENT("nvme-explicit-controller");
     DO_TEST_FAILURE("nvme-invalid-serial");
     DO_TEST_DIFFERENT("passthru-multiple-devs");
     DO_TEST_DIFFERENT("slirp");

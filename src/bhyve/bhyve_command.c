@@ -479,6 +479,8 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",maxq=%d", disk->queues);
         if (disk->queue_size)
             virBufferAsprintf(&opt, ",qsz=%d", disk->queue_size);
+        if (controller->opts.nvmeopts.serial)
+            virBufferAsprintf(&opt, ",ser=%s", controller->opts.nvmeopts.serial);
 
         nvme_opts = virBufferContentAndReset(&opt);
 

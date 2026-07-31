@@ -1,0 +1,9 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,nvme,/tmp/freebsd.img,maxq=2,qsz=256,ser=BHYVE-NVME0-01234 \
+bhyve

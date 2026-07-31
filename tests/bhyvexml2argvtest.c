@@ -280,6 +280,7 @@ mymain(void)
     DO_TEST_FAILURE("serial-invalid-port");
     DO_TEST("nvme");
     DO_TEST("2-nvme-2-controllers");
+    DO_TEST("nvme-explicit-controller");
     DO_TEST_FAILURE("2-nvme-same-controller");
     DO_TEST_FAILURE("nvme-invalid-serial");
     DO_TEST("sata-rotation-rate");
