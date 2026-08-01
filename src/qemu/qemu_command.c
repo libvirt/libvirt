@@ -7703,6 +7703,12 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
                                   NULL) < 0)
             return -1;
 
+        if (iothread->set_poll_weight &&
+            virJSONValueObjectAdd(&props,
+                                  "u:poll-weight", iothread->poll_weight,
+                                  NULL) < 0)
+            return -1;
+
         if (qemuBuildObjectCommandlineFromJSON(cmd, props) < 0)
             return -1;
     }

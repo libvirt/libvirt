@@ -5292,6 +5292,11 @@ qemuDomainHotplugModIOThreadIDDef(virDomainIOThreadIDDef *def,
         def->set_poll_shrink = true;
     }
 
+    if (mondef.set_poll_weight) {
+        def->poll_weight = mondef.poll_weight;
+        def->set_poll_weight = true;
+    }
+
     if (mondef.set_thread_pool_min)
         def->thread_pool_min = mondef.thread_pool_min;
 
@@ -5384,6 +5389,11 @@ qemuDomainHotplugDelIOThread(virDomainObj *vm,
  *   necessary. If a 0 (zero) value is provided, QEMU resets the polling
  *   interval to 0 (zero) allowing the poll-grow to manipulate the time.
  *
+ * - "poll-weight" - weight shift value used by the adaptive polling algorithm
+ *   to determine how much the most recent event interval influences the
+ *   next interval calculation. Accepted range is [0, 63]. If a 0 (zero)
+ *   value is provided, QEMU uses its default weight.
+ *
  * QEMU keeps track of the polling time elapsed and may grow or shrink the
  * its polling interval based upon its heuristic algorithm. It is possible
  * that calculations determine that it has found a "sweet spot" and no
@@ -5418,6 +5428,20 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
         return -1;
     if (rc == 1)
         iothread->set_poll_shrink = true;
+
+    if ((rc = virTypedParamsGetUInt(params, nparams,
+                                   VIR_DOMAIN_IOTHREAD_POLL_WEIGHT,
+                                   &iothread->poll_weight)) < 0)
+        return -1;
+    if (rc == 1) {
+        if (iothread->poll_weight > 63) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("poll-weight value %1$u is out of range [0, 63]"),
+                           iothread->poll_weight);
+            return -1;
+        }
+        iothread->set_poll_weight = true;
+    }
 
     if ((rc = virTypedParamsGetInt(params, nparams,
                                    VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
@@ -5617,6 +5641,13 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
             if (qemuDomainIOThreadValidate(iothreaddef, iothread, true) < 0)
                 goto endjob;
 
+            if (iothread.set_poll_weight &&
+                !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_IOTHREAD_POLL_WEIGHT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("poll-weight is not supported by this QEMU binary"));
+                goto endjob;
+            }
+
             if (qemuDomainHotplugModIOThread(vm, iothread) < 0)
                 goto endjob;
 
@@ -5747,6 +5778,8 @@ qemuDomainSetIOThreadParams(virDomainPtr dom,
                                VIR_TYPED_PARAM_UNSIGNED,
                                VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
                                VIR_TYPED_PARAM_UNSIGNED,
+                               VIR_DOMAIN_IOTHREAD_POLL_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
                                VIR_TYPED_PARAM_INT,
                                VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,

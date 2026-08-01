@@ -2749,6 +2749,21 @@ int                  virDomainDelIOThread(virDomainPtr domain,
 # define VIR_DOMAIN_IOTHREAD_POLL_SHRINK "poll_shrink"
 
 /**
+ * VIR_DOMAIN_IOTHREAD_POLL_WEIGHT:
+ *
+ * This provides a shift value for the adaptive polling algorithm to control
+ * how much the most recent event interval affects the next polling duration
+ * calculation. Larger values decrease the weight of the current interval,
+ * enabling more gradual adjustments. Valid range is [0, 63]. A value of 0
+ * lets the hypervisor select a default weight.
+ *
+ * Accepted type is VIR_TYPED_PARAM_UINT.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_IOTHREAD_POLL_WEIGHT "poll_weight"
+
+/**
  * VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN:
  *
  * Sets the lower bound for thread pool size. A value of -1 disables this bound

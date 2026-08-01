@@ -2334,6 +2334,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("iothreads-ids");
     DO_TEST_CAPS_LATEST("iothreads-ids-partial");
     DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
+    DO_TEST_CAPS_LATEST("iothreads-ids-poll-weight");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("iothreads-ids-poll-weight-outofrange");
     DO_TEST_CAPS_LATEST("iothreads-disk");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-pci");
     DO_TEST_CAPS_LATEST("iothreads-virtio-scsi-mapping");

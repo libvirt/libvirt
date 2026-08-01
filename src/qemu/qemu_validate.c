@@ -500,9 +500,15 @@ qemuValidateDomainDefIOThreads(const virDomainDef *def,
     for (i = 0; i < def->niothreadids; i++) {
         virDomainIOThreadIDDef *iothread = def->iothreadids[i];
 
-        if (iothread->thread_pool_min != -1 || iothread->thread_pool_max != -1) {
+        if (iothread->thread_pool_min != -1 || iothread->thread_pool_max != -1)
             needsThreadPoolCap = true;
-            break;
+
+        /* poll-weight requires QEMU_CAPS_IOTHREAD_POLL_WEIGHT */
+        if (iothread->set_poll_weight &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IOTHREAD_POLL_WEIGHT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("poll-weight is not supported by this QEMU binary"));
+            return -1;
         }
     }
 

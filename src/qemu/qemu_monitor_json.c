@@ -7248,6 +7248,19 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
 
 #undef VIR_IOTHREAD_SET_PROP_UL
 
+#define VIR_IOTHREAD_SET_PROP_UINT(propName, propVal) \
+    if (iothreadInfo->set_##propVal) { \
+        memset(&prop, 0, sizeof(prop)); \
+        prop.type = QEMU_MONITOR_OBJECT_PROPERTY_UINT; \
+        prop.val.ui = iothreadInfo->propVal; \
+        if (qemuMonitorJSONSetObjectProperty(mon, path, propName, &prop) < 0) \
+            return -1; \
+    }
+
+    VIR_IOTHREAD_SET_PROP_UINT("poll-weight", poll_weight);
+
+#undef VIR_IOTHREAD_SET_PROP_UINT
+
     if (iothreadInfo->set_thread_pool_min &&
         iothreadInfo->set_thread_pool_max) {
         int curr_max = -1;
