@@ -7,7 +7,7 @@
   <iothreads>1</iothreads>
   <iothreadids>
     <iothread id='8' thread_pool_min='2147483647' thread_pool_max='2147483647'>
-      <poll max='9223372036854775807' grow='456' shrink='789'/>
+      <poll max='9223372036854775807' grow='456' shrink='789' weight='3'/>
     </iothread>
   </iothreadids>
   <os>

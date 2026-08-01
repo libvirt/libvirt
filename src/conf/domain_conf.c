@@ -17023,7 +17023,9 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
  *
  *     <iothreads>4</iothreads>
  *     <iothreadids>
- *       <iothread id='1' thread_pool_min="0" thread_pool_max="60"/>
+ *       <iothread id='1' thread_pool_min="0" thread_pool_max="60">
+ *         <poll max='32000' grow='2' shrink='2' weight='3'/>
+ *       </iothread>
  *       <iothread id='3'/>
  *       <iothread id='5'/>
  *       <iothread id='7'/>
@@ -17071,6 +17073,12 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node)
             return NULL;
 
         iothrid->set_poll_shrink = rc == 1;
+
+        if ((rc = virXMLPropUInt(pollNode, "weight", 10, VIR_XML_PROP_NONE,
+                                 &iothrid->poll_weight)) < 0)
+            return NULL;
+
+        iothrid->set_poll_weight = rc == 1;
     }
 
     return g_steal_pointer(&iothrid);
@@ -29086,6 +29094,7 @@ virDomainDefIothreadShouldFormat(const virDomainDef *def)
             def->iothreadids[i]->set_poll_max_ns ||
             def->iothreadids[i]->set_poll_grow ||
             def->iothreadids[i]->set_poll_shrink ||
+            def->iothreadids[i]->set_poll_weight ||
             def->iothreadids[i]->thread_pool_min >= 0 ||
             def->iothreadids[i]->thread_pool_max >= 0)
             return true;
@@ -29158,6 +29167,9 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
 
             if (iothread->set_poll_shrink)
                 virBufferAsprintf(&pollAttrBuf, " shrink='%llu'", iothread->poll_shrink);
+
+            if (iothread->set_poll_weight)
+                virBufferAsprintf(&pollAttrBuf, " weight='%u'", iothread->poll_weight);
 
             virXMLFormatElement(&iothreadChildBuf, "poll", &pollAttrBuf, NULL);
 

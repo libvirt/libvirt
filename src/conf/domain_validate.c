@@ -1931,6 +1931,13 @@ virDomainDefValidateIOThreads(const virDomainDef *def)
         if (virDomainDefValidateIOThreadsThreadPool(iothread->thread_pool_min,
                                                     iothread->thread_pool_max) < 0)
             return -1;
+
+        if (iothread->set_poll_weight && iothread->poll_weight > 63) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("poll weight %1$u is out of range [0, 63]"),
+                           iothread->poll_weight);
+            return -1;
+        }
     }
 
     if (def->defaultIOThread &&

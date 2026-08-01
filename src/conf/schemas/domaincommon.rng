@@ -990,6 +990,11 @@
                       <ref name="unsignedLong"/>
                     </attribute>
                   </optional>
+                  <optional>
+                    <attribute name="weight">
+                      <ref name="unsignedInt"/>
+                    </attribute>
+                  </optional>
                 </element>
               </optional>
             </element>

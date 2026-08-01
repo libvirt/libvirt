@@ -2902,6 +2902,8 @@ struct _virDomainIOThreadIDDef {
     bool set_poll_grow;
     unsigned long long poll_shrink;
     bool set_poll_shrink;
+    unsigned int poll_weight;
+    bool set_poll_weight;
 
     int thread_pool_min;
     int thread_pool_max;
