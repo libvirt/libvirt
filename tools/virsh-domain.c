@@ -8282,6 +8282,10 @@ static const vshCmdOptDef opts_iothreadset[] = {
      .unwanted_positional = true,
      .help = N_("set the value for reduction of the IOThread polling time")
     },
+    {.name = "poll-weight",
+     .type = VSH_OT_INT,
+     .help = N_("set the adaptive polling weight factor")
+    },
     {.name = "thread-pool-min",
      .type = VSH_OT_INT,
      .unwanted_positional = true,
@@ -8311,6 +8315,7 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     virTypedParameterPtr par;
     size_t npar = 0;
     unsigned long long poll_val;
+    unsigned int poll_weight;
     int thread_val;
     int rc;
 
@@ -8346,6 +8351,11 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
         return false;
     if (rc > 0)
         virTypedParamListAddUnsigned(params, poll_val, VIR_DOMAIN_IOTHREAD_POLL_SHRINK);
+
+    if ((rc = vshCommandOptUInt(ctl, cmd, "poll-weight", &poll_weight)) < 0)
+        return false;
+    if (rc > 0)
+        virTypedParamListAddUInt(params, poll_weight, VIR_DOMAIN_IOTHREAD_POLL_WEIGHT);
 
     if ((rc = vshCommandOptInt(ctl, cmd, "thread-pool-min", &thread_val)) < 0)
         return false;
