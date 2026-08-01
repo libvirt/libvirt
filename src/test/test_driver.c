@@ -189,6 +189,7 @@ struct _testIOThreadInfo {
     unsigned long long poll_max_ns;
     unsigned int poll_grow;
     unsigned int poll_shrink;
+    unsigned int poll_weight;
 };
 
 static void
@@ -749,6 +750,7 @@ testDomainGenerateIOThreadInfos(virDomainObj *obj)
         iothread.poll_max_ns = 32768;
         iothread.poll_grow = 0;
         iothread.poll_shrink = 0;
+        iothread.poll_weight = 0;
         g_array_append_val(priv->iothreads, iothread);
     }
 }
@@ -9681,6 +9683,7 @@ testDomainAddIOThread(virDomainPtr dom,
     iothread.poll_max_ns = 32768;
     iothread.poll_grow = 0;
     iothread.poll_shrink = 0;
+    iothread.poll_weight = 0;
 
     g_array_append_val(priv->iothreads, iothread);
 
@@ -9795,6 +9798,8 @@ testDomainIOThreadParseParams(virTypedParameterPtr params,
                                VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
                                VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_IOTHREAD_POLL_WEIGHT,
+                               VIR_TYPED_PARAM_UINT,
                                NULL) < 0)
         return -1;
 
@@ -9811,6 +9816,11 @@ testDomainIOThreadParseParams(virTypedParameterPtr params,
     if (virTypedParamsGetUInt(params, nparams,
                               VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
                               &iothread->poll_shrink) < 0)
+        return -1;
+
+    if (virTypedParamsGetUInt(params, nparams,
+                              VIR_DOMAIN_IOTHREAD_POLL_WEIGHT,
+                              &iothread->poll_weight) < 0)
         return -1;
 
     return 0;
@@ -9899,6 +9909,8 @@ testDomainGetStatsIOThread(virDomainObj *dom,
                                  "iothread.%u.poll-grow", iothread.iothread_id);
         virTypedParamListAddUInt(params, iothread.poll_shrink,
                                  "iothread.%u.poll-shrink", iothread.iothread_id);
+        virTypedParamListAddUInt(params, iothread.poll_weight,
+                                 "iothread.%u.poll-weight", iothread.iothread_id);
     }
 
     return 0;
