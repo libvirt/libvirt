@@ -748,6 +748,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 500 */
     QEMU_CAPS_ARM_SMMUV3_CMDQV, /* arm-smmuv3.cmdqv */
+    QEMU_CAPS_IOTHREAD_POLL_WEIGHT, /* -object iothread.poll-weight */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

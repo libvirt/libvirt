@@ -147,6 +147,7 @@
   <flag name='query-block-flat'/>
   <flag name='blockdev-mirror.target-is-zero'/>
   <flag name='object-monitor-qmp'/>
+  <flag name='iothread.poll-weight'/>
   <version>11001000</version>
   <microcodeVersion>39100287</microcodeVersion>
   <package>v11.1.0</package>

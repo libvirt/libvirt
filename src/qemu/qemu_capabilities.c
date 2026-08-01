@@ -774,6 +774,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 500 */
               "arm-smmuv3.cmdqv", /* QEMU_CAPS_ARM_SMMUV3_CMDQV */
+              "iothread.poll-weight", /* QEMU_CAPS_IOTHREAD_POLL_WEIGHT */
     );
 
 
@@ -1683,6 +1684,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "netdev_add/arg-type/+stream/reconnect-ms", QEMU_CAPS_NETDEV_STREAM_RECONNECT_MILISECONDS },
     { "object-add/arg-type/+sev-guest/kernel-hashes", QEMU_CAPS_SEV_GUEST_KERNEL_HASHES },
     { "object-add/arg-type/+iothread/thread-pool-max", QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX },
+    { "object-add/arg-type/+iothread/poll-weight", QEMU_CAPS_IOTHREAD_POLL_WEIGHT },
     { "query-block/arg-type/flat", QEMU_CAPS_QUERY_BLOCK_FLAT },
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
     { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },
