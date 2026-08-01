@@ -815,7 +815,7 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
        <iothread id="4"/>
        <iothread id="6"/>
        <iothread id="8" thread_pool_min="2" thread_pool_max="32">
-         <poll max='123' grow='456' shrink='789'/>
+         <poll max='123' grow='456' shrink='789' weight='3'/>
        </iothread>
      </iothreadids>
      <defaultiothread thread_pool_min="8" thread_pool_max="16"/>
@@ -849,6 +849,12 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
    polling. Attributes ``grow`` and ``shrink`` override (or disable when set to
    ``0``) the default steps for increasing/decreasing the polling interval if
    the set interval is deemed insufficient or excessive.
+   :since:`Since 12.7.0` the optional attribute ``weight`` sets the shift value
+   for the adaptive polling algorithm, controlling how much the most recent
+   event interval affects the next polling duration calculation. Larger values
+   decrease the weight of recent events, producing more gradual adjustments.
+   Valid range is ``[0, 63]``. Omitting ``weight`` or setting it to ``0`` lets
+   the hypervisor select its default value.
 ``defaultiothread``
    This element represents the default event loop within hypervisor, where I/O
    requests from devices not assigned to a specific IOThread are processed.
