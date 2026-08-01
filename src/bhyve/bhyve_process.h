@@ -55,6 +55,8 @@ int virBhyveProcessReset(struct _bhyveConn *driver,
 
 int virBhyveProcessShutdown(virDomainObj *vm);
 
+pid_t virBhyveProcessGetBhyvePid(virDomainObj *vm);
+
 int virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
                                    unsigned long long *cpustats);
 

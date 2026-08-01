@@ -21,6 +21,7 @@ typedef enum {
     FLAG_EXPECT_FAILURE         = 1 << 0,
     FLAG_EXPECT_PARSE_ERROR     = 1 << 1,
     FLAG_EXPECT_PREPARE_ERROR   = 1 << 2,
+    FLAG_UNPRIVILEGED           = 1 << 3,
 } virBhyveXMLToArgvTestFlags;
 
 static int testCompareXMLToArgvFiles(const char *xml,
@@ -141,6 +142,8 @@ testCompareXMLToArgvHelper(const void *data)
     dmargs = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s.devmap",
                              abs_srcdir, arch, info->name);
 
+    driver.privileged = !(info->flags & FLAG_UNPRIVILEGED);
+
     return testCompareXMLToArgvFiles(xml, args, ldargs, dmargs, info->flags);
 }
 
@@ -191,6 +194,9 @@ mymain(void)
 
 # define DO_TEST_FAILURE(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
+
+# define DO_TEST_UNPRIVILEGED_FAILURE(name) \
+    DO_TEST_FULL(name, FLAG_EXPECT_FAILURE | FLAG_UNPRIVILEGED)
 
 # define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
@@ -297,6 +303,7 @@ mymain(void)
     DO_TEST("virtio-scsi");
     DO_TEST("vcpupin");
     DO_TEST("blkiotune");
+    DO_TEST_UNPRIVILEGED_FAILURE("blkiotune");
     DO_TEST_FAILURE("blkiotune-invalid-device");
     DO_TEST_FAILURE("blkiotune-multiple-devices");
     DO_TEST_FAILURE("blkiotune-weight");
@@ -309,6 +316,7 @@ mymain(void)
     DO_TEST_FAILURE("virtio-console-invalid-name");
     DO_TEST_FAILURE("virtio-console-invalid-path");
     DO_TEST("memtune");
+    DO_TEST_UNPRIVILEGED_FAILURE("memtune");
     DO_TEST_FAILURE("memtune-unsupported-params");
     DO_TEST("sysinfo-smbios");
 

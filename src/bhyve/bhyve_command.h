@@ -43,3 +43,6 @@ virBhyveProcessBuildLoadCmd(struct _bhyveConn *driver, virDomainDef *def,
 
 virCommand *
 virBhyveProcessBuildResetCmd(struct _bhyveConn *driver, virDomainDef *def);
+
+virCommand *
+virBhyveProcessBuildGetVMPidCmd(struct _bhyveConn *driver, virDomainDef *def);

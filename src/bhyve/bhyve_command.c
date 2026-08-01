@@ -1367,6 +1367,20 @@ virBhyveProcessBuildResetCmd(struct _bhyveConn *driver G_GNUC_UNUSED,
     return cmd;
 }
 
+virCommand *
+virBhyveProcessBuildGetVMPidCmd(struct _bhyveConn *driver,
+                                virDomainDef *def)
+{
+    virCommand *cmd = virCommandNew("bhyvectl");
+
+    virCommandAddArg(cmd, "--get-vm-pid");
+    virCommandAddArgPair(cmd, "--vm", def->name);
+    if (!driver->privileged)
+        virCommandAddArgPair(cmd, "--rundir", driver->config->stateDir);
+
+    return cmd;
+}
+
 static void
 virAppendBootloaderArgs(virCommand *cmd, virDomainDef *def)
 {

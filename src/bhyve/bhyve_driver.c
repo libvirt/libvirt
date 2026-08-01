@@ -1906,6 +1906,7 @@ bhyveDomainMemoryStats(virDomainPtr domain,
     unsigned long long rss;
     size_t i = 0;
     int ret = -1;
+    pid_t pid;
 
     virCheckFlags(0, -1);
 
@@ -1918,7 +1919,10 @@ bhyveDomainMemoryStats(virDomainPtr domain,
     if (virDomainMemoryStatsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virProcessGetStatInfo(NULL, NULL, NULL, NULL, &rss, vm->pid, 0) < 0) {
+    if ((pid = virBhyveProcessGetBhyvePid(vm)) < 0)
+        goto cleanup;
+
+    if (virProcessGetStatInfo(NULL, NULL, NULL, NULL, &rss, pid, 0) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("cannot get RSS for domain"));
     } else {
@@ -1964,6 +1968,7 @@ bhyveDomainBlockStats(virDomainPtr domain,
     virDomainObj *vm;
     int ret = -1;
     g_autofree struct kinfo_proc *p = NULL;
+    pid_t pid;
 
     if (!(vm = bhyveDomObjFromDomain(domain)))
         goto cleanup;
@@ -1974,7 +1979,10 @@ bhyveDomainBlockStats(virDomainPtr domain,
     if (virDomainBlockStatsEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if ((p = bhyveDomainProcGetInfo(vm->pid)) == NULL)
+    if ((pid = virBhyveProcessGetBhyvePid(vm)) < 0)
+        goto cleanup;
+
+    if ((p = bhyveDomainProcGetInfo(pid)) == NULL)
         goto cleanup;
 
     stats->rd_req = p->ki_rusage.ru_inblock;
@@ -2305,6 +2313,7 @@ bhyveDomainGetMemoryParameters(virDomainPtr domain,
                                int *nparams,
                                unsigned int flags)
 {
+    struct _bhyveConn *privconn = domain->conn->privateData;
     virDomainObj *vm = NULL;
     virDomainDef *persistentDef = NULL;
     int ret = -1;
@@ -2319,6 +2328,12 @@ bhyveDomainGetMemoryParameters(virDomainPtr domain,
 
     if (virDomainGetMemoryParametersEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
+
+    if (!privconn->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("memory parameters are not supported in unprivileged mode"));
+        goto cleanup;
+    }
 
     if (virDomainObjGetDefs(vm, flags, NULL, &persistentDef) < 0)
         goto cleanup;
@@ -2377,6 +2392,12 @@ bhyveDomainSetMemoryParameters(virDomainPtr domain,
 
     if (virDomainSetMemoryParametersEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
+
+    if (!privconn->privileged) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("memory parameters are not supported in unprivileged mode"));
+        goto cleanup;
+    }
 
     if (virDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;

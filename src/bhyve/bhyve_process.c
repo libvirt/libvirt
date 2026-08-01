@@ -138,6 +138,78 @@ bhyveProcessStopHook(struct _bhyveConn *driver,
                 VIR_HOOK_SUBOP_END, NULL, xml, NULL);
 }
 
+static pid_t
+bhyveProcessQueryVMPid(virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *output = NULL;
+    const char *pidstr;
+    char *end = NULL;
+    pid_t pid;
+
+    cmd = virBhyveProcessBuildGetVMPidCmd(priv->driver, vm->def);
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        return -1;
+
+    virStringTrimOptionalNewline(output);
+    if (!STRPREFIX(output, "vm pid:\t"))
+        goto malformed;
+
+    pidstr = output + strlen("vm pid:\t");
+    if (virStrToLong_i(pidstr, &end, 10, &pid) < 0 ||
+        pid <= 0 || *end != '\0')
+        goto malformed;
+
+    return pid;
+
+ malformed:
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unable to parse bhyvectl output: %1$s"), output);
+    return -1;
+}
+
+
+static int
+bhyveProcessWaitForVMPid(virDomainObj *vm)
+{
+    virTimeBackOffVar timebackoff;
+
+    if (virTimeBackOffStart(&timebackoff, 1, 5000) < 0)
+        return -1;
+
+    while (virTimeBackOffWait(&timebackoff)) {
+        if (bhyveProcessQueryVMPid(vm) > 0)
+            return 0;
+
+        virResetLastError();
+    }
+
+    return bhyveProcessQueryVMPid(vm) < 0 ? -1 : 0;
+}
+
+
+pid_t
+virBhyveProcessGetBhyvePid(virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+
+    if (vm->pid == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid PID %1$d for VM"),
+                       (int)vm->pid);
+        return -1;
+    }
+
+    if (priv->driver->privileged)
+        return vm->pid;
+
+    return bhyveProcessQueryVMPid(vm);
+}
+
+
 static int
 bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
 {
@@ -146,6 +218,12 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
     if ((vm->def->blkio.ndevices != 1) &&
         !virMemoryLimitIsSet(vm->def->mem.hard_limit))
         return 0;
+
+    if (!driver->privileged) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("resource limits are not supported in unprivileged mode"));
+        return -1;
+    }
 
     if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RCTL) == 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -156,7 +234,8 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
     if (vm->def->blkio.ndevices == 1) {
         device = &vm->def->blkio.devices[0];
 
-        bhyveRctlSetIoLimits(vm->pid, device);
+        if (bhyveRctlSetIoLimits(vm->pid, device) < 0)
+            return -1;
     }
 
     /* rctl(8) uses bytes for these values and def->mem.* uses kibibytes */
@@ -413,6 +492,10 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
                        vm->def->name);
         goto cleanup;
     }
+
+    /* /dev/vmm can appear before the monitor mode IPC socket is ready. */
+    if (!driver->privileged && bhyveProcessWaitForVMPid(vm) < 0)
+        goto cleanup;
 
     vm->def->id = vm->pid;
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
@@ -764,20 +847,18 @@ virBhyveProcessStop(struct _bhyveConn *driver,
 int
 virBhyveProcessShutdown(virDomainObj *vm)
 {
-    if (vm->pid == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid PID %1$d for VM"),
-                       (int)vm->pid);
+    pid_t pid;
+
+    if ((pid = virBhyveProcessGetBhyvePid(vm)) < 0)
         return -1;
-    }
 
     /* Bhyve tries to perform ACPI shutdown when it receives
      * SIGTERM signal. So we just issue SIGTERM here and rely
      * on the bhyve monitor to clean things up if process disappears.
      */
-    if (virProcessKill(vm->pid, SIGTERM) != 0) {
-        VIR_WARN("Failed to terminate bhyve process for VM '%s': %s",
-                 vm->def->name, virGetLastErrorMessage());
+    if (virProcessKill(pid, SIGTERM) != 0) {
+        VIR_WARN("Failed to terminate bhyve process for VM '%s' (pid: %d): %s",
+                 vm->def->name, (int)pid, virGetLastErrorMessage());
         return -1;
     }
 
@@ -818,6 +899,10 @@ virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
     g_autofree char *errbuf = g_new0(char, _POSIX2_LINE_MAX);
     int nprocs;
     int ret = -1;
+    pid_t pid;
+
+    if ((pid = virBhyveProcessGetBhyvePid(vm)) < 0)
+        return -1;
 
     if ((kd = kvm_openfiles(NULL, NULL, NULL, O_RDONLY, errbuf)) == NULL) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
@@ -827,11 +912,11 @@ virBhyveGetDomainTotalCpuStats(virDomainObj *vm,
 
     }
 
-    kp = kvm_getprocs(kd, KERN_PROC_PID, vm->pid, &nprocs);
+    kp = kvm_getprocs(kd, KERN_PROC_PID, pid, &nprocs);
     if (kp == NULL || nprocs != 1) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Unable to obtain information about pid: %1$d"),
-                       (int)vm->pid);
+                       (int)pid);
         goto cleanup;
     }
 

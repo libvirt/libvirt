@@ -645,9 +645,17 @@ bhyveDomainDefValidate(const virDomainDef *def,
     if (virMemoryLimitIsSet(def->mem.soft_limit) ||
         virMemoryLimitIsSet(def->mem.swap_hard_limit) ||
         def->mem.min_guarantee) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Only 'hard_limit' memory tuning parameter is supported by bhyve"));
-            return -1;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only 'hard_limit' memory tuning parameter is supported by bhyve"));
+        return -1;
+    }
+
+    if (!driver->privileged &&
+        (def->blkio.ndevices > 0 ||
+         virMemoryLimitIsSet(def->mem.hard_limit))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("resource limits are not supported in unprivileged mode"));
+        return -1;
     }
 
     if (!driver->privileged && !def->os.loader) {
