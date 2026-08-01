@@ -943,7 +943,8 @@ virBhyveProcessReconnect(virDomainObj *vm,
     struct kinfo_proc *kp;
     int nprocs;
     char **proc_argv;
-    char *expected_proctitle = NULL;
+    g_autofree char *expected_proctitle = NULL;
+    pid_t bhyvePid;
     bhyveDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virConnect) conn = NULL;
     size_t i;
@@ -961,22 +962,30 @@ virBhyveProcessReconnect(virDomainObj *vm,
     if (kp == NULL || nprocs != 1)
         goto cleanup;
 
-    expected_proctitle = g_strdup_printf("bhyve: %s", vm->def->name);
+    if (data->driver->privileged) {
+        expected_proctitle = g_strdup_printf("bhyve: %s", vm->def->name);
+        proc_argv = kvm_getargv(data->kd, kp, 0);
+        if (!proc_argv || !proc_argv[0] ||
+            STRNEQ(expected_proctitle, proc_argv[0]))
+            goto cleanup;
+    } else {
+        if ((bhyvePid = bhyveProcessQueryVMPid(vm)) < 0)
+            goto cleanup;
 
-    proc_argv = kvm_getargv(data->kd, kp, 0);
-    if (proc_argv && proc_argv[0]) {
-         if (STREQ(expected_proctitle, proc_argv[0])) {
-             ret = 0;
-             priv->mon = bhyveMonitorOpen(vm, data->driver);
-             if (vm->def->ngraphics == 1 &&
-                 vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-                 int vnc_port = vm->def->graphics[0]->data.vnc.port;
-                 if (virPortAllocatorSetUsed(vnc_port) < 0) {
-                     VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
-                              vnc_port, vm->def->name);
-                 }
-             }
-         }
+        kp = kvm_getprocs(data->kd, KERN_PROC_PID, bhyvePid, &nprocs);
+        if (kp == NULL || nprocs != 1 || (pid_t)kp->ki_ppid != vm->pid)
+            goto cleanup;
+    }
+
+    ret = 0;
+    priv->mon = bhyveMonitorOpen(vm, data->driver);
+    if (vm->def->ngraphics == 1 &&
+        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        int vnc_port = vm->def->graphics[0]->data.vnc.port;
+        if (virPortAllocatorSetUsed(vnc_port) < 0) {
+            VIR_WARN("Failed to mark VNC port '%d' as used by '%s'",
+                     vnc_port, vm->def->name);
+        }
     }
 
     for (i = 0; i < vm->def->nnets; i++) {
@@ -1005,7 +1014,6 @@ virBhyveProcessReconnect(virDomainObj *vm,
     }
 
     virObjectUnlock(vm);
-    VIR_FREE(expected_proctitle);
 
     return ret;
 }
