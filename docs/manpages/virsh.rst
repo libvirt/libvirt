@@ -2905,6 +2905,8 @@ not available for statistical purposes.
   growth is managed by the hypervisor.
 * ``iothread.<id>.poll-shrink`` - polling time shrink value. A value of
   (zero) indicates shrink is managed by hypervisor.
+* ``iothread.<id>.poll-weight`` - polling weight shift value. A value of 0
+  (zero) indicates the hypervisor's default weight is used.
 
 *--memory* returns:
 

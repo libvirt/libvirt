@@ -4330,6 +4330,16 @@ struct _virDomainStatsRecord {
  */
 # define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK ".poll-shrink"
 
+/**
+ * VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_WEIGHT:
+ *
+ * Polling weight factor as an unsigned int. This shift value controls how
+ * much the most recent event interval affects adaptive polling calculations.
+ * A 0 (zero) indicates the hypervisor's default weight is used.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_WEIGHT ".poll-weight"
 
 /**
  * VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_COUNT:

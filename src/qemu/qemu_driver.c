@@ -18415,6 +18415,11 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver G_GNUC_UNUSED,
                                          VIR_DOMAIN_STATS_IOTHREAD_PREFIX "%u" VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_SHRINK,
                                          iothreads[i]->iothread_id);
         }
+        if (iothreads[i]->set_poll_weight) {
+            virTypedParamListAddUInt(params, iothreads[i]->poll_weight,
+                                     VIR_DOMAIN_STATS_IOTHREAD_PREFIX "%u" VIR_DOMAIN_STATS_IOTHREAD_SUFFIX_POLL_WEIGHT,
+                                     iothreads[i]->iothread_id);
+        }
     }
 
     for (i = 0; i < niothreads; i++)

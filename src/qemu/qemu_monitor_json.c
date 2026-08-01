@@ -7202,6 +7202,11 @@ qemuMonitorJSONGetIOThreads(qemuMonitor *mon,
             virJSONValueObjectGetNumberUlong(child, "poll-shrink",
                                              &info->poll_shrink) == 0)
             info->poll_valid = true;
+
+        /* poll-weight is optional, only present on newer QEMU */
+        if (virJSONValueObjectGetNumberUint(child, "poll-weight",
+                                            &info->poll_weight) == 0)
+            info->set_poll_weight = true;
     }
 
     *niothreads = n;

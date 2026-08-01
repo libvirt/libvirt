@@ -1583,11 +1583,13 @@ struct _qemuMonitorIOThreadInfo {
     unsigned long long poll_max_ns;
     unsigned long long poll_grow;
     unsigned long long poll_shrink;
+    unsigned int poll_weight;
     int thread_pool_min;
     int thread_pool_max;
     bool set_poll_max_ns;
     bool set_poll_grow;
     bool set_poll_shrink;
+    bool set_poll_weight;
     bool set_thread_pool_min;
     bool set_thread_pool_max;
 };
