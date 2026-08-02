@@ -537,8 +537,10 @@ daemonRemoveAllClientStreams(daemonClientStream *stream)
 /*
  * Returns:
  *   -1  if fatal error occurred
- *    0  if message was fully processed
+ *    0  if message was fully processed and the caller still owns 'msg'
  *    1  if message is still being processed
+ *    2  if message was fully processed and has already been queued for
+ *       sending, so the caller must not touch 'msg' again
  */
 static int
 daemonStreamHandleWriteData(virNetServerClient *client,
@@ -577,11 +579,16 @@ daemonStreamHandleWriteData(virNetServerClient *client,
 
         virErrorRestore(&err);
 
-        return virNetServerProgramSendReplyError(stream->prog,
-                                                 client,
-                                                 msg,
-                                                 &rerr,
-                                                 &msg->header);
+        /* SendReplyError() takes ownership of 'msg' and queues it on the
+         * client, so tell the caller not to send it a second time */
+        if (virNetServerProgramSendReplyError(stream->prog,
+                                              client,
+                                              msg,
+                                              &rerr,
+                                              &msg->header) < 0)
+            return -1;
+
+        return 2;
     }
 
     return 0;
@@ -680,6 +687,13 @@ daemonStreamHandleAbort(virNetServerClient *client,
 }
 
 
+/*
+ * Returns:
+ *   -1  if fatal error occurred
+ *    0  if message was fully processed and the caller still owns 'msg'
+ *    2  if message was fully processed and has already been queued for
+ *       sending, so the caller must not touch 'msg' again
+ */
 static int
 daemonStreamHandleHole(virNetServerClient *client,
                        daemonClientStream *stream,
@@ -714,11 +728,16 @@ daemonStreamHandleHole(virNetServerClient *client,
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
 
-        return virNetServerProgramSendReplyError(stream->prog,
-                                                 client,
-                                                 msg,
-                                                 &rerr,
-                                                 &msg->header);
+        /* SendReplyError() takes ownership of 'msg' and queues it on the
+         * client, so tell the caller not to send it a second time */
+        if (virNetServerProgramSendReplyError(stream->prog,
+                                              client,
+                                              msg,
+                                              &rerr,
+                                              &msg->header) < 0)
+            return -1;
+
+        return 2;
     }
 
     return 0;
@@ -769,7 +788,7 @@ daemonStreamHandleWrite(virNetServerClient *client,
             ret = -1;
         }
 
-        if (ret > 0) {
+        if (ret == 1) {
             /* still processing data from msg, put it back into queue */
             msg->next = stream->rx;
             stream->rx = msg;
@@ -780,6 +799,14 @@ daemonStreamHandleWrite(virNetServerClient *client,
             virNetMessageFree(msg);
             virNetServerClientImmediateClose(client);
             return -1;
+        }
+
+        if (ret == 2) {
+            /* The handler hit an error and has already queued 'msg' on the
+             * client as the error reply. Sending it again below would push
+             * a message which is still on client->tx back onto that same
+             * queue, linking it to itself and freeing it twice. */
+            continue;
         }
 
         /* 'CONTINUE' messages don't send a reply (unless error
