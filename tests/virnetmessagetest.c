@@ -511,6 +511,90 @@ static int testMessagePayloadStreamEncode(const void *args G_GNUC_UNUSED)
 }
 
 
+static size_t
+testMessageQueueLength(virNetMessage *queue)
+{
+    virNetMessage *tmp;
+    size_t len = 0;
+
+    /* Bounded so a corrupted (cyclic) queue cannot hang the test */
+    for (tmp = queue; tmp && len < 100; tmp = tmp->next)
+        len++;
+
+    return len;
+}
+
+
+static int testMessageQueueDuplicatePush(const void *args G_GNUC_UNUSED)
+{
+    virNetMessage *queue = NULL;
+    virNetMessage *msgA = virNetMessageNew(false);
+    virNetMessage *msgB = virNetMessageNew(false);
+    int ret = -1;
+
+    if (!msgA || !msgB)
+        goto cleanup;
+
+    /* Pushing the same message twice must not corrupt the queue. Without
+     * the check in virNetMessageQueuePush() this links msgA to itself,
+     * and serving the queue then returns it forever - the callers going
+     * on to free it more than once.
+     */
+    virNetMessageQueuePush(&queue, msgA);
+    virNetMessageQueuePush(&queue, msgA);
+
+    if (queue != msgA) {
+        VIR_TEST_DEBUG("Expected queue head %p, got %p", msgA, queue);
+        goto cleanup;
+    }
+
+    if (msgA->next != NULL) {
+        VIR_TEST_DEBUG("Message linked to itself: msgA->next=%p", msgA->next);
+        goto cleanup;
+    }
+
+    if (testMessageQueueLength(queue) != 1) {
+        VIR_TEST_DEBUG("Expected queue length 1, got %zu",
+                       testMessageQueueLength(queue));
+        goto cleanup;
+    }
+
+    /* A distinct message must still append normally, and re-pushing an
+     * already queued non-tail message must also be refused.
+     */
+    virNetMessageQueuePush(&queue, msgB);
+    virNetMessageQueuePush(&queue, msgA);
+
+    if (testMessageQueueLength(queue) != 2) {
+        VIR_TEST_DEBUG("Expected queue length 2, got %zu",
+                       testMessageQueueLength(queue));
+        goto cleanup;
+    }
+
+    /* Serving must hand out each message exactly once, then empty */
+    if (virNetMessageQueueServe(&queue) != msgA) {
+        VIR_TEST_DEBUG("Expected msgA to be served first");
+        goto cleanup;
+    }
+
+    if (virNetMessageQueueServe(&queue) != msgB) {
+        VIR_TEST_DEBUG("Expected msgB to be served second");
+        goto cleanup;
+    }
+
+    if (queue != NULL || virNetMessageQueueServe(&queue) != NULL) {
+        VIR_TEST_DEBUG("Expected queue to be empty");
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virNetMessageFree(msgA);
+    virNetMessageFree(msgB);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -533,6 +617,9 @@ mymain(void)
         ret = -1;
 
     if (virTestRun("Message Payload Stream Encode", testMessagePayloadStreamEncode, NULL) < 0)
+        ret = -1;
+
+    if (virTestRun("Message Queue Duplicate Push", testMessageQueueDuplicatePush, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
