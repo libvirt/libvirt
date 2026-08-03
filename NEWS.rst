@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v12.6.0 (unreleased)
+v12.6.0 (2026-08-03)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -39,8 +35,6 @@ v12.6.0 (unreleased)
 
     Allow qemu VMs to be kept running after they notify that they've crashed.
     This is useful for guests that can take their own crash dump and reboot.
-
-* **Bug fixes**
 
 
 v12.5.0 (2026-07-01)
