@@ -406,7 +406,7 @@
           <element name="feature">
             <attribute name="name">
               <data type="string">
-                <param name="pattern">[a-zA-Z0-9\-_]+</param>
+                <param name="pattern">[a-zA-Z0-9\-_.]+</param>
               </data>
             </attribute>
             <empty/>
