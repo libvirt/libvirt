@@ -35,6 +35,11 @@ v12.6.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Add ``preserve-running`` action for ``<on_crash>``
+
+    Allow qemu VMs to be kept running after they notify that they've crashed.
+    This is useful for guests that can take their own crash dump and reboot.
+
 * **Bug fixes**
 
 
