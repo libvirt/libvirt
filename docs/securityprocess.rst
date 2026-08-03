@@ -4,30 +4,31 @@ Security Process
 
 .. contents::
 
-The libvirt project believes in responsible disclosure of security problems, to
-allow vendors time to prepare and distribute patches for problems ahead of their
-publication. This page describes how the process works and how to report
-potential security issues.
+The libvirt project handles security disclosures with a lightweight process
+whose aim is to minimize the overhead of triage and prioritize publication
+of a patch that addresses the issue.
 
 Reporting security issues
 -------------------------
 
-In the event that a bug in libvirt is found which is believed to have
-(potential) security implications there is a dedicated contact to which a bug
-report / notification should be directed. Send an email with as many details of
-the problem as possible (ideally with steps to reproduce) to the following email
-address:
+Security concerns should be reported as confidential issues in the
+`libvirt project on GitLab <https://gitlab.com/libvirt/libvirt/-/work_items>`__,
+or one of the other related projects under the
+`libvirt namespace <https://gitlab.com/libvirt/>`__ if the issue does not
+apply to the core project.
 
-::
+Ensure that the "**turn on confidentiality**" checkbox is selected prior to
+submitting the issue, to restrict visibility to project maintainers only.
 
-   security@lists.libvirt.org
+Maintainer(s) will analyse the reported disclosure and decide whether it
+is to be classed as a security flaw or not. If not a security flaw, the
+``confidential`` tag will be removed immediately. If a security flaw,
+the maintainers will work to develop and test a patch. When a suitable
+patch is considered ready to post to the mailing list or a merge request,
+the ``confidential`` tag will be removed. Generally a CVE should be assigned
+to a security issue before a patch is ready to be posted (see below).
 
-NB. while this email address is backed by a mailing list, it is invitation only
-and moderated for non-members. As such you will receive an auto-reply indicating
-the report is held for moderation. Postings by non-members will be approved by a
-moderator and the reporter copied on any replies.
-
-Refer to the `bug reporting <bugs.html#use-of-automated-tools-ai-agents>`__
+Note: Refer to the `bug reporting <bugs.html#use-of-automated-tools-ai-agents>`__
 page for the *expectations around the use of automated tools and AI agents*,
 **prior** to filing any security report.
 
@@ -42,48 +43,42 @@ formats. Security notices are published on the `libvirt-announce mailing
 list <contact.html#mailing-lists>`__ when any embargo is
 lifted, or as soon as triaged if already public knowledge.
 
-Security team
--------------
-
-The libvirt security team is made up of a subset of the libvirt core development
-team which covers the various distro maintainers of libvirt, along with
-nominated security engineers representing the various vendors who distribute
-libvirt. The team is responsible for analysing incoming reports from users to
-identify whether a security problem exists and its severity. It then works to
-produce a fix for all official stable branches of libvirt and coordinate embargo
-dates between vendors to allow simultaneous release of the fix by all affected
-parties.
-
-If you are a security representative of a vendor distributing libvirt and would
-like to join the security team, send an email to the afore-mentioned security
-address. Typically an existing member of the security team will have to vouch
-for your credentials before membership is approved. All members of the security
-team are **required to respect the embargo policy** described below.
-
 Publication embargo policy
 --------------------------
 
-The libvirt security team operates a policy of `responsible
-disclosure <https://en.wikipedia.org/wiki/Responsible_disclosure>`__. As such
-any security issue reported, that is not already publicly disclosed elsewhere,
-will have an embargo date assigned. Members of the security team agree not to
-publicly disclose any details of the security issue until the embargo date
-expires.
+The libvirt project policy is to limit the time that a disclosure has the
+"*confidential*" marker applied strictly to the minimum required to develop
+and publish a suitable patch and allocate a CVE.
 
-The general aim of the team is to have embargo dates which are two weeks or less
-in duration. If a problem is identified with a proposed patch for a security
-issue, requiring further investigation and bug fixing, the embargo clock may be
-restarted. In exceptional circumstances longer initial embargoes may be
-negotiated by mutual agreement between members of the security team and other
-relevant parties to the problem. Any such extended embargoes will aim to be at
-most one month in duration.
+Given the widespread use of AI/LLM based agents for security auditing,
+as well as ongoing use of traditional fuzzing and static analysis
+tools, the libvirt maintainers consider that any disclosure originating
+from automated tools is highly likely to be independently re-discovered,
+potentially many times over in a very short timeframe.
+
+Thus the libvirt maintainers will generally reject requests for arbitrary
+embargoes unless high severity, extenuating circumstances can be
+demonstrated.
+
+If a patch for a confirmed security issue cannot be developed by a
+maintainer in a reasonable time, the maintainers may choose to make
+a disclosure public without having a patch available. This approach
+should only be taken for issues judged to have low severity.
 
 CVE allocation
 --------------
 
-The libvirt security team will associate each security issue with a CVE number.
-The CVE numbers will usually be allocated by one of the vendor security
-engineers on the security team.
+If a reported disclosure is confirmed to be a security flaw, the
+``CVE::Required`` label will be added.
+
+When a CVE has been allocated, this label will be removd and replaced
+by ``CVE::Assigned``.
+
+The allocated CVE identifier will be included in the patch(es) that
+are required to fix the issue. If multiple patches are involved, the
+CVE must be included in the final patch in the series that closes the
+last hole, but should also be included in any prior patches it the
+series that are directly related.
 
 Branch fixing policy
 --------------------
