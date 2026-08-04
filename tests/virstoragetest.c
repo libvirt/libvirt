@@ -488,12 +488,17 @@ mymain(void)
 
     /* qcow2 + datafile
      * 1) qcow2 image with data file
-     * 2) qcow2 -> qcow2 backing image with data file */
+     * 2) qcow2 -> qcow2 backing image with data file
+     * 3) qcow2 (with no backing file format specified) -> qcow2 backing image with data file
+     */
     TEST_CHAIN("qcow2-datafile",
                abs_srcdir "/virstoragetestdata/images/datafile.qcow2",
                VIR_STORAGE_FILE_QCOW2, EXP_PASS);
     TEST_CHAIN("qcow2datafile-qcow2_qcow2-datafile",
                abs_srcdir "/virstoragetestdata/images/qcow2datafile-datafile.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2datafile-qcow2_qcow2-datafile-auto",
+               abs_srcdir "/virstoragetestdata/images/qcow2_datafile-auto.qcow2",
                VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* broken qcow2 with a 'data_file' which is an empty string */
