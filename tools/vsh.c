@@ -2145,7 +2145,7 @@ vshPrintStderr(vshControl *ctl,
     if (ctl)
         vshOutputLogFile(ctl, level, str);
 
-    if (ctl->stderr_closed)
+    if (ctl && ctl->stderr_closed)
         return;
 
     /* Most output is to stdout, but if someone ran virsh 2>&1, then
