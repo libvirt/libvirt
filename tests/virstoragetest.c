@@ -499,7 +499,7 @@ mymain(void)
                VIR_STORAGE_FILE_QCOW2, EXP_PASS);
     TEST_CHAIN("qcow2datafile-qcow2_qcow2-datafile-auto",
                abs_srcdir "/virstoragetestdata/images/qcow2_datafile-auto.qcow2",
-               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
 
     /* broken qcow2 with a 'data_file' which is an empty string */
     TEST_CHAIN("qcow2-datafile-broken",

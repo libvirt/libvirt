@@ -1426,9 +1426,10 @@ virStorageSourceGetMetadataRecurse(virStorageSource *src,
     /* If we probed the format we MUST ensure that nothing else than the current
      * image is considered for security labelling and/or recursion. */
     if (orig_format == VIR_STORAGE_FILE_AUTO) {
-        if (src->backingStoreRaw) {
+        if (src->backingStoreRaw || src->dataFileRaw) {
             src->format = VIR_STORAGE_FILE_RAW;
             VIR_FREE(src->backingStoreRaw);
+            VIR_FREE(src->dataFileRaw);
             return -2;
         }
     }
