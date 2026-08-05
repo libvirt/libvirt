@@ -33845,9 +33845,85 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "scsi-block"
+    "typename": "arm-smmuv3"
   },
   "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "memory",
+      "type": "link<memory-region>"
+    },
+    {
+      "name": "secure-memory",
+      "type": "link<memory-region>"
+    },
+    {
+      "name": "primary-bus",
+      "type": "link<PCI>"
+    },
+    {
+      "default-value": 0,
+      "name": "bus_num",
+      "type": "uint8"
+    },
+    {
+      "default-value": false,
+      "name": "smmu_per_bus",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": "44",
+      "name": "oas",
+      "description": "Specify Output Address Size (for accel=on). Supported values are 44 or 48 bits. Defaults to 44 bits. oas=auto is not supported.",
+      "type": "OasMode"
+    },
+    {
+      "default-value": "on",
+      "name": "ril",
+      "description": "Disable range invalidation support (for accel=on). ril=auto is not supported.",
+      "type": "OnOffAuto"
+    },
+    {
+      "default-value": 0,
+      "name": "msi-gpa",
+      "type": "uint64"
+    },
+    {
+      "default-value": false,
+      "name": "accel",
+      "description": "Enable SMMUv3 accelerator support. Allows host SMMUv3 to be configured in nested mode for vfio-pci dev assignment",
+      "type": "bool"
+    },
+    {
+      "name": "stage",
+      "type": "str"
+    },
+    {
+      "default-value": "0",
+      "name": "ssidsize",
+      "description": "Number of bits used to represent SubstreamIDs (SSIDs). A value of N allows SSIDs in the range [0 .. 2^N - 1]. Valid range is 0-20, where 0 disables SubstreamID support. Defaults to 0. A value greater than 0 is required to enable PASID support. ssidsize=auto is not supported.",
+      "type": "SsidSizeMode"
+    },
+    {
+      "default-value": "off",
+      "name": "ats",
+      "description": "Enable/disable ATS support (for accel=on). Please ensure host platform has ATS support before enabling this. ats=auto is not supported.",
+      "type": "OnOffAuto"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-33"
 }
 
 {
@@ -33926,7 +34002,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -33934,7 +34010,7 @@
   "arguments": {
     "typename": "scsi-generic"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -33975,7 +34051,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -33983,7 +34059,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -34077,7 +34153,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -34085,7 +34161,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -34154,7 +34230,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -34162,7 +34238,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -34411,12 +34487,12 @@
       "type": "link<irq>"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -35466,7 +35542,7 @@
       "default-ram-id": "ram"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -35474,7 +35550,7 @@
   "arguments": {
     "typename": "virt-11.0-machine"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -35752,7 +35828,7 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -35760,7 +35836,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -35890,12 +35966,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -36123,12 +36199,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -37709,12 +37785,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -37730,50 +37806,6 @@
       "kernel": true
     }
   ],
-  "id": "libvirt-42"
-}
-
-{
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "full",
-    "model": {
-      "name": "host"
-    }
-  },
-  "id": "libvirt-43"
-}
-
-{
-  "return": {
-    "model": {
-      "name": "host",
-      "props": {
-        "sve768": false,
-        "sve128": false,
-        "sve1024": false,
-        "sve1280": false,
-        "sve896": false,
-        "sve256": false,
-        "sve1536": false,
-        "sve1792": false,
-        "sve384": false,
-        "sve": false,
-        "sve2048": false,
-        "pauth": false,
-        "kvm-no-adjvtime": false,
-        "sve512": false,
-        "aarch64": true,
-        "pmu": true,
-        "sve1920": false,
-        "sve1152": false,
-        "kvm-steal-time": true,
-        "sve640": false,
-        "sve1408": false,
-        "sve1664": false
-      }
-    }
-  },
   "id": "libvirt-43"
 }
 
@@ -37819,6 +37851,50 @@
     }
   },
   "id": "libvirt-44"
+}
+
+{
+  "execute": "query-cpu-model-expansion",
+  "arguments": {
+    "type": "full",
+    "model": {
+      "name": "host"
+    }
+  },
+  "id": "libvirt-45"
+}
+
+{
+  "return": {
+    "model": {
+      "name": "host",
+      "props": {
+        "sve768": false,
+        "sve128": false,
+        "sve1024": false,
+        "sve1280": false,
+        "sve896": false,
+        "sve256": false,
+        "sve1536": false,
+        "sve1792": false,
+        "sve384": false,
+        "sve": false,
+        "sve2048": false,
+        "pauth": false,
+        "kvm-no-adjvtime": false,
+        "sve512": false,
+        "aarch64": true,
+        "pmu": true,
+        "sve1920": false,
+        "sve1152": false,
+        "kvm-steal-time": true,
+        "sve640": false,
+        "sve1408": false,
+        "sve1664": false
+      }
+    }
+  },
+  "id": "libvirt-45"
 }
 
 {
@@ -37833,11 +37909,11 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
-  "id": "libvirt-45",
+  "id": "libvirt-46",
   "error": {
     "class": "GenericError",
     "desc": "Parameter 'model.props.hv-passthrough' is unexpected"

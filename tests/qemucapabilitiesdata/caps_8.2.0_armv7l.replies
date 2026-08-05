@@ -31391,9 +31391,36 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "scsi-block"
+    "typename": "arm-smmuv3"
   },
   "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "primary-bus",
+      "type": "link<PCI>"
+    },
+    {
+      "default-value": 0,
+      "name": "bus_num",
+      "type": "uint8"
+    },
+    {
+      "name": "stage",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-33"
 }
 
 {
@@ -31401,7 +31428,7 @@
     "class": "DeviceNotFound",
     "desc": "The libvirt device dump was not collected for this version+device tuple"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -31409,7 +31436,7 @@
   "arguments": {
     "typename": "scsi-generic"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -31417,7 +31444,7 @@
     "class": "DeviceNotFound",
     "desc": "The libvirt device dump was not collected for this version+device tuple"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -31425,7 +31452,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -31519,7 +31546,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -31527,7 +31554,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -31606,7 +31633,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -31614,7 +31641,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -31756,12 +31783,12 @@
       "type": "link<irq>"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -32819,7 +32846,7 @@
       "default-ram-id": "ram"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -32827,7 +32854,7 @@
   "arguments": {
     "typename": "virt-8.2-machine"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -33063,7 +33090,7 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -33071,7 +33098,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -33184,12 +33211,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -33411,12 +33438,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -34898,12 +34925,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -34919,7 +34946,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -34930,11 +34957,11 @@
       "name": "host"
     }
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-44",
   "error": {
     "class": "GenericError",
     "desc": "The CPU type 'host' requires KVM"
@@ -34953,11 +34980,11 @@
       }
     }
   },
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
-  "id": "libvirt-44",
+  "id": "libvirt-45",
   "error": {
     "class": "GenericError",
     "desc": "The CPU type 'host' requires KVM"

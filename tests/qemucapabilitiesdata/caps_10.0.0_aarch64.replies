@@ -32067,9 +32067,36 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "scsi-block"
+    "typename": "arm-smmuv3"
   },
   "id": "libvirt-31"
+}
+
+{
+  "return": [
+    {
+      "name": "primary-bus",
+      "type": "link<PCI>"
+    },
+    {
+      "default-value": 0,
+      "name": "bus_num",
+      "type": "uint8"
+    },
+    {
+      "name": "stage",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-31"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-32"
 }
 
 {
@@ -32077,7 +32104,7 @@
     "class": "DeviceNotFound",
     "desc": "The libvirt device dump was not collected for this version+device tuple"
   },
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -32085,7 +32112,7 @@
   "arguments": {
     "typename": "scsi-generic"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -32093,7 +32120,7 @@
     "class": "DeviceNotFound",
     "desc": "The libvirt device dump was not collected for this version+device tuple"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -32101,7 +32128,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -32191,7 +32218,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -32199,7 +32226,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -32278,7 +32305,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -32286,7 +32313,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -32534,12 +32561,12 @@
       "type": "link<irq>"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -33634,7 +33661,7 @@
       "default-ram-id": "ram"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -33642,7 +33669,7 @@
   "arguments": {
     "typename": "virt-10.0-machine"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -33889,7 +33916,7 @@
       "type": "string"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -33897,7 +33924,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -34016,12 +34043,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -34315,12 +34342,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -35787,12 +35814,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -35808,7 +35835,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -35819,7 +35846,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -35852,7 +35879,7 @@
       }
     }
   },
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -35867,11 +35894,11 @@
       }
     }
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-44",
   "error": {
     "class": "GenericError",
     "desc": "Parameter 'model.props.hv-passthrough' is unexpected"

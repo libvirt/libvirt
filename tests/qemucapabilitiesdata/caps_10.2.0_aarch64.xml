@@ -186,6 +186,7 @@
   <flag name='uefi-vars'/>
   <flag name='blockdev-mirror.target-is-zero'/>
   <flag name='arm-smmuv3'/>
+  <flag name='arm-smmuv3.smmu_per_bus'/>
   <version>10002000</version>
   <microcodeVersion>61700287</microcodeVersion>
   <package>v10.2.0</package>

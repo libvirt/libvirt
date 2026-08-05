@@ -33933,9 +33933,42 @@
 {
   "execute": "device-list-properties",
   "arguments": {
-    "typename": "scsi-block"
+    "typename": "arm-smmuv3"
   },
   "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "primary-bus",
+      "type": "link<PCI>"
+    },
+    {
+      "default-value": 0,
+      "name": "bus_num",
+      "type": "uint8"
+    },
+    {
+      "default-value": false,
+      "name": "smmu_per_bus",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "stage",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "scsi-block"
+  },
+  "id": "libvirt-33"
 }
 
 {
@@ -34008,7 +34041,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -34016,7 +34049,7 @@
   "arguments": {
     "typename": "scsi-generic"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -34057,7 +34090,7 @@
       "type": "int32"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -34065,7 +34098,7 @@
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -34159,7 +34192,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -34167,7 +34200,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -34236,7 +34269,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -34244,7 +34277,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -34492,12 +34525,12 @@
       "type": "link<irq>"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -35539,7 +35572,7 @@
       "default-ram-id": "ram"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -35547,7 +35580,7 @@
   "arguments": {
     "typename": "virt-10.2-machine"
   },
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -35810,7 +35843,7 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -35818,7 +35851,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -35943,12 +35976,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -36176,12 +36209,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -37743,12 +37776,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -37764,50 +37797,6 @@
       "kernel": true
     }
   ],
-  "id": "libvirt-42"
-}
-
-{
-  "execute": "query-cpu-model-expansion",
-  "arguments": {
-    "type": "full",
-    "model": {
-      "name": "host"
-    }
-  },
-  "id": "libvirt-43"
-}
-
-{
-  "return": {
-    "model": {
-      "name": "host",
-      "props": {
-        "sve768": false,
-        "sve128": false,
-        "sve1024": false,
-        "sve1280": false,
-        "sve896": false,
-        "sve256": false,
-        "sve1536": false,
-        "sve1792": false,
-        "sve384": false,
-        "sve": false,
-        "sve2048": false,
-        "pauth": false,
-        "kvm-no-adjvtime": false,
-        "sve512": false,
-        "aarch64": true,
-        "pmu": true,
-        "sve1920": false,
-        "sve1152": false,
-        "kvm-steal-time": true,
-        "sve640": false,
-        "sve1408": false,
-        "sve1664": false
-      }
-    }
-  },
   "id": "libvirt-43"
 }
 
@@ -37853,6 +37842,50 @@
     }
   },
   "id": "libvirt-44"
+}
+
+{
+  "execute": "query-cpu-model-expansion",
+  "arguments": {
+    "type": "full",
+    "model": {
+      "name": "host"
+    }
+  },
+  "id": "libvirt-45"
+}
+
+{
+  "return": {
+    "model": {
+      "name": "host",
+      "props": {
+        "sve768": false,
+        "sve128": false,
+        "sve1024": false,
+        "sve1280": false,
+        "sve896": false,
+        "sve256": false,
+        "sve1536": false,
+        "sve1792": false,
+        "sve384": false,
+        "sve": false,
+        "sve2048": false,
+        "pauth": false,
+        "kvm-no-adjvtime": false,
+        "sve512": false,
+        "aarch64": true,
+        "pmu": true,
+        "sve1920": false,
+        "sve1152": false,
+        "kvm-steal-time": true,
+        "sve640": false,
+        "sve1408": false,
+        "sve1664": false
+      }
+    }
+  },
+  "id": "libvirt-45"
 }
 
 {
@@ -37867,11 +37900,11 @@
       }
     }
   },
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
-  "id": "libvirt-45",
+  "id": "libvirt-46",
   "error": {
     "class": "GenericError",
     "desc": "Parameter 'model.props.hv-passthrough' is unexpected"
