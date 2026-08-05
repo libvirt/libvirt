@@ -5817,6 +5817,18 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         return -1;
     }
 
+    /* While QEMU_CAPS_ARM_SMMUV3_ACCEL tracks the .accel attribute of
+     * arm-smmuv3 it is also a good indicator of .ats, .ril, .ssidsize, and
+     * .oas attributes as all of them were introduced in the same release,
+     * and these features are meant to be backported all together. */
+    if (iommu->model == VIR_DOMAIN_IOMMU_MODEL_SMMUV3 &&
+        iommu->accel != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ARM_SMMUV3_ACCEL)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: accel is not supported with this QEMU binary"));
+        return -1;
+    }
+
     if (iommu->granule > 0) {
         /* QEMU supports only 4KiB, 8KiB, 16KiB and 64KiB granule size */
         if (!(iommu->granule == 4 ||

@@ -6456,6 +6456,31 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <attribute name="accel">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="ats">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="ril">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="ssidsize">
+                <data type="int"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="oas">
+                <data type="int"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
         <optional>

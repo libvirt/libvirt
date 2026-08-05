@@ -3203,6 +3203,16 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
+        if (iommu->accel != VIR_TRISTATE_SWITCH_ON &&
+            (iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
+             iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
+             iommu->ssid_size >= 0 ||
+             iommu->oas >= 0)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("accel must be enabled for iommu model '%1$s' when setting ats, ril, ssidsize, or oas"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
         break;
     case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
         if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3210,7 +3220,12 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->eim != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
-            iommu->pci_bus >= 0) {
+            iommu->pci_bus >= 0 ||
+            iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ssid_size >= 0 ||
+            iommu->oas >= 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("iommu model '%1$s' doesn't support some additional attributes"),
                            virDomainIOMMUModelTypeToString(iommu->model));
@@ -3233,6 +3248,11 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
+            iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ssid_size >= 0 ||
+            iommu->oas >= 0 ||
             iommu->granule != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("iommu model '%1$s' doesn't support some additional attributes"),
@@ -3245,6 +3265,11 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
         if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
+            iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->ssid_size >= 0 ||
+            iommu->oas >= 0 ||
             iommu->granule != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("iommu model '%1$s' doesn't support some additional attributes"),
