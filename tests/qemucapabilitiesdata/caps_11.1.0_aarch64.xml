@@ -190,6 +190,7 @@
   <flag name='object-monitor-qmp'/>
   <flag name='arm-smmuv3'/>
   <flag name='arm-smmuv3.smmu_per_bus'/>
+  <flag name='arm-smmuv3.accel'/>
   <version>11000090</version>
   <microcodeVersion>61700287</microcodeVersion>
   <package>v11.1.0-rc0</package>

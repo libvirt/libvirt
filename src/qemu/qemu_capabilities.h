@@ -744,6 +744,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_OBJECT_MONITOR_QMP, /* 'monitor-qmp' -object */
     QEMU_CAPS_DEVICE_ARM_SMMUV3, /* -device arm-smmuv3 */
     QEMU_CAPS_ARM_SMMUV3_SMMU_PER_BUS, /* arm-smmuv3.smmu_per_bus */
+    QEMU_CAPS_ARM_SMMUV3_ACCEL, /* arm-smmuv3.accel */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
