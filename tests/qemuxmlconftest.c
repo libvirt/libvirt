@@ -2992,6 +2992,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3-pci-bus", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3-pci-bus-single", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3-pci-bus-accel", "aarch64");
+    DO_TEST_CAPS_ARCH_LATEST("iommu-smmuv3-pci-bus-accel-auto", "aarch64");
     DO_TEST_CAPS_LATEST("virtio-iommu-x86_64");
     DO_TEST_CAPS_ARCH_LATEST("virtio-iommu-aarch64", "aarch64");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-wrong-machine");
