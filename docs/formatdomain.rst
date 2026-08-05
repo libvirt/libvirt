@@ -9427,7 +9427,8 @@ Examples:
 
    ``pciBus``
       The ``pciBus`` attribute notes the index of the controller that an
-      IOMMU device is attached to. (QEMU/KVM and ``smmuv3`` model only)
+      IOMMU device is attached to.
+      :since:`Since 11.10.0` (QEMU/KVM and ``smmuv3`` model only)
 
 In case of ``virtio`` IOMMU device, the ``driver`` element can optionally
 contain ``granule`` subelement that allows to choose which granule will be
