@@ -16853,6 +16853,7 @@ virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
         a->iotlb != b->iotlb ||
         a->aw_bits != b->aw_bits ||
         a->dma_translation != b->dma_translation ||
+        a->pci_bus != b->pci_bus ||
         a->xtsup != b->xtsup ||
         a->pt != b->pt ||
         a->granule != b->granule)
