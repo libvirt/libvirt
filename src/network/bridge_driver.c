@@ -121,22 +121,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(networkDnsmasqXmlNsDef, networkDnsmasqDefNamespace
 
 
 static int
-networkDnsmasqConfCheckLineBreaks(const char *record,
-                                  const char *field,
-                                  const char *value)
-{
-    if (virStringHasChars(value, "\r\n")) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("DNS %1$s record %2$s must not contain line breaks"),
-                       record, field);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 networkDnsmasqDefNamespaceParseOptions(networkDnsmasqXmlNsDef *nsdef,
                                        xmlXPathContextPtr ctxt)
 {
@@ -924,6 +908,52 @@ networkConnectSupportsFeature(virConnectPtr conn, int feature)
 }
 
 
+static void
+networkDnsmasqConfAddKey(virBuffer *buf,
+                         const char *key)
+{
+    virBufferAsprintf(buf, "%s\n", key);
+}
+
+
+static int
+G_GNUC_WARN_UNUSED_RESULT
+networkDnsmasqConfAddValue(virBuffer *buf,
+                           const char *key,
+                           const char *val)
+{
+    if (virStringHasChars(val, "\r\n")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Field '%1$s' value '%2$s' must not contain line breaks"),
+                       key, val);
+        return -1;
+    }
+
+    virBufferAsprintf(buf, "%s=%s\n", key, val);
+    return 0;
+}
+
+#define networkDnsmasqConfAddValueLit(buf, key, val) \
+    ignore_value(networkDnsmasqConfAddValue(buf, key, "" val ""))
+
+static int
+G_GNUC_PRINTF(3, 4)
+G_GNUC_WARN_UNUSED_RESULT
+networkDnsmasqConfAddValueFmt(virBuffer *buf,
+                              const char *key,
+                              const char *fmt,
+                              ...)
+{
+    va_list args;
+    g_autofree char *val = NULL;
+
+    va_start(args, fmt);
+    val = g_strdup_vprintf(fmt, args);
+    va_end(args);
+
+    return networkDnsmasqConfAddValue(buf, key, val);
+}
+
 
 static char *
 networkBuildDnsmasqLeaseTime(virNetworkDHCPLeaseTimeDef *lease)
@@ -1023,7 +1053,8 @@ networkDnsmasqConfLocalPTRs(virBuffer *buf,
             return -1;
         }
 
-        virBufferAsprintf(buf, "local=/%s/\n", ptr);
+        if (networkDnsmasqConfAddValueFmt(buf, "local", "/%s/", ptr) < 0)
+            return -1;
     }
 
     return 0;
@@ -1056,13 +1087,14 @@ networkDnsmasqConfDHCP(virBuffer *buf,
         g_autofree char *leasetime = NULL;
         g_autofree char *saddr = NULL;
         g_autofree char *eaddr = NULL;
+        g_auto(virBuffer) val = VIR_BUFFER_INITIALIZER;
 
         if (!(saddr = virSocketAddrFormat(&range.addr.start)) ||
             !(eaddr = virSocketAddrFormat(&range.addr.end)))
             return -1;
 
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
-            virBufferAsprintf(buf, "dhcp-range=%s,%s,%d",
+            virBufferAsprintf(&val, "%s,%s,%d",
                               saddr, eaddr, prefix);
         } else {
             /* IPv4 - dnsmasq requires a netmask rather than prefix */
@@ -1078,14 +1110,12 @@ networkDnsmasqConfDHCP(virBuffer *buf,
 
             if (!(netmaskStr = virSocketAddrFormat(&netmask)))
                 return -1;
-            virBufferAsprintf(buf, "dhcp-range=%s,%s,%s",
+            virBufferAsprintf(&val, "%s,%s,%s",
                               saddr, eaddr, netmaskStr);
         }
 
         if ((leasetime = networkBuildDnsmasqLeaseTime(range.lease)))
-            virBufferAsprintf(buf, ",%s", leasetime);
-
-        virBufferAddLit(buf, "\n");
+            virBufferAsprintf(&val, ",%s", leasetime);
 
         thisRange = virSocketAddrGetRange(&range.addr.start,
                                           &range.addr.end,
@@ -1093,6 +1123,11 @@ networkDnsmasqConfDHCP(virBuffer *buf,
                                           virNetworkIPDefPrefix(ipdef));
         if (thisRange < 0)
             return -1;
+
+        if (networkDnsmasqConfAddValue(buf, "dhcp-range",
+                                       virBufferCurrentContent(&val)) < 0)
+            return -1;
+
         *nbleases += thisRange;
     }
 
@@ -1103,14 +1138,18 @@ networkDnsmasqConfDHCP(virBuffer *buf,
      * support)
      */
     if (!ipdef->nranges && ipdef->nhosts) {
+        g_auto(virBuffer) val = VIR_BUFFER_INITIALIZER;
         g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
         if (!bridgeaddr)
             return -1;
-        virBufferAsprintf(buf, "dhcp-range=%s,static",
+        virBufferAsprintf(&val, "%s,static",
                           bridgeaddr);
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-            virBufferAsprintf(buf, ",%d", prefix);
-        virBufferAddLit(buf, "\n");
+            virBufferAsprintf(&val, ",%d", prefix);
+
+        if (networkDnsmasqConfAddValue(buf, "dhcp-range",
+                                       virBufferCurrentContent(&val)) < 0)
+            return -1;
     }
 
     if (networkBuildDnsmasqDhcpHostsList(dctx, ipdef) < 0)
@@ -1119,8 +1158,8 @@ networkDnsmasqConfDHCP(virBuffer *buf,
     /* Note: the following is IPv4 only */
     if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
         if (ipdef->nranges || ipdef->nhosts) {
-            virBufferAddLit(buf, "dhcp-no-override\n");
-            virBufferAddLit(buf, "dhcp-authoritative\n");
+            networkDnsmasqConfAddKey(buf, "dhcp-no-override");
+            networkDnsmasqConfAddKey(buf, "dhcp-authoritative");
         }
 
         if (ipdef->bootfile) {
@@ -1129,10 +1168,12 @@ networkDnsmasqConfDHCP(virBuffer *buf,
 
                 if (!bootserver)
                     return -1;
-                virBufferAsprintf(buf, "dhcp-boot=%s%s%s\n",
-                                  ipdef->bootfile, ",,", bootserver);
+                if (networkDnsmasqConfAddValueFmt(buf, "dhcp-boot", "%s%s%s",
+                                                  ipdef->bootfile, ",,", bootserver) < 0)
+                    return -1;
             } else {
-                virBufferAsprintf(buf, "dhcp-boot=%s\n", ipdef->bootfile);
+                if (networkDnsmasqConfAddValue(buf, "dhcp-boot", ipdef->bootfile) < 0)
+                    return -1;
             }
         }
     }
@@ -1141,19 +1182,21 @@ networkDnsmasqConfDHCP(virBuffer *buf,
 }
 
 
-static void
+static int
 networkDnsmasqConfTFTP(virBuffer *buf,
                        virNetworkIPDef *ipdef,
                        bool *enableTFTP)
 {
     if (!ipdef->tftproot)
-        return;
+        return 0;
 
     if (!*enableTFTP) {
-        virBufferAddLit(buf, "enable-tftp\n");
+        networkDnsmasqConfAddKey(buf, "enable-tftp");
         *enableTFTP = true;
     }
-    virBufferAsprintf(buf, "tftp-root=%s\n", ipdef->tftproot);
+    if (networkDnsmasqConfAddValue(buf, "tftp-root", ipdef->tftproot) < 0)
+        return -1;
+    return 0;
 }
 
 
@@ -1203,15 +1246,16 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                       "configuration should be made using:\n"
                       "##    virsh net-edit %s\n"
                       "## or other application using the libvirt API.\n"
-                      "##\n## dnsmasq conf file created by libvirt\n"
-                      "strict-order\n",
+                      "##\n## dnsmasq conf file created by libvirt\n",
                       def->name);
+
+    networkDnsmasqConfAddKey(&configbuf, "strict-order");
 
     /* if dns is disabled, set its listening port to 0, which
      * tells dnsmasq to not listen
      */
     if (!wantDNS)
-        virBufferAddLit(&configbuf, "port=0\n");
+        networkDnsmasqConfAddValueLit(&configbuf, "port", "0");
 
     if (wantDNS && def->dns.forwarders) {
         /* addNoResolv should be set to true if there are any entries
@@ -1225,41 +1269,40 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 
         for (i = 0; i < def->dns.nfwds; i++) {
             virNetworkDNSForwarder *fwd = &def->dns.forwarders[i];
+            g_auto(virBuffer) val = VIR_BUFFER_INITIALIZER;
 
-            virBufferAddLit(&configbuf, "server=");
             if (fwd->domain)
-                virBufferAsprintf(&configbuf, "/%s/", fwd->domain);
+                virBufferAsprintf(&val, "/%s/", fwd->domain);
             if (VIR_SOCKET_ADDR_VALID(&fwd->addr)) {
                 g_autofree char *addr = virSocketAddrFormat(&fwd->addr);
                 int port = virSocketAddrGetPort(&fwd->addr);
 
                 if (!addr)
                     return -1;
-                virBufferAddStr(&configbuf, addr);
+                virBufferAddStr(&val, addr);
                 if (port > 0)
-                    virBufferAsprintf(&configbuf, "#%d", port);
-                virBufferAddChar(&configbuf, '\n');
+                    virBufferAsprintf(&val, "#%d", port);
                 if (!fwd->domain)
                     addNoResolv = true;
             } else {
                 /* "don't forward requests for this domain" */
-                virBufferAddLit(&configbuf, "#\n");
+                virBufferAddLit(&val, "#");
             }
+            if (networkDnsmasqConfAddValue(&configbuf, "server",
+                                           virBufferCurrentContent(&val)) < 0)
+                return -1;
         }
         if (addNoResolv)
-            virBufferAddLit(&configbuf, "no-resolv\n");
+            networkDnsmasqConfAddKey(&configbuf, "no-resolv");
     }
 
     if (def->domain) {
-        if (def->domainLocalOnly == VIR_TRISTATE_BOOL_YES) {
-            virBufferAsprintf(&configbuf,
-                              "local=/%s/\n",
-                              def->domain);
-        }
-        virBufferAsprintf(&configbuf,
-                          "domain=%s\n"
-                          "expand-hosts\n",
-                          def->domain);
+        if (def->domainLocalOnly == VIR_TRISTATE_BOOL_YES &&
+            networkDnsmasqConfAddValueFmt(&configbuf, "local", "/%s/", def->domain) < 0)
+            return -1;
+        if (networkDnsmasqConfAddValue(&configbuf, "domain", def->domain) < 0)
+            return -1;
+        networkDnsmasqConfAddKey(&configbuf, "expand-hosts");
     }
 
     if (wantDNS &&
@@ -1267,23 +1310,24 @@ networkDnsmasqConfContents(virNetworkObj *obj,
         return -1;
 
     if (wantDNS && def->dns.forwardPlainNames == VIR_TRISTATE_BOOL_NO) {
-        virBufferAddLit(&configbuf, "domain-needed\n");
+        networkDnsmasqConfAddKey(&configbuf, "domain-needed");
         /* need to specify local=// whether or not a domain is
          * specified, unless the config says we should forward "plain"
          * names (i.e. not fully qualified, no '.' characters)
          */
-        virBufferAddLit(&configbuf, "local=//\n");
+        networkDnsmasqConfAddValueLit(&configbuf, "local", "//");
     }
 
-    if (pidfile)
-        virBufferAsprintf(&configbuf, "pid-file=%s\n", pidfile);
+    if (pidfile &&
+        networkDnsmasqConfAddValue(&configbuf, "pid-file", pidfile) < 0)
+        return -1;
 
     /* dnsmasq will *always* listen on localhost unless told otherwise */
 #ifdef __linux__
-    virBufferAddLit(&configbuf, "except-interface=lo\n");
+    networkDnsmasqConfAddValueLit(&configbuf, "except-interface", "lo");
 #else
     /* BSD family OSes and Solaris call loopback interface as lo0 */
-    virBufferAddLit(&configbuf, "except-interface=lo0\n");
+    networkDnsmasqConfAddValueLit(&configbuf, "except-interface", "lo0");
 #endif
 
     /* using --bind-dynamic with only --interface (no
@@ -1293,10 +1337,9 @@ networkDnsmasqConfContents(virNetworkObj *obj,
      * other than one of the virtual guests connected directly to
      * this network). This was added in response to CVE 2012-3411.
      */
-    virBufferAsprintf(&configbuf,
-                      "bind-dynamic\n"
-                      "interface=%s\n",
-                      def->bridge);
+    networkDnsmasqConfAddKey(&configbuf, "bind-dynamic");
+    if (networkDnsmasqConfAddValue(&configbuf, "interface", def->bridge) < 0)
+        return -1;
 
     /* If this is an isolated network, set the default route option
      * (3) to be empty to avoid setting a default route that's
@@ -1309,24 +1352,22 @@ networkDnsmasqConfContents(virNetworkObj *obj,
      * is set the lifetime of this route to 0, i.e. disable it.
      */
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE) {
-        virBufferAddLit(&configbuf, "dhcp-option=3\n"
-                        "no-resolv\n");
+        networkDnsmasqConfAddValueLit(&configbuf, "dhcp-option", "3");
+        networkDnsmasqConfAddKey(&configbuf, "no-resolv");
         /* interface=* (any), interval=0 (default), lifetime=0 (seconds) */
-        virBufferAddLit(&configbuf, "ra-param=*,0,0\n");
+        networkDnsmasqConfAddValueLit(&configbuf, "ra-param", "*,0,0");
     }
 
     if (wantDNS) {
         for (i = 0; i < dns->ntxts; i++) {
-            if (networkDnsmasqConfCheckLineBreaks("TXT", "name", dns->txts[i].name) < 0 ||
-                networkDnsmasqConfCheckLineBreaks("TXT", "value", dns->txts[i].value) < 0)
+            if (networkDnsmasqConfAddValueFmt(&configbuf, "txt-record", "%s,%s",
+                                              dns->txts[i].name,
+                                              dns->txts[i].value) < 0)
                 return -1;
-
-            virBufferAsprintf(&configbuf, "txt-record=%s,%s\n",
-                              dns->txts[i].name,
-                              dns->txts[i].value);
         }
 
         for (i = 0; i < dns->nsrvs; i++) {
+            g_auto(virBuffer) val = VIR_BUFFER_INITIALIZER;
             /* service/protocol are required, and should have been validated
              * by the parser.
              */
@@ -1343,21 +1384,16 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                 return -1;
             }
 
-            if (networkDnsmasqConfCheckLineBreaks("SRV", "service", dns->srvs[i].service) < 0 ||
-                networkDnsmasqConfCheckLineBreaks("SRV", "protocol", dns->srvs[i].protocol) < 0 ||
-                networkDnsmasqConfCheckLineBreaks("SRV", "domain", dns->srvs[i].domain) < 0 ||
-                networkDnsmasqConfCheckLineBreaks("SRV", "target", dns->srvs[i].target) < 0)
-                return -1;
-
             /* RFC2782 requires that service and protocol be preceded by
              * an underscore.
              */
-            virBufferAsprintf(&configbuf, "srv-host=_%s._%s",
-                              dns->srvs[i].service, dns->srvs[i].protocol);
+            virBufferAsprintf(&val, "_%s._%s",
+                               dns->srvs[i].service,
+                               dns->srvs[i].protocol);
 
             /* domain is optional - it defaults to the domain of this network */
             if (dns->srvs[i].domain)
-                virBufferAsprintf(&configbuf, ".%s", dns->srvs[i].domain);
+                virBufferAsprintf(&val, ".%s", dns->srvs[i].domain);
 
             /* If target is empty or ".", that means "the service is
              * decidedly not available at this domain" (RFC2782). In that
@@ -1365,7 +1401,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
              */
             if (dns->srvs[i].target && STRNEQ(dns->srvs[i].target, ".")) {
 
-                virBufferAsprintf(&configbuf, ",%s", dns->srvs[i].target);
+                virBufferAsprintf(&val, ",%s", dns->srvs[i].target);
                 /* port, priority, and weight are optional, but are
                  * identified by their position in the line. If an item is
                  * unspecified, but something later in the line *is*
@@ -1375,14 +1411,18 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                  */
                 if (dns->srvs[i].port ||
                     dns->srvs[i].priority || dns->srvs[i].weight)
-                    virBufferAsprintf(&configbuf, ",%d",
+                    virBufferAsprintf(&val, ",%d",
                                       dns->srvs[i].port ? dns->srvs[i].port : 1);
                 if (dns->srvs[i].priority || dns->srvs[i].weight)
-                    virBufferAsprintf(&configbuf, ",%d", dns->srvs[i].priority);
+                    virBufferAsprintf(&val, ",%d", dns->srvs[i].priority);
                 if (dns->srvs[i].weight)
-                    virBufferAsprintf(&configbuf, ",%d", dns->srvs[i].weight);
+                    virBufferAsprintf(&val, ",%d", dns->srvs[i].weight);
             }
-            virBufferAddLit(&configbuf, "\n");
+
+            if (networkDnsmasqConfAddValue(&configbuf,
+                                           "srv-host",
+                                           virBufferCurrentContent(&val)) < 0)
+                return -1;
         }
     }
 
@@ -1399,7 +1439,8 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                 }
             }
 
-            networkDnsmasqConfTFTP(&configbuf, ipdef, &enableTFTP);
+            if (networkDnsmasqConfTFTP(&configbuf, ipdef, &enableTFTP) < 0)
+                return -1;
         }
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
             if (ipdef->nranges || ipdef->nhosts) {
@@ -1424,8 +1465,9 @@ networkDnsmasqConfContents(virNetworkObj *obj,
         networkDnsmasqConfDHCP(&configbuf, ipv6def, def->bridge, &nbleases, dctx) < 0)
         return -1;
 
-    if (nbleases > 0)
-        virBufferAsprintf(&configbuf, "dhcp-lease-max=%d\n", nbleases);
+    if (nbleases > 0 &&
+        networkDnsmasqConfAddValueFmt(&configbuf, "dhcp-lease-max", "%d", nbleases) < 0)
+        return -1;
 
     /* this is done once per interface */
     if (networkBuildDnsmasqHostsList(dctx, dns) < 0)
@@ -1435,24 +1477,27 @@ networkDnsmasqConfContents(virNetworkObj *obj,
      * listening for DHCP, we should write a 0-length hosts
      * file to allow for runtime additions.
      */
-    if (ipv4def || ipv6def)
-        virBufferAsprintf(&configbuf, "dhcp-hostsfile=%s\n",
-                          dctx->hostsfile->path);
+    if ((ipv4def || ipv6def) &&
+        networkDnsmasqConfAddValue(&configbuf, "dhcp-hostsfile",
+                                   dctx->hostsfile->path) < 0)
+        return -1;
 
     /* Likewise, always create this file and put it on the
      * commandline, to allow for runtime additions.
      */
-    if (wantDNS) {
-        virBufferAsprintf(&configbuf, "addn-hosts=%s\n",
-                          dctx->addnhostsfile->path);
-    }
+    if (wantDNS &&
+        networkDnsmasqConfAddValue(&configbuf, "addn-hosts",
+                                   dctx->addnhostsfile->path) < 0)
+        return -1;
 
     /* Configure DHCP to tell clients about the MTU. */
-    if (def->mtu > 0)
-        virBufferAsprintf(&configbuf, "dhcp-option=option:mtu,%d\n", def->mtu);
+    if (def->mtu > 0 &&
+        networkDnsmasqConfAddValueFmt(&configbuf, "dhcp-option",
+                                      "option:mtu,%d", def->mtu) < 0)
+        return -1;
 
     if (ipv6def) {
-        virBufferAddLit(&configbuf, "enable-ra\n");
+        networkDnsmasqConfAddKey(&configbuf, "enable-ra");
     } else {
         for (i = 0;
              (ipdef = virNetworkDefGetIPByIndex(def, AF_INET6, i));
@@ -1461,8 +1506,9 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                 g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
                 if (!bridgeaddr)
                     return -1;
-                virBufferAsprintf(&configbuf,
-                                  "dhcp-range=%s,ra-only\n", bridgeaddr);
+                if (networkDnsmasqConfAddValueFmt(&configbuf, "dhcp-range",
+                                                  "%s,ra-only", bridgeaddr) < 0)
+                    return -1;
             }
         }
     }
