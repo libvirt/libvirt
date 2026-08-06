@@ -2808,6 +2808,52 @@ bhyveDomainRename(virDomainPtr domain,
     return ret;
 }
 
+static int
+bhyveDomainAgentSetResponseTimeout(virDomainPtr domain,
+                                   int timeout,
+                                   unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    bhyveDomainObjPrivate *priv = NULL;
+    struct _bhyveConn *privconn = domain->conn->privateData;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("guest agent timeout '%1$d' is less than the minimum '%2$d'"),
+                       timeout, VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN);
+        return -1;
+    }
+
+    if (!(vm = bhyveDomObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainAgentSetResponseTimeoutEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+    if (priv->agent != NULL) {
+        virObjectLock(priv->agent);
+        qemuAgentSetResponseTimeout(priv->agent, timeout);
+        virObjectUnlock(priv->agent);
+    }
+
+    priv->agentTimeout = timeout;
+
+    if (virDomainObjIsActive(vm)) {
+        if (virDomainObjSave(vm, privconn->xmlopt, BHYVE_STATE_DIR) < 0)
+            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectURIProbe = bhyveConnectURIProbe,
@@ -2886,6 +2932,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainAuthorizedSSHKeysGet = bhyveDomainAuthorizedSSHKeysGet, /* 12.5.0 */
     .domainAuthorizedSSHKeysSet = bhyveDomainAuthorizedSSHKeysSet, /* 12.5.0 */
     .domainRename = bhyveDomainRename, /* 12.6.0 */
+    .domainAgentSetResponseTimeout = bhyveDomainAgentSetResponseTimeout, /* 12.7.0 */
 };
 
 

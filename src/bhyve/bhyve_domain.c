@@ -62,9 +62,38 @@ bhyveDomainObjPrivateFree(void *data)
     g_free(priv);
 }
 
+static int
+bhyveDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
+                              virDomainObj *vm,
+                              virDomainDefParserConfig *config G_GNUC_UNUSED)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+
+    if (virXPathInt("string(./agentTimeout)", ctxt, &priv->agentTimeout) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse agent timeout"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
+bhyveDomainObjPrivateXMLFormat(virBuffer *buf,
+                               virDomainObj *vm)
+{
+    bhyveDomainObjPrivate *priv = vm->privateData;
+
+    virBufferAsprintf(buf, "<agentTimeout>%i</agentTimeout>\n", priv->agentTimeout);
+
+    return 0;
+}
+
 virDomainXMLPrivateDataCallbacks virBhyveDriverPrivateDataCallbacks = {
     .alloc = bhyveDomainObjPrivateAlloc,
     .free = bhyveDomainObjPrivateFree,
+    .parse = bhyveDomainObjPrivateXMLParse,
+    .format = bhyveDomainObjPrivateXMLFormat,
 };
 
 static bool
