@@ -111,6 +111,7 @@ aside.admonition {
     background: #6cb5ac;
 }
 
+.important .admonition-title,
 .warning .admonition-title {
     margin: 0;
     padding: 0.5em 1em 0.5em 1em;
