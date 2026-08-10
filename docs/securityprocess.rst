@@ -28,9 +28,10 @@ patch is considered ready to post to the mailing list or a merge request,
 the ``confidential`` tag will be removed. Generally a CVE should be assigned
 to a security issue before a patch is ready to be posted (see below).
 
-Note: Refer to the `bug reporting <bugs.html#use-of-automated-tools-ai-agents>`__
-page for the *expectations around the use of automated tools and AI agents*,
-**prior** to filing any security report.
+.. note::
+   Refer to the `bug reporting <bugs.html#use-of-automated-tools-ai-agents>`__
+   page for the *expectations around the use of automated tools and AI agents*,
+   **prior** to filing any security report.
 
 Security notices
 ----------------
