@@ -20,6 +20,10 @@ apply to the core project.
 Ensure that the "**turn on confidentiality**" checkbox is selected prior to
 submitting the issue, to restrict visibility to project maintainers only.
 
+.. important::
+   Only attach plain files, do not bundle files in archives (zip, tar, etc.)
+   without prior request from a libvirt maintainer.
+
 Maintainer(s) will analyse the reported disclosure and decide whether it
 is to be classed as a security flaw or not. If not a security flaw, the
 ``confidential`` tag will be removed immediately. If a security flaw,
