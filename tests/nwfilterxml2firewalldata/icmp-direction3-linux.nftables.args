@@ -1,0 +1,176 @@
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+n-vnet0-out \
+ether \
+type \
+ip \
+ip \
+protocol \
+icmp \
+ct \
+state \
+new,established \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+n-vnet0-in \
+ether \
+type \
+ip \
+ip \
+protocol \
+icmp \
+ct \
+state \
+established \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+n-vnet0-in \
+ether \
+type \
+ip \
+drop
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+n-vnet0-out \
+ether \
+type \
+ip \
+drop
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+postrouting \
+oif \
+vnet0 \
+jump \
+n-vnet0-in
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+postrouting \
+oif \
+vnet0 \
+jump \
+n-vnet0-in
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-oif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-oif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-in \
+'}'
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-oif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-oif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-in \
+'}'
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+prerouting \
+iif \
+vnet0 \
+jump \
+n-vnet0-out
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+prerouting \
+iif \
+vnet0 \
+jump \
+n-vnet0-out
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-iif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-iif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-out \
+'}'
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-iif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-iif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-out \
+'}'

@@ -1,0 +1,176 @@
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+n-vnet0-out \
+ether \
+saddr \
+'& ff:ff:ff:ff:ff:ff == 01:02:03:04:05:06' \
+ether \
+type \
+0x806 \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+n-vnet0-in \
+ether \
+daddr \
+'& ff:ff:ff:ff:ff:ff == aa:bb:cc:dd:ee:ff' \
+ether \
+type \
+0x800 \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+n-vnet0-in \
+ether \
+daddr \
+'& ff:ff:ff:ff:ff:ff == aa:bb:cc:dd:ee:ff' \
+ether \
+type \
+0x600 \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+n-vnet0-in \
+ether \
+daddr \
+'& ff:ff:ff:ff:ff:ff == aa:bb:cc:dd:ee:ff' \
+ether \
+type \
+0xffff \
+accept
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+postrouting \
+oif \
+vnet0 \
+jump \
+n-vnet0-in
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+postrouting \
+oif \
+vnet0 \
+jump \
+n-vnet0-in
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-oif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-oif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-in \
+'}'
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-oif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-oif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-in \
+'}'
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_inet \
+prerouting \
+iif \
+vnet0 \
+jump \
+n-vnet0-out
+nft \
+add \
+rule \
+bridge \
+libvirt_nwfilter_ethernet \
+prerouting \
+iif \
+vnet0 \
+jump \
+n-vnet0-out
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-iif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_inet \
+vmap-iif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-out \
+'}'
+nft \
+delete \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-iif \
+'{' \
+vnet0 \
+'}'
+nft \
+add \
+element \
+bridge \
+libvirt_nwfilter_ethernet \
+vmap-iif \
+'{' \
+vnet0 \
+: \
+jump \
+n-vnet0-out \
+'}'
