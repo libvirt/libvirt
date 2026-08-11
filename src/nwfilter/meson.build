@@ -5,6 +5,7 @@ nwfilter_driver_sources = [
   'nwfilter_dhcpsnoop.c',
   'nwfilter_ebiptables_driver.c',
   'nwfilter_learnipaddr.c',
+  'nwfilter_nftables_driver.c',
 ]
 
 driver_source_files += files(nwfilter_driver_sources)
