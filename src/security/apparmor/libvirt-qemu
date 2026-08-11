@@ -50,6 +50,16 @@
   /run/udev/data/c16[6,7]* r,
   /run/udev/data/c18[0,8,9]* r,
 
+  # For vfio-ccw (s390x channel subsystem) hostdev passthrough. QEMU reads
+  # the channel-path masks, CHPID list and CHPID type of the passed-through
+  # subchannel from sysfs when building the guest SCHIB. The chpids and
+  # pimpampom files are opened via /sys/bus/css/devices/<id>/ symlinks that
+  # AppArmor resolves to /sys/devices/cssN/<id>/; the CHPID type is read
+  # directly from /sys/devices/cssN/chp0.<chpid>/.
+  /sys/devices/css[0-9]*/*/chpids r,
+  /sys/devices/css[0-9]*/*/pimpampom r,
+  /sys/devices/css[0-9]*/chp0.*/type r,
+
   # WARNING: this gives the guest direct access to host hardware and specific
   # portions of shared memory. This is required for sound using ALSA with kvm,
   # but may constitute a security risk. If your environment does not require
