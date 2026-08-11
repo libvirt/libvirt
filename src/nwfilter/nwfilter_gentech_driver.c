@@ -32,6 +32,7 @@
 #include "nwfilter_dhcpsnoop.h"
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
+#include "nwfilter_nftables_driver.h"
 #include "virnetdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
@@ -48,18 +49,23 @@ static int _virNWFilterTeardownFilter(const char *ifname);
 
 static virNWFilterTechDriver *filter_tech_drivers[] = {
     &ebiptables_driver,
-    NULL
+    &nftables_driver,
 };
 
-int virNWFilterTechDriversInit(bool privileged)
+int virNWFilterTechDriversInit(bool privileged, virNWFilterDriverConfig *config)
 {
     size_t i = 0;
-    VIR_DEBUG("Initializing NWFilter technology drivers");
-    while (filter_tech_drivers[i]) {
-        if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
-            filter_tech_drivers[i]->init(privileged);
-        i++;
+    VIR_DEBUG("Initializing NWFilter technology drivers, chosen '%s'",
+              virFirewallBackendTypeToString(config->firewallBackend));
+
+    for (i = 0; i < G_N_ELEMENTS(filter_tech_drivers); i++) {
+        if (filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED)
+            continue;
+        if (STREQ(filter_tech_drivers[i]->name,
+            virFirewallBackendTypeToString(config->firewallBackend)))
+            filter_tech_drivers[i]->init(privileged, config);
     }
+
     return 0;
 }
 
@@ -67,25 +73,20 @@ int virNWFilterTechDriversInit(bool privileged)
 void virNWFilterTechDriversShutdown(void)
 {
     size_t i = 0;
-    while (filter_tech_drivers[i]) {
+    for (i = 0; i < G_N_ELEMENTS(filter_tech_drivers); i++) {
         if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->shutdown();
-        i++;
     }
 }
 
 
 static virNWFilterTechDriver *
-virNWFilterTechDriverForName(const char *name)
+virNWFilterInitializedTechDriver(void)
 {
     size_t i = 0;
-    while (filter_tech_drivers[i]) {
-        if (STREQ(filter_tech_drivers[i]->name, name)) {
-            if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED) == 0)
-                break;
+    for (i = 0; i < G_N_ELEMENTS(filter_tech_drivers); i++) {
+        if ((filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             return filter_tech_drivers[i];
-        }
-        i++;
     }
     return NULL;
 }
@@ -617,7 +618,6 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverState *driver,
                                    bool *foundNewFilter)
 {
     int rc = -1;
-    const char *drvname = EBIPTABLES_DRIVER_ID;
     virNWFilterTechDriver *techdriver;
     virNWFilterObj *obj;
     virNWFilterDef *filter;
@@ -625,12 +625,11 @@ virNWFilterInstantiateFilterUpdate(virNWFilterDriverState *driver,
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
     virNWFilterVarValue *ipaddr;
 
-    techdriver = virNWFilterTechDriverForName(drvname);
+    techdriver = virNWFilterInitializedTechDriver();
 
     if (!techdriver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get access to ACL tech driver '%1$s'"),
-                       drvname);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get access to ACL tech driver"));
         return -1;
     }
 
@@ -768,15 +767,13 @@ virNWFilterUpdateInstantiateFilter(virNWFilterDriverState *driver,
 static int
 virNWFilterRollbackUpdateFilter(virNWFilterBindingDef *binding)
 {
-    const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
     virNWFilterTechDriver *techdriver;
 
-    techdriver = virNWFilterTechDriverForName(drvname);
+    techdriver = virNWFilterInitializedTechDriver();
     if (!techdriver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get access to ACL tech driver '%1$s'"),
-                       drvname);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get access to ACL tech driver"));
         return -1;
     }
 
@@ -793,15 +790,13 @@ virNWFilterRollbackUpdateFilter(virNWFilterBindingDef *binding)
 static int
 virNWFilterTearOldFilter(virNWFilterBindingDef *binding)
 {
-    const char *drvname = EBIPTABLES_DRIVER_ID;
     int ifindex;
     virNWFilterTechDriver *techdriver;
 
-    techdriver = virNWFilterTechDriverForName(drvname);
+    techdriver = virNWFilterInitializedTechDriver();
     if (!techdriver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get access to ACL tech driver '%1$s'"),
-                       drvname);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get access to ACL tech driver"));
         return -1;
     }
 
@@ -818,14 +813,12 @@ virNWFilterTearOldFilter(virNWFilterBindingDef *binding)
 static int
 _virNWFilterTeardownFilter(const char *ifname)
 {
-    const char *drvname = EBIPTABLES_DRIVER_ID;
     virNWFilterTechDriver *techdriver;
-    techdriver = virNWFilterTechDriverForName(drvname);
+    techdriver = virNWFilterInitializedTechDriver();
 
     if (!techdriver) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not get access to ACL tech driver '%1$s'"),
-                       drvname);
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get access to ACL tech driver"));
         return -1;
     }
 

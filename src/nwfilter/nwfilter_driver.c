@@ -26,17 +26,15 @@
 
 #include "virgdbus.h"
 #include "virlog.h"
-
 #include "internal.h"
-
 #include "virerror.h"
 #include "datatypes.h"
 #include "nwfilter_driver.h"
+#include "nwfilter_driver_conf.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
 #include "virpidfile.h"
 #include "viraccessapicheck.h"
-
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_dhcpsnoop.h"
 #include "nwfilter_learnipaddr.h"
@@ -159,8 +157,11 @@ virNWFilterTriggerRebuildImpl(void *opaque)
 static int
 nwfilterStateCleanupLocked(void)
 {
+    g_autoptr(virNWFilterDriverConfig) cfg = NULL;
     if (!driver)
         return -1;
+
+    cfg = virNWFilterDriverGetConfig(driver);
 
     if (driver->privileged) {
         virNWFilterConfLayerShutdown();
@@ -171,11 +172,7 @@ nwfilterStateCleanupLocked(void)
         nwfilterDriverRemoveDBusMatches();
 
         if (driver->lockFD != -1)
-            virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
-
-        g_free(driver->stateDir);
-        g_free(driver->configDir);
-        g_free(driver->bindingDir);
+            virPidFileRelease(cfg->stateDir, "driver", driver->lockFD);
     }
 
     virObjectUnref(driver->bindings);
@@ -216,6 +213,7 @@ nwfilterStateInitialize(bool privileged,
                         void *opaque G_GNUC_UNUSED)
 {
     VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
+    virNWFilterDriverConfig *cfg;
     GDBusConnection *sysbus = NULL;
 
     if (root != NULL) {
@@ -236,6 +234,9 @@ nwfilterStateInitialize(bool privileged,
     driver->updateLockInitialized = true;
     driver->privileged = privileged;
 
+    if (!(driver->config = cfg = virNWFilterDriverConfigNew(privileged)))
+        goto error;
+
     if (!(driver->nwfilters = virNWFilterObjListNew()))
         goto error;
 
@@ -245,16 +246,8 @@ nwfilterStateInitialize(bool privileged,
     if (!privileged)
         return VIR_DRV_STATE_INIT_SKIPPED;
 
-    driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter");
-
-    if (g_mkdir_with_parents(driver->stateDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create state directory '%1$s'"),
-                             driver->stateDir);
-        goto error;
-    }
-
     if ((driver->lockFD =
-         virPidFileAcquire(driver->stateDir, "driver", getpid())) < 0)
+         virPidFileAcquire(cfg->stateDir, "driver", getpid())) < 0)
         goto error;
 
     if (virNWFilterIPAddrMapInit() < 0)
@@ -266,7 +259,7 @@ nwfilterStateInitialize(bool privileged,
     if (virNWFilterDHCPSnoopInit() < 0)
         goto error;
 
-    if (virNWFilterTechDriversInit(privileged) < 0)
+    if (virNWFilterTechDriversInit(privileged, cfg) < 0)
         goto error;
 
     if (virNWFilterConfLayerInit(virNWFilterTriggerRebuildImpl, driver) < 0)
@@ -279,26 +272,10 @@ nwfilterStateInitialize(bool privileged,
     if (sysbus)
         nwfilterDriverInstallDBusMatches(sysbus);
 
-    driver->configDir = g_strdup(SYSCONFDIR "/libvirt/nwfilter");
-
-    if (g_mkdir_with_parents(driver->configDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
-                             driver->configDir);
-        goto error;
-    }
-
-    driver->bindingDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter-binding");
-
-    if (g_mkdir_with_parents(driver->bindingDir, S_IRWXU) < 0) {
-        virReportSystemError(errno, _("cannot create config directory '%1$s'"),
-                             driver->bindingDir);
-        goto error;
-    }
-
-    if (virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir) < 0)
+    if (virNWFilterObjListLoadAllConfigs(driver->nwfilters, cfg->configDir) < 0)
         goto error;
 
-    if (virNWFilterBindingObjListLoadAllConfigs(driver->bindings, driver->bindingDir) < 0)
+    if (virNWFilterBindingObjListLoadAllConfigs(driver->bindings, cfg->bindingDir) < 0)
         goto error;
 
     if (virNWFilterBuildAll(driver, false) < 0)
@@ -320,11 +297,14 @@ nwfilterStateInitialize(bool privileged,
 static int
 nwfilterStateReload(void)
 {
+    g_autoptr(virNWFilterDriverConfig) cfg = NULL;
     if (!driver)
         return -1;
 
     if (!driver->privileged)
         return 0;
+
+    cfg = virNWFilterDriverGetConfig(driver);
 
     virNWFilterDHCPSnoopEnd(NULL);
     /* shut down all threads -- they will be restarted if necessary */
@@ -332,7 +312,7 @@ nwfilterStateReload(void)
 
     VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
         VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
-            virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
+            virNWFilterObjListLoadAllConfigs(driver->nwfilters, cfg->configDir);
         }
 
 
@@ -535,6 +515,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     virNWFilterObj *obj = NULL;
     virNWFilterDef *objdef;
     virNWFilterPtr nwfilter = NULL;
+    g_autoptr(virNWFilterDriverConfig) cfg = virNWFilterDriverGetConfig(driver);
 
     virCheckFlags(VIR_NWFILTER_DEFINE_VALIDATE, NULL);
 
@@ -558,7 +539,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     def = NULL;
     objdef = virNWFilterObjGetDef(obj);
 
-    if (virNWFilterSaveConfig(driver->configDir, objdef) < 0) {
+    if (virNWFilterSaveConfig(cfg->configDir, objdef) < 0) {
         virNWFilterObjListRemove(driver->nwfilters, obj);
         goto cleanup;
     }
@@ -588,6 +569,7 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     virNWFilterObj *obj;
     virNWFilterDef *def;
     int ret = -1;
+    g_autoptr(virNWFilterDriverConfig) cfg = virNWFilterDriverGetConfig(driver);
 
     VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
         if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
@@ -604,7 +586,7 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
             goto cleanup;
         }
 
-        if (virNWFilterDeleteDef(driver->configDir, def) < 0)
+        if (virNWFilterDeleteDef(cfg->configDir, def) < 0)
             goto cleanup;
 
         virNWFilterObjListRemove(driver->nwfilters, obj);
@@ -730,6 +712,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     virNWFilterBindingDef *def;
     virNWFilterBindingObj *obj = NULL;
     virNWFilterBindingPtr ret = NULL;
+    g_autoptr(virNWFilterDriverConfig) cfg = virNWFilterDriverGetConfig(driver);
 
     virCheckFlags(VIR_NWFILTER_BINDING_CREATE_VALIDATE, NULL);
 
@@ -772,7 +755,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
         }
     }
 
-    virNWFilterBindingObjSave(obj, driver->bindingDir);
+    virNWFilterBindingObjSave(obj, cfg->bindingDir);
 
  cleanup:
     if (!obj)
@@ -799,6 +782,7 @@ nwfilterBindingDelete(virNWFilterBindingPtr binding)
     virNWFilterBindingObj *obj;
     virNWFilterBindingDef *def;
     int ret = -1;
+    g_autoptr(virNWFilterDriverConfig) cfg = virNWFilterDriverGetConfig(driver);
 
     obj = virNWFilterBindingObjListFindByPortDev(driver->bindings, binding->portdev);
     if (!obj) {
@@ -814,7 +798,7 @@ nwfilterBindingDelete(virNWFilterBindingPtr binding)
     VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
         virNWFilterTeardownFilter(def);
     }
-    virNWFilterBindingObjDelete(obj, driver->bindingDir);
+    virNWFilterBindingObjDelete(obj, cfg->bindingDir);
     virNWFilterBindingObjListRemove(driver->bindings, obj);
 
     ret = 0;

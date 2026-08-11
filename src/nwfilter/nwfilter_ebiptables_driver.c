@@ -78,7 +78,7 @@ VIR_LOG_INIT("nwfilter.nwfilter_ebiptables_driver");
 #define MATCH_PHYSDEV_OUT_OLD_FW  "-m", "physdev", "--physdev-out"
 
 static int ebtablesRemoveBasicRules(const char *ifname);
-static int ebiptablesDriverInit(bool privileged);
+static int ebiptablesDriverInit(bool privileged, virNWFilterDriverConfig *config G_GNUC_UNUSED);
 static void ebiptablesDriverShutdown(void);
 static int ebtablesCleanAll(const char *ifname);
 static int ebiptablesAllTeardown(const char *ifname);
@@ -3400,7 +3400,7 @@ virNWFilterTechDriver ebiptables_driver = {
 };
 
 static int
-ebiptablesDriverInit(bool privileged)
+ebiptablesDriverInit(bool privileged, virNWFilterDriverConfig *config G_GNUC_UNUSED)
 {
     if (!privileged)
         return 0;

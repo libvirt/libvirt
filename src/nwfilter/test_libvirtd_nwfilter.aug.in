@@ -1,0 +1,7 @@
+module Test_libvirtd_nwfilter =
+  @CONFIG@
+
+  test Libvirtd_nwfilter.lns get conf =
+{ "firewall_backend" = "@FIREWALL_BACKEND@" }
+{ "enable_trace" = "0" }
+{ "enable_counters" = "0" }

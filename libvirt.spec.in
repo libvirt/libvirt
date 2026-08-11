@@ -623,8 +623,12 @@ bridge capabilities.
 Summary: Nwfilter driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
+    %if %{prefer_nftables}
+Requires: nftables
+    %else
 Requires: iptables
 Requires: ebtables
+    %endif
 
 %description daemon-driver-nwfilter
 The nwfilter driver plugin for the libvirtd daemon, providing
@@ -2250,6 +2254,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
 %{_datadir}/augeas/lenses/virtnwfilterd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
+%config(noreplace) %{_sysconfdir}/libvirt/nwfilter.conf
+%{_datadir}/augeas/lenses/libvirtd_nwfilter.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_nwfilter.aug
 %{_unitdir}/virtnwfilterd.service
 %{_unitdir}/virtnwfilterd.socket
 %{_unitdir}/virtnwfilterd-ro.socket

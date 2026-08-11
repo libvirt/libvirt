@@ -1,0 +1,50 @@
+# Master configuration file for the nwfilter driver.
+# All settings described here are optional - if omitted, sensible
+# defaults are used.
+
+# firewall_backend:
+#
+#   determines which driver to use to setup nwfilter firewall rules
+#
+#   Supported settings:
+#
+#     iptables - use ebtables and iptables commands to construct the user
+#				 defined firewall
+#     nftables - use nft commands to construct the user defined firewall
+#
+#   If firewall_backend isn't configured, libvirt will choose the
+#   first available backend from the following list:
+#
+#     [@FIREWALL_BACKEND_PRIORITY@]
+#
+#   (NB: switching from one backend to another while libvirtd/virtnwfilterd
+#   has started *isn't* supported. The change will take place the
+#   next time that libvirtd/virtnwfilterd is restarted - all existing created
+#   firewall rules remain and have to be cleaned up manually.)
+#
+#firewall_backend = "@FIREWALL_BACKEND@"
+
+# enable_trace:
+#
+#   Enables packet tracing for debugging firewall rules
+#
+#   Supported backends:
+#
+#     nftables - Creates nftables tables root chains with "meta nftrace set 1;" setting
+#
+#   Possible values are 0 or 1. Default value is 0.
+#
+#enable_trace = 0
+
+# enable_counters:
+#
+#   Enables adding a counter to each rule, helpfull for counting
+#   how many tracking packets traversed each rule
+#
+#   Supported backends:
+#
+#     nftables - Adds the "counter" argument to nft rules nwfilter creates
+#
+#   Possible values are 0 or 1. Default value is 0.
+#
+#enable_counters = 0

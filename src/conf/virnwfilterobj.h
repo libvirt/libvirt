@@ -28,26 +28,6 @@ typedef struct _virNWFilterObj virNWFilterObj;
 
 typedef struct _virNWFilterObjList virNWFilterObjList;
 
-typedef struct _virNWFilterDriverState virNWFilterDriverState;
-struct _virNWFilterDriverState {
-    bool privileged;
-
-    /* pid file FD, ensures two copies of the driver can't use the same root */
-    int lockFD;
-
-    virNWFilterObjList *nwfilters;
-
-    virNWFilterBindingObjList *bindings;
-
-    char *stateDir;
-    char *configDir;
-    char *bindingDir;
-
-    /* Recursive. Hold for filter changes, instantiation or deletion */
-    virMutex updateLock;
-    bool updateLockInitialized;
-};
-
 virNWFilterDef *
 virNWFilterObjGetDef(virNWFilterObj *obj);
 

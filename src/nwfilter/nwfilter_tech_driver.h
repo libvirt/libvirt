@@ -24,6 +24,7 @@
 #pragma once
 
 #include "virnwfilterobj.h"
+#include "nwfilter_driver_conf.h"
 
 typedef struct _virNWFilterRuleInst virNWFilterRuleInst;
 struct _virNWFilterRuleInst {
@@ -60,7 +61,7 @@ enum virNWFilterProtoIdx {
 
 #define virNWFilterUShortMapEntryIdx(IDX, ATT, VAL) [IDX] = { .attr = ATT, .val = VAL }
 
-typedef int (*virNWFilterTechDrvInit)(bool privileged);
+typedef int (*virNWFilterTechDrvInit)(bool privileged, virNWFilterDriverConfig *config);
 typedef void (*virNWFilterTechDrvShutdown)(void);
 
 typedef int (*virNWFilterRuleApplyNewRules)(const char *ifname,

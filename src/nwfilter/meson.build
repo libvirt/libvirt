@@ -1,5 +1,6 @@
 nwfilter_driver_sources = [
   'nwfilter_driver.c',
+  'nwfilter_driver_conf.c',
   'nwfilter_gentech_driver.c',
   'nwfilter_tech_driver.c',
   'nwfilter_dhcpsnoop.c',
@@ -44,6 +45,42 @@ if conf.has('WITH_NWFILTER')
       '-DDAEMON_NAME="virtnwfilterd"',
       '-DMODULE_NAME="nwfilter"',
     ],
+  }
+
+  nwfilter_options_conf = configuration_data({
+    'FIREWALL_BACKEND_PRIORITY': ', '.join(firewall_backend_priority),
+    'FIREWALL_BACKEND': firewall_backend_priority[0],
+  })
+
+  nwfilter_conf = configure_file(
+    input: 'nwfilter.conf.in',
+    output: 'nwfilter.conf',
+    configuration: nwfilter_options_conf,
+  )
+
+  nwfilter_options_hack_conf = configuration_data({
+    'FIREWALL_BACKEND_PRIORITY': ', '.join(firewall_backend_priority),
+    'FIREWALL_BACKEND': firewall_backend_priority[0],
+    # This hack is necessary because the output file is going to be
+    # used as input for another configure_file() call later, which
+    # will take care of substituting @CONFIG@ with useful data
+    'CONFIG': '@CONFIG@',
+  })
+  test_libvirtd_network_aug_tmp = configure_file(
+    input: 'test_libvirtd_nwfilter.aug.in',
+    output: 'test_libvirtd_nwfilter.aug.tmp',
+    configuration: nwfilter_options_hack_conf,
+  )
+
+  virt_conf_files += nwfilter_conf
+  virt_aug_files += files('libvirtd_nwfilter.aug')
+  virt_test_aug_files += {
+    'name': 'test_libvirtd_nwfilter.aug',
+    'aug': test_libvirtd_network_aug_tmp,
+    'conf': nwfilter_conf,
+    'test_name': 'libvirtd_nwfilter',
+    'test_srcdir': meson.current_source_dir(),
+    'test_builddir': meson.current_build_dir(),
   }
 
   virt_daemon_confs += {

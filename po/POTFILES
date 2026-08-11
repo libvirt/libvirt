@@ -160,6 +160,7 @@ src/node_device/node_device_driver.c
 src/node_device/node_device_udev.c
 src/nwfilter/nwfilter_dhcpsnoop.c
 src/nwfilter/nwfilter_driver.c
+src/nwfilter/nwfilter_driver_conf.c
 src/nwfilter/nwfilter_ebiptables_driver.c
 src/nwfilter/nwfilter_gentech_driver.c
 src/nwfilter/nwfilter_learnipaddr.c

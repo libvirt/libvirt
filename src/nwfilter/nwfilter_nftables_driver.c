@@ -38,16 +38,20 @@
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
-/* define nftable root table */
+/* define nftable root tables */
 #define NF_ETHERNET_TABLE "libvirt_nwfilter_ethernet"
 #define NF_INET_TABLE     "libvirt_nwfilter_inet"
+
 #define NF_COMMENT \
     "{ comment \"Managed by libvirt for network filters: " \
     "https://libvirt.org/firewall.html#the-network-filter-driver\"; }"
+
 /* nftables counter can be enabled for firewalls transparency */
-#ifndef NF_COUNTER
-# define NF_COUNTER       0
-#endif
+static bool counters_enabled;
+
+/* nftables tracing can be enabled for firewall debugging,
+* to find out where packets are flowing towards */
+static bool trace_enabled;
 
 /* define chains */
 #define IN_CHAIN          "postrouting"
@@ -66,14 +70,7 @@
 
 #define DEFAULT_POLICY    "accept"
 
-#ifndef NF_TRACE
-# define NF_TRACE         0
-#endif
-#if NF_TRACE
-# define TRACE_SETTING    "meta nftrace set 1;"
-#else
-# define TRACE_SETTING    ""
-#endif
+#define TRACE_SETTING    "meta nftrace set 1;"
 
 #define CHAINSETTINGS     "{ }"
 
@@ -85,7 +82,7 @@
 
 #define ROOT_CHAINSETTINGS(chain, defaultPolicy) \
     "{ type filter hook "chain" priority %d;" \
-    " policy "defaultPolicy"; "TRACE_SETTING" }"
+    " policy "defaultPolicy"; %s }"
 
 VIR_LOG_INIT("nwfilter.nwfilter_nftables_driver");
 
@@ -165,6 +162,7 @@ static void nftablesCreateTable(virFirewall *fw,
                                 const char *tableName)
 {
     virFirewallCmd *fwrule = NULL;
+    const char *traceSetting = trace_enabled ? TRACE_SETTING : "";
     int tablePriority = STREQ(tableName, NF_ETHERNET_TABLE) ? 0 : 1;
 
     /* define table */
@@ -186,12 +184,12 @@ static void nftablesCreateTable(virFirewall *fw,
                                tableName, IN_CHAIN, NULL);
     virFirewallCmdAddArgFormat(fw, fwrule,
                                ROOT_CHAINSETTINGS(IN_CHAIN, DEFAULT_POLICY),
-                               tablePriority);
+                               tablePriority, traceSetting);
     fwrule = virFirewallAddCmd(fw, layer, "add", "chain", "bridge",
                                tableName, OUT_CHAIN, NULL);
     virFirewallCmdAddArgFormat(fw, fwrule,
                                ROOT_CHAINSETTINGS(OUT_CHAIN, DEFAULT_POLICY),
-                               tablePriority);
+                               tablePriority, traceSetting);
 
     /* add the one jump rule based on the vmap */
     fwrule = virFirewallAddCmd(fw, layer, "add", "rule", "bridge", tableName,
@@ -1719,7 +1717,7 @@ nftablesCreateRuleInstance(virFirewall *fw,
             goto cleanup;
     }
 
-    if (NF_COUNTER)
+    if (counters_enabled)
         virFirewallCmdAddArg(fw, fwrule, "counter");
 
     /* specify the action for this rule */
@@ -2841,10 +2839,13 @@ nftablesDropAllRules(const char *ifname)
 }
 
 static int
-nftablesDriverInit(bool privileged)
+nftablesDriverInit(bool privileged, virNWFilterDriverConfig *config G_GNUC_UNUSED)
 {
     if (!privileged)
         return 0;
+
+    trace_enabled = config->firewallTracing;
+    counters_enabled = config->ruleCounters;
 
     nftables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 

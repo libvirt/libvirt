@@ -24,8 +24,11 @@
 
 #include "virnwfilterobj.h"
 #include "virnwfilterbindingdef.h"
+#include "nwfilter_driver_conf.h"
+#include "virfirewall.h"
 
-int virNWFilterTechDriversInit(bool privileged);
+
+int virNWFilterTechDriversInit(bool privileged, virNWFilterDriverConfig *config);
 void virNWFilterTechDriversShutdown(void);
 
 enum instCase {

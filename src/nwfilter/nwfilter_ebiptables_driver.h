@@ -27,6 +27,6 @@
 
 extern virNWFilterTechDriver ebiptables_driver;
 
-#define EBIPTABLES_DRIVER_ID "ebiptables"
+#define EBIPTABLES_DRIVER_ID "iptables"
 
 #define IPTABLES_MAX_COMMENT_LENGTH  256
