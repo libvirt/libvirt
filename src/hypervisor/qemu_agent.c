@@ -2843,3 +2843,122 @@ qemuAgentInterfaceFormatParams(virDomainInterfacePtr *ifaces,
         }
     }
 }
+
+
+void
+qemuAgentGuestDeviceInfoFree(qemuAgentGuestDeviceInfo *info)
+{
+    if (!info)
+        return;
+
+    g_free(info->driverName);
+    g_free(info->driverVersion);
+    g_free(info->pci);
+    g_free(info);
+}
+
+
+int
+qemuAgentGetGuestDeviceInfo(qemuAgent *agent,
+                            qemuAgentGuestDeviceInfo ***info,
+                            bool report_unsupported)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data = NULL;
+    size_t ndata;
+    size_t i;
+    int rc;
+
+    if (!(cmd = qemuAgentMakeCommand("guest-get-devices", NULL)))
+        return -1;
+
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
+
+    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu agent didn't return an array of devices"));
+        return -1;
+    }
+
+    ndata = virJSONValueArraySize(data);
+
+    *info = g_new0(qemuAgentGuestDeviceInfo *, ndata);
+
+    for (i = 0; i < ndata; i++) {
+        g_autoptr(qemuAgentGuestDeviceInfo) oneInfo = NULL;
+        virJSONValue *entry = virJSONValueArrayGet(data, i);
+        virJSONValue *dDate = NULL;
+        virJSONValue *idObj = NULL;
+
+        if (!entry) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("array element missing in guest-get-devices return value"));
+            goto error;
+        }
+
+        oneInfo = g_new0(qemuAgentGuestDeviceInfo, 1);
+
+        oneInfo->driverName = g_strdup(virJSONValueObjectGetString(entry, "driver-name"));
+        if (!oneInfo->driverName) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'driver-name' missing in reply of guest-get-devices"));
+            goto error;
+        }
+
+        if ((dDate = virJSONValueObjectGet(entry, "driver-date"))) {
+            if (virJSONValueGetNumberLong(dDate, &oneInfo->driverDate) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed 'driver-date' in reply of guest-get-devices"));
+                goto error;
+            }
+        } else {
+            oneInfo->driverDate = -1;
+        }
+
+        oneInfo->driverVersion = g_strdup(virJSONValueObjectGetString(entry, "driver-version"));
+
+        if ((idObj = virJSONValueObjectGet(entry, "id"))) {
+            const char *type = NULL;
+
+            if (!(type = virJSONValueObjectGetString(idObj, "type"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing 'type' in reply of guest-get-devices"));
+                goto error;
+            }
+
+            if (STREQ("pci", type)) {
+                g_autofree qemuAgentGuestDeviceInfoPCI *pci = NULL;
+
+                pci = g_new0(qemuAgentGuestDeviceInfoPCI, 1);
+
+                if (virJSONValueObjectGetNumberUint(idObj, "vendor-id", &pci->vendorID) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("missing or malformed 'vendor-id' in reply of guest-get-devices"));
+                    goto error;
+                }
+
+                if (virJSONValueObjectGetNumberUint(idObj, "device-id", &pci->deviceID) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("missing or malformed 'device-id' in reply of guest-get-devices"));
+                    goto error;
+                }
+
+                oneInfo->pci = g_steal_pointer(&pci);
+            }
+        }
+
+        (*info)[i] = g_steal_pointer(&oneInfo);
+    }
+
+    return ndata;
+
+ error:
+    for (i = 0; i < ndata; i++) {
+        qemuAgentGuestDeviceInfoFree((*info)[i]);
+    }
+    g_clear_pointer(info, g_free);
+    return -1;
+}

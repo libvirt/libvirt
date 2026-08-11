@@ -218,3 +218,24 @@ void
 qemuAgentInterfaceFormatParams(virDomainInterfacePtr *ifaces,
                                int nifaces,
                                virTypedParamList *list);
+
+typedef struct _qemuAgentGuestDeviceInfoPCI qemuAgentGuestDeviceInfoPCI;
+struct _qemuAgentGuestDeviceInfoPCI {
+    unsigned int vendorID;
+    unsigned int deviceID;
+};
+
+typedef struct _qemuAgentGuestDeviceInfo qemuAgentGuestDeviceInfo;
+struct _qemuAgentGuestDeviceInfo {
+    char *driverName;
+    long long driverDate; /* In nanoseconds since the epoch */
+    char *driverVersion;
+    qemuAgentGuestDeviceInfoPCI *pci;
+};
+
+void qemuAgentGuestDeviceInfoFree(qemuAgentGuestDeviceInfo *info);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuAgentGuestDeviceInfo, qemuAgentGuestDeviceInfoFree);
+
+int qemuAgentGetGuestDeviceInfo(qemuAgent *agent,
+                                qemuAgentGuestDeviceInfo ***info,
+                                bool report_unsupported);
