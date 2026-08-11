@@ -36,6 +36,7 @@ struct _virNWFilterBindingDef {
     virMacAddr mac;
     char *filter;
     GHashTable *filterparams;
+    char *backend;
 };
 
 

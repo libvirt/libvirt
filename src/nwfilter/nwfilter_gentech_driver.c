@@ -70,6 +70,20 @@ int virNWFilterTechDriversInit(bool privileged, virNWFilterDriverConfig *config)
 }
 
 
+static virNWFilterTechDriver *
+virNWFilterTechDriversByName(const char *firewallBackend)
+{
+    size_t i = 0;
+
+    for (i = 0; i < G_N_ELEMENTS(filter_tech_drivers); i++) {
+        if (STREQ(filter_tech_drivers[i]->name, firewallBackend))
+            return filter_tech_drivers[i];
+    }
+
+    return 0;
+}
+
+
 void virNWFilterTechDriversShutdown(void)
 {
     size_t i = 0;
@@ -786,6 +800,33 @@ virNWFilterRollbackUpdateFilter(virNWFilterBindingDef *binding)
     return techdriver->tearNewRules(binding->portdevname);
 }
 
+static int
+virNWFilterSwitchTechDriver(virNWFilterDriverState *driver,
+                            virNWFilterBindingObj *binding,
+                            virNWFilterBindingDef *def)
+{
+    int ret = 0;
+    virNWFilterTechDriver *oldTechDriver = virNWFilterTechDriversByName(def->backend);
+    g_autoptr(virNWFilterDriverConfig) cfg = virNWFilterDriverGetConfig(driver);
+
+    VIR_DEBUG("Detected change in nwfilter firewall backend '%1$s' -> '%2$s', cleaning up '%1$s'",
+              def->backend,
+              virFirewallBackendTypeToString(driver->config->firewallBackend));
+
+    // first we'll apply the rules with the new tech driver
+    if ((ret = virNWFilterInstantiateFilter(driver, def)) < 0)
+        return ret;
+
+    // then we'll cleanup the rules from the old driver
+    if ((ret = oldTechDriver->allTeardown(def->portdevname)) < 0)
+        return ret;
+
+    // update binding backend
+    def->backend = g_strdup(virFirewallBackendTypeToString(driver->config->firewallBackend));
+
+    // save changed binding xml file
+    return virNWFilterBindingObjSave(binding, cfg->bindingDir);
+}
 
 static int
 virNWFilterTearOldFilter(virNWFilterBindingDef *binding)
@@ -854,40 +895,49 @@ enum {
 
 static int
 virNWFilterBuildOne(virNWFilterDriverState *driver,
-                    virNWFilterBindingDef *binding,
+                    virNWFilterBindingObj *binding,
                     GHashTable *skipInterfaces,
                     int step)
 {
     bool skipIface;
     int ret = 0;
-    VIR_DEBUG("Building filter for portdev=%s step=%d", binding->portdevname, step);
+    virNWFilterBindingDef *def = virNWFilterBindingObjGetDef(binding);
+
+    VIR_DEBUG("Building filter for portdev=%s step=%d", def->portdevname, step);
 
     switch (step) {
     case STEP_APPLY_NEW:
         ret = virNWFilterUpdateInstantiateFilter(driver,
-                                                 binding,
+                                                 def,
                                                  &skipIface);
         if (ret == 0 && skipIface) {
             /* filter tree unchanged -- no update needed */
             ret = virHashAddEntry(skipInterfaces,
-                                  binding->portdevname,
+                                  def->portdevname,
                                   (void *)~0);
         }
         break;
-
     case STEP_ROLLBACK:
-        if (!virHashLookup(skipInterfaces, binding->portdevname))
-            ret = virNWFilterRollbackUpdateFilter(binding);
+        if (!virHashLookup(skipInterfaces, def->portdevname))
+            ret = virNWFilterRollbackUpdateFilter(def);
         break;
-
     case STEP_SWITCH:
-        if (!virHashLookup(skipInterfaces, binding->portdevname))
-            ret = virNWFilterTearOldFilter(binding);
+        if (!virHashLookup(skipInterfaces, def->portdevname))
+            ret = virNWFilterTearOldFilter(def);
         break;
-
     case STEP_APPLY_CURRENT:
-        ret = virNWFilterInstantiateFilter(driver,
-                                           binding);
+        // prev is always ebiptables if unset
+        if (def->backend == NULL)
+            def->backend = g_strdup(ebiptables_driver.name);
+
+        // detect change in backend
+        if (STRNEQ(def->backend,
+            virFirewallBackendTypeToString(driver->config->firewallBackend))) {
+            ret = virNWFilterSwitchTechDriver(driver, binding, def);
+        } else {
+            ret = virNWFilterInstantiateFilter(driver, def);
+        }
+
         break;
     }
 
@@ -905,9 +955,8 @@ static int
 virNWFilterBuildIter(virNWFilterBindingObj *binding, void *opaque)
 {
     struct virNWFilterBuildData *data = opaque;
-    virNWFilterBindingDef *def = virNWFilterBindingObjGetDef(binding);
 
-    return virNWFilterBuildOne(data->driver, def,
+    return virNWFilterBuildOne(data->driver, binding,
                                data->skipInterfaces, data->step);
 }
 

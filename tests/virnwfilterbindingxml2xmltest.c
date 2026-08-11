@@ -92,6 +92,7 @@ mymain(void)
     } while (0)
 
     DO_TEST("simple");
+    DO_TEST("simple-backend");
     DO_TEST("filter-vars");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

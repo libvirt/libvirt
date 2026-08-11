@@ -44,6 +44,13 @@
         <element name="filterref">
           <ref name="filterref-node-attributes"/>
         </element>
+
+        <optional>
+          <element name="backend">
+            <attribute name="name"/>
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

@@ -26,7 +26,6 @@
 #include "virnwfilterbindingdef.h"
 #include "viruuid.h"
 
-
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 
 void
@@ -40,6 +39,7 @@ virNWFilterBindingDefFree(virNWFilterBindingDef *def)
     g_free(def->linkdevname);
     g_free(def->filter);
     g_clear_pointer(&def->filterparams, g_hash_table_unref);
+    g_free(def->backend);
 
     g_free(def);
 }
@@ -66,6 +66,8 @@ virNWFilterBindingDefCopy(virNWFilterBindingDef *src)
 
     if (virNWFilterHashTablePutAll(src->filterparams, ret->filterparams) < 0)
         return NULL;
+
+    ret->backend = g_strdup(src->backend);
 
     return g_steal_pointer(&ret);
 }
@@ -143,8 +145,18 @@ virNWFilterBindingDefParseXML(xmlXPathContextPtr ctxt)
 
     node = virXPathNode("./filterref", ctxt);
     if (node &&
-        !(ret->filterparams = virNWFilterParseParamAttributes(node)))
+        !(ret->filterparams = virNWFilterParseParamAttributes(node))) {
         goto cleanup;
+    }
+
+    if (virXPathNode("./backend", ctxt)) {
+        ret->backend = virXPathString("string(./backend/@name)", ctxt);
+        if (!ret->backend) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("filter binding has no firewall backend name"));
+            goto cleanup;
+        }
+    }
 
     return ret;
 
@@ -211,6 +223,7 @@ virNWFilterBindingDefFormatBuf(virBuffer *buf,
     if (virNWFilterFormatParamAttributes(buf, def->filterparams, def->filter) < 0)
         return -1;
 
+    virBufferEscapeString(buf, "<backend name='%s'/>\n", def->backend);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</filterbinding>\n");
 

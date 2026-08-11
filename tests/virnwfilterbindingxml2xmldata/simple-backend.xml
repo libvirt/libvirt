@@ -5,8 +5,6 @@
   </owner>
   <portdev name='vnet0'/>
   <mac address='52:54:00:7b:35:93'/>
-  <filterref filter='clean-traffic'>
-    <parameter name='MAC' value='52:54:00:7b:35:93'/>
-  </filterref>
+  <filterref filter='clean-traffic'/>
   <backend name='iptables'/>
 </filterbinding>

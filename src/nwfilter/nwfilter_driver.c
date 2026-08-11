@@ -725,6 +725,7 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     def = virNWFilterBindingDefParse(xml, NULL, flags);
     if (!def)
         return NULL;
+    def->backend = g_strdup(virFirewallBackendTypeToString(cfg->firewallBackend));
 
     if (virNWFilterBindingCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
