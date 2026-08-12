@@ -1394,6 +1394,128 @@ testQemuAgentGetLoadAvg(const void *data)
 }
 
 
+static const char *testQemuAgentGetGuestDeviceInfoResponse =
+"{"
+"  \"return\": ["
+"    {"
+"      \"driver-date\": 1736726400000000000,"
+"      \"driver-name\": \"Red Hat VirtIO Ethernet Adapter\","
+"      \"driver-version\": \"100.100.104.27100\","
+"      \"id\": {"
+"        \"device-id\": 4161,"
+"        \"vendor-id\": 6900,"
+"        \"type\": \"pci\""
+"      }"
+"    },"
+"    {"
+"      \"driver-name\": \"VirtIO Serial Driver\","
+"      \"driver-version\": \"100.100.104.27100\","
+"      \"id\": {"
+"        \"device-id\": 4163,"
+"        \"vendor-id\": 6900,"
+"        \"type\": \"pci\""
+"      }"
+"    },"
+"    {"
+"      \"driver-date\": 1736726400000000000,"
+"      \"driver-name\": \"VirtIO Balloon Driver\","
+"      \"id\": {"
+"        \"device-id\": 4165,"
+"        \"vendor-id\": 6900,"
+"        \"type\": \"pci\""
+"      }"
+"    },"
+"    {"
+"      \"driver-date\": 1736726400000000000,"
+"      \"driver-name\": \"Red Hat VirtIO GPU DOD controller\","
+"      \"driver-version\": \"100.100.104.27100\""
+"    }"
+"  ]"
+"}";
+
+
+static int
+testQemuAgentGetGuestDeviceInfo(const void *data)
+{
+    virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
+    qemuAgentGuestDeviceInfo **devices = NULL;
+    int ret = -1;
+    size_t i;
+    int ndevices;
+
+    if (!test)
+        return -1;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "guest-get-devices",
+                               testQemuAgentGetGuestDeviceInfoResponse) < 0)
+        return -1;
+
+    ndevices = qemuAgentGetGuestDeviceInfo(qemuMonitorTestGetAgent(test),
+                                           &devices, true);
+
+    if (ndevices < 0)
+        return -1;
+
+    if (ndevices != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "unexpected number of guest devices returned (%d), expected 4",
+                       ndevices);
+        goto cleanup;
+    }
+
+    if (STRNEQ(devices[0]->driverName, "Red Hat VirtIO Ethernet Adapter") ||
+        STRNEQ(devices[0]->driverVersion, "100.100.104.27100") ||
+        devices[0]->driverDate != 1736726400000000000LL ||
+        devices[0]->pci->vendorID != 6900 ||
+        devices[0]->pci->deviceID != 4161) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected device info returned for device #0");
+        goto cleanup;
+    }
+
+    if (STRNEQ(devices[1]->driverName, "VirtIO Serial Driver") ||
+        STRNEQ(devices[1]->driverVersion, "100.100.104.27100") ||
+        devices[1]->driverDate != -1LL ||
+        devices[1]->pci->vendorID != 6900 ||
+        devices[1]->pci->deviceID != 4163) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected device info returned for device #1");
+        goto cleanup;
+    }
+
+    if (STRNEQ(devices[2]->driverName, "VirtIO Balloon Driver") ||
+        devices[2]->driverVersion ||
+        devices[2]->driverDate != 1736726400000000000LL ||
+        devices[2]->pci->vendorID != 6900 ||
+        devices[2]->pci->deviceID != 4165) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected device info returned for device #2");
+        goto cleanup;
+    }
+
+    if (STRNEQ(devices[3]->driverName, "Red Hat VirtIO GPU DOD controller") ||
+        STRNEQ(devices[3]->driverVersion, "100.100.104.27100") ||
+        devices[3]->driverDate != 1736726400000000000LL ||
+        devices[3]->pci) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "unexpected device info returned for device #3");
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    for (i = 0; i < ndevices; i++) {
+        qemuAgentGuestDeviceInfoFree(devices[i]);
+    }
+    g_free(devices);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -1431,6 +1553,7 @@ mymain(void)
     DO_TEST(SSHKeys);
     DO_TEST(GetDisks);
     DO_TEST(GetLoadAvg);
+    DO_TEST(GetGuestDeviceInfo);
 
     DO_TEST(Timeout); /* Timeout should always be called last */
 
