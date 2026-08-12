@@ -13260,6 +13260,11 @@ virDomainSetVcpu(virDomainPtr domain,
  *  The VIR_DOMAIN_GUEST_INFO_LOAD_* constants define the known typed parameter
  *  keys.
  *
+ * VIR_DOMAIN_GUEST_INFO_DEVICES:
+ *  Returns information on guest devices.
+ *  The VIR_DOMAIN_GUEST_INFO_DEVICE_* constants define the known typed
+ *  parameter keys.
+ *
  * Using 0 for @types returns all information groups supported by the given
  * hypervisor.
  *

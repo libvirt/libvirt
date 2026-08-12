@@ -8868,6 +8868,83 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
 # define VIR_DOMAIN_GUEST_INFO_LOAD_15M "load.15m"
 
 /**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_COUNT:
+ *
+ * The number of guest devices that detailed information is fetched for as
+ * unsigned int.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_COUNT "device.count"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX:
+ *
+ * The parameter name prefix to access each device entry. Concatenate the
+ * prefix, the entry number formatted as an unsigned integer and one of the
+ * device suffix parameters to form a complete parameter name.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "device."
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_NAME:
+ *
+ * Name of the device driver (e.g. ``VirtIO Balloon Driver``) as a string.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_NAME ".driverName"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_DATE:
+ *
+ * Driver release date in seconds since the epoch (e.g. 1736726400) as long long.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_DATE ".driverDate"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_VERSION:
+ *
+ * Driver version (e.g. ``100.100.104.27100``) as a string.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_VERSION ".driverVersion"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_ID_TYPE:
+ *
+ * Device identification (e.g. ``pci``) as a string.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_ID_TYPE ".idType"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_VENDOR:
+ *
+ * PCI device (a device with VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_ID_TYPE equal
+ * to ``pci``) vendor id (e.g. 6900) as a unsigned int.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_VENDOR ".pciVendor"
+
+/**
+ * VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_DEVICE:
+ *
+ * PCI device (a device with VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_ID_TYPE equal
+ * to ``pci``) device id (e.g. 4165) as a unsigned int.
+ *
+ * Since: 12.7.0
+ */
+# define VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_DEVICE ".pciDevice"
+
+/**
  * virDomainGuestInfoTypes:
  *
  * Since: 5.7.0
@@ -8881,6 +8958,7 @@ typedef enum {
     VIR_DOMAIN_GUEST_INFO_DISKS = (1 << 5), /* return disks information (Since: 7.0.0) */
     VIR_DOMAIN_GUEST_INFO_INTERFACES = (1 << 6), /* return interfaces information (Since: 7.10.0) */
     VIR_DOMAIN_GUEST_INFO_LOAD = (1 << 7), /* return load averages (Since: 11.2.0) */
+    VIR_DOMAIN_GUEST_INFO_DEVICES = (1 << 8), /* return devices information (Since: 12.7.0) */
 } virDomainGuestInfoTypes;
 
 int virDomainGetGuestInfo(virDomainPtr domain,
