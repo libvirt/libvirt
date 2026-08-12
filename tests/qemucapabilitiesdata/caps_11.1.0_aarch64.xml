@@ -191,9 +191,9 @@
   <flag name='arm-smmuv3'/>
   <flag name='arm-smmuv3.smmu_per_bus'/>
   <flag name='arm-smmuv3.accel'/>
-  <version>11000090</version>
+  <version>11001000</version>
   <microcodeVersion>61700287</microcodeVersion>
-  <package>v11.1.0-rc0</package>
+  <package>v11.1.0</package>
   <arch>aarch64</arch>
   <hostCPU type='kvm' model='host' migratability='no'>
     <property name='sve768' type='boolean' value='false'/>
