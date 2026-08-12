@@ -76,7 +76,7 @@ CVE allocation
 If a reported disclosure is confirmed to be a security flaw, the
 ``CVE::Required`` label will be added.
 
-When a CVE has been allocated, this label will be removd and replaced
+When a CVE has been allocated, this label will be removed and replaced
 by ``CVE::Assigned``.
 
 The allocated CVE identifier will be included in the patch(es) that
