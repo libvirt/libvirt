@@ -13763,6 +13763,10 @@ static const vshCmdOptDef opts_guestinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report load averages information"),
     },
+    {.name = "devices",
+     .type = VSH_OT_BOOL,
+     .help = N_("report devices information"),
+    },
     {.name = NULL}
 };
 
@@ -13792,6 +13796,8 @@ cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
         types |= VIR_DOMAIN_GUEST_INFO_INTERFACES;
     if (vshCommandOptBool(cmd, "load"))
         types |= VIR_DOMAIN_GUEST_INFO_LOAD;
+    if (vshCommandOptBool(cmd, "devices"))
+        types |= VIR_DOMAIN_GUEST_INFO_DEVICES;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;

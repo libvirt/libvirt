@@ -3277,7 +3277,7 @@ guestinfo
 ::
 
    guestinfo domain [--user] [--os] [--timezone] [--hostname] [--filesystem]
-      [--disk] [--interface]
+      [--disk] [--interface] [--devices]
 
 Print information about the guest from the point of view of the guest agent.
 Note that this command requires a guest agent to be configured and running in
@@ -3289,9 +3289,9 @@ Success is always reported in this case.
 
 You can limit the types of information that are returned by specifying one or
 more flags.  Available information types flags are *--user*, *--os*,
-*--timezone*, *--hostname*, *--filesystem*, *--disk*, *--interface* and *--load*.
-If an explicitly requested information type is not supported by the guest agent
-at that point, the processes will provide an exit code of 1.
+*--timezone*, *--hostname*, *--filesystem*, *--disk*, *--interface*, *--load*
+and *--devices*.  If an explicitly requested information type is not supported
+by the guest agent at that point, the processes will provide an exit code of 1.
 
 Note that depending on the hypervisor type and the version of the guest agent
 running within the domain, not all of the following information may be
@@ -3373,6 +3373,15 @@ returned:
 * ``load.1m``  - average load in guest for last 1 minute
 * ``load.5m``  - average load in guest for last 5 minutes
 * ``load.15m`` - average load in guest for last 15 minutes
+
+*--devices* returns:
+* ``device.count`` - the number of devices that info is returned for
+* ``device.<num>.driverName`` - name of the driver associated with device
+* ``device.<num>.driverDate`` - driver release date in seconds since the epoch
+* ``device.<num>.driverVersion`` - version of the driver associated with the device
+* ``device.<num>.idType`` - device identification type (e.g. pci)
+* ``device.<num>.pciVendor`` - vendor ID for PCI device (in decimal)
+* ``device.<num>.pciDevice`` - device ID for PCI device (in decimal)
 
 
 guestvcpus
