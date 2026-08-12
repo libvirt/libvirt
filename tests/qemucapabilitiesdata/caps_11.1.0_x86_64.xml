@@ -222,9 +222,9 @@
   <flag name='amd-iommu.xtsup'/>
   <flag name='blockdev-mirror.target-is-zero'/>
   <flag name='object-monitor-qmp'/>
-  <version>11000090</version>
+  <version>11001000</version>
   <microcodeVersion>43100287</microcodeVersion>
-  <package>v11.1.0-rc0</package>
+  <package>v11.1.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>

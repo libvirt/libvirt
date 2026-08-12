@@ -16,11 +16,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 90,
-      "minor": 0,
+      "micro": 0,
+      "minor": 1,
       "major": 11
     },
-    "package": "v11.1.0-rc0"
+    "package": "v11.1.0"
   },
   "id": "libvirt-2"
 }
@@ -12769,7 +12769,10 @@
           "name": "kdump-raw-snappy"
         },
         {
-          "name": "win-dmp"
+          "name": "win-dmp",
+          "features": [
+            "allowed-by-guest"
+          ]
         }
       ],
       "meta-type": "enum",
