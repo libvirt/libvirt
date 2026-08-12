@@ -239,3 +239,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuAgentGuestDeviceInfo, qemuAgentGuestDeviceInfo
 int qemuAgentGetGuestDeviceInfo(qemuAgent *agent,
                                 qemuAgentGuestDeviceInfo ***info,
                                 bool report_unsupported);
+
+void
+qemuAgentGuestDeviceInfoFormatParams(qemuAgentGuestDeviceInfo **devices,
+                                     size_t ndevices,
+                                     virTypedParamList *list);

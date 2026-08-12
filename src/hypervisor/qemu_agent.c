@@ -2962,3 +2962,39 @@ qemuAgentGetGuestDeviceInfo(qemuAgent *agent,
     g_clear_pointer(info, g_free);
     return -1;
 }
+
+
+void
+qemuAgentGuestDeviceInfoFormatParams(qemuAgentGuestDeviceInfo **devices,
+                                     size_t ndevices,
+                                     virTypedParamList *list)
+{
+    size_t i;
+
+    virTypedParamListAddUInt(list, ndevices, VIR_DOMAIN_GUEST_INFO_DEVICE_COUNT);
+
+    for (i = 0; i < ndevices; i++) {
+        virTypedParamListAddString(list, devices[i]->driverName,
+                                   VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_NAME, i);
+
+        if (devices[i]->driverDate != -1) {
+            /* Guest agent reports this in nanoseconds, our API in seconds. */
+            virTypedParamListAddLLong(list, devices[i]->driverDate / 1000000000,
+                                      VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_DATE, i);
+        }
+
+        if (devices[i]->driverVersion) {
+            virTypedParamListAddString(list, devices[i]->driverVersion,
+                                       VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_DRIVER_VERSION, i);
+        }
+
+        if (devices[i]->pci) {
+            virTypedParamListAddString(list, "pci",
+                                       VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_ID_TYPE, i);
+            virTypedParamListAddUInt(list, devices[i]->pci->vendorID,
+                                     VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_VENDOR, i);
+            virTypedParamListAddUInt(list, devices[i]->pci->deviceID,
+                                     VIR_DOMAIN_GUEST_INFO_DEVICE_PREFIX "%zu" VIR_DOMAIN_GUEST_INFO_DEVICE_SUFFIX_PCI_DEVICE, i);
+        }
+    }
+}

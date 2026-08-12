@@ -1735,6 +1735,7 @@ qemuAgentGetTime;
 qemuAgentGetTimezone;
 qemuAgentGetUsers;
 qemuAgentGetVCPUs;
+qemuAgentGuestDeviceInfoFormatParams;
 qemuAgentGuestDeviceInfoFree;
 qemuAgentInterfaceFormatParams;
 qemuAgentNotifyClose;
