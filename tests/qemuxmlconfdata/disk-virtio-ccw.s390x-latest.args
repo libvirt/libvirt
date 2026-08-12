@@ -22,7 +22,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-QEMUGuest1/.config \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,fd=@mon-fd@,server=on,wait=off \
--mon chardev=charmonitor,id=monitor,mode=control \
+-object '{"qom-type":"monitor-qmp","id":"monitor","chardev":"charmonitor"}' \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
