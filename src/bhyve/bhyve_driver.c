@@ -2862,7 +2862,8 @@ static const unsigned int bhyveDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_FILESYSTEM |
     VIR_DOMAIN_GUEST_INFO_DISKS |
     VIR_DOMAIN_GUEST_INFO_INTERFACES |
-    VIR_DOMAIN_GUEST_INFO_LOAD;
+    VIR_DOMAIN_GUEST_INFO_LOAD |
+    VIR_DOMAIN_GUEST_INFO_DEVICES;
 
 static int
 bhyveDomainGetGuestInfoCheckSupport(unsigned int types,
@@ -2910,6 +2911,8 @@ bhyveDomainGetGuestInfo(virDomainPtr domain,
     double load5m = 0;
     double load15m = 0;
     bool format_load = false;
+    qemuAgentGuestDeviceInfo **devices = NULL;
+    size_t ndevices = 0;
     size_t i;
     g_autoptr(virTypedParamList) list = virTypedParamListNew();
 
@@ -2984,6 +2987,14 @@ bhyveDomainGetGuestInfo(virDomainPtr domain,
             format_load = true;
     }
 
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_DEVICES) {
+        rc = qemuAgentGetGuestDeviceInfo(agent, &devices, report_unsupported);
+        if (rc == -1)
+            goto exitagent;
+        if (rc >= 0)
+            ndevices = rc;
+    }
+
     bhyveDomainObjExitAgent(vm, agent);
     virDomainObjEndAgentJob(vm);
 
@@ -3016,6 +3027,10 @@ bhyveDomainGetGuestInfo(virDomainPtr domain,
         virTypedParamListAddDouble(list, load15m, VIR_DOMAIN_GUEST_INFO_LOAD_15M);
     }
 
+    if (ndevices > 0) {
+        qemuAgentGuestDeviceInfoFormatParams(devices, ndevices, list);
+    }
+
     if (virTypedParamListSteal(list, params, nparams) < 0)
         goto cleanup;
 
@@ -3033,6 +3048,12 @@ bhyveDomainGetGuestInfo(virDomainPtr domain,
             virDomainInterfaceFree(ifaces[i]);
     }
     g_free(ifaces);
+    if (devices && ndevices > 0) {
+        for (i = 0; i < ndevices; i++) {
+            qemuAgentGuestDeviceInfoFree(devices[i]);
+        }
+        g_free(devices);
+    }
 
     virDomainObjEndAPI(&vm);
     return ret;
