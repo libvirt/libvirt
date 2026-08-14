@@ -707,8 +707,35 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
 
     switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
-    case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_NETWORK:
+        if (src->sliceStorage) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("slices are not supported with non-block NVRAM"));
+            return -1;
+        }
+        break;
+
+    case VIR_STORAGE_TYPE_BLOCK:
+        if (src->sliceStorage) {
+            if (src->sliceStorage->offset != 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("offset slices are not supported with NVRAM"));
+                return -1;
+            }
+
+            switch (src->format) {
+            case VIR_STORAGE_FILE_RAW:
+            case VIR_STORAGE_FILE_NONE:
+                break;
+
+            default:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("NVRAM slices are not supported with format '%1$s'"),
+                               virStorageFileFormatTypeToString(src->format));
+                return -1;
+                break;
+            }
+        }
         break;
 
     case VIR_STORAGE_TYPE_DIR:
@@ -725,12 +752,6 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
     case VIR_STORAGE_TYPE_NONE:
     case VIR_STORAGE_TYPE_LAST:
         virReportEnumRangeError(virStorageType, src->type);
-        return -1;
-    }
-
-    if (src->sliceStorage) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("slices are not supported with NVRAM"));
         return -1;
     }
 

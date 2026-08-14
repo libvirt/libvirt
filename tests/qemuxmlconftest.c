@@ -1442,6 +1442,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-dev-slice");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-stateless");
 
     DO_TEST_CAPS_ARCH_LATEST_FULL("firmware-manual-efi-sev-snp", "x86_64",
