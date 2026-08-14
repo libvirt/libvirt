@@ -938,11 +938,13 @@ virStorageFileHasEncryptionFormat(const struct FileEncryptionInfo *info,
 
 static int
 virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
-                                         char *buf)
+                                         char *buf,
+                                         size_t len)
 {
     int payload_offset = -1;
 
-    if (info->payloadOffset != -1) {
+    if (info->payloadOffset != -1 &&
+        len >= info->payloadOffset + sizeof(uint32_t)) {
         if (info->endian == LV_LITTLE_ENDIAN)
             payload_offset = virReadBufInt32LE(buf + info->payloadOffset);
         else
@@ -999,7 +1001,7 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
                     }
                 }
                 meta->encryption->payload_offset =
-                    virStorageFileGetEncryptionPayloadOffset(&fileTypeInfo[meta->format].cryptInfo[i], buf);
+                    virStorageFileGetEncryptionPayloadOffset(&fileTypeInfo[meta->format].cryptInfo[i], buf, len);
             }
         }
     }
