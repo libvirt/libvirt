@@ -591,6 +591,9 @@ virBhyveProcessStart(bhyveConn *driver,
                      virDomainRunningReason reason,
                      unsigned int flags)
 {
+    if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
+        return -1;
+
     /* Run an early hook to setup missing devices. */
     if (bhyveProcessStartHook(driver, vm, VIR_HOOK_BHYVE_OP_PREPARE) < 0)
         goto cleanup;
@@ -609,6 +612,7 @@ virBhyveProcessStart(bhyveConn *driver,
  cleanup:
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_STOPPED);
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
+    virDomainObjRemoveTransientDef(vm);
 
     return -1;
 }
