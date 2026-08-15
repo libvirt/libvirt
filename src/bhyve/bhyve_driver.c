@@ -507,6 +507,7 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     struct _bhyveConn *privconn = domain->conn->privateData;
     virDomainObj *vm;
+    virDomainDef *def;
     char *ret = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
@@ -517,7 +518,12 @@ bhyveDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (virDomainGetXMLDescEnsureACL(domain->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    ret = virDomainDefFormat(vm->def, privconn->xmlopt,
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
+        def = vm->newDef;
+    else
+        def = vm->def;
+
+    ret = virDomainDefFormat(def, privconn->xmlopt,
                              virDomainDefFormatConvertXMLFlags(flags));
 
  cleanup:
