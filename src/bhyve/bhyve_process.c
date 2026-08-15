@@ -887,6 +887,7 @@ virBhyveProcessReconnect(virDomainObj *vm,
         vm->def->id = -1;
         virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF,
                              VIR_DOMAIN_SHUTOFF_UNKNOWN);
+        virDomainObjRemoveTransientDef(vm);
         ignore_value(virDomainObjSave(vm, data->driver->xmlopt,
                                       BHYVE_STATE_DIR));
     }
