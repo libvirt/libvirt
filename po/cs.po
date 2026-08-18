@@ -13,13 +13,14 @@
 # Daniel P. Berrange <berrange@redhat.com>, 2023.
 # Jan Tomko <jtomko@redhat.com>, 2023.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Benjamin Loison <benjamin.loison@orange.fr>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-07-21 12:17+0000\n"
-"Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
+"PO-Revision-Date: 2026-08-18 09:18+0000\n"
+"Last-Translator: Benjamin Loison <benjamin.loison@orange.fr>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/cs/>\n"
 "Language: cs\n"
@@ -27,7 +28,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.7.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 msgid ""
 "\n"
@@ -17946,7 +17947,7 @@ msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr "Toto QEMU nepodporuje scsi-block pro lun passthrough"
 
 msgid "This QEMU doesn't support spice OpenGL"
-msgstr "Toto QEmU nepodporuje spice OpenGL"
+msgstr "Toto QEMU nepodporuje spice OpenGL"
 
 msgid "This QEMU doesn't support spice OpenGL rendernode"
 msgstr "Toto QEMU nepodporuje spice OpenGL rendernode"
