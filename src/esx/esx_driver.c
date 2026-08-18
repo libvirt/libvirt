@@ -169,6 +169,9 @@ esxParseVMXFileName(const char *fileName,
             goto cleanup;
         }
 
+        if (!hostMount->mountInfo->path)
+            continue;
+
         tmp = (char *)STRSKIP(fileName, hostMount->mountInfo->path);
 
         if (!tmp)
