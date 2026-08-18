@@ -6018,6 +6018,7 @@ qemuDomainRestoreInternal(virQEMUDriver *driver,
     bool sparse = false;
     bool bypass_cache = (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0;
     g_autoptr(qemuMigrationParams) restoreParams = NULL;
+    virErrorPtr save_err = NULL;
 
     virCheckFlags(QEMU_DOMAIN_RESTORE_FLAGS, -1);
 
@@ -6142,6 +6143,7 @@ qemuDomainRestoreInternal(virQEMUDriver *driver,
         qemuProcessEndJob(vmNew);
 
  cleanup:
+    virErrorPreserveLast(&save_err);
     VIR_FORCE_CLOSE(fd);
     if (virFileWrapperFdClose(wrapperFd) < 0)
         ret = -1;
@@ -6150,6 +6152,7 @@ qemuDomainRestoreInternal(virQEMUDriver *driver,
     if (vmNew && ret < 0)
         qemuDomainRemoveInactive(vmNew, 0, false);
     virDomainObjEndAPI(&vmNew);
+    virErrorRestore(&save_err);
     return ret;
 }
 
