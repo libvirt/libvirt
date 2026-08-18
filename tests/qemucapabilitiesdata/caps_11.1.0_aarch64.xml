@@ -191,6 +191,7 @@
   <flag name='arm-smmuv3'/>
   <flag name='arm-smmuv3.smmu_per_bus'/>
   <flag name='arm-smmuv3.accel'/>
+  <flag name='arm-smmuv3.cmdqv'/>
   <version>11001000</version>
   <microcodeVersion>61700287</microcodeVersion>
   <package>v11.1.0</package>

@@ -746,6 +746,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_ARM_SMMUV3_SMMU_PER_BUS, /* arm-smmuv3.smmu_per_bus */
     QEMU_CAPS_ARM_SMMUV3_ACCEL, /* arm-smmuv3.accel */
 
+    /* 500 */
+    QEMU_CAPS_ARM_SMMUV3_CMDQV, /* arm-smmuv3.cmdqv */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

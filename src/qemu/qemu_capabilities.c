@@ -771,6 +771,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "arm-smmuv3", /* QEMU_CAPS_DEVICE_ARM_SMMUV3 */
               "arm-smmuv3.smmu_per_bus", /* QEMU_CAPS_ARM_SMMUV3_SMMU_PER_BUS */
               "arm-smmuv3.accel", /* QEMU_CAPS_ARM_SMMUV3_ACCEL */
+
+              /* 500 */
+              "arm-smmuv3.cmdqv", /* QEMU_CAPS_ARM_SMMUV3_CMDQV */
     );
 
 
@@ -1651,6 +1654,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsAMDIOMMU[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsArmSmmuv3[] = {
     { "smmu_per_bus", QEMU_CAPS_ARM_SMMUV3_SMMU_PER_BUS, NULL },
     { "accel", QEMU_CAPS_ARM_SMMUV3_ACCEL, NULL },
+    { "cmdqv", QEMU_CAPS_ARM_SMMUV3_CMDQV, NULL },
 };
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
