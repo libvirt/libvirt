@@ -18,7 +18,7 @@ After=virtlockd.socket
 # To ensure that our helper daemons are not shut down before the main daemon
 # shuts down we need also explicit ordering with the .service unit
 After=virtlogd.service
-After=virtlock.service
+After=virtlockd.service
 Wants=systemd-machined.service
 After=network.target
 After=dbus.service
