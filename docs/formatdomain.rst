@@ -9436,6 +9436,14 @@ Examples:
       devices.
       :since:`Since 12.7.0` (QEMU/KVM and ``smmuv3`` model only)
 
+   ``cmdqv``
+      The ``cmdqv`` attribute with possible values ``on`` and ``off`` can be used
+      to enable NVIDIA Tegra241 CMDQV, an extension for ARM SMMUv3 that supports
+      passthrough of physical SMMU-CMDQ linked command queue from host space to VM.
+      If ``accel`` is enabled and ``cmdqv`` is not configured, the hypervisor
+      default value is used.
+      :since:`Since 12.7.0` (QEMU/KVM and ``smmuv3`` model only)
+
    ``ats``
       The ``ats`` attribute with possible values ``on`` and ``off`` can be
       used to enable reporting Address Translation Services capability to

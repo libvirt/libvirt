@@ -3106,6 +3106,7 @@ struct _virDomainIOMMUDef {
     virTristateSwitch pt;
     int granule; /* -1 means 'host', 0 unset, page size in KiB otherwise */
     virTristateSwitch accel;
+    virTristateSwitch cmdqv;
     virTristateSwitch ats;
     virTristateSwitch ril;
     int ssid_size;

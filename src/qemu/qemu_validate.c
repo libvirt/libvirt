@@ -5829,6 +5829,14 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         return -1;
     }
 
+    if (iommu->model == VIR_DOMAIN_IOMMU_MODEL_SMMUV3 &&
+        iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ARM_SMMUV3_CMDQV)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: cmdqv is not supported with this QEMU binary"));
+        return -1;
+    }
+
     if (iommu->granule > 0) {
         /* QEMU supports only 4KiB, 8KiB, 16KiB and 64KiB granule size */
         if (!(iommu->granule == 4 ||

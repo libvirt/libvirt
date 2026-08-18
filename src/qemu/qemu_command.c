@@ -6311,6 +6311,7 @@ qemuBuildPCINestedSmmuv3DevProps(const virDomainDef *def,
                               "S:ril", qemuOnOffAuto(iommu->ril),
                               "S:ssidsize", ssidsizeStr,
                               "S:oas", oasStr,
+                              "S:cmdqv", qemuOnOffAuto(iommu->cmdqv),
                               NULL) < 0)
         return NULL;
 

@@ -3205,11 +3205,12 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
         }
         if (iommu->accel != VIR_TRISTATE_SWITCH_ON &&
             (iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
+             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
              iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
              iommu->ssid_size >= 0 ||
              iommu->oas >= 0)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("accel must be enabled for iommu model '%1$s' when setting ats, ril, ssidsize, or oas"),
+                           _("accel must be enabled for iommu model '%1$s' when setting ats, ril, ssidsize, oas, or cmdqv"),
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
@@ -3222,6 +3223,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ssid_size >= 0 ||
@@ -3249,6 +3251,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ssid_size >= 0 ||
@@ -3266,6 +3269,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ats != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ril != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->ssid_size >= 0 ||

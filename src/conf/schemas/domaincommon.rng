@@ -6481,6 +6481,11 @@
                 <data type="int"/>
               </attribute>
             </optional>
+            <optional>
+              <attribute name="cmdqv">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
         <optional>
