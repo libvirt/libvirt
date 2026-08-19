@@ -26,6 +26,7 @@
       <target dev='nvme0n1' bus='nvme'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <controller type='scsi' index='0' model='vmpvscsi'/>
     <controller type='nvme' index='0'/>
     <interface type='bridge'>
       <mac address='00:50:56:a0:a6:7e' type='generated'/>

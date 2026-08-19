@@ -584,8 +584,11 @@ VIR_ENUM_IMPL(virVMXControllerModelSCSI,
 );
 
 static int virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def);
-static int virVMXParseSCSIController(virConf *conf, int controller, bool *present,
-                                     int *virtualDev);
+static int
+virVMXParseSCSIController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present);
 static int virVMXParseSATAController(virConf *conf, int controller, bool *present);
 static int virVMXParseNVMEController(virConf *conf, int controller, bool *present);
 static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt,
@@ -1408,7 +1411,6 @@ virVMXParseConfig(virVMXContext *ctx,
     int bus;
     int port;
     bool present;
-    int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     int unit;
     bool hgfs_disabled = true;
     long long sharedFolder_maxNum = 0;
@@ -1739,8 +1741,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     /* def:disks (scsi) */
     for (controller = 0; controller < 4; ++controller) {
-        if (virVMXParseSCSIController(conf, controller, &present,
-                                      &scsi_virtualDev[controller]) < 0) {
+        if (virVMXParseSCSIController(def, conf, controller, &present) < 0) {
             goto cleanup;
         }
 
@@ -1781,11 +1782,6 @@ virVMXParseConfig(virVMXContext *ctx,
     /* add all the SCSI controllers we've seen, up until the last one that is
      * currently used by a disk */
     if (def->ndisks != 0) {
-        virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
-        for (controller = 0; controller <= info->addr.drive.controller; controller++) {
-            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                      controller, scsi_virtualDev[controller]);
-        }
         saved_ndisks = def->ndisks;
     }
 
@@ -2142,30 +2138,28 @@ virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def)
 
 
 static int
-virVMXParseSCSIController(virConf *conf, int controller, bool *present,
-                          int *virtualDev)
+virVMXParseSCSIController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present)
 {
     int result = -1;
     char present_name[32];
     char virtualDev_name[32];
     char *virtualDev_string = NULL;
     char *tmp;
+    int virtualDev = -1;
 
-    if (virtualDev == NULL || *virtualDev != -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
-        return -1;
-    }
-
-    if (controller < 0 || controller > 3) {
+    if (controllerIdx < 0 || controllerIdx > 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("SCSI controller index %1$d out of [0..3] range"),
-                       controller);
+                       controllerIdx);
         return -1;
     }
 
-    g_snprintf(present_name, sizeof(present_name), "scsi%d.present", controller);
+    g_snprintf(present_name, sizeof(present_name), "scsi%d.present", controllerIdx);
     g_snprintf(virtualDev_name, sizeof(virtualDev_name), "scsi%d.virtualDev",
-               controller);
+               controllerIdx);
 
     if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
         goto cleanup;
@@ -2186,19 +2180,22 @@ virVMXParseSCSIController(virConf *conf, int controller, bool *present,
         for (; *tmp != '\0'; ++tmp)
             *tmp = g_ascii_tolower(*tmp);
 
-        *virtualDev = virVMXControllerModelSCSITypeFromString(virtualDev_string);
+        virtualDev = virVMXControllerModelSCSITypeFromString(virtualDev_string);
 
-        if (*virtualDev == -1 ||
-            (*virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068 &&
-             *virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI)) {
+        if (virtualDev == -1 ||
+            (virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC &&
+             virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC &&
+             virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068 &&
+             virtualDev != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry '%1$s' to be 'buslogic' or 'lsilogic' or 'lsisas1068' or 'pvscsi' but found '%2$s'"),
                            virtualDev_name, virtualDev_string);
             goto cleanup;
         }
     }
+
+    virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                              controllerIdx, virtualDev);
 
     result = 0;
 
