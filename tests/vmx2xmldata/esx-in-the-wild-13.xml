@@ -36,7 +36,9 @@ package:20.6.2
       <target dev='sda' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
-    <controller type='scsi' index='0' model='lsilogic'/>
+    <controller type='scsi' index='0' model='lsilogic'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
+    </controller>
     <interface type='bridge'>
       <mac address='fa:16:3e:bb:2c:4a' type='static'/>
       <source bridge='Test'/>

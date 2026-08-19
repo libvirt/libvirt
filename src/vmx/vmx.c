@@ -950,6 +950,34 @@ virVMXGetConfigBoolean(virConf *conf, const char *name, bool *boolean_,
 }
 
 
+static int
+virVMXPCISlotNumber(virConf *conf,
+                    const char *name,
+                    virDomainDeviceInfo *info)
+{
+    long long slotNumber = -1;
+
+    if (virVMXGetConfigLong(conf, name, &slotNumber, -1, true) < 0)
+        return -1;
+
+    if (slotNumber == -1) {
+        /* missing */
+        return 0;
+    }
+
+    /* The slot number encodes PCI address as FFF.BBBBB.DDDDD, for instance:
+     *   1216 = 0x4c0 = 001.00110.00000b
+     * which gives bus = 6, slot = 0, function = 1.
+     */
+    info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    info->addr.pci.domain = 0;
+    info->addr.pci.bus = (slotNumber >> 5) & 0x1f;
+    info->addr.pci.slot = slotNumber & 0x1f;
+    info->addr.pci.function = (slotNumber >> 10) & 0x7;
+
+    return 0;
+}
+
 
 static int
 virVMXSCSIDiskNameToControllerAndUnit(const char *name, int *controller, int *unit)
@@ -2143,12 +2171,14 @@ virVMXParseSCSIController(virDomainDef *def,
                           int controllerIdx,
                           bool *present)
 {
+    virDomainControllerDef *controllerDef = NULL;
     int result = -1;
     char present_name[32];
     char virtualDev_name[32];
     char *virtualDev_string = NULL;
     char *tmp;
     int virtualDev = -1;
+    g_autofree char *pciSlotNumberName = NULL;
 
     if (controllerIdx < 0 || controllerIdx > 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2194,11 +2224,15 @@ virVMXParseSCSIController(virDomainDef *def,
         }
     }
 
-    virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                              controllerIdx, virtualDev);
+    controllerDef = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
+                                              controllerIdx, virtualDev);
+
+    pciSlotNumberName = g_strdup_printf("scsi%d.pciSlotNumber", controllerIdx);
+
+    if (virVMXPCISlotNumber(conf, pciSlotNumberName, &controllerDef->info) < 0)
+        goto cleanup;
 
     result = 0;
-
  cleanup:
     VIR_FREE(virtualDev_string);
 
