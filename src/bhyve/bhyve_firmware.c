@@ -41,7 +41,8 @@ VIR_LOG_INIT("bhyve.bhyve_firmware");
 
 static void
 bhyveFirmwareEnsureNVRAM(virDomainDef *def,
-                         bhyveConn *driver)
+                         bhyveConn *driver,
+                         bool abiUpdate)
 {
     g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(driver);
     virDomainLoaderDef *loader = def->os.loader;
@@ -98,7 +99,8 @@ bhyveFirmwareEnsureNVRAM(virDomainDef *def,
      *
      * If we're loading an existing domain, however, we need to
      * stick with the .fd extension to ensure compatibility */
-    if (loader->nvramTemplate &&
+    if (abiUpdate &&
+        loader->nvramTemplate &&
         virStringHasSuffix(loader->nvramTemplate, ".raw"))
         ext = ".raw";
     else
@@ -112,7 +114,7 @@ bhyveFirmwareEnsureNVRAM(virDomainDef *def,
 int
 bhyveFirmwareFillDomain(bhyveConn *driver,
                         virDomainDef *def,
-                        unsigned int flags)
+                        bool abiUpdate)
 {
     g_autoptr(DIR) dir = NULL;
     g_autoptr(virBhyveDriverConfig) cfg = virBhyveDriverGetConfig(driver);
@@ -122,8 +124,6 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
     g_autofree char *matching_firmware = NULL;
     g_autofree char *matching_nvram_template = NULL;
     g_autofree char *first_found = NULL;
-
-    virCheckFlags(0, -1);
 
     if (!ARCH_IS_X86(def->os.arch))
         return 0;
@@ -190,7 +190,7 @@ bhyveFirmwareFillDomain(bhyveConn *driver,
     loader->path = g_build_filename(firmware_dir, matching_firmware, NULL);
 
  out:
-    bhyveFirmwareEnsureNVRAM(def, driver);
+    bhyveFirmwareEnsureNVRAM(def, driver, abiUpdate);
 
     return 0;
 }

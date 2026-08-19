@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "bhyve_firmware.h"
 #include "bhyve_driver.h"
 #include "bhyve_conf.h"
 #include "bhyve_device.h"
@@ -119,7 +120,7 @@ bhyveDomainDefNeedsISAController(virDomainDef *def)
 
 static int
 bhyveDomainDefPostParse(virDomainDef *def,
-                        unsigned int parseFlags G_GNUC_UNUSED,
+                        unsigned int parseFlags,
                         void *opaque,
                         void *parseOpaque G_GNUC_UNUSED)
 {
@@ -130,6 +131,8 @@ bhyveDomainDefPostParse(virDomainDef *def,
     size_t virtio_serial_controllers = 0;
     size_t virtio_serial_existing_controllers = 0;
     size_t virtio_serial_controllers_to_create = 0;
+    bool abiUpdate = !!(parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
+
     if (!caps)
         return -1;
 
@@ -201,6 +204,12 @@ bhyveDomainDefPostParse(virDomainDef *def,
             cont = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL, -1, -1);
             cont->opts.vioserial.ports = 16;
         }
+    }
+
+    if (bhyveFirmwareFillDomain(driver, def, abiUpdate) < 0) {
+        if (abiUpdate)
+            return -1;
+        virResetLastError();
     }
 
     return 0;

@@ -56,6 +56,8 @@ testCompareXMLToXMLHelper(const void *data)
 static int
 mymain(void)
 {
+    g_autofree char *fakefirmwaredir = g_strdup("fakefirmwaredir");
+    g_autofree char *fakenvramdir = g_strdup("fakenvramdir");
     g_autofree char *fakeubootpath = g_strdup("fakeubootpath/u-boot.bin");
     int ret = 0;
 
@@ -68,7 +70,12 @@ mymain(void)
     if (!(driver.config = virBhyveDriverConfigNew()))
         return EXIT_FAILURE;
 
-    driver.config->ubootPath = fakeubootpath;
+    VIR_FREE(driver.config->firmwareDir);
+    VIR_FREE(driver.config->nvramDir);
+    VIR_FREE(driver.config->ubootPath);
+    driver.config->firmwareDir = g_steal_pointer(&fakefirmwaredir);
+    driver.config->nvramDir = g_steal_pointer(&fakenvramdir);
+    driver.config->ubootPath = g_steal_pointer(&fakeubootpath);
 
 # define DO_TEST_FULL(name, flags) \
     do { \
@@ -179,6 +186,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virObjectUnref(driver.config);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

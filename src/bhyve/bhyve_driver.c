@@ -541,7 +541,8 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     g_autoptr(virCaps) caps = NULL;
-    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
@@ -760,7 +761,9 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     }
 
     if (!(def = virDomainDefParseString(xmlData, privconn->xmlopt,
-                                        NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        NULL,
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
         return NULL;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
@@ -951,7 +954,8 @@ bhyveDomainCreateXML(virConnectPtr conn,
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     unsigned int start_flags = 0;
-    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY |
                   VIR_DOMAIN_START_VALIDATE, NULL);

@@ -27,4 +27,4 @@
 int
 bhyveFirmwareFillDomain(bhyveConn *driver,
                         virDomainDef *def,
-                        unsigned int flags);
+                        bool abiUpdate);

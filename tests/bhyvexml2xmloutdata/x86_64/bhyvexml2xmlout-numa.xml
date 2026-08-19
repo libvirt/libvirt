@@ -6,6 +6,8 @@
   <vcpu placement='static'>8</vcpu>
   <os firmware='efi'>
     <type arch='x86_64'>hvm</type>
+    <loader readonly='yes' type='pflash' format='raw'>fakefirmwaredir/BHYVE_UEFI.fd</loader>
+    <nvram template='fakefirmwaredir/BHYVE_UEFI_VARS.fd' format='raw'>fakenvramdir/bhyve_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <cpu>

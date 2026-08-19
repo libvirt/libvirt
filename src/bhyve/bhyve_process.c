@@ -449,7 +449,9 @@ bhyveProcessPrepareDomain(bhyveConn *driver,
                           virDomainObj *vm,
                           unsigned int flags)
 {
-    if (bhyveFirmwareFillDomain(driver, vm->def, flags) < 0)
+    virCheckFlags(0, -1);
+
+    if (bhyveFirmwareFillDomain(driver, vm->def, false) < 0)
         return -1;
 
     return 0;
