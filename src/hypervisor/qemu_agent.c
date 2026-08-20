@@ -2562,7 +2562,7 @@ int qemuAgentGetDisks(qemuAgent *agent,
     for (i = 0; i < ndata; i++) {
         qemuAgentDiskInfoFree((*disks)[i]);
     }
-    g_free(*disks);
+    g_clear_pointer(disks, g_free);
     return -1;
 }
 
