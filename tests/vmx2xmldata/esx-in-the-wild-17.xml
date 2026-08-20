@@ -37,7 +37,9 @@
     <controller type='scsi' index='0' model='lsisas1068'>
       <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </controller>
-    <controller type='sata' index='0'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </controller>
     <interface type='bridge'>
       <mac address='00:50:56:a5:b8:68' type='generated'/>
       <source bridge='Mgmt Network'/>

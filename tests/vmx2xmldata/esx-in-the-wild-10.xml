@@ -26,7 +26,9 @@
       <target dev='sda' bus='sata'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
-    <controller type='sata' index='0'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
+    </controller>
     <interface type='bridge'>
       <mac address='00:50:56:9a:9c:7a' type='generated'/>
       <source bridge='VM Network'/>
