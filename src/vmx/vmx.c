@@ -589,7 +589,11 @@ virVMXParseSCSIController(virDomainDef *def,
                           virConf *conf,
                           int controllerIdx,
                           bool *present);
-static int virVMXParseSATAController(virConf *conf, int controller, bool *present);
+static int
+virVMXParseSATAController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present);
 static int virVMXParseNVMEController(virConf *conf, int controller, bool *present);
 static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt,
                            virConf *conf, int device, int busType,
@@ -1447,7 +1451,6 @@ virVMXParseConfig(virVMXContext *ctx,
     virCPUDef *cpu = NULL;
     char *firmware = NULL;
     g_autofree char *nvram = NULL;
-    size_t saved_ndisks = 0;
 
     if (ctx->parseFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1807,15 +1810,9 @@ virVMXParseConfig(virVMXContext *ctx,
         }
     }
 
-    /* add all the SCSI controllers we've seen, up until the last one that is
-     * currently used by a disk */
-    if (def->ndisks != 0) {
-        saved_ndisks = def->ndisks;
-    }
-
     /* def:disks (sata) */
     for (controller = 0; controller < 4; ++controller) {
-        if (virVMXParseSATAController(conf, controller, &present) < 0) {
+        if (virVMXParseSATAController(def, conf, controller, &present) < 0) {
             goto cleanup;
         }
 
@@ -1843,14 +1840,6 @@ virVMXParseConfig(virVMXContext *ctx,
 
             VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
         }
-    }
-
-    /* add all the SATA controllers we've seen, up until the last one that is
-     * currently used by a disk */
-    if (def->ndisks - saved_ndisks != 0) {
-        virDomainDeviceInfo *info = &def->disks[def->ndisks - 1]->info;
-        for (controller = 0; controller <= info->addr.drive.controller; controller++)
-            virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA, controller, -1);
     }
 
     /* def:disks (ide) */
@@ -2242,21 +2231,30 @@ virVMXParseSCSIController(virDomainDef *def,
 
 
 static int
-virVMXParseSATAController(virConf *conf, int controller, bool *present)
+virVMXParseSATAController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present)
 {
     char present_name[32];
 
-    if (controller < 0 || controller > 3) {
+    if (controllerIdx < 0 || controllerIdx > 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("SATA controller index %1$d out of [0..3] range"),
-                       controller);
+                       controllerIdx);
         return -1;
     }
 
-    g_snprintf(present_name, sizeof(present_name), "sata%d.present", controller);
+    g_snprintf(present_name, sizeof(present_name), "sata%d.present", controllerIdx);
 
     if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
         return -1;
+
+    if (!*present)
+        return 0;
+
+    virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                              controllerIdx, -1);
 
     return 0;
 }
