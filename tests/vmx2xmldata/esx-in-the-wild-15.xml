@@ -33,8 +33,8 @@
       <target dev='nvme0n2' bus='nvme'/>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
-    <controller type='ide' index='0'/>
     <controller type='nvme' index='0'/>
+    <controller type='ide' index='0'/>
     <interface type='bridge'>
       <mac address='00:50:56:83:c9:0c' type='generated'/>
       <source bridge='inside'/>

@@ -594,7 +594,11 @@ virVMXParseSATAController(virDomainDef *def,
                           virConf *conf,
                           int controllerIdx,
                           bool *present);
-static int virVMXParseNVMEController(virConf *conf, int controller, bool *present);
+static int
+virVMXParseNVMEController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present);
 static int virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt,
                            virConf *conf, int device, int busType,
                            int controllerOrBus, int unit, virDomainDiskDef **def,
@@ -1885,7 +1889,7 @@ virVMXParseConfig(virVMXContext *ctx,
 
     /* def:disks (nvme) */
     for (controller = 0; controller < 4; ++controller) {
-        if (virVMXParseNVMEController(conf, controller, &present) < 0)
+        if (virVMXParseNVMEController(def, conf, controller, &present) < 0)
             goto cleanup;
 
         if (!present)
@@ -2268,22 +2272,30 @@ virVMXParseSATAController(virDomainDef *def,
 
 
 static int
-virVMXParseNVMEController(virConf *conf, int controller, bool *present)
+virVMXParseNVMEController(virDomainDef *def,
+                          virConf *conf,
+                          int controllerIdx,
+                          bool *present)
 {
     char present_name[32];
 
-    if (controller < 0 || controller > 3) {
+    if (controllerIdx < 0 || controllerIdx > 3) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("NVMe controller index %1$d out of [0..3] range"),
-                       controller);
+                       controllerIdx);
         return -1;
     }
 
-    g_snprintf(present_name, sizeof(present_name), "nvme%d.present", controller);
+    g_snprintf(present_name, sizeof(present_name), "nvme%d.present", controllerIdx);
 
     if (virVMXGetConfigBoolean(conf, present_name, present, false, true) < 0)
         return -1;
 
+    if (!*present)
+        return 0;
+
+    virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_NVME,
+                              controllerIdx, -1);
     return 0;
 }
 
