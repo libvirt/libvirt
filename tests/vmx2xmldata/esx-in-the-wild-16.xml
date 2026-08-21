@@ -32,7 +32,9 @@
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x02' function='0x0'/>
     </controller>
-    <controller type='nvme' index='0'/>
+    <controller type='nvme' index='0'>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x03' function='0x0'/>
+    </controller>
     <interface type='bridge'>
       <mac address='00:50:56:a0:a6:7e' type='generated'/>
       <source bridge='VM Network'/>

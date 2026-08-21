@@ -2277,6 +2277,8 @@ virVMXParseNVMEController(virDomainDef *def,
                           int controllerIdx,
                           bool *present)
 {
+    virDomainControllerDef *controllerDef = NULL;
+    g_autofree char *pciSlotNumberName = NULL;
     char present_name[32];
 
     if (controllerIdx < 0 || controllerIdx > 3) {
@@ -2294,8 +2296,14 @@ virVMXParseNVMEController(virDomainDef *def,
     if (!*present)
         return 0;
 
-    virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_NVME,
-                              controllerIdx, -1);
+    controllerDef = virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_NVME,
+                                              controllerIdx, -1);
+
+    pciSlotNumberName = g_strdup_printf("nvme%d.pciSlotNumber", controllerIdx);
+
+    if (virVMXPCISlotNumber(conf, pciSlotNumberName, &controllerDef->info) < 0)
+        return -1;
+
     return 0;
 }
 
