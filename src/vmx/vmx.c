@@ -2930,6 +2930,8 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
 
     int netmodel = VIR_DOMAIN_NET_MODEL_UNKNOWN;
 
+    g_autofree char *pciSlotNumberName = NULL;
+
     if (def == NULL || *def != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
@@ -3123,6 +3125,11 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
                        connectionType_name);
         goto cleanup;
     }
+
+    pciSlotNumberName = g_strdup_printf("ethernet%d.pciSlotNumber", controller);
+
+    if (virVMXPCISlotNumber(conf, pciSlotNumberName, &(*def)->info) < 0)
+        goto cleanup;
 
     (*def)->model = netmodel;
     result = 0;

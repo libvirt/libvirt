@@ -43,6 +43,7 @@ package:20.6.2
       <mac address='fa:16:3e:bb:2c:4a' type='static'/>
       <source bridge='Test'/>
       <model type='vmxnet3'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </interface>
     <serial type='null'>
       <target port='0'/>

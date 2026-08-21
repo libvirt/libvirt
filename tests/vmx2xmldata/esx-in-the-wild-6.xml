@@ -33,6 +33,7 @@
       <mac address='00:0c:29:2c:3a:fc' type='generated'/>
       <source bridge='VM Network'/>
       <model type='vmxnet3'/>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </interface>
     <video>
       <model type='vmvga' vram='8192' primary='yes'/>
