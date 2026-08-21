@@ -5,5 +5,5 @@ bhyve \
 -H \
 -P \
 -s 0:0,hostbridge \
--s 2:0,nvme,/tmp/freebsd.img,maxq=2,qsz=256,ser=BHYVE-NVME0-01234 \
+-s 2:0,nvme,/tmp/freebsd.img,maxq=2,qsz=256,eui64=0x01000000efbeadde,ser=BHYVE-NVME0-01234 \
 bhyve

@@ -14,6 +14,7 @@
       <driver name='file' type='raw' queues='2' queue_size='256'/>
       <source file='/tmp/freebsd.img'/>
       <target dev='nvme0n1' bus='nvme'/>
+      <wwn>01000000efbeadde</wwn>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
   </devices>

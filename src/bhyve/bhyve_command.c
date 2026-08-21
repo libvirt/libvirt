@@ -479,6 +479,10 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",maxq=%d", disk->queues);
         if (disk->queue_size)
             virBufferAsprintf(&opt, ",qsz=%d", disk->queue_size);
+        if (disk->wwn)
+            virBufferAsprintf(&opt, ",eui64=%s%s",
+                              STRPREFIX(disk->wwn, "0x") ? "" : "0x",
+                              disk->wwn);
         if (controller->opts.nvmeopts.serial)
             virBufferAsprintf(&opt, ",ser=%s", controller->opts.nvmeopts.serial);
 

@@ -5,6 +5,6 @@ bhyve \
 -H \
 -P \
 -s 0:0,hostbridge \
--s 2:0,nvme,/tmp/freebsd.img \
+-s 2:0,nvme,/tmp/freebsd.img,eui64=0xdeadbeef00000001 \
 -s 3:0,nvme,/tmp/data.img \
 bhyve

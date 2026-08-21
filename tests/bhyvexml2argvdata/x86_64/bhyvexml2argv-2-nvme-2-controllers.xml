@@ -11,6 +11,7 @@
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd.img'/>
       <target dev='nvme0n1' bus='nvme'/>
+      <wwn>0xdeadbeef00000001</wwn>
     </disk>
     <disk type='file'>
       <driver name='file' type='raw'/>
