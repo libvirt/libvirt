@@ -17,9 +17,41 @@ v12.7.0 (unreleased)
 
 * **New features**
 
+  * bhyve: implement ``virDomainGetGuestInfo()`` and ``virDomainAgentSetResponseTimeout()`` APIs
+
+    The bhyve driver now implements ``virDomainGetGuestInfo()`` which returns
+    information about the guest, and ``virDomainAgentSetResponseTimeout()``
+    which sets the guest agent response timeout.
+
+  * bhyve: allow setting disk serial numbers
+
+    The bhyve driver now allows specifying ``<serial>`` for SATA disks and NVMe
+    controllers::
+
+      <disk type='file'>
+        <serial>BHYVE-SER01-0001</serial>
+        <driver name='file' type='raw'/>
+        <source file='/tmp/freebsd1.img'/>
+        <target dev='hda' bus='sata' rotation_rate='7200'/>
+      </disk>
+      <controller type='nvme' index='0'>
+        <serial>BHYVE-NVME0-01234</serial>
+      </controller>
+
+    It also supports specifying ``<wwn>`` for NVMe disks::
+
+      <disk type='file'>
+        <driver name='file' type='raw'/>
+        <source file='/path/to/some.img'/>
+        <target dev='nvme0n1' bus='nvme'/>
+        <wwn>01000000efbeadde</wwn>
+      </disk>
+
 * **Improvements**
 
 * **Bug fixes**
+
+  * bhyve: fix domain API calls hanging after domain shutdown
 
 
 v12.6.0 (2026-08-03)
