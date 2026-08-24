@@ -511,7 +511,7 @@ Import and export of libvirt domain XML configs
 
 The QEMU driver currently supports a single native config format known as
 ``qemu-argv``. The data for this format is expected to be a single line first a
-list of environment variables, then the QEMu binary name, finally followed by
+list of environment variables, then the QEMU binary name, finally followed by
 the QEMU command line arguments
 
 Converting from QEMU args to domain XML
