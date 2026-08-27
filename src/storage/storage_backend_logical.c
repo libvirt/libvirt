@@ -127,6 +127,7 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
     unsigned long long offset;
     unsigned long long size;
     unsigned long long length;
+    g_auto(GStrv) regex_array = NULL;
     g_autofree char *regex = NULL;
 
     /* Assume 1 extent (the regex for 'devices' is "(\\S+)") and only
@@ -160,13 +161,10 @@ virStorageBackendLogicalParseVolExtents(virStorageVolDef *vol,
     }
 
     /* Allocate space for 'nextents' regex_unit strings plus a comma for each */
-    regex = g_new0(char, nextents * (strlen(regex_unit) + 1) + 1);
-    strcat(regex, regex_unit);
-    for (i = 1; i < nextents; i++) {
-        /* "," is the separator of "devices" field */
-        strcat(regex, ",");
-        strcat(regex, regex_unit);
-    }
+    regex_array = g_new0(char *, nextents + 1);
+    for (i = 0; i < nextents; i++)
+        regex_array[i] = g_strdup(regex_unit);
+    regex = g_strjoinv(",", regex_array);
 
     re = g_regex_new(regex, 0, 0, &err);
     if (!re) {
