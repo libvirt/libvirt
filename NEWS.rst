@@ -53,11 +53,29 @@ v12.7.0 (unreleased)
     which controls the weight of the most recent event interval in the
     adaptive polling duration calculation.
 
+  * Add guest device info to ``virDomainGetGuestInfo()``
+
+    QEMU guest agent has 'guest-get-devices` command, which returns information
+    on guest devices (driver name, version, release date, and so on). This is
+    now exposed via ``virDomainGetGuestInfo()`` API (accessible via ``guestinfo
+    --devices`` virsh command).
+
 * **Improvements**
 
 * **Bug fixes**
 
   * bhyve: fix domain API calls hanging after domain shutdown
+
+  * remote: Fix stale virStream status
+
+    In a few cases it might happen that daemon held incorrect state of a
+    virStream leading to an infinite loop. This is now fixed.
+
+  * esx: Don't crash when parsing unmounted datastore
+
+    When libvirt constructs domain XML for an ESX domain it traverses through
+    all datastores to find which one stores disks for the domain. But if a
+    datastore wasn't mounted, then a crash would occur. This is now fixed.
 
 
 v12.6.0 (2026-08-03)
