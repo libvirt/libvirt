@@ -47,6 +47,12 @@ v12.7.0 (unreleased)
         <wwn>01000000efbeadde</wwn>
       </disk>
 
+  * qemu: Add poll-weight support for iothreads
+
+    The qemu driver now supports the iothread poll-weight property,
+    which controls the weight of the most recent event interval in the
+    adaptive polling duration calculation.
+
 * **Improvements**
 
 * **Bug fixes**
