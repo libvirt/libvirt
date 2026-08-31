@@ -38,11 +38,11 @@ int virHostCPUGetStats(int cpuNum,
                        virNodeCPUStatsPtr params,
                        int *nparams);
 
-bool virHostCPUHasBitmap(void);
+bool virHostCPUHasBitmap(void) ATTRIBUTE_MOCKABLE;
 virBitmap *virHostCPUGetPresentBitmap(void);
-virBitmap *virHostCPUGetOnlineBitmap(void);
+virBitmap *virHostCPUGetOnlineBitmap(void) ATTRIBUTE_MOCKABLE;
 virBitmap *virHostCPUGetAvailableCPUsBitmap(void);
-int virHostCPUGetIsolated(virBitmap **isolated);
+int virHostCPUGetIsolated(virBitmap **isolated) ATTRIBUTE_MOCKABLE;
 
 int virHostCPUGetCount(void);
 int virHostCPUGetThreadsPerSubcore(virArch arch) ATTRIBUTE_MOCKABLE;

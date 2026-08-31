@@ -2580,7 +2580,7 @@ qemuProcessDetectIOThreadPIDs(virDomainObj *vm,
  *
  * Returns: 0 on success, -1 on error.
  */
-static int
+int
 qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet)
 {
     g_autoptr(virBitmap) isolCpus = NULL;

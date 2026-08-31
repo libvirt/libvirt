@@ -269,3 +269,5 @@ void qemuProcessHandleNbdkitExit(qemuNbdkitProcess *nbdkit,
 int qemuPrepareNVRAM(virQEMUDriver *driver,
                      virDomainDef *def,
                      bool reset_nvram);
+
+int qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet);
