@@ -2567,30 +2567,46 @@ qemuProcessDetectIOThreadPIDs(virDomainObj *vm,
 }
 
 
+/**
+ * qemuProcessGetAllCpuAffinity:
+ * @cpumapRet: returned CPU affinity map
+ *
+ * Sets @cpumapRet to the online CPUs minus the isolated ones.
+ *
+ * In case there is nothing to exclude (no isolated CPUs, or no overlap with
+ * online CPUs), sets @cpumapRet to NULL instead, indicating to the caller that
+ * it should not call sched_setaffinity(), which would prevent the usage of
+ * CPUs that are hot plugged later on.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
 static int
 qemuProcessGetAllCpuAffinity(virBitmap **cpumapRet)
 {
     g_autoptr(virBitmap) isolCpus = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
 
     *cpumapRet = NULL;
 
     if (!virHostCPUHasBitmap())
         return 0;
 
-    if (!(*cpumapRet = virHostCPUGetOnlineBitmap()))
+    if (!(cpumap = virHostCPUGetOnlineBitmap()))
         return -1;
 
     if (virHostCPUGetIsolated(&isolCpus) < 0)
         return -1;
 
-    if (isolCpus) {
+    if (isolCpus && virBitmapOverlaps(cpumap, isolCpus)) {
         g_autofree char *isolCpusStr = virBitmapFormat(isolCpus);
-        g_autofree char *cpumapRetStr = virBitmapFormat(*cpumapRet);
+        g_autofree char *cpumapRetStr = virBitmapFormat(cpumap);
 
         VIR_INFO("Subtracting isolated CPUs %1$s from online CPUs %2$s",
                  isolCpusStr, cpumapRetStr);
 
-        virBitmapSubtract(*cpumapRet, isolCpus);
+        virBitmapSubtract(cpumap, isolCpus);
+
+        *cpumapRet = g_steal_pointer(&cpumap);
     }
 
     return 0;
