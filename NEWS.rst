@@ -13,6 +13,35 @@ v12.7.0 (unreleased)
 
 * **Security**
 
+  * CVE-2026-18917: Integer overflow in RPC handler for ``virNodeGetFreePages``
+
+    The RPC handler for ``virNodeGetFreePages`` didn't properly check for
+    overflows in multiplication of integers when calculating the amount of
+    returned data for validation and allocation of the return buffer.
+
+    Specific values could thus pass validation and cause an undersized buffer
+    to be allocated. The hypervisor driver would then fill the undersized buffer
+    based on the values prior to multiplication and thus cause a write beyond
+    the end of the allocated buffer.
+
+    This bug can be triggered via a read-only connection.
+
+  * CVE-2026-77158: Double free of disks array in ``qemuAgentGetDisks``
+
+    The qemu hypervisor driver would double-free the array of parsed disks, on
+    error code paths leading to crash of the daemon. The error code path could
+    be reached when the qemu guest agent provided malformed data as response to
+    the ``guest-get-disks`` command.
+
+  * CVE-2026-77159: ``chown()`` of swtpm log file follows symlinks
+
+    When starting up a VM with a ``swtpm`` device configured, libvirt
+    ``chown()``-s the log file of swtpm to the (unprivileged) user/group
+    running the swtpm process. The problem is that the directory containing the
+    log files is also owned by the same user/group, thus users with access
+    to that directory could install a symlink to a privileged file that the
+    libvirt daemon would follow and chown the file pointed to.
+
 * **Removed features**
 
 * **New features**
@@ -76,6 +105,12 @@ v12.7.0 (unreleased)
     When libvirt constructs domain XML for an ESX domain it traverses through
     all datastores to find which one stores disks for the domain. But if a
     datastore wasn't mounted, then a crash would occur. This is now fixed.
+
+  * virsh: Don't crash when certain error messages are printed
+
+    A bug in the error printing function could cause ``virsh`` to crash when
+    certain errors (e.g. disk not found in ``virsh detach-disk``) were being
+    reported.
 
 
 v12.6.0 (2026-08-03)
