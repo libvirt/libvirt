@@ -8,7 +8,7 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v12.7.0 (unreleased)
+v12.7.0 (2026-09-01)
 ====================
 
 * **Security**
@@ -41,8 +41,6 @@ v12.7.0 (unreleased)
     log files is also owned by the same user/group, thus users with access
     to that directory could install a symlink to a privileged file that the
     libvirt daemon would follow and chown the file pointed to.
-
-* **Removed features**
 
 * **New features**
 
@@ -88,8 +86,6 @@ v12.7.0 (unreleased)
     on guest devices (driver name, version, release date, and so on). This is
     now exposed via ``virDomainGetGuestInfo()`` API (accessible via ``guestinfo
     --devices`` virsh command).
-
-* **Improvements**
 
 * **Bug fixes**
 
