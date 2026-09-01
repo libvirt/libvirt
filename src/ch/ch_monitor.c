@@ -70,12 +70,34 @@ virCHMonitorPut(virCHMonitor *mon,
                 virJSONValue **answer);
 
 static int
+virCHMonitorBuildCPUTopologyJSON(virJSONValue *content,
+                                 virDomainDef *vmdef)
+{
+    int rc;
+
+    if ((rc = virDomainDefGetVcpusTopology(vmdef, NULL)) != 0)
+        return rc;
+
+    if (virJSONValueObjectAdd(&content,
+                              "u:threads_per_core", vmdef->cpu->threads,
+                              "u:cores_per_die", vmdef->cpu->cores,
+                              "u:dies_per_package", vmdef->cpu->dies,
+                              "u:packages", vmdef->cpu->sockets,
+                              NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
 {
     g_autoptr(virJSONValue) cpus = NULL;
+    g_autoptr(virJSONValue) topology = virJSONValueNewObject();
     unsigned int maxvcpus = 0;
     unsigned int nvcpus = 0;
     virDomainVcpuDef *vcpu;
+    int rc;
     size_t i;
 
     /* count maximum allowed number vcpus and enabled vcpus when boot.*/
@@ -92,6 +114,17 @@ virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
             return -1;
         if (virJSONValueObjectAppendNumberInt(cpus, "max_vcpus", vmdef->maxvcpus) < 0)
             return -1;
+        if ((rc = virCHMonitorBuildCPUTopologyJSON(topology, vmdef)) < 0)
+            return -1;
+
+        if (rc == 0) {
+            VIR_DEBUG("Using CPU topology: %u:%u:%u:%u",
+                      vmdef->cpu->sockets, vmdef->cpu->dies,
+                      vmdef->cpu->cores, vmdef->cpu->threads);
+            if (virJSONValueObjectAppend(cpus, "topology", &topology) < 0)
+                return -1;
+        }
+
         if (virJSONValueObjectAppend(content, "cpus", &cpus) < 0)
             return -1;
     }
