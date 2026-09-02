@@ -22,6 +22,9 @@ module Virtlogd =
    let int_entry      (kw:string) = [ key kw . value_sep . int_val ]
    let str_array_entry (kw:string) = [ key kw . value_sep . str_array_val ]
 
+   let bytes_val = del /\"/ "\"" . store /[0-9]+[a-zA-Z]+/ . del /\"/ "\""
+   let bytes_entry    (kw:string) = [ key kw . value_sep . bytes_val ] | [ key kw . value_sep . int_val ]
+
 
    (* Config entry grouped by function - same order as example config *)
    let logging_entry = int_entry "log_level"
@@ -29,7 +32,7 @@ module Virtlogd =
                      | str_entry "log_outputs"
                      | int_entry "max_clients"
                      | int_entry "admin_max_clients"
-                     | int_entry "max_size"
+                     | bytes_entry "max_size"
                      | int_entry "max_backups"
                      | int_entry "max_age_days"
                      | str_entry "log_root"

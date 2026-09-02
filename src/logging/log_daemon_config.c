@@ -91,7 +91,7 @@ virLogDaemonConfigLoadOptions(virLogDaemonConfig *data,
         return -1;
     if (virConfGetValueUInt(conf, "admin_max_clients", &data->admin_max_clients) < 0)
         return -1;
-    if (virConfGetValueSizeT(conf, "max_size", &data->max_size) < 0)
+    if (virConfGetValueBytes(conf, "max_size", &data->max_size) < 0)
         return -1;
     if (virConfGetValueSizeT(conf, "max_backups", &data->max_backups) < 0)
         return -1;

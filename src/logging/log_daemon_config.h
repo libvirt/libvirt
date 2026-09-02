@@ -32,7 +32,7 @@ struct _virLogDaemonConfig {
     unsigned int admin_max_clients;
 
     size_t max_backups;
-    size_t max_size;
+    unsigned long long max_size;
 
     char *log_root;
     size_t max_age_days;

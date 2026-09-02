@@ -26,6 +26,11 @@ v12.8.0 (unreleased)
     available only to a guest that can use it, such dumps are now written in
     win-dmp format instead.
 
+  * logging: ``max_size`` in virtlogd.conf accepts a unit suffix
+
+    The setting now takes a size such as ``"2MiB"`` as well as a plain byte
+    count.
+
 * **Bug fixes**
 
 
