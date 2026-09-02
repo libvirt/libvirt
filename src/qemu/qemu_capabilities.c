@@ -775,6 +775,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 500 */
               "arm-smmuv3.cmdqv", /* QEMU_CAPS_ARM_SMMUV3_CMDQV */
               "iothread.poll-weight", /* QEMU_CAPS_IOTHREAD_POLL_WEIGHT */
+              "win-dmp.guest-aware", /* QEMU_CAPS_WIN_DMP_GUEST_AWARE */
     );
 
 
@@ -1674,6 +1675,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+socket/data/reconnect-ms", QEMU_CAPS_CHARDEV_RECONNECT_MILISECONDS },
     { "chardev-add/arg-type/backend/+qemu-vdagent", QEMU_CAPS_CHARDEV_QEMU_VDAGENT },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
+    { "dump-guest-memory/arg-type/format/^win-dmp/$allowed-by-guest", QEMU_CAPS_WIN_DMP_GUEST_AWARE },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "netdev_add/arg-type/+stream", QEMU_CAPS_NETDEV_STREAM },
     { "netdev_add/arg-type/+stream/reconnect", QEMU_CAPS_NETDEV_STREAM_RECONNECT },

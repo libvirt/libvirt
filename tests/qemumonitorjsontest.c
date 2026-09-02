@@ -3116,6 +3116,8 @@ mymain(void)
     DO_TEST_QAPI_QUERY("variant", "blockdev-add/arg-type/+file", 1, true);
     DO_TEST_QAPI_QUERY("variant property", "blockdev-add/arg-type/+file/filename", 1, true);
     DO_TEST_QAPI_QUERY("enum value", "query-status/ret-type/status/^debug", 1, false);
+    DO_TEST_QAPI_QUERY("enum value feature", "query-migrate-capabilities/ret-type/capability/^x-colo/$unstable", 1, false);
+    DO_TEST_QAPI_QUERY("enum value in command arguments", "dump-guest-memory/arg-type/format/^win-dmp", 1, false);
     DO_TEST_QAPI_QUERY("builtin type", "query-qmp-schema/ret-type/name/!string", 1, false);
     DO_TEST_QAPI_QUERY("alternate variant 1", "blockdev-add/arg-type/+qcow2/backing/!null", 1, false);
     DO_TEST_QAPI_QUERY("alternate variant 2", "blockdev-add/arg-type/+qcow2/backing/!string", 1, false);
@@ -3125,6 +3127,7 @@ mymain(void)
     DO_TEST_QAPI_QUERY("nonexistent attr", "screendump/arg-type/nonexistent", 0, false);
     DO_TEST_QAPI_QUERY("nonexistent variant", "blockdev-add/arg-type/+nonexistent", 0, false);
     DO_TEST_QAPI_QUERY("nonexistent enum value", "query-status/ret-type/status/^nonexistentdebug", 0, false);
+    DO_TEST_QAPI_QUERY("nonexistent enum value feature", "query-migrate-capabilities/ret-type/capability/^x-colo/$nonexistentfeature", 0, false);
     DO_TEST_QAPI_QUERY("broken query for enum value", "query-status/ret-type/status/^debug/test", -1, false);
     DO_TEST_QAPI_QUERY("builtin type", "query-qmp-schema/ret-type/name/!number", 0, false);
 
