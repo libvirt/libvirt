@@ -83,6 +83,7 @@ module Test_libvirtd_qemu =
 { "snapshot_image_format" = "raw" }
 { "auto_dump_path" = "/var/lib/libvirt/qemu/dump" }
 { "auto_dump_bypass_cache" = "0" }
+{ "auto_dump_max_size" = "10GiB" }
 { "auto_start_bypass_cache" = "0" }
 { "auto_start_delay" = "0" }
 { "auto_shutdown_try_save" = "persistent" }

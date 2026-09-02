@@ -25,6 +25,9 @@ module Libvirtd_qemu =
    let unlimited_val =  del /\"/ "\"" . store /unlimited/ . del /\"/ "\""
    let limits_entry (kw:string) = [ key kw . value_sep . unlimited_val ] |  [ key kw . value_sep . int_val ]
 
+   let bytes_val = del /\"/ "\"" . store /[0-9]+[a-zA-Z]+/ . del /\"/ "\""
+   let bytes_entry (kw:string) = [ key kw . value_sep . bytes_val ] | [ key kw . value_sep . int_val ]
+
 
    (* Config entry grouped by function - same order as example config *)
    let default_tls_entry = str_entry "default_tls_x509_cert_dir"
@@ -109,6 +112,7 @@ module Libvirtd_qemu =
                  | str_entry "snapshot_image_format"
                  | str_entry "auto_dump_path"
                  | bool_entry "auto_dump_bypass_cache"
+                 | bytes_entry "auto_dump_max_size"
                  | bool_entry "auto_start_bypass_cache"
                  | int_entry "auto_start_delay"
                  | str_entry "auto_shutdown_try_save"

@@ -748,6 +748,8 @@ virQEMUDriverConfigLoadSaveEntry(virQEMUDriverConfig *cfg,
         return -1;
     if (virConfGetValueBool(conf, "auto_dump_bypass_cache", &cfg->autoDumpBypassCache) < 0)
         return -1;
+    if (virConfGetValueBytes(conf, "auto_dump_max_size", &cfg->autoDumpMaxSize) < 0)
+        return -1;
     if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
         return -1;
     if (virConfGetValueUInt(conf, "auto_start_delay", &cfg->autoStartDelayMS) < 0)

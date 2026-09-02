@@ -3560,6 +3560,134 @@ qemuDomainGetAutoDumpFormat(virDomainObj *vm)
 }
 
 
+typedef struct _qemuAutoDumpFile qemuAutoDumpFile;
+struct _qemuAutoDumpFile {
+    char *path;
+    unsigned long long size;
+    long long mtime;
+};
+
+static void
+qemuAutoDumpFileFree(void *opaque)
+{
+    qemuAutoDumpFile *file = opaque;
+
+    g_free(file->path);
+    g_free(file);
+}
+
+
+static gint
+qemuAutoDumpFileCompare(gconstpointer a,
+                        gconstpointer b)
+{
+    qemuAutoDumpFile *fa = *(qemuAutoDumpFile **) a;
+    qemuAutoDumpFile *fb = *(qemuAutoDumpFile **) b;
+
+    return fa->mtime < fb->mtime ? -1 : fa->mtime > fb->mtime;
+}
+
+
+static bool
+qemuIsAutoDumpFileName(const char *name)
+{
+    /* "-YYYY-MM-DD-HH:MM:SS" as built by getAutoDumpPath(), 'd' any digit */
+    static const char shape[] = "-dddd-dd-dd-dd:dd:dd";
+    size_t shapelen = sizeof(shape) - 1;
+    size_t len = strlen(name);
+    const char *stamp;
+    size_t i;
+
+    if (len <= shapelen)
+        return false;
+
+    stamp = name + len - shapelen;
+
+    for (i = 0; i < shapelen; i++) {
+        if (shape[i] == 'd') {
+            if (!g_ascii_isdigit(stamp[i]))
+                return false;
+        } else if (stamp[i] != shape[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+/* Removes the oldest dumps under autoDumpPath until the total size fits
+ * autoDumpMaxSize. KEEP (the dump just written) is never removed, even
+ * alone over quota: mtime alone can't protect it, since it is only
+ * second-granularity and ties with another dump written the same
+ * second would make the eviction order among them arbitrary. */
+static void
+qemuPruneAutoDumpPath(virQEMUDriverConfig *cfg,
+                      const char *keep)
+{
+    g_autoptr(DIR) dir = NULL;
+    struct dirent *entry;
+    g_autoptr(GPtrArray) files = NULL;
+    unsigned long long total = 0;
+    size_t i;
+    int rc;
+
+    if (cfg->autoDumpMaxSize == 0)
+        return;
+
+    if (virDirOpenQuiet(&dir, cfg->autoDumpPath) < 0)
+        return;
+
+    files = g_ptr_array_new_with_free_func(qemuAutoDumpFileFree);
+
+    while ((rc = virDirRead(dir, &entry, NULL)) > 0) {
+        g_autofree char *path = g_strdup_printf("%s/%s", cfg->autoDumpPath,
+                                                entry->d_name);
+        GStatBuf sb;
+        qemuAutoDumpFile *file;
+        unsigned long long alloc;
+
+        if (!qemuIsAutoDumpFileName(entry->d_name))
+            continue;
+
+        if (g_stat(path, &sb) < 0 || !S_ISREG(sb.st_mode))
+            continue;
+
+        alloc = (unsigned long long)sb.st_blocks * DEV_BSIZE;
+        total += alloc;
+
+        if (STREQ(path, keep))
+            continue;
+
+        file = g_new0(qemuAutoDumpFile, 1);
+        file->path = g_steal_pointer(&path);
+        file->size = alloc;
+        file->mtime = sb.st_mtime;
+
+        g_ptr_array_add(files, file);
+    }
+
+    if (rc < 0)
+        return;
+
+    g_ptr_array_sort(files, qemuAutoDumpFileCompare);
+
+    for (i = 0; i < files->len && total > cfg->autoDumpMaxSize; i++) {
+        qemuAutoDumpFile *file = g_ptr_array_index(files, i);
+
+        if (unlink(file->path) < 0 && errno != ENOENT) {
+            VIR_WARN("Failed to prune old dump %s: %s",
+                     file->path, g_strerror(errno));
+            continue;
+        }
+
+        VIR_DEBUG("Pruned old dump %s to satisfy auto_dump_max_size quota",
+                  file->path);
+        total -= file->size;
+    }
+}
+
+
 static void
 processWatchdogEvent(virQEMUDriver *driver,
                      virDomainObj *vm,
@@ -3589,6 +3717,8 @@ processWatchdogEvent(virQEMUDriver *driver,
                               qemuDomainGetAutoDumpFormat(vm))) < 0)
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Dump failed"));
+        else
+            qemuPruneAutoDumpPath(cfg, dumpfile);
 
         ret = qemuProcessStartCPUs(driver, vm,
                                    VIR_DOMAIN_RUNNING_UNPAUSED,
@@ -3624,6 +3754,8 @@ doCoreDumpToAutoDumpPath(virQEMUDriver *driver,
                           qemuDomainGetAutoDumpFormat(vm))) < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
+    else
+        qemuPruneAutoDumpPath(cfg, dumpfile);
     return ret;
 }
 

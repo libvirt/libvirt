@@ -226,6 +226,7 @@ struct _virQEMUDriverConfig {
 
     char *autoDumpPath;
     bool autoDumpBypassCache;
+    unsigned long long autoDumpMaxSize;
     bool autoStartBypassCache;
     unsigned int autoStartDelayMS;
     virDomainDriverAutoShutdownConfig autoShutdown;

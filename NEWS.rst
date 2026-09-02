@@ -17,6 +17,13 @@ v12.8.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add ``auto_dump_max_size`` to cap the size of auto-triggered dumps
+
+    A guest that keeps crashing fills ``auto_dump_path`` one dump at a time.
+    The new ``auto_dump_max_size`` setting in qemu.conf bounds the total size
+    those dumps may occupy, pruning the oldest after each new one. It takes a
+    byte count or a size such as ``"10GiB"``; 0, the default, keeps them all.
+
 * **Improvements**
 
   * qemu: Select the win-dmp format for Windows guest crash dumps

@@ -688,6 +688,23 @@
 #auto_dump_bypass_cache = 0
 
 
+# Total size that auto-triggered dumps (from on_crash and watchdog
+# handling) are allowed to occupy under auto_dump_path. After each new
+# dump is written, the oldest dumps are removed until the total fits
+# the quota again. The dump that was just written is never removed by
+# this, even if it alone exceeds the quota. Only the dumps libvirt
+# itself wrote are counted and removed.
+#
+# The value is a plain byte count, or a byte count followed by a unit
+# suffix: bytes/b, KB/k/KiB, MB/M/MiB, GB/G/GiB, TB/T/TiB, PB/P/PiB, or
+# EB/E/EiB (decimal 'B' suffixes scale by 1000, binary 'iB' suffixes,
+# and their bare single-letter equivalents, scale by 1024).
+#
+# Defaults to 0, which disables the quota and keeps every dump forever.
+#
+#auto_dump_max_size = "10GiB"
+
+
 # When a domain is configured to be auto-started, enabling this flag
 # has the same effect as using the VIR_DOMAIN_START_BYPASS_CACHE flag
 # with the virDomainCreateWithFlags API.  That is, the system will
