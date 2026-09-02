@@ -1117,6 +1117,53 @@ int virConfGetValueUInt(virConf *conf,
 
 
 /**
+ * virConfGetValueBytes:
+ * @conf: the config object
+ * @setting: the config entry name
+ * @value: pointer to hold the byte count
+ *
+ * Get the value of the config entry @setting, storing it in @value.
+ * The entry may be a plain integer, taken as a byte count, or a
+ * string holding a byte count followed by a unit suffix understood
+ * by virStrToBytes(). If the config entry is not present, then
+ * @value will be unmodified.
+ *
+ * Reports an error if the config entry is set but has an unexpected
+ * type, or if a string entry cannot be parsed as a size.
+ *
+ * Returns: 1 if the value was present, 0 if missing, -1 on error
+ */
+int virConfGetValueBytes(virConf *conf,
+                         const char *setting,
+                         unsigned long long *value)
+{
+    virConfValue *cval = virConfGetValue(conf, setting);
+
+    VIR_DEBUG("Get value bytes %p %d",
+              cval, cval ? cval->type : VIR_CONF_NONE);
+
+    if (!cval)
+        return 0;
+
+    if (cval->type == VIR_CONF_ULLONG) {
+        *value = cval->l;
+        return 1;
+    }
+
+    if (cval->type == VIR_CONF_STRING) {
+        if (virStrToBytes(cval->str, ULLONG_MAX, value) < 0)
+            return -1;
+        return 1;
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("%1$s: expected an unsigned integer or a size string for '%2$s' parameter"),
+                   conf->filename, setting);
+    return -1;
+}
+
+
+/**
  * virConfGetValueSizeT:
  * @conf: the config object
  * @setting: the config entry name

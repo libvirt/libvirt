@@ -100,6 +100,9 @@ int virConfGetValueInt(virConf *conf,
 int virConfGetValueUInt(virConf *conf,
                         const char *setting,
                         unsigned int *value);
+int virConfGetValueBytes(virConf *conf,
+                         const char *setting,
+                         unsigned long long *value);
 int virConfGetValueSizeT(virConf *conf,
                          const char *setting,
                          size_t *value);

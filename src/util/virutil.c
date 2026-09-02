@@ -235,6 +235,29 @@ virScaleInteger(unsigned long long *value, const char *suffix,
 }
 
 
+/* Parse the whole of STR as a byte count into RESULT, rejecting the
+ * result if it exceeds LIMIT. STR is a plain decimal integer, or a
+ * decimal integer immediately followed by one of the unit suffixes
+ * recognized by virScaleInteger(); unlike virStrToLong_ullp(), no
+ * characters may be left over after that optional suffix. Return 0 on
+ * success, -1 with error message raised on failure. */
+int
+virStrToBytes(const char *str,
+              unsigned long long limit,
+              unsigned long long *result)
+{
+    char *end;
+
+    if (virStrToLong_ullp(str, &end, 10, result) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Unable to parse integer from size '%1$s'"), str);
+        return -1;
+    }
+
+    return virScaleInteger(result, end, 1, limit);
+}
+
+
 /**
  * Format @val as a base-10 decimal number, in the
  * buffer @buf of size @buflen. To allocate a suitable
