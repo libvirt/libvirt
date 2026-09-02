@@ -3532,6 +3532,34 @@ getAutoDumpPath(virQEMUDriver *driver,
     return g_strdup_printf("%s/%s-%s", cfg->autoDumpPath, domname, nowstr);
 }
 
+/* Older QEMU offers win-dmp on any x86 machine, so trust the capability
+ * query only where QEMU says the answer depends on the guest. */
+static unsigned int
+qemuDomainGetAutoDumpFormat(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    unsigned int dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_RAW;
+    int rc;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_WIN_DMP_GUEST_AWARE))
+        return dumpformat;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_DUMP) < 0) {
+        virResetLastError();
+        return dumpformat;
+    }
+
+    rc = qemuMonitorGetDumpGuestMemoryCapability(priv->mon, "win-dmp");
+    if (rc < 0)
+        virResetLastError();
+    else if (rc > 0)
+        dumpformat = VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP;
+
+    qemuDomainObjExitMonitor(vm);
+    return dumpformat;
+}
+
+
 static void
 processWatchdogEvent(virQEMUDriver *driver,
                      virDomainObj *vm,
@@ -3558,7 +3586,7 @@ processWatchdogEvent(virQEMUDriver *driver,
 
         flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
         if ((ret = doCoreDump(driver, vm, dumpfile, flags,
-                              VIR_DOMAIN_CORE_DUMP_FORMAT_RAW)) < 0)
+                              qemuDomainGetAutoDumpFormat(vm))) < 0)
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Dump failed"));
 
@@ -3578,6 +3606,7 @@ processWatchdogEvent(virQEMUDriver *driver,
     virDomainObjEndAsyncJob(vm);
 }
 
+
 static int
 doCoreDumpToAutoDumpPath(virQEMUDriver *driver,
                          virDomainObj *vm,
@@ -3592,7 +3621,7 @@ doCoreDumpToAutoDumpPath(virQEMUDriver *driver,
 
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
     if ((ret = doCoreDump(driver, vm, dumpfile, flags,
-                          VIR_DOMAIN_CORE_DUMP_FORMAT_RAW)) < 0)
+                          qemuDomainGetAutoDumpFormat(vm))) < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
     return ret;

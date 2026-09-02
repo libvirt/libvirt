@@ -19,6 +19,13 @@ v12.8.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Select the win-dmp format for Windows guest crash dumps
+
+    Dumps triggered by ``<on_crash>`` and by watchdog handling used QEMU's elf
+    default, which WinDbg cannot load. Where QEMU reports the format as
+    available only to a guest that can use it, such dumps are now written in
+    win-dmp format instead.
+
 * **Bug fixes**
 
 
