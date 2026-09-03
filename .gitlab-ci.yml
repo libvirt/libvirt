@@ -193,7 +193,7 @@ cve_tags:
     - when: never
   script:
     # fetch list of git tags and exceptions
-    - git tag | grep -o 'CVE-[0-9]\+-[0-9]\+' > cve-tags
+    - git tag | grep -o 'CVE-[0-9]\+-[0-9]\+' | sort -u > cve-tags
     - grep -o 'CVE-[0-9]\+-[0-9]\+' .cve_exceptions > cve-allowed-exceptions
     - sort -u cve-tags cve-allowed-exceptions > cve-allowed
     # lookup CVE ids in 'git-log'
