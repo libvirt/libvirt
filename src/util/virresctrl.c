@@ -2587,6 +2587,16 @@ virResctrlMonitorGetID(virResctrlMonitor *monitor)
 }
 
 
+char *
+virResctrlMonitorGetName(virResctrlMonitor *monitor)
+{
+    if (!monitor->path)
+        return NULL;
+
+    return g_path_get_basename(monitor->path);
+}
+
+
 void
 virResctrlMonitorSetAlloc(virResctrlMonitor *monitor,
                           virResctrlAlloc *alloc)

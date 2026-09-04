@@ -233,6 +233,9 @@ virResctrlMonitorSetID(virResctrlMonitor *monitor,
 const char *
 virResctrlMonitorGetID(virResctrlMonitor *monitor);
 
+char *
+virResctrlMonitorGetName(virResctrlMonitor *monitor);
+
 void
 virResctrlMonitorSetAlloc(virResctrlMonitor *monitor,
                           virResctrlAlloc *alloc);

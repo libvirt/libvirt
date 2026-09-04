@@ -17415,7 +17415,7 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
              * let this newly allocated memory buffer to be freed along with
              * the free of 'res' */
             res->vcpus = virBitmapFormat(domresmon->vcpus);
-            res->name = g_strdup(virResctrlMonitorGetID(monitor));
+            res->name = virResctrlMonitorGetName(monitor);
 
             if (virResctrlMonitorGetStats(monitor, (const char **)features,
                                           &res->stats, &res->nstats) < 0)
