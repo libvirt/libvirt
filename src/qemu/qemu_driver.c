@@ -17577,6 +17577,9 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
         return;
     }
 
+    if (nresdata == 0)
+        return;
+
     virTypedParamListAddUInt(params, nresdata,
                              VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_COUNT);
 
