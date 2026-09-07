@@ -1029,10 +1029,13 @@ CPU Tuning
    Optional ``cachetune`` element can control allocations for CPU caches using
    the resctrl on the host. Whether or not is this supported can be gathered
    from capabilities where some limitations like minimum size and required
-   granularity are reported as well. The required attribute ``vcpus`` specifies
-   to which vCPUs this allocation applies. A vCPU can only be member of one
-   ``cachetune`` element allocation. The vCPUs specified by cachetune can be
-   identical with those in memorytune, however they are not allowed to overlap.
+   granularity are reported as well. The optional attribute ``vcpus`` specifies
+   to which vCPUs this allocation applies. If ``vcpus`` is omitted the allocation
+   applies to the whole emulator process; the resctrl group is then inherited by
+   all its threads and child processes. A vCPU can only be member of one
+   ``cachetune`` element allocation. The scope specified by cachetune
+   can be identical with those in memorytune, however they are not
+   allowed to overlap.
    The optional, output only ``id`` attribute identifies cache uniquely.
    Supported subelements are:
 
@@ -1059,23 +1062,26 @@ CPU Tuning
          specified, defaults to bytes.
 
    ``monitor`` :since:`Since 4.10.0`
-      The optional element ``monitor`` creates the cache monitor(s) for current
-      cache allocation and has the following required attributes:
+      The optional element ``monitor`` creates the cache monitor(s) for
+      the enclosing ``cachetune`` allocation. It has the following attributes:
 
       ``level``
-         Host cache level the monitor belongs to.
+         Required. Host cache level the monitor belongs to.
       ``vcpus``
-         vCPU list the monitor applies to. A monitor's vCPU list can only be the
-         member(s) of the vCPU list of the associated allocation. The default
-         monitor has the same vCPU list as the associated allocation. For
-         non-default monitors, overlapping vCPUs are not permitted.
+         Optional. The vCPUs to monitor. Must be a subset of the enclosing
+         allocation's vCPUs and must not overlap another cache monitor of the
+         same allocation. A monitor covering the allocation's full vCPU list
+         reports the allocation as a whole. Omit ``vcpus`` to inherit the
+         enclosing allocation's scope.
 
 ``memorytune`` :since:`Since 4.7.0`
    Optional ``memorytune`` element can control allocations for memory bandwidth
    using the resctrl on the host. Whether or not is this supported can be
    gathered from capabilities where some limitations like minimum bandwidth and
-   required granularity are reported as well. The required attribute ``vcpus``
-   specifies to which vCPUs this allocation applies. A vCPU can only be member
+   required granularity are reported as well. The optional attribute ``vcpus``
+   specifies to which vCPUs this allocation applies. If ``vcpus`` is omitted the
+   allocation applies to the whole emulator process; the resctrl group is then
+   inherited by all its threads and child processes. A vCPU can only be member
    of one ``memorytune`` element allocation. The ``vcpus`` specified by
    ``memorytune`` can be identical to those specified by ``cachetune``. However
    they are not allowed to overlap each other. Supported subelements are:
@@ -1094,21 +1100,24 @@ CPU Tuning
          configuration.
 
 ``energytune`` :since:`Since 12.4.0`
-   Optional ``energytune`` element allows to monitor energy consumption using the
-   resctrl filesystem on the host. Whether or not is this supported can be
-   gathered from capabilities where number of monitors and available features are
-   reported. The required attribute ``vcpus`` specifies to which allocation group
-   this monitor belongs. A vCPU can only be member of one allocation group and monitor
-   group. The ``vcpus`` specified by ``energytune`` can be identical to those
-   specified by ``cachetune`` or ``memorytune``. However they are not allowed to
-   overlap each other. Supported subelements are:
+   Optional ``energytune`` element defines a group for energy consumption
+   monitoring using the resctrl filesystem on the host. Whether or not is this
+   supported can be gathered from capabilities where number of monitors and
+   available features are reported. The optional attribute ``vcpus`` specifies
+   which vCPUs form this group. If ``vcpus`` is omitted the group covers the whole
+   emulator process; the resctrl group is then inherited by all its threads and
+   child processes. A vCPU can only be member of one ``energytune`` group. The
+   ``vcpus`` specified by ``energytune`` can be identical to those specified by
+   ``cachetune`` or ``memorytune``. However they are not allowed to overlap each
+   other. Supported subelements are:
 
    ``monitor``
-      The optional element ``monitor`` creates the energy monitor for
-      this allocation group and has the following required attribute:
+      The optional element creates the energy monitor for the
+      enclosing ``energytune`` group. It has the following attribute:
 
       ``vcpus``
-         vCPU list the monitor applies to.
+         Optional. The vCPUs to monitor. Omit ``vcpus`` to inherit the enclosing
+         group's scope.
 
 
 Memory Allocation

@@ -211,6 +211,17 @@ mymain(void)
     DO_TEST("cachetune-cdp");
     DO_TEST("cachetune");
     DO_TEST("energytune");
+    DO_TEST("energytune-wholeprocess");
+    DO_TEST("memorytune-wholeprocess");
+    DO_TEST("cachetune-wholeprocess-monitors");
+    DO_TEST("resctrl-wholeprocess-monitors");
+    DO_TEST("resctrl-wholeprocess-alloc-monitor");
+    DO_TEST_FAIL_INACTIVE("resctrl-wholeprocess-layering");
+    DO_TEST_FAIL_INACTIVE("cachetune-wholeprocess-duplicate");
+    DO_TEST_FAIL_INACTIVE("cachetune-wholeprocess-monitor-duplicate");
+    DO_TEST_DIFFERENT("cachetune-monitor-inherit-alloc");
+    DO_TEST_FAIL_INACTIVE("energytune-colliding-monitor");
+    DO_TEST_FAIL_INACTIVE("cachetune-monitor-empty-vcpus");
     DO_TEST_DIFFERENT("cachetune-extra-tunes");
     DO_TEST_FAIL_INACTIVE("cachetune-colliding-allocs");
     DO_TEST_FAIL_INACTIVE("cachetune-colliding-tunes");

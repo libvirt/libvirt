@@ -18814,15 +18814,18 @@ virDomainDefParseBootOptions(virDomainDef *def,
 static int
 virDomainResctrlParseVcpus(virDomainDef *def,
                            xmlNodePtr node,
-                           virBitmap **vcpus)
+                           virBitmap **vcpus,
+                           bool *wholeProcess)
 {
     g_autofree char *vcpus_str = NULL;
 
+    *vcpus = NULL;
+
     vcpus_str = virXMLPropString(node, "vcpus");
-    if (!vcpus_str) {
-        virReportError(VIR_ERR_XML_ERROR, _("Missing %1$s attribute 'vcpus'"),
-                       node->name);
-        return -1;
+    *wholeProcess = !vcpus_str;
+    if (*wholeProcess) {
+        *vcpus = virBitmapNew(0);
+        return 0;
     }
     if (virBitmapParse(vcpus_str, vcpus, VIR_DOMAIN_CPUMASK_LEN) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -18902,6 +18905,9 @@ virDomainCachetuneDefParseCache(xmlXPathContextPtr ctxt,
 /* Checking if the monitor's vcpus and tag is conflicted with existing
  * allocation and monitors.
  *
+ * A whole-process monitor must not be mixed with explicit monitors and may
+ * cover each resource type only once.
+ *
  * Returns 1 if @monitor->vcpus equals to @resctrl->vcpus, then the monitor
  * will share the underlying resctrl group with @resctrl->alloc. Returns -1
  * if any conflict found. Returns 0 if no conflict and @monitor->vcpus is
@@ -18918,17 +18924,40 @@ virDomainResctrlValidateMonitor(virDomainResctrlDef *resctrl,
     bool vcpus_overlap_no_resctrl = false;
     bool default_alloc_monitor = virResctrlAllocIsEmpty(resctrl->alloc);
 
+    if (resctrl->nmonitors > 0 &&
+        resctrl->monitors[0]->wholeProcess != monitor->wholeProcess) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Whole-process and explicit monitors cannot be mixed"));
+        return -1;
+    }
+
+    if (monitor->wholeProcess) {
+        for (i = 0; i < resctrl->nmonitors; i++) {
+            if (resctrl->monitors[i]->tag == monitor->tag) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Duplicate whole-process monitor of the same resource type"));
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
     if (virBitmapIsAllClear(monitor->vcpus)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("vcpus is empty"));
         return -1;
     }
 
-    while ((vcpu = virBitmapNextSetBit(monitor->vcpus, vcpu)) >= 0) {
-        if (!virBitmapIsBitSet(resctrl->vcpus, vcpu)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Monitor vcpus conflicts with allocation"));
-            return -1;
+    /* A whole-process allocation covers every thread, so it does not constrain
+     * an explicit monitor's vcpus. */
+    if (!resctrl->wholeProcess) {
+        while ((vcpu = virBitmapNextSetBit(monitor->vcpus, vcpu)) >= 0) {
+            if (!virBitmapIsBitSet(resctrl->vcpus, vcpu)) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("Monitor vcpus conflicts with allocation"));
+                return -1;
+            }
         }
     }
 
@@ -18995,6 +19024,7 @@ virDomainResctrlMonDefParse(virDomainDef *def,
 
     for (i = 0; i < n; i++) {
         g_autofree char *id = NULL;
+        bool wholeProcess = false;
 
         domresmon = g_new0(virDomainResctrlMonDef, 1);
 
@@ -19020,27 +19050,41 @@ virDomainResctrlMonDefParse(virDomainDef *def,
             }
         }
 
-        if (virDomainResctrlParseVcpus(def, nodes[i], &domresmon->vcpus) < 0)
+        if (virDomainResctrlParseVcpus(def, nodes[i], &domresmon->vcpus,
+                                       &wholeProcess) < 0)
             goto cleanup;
+
+        /* A monitor that omits vcpus inside an explicit allocation inherits
+         * the allocation's vcpu scope instead of covering the whole process. */
+        if (wholeProcess && !resctrl->wholeProcess) {
+            virBitmapFree(domresmon->vcpus);
+            domresmon->vcpus = virBitmapNewCopy(resctrl->vcpus);
+            wholeProcess = false;
+        }
+
+        domresmon->wholeProcess = wholeProcess;
 
         rv = virDomainResctrlValidateMonitor(resctrl, domresmon);
         if (rv < 0)
             goto cleanup;
 
-        /* If monitor's vcpu list is identical to the vcpu list of the
-         * associated allocation, set monitor's id to the same value
-         * as the allocation. */
-        if (rv == 1) {
-            id = g_strdup(virResctrlAllocGetID(resctrl->alloc));
-        } else {
-            g_autofree char *tmp = virBitmapFormat(domresmon->vcpus);
+        /* A whole-process monitor keeps its id unset, which selects the bare
+         * machine name. Otherwise, if the monitor's vcpu list is identical to
+         * the vcpu list of the associated allocation, share the allocation's
+         * id. */
+        if (!wholeProcess) {
+            if (rv == 1) {
+                id = g_strdup(virResctrlAllocGetID(resctrl->alloc));
+            } else {
+                g_autofree char *tmp = virBitmapFormat(domresmon->vcpus);
 
-            id = g_strdup_printf("vcpus_%s", tmp);
+                id = g_strdup_printf("vcpus_%s", tmp);
+            }
         }
 
         virResctrlMonitorSetAlloc(domresmon->instance, resctrl->alloc);
 
-        if (virResctrlMonitorSetID(domresmon->instance, id) < 0)
+        if (id && virResctrlMonitorSetID(domresmon->instance, id) < 0)
             goto cleanup;
 
         VIR_APPEND_ELEMENT(resctrl->monitors, resctrl->nmonitors, domresmon);
@@ -19057,36 +19101,61 @@ static virDomainResctrlDef *
 virDomainResctrlNew(xmlNodePtr node,
                     virResctrlAlloc *alloc,
                     virBitmap *vcpus,
+                    bool wholeProcess,
                     unsigned int flags)
 {
     virDomainResctrlDef *resctrl = NULL;
     g_autofree char *vcpus_str = NULL;
     g_autofree char *alloc_id = NULL;
 
-    /* We need to format it back because we need to be consistent in the naming
-     * even when users specify some "sub-optimal" string there. */
-    vcpus_str = virBitmapFormat(vcpus);
+    /* A whole-process group omits the "vcpus" suffix. */
+    if (!wholeProcess) {
+        /* We need to format it back because we need to be consistent in the naming
+         * even when users specify some "sub-optimal" string there. */
+        vcpus_str = virBitmapFormat(vcpus);
 
-    if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-        alloc_id = virXMLPropString(node, "id");
+        if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
+            alloc_id = virXMLPropString(node, "id");
 
-    if (!alloc_id) {
-        /* The number of allocations is limited and the directory structure is flat,
-         * not hierarchical, so we need to have all same allocations in one
-         * directory, so it's nice to have it named appropriately.  For now it's
-         * 'vcpus_...' but it's designed in order for it to be changeable in the
-         * future (it's part of the status XML). */
-        alloc_id = g_strdup_printf("vcpus_%s", vcpus_str);
+        if (!alloc_id) {
+            /* The number of allocations is limited and the directory structure is flat,
+             * not hierarchical, so we need to have all same allocations in one
+             * directory, so it's nice to have it named appropriately.  For now it's
+             * 'vcpus_...' but it's designed in order for it to be changeable in the
+             * future (it's part of the status XML). */
+            alloc_id = g_strdup_printf("vcpus_%s", vcpus_str);
+        }
+
+        if (virResctrlAllocSetID(alloc, alloc_id) < 0)
+            return NULL;
     }
-
-    if (virResctrlAllocSetID(alloc, alloc_id) < 0)
-        return NULL;
 
     resctrl = g_new0(virDomainResctrlDef, 1);
     resctrl->vcpus = virBitmapNewCopy(vcpus);
+    resctrl->wholeProcess = wholeProcess;
     resctrl->alloc = virObjectRef(alloc);
 
     return resctrl;
+}
+
+
+/* Whole-process and per-vcpu allocations cannot be mixed: assigning explicit
+ * vCPUs to their own group would pull them out of the whole-process group. */
+static int
+virDomainResctrlValidateScope(virDomainDef *def,
+                              bool wholeProcess)
+{
+    size_t i;
+
+    for (i = 0; i < def->nresctrls; i++) {
+        if (def->resctrls[i]->wholeProcess != wholeProcess) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Whole-process and per-vcpu resctrl allocations cannot be mixed"));
+            return -1;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -19101,16 +19170,17 @@ virDomainCachetuneDefParse(virDomainDef *def,
     ssize_t i = 0;
     int n;
     int ret = -1;
+    bool wholeProcess = false;
     g_autoptr(virBitmap) vcpus = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virResctrlAlloc) alloc = NULL;
 
     ctxt->node = node;
 
-    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
+    if (virDomainResctrlParseVcpus(def, node, &vcpus, &wholeProcess) < 0)
         return -1;
 
-    if (virBitmapIsAllClear(vcpus))
+    if (!wholeProcess && virBitmapIsAllClear(vcpus))
         return 0;
 
     if ((n = virXPathNodeSet("./cache", ctxt, &nodes)) < 0)
@@ -19125,6 +19195,9 @@ virDomainCachetuneDefParse(virDomainDef *def,
         return -1;
     }
 
+    if (virDomainResctrlValidateScope(def, wholeProcess) < 0)
+        return -1;
+
     if (!(alloc = virResctrlAllocNew()))
         return -1;
 
@@ -19133,7 +19206,7 @@ virDomainCachetuneDefParse(virDomainDef *def,
             return -1;
     }
 
-    if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
+    if (!(resctrl = virDomainResctrlNew(node, alloc, vcpus, wholeProcess, flags)))
         return -1;
 
     if (virDomainResctrlMonDefParse(def, ctxt, node,
@@ -19469,15 +19542,16 @@ virDomainMemorytuneDefParse(virDomainDef *def,
     ssize_t i = 0;
     size_t nmons = 0;
     size_t ret = -1;
+    bool wholeProcess = false;
 
     int n;
 
     ctxt->node = node;
 
-    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
+    if (virDomainResctrlParseVcpus(def, node, &vcpus, &wholeProcess) < 0)
         return -1;
 
-    if (virBitmapIsAllClear(vcpus))
+    if (!wholeProcess && virBitmapIsAllClear(vcpus))
         return 0;
 
     if ((n = virXPathNodeSet("./node", ctxt, &nodes)) < 0)
@@ -19489,6 +19563,8 @@ virDomainMemorytuneDefParse(virDomainDef *def,
     if (resctrl) {
         alloc = virObjectRef(resctrl->alloc);
     } else {
+        if (virDomainResctrlValidateScope(def, wholeProcess) < 0)
+            return -1;
         if (!(alloc = virResctrlAllocNew()))
             return -1;
     }
@@ -19504,7 +19580,8 @@ virDomainMemorytuneDefParse(virDomainDef *def,
      * just update the existing alloc information, which is done in above
      * virDomainMemorytuneDefParseMemory */
     if (!resctrl) {
-        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
+        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus,
+                                               wholeProcess, flags)))
             return -1;
 
         resctrl = newresctrl;
@@ -19544,15 +19621,16 @@ virDomainEnergytuneDefParse(virDomainDef *def,
     virDomainResctrlDef *newresctrl = NULL;
     g_autoptr(virBitmap) vcpus = NULL;
     g_autoptr(virResctrlAlloc) alloc = NULL;
+    bool wholeProcess = false;
     size_t nmons;
     int ret = -1;
 
     ctxt->node = node;
 
-    if (virDomainResctrlParseVcpus(def, node, &vcpus) < 0)
+    if (virDomainResctrlParseVcpus(def, node, &vcpus, &wholeProcess) < 0)
         return -1;
 
-    if (virBitmapIsAllClear(vcpus))
+    if (!wholeProcess && virBitmapIsAllClear(vcpus))
         return 0;
 
     if (virDomainResctrlVcpuMatch(def, vcpus, &resctrl) < 0)
@@ -19561,9 +19639,12 @@ virDomainEnergytuneDefParse(virDomainDef *def,
     if (resctrl) {
         alloc = virObjectRef(resctrl->alloc);
     } else {
+        if (virDomainResctrlValidateScope(def, wholeProcess) < 0)
+            return -1;
         if (!(alloc = virResctrlAllocNew()))
             return -1;
-        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus, flags)))
+        if (!(newresctrl = virDomainResctrlNew(node, alloc, vcpus,
+                                               wholeProcess, flags)))
             return -1;
         resctrl = newresctrl;
     }
@@ -28780,16 +28861,22 @@ virDomainResctrlMonDefFormatHelper(virDomainResctrlMonDef *domresmon,
     if (domresmon->tag != tag)
         return 0;
 
-    virBufferAddLit(buf, "<monitor ");
+    virBufferAddLit(buf, "<monitor");
 
     if (tag == VIR_RESCTRL_MONITOR_TYPE_CACHE) {
-        virBufferAsprintf(buf, "level='%u' ",
+        virBufferAsprintf(buf, " level='%u'",
                           VIR_DOMAIN_RESCTRL_MONITOR_CACHELEVEL);
+    }
+
+    /* A whole-process monitor has no vcpus attribute. */
+    if (domresmon->wholeProcess) {
+        virBufferAddLit(buf, "/>\n");
+        return 0;
     }
 
     vcpus = virBitmapFormat(domresmon->vcpus);
 
-    virBufferAsprintf(buf, "vcpus='%s'/>\n", vcpus);
+    virBufferAsprintf(buf, " vcpus='%s'/>\n", vcpus);
 
     return 0;
 }
@@ -28820,16 +28907,19 @@ virDomainCachetuneDefFormat(virBuffer *buf,
     if (!virBufferUse(&childrenBuf))
         return 0;
 
-    vcpus = virBitmapFormat(resctrl->vcpus);
+    /* A whole-process group has no vcpus and no id to format. */
+    if (!resctrl->wholeProcess) {
+        vcpus = virBitmapFormat(resctrl->vcpus);
 
-    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
+        virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
-    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
-        const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
-        if (!alloc_id)
-            return -1;
+        if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+            const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
+            if (!alloc_id)
+                return -1;
 
-        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+            virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+        }
     }
 
     virXMLFormatElement(buf, "cachetune", &attrBuf, &childrenBuf);
@@ -28877,16 +28967,19 @@ virDomainMemorytuneDefFormat(virBuffer *buf,
     if (!virBufferUse(&childrenBuf))
         return 0;
 
-    vcpus = virBitmapFormat(resctrl->vcpus);
+    /* A whole-process group has no vcpus and no id to format. */
+    if (!resctrl->wholeProcess) {
+        vcpus = virBitmapFormat(resctrl->vcpus);
 
-    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
+        virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
-    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
-        const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
-        if (!alloc_id)
-            return -1;
+        if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+            const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
+            if (!alloc_id)
+                return -1;
 
-        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+            virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+        }
     }
 
     virXMLFormatElement(buf, "memorytune", &attrBuf, &childrenBuf);
@@ -28915,15 +29008,18 @@ virDomainEnergytuneDefFormat(virBuffer *buf,
     if (!virBufferUse(&childrenBuf))
         return 0;
 
-    vcpus = virBitmapFormat(resctrl->vcpus);
-    virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
+    /* A whole-process group has no vcpus and no id to format. */
+    if (!resctrl->wholeProcess) {
+        vcpus = virBitmapFormat(resctrl->vcpus);
+        virBufferAsprintf(&attrBuf, " vcpus='%s'", vcpus);
 
-    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
-        const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
-        if (!alloc_id)
-            return -1;
+        if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)) {
+            const char *alloc_id = virResctrlAllocGetID(resctrl->alloc);
+            if (!alloc_id)
+                return -1;
 
-        virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+            virBufferAsprintf(&attrBuf, " id='%s'", alloc_id);
+        }
     }
 
     virXMLFormatElement(buf, "energytune", &attrBuf, &childrenBuf);

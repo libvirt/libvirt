@@ -2937,12 +2937,14 @@ struct _virDomainCputune {
 
 struct _virDomainResctrlMonDef {
     virBitmap *vcpus;
+    bool wholeProcess;
     virResctrlMonitorType tag;
     virResctrlMonitor *instance;
 };
 
 struct _virDomainResctrlDef {
     virBitmap *vcpus;
+    bool wholeProcess;
     virResctrlAlloc *alloc;
 
     virDomainResctrlMonDef **monitors;
