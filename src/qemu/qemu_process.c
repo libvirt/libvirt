@@ -2925,17 +2925,32 @@ qemuProcessResctrlCreate(virQEMUDriver *driver,
 
     for (i = 0; i < vm->def->nresctrls; i++) {
         size_t j = 0;
+        virDomainResctrlDef *resctrl = vm->def->resctrls[i];
+
         if (virResctrlAllocCreate(caps->host.resctrl,
-                                  vm->def->resctrls[i]->alloc,
+                                  resctrl->alloc,
                                   priv->machineName) < 0)
             return -1;
 
-        for (j = 0; j < vm->def->resctrls[i]->nmonitors; j++) {
+        /* A whole-process group covers every emulator thread.
+         * Assign the emulator PID now, while still in the pre-exec handshake
+         * window, so the resctrl group is inherited by every thread the QEMU
+         * process subsequently spawns (vCPUs, iothreads, workers etc.). */
+        if (resctrl->wholeProcess &&
+            !virResctrlAllocIsEmpty(resctrl->alloc) &&
+            virResctrlAllocAddPID(resctrl->alloc, vm->pid) < 0)
+            return -1;
+
+        for (j = 0; j < resctrl->nmonitors; j++) {
             virDomainResctrlMonDef *mon = NULL;
 
-            mon = vm->def->resctrls[i]->monitors[j];
+            mon = resctrl->monitors[j];
             if (virResctrlMonitorCreate(mon->instance,
                                         priv->machineName) < 0)
+                return -1;
+
+            if (mon->wholeProcess &&
+                virResctrlMonitorAddPID(mon->instance, vm->pid) < 0)
                 return -1;
         }
     }
@@ -6280,6 +6295,25 @@ qemuProcessSetupVcpu(virDomainObj *vm,
     for (i = 0; i < vm->def->nresctrls; i++) {
         size_t j = 0;
         virDomainResctrlDef *ct = vm->def->resctrls[i];
+
+        /* A whole-process allocation covers every thread: its control group is
+         * assigned the emulator PID once at startup and inherited by every
+         * thread, so per-vCPU threads need no allocation assignment here.
+         * Per-vCPU monitors underneath it, however, still need each vCPU's PID
+         * to carve out their own mon_group. */
+        if (ct->wholeProcess) {
+            for (j = 0; j < ct->nmonitors; j++) {
+                mon = ct->monitors[j];
+
+                if (virBitmapIsBitSet(mon->vcpus, vcpuid)) {
+                    if (virResctrlMonitorAddPID(mon->instance, vcpupid) < 0)
+                        return -1;
+                    break;
+                }
+            }
+
+            continue;
+        }
 
         if (virBitmapIsBitSet(ct->vcpus, vcpuid)) {
             if (virResctrlAllocAddPID(ct->alloc, vcpupid) < 0)

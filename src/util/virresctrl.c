@@ -2287,12 +2287,10 @@ virResctrlDeterminePath(const char *parentpath,
                         const char *prefix,
                         const char *id)
 {
-    if (!id) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Resctrl ID must be set before determining resctrl parentpath='%1$s' prefix='%2$s'"),
-                       parentpath, prefix);
-        return NULL;
-    }
+    /* A NULL id denotes a whole-process group, which uses the bare machine
+     * name with no id suffix. */
+    if (!id)
+        return g_strdup_printf("%s/%s", parentpath, prefix);
 
     return g_strdup_printf("%s/%s-%s", parentpath, prefix, id);
 }
