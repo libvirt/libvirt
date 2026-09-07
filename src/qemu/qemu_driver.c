@@ -17421,11 +17421,10 @@ qemuDomainGetResctrlMonData(virQEMUDriver *driver,
 
             res = g_new0(virQEMUResctrlMonData, 1);
 
-            /* If virBitmapFormat successfully returns an vcpu string, then
-             * res.vcpus is assigned with an memory space holding it,
-             * let this newly allocated memory buffer to be freed along with
-             * the free of 'res' */
-            res->vcpus = virBitmapFormat(domresmon->vcpus);
+            /* Leave res->vcpus NULL for a whole-process monitor; formatting
+             * its empty bitmap would report an empty vcpus field. */
+            if (!domresmon->wholeProcess)
+                res->vcpus = virBitmapFormat(domresmon->vcpus);
             res->name = virResctrlMonitorGetName(monitor);
 
             if (virResctrlMonitorGetStats(monitor, (const char **)features,
@@ -17475,8 +17474,9 @@ qemuDomainGetStatsMemoryBandwidth(virQEMUDriver *driver,
     for (i = 0; i < nresdata; i++) {
         virTypedParamListAddString(params, resdata[i]->name,
                                    VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NAME, i);
-        virTypedParamListAddString(params, resdata[i]->vcpus,
-                                   VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_VCPUS, i);
+        if (resdata[i]->vcpus)
+            virTypedParamListAddString(params, resdata[i]->vcpus,
+                                       VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_VCPUS, i);
         virTypedParamListAddUInt(params, resdata[i]->nstats,
                                  VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_MEMORY_BANDWIDTH_MONITOR_SUFFIX_NODE_COUNT, i);
 
@@ -17540,8 +17540,9 @@ qemuDomainGetStatsEnergy(virQEMUDriver *driver,
 
         virTypedParamListAddString(params, resdata[i]->name,
                                    VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_NAME, i);
-        virTypedParamListAddString(params, resdata[i]->vcpus,
-                                   VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_VCPUS, i);
+        if (resdata[i]->vcpus)
+            virTypedParamListAddString(params, resdata[i]->vcpus,
+                                       VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_VCPUS, i);
         virTypedParamListAddUInt(params, resdata[i]->nstats,
                                  VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_ENERGY_MONITOR_SUFFIX_PKG_COUNT, i);
 
@@ -17597,8 +17598,9 @@ qemuDomainGetStatsCpuCache(virQEMUDriver *driver,
     for (i = 0; i < nresdata; i++) {
         virTypedParamListAddString(params, resdata[i]->name,
                                    VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_NAME, i);
-        virTypedParamListAddString(params, resdata[i]->vcpus,
-                                   VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS, i);
+        if (resdata[i]->vcpus)
+            virTypedParamListAddString(params, resdata[i]->vcpus,
+                                       VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_VCPUS, i);
         virTypedParamListAddUInt(params, resdata[i]->nstats,
                                  VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_PREFIX "%zu" VIR_DOMAIN_STATS_CPU_CACHE_MONITOR_SUFFIX_BANK_COUNT, i);
 
