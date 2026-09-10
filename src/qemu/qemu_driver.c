@@ -4166,9 +4166,9 @@ processJobStatusChangeEvent(virDomainObj *vm,
 
 
 static void
-processMonitorEOFEvent(virQEMUDriver *driver,
-                       virDomainObj *vm,
-                       int domid)
+qemuProcessFinishStop(virQEMUDriver *driver,
+                      virDomainObj *vm,
+                      bool migration)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int eventReason = VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN;
@@ -4176,6 +4176,34 @@ processMonitorEOFEvent(virQEMUDriver *driver,
     const char *auditReason = "shutdown";
     unsigned int stopFlags = 0;
     virObjectEvent *event = NULL;
+
+    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTDOWN) {
+        VIR_DEBUG("qemu process for '%s' disappeared without SHUTDOWN event; "
+                  "assuming the domain crashed", vm->def->name);
+        eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
+        stopReason = VIR_DOMAIN_SHUTOFF_CRASHED;
+        auditReason = "failed";
+    }
+
+    if (migration) {
+        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
+        qemuMigrationDstErrorSave(driver, vm->def->name,
+                                  qemuMonitorLastError(priv->mon));
+    }
+
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                              eventReason);
+    qemuProcessStop(vm, stopReason, VIR_ASYNC_JOB_NONE, stopFlags);
+    virDomainAuditStop(vm, auditReason);
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
+
+
+static void
+processMonitorEOFEvent(virQEMUDriver *driver,
+                       virDomainObj *vm,
+                       int domid)
+{
     bool migration;
 
     if (vm->def->id != domid) {
@@ -4195,25 +4223,7 @@ processMonitorEOFEvent(virQEMUDriver *driver,
         goto endjob;
     }
 
-    if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_SHUTDOWN) {
-        VIR_DEBUG("Monitor connection to '%s' closed without SHUTDOWN event; "
-                  "assuming the domain crashed", vm->def->name);
-        eventReason = VIR_DOMAIN_EVENT_STOPPED_FAILED;
-        stopReason = VIR_DOMAIN_SHUTOFF_CRASHED;
-        auditReason = "failed";
-    }
-
-    if (migration) {
-        stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
-        qemuMigrationDstErrorSave(driver, vm->def->name,
-                                  qemuMonitorLastError(priv->mon));
-    }
-
-    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
-                                              eventReason);
-    qemuProcessStop(vm, stopReason, VIR_ASYNC_JOB_NONE, stopFlags);
-    virDomainAuditStop(vm, auditReason);
-    virObjectEventStateQueue(driver->domainEventState, event);
+    qemuProcessFinishStop(driver, vm, migration);
 
  endjob:
     qemuDomainRemoveInactive(vm, 0, migration);
@@ -4370,13 +4380,14 @@ processNbdkitExitedEvent(virDomainObj *vm,
 
 
 static void
-processShutdownCompletedEvent(virDomainObj *vm)
+processShutdownCompletedEvent(virQEMUDriver *driver,
+                              virDomainObj *vm)
 {
     if (qemuProcessBeginStopJob(vm, VIR_JOB_DESTROY, true) < 0)
         return;
 
     if (virDomainObjIsActive(vm)) {
-        qemuProcessStop(vm, VIR_DOMAIN_SHUTOFF_UNKNOWN, VIR_ASYNC_JOB_NONE, 0);
+        qemuProcessFinishStop(driver, vm, false);
         qemuDomainRemoveInactive(vm, 0, false);
     }
 
@@ -4449,7 +4460,7 @@ qemuProcessEventHandler(void *data,
         processNbdkitExitedEvent(vm, processEvent->data);
         break;
     case QEMU_PROCESS_EVENT_SHUTDOWN_COMPLETED:
-        processShutdownCompletedEvent(vm);
+        processShutdownCompletedEvent(driver, vm);
         break;
     case QEMU_PROCESS_EVENT_LAST:
         break;
