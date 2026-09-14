@@ -549,8 +549,6 @@ virNetDaemonRemoveShutdownInhibition(virNetDaemon *dmn)
 
 
 #ifndef WIN32
-static sig_atomic_t sigErrors;
-static int sigLastErrno;
 static int sigWrite = -1;
 
 static void
@@ -558,7 +556,6 @@ virNetDaemonSignalHandler(int sig, siginfo_t * siginfo,
                           void* context G_GNUC_UNUSED)
 {
     int origerrno;
-    int r;
     siginfo_t tmp = { 0 };
 
     if (SA_SIGINFO)
@@ -568,11 +565,7 @@ virNetDaemonSignalHandler(int sig, siginfo_t * siginfo,
     tmp.si_signo = sig;
 
     origerrno = errno;
-    r = safewrite(sigWrite, &tmp, sizeof(tmp));
-    if (r == -1) {
-        sigErrors++;
-        sigLastErrno = errno;
-    }
+    ignore_value(safewrite(sigWrite, &tmp, sizeof(tmp)));
     errno = origerrno;
 }
 
