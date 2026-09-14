@@ -228,6 +228,7 @@
   <flag name='vfio-pci.ats'/>
   <flag name='intel-iommu.scalable-mode'/>
   <flag name='intel-iommu.fsts'/>
+  <flag name='intel-iommu.pasid-bits'/>
   <version>11001000</version>
   <microcodeVersion>43100287</microcodeVersion>
   <package>v11.1.0</package>

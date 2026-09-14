@@ -760,6 +760,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_INTEL_IOMMU_SCALABLE_MODE, /* intel-iommu.scalable-mode */
     QEMU_CAPS_INTEL_IOMMU_FSTS, /* intel-iommu.fsts */
 
+    /* 510 */
+    QEMU_CAPS_INTEL_IOMMU_PASID_BITS, /* intel-iommu.pasid-bits */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
