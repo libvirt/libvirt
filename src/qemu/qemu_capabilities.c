@@ -784,6 +784,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "pcie-root-port.width", /* QEMU_CAPS_PCIE_ROOT_PORT_WIDTH */
               "vfio-pci.ats", /* QEMU_CAPS_VFIO_PCI_ATS */
               "intel-iommu.scalable-mode", /* QEMU_CAPS_INTEL_IOMMU_SCALABLE_MODE */
+              "intel-iommu.fsts", /* QEMU_CAPS_INTEL_IOMMU_FSTS */
     );
 
 
@@ -1633,6 +1634,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "aw-bits", QEMU_CAPS_INTEL_IOMMU_AW_BITS, NULL },
     { "dma-translation", QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION, NULL },
     { "scalable-mode", QEMU_CAPS_INTEL_IOMMU_SCALABLE_MODE, NULL },
+    { "fsts", QEMU_CAPS_INTEL_IOMMU_FSTS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
