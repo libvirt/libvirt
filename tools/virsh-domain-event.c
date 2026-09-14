@@ -114,7 +114,8 @@ VIR_ENUM_IMPL(virshDomainEventShutdown,
               VIR_DOMAIN_EVENT_SHUTDOWN_LAST,
               N_("Finished"),
               N_("Finished after guest request"),
-              N_("Finished after host request"));
+              N_("Finished after host request"),
+              N_("Finished after guest reboot request"));
 
 VIR_ENUM_DECL(virshDomainEventPMSuspended);
 VIR_ENUM_IMPL(virshDomainEventPMSuspended,

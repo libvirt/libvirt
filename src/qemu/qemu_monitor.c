@@ -1083,7 +1083,7 @@ qemuMonitorEmitShutdown(qemuMonitor *mon, virTristateBool guest,
             qemuDomainSetFakeReboot(vm, true);
     }
 
-    QEMU_MONITOR_CALLBACK(mon, domainShutdown, mon->vm, guest);
+    QEMU_MONITOR_CALLBACK(mon, domainShutdown, mon->vm, guest, reason);
 }
 
 

@@ -746,14 +746,16 @@ qemuProcessHandleEvent(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
-                          virTristateBool guest_initiated)
+                          virTristateBool guest_initiated,
+                          const char *reason)
 {
     virQEMUDriver *driver;
     qemuDomainObjPrivate *priv;
     virObjectEvent *event = NULL;
     int detail = 0;
 
-    VIR_DEBUG("vm=%p", vm);
+    VIR_DEBUG("vm=%p guest=%u reason=%s",
+              vm, guest_initiated, NULLSTR(reason));
 
     virObjectLock(vm);
 
@@ -782,7 +784,10 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
 
         switch (guest_initiated) {
         case VIR_TRISTATE_BOOL_YES:
-            detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST;
+            if (STREQ_NULLABLE(reason, "guest-reset"))
+                detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST_RESET;
+            else
+                detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST;
             break;
 
         case VIR_TRISTATE_BOOL_NO:

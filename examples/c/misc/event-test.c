@@ -252,6 +252,9 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_SHUTDOWN_HOST:
                 return "Host request";
 
+            case VIR_DOMAIN_EVENT_SHUTDOWN_GUEST_RESET:
+                return "Guest reboot request";
+
             case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
                 break;
             }

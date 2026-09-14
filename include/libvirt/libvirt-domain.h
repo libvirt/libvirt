@@ -5806,6 +5806,11 @@ typedef enum {
      */
     VIR_DOMAIN_EVENT_SHUTDOWN_HOST = 2,
 
+    /* Domain finished shutting down because the guest requested a reboot
+     * while the 'on_reboot' lifecycle action was set to 'destroy' (Since: 12.9.0)
+     */
+    VIR_DOMAIN_EVENT_SHUTDOWN_GUEST_RESET = 3,
+
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_SHUTDOWN_LAST /* (Since: 0.9.10) */
 # endif
