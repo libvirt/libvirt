@@ -788,6 +788,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 510 */
               "intel-iommu.pasid-bits", /* QEMU_CAPS_INTEL_IOMMU_PASID_BITS */
+              "intel-iommu.svm", /* QEMU_CAPS_INTEL_IOMMU_SVM */
     );
 
 
@@ -1639,6 +1640,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIntelIOMMU[] = {
     { "scalable-mode", QEMU_CAPS_INTEL_IOMMU_SCALABLE_MODE, NULL },
     { "fsts", QEMU_CAPS_INTEL_IOMMU_FSTS, NULL },
     { "pasid-bits", QEMU_CAPS_INTEL_IOMMU_PASID_BITS, NULL },
+    { "svm", QEMU_CAPS_INTEL_IOMMU_SVM, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsMCH[] = {
