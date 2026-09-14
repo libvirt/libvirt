@@ -226,6 +226,7 @@
   <flag name='iothread.poll-weight'/>
   <flag name='win-dmp.guest-aware'/>
   <flag name='vfio-pci.ats'/>
+  <flag name='intel-iommu.scalable-mode'/>
   <version>11001000</version>
   <microcodeVersion>43100287</microcodeVersion>
   <package>v11.1.0</package>
