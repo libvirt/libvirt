@@ -6489,6 +6489,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="pasid_bits">
+                <ref name="uint8"/>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="xtsup">
                 <ref name="virOnOff"/>
               </attribute>

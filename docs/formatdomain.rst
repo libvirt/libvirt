@@ -9550,6 +9550,11 @@ Examples:
       Enable first stage translation.
       :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
 
+   ``pasid_bits``
+      The ``pasid_bits`` attribute can be used to set the pasid bit width.
+      Max supported value is 20 according to PCI spec, pasid is disabled if 0.
+      :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
+
 In case of ``virtio`` IOMMU device, the ``driver`` element can optionally
 contain ``granule`` subelement that allows to choose which granule will be
 used by default. It is useful when running guests with different page size

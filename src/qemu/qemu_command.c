@@ -6378,6 +6378,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                       "T:dma-translation", iommu->dma_translation,
                                       "T:scalable-mode", iommu->scalable_mode,
                                       "T:fsts", iommu->fsts,
+                                      "p:pasid-bits", iommu->pasid_bits,
                                       NULL) < 0)
                 return -1;
 
