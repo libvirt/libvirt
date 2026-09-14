@@ -6494,6 +6494,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="svm">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="xtsup">
                 <ref name="virOnOff"/>
               </attribute>

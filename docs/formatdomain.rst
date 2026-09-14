@@ -9555,6 +9555,12 @@ Examples:
       Max supported value is 20 according to PCI spec, pasid is disabled if 0.
       :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
 
+   ``svm``
+      Enable shared virtual memory. It exposes the necessary hardware
+      capabilities to the guest operating system so that devices can share
+      the exact same virtual address space as user-space applications.
+      :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
+
 In case of ``virtio`` IOMMU device, the ``driver`` element can optionally
 contain ``granule`` subelement that allows to choose which granule will be
 used by default. It is useful when running guests with different page size

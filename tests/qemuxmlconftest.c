@@ -3004,6 +3004,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-scalable-mode");
     DO_TEST_CAPS_LATEST("intel-iommu-fsts");
     DO_TEST_CAPS_LATEST("intel-iommu-pasid-bits");
+    DO_TEST_CAPS_LATEST("intel-iommu-svm");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("intel-iommu-wrong-machine");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("intel-iommu-eim-autoadd");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("intel-iommu-eim-autoadd-v2");

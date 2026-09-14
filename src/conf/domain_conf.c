@@ -14845,6 +14845,10 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
                            &iommu->pasid_bits) < 0)
             return NULL;
 
+        if (virXMLPropTristateSwitch(driver, "svm", VIR_XML_PROP_NONE,
+                                     &iommu->svm) < 0)
+            return NULL;
+
         if ((granule = virXPathNode("./driver/granule", ctxt))) {
             g_autofree char *mode = virXMLPropString(granule, "mode");
             unsigned long long size;
@@ -16958,6 +16962,7 @@ virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
         a->scalable_mode != b->scalable_mode ||
         a->fsts != b->fsts ||
         a->pasid_bits != b->pasid_bits ||
+        a->svm != b->svm ||
         a->xtsup != b->xtsup ||
         a->pt != b->pt ||
         a->granule != b->granule)
@@ -22992,6 +22997,13 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain IOMMU device 'pasid_bits' '%1$u' does not match source '%2$u'"),
                        dst->pasid_bits, src->pasid_bits);
+        return false;
+    }
+    if (src->svm != dst->svm) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device 'svm' '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->svm),
+                       virTristateSwitchTypeToString(src->svm));
         return false;
     }
     if (src->pt != dst->pt) {
@@ -29495,6 +29507,10 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     if (iommu->pasid_bits > 0) {
         virBufferAsprintf(&driverAttrBuf, " pasid_bits='%u'",
                           iommu->pasid_bits);
+    }
+    if (iommu->svm != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " svm='%s'",
+                          virTristateSwitchTypeToString(iommu->svm));
     }
     if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " passthrough='%s'",

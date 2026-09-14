@@ -3141,6 +3141,7 @@ struct _virDomainIOMMUDef {
     virTristateSwitch scalable_mode;
     virTristateSwitch fsts;
     unsigned int pasid_bits;
+    virTristateSwitch svm;
     virTristateSwitch xtsup;
     virTristateSwitch pt;
     int granule; /* -1 means 'host', 0 unset, page size in KiB otherwise */

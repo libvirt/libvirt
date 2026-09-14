@@ -5955,6 +5955,12 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                        _("iommu: 'pasid_bits' exceeds maximum allowed value 20 in QEMU binary"));
         return -1;
     }
+    if (iommu->svm != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_SVM)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: 'svm' is not supported with this QEMU binary"));
+        return -1;
+    }
 
     /* While QEMU_CAPS_ARM_SMMUV3_ACCEL tracks the .accel attribute of
      * arm-smmuv3 it is also a good indicator of .ats, .ril, .ssidsize, and

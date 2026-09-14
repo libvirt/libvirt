@@ -6379,6 +6379,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                       "T:scalable-mode", iommu->scalable_mode,
                                       "T:fsts", iommu->fsts,
                                       "p:pasid-bits", iommu->pasid_bits,
+                                      "T:svm", iommu->svm,
                                       NULL) < 0)
                 return -1;
 

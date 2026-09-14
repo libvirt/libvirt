@@ -3205,6 +3205,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pasid_bits != 0 ||
+            iommu->svm != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pt != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->granule != 0) {
@@ -3234,6 +3235,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pasid_bits != 0 ||
+            iommu->svm != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3264,6 +3266,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->svm != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pasid_bits != 0 ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3308,6 +3311,29 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             if (iommu->pasid_bits > 0) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("iommu model '%1$s' 'pasid_bits' requires 'scalable_mode' to be 'on'"),
+                               virDomainIOMMUModelTypeToString(iommu->model));
+                return -1;
+            }
+        }
+
+        if (iommu->svm == VIR_TRISTATE_SWITCH_ON) {
+            if (iommu->iotlb != VIR_TRISTATE_SWITCH_ON) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("iommu model '%1$s' 'svm' requires 'iotlb' to be 'on'"),
+                               virDomainIOMMUModelTypeToString(iommu->model));
+                return -1;
+            }
+
+            if (iommu->fsts != VIR_TRISTATE_SWITCH_ON) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("iommu model '%1$s' 'svm' requires 'fsts' to be 'on'"),
+                               virDomainIOMMUModelTypeToString(iommu->model));
+                return -1;
+            }
+
+            if (iommu->pasid_bits == 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("iommu model '%1$s' 'svm' requires 'pasid_bits' to be configured (> 0)"),
                                virDomainIOMMUModelTypeToString(iommu->model));
                 return -1;
             }
