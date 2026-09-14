@@ -3138,6 +3138,7 @@ struct _virDomainIOMMUDef {
     int pci_bus;
     virDomainDeviceInfo info;
     virTristateSwitch dma_translation;
+    virTristateSwitch scalable_mode;
     virTristateSwitch xtsup;
     virTristateSwitch pt;
     int granule; /* -1 means 'host', 0 unset, page size in KiB otherwise */

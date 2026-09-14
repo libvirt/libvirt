@@ -6376,6 +6376,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                       "T:device-iotlb", iommu->iotlb,
                                       "p:aw-bits", iommu->aw_bits,
                                       "T:dma-translation", iommu->dma_translation,
+                                      "T:scalable-mode", iommu->scalable_mode,
                                       NULL) < 0)
                 return -1;
 

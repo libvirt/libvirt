@@ -3001,6 +3001,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("intel-iommu-device-iotlb");
     DO_TEST_CAPS_LATEST("intel-iommu-aw-bits");
     DO_TEST_CAPS_LATEST("intel-iommu-dma-translation");
+    DO_TEST_CAPS_LATEST("intel-iommu-scalable-mode");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("intel-iommu-wrong-machine");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("intel-iommu-eim-autoadd");
     DO_TEST_CAPS_LATEST_ABI_UPDATE("intel-iommu-eim-autoadd-v2");

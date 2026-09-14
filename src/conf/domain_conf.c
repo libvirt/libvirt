@@ -14833,6 +14833,10 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
                           &iommu->oas, -1) < 0)
             return NULL;
 
+        if (virXMLPropTristateSwitch(driver, "scalable_mode", VIR_XML_PROP_NONE,
+                                     &iommu->scalable_mode) < 0)
+            return NULL;
+
         if ((granule = virXPathNode("./driver/granule", ctxt))) {
             g_autofree char *mode = virXMLPropString(granule, "mode");
             unsigned long long size;
@@ -16943,6 +16947,7 @@ virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
         a->ril != b->ril ||
         a->ssid_size != b->ssid_size ||
         a->oas != b->oas ||
+        a->scalable_mode != b->scalable_mode ||
         a->xtsup != b->xtsup ||
         a->pt != b->pt ||
         a->granule != b->granule)
@@ -22957,6 +22962,13 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
                        _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->dma_translation),
                        virTristateSwitchTypeToString(src->dma_translation));
+        return false;
+    }
+    if (src->scalable_mode != dst->scalable_mode) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device 'scalable_mode' '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->scalable_mode),
+                       virTristateSwitchTypeToString(src->scalable_mode));
         return false;
     }
     if (src->pt != dst->pt) {
@@ -29448,6 +29460,10 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " dma_translation='%s'",
                           virTristateSwitchTypeToString(iommu->dma_translation));
+    }
+    if (iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " scalable_mode='%s'",
+                          virTristateSwitchTypeToString(iommu->scalable_mode));
     }
     if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " passthrough='%s'",

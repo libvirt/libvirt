@@ -6479,6 +6479,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="scalable_mode">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="xtsup">
                 <ref name="virOnOff"/>
               </attribute>

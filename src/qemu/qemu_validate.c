@@ -5928,6 +5928,12 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                        _("iommu: updating dma translation is not supported with this QEMU binary"));
         return -1;
     }
+    if (iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_SCALABLE_MODE))  {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: 'scalable_mode' is not supported with this QEMU binary"));
+        return -1;
+    }
 
     /* While QEMU_CAPS_ARM_SMMUV3_ACCEL tracks the .accel attribute of
      * arm-smmuv3 it is also a good indicator of .ats, .ril, .ssidsize, and

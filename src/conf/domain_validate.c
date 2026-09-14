@@ -3202,6 +3202,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pt != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->granule != 0) {
@@ -3228,6 +3229,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->eim != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3256,6 +3258,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->eim != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
