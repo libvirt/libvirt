@@ -22898,83 +22898,83 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
     }
     if (src->intremap != dst->intremap) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device intremap value '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'intremap' value '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->intremap),
                        virTristateSwitchTypeToString(src->intremap));
         return false;
     }
     if (src->caching_mode != dst->caching_mode) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device caching mode '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'caching_mode' '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->caching_mode),
                        virTristateSwitchTypeToString(src->caching_mode));
         return false;
     }
     if (src->eim != dst->eim) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device eim value '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'eim' value '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->eim),
                        virTristateSwitchTypeToString(src->eim));
         return false;
     }
     if (src->iotlb != dst->iotlb) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device iotlb value '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'iotlb' value '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->iotlb),
                        virTristateSwitchTypeToString(src->iotlb));
         return false;
     }
     if (src->aw_bits != dst->aw_bits) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device aw_bits value '%1$u' does not match source '%2$u'"),
+                       _("Target domain IOMMU device 'aw_bits' value '%1$u' does not match source '%2$u'"),
                        dst->aw_bits, src->aw_bits);
         return false;
     }
     if (src->pci_bus != dst->pci_bus) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device pci_bus value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'pciBus' value '%1$d' does not match source '%2$d'"),
                        dst->pci_bus, src->pci_bus);
         return false;
     }
     if (src->accel != dst->accel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device accel value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'accel' value '%1$d' does not match source '%2$d'"),
                        dst->accel, src->accel);
         return false;
     }
     if (src->cmdqv != dst->cmdqv) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device cmdqv value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'cmdqv' value '%1$d' does not match source '%2$d'"),
                        dst->cmdqv, src->cmdqv);
         return false;
     }
     if (src->ats != dst->ats) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device ATS value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'ats' value '%1$d' does not match source '%2$d'"),
                        dst->ats, src->ats);
         return false;
     }
     if (src->ril != dst->ril) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device ril value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'ril' value '%1$d' does not match source '%2$d'"),
                        dst->ril, src->ril);
         return false;
     }
     if (src->ssid_size != dst->ssid_size) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device ssid_size value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'ssidsize' value '%1$d' does not match source '%2$d'"),
                        dst->ssid_size, src->ssid_size);
         return false;
     }
     if (src->oas != dst->oas) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device oas value '%1$d' does not match source '%2$d'"),
+                       _("Target domain IOMMU device 'oas' value '%1$d' does not match source '%2$d'"),
                        dst->oas, src->oas);
         return false;
     }
     if (src->dma_translation != dst->dma_translation) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device dma translation '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'dma_translation' '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->dma_translation),
                        virTristateSwitchTypeToString(src->dma_translation));
         return false;
@@ -23008,14 +23008,14 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
     }
     if (src->pt != dst->pt) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device passthrough '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'passthrough' '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->pt),
                        virTristateSwitchTypeToString(src->pt));
         return false;
     }
     if (src->xtsup != dst->xtsup) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device xtsup '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'xtsup' '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->xtsup),
                        virTristateSwitchTypeToString(src->xtsup));
         return false;
@@ -23025,7 +23025,7 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
         g_autofree char *dst_granule = virDomainIOMMUGranuleModeTypeToString(dst->granule);
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain IOMMU device granule '%1$s' does not match source '%2$s'"),
+                       _("Target domain IOMMU device 'granule' '%1$s' does not match source '%2$s'"),
                        dst_granule,
                        src_granule);
         return false;

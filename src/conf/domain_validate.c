@@ -3221,7 +3221,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
              iommu->ssid_size >= 0 ||
              iommu->oas >= 0)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("accel must be enabled for iommu model '%1$s' when setting ats, ril, ssidsize, oas, or cmdqv"),
+                           _("'accel' must be enabled for iommu model '%1$s' when setting ats, ril, ssidsize, oas, or cmdqv"),
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
@@ -3254,7 +3254,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
          * be assumed to be hypervisor agnostic and thus can live here. */
         if (iommu->aw_bits != 0 && (iommu->aw_bits < 32 || iommu->aw_bits > 64)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("aw-bits must be within [32,64]"));
+                           _("'aw_bits' must be within [32,64]"));
             return -1;
         }
         break;

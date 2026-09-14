@@ -2826,13 +2826,13 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                 if (virHostdevIsPCIDeviceWithIOMMUFD(hostdev)) {
                     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOMMUFD)) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("IOMMUFD is not supported by this version of qemu"));
+                                       _("'iommufd' is not supported by this version of qemu"));
                         return -1;
                     }
 
                     if (!virIOMMUFDSupported()) {
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("IOMMUFD is not supported by host kernel"));
+                                       _("'iommufd' is not supported by host kernel"));
                         return -1;
                     }
                 } else if (virDomainDefHasIntelIOMMUWithFSTS(def)) {
@@ -5820,7 +5820,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         if (iommu->pci_bus >= 0) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ARM_SMMUV3_SMMU_PER_BUS)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("IOMMU device: Setting pciBus for '%1$s' is not supported with this QEMU binary"),
+                               _("IOMMU device: Setting 'pciBus' for '%1$s' is not supported with this QEMU binary"),
                                virDomainIOMMUModelTypeToString(iommu->model));
                 return -1;
             }
@@ -5900,36 +5900,36 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
     if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_INTREMAP)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: interrupt remapping is not supported with this QEMU binary"));
+                       _("iommu: 'intremap' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_CACHING_MODE))  {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: caching mode is not supported with this QEMU binary"));
+                       _("iommu: 'caching_mode' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_EIM))  {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: eim is not supported with this QEMU binary"));
+                       _("iommu: 'eim' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: device IOTLB is not supported with this QEMU binary"));
+                       _("iommu: 'iotlb' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->aw_bits > 0 && !aw_bits_supported) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: aw_bits is not supported with this QEMU binary"));
+                       _("iommu: 'aw_bits' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_DMA_TRANSLATION))  {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: updating dma translation is not supported with this QEMU binary"));
+                       _("iommu: updating 'dma_translation' is not supported with this QEMU binary"));
         return -1;
     }
     if (iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT &&
@@ -5970,7 +5970,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         iommu->accel != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ARM_SMMUV3_ACCEL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: accel is not supported with this QEMU binary"));
+                       _("iommu: 'accel' is not supported with this QEMU binary"));
         return -1;
     }
 
@@ -5978,7 +5978,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ARM_SMMUV3_CMDQV)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iommu: cmdqv is not supported with this QEMU binary"));
+                       _("iommu: 'cmdqv' is not supported with this QEMU binary"));
         return -1;
     }
 
@@ -5989,7 +5989,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
               iommu->granule == 16 ||
               iommu->granule == 64)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: unsupported granule size. Supported values are 4, 8, 16 and 64 KiB"));
+                           _("iommu: unsupported 'granule' size. Supported values are 4, 8, 16 and 64 KiB"));
             return -1;
         }
 
@@ -6000,7 +6000,7 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
          * other makes no sense. */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOMMU_AW_BITS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("iommu: page granule is not supported with this QEMU binary"));
+                           _("iommu: page 'granule' is not supported with this QEMU binary"));
             return -1;
         }
     }
