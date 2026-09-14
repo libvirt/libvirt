@@ -4877,3 +4877,6 @@ virDomainThrottleFilterFind(const virDomainDiskDef *def,
 bool
 virDomainDefHasTimer(const virDomainDef *def,
                      virDomainTimerNameType name);
+
+bool
+virDomainDefHasIntelIOMMUWithFSTS(const virDomainDef *def);

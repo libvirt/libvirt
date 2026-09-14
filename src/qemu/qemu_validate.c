@@ -2835,6 +2835,10 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                                        _("IOMMUFD is not supported by host kernel"));
                         return -1;
                     }
+                } else if (virDomainDefHasIntelIOMMUWithFSTS(def)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("VFIO PCI device assignment without 'iommufd' is not compatible with 'intel' IOMMU with 'fsts'"));
+                    return -1;
                 }
 
                 if (hostdev->source.subsys.u.pci.driver.ats != VIR_TRISTATE_SWITCH_ABSENT &&

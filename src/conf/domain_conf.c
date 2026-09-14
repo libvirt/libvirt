@@ -33756,3 +33756,28 @@ virDomainDefHasTimer(const virDomainDef *def,
 
     return false;
 }
+
+
+static bool
+virIOMMUIsIntelWithFSTS(const virDomainIOMMUDef *iommu)
+{
+    if (iommu && iommu->model == VIR_DOMAIN_IOMMU_MODEL_INTEL &&
+        iommu->fsts == VIR_TRISTATE_SWITCH_ON)
+        return true;
+
+    return false;
+}
+
+
+bool
+virDomainDefHasIntelIOMMUWithFSTS(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->niommus; i++) {
+        if (virIOMMUIsIntelWithFSTS(def->iommus[i]))
+            return true;
+    }
+
+    return false;
+}

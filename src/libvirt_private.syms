@@ -345,6 +345,7 @@ virDomainDefGetVcpusMax;
 virDomainDefGetVcpusTopology;
 virDomainDefHasDeviceAddress;
 virDomainDefHasGraphics;
+virDomainDefHasIntelIOMMUWithFSTS;
 virDomainDefHasManagedPR;
 virDomainDefHasMdevHostdev;
 virDomainDefHasMemballoon;
