@@ -9546,6 +9546,10 @@ Examples:
       Enable scalable mode DMA translation.
       :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
 
+   ``fsts``
+      Enable first stage translation.
+      :since:`Since 12.10.0` (QEMU/KVM and ``intel`` model only)
+
 In case of ``virtio`` IOMMU device, the ``driver`` element can optionally
 contain ``granule`` subelement that allows to choose which granule will be
 used by default. It is useful when running guests with different page size

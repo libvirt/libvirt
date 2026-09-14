@@ -14837,6 +14837,10 @@ virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
                                      &iommu->scalable_mode) < 0)
             return NULL;
 
+        if (virXMLPropTristateSwitch(driver, "fsts", VIR_XML_PROP_NONE,
+                                     &iommu->fsts) < 0)
+            return NULL;
+
         if ((granule = virXPathNode("./driver/granule", ctxt))) {
             g_autofree char *mode = virXMLPropString(granule, "mode");
             unsigned long long size;
@@ -16948,6 +16952,7 @@ virDomainIOMMUDefEquals(const virDomainIOMMUDef *a,
         a->ssid_size != b->ssid_size ||
         a->oas != b->oas ||
         a->scalable_mode != b->scalable_mode ||
+        a->fsts != b->fsts ||
         a->xtsup != b->xtsup ||
         a->pt != b->pt ||
         a->granule != b->granule)
@@ -22969,6 +22974,13 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
                        _("Target domain IOMMU device 'scalable_mode' '%1$s' does not match source '%2$s'"),
                        virTristateSwitchTypeToString(dst->scalable_mode),
                        virTristateSwitchTypeToString(src->scalable_mode));
+        return false;
+    }
+    if (src->fsts != dst->fsts) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device 'fsts' '%1$s' does not match source '%2$s'"),
+                       virTristateSwitchTypeToString(dst->fsts),
+                       virTristateSwitchTypeToString(src->fsts));
         return false;
     }
     if (src->pt != dst->pt) {
@@ -29464,6 +29476,10 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     if (iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " scalable_mode='%s'",
                           virTristateSwitchTypeToString(iommu->scalable_mode));
+    }
+    if (iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(&driverAttrBuf, " fsts='%s'",
+                          virTristateSwitchTypeToString(iommu->fsts));
     }
     if (iommu->pt != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(&driverAttrBuf, " passthrough='%s'",

@@ -6484,6 +6484,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="fsts">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="xtsup">
                 <ref name="virOnOff"/>
               </attribute>

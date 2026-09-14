@@ -3203,6 +3203,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->xtsup != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pt != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->granule != 0) {
@@ -3230,6 +3231,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3259,6 +3261,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->aw_bits != 0 ||
             iommu->dma_translation != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->scalable_mode != VIR_TRISTATE_SWITCH_ABSENT ||
+            iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->pci_bus >= 0 ||
             iommu->accel != VIR_TRISTATE_SWITCH_ABSENT ||
             iommu->cmdqv != VIR_TRISTATE_SWITCH_ABSENT ||
@@ -3287,6 +3290,14 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
             iommu->granule != 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("iommu model '%1$s' doesn't support some additional attributes"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+
+        if (iommu->scalable_mode != VIR_TRISTATE_SWITCH_ON &&
+            iommu->fsts == VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("iommu model '%1$s' 'fsts' requires 'scalable_mode' to be 'on'"),
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }

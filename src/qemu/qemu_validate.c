@@ -5934,6 +5934,12 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                        _("iommu: 'scalable_mode' is not supported with this QEMU binary"));
         return -1;
     }
+    if (iommu->fsts != VIR_TRISTATE_SWITCH_ABSENT &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_INTEL_IOMMU_FSTS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("iommu: 'fsts' is not supported with this QEMU binary"));
+        return -1;
+    }
 
     /* While QEMU_CAPS_ARM_SMMUV3_ACCEL tracks the .accel attribute of
      * arm-smmuv3 it is also a good indicator of .ats, .ril, .ssidsize, and
