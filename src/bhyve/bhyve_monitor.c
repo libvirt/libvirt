@@ -186,6 +186,9 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
         }
     }
 
+    if (!virDomainObjIsActive(vm) && !vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
+
  cleanup:
     virObjectUnlock(vm);
 }
