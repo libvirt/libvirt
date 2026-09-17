@@ -236,12 +236,6 @@ vshReportError(vshControl *ctl)
     vshResetLibvirtError();
 }
 
-/*
- * Detection of disconnections and automatic reconnection support
- */
-static int disconnected; /* we may have been disconnected */
-
-
 /* vshCmddefSearch:
  * @cmdname: name of command to find
  *
@@ -1391,16 +1385,6 @@ vshCommandRun(vshControl *ctl,
         }
 
         after = g_get_real_time();
-
-        /* try to automatically catch disconnections */
-        if (ret != EXIT_SUCCESS &&
-            ((last_error != NULL) &&
-             (((last_error->code == VIR_ERR_SYSTEM_ERROR) &&
-               (last_error->domain == VIR_FROM_REMOTE)) ||
-              (last_error->code == VIR_ERR_RPC) ||
-              (last_error->code == VIR_ERR_NO_CONNECT) ||
-              (last_error->code == VIR_ERR_INVALID_CONN))))
-            disconnected++;
 
         if (ret != EXIT_SUCCESS)
             vshReportError(ctl);
