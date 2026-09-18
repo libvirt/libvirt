@@ -954,10 +954,12 @@ qemuValidateDomainVCpuTopology(const virDomainDef *def, virQEMUCaps *qemuCaps)
                            QEMU_MAX_VCPUS_WITHOUT_X2APIC);
             return -1;
         }
-        if (!def->iommus || (def->iommus[0]->eim != VIR_TRISTATE_SWITCH_ON &&
-            def->iommus[0]->xtsup != VIR_TRISTATE_SWITCH_ON)) {
+        if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] != VIR_DOMAIN_IOAPIC_QEMU &&
+            (!def->iommus ||
+             (def->iommus[0]->eim != VIR_TRISTATE_SWITCH_ON &&
+              def->iommus[0]->xtsup != VIR_TRISTATE_SWITCH_ON))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("more than %1$d vCPUs require EIM or XTSup mode enabled on the iommu device"),
+                           _("more than %1$d vCPUs require either IOAPIC in QEMU or an iommu device with EIM or XTSup mode enabled"),
                            QEMU_MAX_VCPUS_WITHOUT_X2APIC);
             return -1;
         }
