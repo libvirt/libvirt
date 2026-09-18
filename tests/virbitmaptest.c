@@ -768,6 +768,30 @@ test17(const void *opaque G_GNUC_UNUSED)
 }
 
 
+static int
+test18(const void *opaque G_GNUC_UNUSED)
+{
+    g_autoptr(virBitmap) map = virBitmapNew(0);
+    g_autoptr(virBitmap) copy = virBitmapNewCopy(map);
+
+    /* Creating an empty bitmap means underlying array of bits is
+     * unallocated (NULL). For some virBitmap APIs this may lead
+     * to UB. The whole point of this test is to call those and
+     * rely on clang's UB sanitizer to catch such errors at
+     * runtime. */
+
+    virBitmapSetAll(map);
+    virBitmapClearAll(copy);
+
+    if (!virBitmapEqual(map, copy)) {
+        fprintf(stderr, "empty maps don't equal\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 #define TESTBINARYOP(A, B, RES, FUNC) \
     testBinaryOpData.a = A; \
     testBinaryOpData.b = B; \
@@ -845,6 +869,9 @@ mymain(void)
         ret = -1;
 
     if (virTestRun("test17", test17, NULL) < 0)
+        ret = -1;
+
+    if (virTestRun("test18", test18, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

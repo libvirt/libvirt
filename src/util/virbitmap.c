@@ -587,7 +587,8 @@ virBitmapNewCopy(virBitmap *src)
 {
     virBitmap *dst = virBitmapNew(src->nbits);
 
-    memcpy(dst->map, src->map, dst->map_len * sizeof(src->map[0]));
+    if (G_LIKELY(dst->map_len > 0))
+        memcpy(dst->map, src->map, dst->map_len * sizeof(src->map[0]));
 
     return dst;
 }
@@ -770,6 +771,9 @@ virBitmapClearTail(virBitmap *bitmap)
  */
 void virBitmapSetAll(virBitmap *bitmap)
 {
+    if (G_UNLIKELY(bitmap->map_len == 0))
+        return;
+
     memset(bitmap->map, 0xff,
            bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT));
 
@@ -786,6 +790,9 @@ void virBitmapSetAll(virBitmap *bitmap)
 void
 virBitmapClearAll(virBitmap *bitmap)
 {
+    if (G_UNLIKELY(bitmap->map_len == 0))
+        return;
+
     memset(bitmap->map, 0,
            bitmap->map_len * (VIR_BITMAP_BITS_PER_UNIT / CHAR_BIT));
 }
