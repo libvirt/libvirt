@@ -8968,6 +8968,21 @@ Example: usage of external TPM emulator :since:`Since 9.0.0`
    This attribute only works with the ``emulator`` backend. The accepted values
    are ``yes`` and ``no``. :since:`Since 7.0.0`
 
+``backup``
+  The optional ``backup`` attribute controls whether swtpm creates a
+  backup of its TPM state file before updating it. Enabling backup
+  protects against TPM state file corruption if swtpm process crashes
+  unexpectedly. Disabling backups avoids file-copying overhead. The
+  accepted values are ``yes`` and ``no``. :since:`Since 12.10.0`
+
+``fsync``
+  The optional ``fsync`` attribute controls whether swtpm explicitly
+  flushes its state changes to the physical storage using fsync().
+  Enabling fsync ensures data remains consistent across host power loss,
+  but might introduces I/O latency. Disabling fsync removes this latency
+  at the expense of host-level crash resilience. Acceptable
+  values are ``yes`` and ``no``. :since:`Since 12.10.0`
+
 ``active_pcr_banks``
    The ``active_pcr_banks`` node is used to define which of the PCR banks
    of a TPM 2.0 to activate. Valid names are for example sha1, sha256, sha384,

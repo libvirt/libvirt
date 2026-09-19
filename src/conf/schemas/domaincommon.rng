@@ -6240,6 +6240,16 @@
               <ref name="uint8"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="backup">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="fsync">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
         </group>
         <group>
           <attribute name="type">

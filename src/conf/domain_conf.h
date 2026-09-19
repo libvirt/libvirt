@@ -1576,6 +1576,8 @@ struct _virDomainTPMEmulatorDef {
         char *name;   /* name read from active profile */
         virDomainTPMProfileRemoveDisabled removeDisabled;
     } profile;
+    virTristateBool backup;
+    virTristateBool fsync;
 };
 
 struct _virDomainTPMDef {

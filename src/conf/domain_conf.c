@@ -11489,6 +11489,11 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
  *   </backend>
  * </tpm>
  *
+ * Emulator state backup and fsync is supported with the following:
+ * <tpm model='tpm-crb'>
+ *   <backend type='emulator' version='2.0' backup='yes' fsync='yes'>
+ * </tpm>
+ *
  */
 static virDomainTPMDef *
 virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
@@ -11601,6 +11606,16 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
         }
+
+        if (virXMLPropTristateBool(backends[0], "backup",
+                                   VIR_XML_PROP_NONE,
+                                   &def->data.emulator.backup) < 0)
+            goto error;
+
+        if (virXMLPropTristateBool(backends[0], "fsync",
+                                   VIR_XML_PROP_NONE,
+                                   &def->data.emulator.fsync) < 0)
+            goto error;
 
         if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
             break;
@@ -26794,6 +26809,15 @@ virDomainTPMDefFormat(virBuffer *buf,
         }
         if (def->data.emulator.persistent_state)
             virBufferAddLit(&backendAttrBuf, " persistent_state='yes'");
+
+        if (def->data.emulator.backup != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&backendAttrBuf, " backup='%s'",
+                              virTristateBoolTypeToString(def->data.emulator.backup));
+
+        if (def->data.emulator.fsync != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&backendAttrBuf, " fsync='%s'",
+                              virTristateBoolTypeToString(def->data.emulator.fsync));
+
         if (def->data.emulator.debug != 0)
             virBufferAsprintf(&backendAttrBuf, " debug='%u'",
                               def->data.emulator.debug);

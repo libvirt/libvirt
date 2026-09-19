@@ -28,7 +28,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-tis'>
-      <backend type='emulator' version='2.0'>
+      <backend type='emulator' version='2.0' backup='yes' fsync='yes'>
         <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
         <source type='dir' path='/some/dir'/>
       </backend>
