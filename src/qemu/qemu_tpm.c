@@ -669,34 +669,41 @@ qemuTPMVirCommandSwtpmAddEncryption(virCommand *cmd,
     return 0;
 }
 
-static void
+static int
 qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
                                   const virDomainTPMEmulatorDef *emulator,
                                   const virDomainTPMDef *tpmDef,
                                   const virQEMUDriverConfig *cfg)
 {
-    const char *lock = ",lock";
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autofree char *swtpm = NULL;
+    bool hasLock = virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_LOCK);
 
-    if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_LOCK)) {
-        if (qemuTPMHasSharedStorage(cfg, tpmDef))
-            VIR_WARN("This swtpm version doesn't support explicit locking");
+    swtpm = virTPMGetSwtpm();
 
-        lock = "";
-    }
+    if (!hasLock && qemuTPMHasSharedStorage(cfg, tpmDef))
+        VIR_WARN("This swtpm version doesn't support explicit locking");
 
     virCommandAddArg(cmd, "--tpmstate");
+
     switch (emulator->source_type) {
     case VIR_DOMAIN_TPM_SOURCE_TYPE_FILE:
-        virCommandAddArgFormat(cmd, "backend-uri=file://%s%s",
-                               emulator->source_path, lock);
+        virBufferAsprintf(&buf, "backend-uri=file://%s", emulator->source_path);
+        if (hasLock)
+            virBufferAddLit(&buf, ",lock");
         break;
+
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DEFAULT:
     case VIR_DOMAIN_TPM_SOURCE_TYPE_LAST:
-        virCommandAddArgFormat(cmd, "dir=%s,mode=0600%s",
-                               emulator->source_path, lock);
+        virBufferAsprintf(&buf, "dir=%s,mode=0600", emulator->source_path);
+        if (hasLock)
+            virBufferAddLit(&buf, ",lock");
         break;
     }
+
+    virCommandAddArgBuffer(cmd, &buf);
+    return 0;
 }
 
 /* qemuTPMEmulatorUpdateProfileName:
@@ -736,7 +743,8 @@ qemuTPMEmulatorUpdateProfileName(virDomainTPMEmulatorDef *emulator,
 
     virCommandAddArgList(cmd, "socket", "--print-info", "0x20", "--tpm2", NULL);
 
-    qemuTPMVirCommandSwtpmAddTPMState(cmd, emulator, persistentTPMDef, cfg);
+    if (qemuTPMVirCommandSwtpmAddTPMState(cmd, emulator, persistentTPMDef, cfg) < 0)
+        return -1;
 
     if (qemuTPMVirCommandSwtpmAddEncryption(cmd, emulator, swtpm) < 0)
         return -1;
@@ -860,7 +868,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
                            tpm->data.emulator.source->data.nix.path);
 
-    qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator, tpm, cfg);
+    if (qemuTPMVirCommandSwtpmAddTPMState(cmd, &tpm->data.emulator, tpm, cfg) < 0)
+        goto error;
 
     virCommandAddArg(cmd, "--log");
     if (tpm->data.emulator.debug != 0)
