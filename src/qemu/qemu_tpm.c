@@ -691,6 +691,18 @@ qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
         virBufferAsprintf(&buf, "backend-uri=file://%s", emulator->source_path);
         if (hasLock)
             virBufferAddLit(&buf, ",lock");
+
+        if (emulator->backup != VIR_TRISTATE_BOOL_ABSENT) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("'backup' feature is not supported by this backend"));
+            return -1;
+        }
+
+        if (emulator->fsync != VIR_TRISTATE_BOOL_ABSENT) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                           _("'fsync' feature is not supported by this backend"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_TPM_SOURCE_TYPE_DIR:
@@ -699,6 +711,26 @@ qemuTPMVirCommandSwtpmAddTPMState(virCommand *cmd,
         virBufferAsprintf(&buf, "dir=%s,mode=0600", emulator->source_path);
         if (hasLock)
             virBufferAddLit(&buf, ",lock");
+
+        if (emulator->backup == VIR_TRISTATE_BOOL_YES) {
+            if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_BACKUP)) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                               _("'%1$s' does not support 'backup' feature"),
+                               swtpm);
+                return -1;
+            }
+            virBufferAddLit(&buf, ",backup");
+        }
+
+        if (emulator->fsync == VIR_TRISTATE_BOOL_YES) {
+            if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_TPMSTATE_OPT_FSYNC)) {
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                               _("'%1$s' does not support 'fsync' feature"),
+                               swtpm);
+                return -1;
+            }
+            virBufferAddLit(&buf, ",fsync");
+        }
         break;
     }
 
