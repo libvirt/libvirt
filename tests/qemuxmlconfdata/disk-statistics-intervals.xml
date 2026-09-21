@@ -23,6 +23,7 @@
             <bin start='0'/>
             <bin start='20'/>
             <bin start='30'/>
+            <bin start='5000000000'/>
           </latency-histogram>
         </statistics>
       </driver>

@@ -8427,7 +8427,7 @@ virDomainDiskDefDriverParseXMLHistogramOne(virDomainDiskDef *def,
                                            xmlNodePtr cur)
 {
     g_autofree char *histogram_type = NULL;
-    unsigned int **histogram_config = NULL;
+    unsigned long long **histogram_config = NULL;
     g_autoptr(GPtrArray) binNodes = virXMLNodeGetSubelementList(cur, "bin");
     size_t nbins = 0;
     size_t i;
@@ -8463,12 +8463,12 @@ virDomainDiskDefDriverParseXMLHistogramOne(virDomainDiskDef *def,
         return -1;
     }
 
-    *histogram_config = g_new0(unsigned int, binNodes->len + 1);
+    *histogram_config = g_new0(unsigned long long, binNodes->len + 1);
 
     for (i = 0; i < binNodes->len; i++) {
-        unsigned int val;
+        unsigned long long val;
 
-        if (virXMLPropUInt(g_ptr_array_index(binNodes, i),
+        if (virXMLPropULongLong(g_ptr_array_index(binNodes, i),
                            "start", 10,
                            VIR_XML_PROP_REQUIRED,
                            &val) < 0)
@@ -24571,7 +24571,7 @@ virDomainDiskDefFormatThrottleFilters(virBuffer *buf,
 static void
 virDomainDiskDefFormatDriverHistogram(virBuffer *buf,
                                       const char *type,
-                                      unsigned int *bins)
+                                      unsigned long long *bins)
 {
     g_auto(virBuffer) histogramAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) histogramChildBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -24586,7 +24586,7 @@ virDomainDiskDefFormatDriverHistogram(virBuffer *buf,
     virBufferAddLit(&histogramChildBuf, "<bin start='0'/>\n");
 
     for (; *bins > 0; bins++)
-        virBufferAsprintf(&histogramChildBuf, "<bin start='%u'/>\n", *bins);
+        virBufferAsprintf(&histogramChildBuf, "<bin start='%llu'/>\n", *bins);
 
     virXMLFormatElement(buf, "latency-histogram", &histogramAttrBuf, &histogramChildBuf);
 }

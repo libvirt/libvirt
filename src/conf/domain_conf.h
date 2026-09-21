@@ -599,11 +599,11 @@ struct _virDomainDiskDef {
     unsigned int *statistics; /* Optional, zero terminated list of intervals to
                                 collect statistics for */
     /* optional zero terminated lists of bin boundaries for latency histograms */
-    unsigned int *histogram_boundaries;
-    unsigned int *histogram_boundaries_read;
-    unsigned int *histogram_boundaries_write;
-    unsigned int *histogram_boundaries_zone;
-    unsigned int *histogram_boundaries_flush;
+    unsigned long long *histogram_boundaries;
+    unsigned long long *histogram_boundaries_read;
+    unsigned long long *histogram_boundaries_write;
+    unsigned long long *histogram_boundaries_zone;
+    unsigned long long *histogram_boundaries_flush;
 
     virDomainDiskDetectZeroes detect_zeroes;
     virTristateSwitch discard_no_unref;

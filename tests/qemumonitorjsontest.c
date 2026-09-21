@@ -1130,13 +1130,45 @@ GEN_TEST_FUNC(qemuMonitorJSONSetAction,
 GEN_TEST_FUNC(qemuMonitorJSONSetLaunchSecurityState, "sev_secret_header",
               "sev_secret", 0, true)
 
-unsigned int testHistogramBoundaries[] = {10, 30, 50, 0};
-GEN_TEST_FUNC(qemuMonitorJSONBlockLatencyHistogramSet, "devid",
-              testHistogramBoundaries,
-              testHistogramBoundaries,
-              testHistogramBoundaries,
-              testHistogramBoundaries,
-              testHistogramBoundaries)
+static int
+testQemuMonitorJSONqemuMonitorJSONBlockLatencyHistogramSet(const void *opaque)
+{
+    const testQemuMonitorJSONSimpleFuncData *data = opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    unsigned long long boundaries[] = {10, 30, 5000000000ULL, 0};
+    g_autoptr(qemuMonitorTest) test = NULL;
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItemVerbatim(test,
+                                        "{"
+                                        "\"execute\":\"block-latency-histogram-set\","
+                                        "\"arguments\":{"
+                                        "\"id\":\"devid\","
+                                        "\"boundaries\":[10,30,5000000000],"
+                                        "\"boundaries-read\":[10,30,5000000000],"
+                                        "\"boundaries-write\":[10,30,5000000000],"
+                                        "\"boundaries-zap\":[10,30,5000000000],"
+                                        "\"boundaries-flush\":[10,30,5000000000]"
+                                        "},"
+                                        "\"id\":\"libvirt-1\""
+                                        "}",
+                                        NULL,
+                                        "{\"return\":{}}") < 0)
+        return -1;
+
+    if (qemuMonitorJSONBlockLatencyHistogramSet(qemuMonitorTestGetMonitor(test),
+                                                "devid",
+                                                boundaries,
+                                                boundaries,
+                                                boundaries,
+                                                boundaries,
+                                                boundaries) < 0)
+        return -1;
+
+    return 0;
+}
 
 static int
 testQemuMonitorJSONqemuMonitorJSONNBDServerStart(const void *opaque)

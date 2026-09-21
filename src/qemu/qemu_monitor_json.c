@@ -9176,7 +9176,7 @@ qemuMonitorJSONBlockdevSetActive(qemuMonitor *mon,
 
 
 static virJSONValue *
-qemuMonitorJSONBlockLatencyHistogramBoundary(unsigned int *bound)
+qemuMonitorJSONBlockLatencyHistogramBoundary(unsigned long long *bound)
 {
     g_autoptr(virJSONValue) ret = virJSONValueNewArray();
 
@@ -9184,7 +9184,7 @@ qemuMonitorJSONBlockLatencyHistogramBoundary(unsigned int *bound)
         return NULL;
 
     for (; *bound > 0; bound++) {
-        g_autoptr(virJSONValue) val = virJSONValueNewNumberUint(*bound);
+        g_autoptr(virJSONValue) val = virJSONValueNewNumberUlong(*bound);
 
         /* the only error is if the first argument is not an array */
         ignore_value(virJSONValueArrayAppend(ret, &val));
@@ -9197,11 +9197,11 @@ qemuMonitorJSONBlockLatencyHistogramBoundary(unsigned int *bound)
 int
 qemuMonitorJSONBlockLatencyHistogramSet(qemuMonitor *mon,
                                         const char *id,
-                                        unsigned int *boundaries,
-                                        unsigned int *boundaries_read,
-                                        unsigned int *boundaries_write,
-                                        unsigned int *boundaries_zone,
-                                        unsigned int *boundaries_flush)
+                                        unsigned long long *boundaries,
+                                        unsigned long long *boundaries_read,
+                                        unsigned long long *boundaries_write,
+                                        unsigned long long *boundaries_zone,
+                                        unsigned long long *boundaries_flush)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;

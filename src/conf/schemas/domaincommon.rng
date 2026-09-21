@@ -2845,7 +2845,7 @@
                   <oneOrMore>
                     <element name='bin'>
                       <attribute name='start'>
-                        <ref name="unsignedInt"/>
+                        <ref name="unsignedLong"/>
                       </attribute>
                     </element>
                   </oneOrMore>
