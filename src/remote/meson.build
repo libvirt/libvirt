@@ -52,12 +52,15 @@ foreach name : [ 'remote', 'qemu', 'lxc' ]
   rpc_probe_files += files(protocol_x)
 endforeach
 
+remote_daemon_stream_sources = files(
+  'remote_daemon_stream.c',
+)
+
 remote_daemon_sources = files(
   'remote_daemon.c',
   'remote_daemon_config.c',
   'remote_daemon_dispatch.c',
-  'remote_daemon_stream.c',
-)
+) + remote_daemon_stream_sources
 
 remote_daemon_generated = []
 

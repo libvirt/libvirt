@@ -492,6 +492,15 @@ endif
 
 if conf.has('WITH_REMOTE')
   tests += [
+    {
+      'name': 'daemonstreamtest',
+      'sources': [
+        'daemonstreamtest.c',
+        remote_daemon_stream_sources,
+        remote_protocol_generated,
+      ],
+      'include': [ remote_inc_dir ],
+    },
     { 'name': 'virnetdaemontest' },
     { 'name': 'virnetmessagetest' },
     { 'name': 'virnetserverclienttest' },
