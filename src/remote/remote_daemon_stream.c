@@ -110,15 +110,16 @@ daemonStreamMessageFinished(virNetMessage *msg,
 
 
 /*
- * Callback that gets invoked when a stream becomes writable/readable
+ * Returns true if the client has to be closed, which the caller does
+ * after dropping priv->lock.
  */
-static void
-daemonStreamEvent(virStreamPtr st, int events, void *opaque)
+static bool
+daemonStreamEventLocked(virNetServerClient *client,
+                        virStreamPtr st,
+                        int events)
 {
-    virNetServerClient *client = opaque;
-    daemonClientStream *stream;
     daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
-    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->lock);
+    daemonClientStream *stream;
 
     stream = priv->streams;
     while (stream) {
@@ -130,7 +131,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
     if (!stream) {
         VIR_WARN("event for client=%p stream st=%p, but missing stream state", client, st);
         virStreamEventRemoveCallback(st);
-        return;
+        return false;
     }
 
     VIR_DEBUG("st=%p events=%d EOF=%d closed=%d", st, events, stream->recvEOF, stream->closed);
@@ -139,8 +140,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         (events & VIR_STREAM_EVENT_WRITABLE)) {
         if (daemonStreamHandleWrite(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
-            virNetServerClientClose(client);
-            return;
+            return true;
         }
     }
 
@@ -149,8 +149,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         events = events & ~(VIR_STREAM_EVENT_READABLE);
         if (daemonStreamHandleRead(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
-            virNetServerClientClose(client);
-            return;
+            return true;
         }
         /* If we detected EOF during read processing,
          * then clear hangup/error conditions, since
@@ -174,8 +173,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
             if (daemonStreamHandleFinish(client, stream, msg) < 0) {
                 virNetMessageFree(msg);
                 daemonRemoveClientStream(client, stream);
-                virNetServerClientClose(client);
-                return;
+                return true;
             }
             break;
         case VIR_NET_ERROR:
@@ -184,8 +182,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
             if (daemonStreamHandleAbort(client, stream, msg) < 0) {
                 virNetMessageFree(msg);
                 daemonRemoveClientStream(client, stream);
-                virNetServerClientClose(client);
-                return;
+                return true;
             }
             break;
         }
@@ -203,8 +200,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         stream->recvEOF = true;
         if (!(msg = virNetMessageNew(false))) {
             daemonRemoveClientStream(client, stream);
-            virNetServerClientClose(client);
-            return;
+            return true;
         }
         msg->cb = daemonStreamMessageFinished;
         msg->opaque = stream;
@@ -217,8 +213,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                                               "", 0) < 0) {
             virNetMessageFree(msg);
             daemonRemoveClientStream(client, stream);
-            virNetServerClientClose(client);
-            return;
+            return true;
         }
     }
 
@@ -258,9 +253,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                                                      stream->serial);
         }
         daemonRemoveClientStream(client, stream);
-        if (ret < 0)
-            virNetServerClientClose(client);
-        return;
+        return ret < 0;
     }
 
     if (stream->closed) {
@@ -268,6 +261,27 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
     } else {
         daemonStreamUpdateEvents(stream);
     }
+
+    return false;
+}
+
+
+/*
+ * Callback that gets invoked when a stream becomes writable/readable
+ */
+static void
+daemonStreamEvent(virStreamPtr st, int events, void *opaque)
+{
+    virNetServerClient *client = opaque;
+    daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
+    bool needClose = false;
+
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->lock) {
+        needClose = daemonStreamEventLocked(client, st, events);
+    }
+
+    if (needClose)
+        virNetServerClientClose(client);
 }
 
 
