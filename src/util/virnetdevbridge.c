@@ -289,29 +289,6 @@ virNetDevBridgePortSetUnicastFlood(const char *brname,
 }
 
 
-int
-virNetDevBridgePortGetIsolated(const char *brname,
-                               const char *ifname,
-                               bool *enable)
-{
-    unsigned long value;
-
-    if (virNetDevBridgePortGet(brname, ifname, "isolated", &value) < 0)
-       return -1;
-
-    *enable = !!value;
-    return 0;
-}
-
-
-int
-virNetDevBridgePortSetIsolated(const char *brname,
-                               const char *ifname,
-                               bool enable)
-{
-    return virNetDevBridgePortSet(brname, ifname, "isolated", enable ? 1 : 0);
-}
-
 static int
 virNetDevBridgeSetupVlans(const char *ifname, const virNetDevVlan *virtVlan)
 {
@@ -416,8 +393,123 @@ virNetDevBridgePortSetUnicastFlood(const char *brname G_GNUC_UNUSED,
                          _("Unable to set bridge port unicast_flood on this platform"));
     return -1;
 }
+#endif
+
+#if defined(__linux__)
+int
+virNetDevBridgePortGetIsolated(const char *brname,
+                               const char *ifname,
+                               bool *enable)
+{
+    unsigned long value;
+
+    if (virNetDevBridgePortGet(brname, ifname, "isolated", &value) < 0)
+       return -1;
+
+    *enable = !!value;
+    return 0;
+}
 
 
+int
+virNetDevBridgePortSetIsolated(const char *brname,
+                               const char *ifname,
+                               bool enable)
+{
+    return virNetDevBridgePortSet(brname, ifname, "isolated", enable ? 1 : 0);
+}
+
+#elif defined(WITH_BSD_BRIDGE_MGMT) && defined(IFBIF_PRIVATE)
+static int
+virNetDevBridgePortGet(const char *brname,
+                       const char *ifname,
+                       uint32_t flag,
+                       unsigned long *value)
+{
+    struct ifbreq req = { 0 };
+
+    if (virStrcpyStatic(req.ifbr_ifsname, ifname) < 0) {
+        virReportSystemError(ERANGE,
+                             _("Network interface name '%1$s' is too long"),
+                             ifname);
+        return -1;
+    }
+
+    if (virNetDevBridgeCmd(brname, BRDGGIFFLGS, &req, sizeof(req), false) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get bridge %1$s port %2$s flags"),
+                             brname, ifname);
+        return -1;
+    }
+
+    *value = req.ifbr_ifsflags & flag;
+
+    return 0;
+}
+
+
+static int
+virNetDevBridgePortSet(const char *brname,
+                       const char *ifname,
+                       uint32_t flag,
+                       unsigned long value)
+{
+    struct ifbreq req = { 0 };
+
+    if (virStrcpyStatic(req.ifbr_ifsname, ifname) < 0) {
+        virReportSystemError(ERANGE,
+                             _("Network interface name '%1$s' is too long"),
+                             ifname);
+        return -1;
+    }
+
+    if (virNetDevBridgeCmd(brname, BRDGGIFFLGS, &req, sizeof(req), false) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to get bridge %1$s port %2$s flags"),
+                             brname, ifname);
+        return -1;
+    }
+
+    if (value)
+        req.ifbr_ifsflags |= flag;
+    else
+        req.ifbr_ifsflags &= ~flag;
+
+    if (virNetDevBridgeCmd(brname, BRDGSIFFLGS, &req, sizeof(req), true) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to set bridge %1$s port %2$s flags"),
+                             brname, ifname);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virNetDevBridgePortGetIsolated(const char *brname,
+                               const char *ifname,
+                               bool *enable)
+{
+    unsigned long value;
+
+    if (virNetDevBridgePortGet(brname, ifname, IFBIF_PRIVATE, &value) < 0)
+       return -1;
+
+    *enable = !!value;
+    return 0;
+}
+
+
+int
+virNetDevBridgePortSetIsolated(const char *brname,
+                               const char *ifname,
+                               bool enable)
+{
+    return virNetDevBridgePortSet(brname, ifname, IFBIF_PRIVATE, enable);
+}
+
+#else
 int
 virNetDevBridgePortGetIsolated(const char *brname G_GNUC_UNUSED,
                                const char *ifname G_GNUC_UNUSED,
