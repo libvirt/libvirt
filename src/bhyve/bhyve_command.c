@@ -336,6 +336,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         if (disk->serial)
             virBufferAsprintf(&device, ",ser=%s", disk->serial);
 
+        if (disk->info.bootIndex != 0)
+            virBufferAsprintf(&device, ",bootindex=%u", disk->info.bootIndex);
+
         virBufferAddBuffer(&buf, &device);
     }
 
@@ -544,6 +547,7 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
                            virCommand *cmd)
 {
     const char *disk_source;
+    g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
 
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         return -1;
@@ -563,10 +567,14 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
 
     disk_source = virDomainDiskGetSource(disk);
 
+    if (disk->info.bootIndex != 0)
+        virBufferAsprintf(&opts, ",bootindex=%u", disk->info.bootIndex);
+
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "%d:0,virtio-blk,%s",
+    virCommandAddArgFormat(cmd, "%d:0,virtio-blk,%s%s",
                            disk->info.addr.pci.slot,
-                           disk_source);
+                           disk_source,
+                           virBufferCurrentContent(&opts));
 
     return 0;
 }

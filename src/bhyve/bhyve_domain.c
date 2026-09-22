@@ -454,6 +454,15 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_DISK: {
         virDomainDiskDef *disk = dev->data.disk;
 
+        if ((disk->bus == VIR_DOMAIN_DISK_BUS_SATA ||
+             disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) &&
+            disk->info.bootIndex > INT_MAX) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("boot order '%1$u' is greater than bhyve's maximum of %2$d"),
+                           disk->info.bootIndex, INT_MAX);
+            return -1;
+        }
+
         if (disk->rotation_rate &&
             disk->bus != VIR_DOMAIN_DISK_BUS_SATA) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

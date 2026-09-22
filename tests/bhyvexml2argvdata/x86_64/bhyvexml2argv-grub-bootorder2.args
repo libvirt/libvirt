@@ -5,6 +5,6 @@ bhyve \
 -H \
 -P \
 -s 0:0,hostbridge \
--s 2:0,ahci,hd:/tmp/freebsd1.img,hd:/tmp/freebsd2.img,hd:/tmp/freebsd3.img \
+-s 2:0,ahci,hd:/tmp/freebsd1.img,bootindex=111,hd:/tmp/freebsd2.img,bootindex=22,hd:/tmp/freebsd3.img,bootindex=3 \
 -s 3:0,virtio-net,faketapdev,mac=52:54:00:0e:d2:6f \
 bhyve

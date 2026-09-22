@@ -1,0 +1,13 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-l bootrom,fakefirmwaredir/BHYVE_UEFI.fd,fakenvramdir/bhyve_VARS.fd,fwcfg=qemu \
+-s 1:0,lpc \
+-s 2:0,ahci,hd:/tmp/freebsd1.img,bootindex=2,hd:/tmp/freebsd2.img,bootindex=1 \
+-s 3:0,virtio-net,faketapdev,mac=52:54:00:b9:94:02 \
+-s 4:0,virtio-blk,/tmp/freebsd2.img,bootindex=3 \
+bhyve

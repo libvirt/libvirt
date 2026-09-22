@@ -205,6 +205,8 @@ mymain(void)
                        BHYVE_CAP_NVME | BHYVE_CAP_NUMA;
 
     DO_TEST("base");
+    DO_TEST("bootorder");
+    DO_TEST_FAILURE("bootorder-invalid-index");
     DO_TEST("wired");
     DO_TEST("acpiapic");
     driver.bhyvecaps &= ~BHYVE_CAP_ACPI;
