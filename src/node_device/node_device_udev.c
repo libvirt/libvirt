@@ -2482,10 +2482,17 @@ nodeStateShutdownWait(void)
     if (!priv)
         return 0;
 
-    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
-        if (priv->udevThread)
-            virThreadJoin(priv->udevThread);
-    }
+    /* Do not hold @priv's lock while joining the udev thread.
+     * udevEventHandleThread() must acquire that very lock in order to
+     * observe @priv->udevThreadQuit - already set by
+     * nodeStateShutdownPrepare() - and return. Joining while holding the
+     * lock therefore deadlocks the two threads against each other.
+     *
+     * @priv->udevThread is only ever assigned in nodeStateInitialize() and
+     * released by udevEventDataDispose(), and the udev thread holds a
+     * reference to @priv, so accessing it here without the lock is safe. */
+    if (priv->udevThread)
+        virThreadJoin(priv->udevThread);
 
     if (priv->workerPool)
         virThreadPoolDrain(priv->workerPool);
