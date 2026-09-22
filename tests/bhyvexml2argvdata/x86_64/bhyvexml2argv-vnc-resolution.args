@@ -5,7 +5,7 @@ bhyve \
 -H \
 -P \
 -s 0:0,hostbridge \
--l bootrom,/path/to/test.fd \
+-l bootrom,/path/to/test.fd,fwcfg=qemu \
 -s 1:0,lpc \
 -s 2:0,fbuf,tcp=127.0.0.1:5904,w=1920,h=1080 \
 bhyve

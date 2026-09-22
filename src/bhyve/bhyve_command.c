@@ -1245,6 +1245,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
                 virBufferAsprintf(&buf, "bootrom,%s", def->os.loader->path);
                 if (def->os.loader->nvram && def->os.loader->nvram->path)
                     virBufferAsprintf(&buf, ",%s", def->os.loader->nvram->path);
+                virBufferAddStr(&buf, ",fwcfg=qemu");
 
                 virCommandAddArgList(cmd, "-l", virBufferCurrentContent(&buf), NULL);
             } else {
