@@ -56,7 +56,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libreadline-dev \
                       libsanlock-dev \
                       libsasl2-dev \
-                      libselinux1-dev \
+                      libselinux-dev \
                       libssh-dev \
                       libssh2-1-dev \
                       libtirpc-dev \

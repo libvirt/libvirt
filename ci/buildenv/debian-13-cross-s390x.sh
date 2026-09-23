@@ -74,7 +74,7 @@ function install_buildenv() {
             libreadline-dev:s390x \
             libsanlock-dev:s390x \
             libsasl2-dev:s390x \
-            libselinux1-dev:s390x \
+            libselinux-dev:s390x \
             libssh-dev:s390x \
             libssh2-1-dev:s390x \
             libtirpc-dev:s390x \

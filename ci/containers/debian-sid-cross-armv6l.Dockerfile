@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:sid-slim
+FROM docker.io/amd64/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -83,7 +83,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libreadline-dev:armel \
                       libsanlock-dev:armel \
                       libsasl2-dev:armel \
-                      libselinux1-dev:armel \
+                      libselinux-dev:armel \
                       libssh-dev:armel \
                       libssh2-1-dev:armel \
                       libtirpc-dev:armel \

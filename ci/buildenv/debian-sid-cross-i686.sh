@@ -72,7 +72,7 @@ function install_buildenv() {
             libreadline-dev:i386 \
             libsanlock-dev:i386 \
             libsasl2-dev:i386 \
-            libselinux1-dev:i386 \
+            libselinux-dev:i386 \
             libssh-dev:i386 \
             libssh2-1-dev:i386 \
             libtirpc-dev:i386 \

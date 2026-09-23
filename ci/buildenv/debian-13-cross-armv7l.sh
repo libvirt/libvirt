@@ -72,7 +72,7 @@ function install_buildenv() {
             libreadline-dev:armhf \
             libsanlock-dev:armhf \
             libsasl2-dev:armhf \
-            libselinux1-dev:armhf \
+            libselinux-dev:armhf \
             libssh-dev:armhf \
             libssh2-1-dev:armhf \
             libtirpc-dev:armhf \

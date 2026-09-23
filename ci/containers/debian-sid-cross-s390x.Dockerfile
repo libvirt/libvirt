@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:sid-slim
+FROM docker.io/amd64/debian:sid-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -85,7 +85,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libreadline-dev:s390x \
                       libsanlock-dev:s390x \
                       libsasl2-dev:s390x \
-                      libselinux1-dev:s390x \
+                      libselinux-dev:s390x \
                       libssh-dev:s390x \
                       libssh2-1-dev:s390x \
                       libtirpc-dev:s390x \

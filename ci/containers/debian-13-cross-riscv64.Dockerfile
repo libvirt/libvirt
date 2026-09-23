@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/debian:13-slim
+FROM docker.io/amd64/debian:13-slim
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -85,7 +85,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
                       libreadline-dev:riscv64 \
                       libsanlock-dev:riscv64 \
                       libsasl2-dev:riscv64 \
-                      libselinux1-dev:riscv64 \
+                      libselinux-dev:riscv64 \
                       libssh-dev:riscv64 \
                       libssh2-1-dev:riscv64 \
                       libtirpc-dev:riscv64 \

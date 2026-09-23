@@ -74,7 +74,7 @@ function install_buildenv() {
             libreadline-dev:riscv64 \
             libsanlock-dev:riscv64 \
             libsasl2-dev:riscv64 \
-            libselinux1-dev:riscv64 \
+            libselinux-dev:riscv64 \
             libssh-dev:riscv64 \
             libssh2-1-dev:riscv64 \
             libtirpc-dev:riscv64 \
