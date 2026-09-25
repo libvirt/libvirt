@@ -276,6 +276,7 @@ mymain(void)
     DO_TEST("iothreadids");
 
     DO_TEST("iommufd");
+    DO_TEST("locking");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
