@@ -120,6 +120,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
 struct testInfo {
     const char *name;
+    const char *argsSuffix;
     unsigned int flags;
 };
 
@@ -135,8 +136,8 @@ testCompareXMLToArgvHelper(const void *data)
 
     xml = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s.xml",
                           abs_srcdir, arch, info->name);
-    args = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s.args",
-                           abs_srcdir, arch, info->name);
+    args = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s%s.args",
+                           abs_srcdir, arch, info->name, info->argsSuffix);
     ldargs = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s.ldargs",
                              abs_srcdir, arch, info->name);
     dmargs = g_strdup_printf("%s/bhyvexml2argvdata/%s/bhyvexml2argv-%s.devmap",
@@ -171,23 +172,28 @@ mymain(void)
     VIR_FREE(driver.config->firmwareDir);
     VIR_FREE(driver.config->nvramDir);
     VIR_FREE(driver.config->ubootPath);
+    VIR_FREE(driver.config->bhyveRunDir);
     driver.config->firmwareDir = g_steal_pointer(&fakefirmwaredir);
     driver.config->nvramDir = g_steal_pointer(&fakenvramdir);
     driver.config->ubootPath = g_steal_pointer(&fakeubootpath);
+    driver.config->bhyveRunDir = g_strdup("/path/to/bhyve/run");
     driver.config->bhyveloadTimeout = 0;
     driver.config->bhyveloadTimeoutKill = 0;
 
     driver.privileged = true;
 
-# define DO_TEST_FULL(name, flags) \
+# define DO_TEST_FULL_OUTPUT(name, suffix, flags) \
     do { \
         static struct testInfo info = { \
-            name, (flags) \
+            name, suffix, (flags) \
         }; \
-        if (virTestRun("BHYVE XML-2-ARGV " name, \
+        if (virTestRun("BHYVE XML-2-ARGV " name suffix, \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1; \
     } while (0)
+
+# define DO_TEST_FULL(name, flags) \
+    DO_TEST_FULL_OUTPUT(name, "", flags)
 
 # define DO_TEST(name) \
     DO_TEST_FULL(name, 0)
@@ -197,6 +203,9 @@ mymain(void)
 
 # define DO_TEST_UNPRIVILEGED_FAILURE(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_FAILURE | FLAG_UNPRIVILEGED)
+
+# define DO_TEST_UNPRIVILEGED(name) \
+    DO_TEST_FULL_OUTPUT(name, "-unprivileged", FLAG_UNPRIVILEGED)
 
 # define DO_TEST_PARSE_ERROR(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
@@ -213,6 +222,7 @@ mymain(void)
                        BHYVE_CAP_NVME | BHYVE_CAP_NUMA;
 
     DO_TEST("base");
+    DO_TEST_UNPRIVILEGED_FAILURE("base");
     DO_TEST("bootorder");
     DO_TEST_FAILURE("bootorder-invalid-index");
     DO_TEST("wired");
@@ -226,6 +236,7 @@ mymain(void)
     DO_TEST("console");
     DO_TEST("console-master-slave-not-specified");
     DO_TEST("grub-defaults");
+    DO_TEST_UNPRIVILEGED_FAILURE("grub-defaults");
     DO_TEST("grub-bootorder");
     DO_TEST("grub-bootorder2");
     DO_TEST("bhyveload-bootorder");
@@ -236,6 +247,7 @@ mymain(void)
     DO_TEST_FAILURE("bhyveload-bootorder4");
     DO_TEST_PARSE_ERROR("bhyveload-bootorder5");
     DO_TEST("custom-loader");
+    DO_TEST_UNPRIVILEGED_FAILURE("custom-loader");
     DO_TEST("disk-cdrom-grub");
     DO_TEST("serial-grub");
     DO_TEST("localtime");
@@ -243,6 +255,7 @@ mymain(void)
     DO_TEST("passthru");
     DO_TEST("passthru-multiple-devs");
     DO_TEST("uefi");
+    DO_TEST_UNPRIVILEGED("uefi");
     DO_TEST("uefi-nvram");
     DO_TEST("uefi-nvram-template-set");
     DO_TEST("uefi-nvram-template-and-source-set");
