@@ -41,6 +41,7 @@ struct _virBhyveDriverConfig {
     char *logDir;
     char *nvramDir;
     char *stateDir;
+    char *bhyveRunDir;
 
     char *ubootPath;
 

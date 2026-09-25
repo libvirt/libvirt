@@ -70,6 +70,7 @@ virBhyveDriverConfigNew(bool privileged)
         cfg->configDir = g_strdup_printf("%s/bhyve", cfg->configBaseDir);
         cfg->autostartDir = g_strdup_printf("%s/bhyve/autostart", cfg->configBaseDir);
         cfg->stateDir = g_strdup_printf("%s/libvirt/bhyve", RUNSTATEDIR);
+        cfg->bhyveRunDir = g_strdup(RUNSTATEDIR "/bhyve");
         cfg->logDir = g_strdup_printf("%s/log/libvirt/bhyve", LOCALSTATEDIR);
     } else {
         g_autofree char *rundir = NULL;
@@ -89,6 +90,7 @@ virBhyveDriverConfigNew(bool privileged)
         cfg->configDir = g_strdup_printf("%s/bhyve", cfg->configBaseDir);
         cfg->autostartDir = g_strdup_printf("%s/bhyve/autostart", cfg->configBaseDir);
         cfg->stateDir = g_strdup_printf("%s/bhyve/run", rundir);
+        cfg->bhyveRunDir = g_strdup(cfg->stateDir);
         cfg->logDir = g_strdup_printf("%s/bhyve/log", cachedir);
     }
 
@@ -151,6 +153,7 @@ virBhyveDriverConfigDispose(void *obj)
     g_free(cfg->logDir);
     g_free(cfg->nvramDir);
     g_free(cfg->stateDir);
+    g_free(cfg->bhyveRunDir);
 
     g_free(cfg->ubootPath);
 }

@@ -722,6 +722,20 @@ bhyveProcessRemoveDomainStatus(const char *statusDir,
     }
 }
 
+static void
+bhyveProcessRemoveIPCSocket(struct _bhyveConn *driver,
+                            const char *name)
+{
+    g_autofree char *path = g_strdup_printf("%s/%s",
+                                            driver->config->bhyveRunDir,
+                                            name);
+
+    if (unlink(path) < 0 && errno != ENOENT) {
+        VIR_WARN("Failed to remove bhyve IPC socket for %s: %s",
+                 name, g_strerror(errno));
+    }
+}
+
 /**
  * @driver: bhyve driver
  * @vm: domain object
@@ -826,6 +840,7 @@ virBhyveProcessStopImpl(struct _bhyveConn *driver,
         bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
     virPidFileDelete(driver->config->stateDir, vm->def->name);
     bhyveProcessRemoveDomainStatus(driver->config->stateDir, vm->def->name);
+    bhyveProcessRemoveIPCSocket(driver, vm->def->name);
 
     if (restoreDef)
         virDomainObjRemoveTransientDef(vm);

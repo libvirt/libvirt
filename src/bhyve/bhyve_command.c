@@ -1112,7 +1112,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
     if (!driver->privileged) {
         virCommandAddArg(cmd, "-M");
         virCommandAddArg(cmd, "-o");
-        virCommandAddArgFormat(cmd, "rundir=%s", driver->config->stateDir);
+        virCommandAddArgFormat(cmd, "rundir=%s", driver->config->bhyveRunDir);
     }
 
     /* CPUs */
@@ -1375,8 +1375,7 @@ virBhyveProcessBuildGetVMPidCmd(struct _bhyveConn *driver,
 
     virCommandAddArg(cmd, "--get-vm-pid");
     virCommandAddArgPair(cmd, "--vm", def->name);
-    if (!driver->privileged)
-        virCommandAddArgPair(cmd, "--rundir", driver->config->stateDir);
+    virCommandAddArgPair(cmd, "--rundir", driver->config->bhyveRunDir);
 
     return cmd;
 }
