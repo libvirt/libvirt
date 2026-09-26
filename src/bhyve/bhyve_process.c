@@ -433,8 +433,8 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
     if (devicemap != NULL) {
         rc = unlink(devmap_file);
         if (rc < 0 && errno != ENOENT)
-            virReportSystemError(errno, _("cannot unlink file '%1$s'"),
-                                 devmap_file);
+            VIR_WARN("cannot unlink file '%s': %s",
+                     devmap_file, g_strerror(errno));
     }
 
     if (ret < 0)
@@ -593,6 +593,8 @@ virBhyveProcessStart(bhyveConn *driver,
                      virDomainRunningReason reason,
                      unsigned int flags)
 {
+    virErrorPtr save_err = NULL;
+
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
         return -1;
 
@@ -612,9 +614,11 @@ virBhyveProcessStart(bhyveConn *driver,
     return virBhyveProcessStartImpl(driver, vm, reason);
 
  cleanup:
+    virErrorPreserveLast(&save_err);
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_STOPPED);
     bhyveProcessStopHook(driver, vm, VIR_HOOK_BHYVE_OP_RELEASE);
     virDomainObjRemoveTransientDef(vm);
+    virErrorRestore(&save_err);
 
     return -1;
 }
@@ -660,6 +664,9 @@ virBhyveProcessStopImpl(struct _bhyveConn *driver,
     g_autoptr(virCommand) cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
     bool vm_started = false;
+    virErrorPtr save_err = NULL;
+
+    virErrorPreserveLast(&save_err);
 
     if (vm->pid != 0)
         vm_started = true;
@@ -667,14 +674,15 @@ virBhyveProcessStopImpl(struct _bhyveConn *driver,
     if (!forceCleanup) {
         if (!virDomainObjIsActive(vm)) {
             VIR_DEBUG("VM '%s' not active", vm->def->name);
-            return 0;
+            goto cleanup;
         }
 
         if (!vm_started) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid PID %1$d for VM"),
                            (int)vm->pid);
-            return -1;
+            ret = -1;
+            goto cleanup;
         }
     }
 
@@ -735,6 +743,8 @@ virBhyveProcessStopImpl(struct _bhyveConn *driver,
     if (restoreDef)
         virDomainObjRemoveTransientDef(vm);
 
+ cleanup:
+    virErrorRestore(&save_err);
     return ret;
 }
 
