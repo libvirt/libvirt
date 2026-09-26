@@ -30,6 +30,23 @@ v12.8.0 (unreleased)
     those dumps may occupy, pruning the oldest after each new one. It takes a
     byte count or a size such as ``"10GiB"``; 0, the default, keeps them all.
 
+  * FreeBSD: support VLAN configuration on bridges
+
+    libvirt on FreeBSD now supports VLAN configurations such as::
+
+      <vlan trunk='yes'>
+        <tag id='42' nativeMode='untagged'/>
+        <tag id='43'/>
+      </vlan>
+
+    It also supports ``macTableManager='libvirt'`` bridge configuration
+    for networks (requires FreeBSD 15.0 or newer).
+
+  * bhyve: implement ``virDomainSetLifecycleAction()`` API
+
+    The bhyve driver now implements the ``virDomainSetLifecycleAction()`` API
+    (accessible via ``virsh set-lifecycle-action``).
+
 * **Improvements**
 
   * qemu: Select the win-dmp format for Windows guest crash dumps
@@ -51,6 +68,11 @@ v12.8.0 (unreleased)
     Statistics now use the correct monitor group names and omit nonexistent
     cache monitor data.
 
+  * bhyve: fixes for transient/persistent domain handling and leftover TAP devices
+
+    A few issues related to transient and persistent domain handling were fixed.
+    Additionally, error handling bugs in the network interfaces management code
+    were fixed so it does not leave dangling TAP interfaces on errors.
 
 v12.7.0 (2026-09-01)
 ====================
