@@ -45,6 +45,12 @@
   /sys/bus/usb/devices/ r,
   /sys/bus/usb/devices/* r,
   /sys/devices/**/usb[0-9]*/** r,
+  # For USB hostdev access, QEMU (via libusb) walks up the sysfs topology
+  # of the passed-through device and reads the uevent of the parent USB
+  # host controller, which sits one level above the usb[0-9]* directory
+  # (e.g. /sys/devices/pci0000:00/0000:00:01.2/uevent). uevent files only
+  # expose non-sensitive device metadata.
+  /sys/devices/**/uevent r,
   # libusb needs udev data about usb devices (~equal to content of lsusb -v)
   /run/udev/data/+usb* r,
   /run/udev/data/c16[6,7]* r,
