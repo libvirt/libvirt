@@ -133,17 +133,11 @@ foreach name : libvirt_conf_files
   set_variable(name['virtd'].underscorify(), tmp)
 endforeach
 
-logrotate_files = [
+driver_logrotate_files = [
   'libvirtd.qemu',
   'libvirtd.lxc',
   'libvirtd.libxl',
 ]
-
-if conf.has('WITH_MONOLITHIC_LIBVIRTD')
-  logrotate_files += [
-    'libvirtd',
-  ]
-endif
 
 if conf.has('WITH_REMOTE')
   remote_driver_lib = static_library(
@@ -268,15 +262,15 @@ if conf.has('WITH_REMOTE')
       runstatedir / 'libvirt' / 'common',
     ]
 
-    logrotate_conf = configuration_data({
+    driver_logrotate_conf = configuration_data({
       'localstatedir': localstatedir,
     })
 
-    foreach name : logrotate_files
+    foreach name : driver_logrotate_files
       log_file = configure_file(
         input: '@0@.logrotate.in'.format(name),
         output: '@0@.logrotate'.format(name),
-        configuration: logrotate_conf,
+        configuration: driver_logrotate_conf,
       )
       install_data(
         log_file,

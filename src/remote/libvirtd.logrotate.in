@@ -1,4 +1,4 @@
-@localstatedir@/log/libvirt/libvirtd.log {
+@localstatedir@/log/libvirt/@daemon@.log {
         weekly
         missingok
         rotate 4

@@ -285,6 +285,26 @@ subdir('vbox')
 subdir('vmware')
 subdir('vz')
 
+# Generate a logrotate configuration for every daemon built by this
+# configuration.  The driver-specific logrotate files for guest logs are
+# installed by src/remote/meson.build.
+foreach daemon : virt_daemons
+  daemon_logrotate_conf = configuration_data({
+    'daemon': daemon['name'],
+    'localstatedir': localstatedir,
+  })
+  daemon_logrotate = configure_file(
+    input: 'remote/libvirtd.logrotate.in',
+    output: '@0@.logrotate'.format(daemon['name']),
+    configuration: daemon_logrotate_conf,
+  )
+  install_data(
+    daemon_logrotate,
+    install_dir: sysconfdir / 'logrotate.d',
+    rename: [ daemon['name'] ],
+  )
+endforeach
+
 
 driver_sources = files(
   'driver.c',
