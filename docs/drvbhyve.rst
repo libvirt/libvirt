@@ -32,14 +32,34 @@ Additional information on bhyve could be obtained on
 Connections to the Bhyve driver
 -------------------------------
 
-The libvirt bhyve driver is a single-instance privileged driver. Some sample
-connection URIs are:
+The libvirt bhyve driver is a multi-instance driver, providing a single system
+wide privileged driver (the "system" instance), and per-user unprivileged
+drivers (the "session" instance). The URI driver protocol is "bhyve". Some
+example connection URIs for the libvirt driver are:
 
 ::
+
+   bhyve:///session                    (local access to per-user instance)
+   bhyve+unix:///session               (local access to per-user instance)
 
    bhyve:///system                     (local access)
    bhyve+unix:///system                (local access)
    bhyve+ssh://root@example.com/system (remote access, SSH tunnelled)
+
+The per-user instance connection is supported :since:`since 12.9.0`. It requires
+bhyve monitor mode support (``bhyve -M``) and the ``--get-vm-pid`` option
+support in ``bhyvectl(8)``. At the moment these features are only available on
+FreeBSD -CURRENT.
+
+Session mode
+------------
+
+The per-user instance has some limitations and requirements:
+
+* User needs permission to access ``/dev/vmmctl``.
+* It supports only UEFI boot; ``bhyveload``, ``grub-bhyve`` and other external
+  loaders are not supported.
+* Memory and block I/O tuning are not supported.
 
 Example guest domain XML configurations
 ---------------------------------------
