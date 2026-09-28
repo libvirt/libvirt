@@ -17,6 +17,12 @@ v12.8.0 (unreleased)
 
 * **New features**
 
+  * resctrl: Support whole-process allocations and monitoring
+
+    ``cachetune``, ``memorytune`` and ``energytune`` can now apply to the
+    entire QEMU process. Monitors without a ``vcpus`` attribute inherit the
+    enclosing scope. This enables whole-VM resctrl allocations and monitoring.
+
   * qemu: Add ``auto_dump_max_size`` to cap the size of auto-triggered dumps
 
     A guest that keeps crashing fills ``auto_dump_path`` one dump at a time.
@@ -39,6 +45,11 @@ v12.8.0 (unreleased)
     count.
 
 * **Bug fixes**
+
+  * qemu: Fix resctrl monitor statistics reporting
+
+    Statistics now use the correct monitor group names and omit nonexistent
+    cache monitor data.
 
 
 v12.7.0 (2026-09-01)
