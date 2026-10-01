@@ -922,7 +922,7 @@ virStorageFileHasEncryptionFormat(const struct FileEncryptionInfo *info,
     } else if (info->modeOffset != -1) {
         int crypt_format;
 
-        if (info->modeOffset >= len)
+        if (len < info->modeOffset + sizeof(uint32_t))
             return false;
 
         crypt_format = virReadBufInt32BE(buf + info->modeOffset);
