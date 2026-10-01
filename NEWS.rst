@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v12.8.0 (unreleased)
+v12.8.0 (2026-10-01)
 ====================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -73,6 +69,7 @@ v12.8.0 (unreleased)
     A few issues related to transient and persistent domain handling were fixed.
     Additionally, error handling bugs in the network interfaces management code
     were fixed so it does not leave dangling TAP interfaces on errors.
+
 
 v12.7.0 (2026-09-01)
 ====================
