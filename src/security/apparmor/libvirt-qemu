@@ -209,7 +209,7 @@
   # support for passt network back-end
   /usr/bin/passt Cx -> passt,
 
-  profile passt {
+  profile passt flags=(attach_disconnected) {
     /usr/bin/passt r,
 
     signal (receive) set=("term") peer=/usr/sbin/libvirtd,
