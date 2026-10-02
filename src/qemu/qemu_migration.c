@@ -2004,6 +2004,7 @@ qemuMigrationUpdateJobType(virDomainJobData *jobData)
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_DEVICE:
         jobData->status = VIR_DOMAIN_JOB_STATUS_MIGRATING;
         break;
 
@@ -4895,6 +4896,7 @@ qemuMigrationSrcIsCanceled(virDomainObj *vm)
                   qemuMonitorMigrationStatusTypeToString(status));
         return true;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_DEVICE:
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
     case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER_SETUP:

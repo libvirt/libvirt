@@ -1674,6 +1674,19 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
                                "        \"error-desc\": \"It's broken\""
                                "    },"
                                "    \"id\": \"libvirt-14\""
+                               "}") < 0 ||
+        qemuMonitorTestAddItem(test, "query-migrate",
+                               "{"
+                               "    \"return\": {"
+                               "        \"status\": \"postcopy-device\","
+                               "        \"total-time\": 52,"
+                               "        \"ram\": {"
+                               "            \"total\": 1611038720,"
+                               "            \"remaining\": 0,"
+                               "            \"transferred\": 1611038720"
+                               "        }"
+                               "    },"
+                               "    \"id\": \"libvirt-15\""
                                "}") < 0)
         return -1;
 
@@ -1696,6 +1709,18 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
         STRNEQ_NULLABLE(error, "It's broken")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Invalid failed migration status");
+        return -1;
+    }
+
+    memset(&stats, 0, sizeof(stats));
+    if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test),
+                                         &stats, NULL) < 0)
+        return -1;
+
+    if (stats.status != QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_DEVICE ||
+        stats.ram_transferred != 1611038720) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Invalid postcopy-device migration statistics");
         return -1;
     }
 
