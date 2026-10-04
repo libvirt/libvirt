@@ -12382,7 +12382,7 @@ qemuConnectCPUModelBaseline(virQEMUCaps *qemuCaps,
                                             false, false, &result) < 0)
             return NULL;
 
-        if (qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
+        if (result && qemuConnectStealCPUModelFromInfo(baseline, &result) < 0)
             return NULL;
     }
 
