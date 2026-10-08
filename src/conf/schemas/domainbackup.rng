@@ -94,7 +94,7 @@
                     <attribute name="transport">
                       <value>fd</value>
                     </attribute>
-                    <attribute name="fdgroup"/>
+                    <ref name="fdgroupattr"/>
                   </group>
                 </choice>
               </element>

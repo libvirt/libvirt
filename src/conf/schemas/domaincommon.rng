@@ -249,6 +249,16 @@
     </choice>
   </define>
 
+  <define name="fdgroupattr">
+    <attribute name="fdgroup"/>
+  </define>
+
+  <define name="fdgroup">
+    <optional>
+      <ref name="fdgroupattr"/>
+    </optional>
+  </define>
+
   <define name="osxen">
     <choice>
       <group>
@@ -1419,9 +1429,7 @@
       <attribute name="enabled">
         <ref name="virYesNo"/>
       </attribute>
-      <optional>
-        <attribute name="fdgroup"/>
-      </optional>
+      <ref name='fdgroup'/>
     </element>
   </define>
 
@@ -2006,9 +2014,7 @@
                 <ref name="vmwarePath"/>
               </choice>
             </attribute>
-            <optional>
-              <attribute name="fdgroup"/>
-            </optional>
+            <ref name="fdgroup"/>
           </optional>
           <ref name="diskSourceCommon"/>
           <optional>
