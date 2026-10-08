@@ -278,6 +278,8 @@ mymain(void)
 
     DO_TEST_STATUS("qcow2-data-file");
 
+    DO_TEST_STATUS("virtiofs");
+
     /* These test cases capture situation where the 'device' attribute of a
      * virtio video device is missing and thus needs to be inferred from the
      * available capabilities when an upgraded libvirt is started */

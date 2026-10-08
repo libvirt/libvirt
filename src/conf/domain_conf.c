@@ -9564,6 +9564,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         g_autofree char *queue_size = virXPathString("string(./driver/@queue)", ctxt);
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
+        g_autofree char *caps = virXPathString("string(./binary/@caps)", ctxt);
         g_autofree char *thread_pool_size = virXPathString("string(./binary/thread_pool/@size)", ctxt);
         g_autofree char *openfiles = virXPathString("string(./binary/openfiles/@max)", ctxt);
         xmlNodePtr binary_node = virXPathNode("./binary", ctxt);
@@ -9599,6 +9600,9 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
 
         if (binary)
             def->binary = virFileSanitizePath(binary);
+
+        if (caps)
+            def->caps = virBitmapParseUnlimitedAllowEmpty(caps);
 
         if (virXMLPropTristateSwitch(binary_node, "xattr",
                                      VIR_XML_PROP_NONE,
@@ -25221,6 +25225,11 @@ virDomainFSDefFormat(virBuffer *buf,
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         g_auto(virBuffer) lockAttrBuf = VIR_BUFFER_INITIALIZER;
         virBufferEscapeString(&binaryAttrBuf, " path='%s'", def->binary);
+
+        if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS) {
+            g_autofree char *capsBitmap = virBitmapFormat(def->caps);
+            virBufferAsprintf(&binaryAttrBuf, " caps='%s'", capsBitmap);
+        }
 
         if (def->xattr != VIR_TRISTATE_SWITCH_ABSENT) {
             virBufferAsprintf(&binaryAttrBuf, " xattr='%s'",
