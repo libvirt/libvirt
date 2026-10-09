@@ -3,11 +3,11 @@
   <server transport='fd' fdgroup='nbdfd'/>
   <disks>
     <disk name='vda' type='file'>
-      <scratch file='/path/to/file'/>
+      <scratch file='/path/to/file' fdgroup='scratchfd-vda'/>
     </disk>
     <disk name='hda' backup='no'/>
     <disk name='vdc' type='file' backupmode='full'>
-      <scratch file='/path/to/file'/>
+      <scratch file='/path/to/file' fdgroup='scratchfd-vdc'/>
     </disk>
     <disk name='vdd' type='file' backupmode='incremental'>
       <scratch file='/path/to/file'/>
