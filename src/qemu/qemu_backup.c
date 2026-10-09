@@ -451,6 +451,7 @@ qemuBackupDiskPrepareOneStorage(virDomainObj *vm,
 
     if (!reuse_external &&
         dd->store->type == VIR_STORAGE_TYPE_FILE &&
+        !virStorageSourceIsFD(dd->store) &&
         virStorageSourceSupportsCreate(dd->store)) {
 
         if (virFileExists(dd->store->path)) {

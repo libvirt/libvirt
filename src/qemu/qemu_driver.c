@@ -14904,7 +14904,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 
     /* pre-create the image file. This is required so that libvirt can properly
      * label the image for access by qemu */
-    if (!existing) {
+    if (!existing && !virStorageSourceIsFD(mirror)) {
         if (supports_create) {
             if (virStorageSourceCreate(mirror) < 0) {
                 virReportSystemError(errno, "%s", _("failed to create copy target"));

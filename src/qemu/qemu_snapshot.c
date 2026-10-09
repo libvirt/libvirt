@@ -1351,7 +1351,7 @@ qemuSnapshotDiskPrepareOne(qemuSnapshotDiskContext *snapctxt,
 
         dd->initialized = true;
 
-        if (!reuse) {
+        if (!reuse && !virStorageSourceIsFD(dd->src)) {
             /* pre-create the image file so that we can label it before handing it to qemu */
             if (dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
                 if (virStorageSourceCreate(dd->src) < 0) {
