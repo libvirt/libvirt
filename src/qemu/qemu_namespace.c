@@ -1031,9 +1031,26 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
 
     if (isLink) {
         g_autofree char *target = NULL;
+        bool targetMatches = false;
 
-        if ((target = g_file_read_link(data->file, NULL)) &&
-            STREQ(target, data->target)) {
+        if ((target = g_file_read_link(data->file, NULL))) {
+            /* Normalize relative path to absolute path for comparison,
+             * using the same logic as qemuNamespaceMknodItemInit(). */
+            if (!g_path_is_absolute(target)) {
+                g_autofree char *fileTmp = g_strdup(data->file);
+                char *c = NULL;
+
+                if ((c = strrchr(fileTmp, '/')))
+                    *(c + 1) = '\0';
+
+                target = g_strdup_printf("%s%s", fileTmp, target);
+            }
+
+            if (STREQ(target, data->target))
+                targetMatches = true;
+        }
+
+        if (targetMatches) {
             VIR_DEBUG("Skipping symlink %s -> %s which exists and points to correct target",
                       data->file, data->target);
         } else {
