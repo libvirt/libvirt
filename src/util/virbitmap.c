@@ -562,7 +562,7 @@ virBitmapParseUnlimited(const char *str)
  * empty (or contains just spaces) an empty bitmap is returned instead of an
  * error.
  *
- * Returns @bitmap on success, or NULL in cas of error
+ * Returns @bitmap on success, or NULL in case of error
  */
 virBitmap *
 virBitmapParseUnlimitedAllowEmpty(const char *str)
