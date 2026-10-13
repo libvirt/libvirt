@@ -249,6 +249,7 @@ mymain(void)
     DO_TEST_DOMAIN("x86_64-pc-headless");
     DO_TEST_DOMAIN("x86_64-q35-graphics");
     DO_TEST_DOMAIN("x86_64-q35-headless");
+    DO_TEST_DOMAIN("boot-complex");
 
  cleanup:
     qemuTestDriverFree(&driver);
