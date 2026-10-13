@@ -5691,6 +5691,7 @@ typedef enum {
 typedef enum {
     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file (Since: 0.5.0) */
     VIR_DOMAIN_EVENT_UNDEFINED_RENAMED = 1, /* Domain was renamed (Since: 1.2.19) */
+    VIR_DOMAIN_EVENT_UNDEFINED_MIGRATED = 2, /* Domain was migrated with VIR_MIGRATE_UNDEFINE_SOURCE flag (Since: 12.9.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_UNDEFINED_LAST /* (Since: 0.9.10) */

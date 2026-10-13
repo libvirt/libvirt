@@ -62,7 +62,8 @@ VIR_ENUM_DECL(virshDomainEventUndefined);
 VIR_ENUM_IMPL(virshDomainEventUndefined,
               VIR_DOMAIN_EVENT_UNDEFINED_LAST,
               N_("Removed"),
-              N_("Renamed"));
+              N_("Renamed"),
+              N_("Migrated"));
 
 VIR_ENUM_DECL(virshDomainEventStarted);
 VIR_ENUM_IMPL(virshDomainEventStarted,

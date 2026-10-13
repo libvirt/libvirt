@@ -121,6 +121,9 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_UNDEFINED_RENAMED:
                 return "Renamed";
 
+            case VIR_DOMAIN_EVENT_UNDEFINED_MIGRATED:
+                return "Migrated";
+
             case VIR_DOMAIN_EVENT_UNDEFINED_LAST:
                 break;
             }
