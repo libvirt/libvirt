@@ -275,6 +275,11 @@ mymain(void)
     DO_TEST_DOMAIN("x86_64-q35-graphics");
     DO_TEST_DOMAIN("x86_64-q35-headless");
     DO_TEST_DOMAIN("boot-complex");
+    /* Rerun the same test but now mimic that one disk is a dir
+     * instead of regular file. */
+    g_setenv(PATH_MIMIC_DIR, "/dev/HostVG/hdc", TRUE);
+    DO_TEST_DOMAIN_ERROR_UNSUPPORTED("boot-complex");
+    g_unsetenv(PATH_MIMIC_DIR);
 
  cleanup:
     qemuTestDriverFree(&driver);
