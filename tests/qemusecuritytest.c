@@ -32,6 +32,7 @@
 struct testData {
     virQEMUDriver *driver;
     const char *file; /* file name to load VM def XML from; qemuxmlconfdata/ */
+    int expectError;
 };
 
 
@@ -117,8 +118,26 @@ testDomain(const void *opaque)
     if (g_setenv(ENVVAR, "1", FALSE) == FALSE)
         return -1;
 
-    if (qemuSecuritySetAllLabel(data->driver, vm, NULL, false) < 0)
+    if (qemuSecuritySetAllLabel(data->driver, vm, NULL, false) < 0) {
+        if (data->expectError != VIR_ERR_OK) {
+            int errCode = virGetLastErrorCode();
+
+            if (errCode == data->expectError) {
+                /* expected failure */
+                ret = 0;
+            } else {
+                VIR_TEST_DEBUG("Unexpected error code %d, expected %d",
+                               errCode, data->expectError);
+            }
+        }
         goto cleanup;
+    }
+
+    if (data->expectError != VIR_ERR_OK) {
+        VIR_TEST_DEBUG("passed instead of expected error code %d",
+                       data->expectError);
+        goto cleanup;
+    }
 
     qemuSecurityRestoreAllLabel(data->driver, vm, false);
 
@@ -191,13 +210,19 @@ mymain(void)
 
     driver.securityManager = g_steal_pointer(&stack);
 
-
-#define DO_TEST_DOMAIN(f) \
+#define DO_TEST_DOMAIN_FULL(f, err) \
     do { \
-        struct testData data = {.driver = &driver, .file = f}; \
+        struct testData data = {.driver = &driver, .file = f, \
+            .expectError = err}; \
         if (virTestRun(f, testDomain, &data) < 0) \
             ret = -1; \
     } while (0)
+
+#define DO_TEST_DOMAIN(f) \
+    DO_TEST_DOMAIN_FULL(f, VIR_ERR_OK)
+
+#define DO_TEST_DOMAIN_ERROR_UNSUPPORTED(f) \
+    DO_TEST_DOMAIN_FULL(f, VIR_ERR_CONFIG_UNSUPPORTED)
 
     DO_TEST_DOMAIN("acpi-table");
     DO_TEST_DOMAIN("channel-unix-guestfwd");
