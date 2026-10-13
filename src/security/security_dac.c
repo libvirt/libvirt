@@ -947,6 +947,43 @@ virSecurityDACSetImageLabelInternal(virSecurityManager *mgr,
     if (src->seclabelSkipRemember)
         remember = false;
 
+    /* If we don't remember the label, do an extra check if the
+     * storage source is actually of expected type. Ideally, if
+     * hypervisor rejects incorrect type then we'd just restore
+     * the remembered label, BUT if we do not remember it in the
+     * first place, then there's no restore. */
+    if (!remember && src->path) {
+        struct stat sb;
+
+        switch (src->type) {
+        case VIR_STORAGE_TYPE_FILE:
+        case VIR_STORAGE_TYPE_BLOCK:
+        case VIR_STORAGE_TYPE_DIR:
+        case VIR_STORAGE_TYPE_CTL:
+            if (stat(src->path, &sb) < 0) {
+                virReportSystemError(errno, _("Failed to stat %1$s"), src->path);
+                return -1;
+            }
+
+            if ((src->type == VIR_STORAGE_TYPE_DIR) != !!S_ISDIR(sb.st_mode)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid file type for disk source %1$s"),
+                               src->path);
+                return -1;
+            }
+            break;
+
+        case VIR_STORAGE_TYPE_NONE:
+        case VIR_STORAGE_TYPE_NETWORK:
+        case VIR_STORAGE_TYPE_VOLUME:
+        case VIR_STORAGE_TYPE_NVME:
+        case VIR_STORAGE_TYPE_VHOST_USER:
+        case VIR_STORAGE_TYPE_VHOST_VDPA:
+        case VIR_STORAGE_TYPE_LAST:
+            break;
+        }
+    }
+
     return virSecurityDACSetOwnership(mgr, src, NULL, user, group, remember);
 }
 
