@@ -1478,7 +1478,7 @@ xenFormatXLDiskSrcNet(virStorageSource *src)
 
         virBufferStrcat(&buf, "rbd:", src->path, NULL);
 
-        virBufferAddLit(&buf, ":auth_supported=none");
+        virBufferAddLit(&buf, ":auth_client_required=none");
 
         if (src->nhosts > 0) {
             virBufferAddLit(&buf, ":mon_host=");

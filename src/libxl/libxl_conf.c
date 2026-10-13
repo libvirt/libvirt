@@ -1087,11 +1087,10 @@ libxlMakeNetworkDiskSrcStr(virStorageSource *src,
 
         if (username) {
             virBufferEscape(&buf, '\\', ":", ":id=%s", username);
-            virBufferEscape(&buf, '\\', ":",
-                            ":key=%s:auth_supported=cephx\\;none",
-                            secret);
+            virBufferEscape(&buf, '\\', ":", ":key=%s", secret);
+            virBufferAddLit(&buf, ":auth_client_required=cephx\\;none");
         } else {
-            virBufferAddLit(&buf, ":auth_supported=none");
+            virBufferAddLit(&buf, ":auth_client_required=none");
         }
 
         if (src->nhosts > 0) {

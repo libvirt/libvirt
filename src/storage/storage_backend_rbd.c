@@ -241,7 +241,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
             goto cleanup;
 
         if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
-                                             "auth_supported", "cephx") < 0)
+                                             "auth_client_required", "cephx") < 0)
             goto cleanup;
     } else {
         VIR_DEBUG("Not using cephx authorization");
@@ -250,8 +250,9 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDState *ptr,
                            _("failed to create the RADOS cluster"));
             goto cleanup;
         }
+
         if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
-                                             "auth_supported", "none") < 0)
+                                             "auth_client_required", "none") < 0)
             goto cleanup;
     }
 
