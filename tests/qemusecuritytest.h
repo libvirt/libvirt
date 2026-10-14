@@ -19,6 +19,9 @@
 #pragma once
 
 #define ENVVAR "LIBVIRT_QEMU_SECURITY_TEST"
+/* If PATH_MIMIC_DIR is set then stat() mocked in qemusecuritymock.c pretends
+ * the value is a directory instead of a file. */
+#define PATH_MIMIC_DIR "LIBVIRT_QEMU_SECURITY_TEST_MIMIC_DIR"
 
 #include "internal.h"
 

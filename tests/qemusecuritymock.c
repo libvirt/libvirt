@@ -232,6 +232,7 @@ int virFileRemoveXAttr(const char *path,
 #define VIR_MOCK_STAT_HOOK \
     do { \
         if (g_getenv(ENVVAR)) { \
+            const char *mimicDir = g_getenv(PATH_MIMIC_DIR); \
             uint32_t *val; \
 \
             virMutexLock(&m); \
@@ -239,7 +240,11 @@ int virFileRemoveXAttr(const char *path,
 \
             memset(sb, 0, sizeof(*sb)); \
 \
-            sb->st_mode = S_IFREG | 0666; \
+            if (STREQ_NULLABLE(path, mimicDir)) { \
+                sb->st_mode = S_IFDIR | 0666; \
+            } else { \
+                sb->st_mode = S_IFREG | 0666; \
+            } \
             sb->st_size = 123456; \
             sb->st_ino = 1; \
 \
