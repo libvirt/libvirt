@@ -175,9 +175,19 @@
               <!-- Allow to plainly select a disk for backup without any other config -->
               <group>
                 <ref name="backupAttr"/>
+                <optional>
+                  <attribute name="sparsify">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                </optional>
               </group>
               <group>
                 <ref name="backupAttr"/>
+                <optional>
+                  <attribute name="sparsify">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                </optional>
                 <attribute name="type">
                   <value>file</value>
                 </attribute>

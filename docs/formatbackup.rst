@@ -115,6 +115,11 @@ were supplied). The following child elements and attributes are supported:
          for an incremental backup exported via NBD export name for the given
          disk. Valid only for pull mode backups.
 
+      ``sparsify``
+         Valid only for ``full`` push mode backups.
+         Requests that any zero blocks are un-allocated in the backup file even
+         when they were allocated in the source. :since:`Since 12.9.0`
+
       ``type``
          A mandatory attribute to describe the type of the disk, except when
          ``backup='no'`` is used. Valid values include ``file``, or ``block``.

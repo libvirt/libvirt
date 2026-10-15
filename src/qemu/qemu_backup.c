@@ -315,6 +315,11 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
         dd->backingStore = dd->terminator = virStorageSourceNew();
     }
 
+    if (backupdisk->sparsify == VIR_TRISTATE_BOOL_YES) {
+        backupdisk->store->detect_zeroes = VIR_DOMAIN_DISK_DETECT_ZEROES_UNMAP;
+        backupdisk->store->discard = VIR_DOMAIN_DISK_DISCARD_UNMAP;
+    }
+
     if (qemuDomainPrepareStorageSourceBlockdev(NULL, dd->store, priv, cfg) < 0)
         return -1;
 

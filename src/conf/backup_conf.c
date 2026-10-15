@@ -129,7 +129,11 @@ virDomainBackupDiskDefParseXML(xmlNodePtr node,
     if (def->backup == VIR_TRISTATE_BOOL_NO)
         return 0;
 
-    if (!push) {
+    if (push) {
+        if (virXMLPropTristateBool(node, "sparsify", VIR_XML_PROP_NONE,
+                                   &def->sparsify) < 0)
+            return -1;
+    } else {
         def->exportname = virXMLPropString(node, "exportname");
         def->exportbitmap = virXMLPropString(node, "exportbitmap");
     }
@@ -324,6 +328,10 @@ virDomainBackupDiskDefFormat(virBuffer *buf,
 
         virBufferEscapeString(&attrBuf, " exportname='%s'", disk->exportname);
         virBufferEscapeString(&attrBuf, " exportbitmap='%s'", disk->exportbitmap);
+
+        if (disk->sparsify != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&attrBuf, " sparsify='%s'",
+                              virTristateBoolTypeToString(disk->sparsify));
 
         if (disk->store->id != 0)
             virBufferAsprintf(&attrBuf, " index='%u'", disk->store->id);
@@ -535,6 +543,14 @@ virDomainBackupAlignDisks(virDomainBackupDef *def,
         if (!backupdisk->incremental &&
             backupdisk->backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL)
             backupdisk->incremental = g_strdup(def->incremental);
+
+        if (backupdisk->sparsify == VIR_TRISTATE_BOOL_YES &&
+            backupdisk->backupmode == VIR_DOMAIN_BACKUP_DISK_BACKUP_MODE_INCREMENTAL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("The 'sparsify' mode of disk '%1$s' can be used only for full backup"),
+                           backupdisk->name);
+            return -1;
+        }
     }
 
     return 0;
