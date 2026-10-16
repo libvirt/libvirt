@@ -222,7 +222,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
 }
 
 int
-qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
+qemuInterfaceOpenVhostNet(virDomainObj *vm,
                           virDomainNetDef *net)
 {
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
@@ -231,6 +231,11 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
 
     if (!vhostfdSize)
          vhostfdSize = 1;
+
+    if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM ||
+        net->driver.virtio.name == VIR_DOMAIN_NET_DRIVER_TYPE_QEMU) {
+        return 0;
+    }
 
     if (!virDomainNetIsVirtioModel(net))
         return 0;
