@@ -2006,8 +2006,14 @@ endif
 
 # nwfilter should only be compiled for linux, and only if the
 # libvirt daemon is also being compiled
-if conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
+if not get_option('driver_nwfilter').disabled() and conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
   conf.set('WITH_NWFILTER', 1)
+elif get_option('driver_nwfilter').enabled()
+  if not conf.has('WITH_LIBVIRTD')
+    error('libvirtd must be enabled to build the network driver')
+  else
+    error('linux host is required to build the nwfilter driver')
+  endif
 endif
 
 if conf.has('WITH_NWFILTER') or conf.has('WITH_NETWORK')
@@ -2259,6 +2265,7 @@ driver_summary = {
   'LXC': conf.has('WITH_LXC'),
   'Monolithic libvirtd': conf.has('WITH_MONOLITHIC_LIBVIRTD'),
   'Network': conf.has('WITH_NETWORK'),
+  'NWFilter': conf.has('WITH_NWFILTER'),
   'OpenVZ': conf.has('WITH_OPENVZ'),
   'QEMU': conf.has('WITH_QEMU'),
   'Remote': conf.has('WITH_REMOTE'),
