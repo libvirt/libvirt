@@ -2031,7 +2031,7 @@ endif
 
 # nwfilter should only be compiled for linux, and only if the
 # libvirt daemon is also being compiled
-if conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
+if conf.has('WITH_LIBVIRTD') and conf.has('WITH_NETWORK') and host_machine.system() == 'linux'
   conf.set('WITH_NWFILTER', 1)
 endif
 
