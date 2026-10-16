@@ -1650,31 +1650,6 @@ endif
 
 if not get_option('driver_network').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set('WITH_NETWORK', 1)
-
-  firewall_backend_priority = get_option('firewall_backend_priority')
-  if firewall_backend_priority.length() == 0
-      if host_machine.system() == 'linux'
-          firewall_backend_priority = ['nftables', 'iptables']
-      elif host_machine.system() == 'freebsd'
-          firewall_backend_priority = ['pf']
-      else
-          # No firewall impl on non-Linux so far, so force 'none'
-          # as placeholder
-          firewall_backend_priority = ['none']
-      endif
-  else
-      if host_machine.system() != 'linux'
-          error('firewall backend priority only supported on linux hosts')
-      endif
-  endif
-
-  backends = []
-  foreach backend: firewall_backend_priority
-      backend = 'VIR_FIREWALL_BACKEND_' + backend.to_upper()
-      backends += backend
-  endforeach
-
-  conf.set('FIREWALL_BACKENDS', ', '.join(backends))
 elif get_option('driver_network').enabled()
   error('libvirtd must be enabled to build the network driver')
 endif
@@ -2035,6 +2010,33 @@ if conf.has('WITH_LIBVIRTD') and host_machine.system() == 'linux'
   conf.set('WITH_NWFILTER', 1)
 endif
 
+if conf.has('WITH_NWFILTER') or conf.has('WITH_NETWORK')
+  firewall_backend_priority = get_option('firewall_backend_priority')
+  if firewall_backend_priority.length() == 0
+      if host_machine.system() == 'linux'
+          firewall_backend_priority = ['nftables', 'iptables']
+      elif host_machine.system() == 'freebsd'
+          firewall_backend_priority = ['pf']
+      else
+          # No firewall impl on non-Linux so far, so force 'none'
+          # as placeholder
+          firewall_backend_priority = ['none']
+      endif
+  else
+      if host_machine.system() != 'linux'
+          error('firewall backend priority only supported on linux hosts')
+      endif
+  endif
+
+  backends = []
+  foreach backend: firewall_backend_priority
+      backend = 'VIR_FIREWALL_BACKEND_' + backend.to_upper()
+      backends += backend
+  endforeach
+
+  conf.set('FIREWALL_BACKENDS', ', '.join(backends))
+endif
+
 if not get_option('pm_utils').disabled()
   use_pm_utils = true
   if init_script == 'systemd'
@@ -2373,7 +2375,7 @@ misc_summary = {
   'virt-login-shell': conf.has('WITH_LOGIN_SHELL'),
   'Warning Flags': supported_cc_flags,
 }
-if conf.has('WITH_NETWORK')
+if conf.has('WITH_NWFILTER') or conf.has('WITH_NETWORK')
   misc_summary += {
     'firewall backends': firewall_backend_priority,
   }
