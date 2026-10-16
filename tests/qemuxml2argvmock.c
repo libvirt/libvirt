@@ -232,7 +232,8 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm,
     if (!vhostfdSize)
          vhostfdSize = 1;
 
-    if (vm->def->virtType != VIR_DOMAIN_VIRT_KVM ||
+    if ((vm->def->virtType != VIR_DOMAIN_VIRT_KVM &&
+         vm->def->virtType != VIR_DOMAIN_VIRT_HYPERV) ||
         net->driver.virtio.name == VIR_DOMAIN_NET_DRIVER_TYPE_QEMU) {
         return 0;
     }
