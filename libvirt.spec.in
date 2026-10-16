@@ -1393,6 +1393,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_remote_mode} \
            -Ddriver_interface=enabled \
            -Ddriver_network=enabled \
+           -Ddriver_nodedev=enabled \
            -Ddriver_nwfilter=enabled \
            -Dstorage_fs=enabled \
            -Dstorage_lvm=enabled \
@@ -1476,6 +1477,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Ddriver_libxl=disabled \
   -Ddriver_lxc=disabled \
   -Ddriver_network=disabled \
+  -Ddriver_nodedev=disabled \
   -Ddriver_nwfilter=disabled \
   -Ddriver_openvz=disabled \
   -Ddriver_qemu=disabled \

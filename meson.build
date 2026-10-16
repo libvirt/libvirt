@@ -1654,8 +1654,14 @@ elif get_option('driver_network').enabled()
   error('libvirtd must be enabled to build the network driver')
 endif
 
-if udev_dep.found() and conf.has('WITH_LIBVIRTD')
+if not get_option('driver_nodedev').disabled() and conf.has('WITH_LIBVIRTD') and udev_dep.found()
   conf.set('WITH_NODE_DEVICES', 1)
+elif get_option('driver_nodedev').enabled()
+  if not conf.has('WITH_LIBVIRTD')
+    error('libvirtd must be enabled to build the node device driver')
+  elif not udev_dep.found()
+    error('udev library is required to build the node device driver')
+  endif
 endif
 
 if not get_option('driver_openvz').disabled() and host_machine.system() == 'linux'
@@ -2265,6 +2271,7 @@ driver_summary = {
   'LXC': conf.has('WITH_LXC'),
   'Monolithic libvirtd': conf.has('WITH_MONOLITHIC_LIBVIRTD'),
   'Network': conf.has('WITH_NETWORK'),
+  'Node device': conf.has('WITH_NODE_DEVICES'),
   'NWFilter': conf.has('WITH_NWFILTER'),
   'OpenVZ': conf.has('WITH_OPENVZ'),
   'QEMU': conf.has('WITH_QEMU'),
