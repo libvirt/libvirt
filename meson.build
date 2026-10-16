@@ -1749,7 +1749,7 @@ if not get_option('driver_qemu').disabled()
   endif
 endif
 
-if not get_option('driver_secrets').disabled() and conf.has('WITH_LIBVIRTD')
+if not get_option('driver_secret').disabled() and conf.has('WITH_LIBVIRTD')
   conf.set('WITH_SECRETS', 1)
 endif
 

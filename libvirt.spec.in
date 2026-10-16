@@ -1482,7 +1482,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Ddriver_nwfilter=disabled \
   -Ddriver_openvz=disabled \
   -Ddriver_qemu=disabled \
-  -Ddriver_secrets=disabled \
+  -Ddriver_secret=disabled \
   -Ddriver_storage=disabled \
   -Ddriver_vbox=disabled \
   -Ddriver_vmware=disabled \
