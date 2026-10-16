@@ -1794,7 +1794,7 @@ endif
 
 use_storage = false
 
-if conf.has('WITH_LIBVIRTD')
+if not get_option('driver_storage').disabled() and conf.has('WITH_LIBVIRTD')
   if not get_option('storage_dir').disabled()
     use_storage = true
     conf.set('WITH_STORAGE_DIR', 1)
@@ -1897,10 +1897,15 @@ if conf.has('WITH_LIBVIRTD')
     use_storage = true
     conf.set('WITH_STORAGE_ZFS', 1)
   endif
-endif
 
-if use_storage
-  conf.set('WITH_STORAGE', 1)
+  if use_storage
+    conf.set('WITH_STORAGE', 1)
+  elif get_option('driver_storage').enabled()
+    error('storage driver enabled but no storage backends enabled')
+  endif
+
+elif get_option('driver_storage').enabled() and not conf.has('WITH_LIBVIRTD')
+  error('libvirtd must be enabled to build the storage driver')
 endif
 
 
@@ -2276,6 +2281,7 @@ driver_summary = {
   'OpenVZ': conf.has('WITH_OPENVZ'),
   'QEMU': conf.has('WITH_QEMU'),
   'Remote': conf.has('WITH_REMOTE'),
+  'Storage': conf.has('WITH_STORAGE'),
   'Test': conf.has('WITH_TEST'),
   'VBox': conf.has('WITH_VBOX'),
   'VMware': conf.has('WITH_VMWARE'),

@@ -97,6 +97,8 @@ option('driver_nodedev', type: 'feature', value: 'auto', description: 'node devi
 # dep:driver_remote dep:driver_libvirtd
 option('driver_nwfilter', type: 'feature', value: 'auto', description: 'network filter driver')
 # dep:driver_remote dep:driver_libvirtd
+option('driver_storage', type: 'feature', value: 'auto', description: 'storage driver')
+# dep:driver_remote dep:driver_libvirtd
 option('driver_secrets', type: 'feature', value: 'auto', description: 'local secrets management driver')
 
 
