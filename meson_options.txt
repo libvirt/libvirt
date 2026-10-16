@@ -92,6 +92,7 @@ option('driver_vz', type: 'feature', value: 'auto', description: 'Virtuozzo driv
 option('driver_interface', type: 'feature', value: 'auto', description: 'host interface driver')
 # dep:driver_remote dep:driver_libvirtd
 option('driver_network', type: 'feature', value: 'auto', description: 'virtual network driver')
+# dep:driver_remote dep:driver_libvirtd
 option('driver_secrets', type: 'feature', value: 'auto', description: 'local secrets management driver')
 
 
