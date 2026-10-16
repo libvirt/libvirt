@@ -27,6 +27,11 @@
       <source file='/var/lib/libvirt/images/test.qcow2'/>
       <target dev='vda' bus='virtio'/>
     </disk>
+    <interface type='ethernet'>
+      <mac address='52:54:00:e5:48:5a'/>
+      <model type='virtio'/>
+      <driver name='vhost' ioeventfd='on' queues='5'/>
+    </interface>
     <console type='pty'/>
     <rng model='virtio'>
       <backend model='random'>/dev/urandom</backend>

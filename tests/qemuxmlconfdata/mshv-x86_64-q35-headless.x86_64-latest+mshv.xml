@@ -30,10 +30,10 @@
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/test.qcow2'/>
       <target dev='vda' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </disk>
     <controller type='usb' index='0' model='qemu-xhci'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
@@ -64,6 +64,17 @@
       <target chassis='5' port='0xc'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x4'/>
     </controller>
+    <controller type='pci' index='6' model='pcie-root-port'>
+      <model name='pcie-root-port'/>
+      <target chassis='6' port='0xd'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x5'/>
+    </controller>
+    <interface type='ethernet'>
+      <mac address='52:54:00:e5:48:5a'/>
+      <model type='virtio'/>
+      <driver name='vhost' ioeventfd='on' queues='5'/>
+      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+    </interface>
     <serial type='pty'>
       <target type='isa-serial' port='0'>
         <model name='isa-serial'/>
@@ -77,11 +88,11 @@
     <audio id='1' type='none'/>
     <watchdog model='itco' action='reset'/>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </memballoon>
     <rng model='virtio'>
       <backend model='random'>/dev/urandom</backend>
-      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </rng>
   </devices>
 </domain>
