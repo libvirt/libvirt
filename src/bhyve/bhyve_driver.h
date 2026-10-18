@@ -25,7 +25,7 @@
 
 int bhyveRegister(void);
 
-unsigned bhyveDriverGetBhyveCaps(struct _bhyveConn *driver);
+virBitmap *bhyveDriverGetBhyveCaps(struct _bhyveConn *driver);
 
 unsigned bhyveDriverGetGrubCaps(struct _bhyveConn *driver);
 

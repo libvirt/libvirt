@@ -253,7 +253,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
 
 static int
 bhyveParseBhyveLPCArg(virDomainDef *def,
-                      unsigned caps G_GNUC_UNUSED,
+                      virBitmap *caps G_GNUC_UNUSED,
                       const char *arg)
 {
     /* -l emulation[,config] */
@@ -391,7 +391,7 @@ bhyveParsePCISlot(const char *slotdef,
 
 static int
 bhyveParsePCIDisk(virDomainDef *def,
-                  unsigned caps G_GNUC_UNUSED,
+                  virBitmap *caps G_GNUC_UNUSED,
                   unsigned pcibus,
                   unsigned pcislot,
                   unsigned function,
@@ -461,7 +461,7 @@ bhyveParsePCIDisk(virDomainDef *def,
 static int
 bhyveParsePCINet(virDomainDef *def,
                  virDomainXMLOption *xmlopt,
-                 unsigned caps G_GNUC_UNUSED,
+                 virBitmap *caps G_GNUC_UNUSED,
                  unsigned bus,
                  unsigned slot,
                  unsigned function,
@@ -536,7 +536,7 @@ bhyveParsePCINet(virDomainDef *def,
 static int
 bhyveParsePCIFbuf(virDomainDef *def,
                   virDomainXMLOption *xmlopt,
-                  unsigned caps G_GNUC_UNUSED,
+                  virBitmap *caps G_GNUC_UNUSED,
                   unsigned bus,
                   unsigned slot,
                   unsigned function,
@@ -644,7 +644,7 @@ bhyveParsePCIFbuf(virDomainDef *def,
 static int
 bhyveParsePCIRND(virDomainDef *def,
                  virDomainXMLOption *xmlopt G_GNUC_UNUSED,
-                 unsigned caps G_GNUC_UNUSED,
+                 virBitmap *caps G_GNUC_UNUSED,
                  unsigned bus,
                  unsigned slot,
                  unsigned function,
@@ -733,7 +733,7 @@ bhyveParsePassthru(virDomainDef *def G_GNUC_UNUSED,
 static int
 bhyveParseBhyvePCIArg(virDomainDef *def,
                       virDomainXMLOption *xmlopt,
-                      unsigned caps,
+                      virBitmap *caps,
                       unsigned *nvirtiodisk,
                       unsigned *nahcidisk,
                       const char *arg)
@@ -822,7 +822,7 @@ bhyveParseBhyvePCIArg(virDomainDef *def,
 static int
 bhyveParseBhyveCommandLine(virDomainDef *def,
                            virDomainXMLOption *xmlopt,
-                           unsigned caps,
+                           virBitmap *caps,
                            int argc, char **argv)
 {
     int vcpus = 1;
@@ -1025,7 +1025,7 @@ bhyveParseCustomLoaderCommandLine(virDomainDef *def,
 
 virDomainDef *
 bhyveParseCommandLineString(const char* nativeConfig,
-                            unsigned caps,
+                            virBitmap *caps,
                             virDomainXMLOption *xmlopt)
 {
     g_autoptr(virDomainDef) def = NULL;

@@ -157,7 +157,7 @@ bhyveDomainDefPostParse(virDomainDef *def,
     /* When not specified in the domain XML, clock.offset defaults to UTC which is
      * not supported by bhyve on ARM64. So force it to LOCALTIME. */
     if ((def->clock.offset == VIR_DOMAIN_CLOCK_OFFSET_UTC) &&
-        !(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RTC_UTC))
+        !virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_RTC_UTC))
         def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
 
     /* bhyve/arm64 does not provide the bhyveload(8) tool,
@@ -237,7 +237,7 @@ bhyveDomainDiskDefAssignAddress(struct _bhyveConn *driver,
     case VIR_DOMAIN_DISK_BUS_SATA:
         def->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
 
-        if ((driver->bhyvecaps & BHYVE_CAP_AHCI32SLOT) != 0) {
+        if (virBhyveCapsGet(driver->bhyvecaps, BHYVE_CAP_AHCI32SLOT)) {
             def->info.addr.drive.controller = idx / 32;
             def->info.addr.drive.unit = idx % 32;
         } else {

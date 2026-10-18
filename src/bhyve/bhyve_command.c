@@ -60,7 +60,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     if (net->model == VIR_DOMAIN_NET_MODEL_VIRTIO) {
         nic_model = "virtio-net";
     } else if (net->model == VIR_DOMAIN_NET_MODEL_E1000) {
-        if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NET_E1000) != 0) {
+        if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_NET_E1000)) {
             nic_model = "e1000";
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -272,7 +272,7 @@ bhyveBuildTPMArgStr(const virDomainDef *def G_GNUC_UNUSED,
                     struct _bhyveConn *driver,
                     virCommand *cmd)
 {
-    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_TPM)) {
+    if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_LPC_TPM)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Installed bhyve binary does not support TPM devices"));
         return -1;
@@ -333,13 +333,13 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 
         switch (disk->device) {
         case VIR_DOMAIN_DISK_DEVICE_DISK:
-            if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_AHCI32SLOT))
+            if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_AHCI32SLOT))
                 virBufferAsprintf(&device, ",hd:%s", disk_source);
             else
                 virBufferAsprintf(&device, "-hd,%s", disk_source);
             break;
         case VIR_DOMAIN_DISK_DEVICE_CDROM:
-            if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_AHCI32SLOT))
+            if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_AHCI32SLOT))
                 virBufferAsprintf(&device, ",cd:%s", disk_source);
             else
                 virBufferAsprintf(&device, "-cd,%s", disk_source);
@@ -488,7 +488,7 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
         if (disk->bus != VIR_DOMAIN_DISK_BUS_NVME)
             continue;
 
-        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NVME)) {
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_NVME)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Bhyve version does not support NVMe"));
             return -1;
@@ -716,7 +716,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     bool escapeAddr;
     unsigned short port;
 
-    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_BOOTROM) ||
+    if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_LPC_BOOTROM) ||
         def->os.bootloader ||
         !def->os.loader) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -724,7 +724,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
         return -1;
     }
 
-    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_FBUF)) {
+    if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_FBUF)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Bhyve version does not support framebuffer"));
         return -1;
@@ -791,7 +791,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
     }
 
     if (graphics->data.vnc.auth.passwd) {
-        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_VNC_PASSWORD)) {
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_VNC_PASSWORD)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("VNC Password authentication not supported by bhyve"));
             return -1;
@@ -805,7 +805,7 @@ bhyveBuildGraphicsArgStr(const virDomainDef *def,
 
         virBufferAsprintf(&opt, ",password=%s", graphics->data.vnc.auth.passwd);
     } else {
-        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_VNC_PASSWORD))
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_VNC_PASSWORD))
             VIR_WARN("%s", _("Security warning: VNC auth is not supported."));
         else
             VIR_WARN("%s", _("Security warning: VNC is used without authentication."));
@@ -836,7 +836,7 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
 {
     g_auto(virBuffer) params = VIR_BUFFER_INITIALIZER;
 
-    if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_SOUND_HDA)) {
+    if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_SOUND_HDA)) {
         /* Currently, bhyve only supports "hda" sound devices, so
            if it's not supported, sound devices are not supported at all */
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1157,7 +1157,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
             return NULL;
         }
 
-        if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_CPUTOPOLOGY) != 0) {
+        if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_CPUTOPOLOGY)) {
             virCommandAddArgFormat(cmd, "cpus=%d,sockets=%d,cores=%d,threads=%d",
                                    nvcpus,
                                    def->cpu->sockets,
@@ -1189,7 +1189,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     /* NUMA */
     if (ncells) {
-        if (!(bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_NUMA)) {
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_NUMA)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support NUMA configuration"));
             return NULL;
@@ -1222,7 +1222,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     /* Options */
     if ((def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON) &&
-        (bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_ACPI))
+        virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_ACPI))
         /* As of FreeBSD commit
          * https://cgit.freebsd.org/src/commit/?id=6a0e7f908802b86ca5d1c0b3c404b8391d0f626e
          * bhyve(8) generates ACPI tables unconditionally, so nothing needs to be done
@@ -1238,7 +1238,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         /* used by default in bhyve */
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-        if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RTC_UTC) != 0) {
+        if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_RTC_UTC)) {
             virCommandAddArg(cmd, "-u");
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1279,7 +1279,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         if (ARCH_IS_X86(arch)) {
-            if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_LPC_BOOTROM)) {
+            if (virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_LPC_BOOTROM)) {
                 virBufferAsprintf(&buf, "bootrom,%s", def->os.loader->path);
                 if (def->os.loader->nvram && def->os.loader->nvram->path)
                     virBufferAsprintf(&buf, ",%s", def->os.loader->nvram->path);

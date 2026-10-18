@@ -147,7 +147,7 @@ fillXenCaps(virDomainCaps *domCaps)
 # include "bhyve/bhyve_capabilities.h"
 
 static int
-fillBhyveCaps(virDomainCaps *domCaps, unsigned int *bhyve_caps)
+fillBhyveCaps(virDomainCaps *domCaps, virBitmap *bhyve_caps)
 {
     g_autofree virDomainCapsStringValues *firmwares = NULL;
 
@@ -156,7 +156,7 @@ fillBhyveCaps(virDomainCaps *domCaps, unsigned int *bhyve_caps)
     if (fillStringValues(firmwares, "/foo/bar", "/foo/baz", NULL) < 0)
         return -1;
 
-    if (virBhyveDomainCapsFill(domCaps, *bhyve_caps, firmwares) < 0)
+    if (virBhyveDomainCapsFill(domCaps, bhyve_caps, firmwares) < 0)
         return -1;
 
     return 0;
@@ -420,7 +420,7 @@ mymain(void)
     int ret = 0;
 
 #if WITH_BHYVE
-    unsigned int bhyve_caps = 0;
+    g_autoptr(virBitmap) bhyve_caps = virBitmapNew(BHYVE_CAP_LAST);
 #endif
 
 #if WITH_QEMU
@@ -523,16 +523,16 @@ mymain(void)
 #endif /* WITH_LIBXL */
 
 #if WITH_BHYVE
-    DO_TEST_BHYVE("basic", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+    DO_TEST_BHYVE("basic", "/usr/sbin/bhyve", bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 
-    bhyve_caps |= BHYVE_CAP_LPC_BOOTROM;
-    DO_TEST_BHYVE("uefi", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+    virBhyveCapsSet(bhyve_caps, BHYVE_CAP_LPC_BOOTROM);
+    DO_TEST_BHYVE("uefi", "/usr/sbin/bhyve", bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 
-    bhyve_caps |= BHYVE_CAP_FBUF;
-    DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+    virBhyveCapsSet(bhyve_caps, BHYVE_CAP_FBUF);
+    DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 
-    bhyve_caps |= BHYVE_CAP_LPC_TPM;
-    DO_TEST_BHYVE("tpm", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+    virBhyveCapsSet(bhyve_caps, BHYVE_CAP_LPC_TPM);
+    DO_TEST_BHYVE("tpm", "/usr/sbin/bhyve", bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
 #endif /* WITH_BHYVE */
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

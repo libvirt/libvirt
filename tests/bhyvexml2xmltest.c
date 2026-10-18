@@ -95,7 +95,9 @@ mymain(void)
 # define DO_TEST_FAILURE(name) \
     DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
 
-    driver.bhyvecaps = BHYVE_CAP_AHCI32SLOT | BHYVE_CAP_RTC_UTC;
+    driver.bhyvecaps = virBitmapNew(BHYVE_CAP_LAST);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_AHCI32SLOT);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_RTC_UTC);
 
     DO_TEST_DIFFERENT("acpiapic");
     DO_TEST_DIFFERENT("base");
@@ -174,7 +176,7 @@ mymain(void)
     DO_TEST_DIFFERENT("addr-isa-controller-on-slot-31");
 
     /* The same without 32 devs per controller support */
-    driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_AHCI32SLOT);
     DO_TEST_DIFFERENT("addr-no32devs-single-sata-disk");
     DO_TEST_DIFFERENT("addr-no32devs-multiple-sata-disks");
     DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
@@ -186,7 +188,7 @@ mymain(void)
     virTestSetHostArch(VIR_ARCH_AARCH64);
     driver.caps = virBhyveCapsBuild();
     /* bhyve does not support UTC clock on ARM */
-    driver.bhyvecaps ^= BHYVE_CAP_RTC_UTC;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_RTC_UTC);
 
     DO_TEST_DIFFERENT("base");
     DO_TEST_DIFFERENT("console");
@@ -194,6 +196,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virBitmapFree(driver.bhyvecaps);
     virObjectUnref(driver.config);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

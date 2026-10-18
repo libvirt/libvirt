@@ -143,7 +143,8 @@ mymain(void)
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
-    driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
+    driver.bhyvecaps = virBitmapNew(BHYVE_CAP_LAST);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_RTC_UTC);
 
     DO_TEST("base");
     DO_TEST("wired");
@@ -193,6 +194,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virBitmapFree(driver.bhyvecaps);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

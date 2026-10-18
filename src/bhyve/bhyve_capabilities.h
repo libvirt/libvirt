@@ -24,12 +24,13 @@
 
 #include "capabilities.h"
 #include "conf/domain_capabilities.h"
+#include "virbitmap.h"
 
 #include "bhyve_utils.h"
 
 virCaps *virBhyveCapsBuild(void);
 int virBhyveDomainCapsFill(virDomainCaps *caps,
-                           unsigned int bhyvecaps,
+                           virBitmap *bhyvecaps,
                            virDomainCapsStringValues *firmwares);
 virDomainCaps *virBhyveDomainCapsBuild(bhyveConn *conn,
                                        const char *emulatorbin,
@@ -43,25 +44,34 @@ typedef enum {
 } virBhyveGrubCapsFlags;
 
 typedef enum {
-    BHYVE_CAP_RTC_UTC = 1 << 0,
-    BHYVE_CAP_AHCI32SLOT = 1 << 1,
-    BHYVE_CAP_NET_E1000 = 1 << 2,
-    BHYVE_CAP_LPC_BOOTROM = 1 << 3,
-    BHYVE_CAP_FBUF = 1 << 4,
-    BHYVE_CAP_XHCI = 1 << 5,
-    BHYVE_CAP_CPUTOPOLOGY = 1 << 6,
-    BHYVE_CAP_SOUND_HDA = 1 << 7,
-    BHYVE_CAP_VNC_PASSWORD = 1 << 8,
-    BHYVE_CAP_VIRTIO_9P = 1 << 9,
-    BHYVE_CAP_VIRTIO_RND = 1 << 10,
-    BHYVE_CAP_NVME = 1 << 11,
-    BHYVE_CAP_ACPI = 1 << 12,
-    BHYVE_CAP_NUMA = 1 << 13,
-    BHYVE_CAP_RCTL = 1 << 14,
-    BHYVE_CAP_MONITOR = 1 << 15,
-    BHYVE_CAP_GET_VMPID = 1 << 16,
-    BHYVE_CAP_LPC_TPM = 1 << 17,
+    BHYVE_CAP_RTC_UTC,
+    BHYVE_CAP_AHCI32SLOT,
+    BHYVE_CAP_NET_E1000,
+    BHYVE_CAP_LPC_BOOTROM,
+    BHYVE_CAP_FBUF,
+    BHYVE_CAP_XHCI,
+    BHYVE_CAP_CPUTOPOLOGY,
+    BHYVE_CAP_SOUND_HDA,
+    BHYVE_CAP_VNC_PASSWORD,
+    BHYVE_CAP_VIRTIO_9P,
+    BHYVE_CAP_VIRTIO_RND,
+    BHYVE_CAP_NVME,
+    BHYVE_CAP_ACPI,
+    BHYVE_CAP_NUMA,
+    BHYVE_CAP_RCTL,
+    BHYVE_CAP_MONITOR,
+    BHYVE_CAP_GET_VMPID,
+    BHYVE_CAP_LPC_TPM,
+
+    BHYVE_CAP_LAST,
 } virBhyveCapsFlags;
 
+void virBhyveCapsSet(virBitmap *caps,
+                     virBhyveCapsFlags flag) ATTRIBUTE_NONNULL(1);
+void virBhyveCapsClear(virBitmap *caps,
+                       virBhyveCapsFlags flag) ATTRIBUTE_NONNULL(1);
+bool virBhyveCapsGet(virBitmap *caps,
+                     virBhyveCapsFlags flag);
+
 int virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps);
-int virBhyveProbeCaps(unsigned int *caps);
+int virBhyveProbeCaps(virBitmap **caps);

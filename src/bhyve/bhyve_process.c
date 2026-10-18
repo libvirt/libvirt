@@ -225,7 +225,7 @@ bhyveSetResourceLimits(struct _bhyveConn *driver, virDomainObj *vm)
         return -1;
     }
 
-    if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_RCTL) == 0) {
+    if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(driver), BHYVE_CAP_RCTL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Cannot set resource limits: RACCT/RCTL is either not supported or not enabled"));
         return -1;

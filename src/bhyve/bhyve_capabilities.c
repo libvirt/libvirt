@@ -42,6 +42,30 @@
 VIR_LOG_INIT("bhyve.bhyve_capabilities");
 
 
+void
+virBhyveCapsSet(virBitmap *caps,
+                virBhyveCapsFlags flag)
+{
+    ignore_value(virBitmapSetBit(caps, flag));
+}
+
+
+void
+virBhyveCapsClear(virBitmap *caps,
+                  virBhyveCapsFlags flag)
+{
+    ignore_value(virBitmapClearBit(caps, flag));
+}
+
+
+bool
+virBhyveCapsGet(virBitmap *caps,
+                virBhyveCapsFlags flag)
+{
+    return caps && virBitmapIsBitSet(caps, flag);
+}
+
+
 virCaps *
 virBhyveCapsBuild(void)
 {
@@ -69,7 +93,7 @@ virBhyveCapsBuild(void)
 
 int
 virBhyveDomainCapsFill(virDomainCaps *caps,
-                       unsigned int bhyvecaps,
+                       virBitmap *bhyvecaps,
                        virDomainCapsStringValues *firmwares)
 {
     caps->disk.supported = VIR_TRISTATE_BOOL_YES;
@@ -87,7 +111,7 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
     caps->os.supported = VIR_TRISTATE_BOOL_YES;
 
     caps->os.loader.supported = VIR_TRISTATE_BOOL_NO;
-    if (bhyvecaps & BHYVE_CAP_LPC_BOOTROM) {
+    if (virBhyveCapsGet(bhyvecaps, BHYVE_CAP_LPC_BOOTROM)) {
         caps->os.loader.type.report = true;
         caps->os.loader.readonly.report = true;
         caps->os.loader.supported = VIR_TRISTATE_BOOL_YES;
@@ -103,7 +127,7 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
 
     caps->graphics.supported = VIR_TRISTATE_BOOL_NO;
     caps->video.supported = VIR_TRISTATE_BOOL_NO;
-    if (bhyvecaps & BHYVE_CAP_FBUF) {
+    if (virBhyveCapsGet(bhyvecaps, BHYVE_CAP_FBUF)) {
         caps->graphics.supported = VIR_TRISTATE_BOOL_YES;
         caps->graphics.type.report = true;
         caps->video.supported = VIR_TRISTATE_BOOL_YES;
@@ -112,7 +136,7 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
         VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
     }
 
-    if (bhyvecaps & BHYVE_CAP_VIRTIO_RND) {
+    if (virBhyveCapsGet(bhyvecaps, BHYVE_CAP_VIRTIO_RND)) {
         caps->rng.supported = VIR_TRISTATE_BOOL_YES;
         caps->rng.model.report = true;
         caps->rng.backendModel.report = true;
@@ -121,7 +145,7 @@ virBhyveDomainCapsFill(virDomainCaps *caps,
         VIR_DOMAIN_CAPS_ENUM_SET(caps->rng.backendModel,
                                  VIR_DOMAIN_RNG_BACKEND_RANDOM);
     }
-    if (bhyvecaps & BHYVE_CAP_LPC_TPM) {
+    if (virBhyveCapsGet(bhyvecaps, BHYVE_CAP_LPC_TPM)) {
         caps->tpm.supported = VIR_TRISTATE_BOOL_YES;
         caps->tpm.model.report = true;
         caps->tpm.backendModel.report = true;
@@ -156,7 +180,7 @@ virBhyveDomainCapsBuild(struct _bhyveConn *conn,
                         virDomainVirtType virttype)
 {
     virDomainCaps *caps = NULL;
-    unsigned int bhyve_caps = 0;
+    g_autoptr(virBitmap) bhyve_caps = NULL;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     size_t firmwares_alloc = 0;
@@ -222,12 +246,12 @@ virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
 }
 
 static int
-bhyveProbeCapsDeviceHelper(unsigned int *caps,
+bhyveProbeCapsDeviceHelper(virBitmap *caps,
                            char *binary,
                            const char *bus,
                            const char *device,
                            const char *errormsg,
-                           unsigned int flag)
+                           virBhyveCapsFlags flag)
 {
     g_autofree char *error = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -240,13 +264,13 @@ bhyveProbeCapsDeviceHelper(unsigned int *caps,
         return -1;
 
     if (strstr(error, errormsg) == NULL)
-        *caps |= flag;
+        virBhyveCapsSet(caps, flag);
 
     return 0;
 }
 
 static int
-bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
+bhyveProbeCapsFromHelp(virBitmap *caps, char *binary)
 {
     g_autofree char *help = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -259,52 +283,52 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
         return -1;
 
     if (strstr(help, "-u:") != NULL)
-        *caps |= BHYVE_CAP_RTC_UTC;
+        virBhyveCapsSet(caps, BHYVE_CAP_RTC_UTC);
 
     /* "-c vcpus" was there before CPU topology support was introduced,
      * then it became
      * "-c [[cpus=]numcpus][,sockets=n][,cores=n][,threads=n] */
     if (strstr(help, "-c vcpus") == NULL)
-        *caps |= BHYVE_CAP_CPUTOPOLOGY;
+        virBhyveCapsSet(caps, BHYVE_CAP_CPUTOPOLOGY);
 
     if (strstr(help, "-A:") != NULL)
-        *caps |= BHYVE_CAP_ACPI;
+        virBhyveCapsSet(caps, BHYVE_CAP_ACPI);
 
     if (strstr(help, "-n:") != NULL)
-        *caps |= BHYVE_CAP_NUMA;
+        virBhyveCapsSet(caps, BHYVE_CAP_NUMA);
 
     if (strstr(help, "-M:") != NULL)
-        *caps |= BHYVE_CAP_MONITOR;
+        virBhyveCapsSet(caps, BHYVE_CAP_MONITOR);
 
     return 0;
 }
 
 static int
-bhyveFillCapForDevice(unsigned int *caps, const char *device)
+bhyveFillCapForDevice(virBitmap *caps, const char *device)
 {
    if (STREQ(device, "ahci"))
-       *caps |= BHYVE_CAP_AHCI32SLOT;
+       virBhyveCapsSet(caps, BHYVE_CAP_AHCI32SLOT);
    else if (STREQ(device, "e1000"))
-       *caps |= BHYVE_CAP_NET_E1000;
+       virBhyveCapsSet(caps, BHYVE_CAP_NET_E1000);
    else if (STREQ(device, "fbuf"))
-       *caps |= BHYVE_CAP_FBUF;
+       virBhyveCapsSet(caps, BHYVE_CAP_FBUF);
    else if (STREQ(device, "hda"))
-       *caps |= BHYVE_CAP_SOUND_HDA;
+       virBhyveCapsSet(caps, BHYVE_CAP_SOUND_HDA);
    else if (STREQ(device, "nvme"))
-       *caps |= BHYVE_CAP_NVME;
+       virBhyveCapsSet(caps, BHYVE_CAP_NVME);
    else if (STREQ(device, "virtio-9p"))
-       *caps |= BHYVE_CAP_VIRTIO_9P;
+       virBhyveCapsSet(caps, BHYVE_CAP_VIRTIO_9P);
    else if (STREQ(device, "virtio-rnd"))
-       *caps |= BHYVE_CAP_VIRTIO_RND;
+       virBhyveCapsSet(caps, BHYVE_CAP_VIRTIO_RND);
    else if (STREQ(device, "xhci"))
-       *caps |= BHYVE_CAP_XHCI;
+       virBhyveCapsSet(caps, BHYVE_CAP_XHCI);
 
    return 0;
 }
 
 
 static int
-bhyveProbeCapsFromSHelp(unsigned int *caps, char *binary)
+bhyveProbeCapsFromSHelp(virBitmap *caps, char *binary)
 {
     g_autofree char *help = NULL;
     g_autoptr(virCommand) cmd = NULL;
@@ -328,7 +352,7 @@ bhyveProbeCapsFromSHelp(unsigned int *caps, char *binary)
 }
 
 static int
-bhyveProbeCapsLpcBootrom(unsigned int *caps, char *binary)
+bhyveProbeCapsLpcBootrom(virBitmap *caps, char *binary)
 {
     return bhyveProbeCapsDeviceHelper(caps, binary,
                                       "-l",
@@ -339,7 +363,7 @@ bhyveProbeCapsLpcBootrom(unsigned int *caps, char *binary)
 
 
 static int
-bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
+bhyveProbeCapsVNCPassword(virBitmap *caps, char *binary)
 {
     return bhyveProbeCapsDeviceHelper(caps, binary,
                                       "-s",
@@ -350,7 +374,7 @@ bhyveProbeCapsVNCPassword(unsigned int *caps, char *binary)
 
 
 static int
-bhyveProbeCapsLpcTpm(unsigned int *caps, char *binary)
+bhyveProbeCapsLpcTpm(virBitmap *caps, char *binary)
 {
     return bhyveProbeCapsDeviceHelper(caps, binary,
                                       "-l",
@@ -361,7 +385,7 @@ bhyveProbeCapsLpcTpm(unsigned int *caps, char *binary)
 
 
 static void
-bhyveProbeCapsRctl(unsigned int *caps)
+bhyveProbeCapsRctl(virBitmap *caps)
 {
     bool racct_enable;
     size_t racct_enable_len;
@@ -376,13 +400,13 @@ bhyveProbeCapsRctl(unsigned int *caps)
         return;
 
     if (racct_enable)
-        *caps |= BHYVE_CAP_RCTL;
+        virBhyveCapsSet(caps, BHYVE_CAP_RCTL);
 
     return;
 }
 
 static int
-bhyveProbeCapsBhyvectl(unsigned int *caps)
+bhyveProbeCapsBhyvectl(virBitmap *caps)
 {
     g_autofree char *binary = virFindFileInPath("bhyvectl");
     g_autofree char *help = NULL;
@@ -399,14 +423,15 @@ bhyveProbeCapsBhyvectl(unsigned int *caps)
         return -1;
 
     if (strstr(help, "--get-vm-pid") != NULL)
-        *caps |= BHYVE_CAP_GET_VMPID;
+        virBhyveCapsSet(caps, BHYVE_CAP_GET_VMPID);
 
     return 0;
 }
 
 int
-virBhyveProbeCaps(unsigned int *caps)
+virBhyveProbeCaps(virBitmap **caps)
 {
+    g_autoptr(virBitmap) bitmap = virBitmapNew(BHYVE_CAP_LAST);
     char *binary;
     int ret = 0;
 
@@ -414,27 +439,29 @@ virBhyveProbeCaps(unsigned int *caps)
     if (binary == NULL)
         goto out;
 
-    if ((ret = bhyveProbeCapsFromHelp(caps, binary)))
+    if ((ret = bhyveProbeCapsFromHelp(bitmap, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsFromSHelp(caps, binary)))
+    if ((ret = bhyveProbeCapsFromSHelp(bitmap, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsLpcBootrom(caps, binary)))
+    if ((ret = bhyveProbeCapsLpcBootrom(bitmap, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsVNCPassword(caps, binary)))
+    if ((ret = bhyveProbeCapsVNCPassword(bitmap, binary)))
         goto out;
 
-    if ((ret = bhyveProbeCapsBhyvectl(caps)))
+    if ((ret = bhyveProbeCapsBhyvectl(bitmap)))
         goto out;
 
-    bhyveProbeCapsRctl(caps);
+    bhyveProbeCapsRctl(bitmap);
 
-    if ((ret = bhyveProbeCapsLpcTpm(caps, binary)))
+    if ((ret = bhyveProbeCapsLpcTpm(bitmap, binary)))
         goto out;
 
  out:
+    if (ret == 0)
+        *caps = g_steal_pointer(&bitmap);
     VIR_FREE(binary);
     return ret;
 }

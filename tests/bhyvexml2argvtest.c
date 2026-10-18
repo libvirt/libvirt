@@ -214,13 +214,20 @@ mymain(void)
     DO_TEST_FULL(name, FLAG_EXPECT_PREPARE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
-    driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
-                       BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
-                       BHYVE_CAP_FBUF | BHYVE_CAP_XHCI | \
-                       BHYVE_CAP_CPUTOPOLOGY | BHYVE_CAP_SOUND_HDA | \
-                       BHYVE_CAP_VNC_PASSWORD | BHYVE_CAP_VIRTIO_9P | \
-                       BHYVE_CAP_NVME | BHYVE_CAP_NUMA | \
-                       BHYVE_CAP_LPC_TPM;
+    driver.bhyvecaps = virBitmapNew(BHYVE_CAP_LAST);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_RTC_UTC);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_AHCI32SLOT);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_NET_E1000);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_LPC_BOOTROM);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_FBUF);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_XHCI);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_CPUTOPOLOGY);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_SOUND_HDA);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_VNC_PASSWORD);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_VIRTIO_9P);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_NVME);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_NUMA);
+    virBhyveCapsSet(driver.bhyvecaps, BHYVE_CAP_LPC_TPM);
 
     DO_TEST("base");
     DO_TEST_UNPRIVILEGED_FAILURE("base");
@@ -228,7 +235,7 @@ mymain(void)
     DO_TEST_FAILURE("bootorder-invalid-index");
     DO_TEST("wired");
     DO_TEST("acpiapic");
-    driver.bhyvecaps &= ~BHYVE_CAP_ACPI;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_ACPI);
     DO_TEST_FAILURE("acpiapic");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
@@ -281,7 +288,7 @@ mymain(void)
     DO_TEST("numa");
     DO_TEST_FAILURE("numa-empty-cpuset");
     DO_TEST_FAILURE("numa-too-many-domains");
-    driver.bhyvecaps &= ~BHYVE_CAP_NUMA;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_NUMA);
     DO_TEST_FAILURE("numa");
     fakefirmwaredir = g_steal_pointer(&driver.config->firmwareDir);
     driver.config->firmwareDir = g_steal_pointer(&fakefirmwareemptydir);
@@ -291,13 +298,13 @@ mymain(void)
     DO_TEST_FAILURE("fs-9p-unsupported-type");
     DO_TEST_FAILURE("fs-9p-unsupported-driver");
     DO_TEST_FAILURE("fs-9p-unsupported-accessmode");
-    driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_9P;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_VIRTIO_9P);
     DO_TEST_FAILURE("fs-9p");
     DO_TEST("virtio-rnd");
     DO_TEST_FAILURE("virtio-rnd-backend-random-non-default-file");
     DO_TEST_FAILURE("virtio-rnd-backend-builtin");
     DO_TEST_FAILURE("virtio-rnd-transitional");
-    driver.bhyvecaps &= ~BHYVE_CAP_VIRTIO_RND;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_VIRTIO_RND);
     DO_TEST_FAILURE("virtio-rnd");
     DO_TEST("serial-tcp");
     DO_TEST("4-consoles");
@@ -338,7 +345,7 @@ mymain(void)
     DO_TEST_FAILURE("tpm-comma-path");
     DO_TEST_FAILURE("tpm-invalid-model");
     DO_TEST_FAILURE("tpm-multiple-devices");
-    driver.bhyvecaps &= ~BHYVE_CAP_LPC_TPM;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_LPC_TPM);
     DO_TEST_FAILURE("tpm");
 
     /* Address allocation tests */
@@ -352,7 +359,7 @@ mymain(void)
     DO_TEST("addr-non-isa-controller-on-slot-1");
 
     /* The same without 32 devs per controller support */
-    driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_AHCI32SLOT);
     DO_TEST("addr-no32devs-single-sata-disk");
     DO_TEST("addr-no32devs-multiple-sata-disks");
     DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
@@ -362,33 +369,33 @@ mymain(void)
     DO_TEST_FAILURE("xhci-multiple-controllers");
     DO_TEST_FAILURE("xhci-no-devs");
     DO_TEST_FAILURE("xhci-multiple-devs");
-    driver.bhyvecaps ^= BHYVE_CAP_XHCI;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_XHCI);
     DO_TEST_FAILURE("input-xhci-tablet");
 
     driver.grubcaps = 0;
 
     DO_TEST("serial-grub-nocons");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_NET_E1000;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_NET_E1000);
 
     DO_TEST_FAILURE("net-e1000");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_LPC_BOOTROM;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_LPC_BOOTROM);
     DO_TEST_FAILURE("uefi");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_FBUF;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_FBUF);
     DO_TEST_FAILURE("vnc");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_CPUTOPOLOGY;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_CPUTOPOLOGY);
     DO_TEST_FAILURE("cputopology");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_SOUND_HDA;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_SOUND_HDA);
     DO_TEST_FAILURE("sound");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_VNC_PASSWORD;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_VNC_PASSWORD);
     DO_TEST_FAILURE("vnc-password");
 
-    driver.bhyvecaps &= ~BHYVE_CAP_NVME;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_NVME);
     DO_TEST_FAILURE("nvme");
 
     driver.config->bhyveloadTimeout = 300;
@@ -400,9 +407,9 @@ mymain(void)
     virTestSetHostArch(VIR_ARCH_AARCH64);
     driver.caps = virBhyveCapsBuild();
     /* bhyve does not support UTC clock on ARM */
-    driver.bhyvecaps ^= BHYVE_CAP_RTC_UTC;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_RTC_UTC);
     /* bhyve does not support NUMA on ARM */
-    driver.bhyvecaps &= ~BHYVE_CAP_NUMA;
+    virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_NUMA);
 
     DO_TEST("base");
     DO_TEST("console");
@@ -411,6 +418,7 @@ mymain(void)
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
+    virBitmapFree(driver.bhyvecaps);
     virPortAllocatorRangeFree(driver.remotePorts);
     virObjectUnref(driver.config);
 

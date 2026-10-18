@@ -21,5 +21,5 @@
 #pragma once
 
 virDomainDef *bhyveParseCommandLineString(const char* nativeConfig,
-                                          unsigned caps,
+                                          virBitmap *caps,
                                           virDomainXMLOption *xmlopt);

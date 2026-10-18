@@ -783,7 +783,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
             return NULL;
         }
 
-        if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(privconn), BHYVE_CAP_LPC_BOOTROM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support bootrom"));
             return NULL;
@@ -1377,6 +1377,7 @@ bhyveStateCleanup(void)
     virSysinfoDefFree(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->domainEventState);
     virPortAllocatorRangeFree(bhyve_driver->remotePorts);
+    virBitmapFree(bhyve_driver->bhyvecaps);
 
     if (bhyve_driver->lockFD != -1)
         virPidFileRelease(bhyve_driver->config->stateDir, "driver", bhyve_driver->lockFD);
@@ -1421,13 +1422,15 @@ bhyveStateInitialize(bool privileged,
     if (virBhyveProbeCaps(&bhyve_driver->bhyvecaps) < 0)
         goto cleanup;
 
-    if (!privileged && !(bhyveDriverGetBhyveCaps(bhyve_driver) & BHYVE_CAP_MONITOR)) {
+    if (!privileged &&
+        !virBhyveCapsGet(bhyveDriverGetBhyveCaps(bhyve_driver), BHYVE_CAP_MONITOR)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("bhyve does not support monitor mode, cannot run unprivileged"));
         goto cleanup;
     }
 
-    if (!privileged && !(bhyveDriverGetBhyveCaps(bhyve_driver) & BHYVE_CAP_GET_VMPID)) {
+    if (!privileged &&
+        !virBhyveCapsGet(bhyveDriverGetBhyveCaps(bhyve_driver), BHYVE_CAP_GET_VMPID)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("bhyvectl does not support querying the VM PID, cannot run unprivileged"));
         goto cleanup;
@@ -1513,12 +1516,12 @@ bhyveStateInitialize(bool privileged,
     return VIR_DRV_STATE_INIT_ERROR;
 }
 
-unsigned
+virBitmap *
 bhyveDriverGetBhyveCaps(struct _bhyveConn *driver)
 {
     if (driver != NULL)
         return driver->bhyvecaps;
-    return 0;
+    return NULL;
 }
 
 unsigned
@@ -1774,7 +1777,7 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
 {
     g_autoptr(virDomainDef) def = NULL;
     struct _bhyveConn *privconn = conn->privateData;
-    unsigned bhyveCaps = bhyveDriverGetBhyveCaps(privconn);
+    virBitmap *bhyveCaps = bhyveDriverGetBhyveCaps(privconn);
 
     virCheckFlags(0, NULL);
 
@@ -2409,7 +2412,7 @@ bhyveDomainSetMemoryParameters(virDomainPtr domain,
         return -1;
 
     if (def) {
-        if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_RCTL) == 0) {
+        if (!virBhyveCapsGet(bhyveDriverGetBhyveCaps(privconn), BHYVE_CAP_RCTL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Cannot set resource limits: RACCT/RCTL is either not supported or not enabled"));
             goto endjob;

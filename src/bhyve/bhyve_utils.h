@@ -27,6 +27,7 @@
 #include "virdomainobjlist.h"
 #include "virthread.h"
 #include "hypervisor/virclosecallbacks.h"
+#include "virbitmap.h"
 #include "virportallocator.h"
 
 typedef struct _virBhyveDriverConfig virBhyveDriverConfig;
@@ -69,7 +70,7 @@ struct _bhyveConn {
 
     virPortAllocatorRange *remotePorts;
 
-    unsigned bhyvecaps;
+    virBitmap *bhyvecaps;
     unsigned grubcaps;
 
     bool privileged;
