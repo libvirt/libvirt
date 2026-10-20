@@ -348,7 +348,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
 
     /* 215 */
-    X_QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
+    QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
     X_QEMU_CAPS_OBJECT_SECRET, /* -object secret */
     QEMU_CAPS_DEVICE_PXB, /* -device pxb */
     QEMU_CAPS_DEVICE_PXB_PCIE, /* -device pxb-pcie */

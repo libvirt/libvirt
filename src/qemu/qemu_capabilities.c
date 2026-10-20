@@ -374,7 +374,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev-logfile", /* X_QEMU_CAPS_CHARDEV_LOGFILE */
 
               /* 215 */
-              "debug-threads", /* X_QEMU_CAPS_NAME_DEBUG_THREADS */
+              "debug-threads", /* QEMU_CAPS_NAME_DEBUG_THREADS */
               "secret", /* X_QEMU_CAPS_OBJECT_SECRET */
               "pxb", /* QEMU_CAPS_DEVICE_PXB */
               "pxb-pcie", /* QEMU_CAPS_DEVICE_PXB_PCIE */
@@ -3628,6 +3628,7 @@ struct virQEMUCapsCommandLineProps {
  * in qemu and thus isn't being properly extended. Other means to detect
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
+    { "name", "debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "machine", "hpet", QEMU_CAPS_MACHINE_HPET },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },

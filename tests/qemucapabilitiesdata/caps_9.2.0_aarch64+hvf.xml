@@ -47,6 +47,7 @@
   <flag name='virtio-tablet'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
+  <flag name='debug-threads'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='query-cpu-model-expansion'/>

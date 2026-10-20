@@ -70,6 +70,7 @@
   <flag name='mptsas1068'/>
   <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
+  <flag name='debug-threads'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='intel-iommu'/>

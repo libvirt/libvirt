@@ -6969,7 +6969,8 @@ qemuAppendLoadparmMachineParm(virBuffer *buf,
 static int
 qemuBuildNameCommandLine(virCommand *cmd,
                          virQEMUDriverConfig *cfg,
-                         const virDomainDef *def)
+                         const virDomainDef *def,
+                         virQEMUCaps *qemuCaps)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -6982,7 +6983,8 @@ qemuBuildNameCommandLine(virCommand *cmd,
     if (cfg->setProcessName)
         virBufferAsprintf(&buf, ",process=qemu:%s", def->name);
 
-    virBufferAddLit(&buf, ",debug-threads=on");
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_DEBUG_THREADS))
+        virBufferAddLit(&buf, ",debug-threads=on");
 
     virCommandAddArgBuffer(cmd, &buf);
 
@@ -10878,7 +10880,7 @@ qemuBuildCommandLine(virDomainObj *vm,
         virCommandAddEnvXDG(cmd, priv->libDir);
     }
 
-    if (qemuBuildNameCommandLine(cmd, cfg, def) < 0)
+    if (qemuBuildNameCommandLine(cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
     qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def);

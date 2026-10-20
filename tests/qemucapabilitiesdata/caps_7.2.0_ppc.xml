@@ -59,6 +59,7 @@
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
   <flag name='spice-gl'/>
+  <flag name='debug-threads'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
   <flag name='vhost-scsi'/>
