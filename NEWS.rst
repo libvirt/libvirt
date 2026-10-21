@@ -19,6 +19,13 @@ v12.9.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Emit UNDEFINED event when undefining source after migration
+
+    After successfully migrating a domain with the ``VIR_MIGRATE_UNDEFINE_SOURCE``
+    flag, the QEMU driver now emits a ``VIR_DOMAIN_EVENT_UNDEFINED`` lifecycle
+    event on the source host. The event includes the newly added
+    VIR_DOMAIN_EVENT_UNDEFINED_MIGRATED detail.
+
 * **Bug fixes**
 
 
