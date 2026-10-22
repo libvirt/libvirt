@@ -20,6 +20,7 @@
 
 #include <config.h>
 
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
@@ -117,6 +118,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
     const char *name;
     struct kevent kev;
     int rc, status;
+    bool shutdownBySignal;
 
     if (watch != mon->watch || kq != mon->kq) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -153,13 +155,19 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
 
     name = vm->def->name;
     status = kev.data;
+    /* On amd64 SIGTERM triggers ACPI shutdown, and we see it as WIFEXITED(status).
+     * However, arm64 has no SIGTERM handler, so we see it as WIFSIGNALED(status).
+     */
+    shutdownBySignal = WIFSIGNALED(status) &&
+        WTERMSIG(status) == SIGTERM;
+
     if (WIFSIGNALED(status) && WCOREDUMP(status)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Guest %1$s got signal %2$d and crashed"),
                        name, WTERMSIG(status));
         virBhyveProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED, false);
-    } else if (WIFEXITED(status)) {
-        if (WEXITSTATUS(status) == 0 || mon->reboot) {
+    } else if (WIFEXITED(status) || shutdownBySignal) {
+        if ((!shutdownBySignal && WEXITSTATUS(status) == 0) || mon->reboot) {
             /* 0 - reboot */
             if (vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY ||
                 vm->def->onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE) {
@@ -169,7 +177,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
                 VIR_INFO("Guest %s rebooted; restarting domain.", name);
                 virBhyveProcessRestart(driver, vm);
             }
-        } else if (WEXITSTATUS(status) < 3) {
+        } else if (shutdownBySignal || WEXITSTATUS(status) < 3) {
             /* 1 - shutdown, 2 - halt, 3 - triple fault. others - error */
             if (vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART ||
                 vm->def->onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME) {
