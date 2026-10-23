@@ -161,7 +161,6 @@ addnhostsWrite(const char *path,
 {
     g_autofree char *tmp = NULL;
     FILE *f;
-    bool istmp = true;
     size_t i, j;
     int rc = 0;
 
@@ -171,20 +170,14 @@ addnhostsWrite(const char *path,
 
     tmp = g_strdup_printf("%s.new", path);
 
-    if (!(f = fopen(tmp, "w"))) {
-        istmp = false;
-        if (!(f = fopen(path, "w")))
-            return -errno;
-    }
+    if (!(f = fopen(tmp, "w")))
+        return -errno;
 
     for (i = 0; i < nhosts; i++) {
         if (fputs(hosts[i].ip, f) == EOF || fputc('\t', f) == EOF) {
             rc = -errno;
             VIR_FORCE_FCLOSE(f);
-
-            if (istmp)
-                unlink(tmp);
-
+            unlink(tmp);
             return rc;
         }
 
@@ -192,10 +185,7 @@ addnhostsWrite(const char *path,
             if (fputs(hosts[i].hostnames[j], f) == EOF || fputc('\t', f) == EOF) {
                 rc = -errno;
                 VIR_FORCE_FCLOSE(f);
-
-                if (istmp)
-                    unlink(tmp);
-
+                unlink(tmp);
                 return rc;
             }
         }
@@ -203,10 +193,7 @@ addnhostsWrite(const char *path,
         if (fputc('\n', f) == EOF) {
             rc = -errno;
             VIR_FORCE_FCLOSE(f);
-
-            if (istmp)
-                unlink(tmp);
-
+            unlink(tmp);
             return rc;
         }
     }
@@ -214,7 +201,7 @@ addnhostsWrite(const char *path,
     if (VIR_FCLOSE(f) == EOF)
         return -errno;
 
-    if (istmp && rename(tmp, path) < 0) {
+    if (rename(tmp, path) < 0) {
         rc = -errno;
         unlink(tmp);
         return rc;
