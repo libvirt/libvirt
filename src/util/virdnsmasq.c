@@ -314,59 +314,37 @@ hostsfileNew(const char *name,
 }
 
 static int
-hostsfileWrite(const char *path,
-               dnsmasqDhcpHost *hosts,
-               unsigned int nhosts)
+hostsfileWrite(int fd,
+               const char *path,
+               const void *opaque)
 {
-    g_autofree char *tmp = NULL;
-    FILE *f;
+    const dnsmasqHostsfile *hostsfile = opaque;
     size_t i;
-    int rc = 0;
 
-    /* even if there are 0 hosts, create a 0 length file, to allow
-     * for runtime addition.
-     */
-
-    tmp = g_strdup_printf("%s.new", path);
-
-    if (!(f = fopen(tmp, "w"))) {
-        return -errno;
-    }
-
-    for (i = 0; i < nhosts; i++) {
-        if (fputs(hosts[i].host, f) == EOF || fputc('\n', f) == EOF) {
-            rc = -errno;
-            VIR_FORCE_FCLOSE(f);
-            unlink(tmp);
-            return rc;
-        }
-    }
-
-    if (VIR_FCLOSE(f) == EOF)
-        return -errno;
-
-    if (rename(tmp, path) < 0) {
-        rc = -errno;
-        unlink(tmp);
-        return rc;
+    for (i = 0; i < hostsfile->nhosts; i++) {
+        if (safewrite(fd, hostsfile->hosts[i].host,
+                      strlen(hostsfile->hosts[i].host)) < 0)
+            goto error;
+        if (safewrite(fd, "\n", 1) < 0)
+            goto error;
     }
 
     return 0;
+
+ error:
+    virReportSystemError(errno,
+                         _("cannot write config file '%1$s'"),
+                         path);
+    return -1;
 }
 
 static int
 hostsfileSave(dnsmasqHostsfile *hostsfile)
 {
-    int err = hostsfileWrite(hostsfile->path, hostsfile->hosts,
-                             hostsfile->nhosts);
-
-    if (err < 0) {
-        virReportSystemError(-err, _("cannot write config file '%1$s'"),
-                             hostsfile->path);
-        return -1;
-    }
-
-    return 0;
+    return virFileRewrite(hostsfile->path,
+                          0600, -1, -1,
+                          hostsfileWrite,
+                          hostsfile);
 }
 
 /**
