@@ -154,76 +154,56 @@ addnhostsNew(const char *name,
     return NULL;
 }
 
+
 static int
-addnhostsWrite(const char *path,
-               dnsmasqAddnHost *hosts,
-               unsigned int nhosts)
+addnhostsWrite(int fd,
+               const char *path,
+               const void *opaque)
 {
-    g_autofree char *tmp = NULL;
-    FILE *f;
+    const dnsmasqAddnHostsfile *addnhostsfile = opaque;
     size_t i, j;
-    int rc = 0;
 
     /* even if there are 0 hosts, create a 0 length file, to allow
      * for runtime addition.
      */
 
-    tmp = g_strdup_printf("%s.new", path);
+    for (i = 0; i < addnhostsfile->nhosts; i++) {
+        if (safewrite(fd, addnhostsfile->hosts[i].ip,
+                      strlen(addnhostsfile->hosts[i].ip)) < 0)
+            goto error;
+        if (safewrite(fd, "\t", 1) < 0)
+            goto error;
 
-    if (!(f = fopen(tmp, "w")))
-        return -errno;
-
-    for (i = 0; i < nhosts; i++) {
-        if (fputs(hosts[i].ip, f) == EOF || fputc('\t', f) == EOF) {
-            rc = -errno;
-            VIR_FORCE_FCLOSE(f);
-            unlink(tmp);
-            return rc;
+        for (j = 0; j < addnhostsfile->hosts[i].nhostnames; j++) {
+            if (safewrite(fd, addnhostsfile->hosts[i].hostnames[j],
+                          strlen(addnhostsfile->hosts[i].hostnames[j])) < 0)
+                goto error;
+            if (safewrite(fd, "\t", 1) < 0)
+                goto error;
         }
 
-        for (j = 0; j < hosts[i].nhostnames; j++) {
-            if (fputs(hosts[i].hostnames[j], f) == EOF || fputc('\t', f) == EOF) {
-                rc = -errno;
-                VIR_FORCE_FCLOSE(f);
-                unlink(tmp);
-                return rc;
-            }
-        }
-
-        if (fputc('\n', f) == EOF) {
-            rc = -errno;
-            VIR_FORCE_FCLOSE(f);
-            unlink(tmp);
-            return rc;
-        }
-    }
-
-    if (VIR_FCLOSE(f) == EOF)
-        return -errno;
-
-    if (rename(tmp, path) < 0) {
-        rc = -errno;
-        unlink(tmp);
-        return rc;
+        if (safewrite(fd, "\n", 1) < 0)
+            goto error;
     }
 
     return 0;
+
+ error:
+    virReportSystemError(errno,
+                         _("cannot write config file '%1$s'"),
+                         path);
+    return -1;
 }
 
 static int
 addnhostsSave(dnsmasqAddnHostsfile *addnhostsfile)
 {
-    int err = addnhostsWrite(addnhostsfile->path, addnhostsfile->hosts,
-                             addnhostsfile->nhosts);
-
-    if (err < 0) {
-        virReportSystemError(-err, _("cannot write config file '%1$s'"),
-                             addnhostsfile->path);
-        return -1;
-    }
-
-    return 0;
+    return virFileRewrite(addnhostsfile->path,
+                          0600, -1, -1,
+                          addnhostsWrite,
+                          addnhostsfile);
 }
+
 
 static int
 genericFileDelete(char *path)
