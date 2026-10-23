@@ -320,7 +320,6 @@ hostsfileWrite(const char *path,
 {
     g_autofree char *tmp = NULL;
     FILE *f;
-    bool istmp = true;
     size_t i;
     int rc = 0;
 
@@ -331,19 +330,14 @@ hostsfileWrite(const char *path,
     tmp = g_strdup_printf("%s.new", path);
 
     if (!(f = fopen(tmp, "w"))) {
-        istmp = false;
-        if (!(f = fopen(path, "w")))
-            return -errno;
+        return -errno;
     }
 
     for (i = 0; i < nhosts; i++) {
         if (fputs(hosts[i].host, f) == EOF || fputc('\n', f) == EOF) {
             rc = -errno;
             VIR_FORCE_FCLOSE(f);
-
-            if (istmp)
-                unlink(tmp);
-
+            unlink(tmp);
             return rc;
         }
     }
@@ -351,7 +345,7 @@ hostsfileWrite(const char *path,
     if (VIR_FCLOSE(f) == EOF)
         return -errno;
 
-    if (istmp && rename(tmp, path) < 0) {
+    if (rename(tmp, path) < 0) {
         rc = -errno;
         unlink(tmp);
         return rc;
