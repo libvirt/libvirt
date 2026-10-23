@@ -2088,7 +2088,16 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                 goto cleanup;
             }
 
-            info->maxMem = dynamicProperty->val->int32 * 1024; /* Scale from megabyte to kilobyte */
+            if (VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX,
+                                             dynamicProperty->val->int32, 1024, 0)) {
+                virReportError(VIR_ERR_OVERFLOW,
+                               _("the maximum memory value too large: %1$llu"),
+                               (unsigned long long) dynamicProperty->val->int32);
+                goto cleanup;
+            }
+
+            /* Scale from megabyte to kilobyte */
+            info->maxMem = dynamicProperty->val->int32 * 1024UL;
         } else if (STREQ(dynamicProperty->name, "config.hardware.numCPU")) {
             if (esxVI_AnyType_ExpectType(dynamicProperty->val,
                                          esxVI_Type_Int) < 0) {
@@ -2105,8 +2114,16 @@ esxDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
             memory_limit = dynamicProperty->val->int64;
 
-            if (memory_limit > 0)
+            if (memory_limit > 0) {
+                if (VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX, memory_limit, 1024, 0)) {
+                    virReportError(VIR_ERR_OVERFLOW,
+                                   _("the current memory value too large: %1$llu"),
+                                   (unsigned long long) memory_limit);
+                    goto cleanup;
+                }
+
                 memory_limit *= 1024; /* Scale from megabyte to kilobyte */
+            }
         } else {
             VIR_WARN("Unexpected '%s' property", dynamicProperty->name);
         }
