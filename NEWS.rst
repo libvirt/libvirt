@@ -17,6 +17,37 @@ v12.9.0 (unreleased)
 
 * **New features**
 
+  * bhyve: support session mode
+
+    The bhyve driver now supports the session mode: ``bhyve:///session``.
+    It requires bhyve monitor mode support, so at the time of writing it
+    is available to -CURRENT users only.
+
+  * bhyve: support boot order configuration for disks
+
+    The bhyve driver now supports boot order configuration for the
+    SATA and VirtIO disks with ``<boot order='..'/>``. Now it also
+    uses the QEMU-compatible ``fwcfg`` interface.
+
+  * bhyve: TPM support
+
+    The bhyve driver now supports TPM with an external emulator.
+
+  * bhyve: implement ``virDomainReset()``
+
+    The bhyve driver now implements the ``virDomainReset()`` API
+    (accessible via ``virsh reset``).
+
+  * FreeBSD: support isolated bridge ports
+
+    libvirt on FreeBSD now supports isolated bridge ports such as::
+
+      <interface type='bridge'>
+        <source bridge='bridge0'/>
+        <model type='virtio'/>
+        <port isolated='yes'/>
+      </interface>
+
 * **Improvements**
 
   * qemu: Emit UNDEFINED event when undefining source after migration
@@ -28,6 +59,10 @@ v12.9.0 (unreleased)
 
 * **Bug fixes**
 
+  * bhyve: fix shutdown handling on arm64
+
+    Signal-based shutdown now correctly handles bhyve terminating directly
+    on arm64, preventing stopped domains from remaining reported as running.
 
 v12.8.0 (2026-10-01)
 ====================
