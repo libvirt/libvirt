@@ -424,6 +424,39 @@ testGetSubIDs(const void *data G_GNUC_UNUSED)
 
 
 static int
+testMultiplyAddIsOverflow(const void *data G_GNUC_UNUSED)
+{
+    unsigned long a = ULONG_MAX / 1024UL;
+
+    if (VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX, a, 1024, 1023)) {
+        VIR_TEST_DEBUG("should not have failed (limit=%lu, value%lu, multiply=1024, add=1023).",
+                       ULONG_MAX, a);
+        return -1;
+    }
+
+    if (!VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX, a, 1024, 1024)) {
+        VIR_TEST_DEBUG("should have failed (limit=%lu, value=%lu, multiply=1024, add=1024).",
+                       ULONG_MAX, a);
+        return -1;
+    }
+
+    if (VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX - 1022, a, 1024, 1)) {
+        VIR_TEST_DEBUG("should not have failed (limit=%lu, value=%lu, multiply=1024, add=1).",
+                       ULONG_MAX - 1022, a);
+        return -1;
+    }
+
+    if (!VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX - 1023, a, 1024, 1)) {
+        VIR_TEST_DEBUG("should have failed (limit=%lu, value=%lu, multiply=1024, add=1).",
+                       ULONG_MAX - 1023, a);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int result = 0;
@@ -447,6 +480,7 @@ mymain(void)
     DO_TEST(KernelCmdlineNextParam);
     DO_TEST(KernelCmdlineMatchParam);
     DO_TEST(GetSubIDs);
+    DO_TEST(MultiplyAddIsOverflow);
 
     return result == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
