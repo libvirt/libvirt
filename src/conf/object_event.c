@@ -727,12 +727,13 @@ virObjectEventStateQueueRemote(virObjectEventState *state,
     if (!event)
         return;
 
+    virObjectLock(state);
+
     if (state->timer < 0) {
+        virObjectUnlock(state);
         virObjectUnref(event);
         return;
     }
-
-    virObjectLock(state);
 
     event->remoteID = remoteID;
     if (virObjectEventQueuePush(state->queue, event) < 0) {

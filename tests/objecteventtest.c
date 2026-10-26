@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include "testutils.h"
+#include "virthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -444,6 +445,94 @@ testDomainStartStopEvent(const void *data)
     return ret;
 }
 
+typedef struct {
+    lifecycleEventCounter counter;
+    virConnectPtr conn;
+    virThread thread;
+    bool started;
+} queueRaceData;
+
+static void
+queueRaceDefine(void *opaque)
+{
+    virDomainPtr dom = virDomainDefineXML(opaque, domainDef);
+
+    if (dom)
+        virDomainFree(dom);
+}
+
+/* Runs under the event state lock while the last callback is removed */
+static void
+queueRaceFree(void *opaque)
+{
+    queueRaceData *race = opaque;
+
+    if (virThreadCreate(&race->thread, true, queueRaceDefine, race->conn) < 0)
+        return;
+    race->started = true;
+    g_usleep(100 * 1000);
+}
+
+static void
+queueRaceWatchdog(int timer G_GNUC_UNUSED,
+                  void *opaque G_GNUC_UNUSED)
+{
+}
+
+static int
+testDomainEventQueueRace(const void *data)
+{
+    const objecteventTest *test = data;
+    queueRaceData race = { .conn = test->conn };
+    lifecycleEventCounter counter = { 0 };
+    int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
+    virDomainPtr dom = NULL;
+    int timer = -1;
+    int id;
+    int ret = -1;
+
+    id = virConnectDomainEventRegisterAny(test->conn, NULL, eventId,
+                           VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
+                           &race, queueRaceFree);
+    if (id < 0)
+        return -1;
+
+    virConnectDomainEventDeregisterAny(test->conn, id);
+    if (!race.started)
+        return -1;
+    virThreadJoin(&race.thread);
+
+    id = virConnectDomainEventRegisterAny(test->conn, NULL, eventId,
+                           VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
+                           &counter, NULL);
+    if (id < 0)
+        return -1;
+
+    if (!(dom = virDomainLookupByName(test->conn, "test-domain")) ||
+        virDomainUndefine(dom) < 0)
+        goto cleanup;
+
+    /* A stuck queue never fires, so do not wait for it forever */
+    if ((timer = virEventAddTimeout(1000, queueRaceWatchdog, NULL, NULL)) < 0)
+        goto cleanup;
+
+    if (virEventRunDefaultImpl() < 0)
+        goto cleanup;
+
+    if (counter.undefineEvents != 1 || counter.unexpectedEvents > 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (timer >= 0)
+        virEventRemoveTimeout(timer);
+    virConnectDomainEventDeregisterAny(test->conn, id);
+    if (dom)
+        virDomainFree(dom);
+
+    return ret;
+}
+
 static int
 testNetworkCreateXML(const void *data)
 {
@@ -803,6 +892,9 @@ mymain(void)
     if (virTestRun("Domain (un)define events", testDomainDefine, &test) < 0)
         ret = EXIT_FAILURE;
     if (virTestRun("Domain start stop events", testDomainStartStopEvent, &test) < 0)
+        ret = EXIT_FAILURE;
+    if (virTestRun("Domain event queued while last callback is removed",
+                   testDomainEventQueueRace, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Network event tests */
