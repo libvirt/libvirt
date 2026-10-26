@@ -49,6 +49,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
                     virCommand *cmd,
                     bool dryRun)
 {
+    g_auto(virBuffer) netarg = VIR_BUFFER_INITIALIZER;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     char *realifname = NULL;
     const char *brname = NULL;
@@ -97,8 +98,11 @@ bhyveBuildNetArgStr(const virDomainDef *def,
         break;
     case VIR_DOMAIN_NET_TYPE_USER:
         virCommandAddArg(cmd, "-s");
-        virCommandAddArgFormat(cmd, "%d:0,%s,slirp,mac=%s,open",
-                               net->info.addr.pci.slot, nic_model, macaddr);
+        virBufferAsprintf(&netarg, "%d:0,%s,slirp,mac=%s,open",
+                          net->info.addr.pci.slot, nic_model, macaddr);
+        if (net->mtu)
+            virBufferAsprintf(&netarg, ",mtu=%u", net->mtu);
+        virCommandAddArgBuffer(cmd, &netarg);
         return 0;
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -125,7 +129,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
                                            virDomainNetGetActualPortOptionsIsolated(net),
-                                           NULL, 0, NULL,
+                                           NULL, net->mtu, NULL,
                                            VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
             goto cleanup;
         }
@@ -148,9 +152,12 @@ bhyveBuildNetArgStr(const virDomainDef *def,
 
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "%d:0,%s,%s,mac=%s",
-                           net->info.addr.pci.slot, nic_model,
-                           realifname, macaddr);
+    virBufferAsprintf(&netarg, "%d:0,%s,%s,mac=%s",
+                      net->info.addr.pci.slot, nic_model,
+                      realifname, macaddr);
+    if (net->mtu && net->model == VIR_DOMAIN_NET_MODEL_VIRTIO)
+        virBufferAsprintf(&netarg, ",mtu=%u", net->mtu);
+    virCommandAddArgBuffer(cmd, &netarg);
 
     ret = 0;
  cleanup:

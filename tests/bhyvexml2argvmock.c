@@ -61,7 +61,7 @@ void virMacAddrGenerate(const unsigned char prefix[VIR_MAC_PREFIX_BUFLEN],
     addr->addr[5] = 0;
 }
 
-int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
+int virNetDevTapCreateInBridgePort(const char *brname,
                                    char **ifname,
                                    const virMacAddr *macaddr G_GNUC_UNUSED,
                                    const unsigned char *vmuuid G_GNUC_UNUSED,
@@ -72,10 +72,14 @@ int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
                                    const virNetDevVlan *virtVlan G_GNUC_UNUSED,
                                    virTristateBool isolatedPort G_GNUC_UNUSED,
                                    virNetDevCoalesce *coalesce G_GNUC_UNUSED,
-                                   unsigned int mtu G_GNUC_UNUSED,
+                                   unsigned int mtu,
                                    unsigned int *actualMTU G_GNUC_UNUSED,
                                    unsigned int fakeflags G_GNUC_UNUSED)
 {
+    /* Validate MTU passed by the net-mtu-bridge test */
+    if (STREQ(brname, "mtu-br0") && mtu != 9000)
+        return -1;
+
     VIR_FREE(*ifname);
     *ifname = g_strdup("vnet0");
     return 0;

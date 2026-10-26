@@ -260,6 +260,8 @@ mymain(void)
     DO_TEST("serial-grub");
     DO_TEST("localtime");
     DO_TEST("net-e1000");
+    DO_TEST("net-mtu-bridge");
+    DO_TEST("net-mtu-slirp");
     DO_TEST("passthru");
     DO_TEST("passthru-multiple-devs");
     DO_TEST("uefi");
