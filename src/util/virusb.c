@@ -120,6 +120,7 @@ virUSBDeviceSearch(unsigned int vendor,
                    unsigned int devno,
                    const char *port,
                    const char *vroot,
+                   char **inaccessiblePath,
                    unsigned int flags)
 {
     g_autoptr(DIR) dir = NULL;
@@ -128,7 +129,6 @@ virUSBDeviceSearch(unsigned int vendor,
     struct dirent *de;
     virUSBDeviceList *list = NULL;
     virUSBDeviceList *ret = NULL;
-    g_autoptr(virUSBDevice) usb = NULL;
     int direrr;
 
     if (!(list = virUSBDeviceListNew()))
@@ -138,10 +138,12 @@ virUSBDeviceSearch(unsigned int vendor,
         goto cleanup;
 
     while ((direrr = virDirRead(dir, &de, USB_SYSFS "/devices")) > 0) {
+        g_autoptr(virUSBDevice) usb = NULL;
         unsigned int found_prod, found_vend, found_bus, found_devno;
         g_autofree char *found_port = NULL;
         bool port_matches;
         char *tmpstr = de->d_name;
+        const char *devPath = NULL;
 
         if (strchr(de->d_name, ':'))
             continue;
@@ -198,8 +200,21 @@ virUSBDeviceSearch(unsigned int vendor,
         if (!usb)
             goto cleanup;
 
-        if (virUSBDeviceListAdd(list, &usb) < 0)
-            goto cleanup;
+        /* In containerized environments sysfs may expose USB devices
+         * from the host kernel while the corresponding device node
+         * under /dev/bus/usb/ is not present in the current mount
+         * namespace. Such device cannot be used, so skip it here. */
+        devPath = virUSBDeviceGetPath(usb);
+        if (virFileExists(devPath)) {
+            if (virUSBDeviceListAdd(list, &usb) < 0)
+                goto cleanup;
+        } else {
+            VIR_DEBUG("USB device %03u:%03u found in sysfs but device "
+                      "node '%s' is not accessible in the current mount "
+                      "namespace, skipping",
+                      found_bus, found_devno, devPath);
+            *inaccessiblePath = g_strdup(devPath);
+        }
 
         if (found)
             break;
@@ -226,10 +241,11 @@ virUSBDeviceFind(unsigned int vendor,
                  virUSBDeviceList **devices)
 {
     g_autoptr(virUSBDeviceList) list = NULL;
+    g_autofree char *inaccessiblePath = NULL;
     int count;
 
     if (!(list = virUSBDeviceSearch(vendor, product, bus, devno, port,
-                                    vroot, flags)))
+                                    vroot, &inaccessiblePath, flags)))
         return -1;
 
     count = list->count;
@@ -240,9 +256,16 @@ virUSBDeviceFind(unsigned int vendor,
             return 0;
         }
 
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Did not find matching USB device: vid:%1$04x, pid:%2$04x, bus:%3$u, device:%4$u, port:%5$s"),
-                       vendor, product, bus, devno, port ? port : "");
+        if (inaccessiblePath) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("USB device vid:%1$04x, pid:%2$04x, bus:%3$u, device:%4$u, port:%5$s is present on the host but its device node '%6$s' is not accessible in the current mount namespace"),
+                           vendor, product, bus, devno, port ? port : "",
+                           inaccessiblePath);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Did not find matching USB device: vid:%1$04x, pid:%2$04x, bus:%3$u, device:%4$u, port:%5$s"),
+                           vendor, product, bus, devno, port ? port : "");
+        }
         return -1;
     }
 

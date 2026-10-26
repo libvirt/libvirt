@@ -259,6 +259,39 @@ testUSBList(const void *opaque G_GNUC_UNUSED)
 }
 
 
+/* usb4 (bus 4, device 1) is present in the fake sysfs, but the mock makes
+ * its /dev/bus/usb node inaccessible, i.e. the device is exposed by the host
+ * kernel but not accessible in our mount namespace (as happens inside a
+ * container).  Such a device must be treated as absent: skipped for
+ * startupPolicy 'optional' (mandatory == false) and reported as an error
+ * otherwise. */
+static int
+testDeviceFindInaccessible(const void *opaque G_GNUC_UNUSED)
+{
+    g_autoptr(virUSBDeviceList) devs = NULL;
+    int rv;
+
+    rv = virUSBDeviceFind(0x1d6b, 0x0003, 4, 1, NULL, NULL, false,
+                          USB_DEVICE_FIND_BY_DEVICE, &devs);
+    if (rv != 0 || devs) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "optional inaccessible device: expected no match (rv=0 and no device list), got rv=%d",
+                       rv);
+        return -1;
+    }
+
+    rv = virUSBDeviceFind(0x1d6b, 0x0003, 4, 1, NULL, NULL, true,
+                          USB_DEVICE_FIND_BY_DEVICE, &devs);
+    if (rv >= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "mandatory inaccessible device: expected failure, but the device was reported as available");
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 mymain(void)
 {
@@ -334,6 +367,10 @@ mymain(void)
     DO_TEST_FIND_BY_VENDOR_AND_PORT_FAIL("Bogus", 0xf00d, 0xbeef, 1024, "1.1.1.1");
 
     if (virTestRun("USB List test", testUSBList, NULL) < 0)
+        rv = -1;
+
+    if (virTestRun("USBDeviceFind inaccessible node",
+                   testDeviceFindInaccessible, NULL) < 0)
         rv = -1;
 
     if (rv < 0)
