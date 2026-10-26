@@ -198,6 +198,19 @@ addnhostsWrite(int fd,
 static int
 addnhostsSave(dnsmasqAddnHostsfile *addnhostsfile)
 {
+    size_t i, j;
+    for (i = 0; i < addnhostsfile->nhosts; i++) {
+        for (j = 0; j < addnhostsfile->hosts[i].nhostnames; j++) {
+            if (strcspn(addnhostsfile->hosts[i].hostnames[j], "\t\n\r ") !=
+                strlen(addnhostsfile->hosts[i].hostnames[j])) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("dnsmasq hostname '%1$s' contains forbidden whitespace"),
+                               addnhostsfile->hosts[i].hostnames[j]);
+                return -1;
+            }
+        }
+    }
+
     return virFileRewrite(addnhostsfile->path,
                           0600, -1, -1,
                           addnhostsWrite,
@@ -341,6 +354,17 @@ hostsfileWrite(int fd,
 static int
 hostsfileSave(dnsmasqHostsfile *hostsfile)
 {
+    size_t i;
+    for (i = 0; i < hostsfile->nhosts; i++) {
+        if (strcspn(hostsfile->hosts[i].host, "\t\n\r ") !=
+            strlen(hostsfile->hosts[i].host)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("dnsmasq hostname '%1$s' contains forbidden whitespace"),
+                           hostsfile->hosts[i].host);
+            return -1;
+        }
+    }
+
     return virFileRewrite(hostsfile->path,
                           0600, -1, -1,
                           hostsfileWrite,
