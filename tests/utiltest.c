@@ -452,6 +452,12 @@ testMultiplyAddIsOverflow(const void *data G_GNUC_UNUSED)
         return -1;
     }
 
+    if (VIR_MULTIPLY_ADD_IS_OVERFLOW(ULONG_MAX, a, 1024, 0)) {
+        VIR_TEST_DEBUG("should not have failed (limit=%lu, value=%lu, multiply=1024, add=0).",
+                       ULONG_MAX, a);
+        return -1;
+    }
+
     return 0;
 }
 

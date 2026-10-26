@@ -54,7 +54,7 @@
  */
 #define VIR_MULTIPLY_ADD_IS_OVERFLOW(limit, value, multiply, add) \
   (G_UNLIKELY(((multiply) > 0 && (value) > (limit) / (multiply)) || \
-              ((limit) - ((value) * (multiply)) < (add))))
+              ((limit) - (add) < ((value) * (multiply)))))
 
 /* The library itself is allowed to use deprecated functions /
  * variables, so effectively undefine the deprecated attribute
