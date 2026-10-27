@@ -554,6 +554,7 @@ virNWFilterObjListExport(virConnectPtr conn,
     VIR_FREE(tmp_filters);
     for (i = 0; i < nfilters; i++)
         virNWFilterObjUnlock(objs[i]);
+    VIR_FREE(objs);
     return ret;
 }
 
