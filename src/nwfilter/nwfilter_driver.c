@@ -176,6 +176,7 @@ nwfilterStateCleanupLocked(void)
     }
 
     virObjectUnref(driver->bindings);
+    virObjectUnref(driver->config);
 
     /* free inactive nwfilters */
     virNWFilterObjListFree(driver->nwfilters);
