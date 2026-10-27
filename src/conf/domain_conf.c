@@ -18410,7 +18410,7 @@ virDomainVcpuParse(virDomainDef *def,
         if (!(tmp = virXMLNodeContentString(vcpuNode)))
             return -1;
 
-        if (virStrToLong_ui(tmp, NULL, 10, &maxvcpus) < 0) {
+        if (virStrToLong_uip(tmp, NULL, 10, &maxvcpus) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("maximum vcpus count must be an integer"));
             return -1;
