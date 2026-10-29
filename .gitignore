@@ -24,3 +24,6 @@ tags
 # clangd related ignores
 .clangd
 compile_commands.json
+
+# meson related ignores
+/subprojects/.wraplock
