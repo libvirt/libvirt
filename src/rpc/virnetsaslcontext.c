@@ -37,12 +37,20 @@ struct _virNetSASLContext {
     unsigned int tcpMinSSF;
 };
 
+typedef enum virNetSASLSessionState virNetSASLSessionState;
+enum virNetSASLSessionState {
+    VIR_NET_SASL_SESSION_STATE_INIT,
+    VIR_NET_SASL_SESSION_STATE_START,
+    VIR_NET_SASL_SESSION_STATE_STEP
+};
+
 struct _virNetSASLSession {
     virObjectLockable parent;
 
     sasl_conn_t *conn;
     size_t maxbufsize;
     sasl_callback_t *callbacks;
+    virNetSASLSessionState state;
 };
 
 
@@ -247,6 +255,8 @@ virNetSASLSession *virNetSASLSessionNewServer(virNetSASLContext *ctxt G_GNUC_UNU
                        err, sasl_errstring(err, NULL, NULL));
         goto cleanup;
     }
+
+    sasl->state = VIR_NET_SASL_SESSION_STATE_INIT;
 
     return sasl;
 
@@ -529,6 +539,13 @@ int virNetSASLSessionServerStart(virNetSASLSession *sasl,
     int ret = -1;
 
     virObjectLock(sasl);
+
+    if (sasl->state != VIR_NET_SASL_SESSION_STATE_INIT) {
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                       _("unexpected state of SASL session"));
+        goto cleanup;
+    }
+
     err = sasl_server_start(sasl->conn,
                             mechname,
                             clientin,
@@ -542,12 +559,15 @@ int virNetSASLSessionServerStart(virNetSASLSession *sasl,
     case SASL_OK:
         if (virNetSASLSessionUpdateBufSize(sasl) < 0)
             goto cleanup;
+        sasl->state = VIR_NET_SASL_SESSION_STATE_START;
         ret = VIR_NET_SASL_COMPLETE;
         break;
     case SASL_CONTINUE:
+        sasl->state = VIR_NET_SASL_SESSION_STATE_START;
         ret = VIR_NET_SASL_CONTINUE;
         break;
     case SASL_INTERACT:
+        sasl->state = VIR_NET_SASL_SESSION_STATE_START;
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:
@@ -575,6 +595,14 @@ int virNetSASLSessionServerStep(virNetSASLSession *sasl,
     int ret = -1;
 
     virObjectLock(sasl);
+
+    if (sasl->state != VIR_NET_SASL_SESSION_STATE_START &&
+        sasl->state != VIR_NET_SASL_SESSION_STATE_STEP) {
+        virReportError(VIR_ERR_AUTH_FAILED, "%s",
+                       _("unexpected state of SASL session"));
+        goto cleanup;
+    }
+
     err = sasl_server_step(sasl->conn,
                            clientin,
                            inlen,
@@ -587,12 +615,15 @@ int virNetSASLSessionServerStep(virNetSASLSession *sasl,
     case SASL_OK:
         if (virNetSASLSessionUpdateBufSize(sasl) < 0)
             goto cleanup;
+        sasl->state = VIR_NET_SASL_SESSION_STATE_STEP;
         ret = VIR_NET_SASL_COMPLETE;
         break;
     case SASL_CONTINUE:
+        sasl->state = VIR_NET_SASL_SESSION_STATE_STEP;
         ret = VIR_NET_SASL_CONTINUE;
         break;
     case SASL_INTERACT:
+        sasl->state = VIR_NET_SASL_SESSION_STATE_STEP;
         ret = VIR_NET_SASL_INTERACT;
         break;
     default:

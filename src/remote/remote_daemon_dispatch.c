@@ -4034,7 +4034,7 @@ remoteDispatchAuthSaslStep(virNetServer *server,
     VIR_DEBUG("Step SASL auth %d", virNetServerClientGetFD(client));
     if (virNetServerClientGetAuth(client) != VIR_NET_SERVER_SERVICE_AUTH_SASL ||
         priv->sasl == NULL) {
-        VIR_ERROR(_("client tried invalid SASL start request"));
+        VIR_ERROR(_("client tried invalid SASL step request"));
         goto authfail;
     }
 
