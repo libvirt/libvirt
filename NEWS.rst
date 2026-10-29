@@ -57,12 +57,48 @@ v12.9.0 (unreleased)
     event on the source host. The event includes the newly added
     VIR_DOMAIN_EVENT_UNDEFINED_MIGRATED detail.
 
+  * qemu: report guest reboot as shutdown detail for on_reboot=destroy
+
+    Libvirt now reports the reason of shutdown event properly.
+
+  * qemu: Consider vhost net for MSHV accelerator
+
+    This release enables vhost networking for both KVM and MSHV accelerators.
+
 * **Bug fixes**
 
   * bhyve: fix shutdown handling on arm64
 
     Signal-based shutdown now correctly handles bhyve terminating directly
     on arm64, preventing stopped domains from remaining reported as running.
+
+  * virpci: fix handling newline in PCI device class
+
+    This releases fixes a regression introduced in ``v12.2.0`` release which
+    kept libvirt unable to parse PCI related files from a sysfs mount, if they
+    contained a newline character.
+
+  * security: Check if R/O or shared disk is not directory
+
+    Starting a domain with a read only disk (e.g. cdrom), or attaching one to
+    an already running domain might have resulted in mangled permissions, if a
+    directory was given as the disk source.
+
+  * esx: Avoid integer overflow in esxDomainGetInfo()
+
+    The ESX driver implementation for ``virDomainGetInfo()`` API fetches domain
+    memory size and domain max memory size in MiB and then multiplies both
+    values by factor of 1024, since the API reports those sizes in KiB. But
+    these multiplications can overflow and thus report invalid values. An error
+    is reported instead.
+
+  * conf: Deny negative vcpu count
+
+    If a negative value was specified for the number of vCPUs in domain XML,
+    libvirt would try to allocate absurdly large amounts of memory which would
+    trigger OOM killer and kill the daemon. Non-positive values are forbidden
+    now.
+
 
 v12.8.0 (2026-10-01)
 ====================
