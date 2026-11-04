@@ -25,6 +25,7 @@
     <controller type='pci' index='3' model='pcie-switch-upstream-port'/>
     <controller type='pci' index='4' model='pcie-switch-upstream-port'>
       <model name='pcie-upstream-port'/>
+      <target speed='16' width='8'/>
     </controller>
     <controller type='sata' index='0'/>
     <input type='mouse' bus='ps2'/>

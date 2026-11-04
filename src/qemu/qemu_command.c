@@ -182,6 +182,19 @@ qemuOnOffAuto(virTristateSwitch s)
 }
 
 
+VIR_ENUM_DECL(qemuControllerPCILinkSpeed);
+VIR_ENUM_IMPL(qemuControllerPCILinkSpeed,
+              VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_LAST,
+              "", /* default value, we shouldn't see this */
+              "2_5",
+              "5",
+              "8",
+              "16",
+              "32",
+              "64",
+);
+
+
 static int
 qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props)
@@ -2788,6 +2801,25 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
                        _("Unexpected PCI controller model %1$d"),
                        def->model);
         return -1;
+    }
+
+    /* Options common to all PCIe ports. */
+    if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT ||
+        def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT ||
+        def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT) {
+        if (pciopts->speed != VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_DEFAULT) {
+            const char *speedstr = qemuControllerPCILinkSpeedTypeToString(pciopts->speed);
+
+            if (virJSONValueObjectAdd(&props, "s:speed", speedstr, NULL) < 0)
+                return -1;
+        }
+
+        if (pciopts->width != VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_DEFAULT) {
+            const char *widthstr = virDomainControllerPCILinkWidthTypeToString(pciopts->width);
+
+            if (virJSONValueObjectAdd(&props, "s:width", widthstr, NULL) < 0)
+                return -1;
+        }
     }
 
     *devprops = g_steal_pointer(&props);

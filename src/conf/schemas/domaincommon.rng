@@ -3120,6 +3120,30 @@
                     </attribute>
                   </optional>
                   <optional>
+                    <attribute name="speed">
+                      <choice>
+                        <value>2.5</value>
+                        <value>5</value>
+                        <value>8</value>
+                        <value>16</value>
+                        <value>32</value>
+                        <value>64</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="width">
+                      <choice>
+                        <value>1</value>
+                        <value>2</value>
+                        <value>4</value>
+                        <value>8</value>
+                        <value>16</value>
+                        <value>32</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <optional>
                     <attribute name="busNr">
                       <ref name="uint8"/>
                     </attribute>

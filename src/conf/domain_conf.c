@@ -458,6 +458,28 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "pcie-pci-bridge",
 );
 
+VIR_ENUM_IMPL(virDomainControllerPCILinkSpeed,
+              VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_LAST,
+              "default",
+              "2.5",
+              "5",
+              "8",
+              "16",
+              "32",
+              "64",
+);
+
+VIR_ENUM_IMPL(virDomainControllerPCILinkWidth,
+              VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_LAST,
+              "default",
+              "1",
+              "2",
+              "4",
+              "8",
+              "16",
+              "32",
+);
+
 VIR_ENUM_IMPL(virDomainControllerModelSCSI,
               VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
@@ -9231,6 +9253,18 @@ virDomainControllerDefParseXML(virDomainXMLOption *xmlopt,
             if (virXMLPropInt(targetNodes[0], "port", 0, VIR_XML_PROP_NONNEGATIVE,
                               &def->opts.pciopts.port,
                               def->opts.pciopts.port) < 0)
+                return NULL;
+
+            if (virXMLPropEnum(targetNodes[0], "speed",
+                               virDomainControllerPCILinkSpeedTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->opts.pciopts.speed) < 0)
+                return NULL;
+
+            if (virXMLPropEnum(targetNodes[0], "width",
+                               virDomainControllerPCILinkWidthTypeFromString,
+                               VIR_XML_PROP_NONZERO,
+                               &def->opts.pciopts.width) < 0)
                 return NULL;
 
             if (virXMLPropInt(targetNodes[0], "busNr", 0, VIR_XML_PROP_NONNEGATIVE,
@@ -25019,6 +25053,12 @@ virDomainControllerDefFormatPCI(virBuffer *buf,
         virBufferAsprintf(&targetAttrBuf, " chassis='%d'", def->opts.pciopts.chassis);
     if (def->opts.pciopts.port != -1)
         virBufferAsprintf(&targetAttrBuf, " port='0x%x'", def->opts.pciopts.port);
+    if (def->opts.pciopts.speed != VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_DEFAULT)
+        virBufferAsprintf(&targetAttrBuf, " speed='%s'",
+                          virDomainControllerPCILinkSpeedTypeToString(def->opts.pciopts.speed));
+    if (def->opts.pciopts.width != VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_DEFAULT)
+        virBufferAsprintf(&targetAttrBuf, " width='%s'",
+                          virDomainControllerPCILinkWidthTypeToString(def->opts.pciopts.width));
     if (def->opts.pciopts.busNr != -1)
         virBufferAsprintf(&targetAttrBuf, " busNr='%d'", def->opts.pciopts.busNr);
     if (def->opts.pciopts.targetIndex != -1)

@@ -50,7 +50,7 @@
     </controller>
     <controller type='pci' index='6' model='pcie-switch-downstream-port'>
       <model name='pcie-downstream-port'/>
-      <target chassis='30' port='0x27'/>
+      <target chassis='30' port='0x27' speed='16' width='8'/>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
     </controller>
     <controller type='pci' index='7' model='pcie-switch-upstream-port'>

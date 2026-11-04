@@ -671,6 +671,30 @@ typedef enum {
 } virDomainControllerPCIModelName;
 
 typedef enum {
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_DEFAULT = 0,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_2_5,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_5,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_8,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_16,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_32,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_64,
+
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_LAST
+} virDomainControllerPCILinkSpeed;
+
+typedef enum {
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_DEFAULT = 0,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_1,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_2,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_4,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_8,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_16,
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_32,
+
+    VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_LAST
+} virDomainControllerPCILinkWidth;
+
+typedef enum {
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT = -1,
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO,
     VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC,
@@ -767,6 +791,10 @@ struct _virDomainPCIControllerOpts {
      * pcie-root-port/pcie-switch-downstream-port, -1 = unspecified */
     int chassis;
     int port;
+    /* speed & width used by pcie-root-port/pcie-switch-upstream-port/
+     * pcie-switch-downstream-port */
+    virDomainControllerPCILinkSpeed speed;
+    virDomainControllerPCILinkWidth width;
     int busNr; /* used by pci-expander-bus, -1 == unspecified */
     int targetIndex; /* used by spapr-pci-host-bridge, -1 == unspecified */
     /* numaNode is a *subelement* of target (to match existing
@@ -4434,6 +4462,8 @@ VIR_ENUM_DECL(virDomainDiskMirrorState);
 VIR_ENUM_DECL(virDomainController);
 VIR_ENUM_DECL(virDomainControllerModelPCI);
 VIR_ENUM_DECL(virDomainControllerPCIModelName);
+VIR_ENUM_DECL(virDomainControllerPCILinkSpeed);
+VIR_ENUM_DECL(virDomainControllerPCILinkWidth);
 VIR_ENUM_DECL(virDomainControllerModelSCSI);
 VIR_ENUM_DECL(virDomainControllerModelUSB);
 VIR_ENUM_DECL(virDomainControllerModelIDE);

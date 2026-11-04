@@ -4275,6 +4275,15 @@ virValidateControllerPCIModelNameToQEMUCaps(int modelName)
 }
 
 
+static bool
+qemuValidateControllerPCIModelNameHasLinkProps(virDomainControllerPCIModelName modelName)
+{
+    return modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT ||
+           modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_UPSTREAM_PORT ||
+           modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_DOWNSTREAM_PORT;
+}
+
+
 static int
 qemuValidateDomainDeviceDefControllerAttributes(const virDomainControllerDef *controller)
 {
@@ -4758,6 +4767,66 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         }
         break;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+    default:
+        virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        return -1;
+    }
+
+    /* speed and width */
+    switch ((virDomainControllerModelPCI) cont->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        if (pciopts->speed != VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_DEFAULT) {
+            if (!qemuValidateControllerPCIModelNameHasLinkProps(pciopts->modelName)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the 'speed' property on a '%1$s' device is not supported"),
+                               modelName);
+                return -1;
+            }
+            if (pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIE_ROOT_PORT_SPEED)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the 'speed' property on a '%1$s' device is not supported by this QEMU binary"),
+                               modelName);
+                return -1;
+            }
+        }
+
+        if (pciopts->width != VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_DEFAULT) {
+            if (!qemuValidateControllerPCIModelNameHasLinkProps(pciopts->modelName)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the 'width' property on a '%1$s' device is not supported"),
+                               modelName);
+                return -1;
+            }
+            if (pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIE_ROOT_PORT_WIDTH)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the 'width' property on a '%1$s' device is not supported by this QEMU binary"),
+                               modelName);
+                return -1;
+            }
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        if (pciopts->speed != VIR_DOMAIN_CONTROLLER_PCI_LINK_SPEED_DEFAULT) {
+            virReportControllerInvalidOption(cont, model, modelName, "speed");
+            return -1;
+        }
+        if (pciopts->width != VIR_DOMAIN_CONTROLLER_PCI_LINK_WIDTH_DEFAULT) {
+            virReportControllerInvalidOption(cont, model, modelName, "width");
+            return -1;
+        }
+        break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
     default:

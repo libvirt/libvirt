@@ -2770,6 +2770,11 @@ mymain(void)
      * based on QEMU binary capabilities. We use x86/q35 for the test, but
      * any PCIe machine type (such as aarch64/virt) will behave the same */
     DO_TEST_CAPS_LATEST("pcie-root-port-model-generic");
+    DO_TEST_CAPS_LATEST("pcie-root-port-speed-width");
+    DO_TEST_CAPS_VER_PARSE_ERROR("pcie-root-port-speed-width", "11.0.0");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("pcie-root-port-speed-ioh3420");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("pcie-switch-downstream-port-width-xio3130");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("pci-bridge-speed");
     DO_TEST_CAPS_LATEST("pcie-root-port-model-ioh3420");
     DO_TEST_CAPS_LATEST("pcie-root-port-nohotplug");
 

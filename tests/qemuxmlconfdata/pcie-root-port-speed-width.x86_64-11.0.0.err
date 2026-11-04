@@ -1,0 +1,1 @@
+unsupported configuration: setting the 'speed' property on a 'pcie-root-port' device is not supported by this QEMU binary

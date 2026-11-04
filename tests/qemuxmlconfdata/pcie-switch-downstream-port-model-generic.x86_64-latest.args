@@ -31,7 +31,7 @@ XDG_CONFIG_HOME=/var/lib/libvirt/qemu/domain--1-q35-test/.config \
 -device '{"driver":"pcie-downstream-port","port":0,"chassis":3,"id":"pci.3","bus":"pci.2","addr":"0x0"}' \
 -device '{"driver":"pcie-downstream-port","port":1,"chassis":4,"id":"pci.4","bus":"pci.2","addr":"0x1"}' \
 -device '{"driver":"pcie-downstream-port","port":2,"chassis":5,"id":"pci.5","bus":"pci.2","addr":"0x2"}' \
--device '{"driver":"pcie-downstream-port","port":39,"chassis":30,"id":"pci.6","bus":"pci.2","addr":"0x3"}' \
+-device '{"driver":"pcie-downstream-port","port":39,"chassis":30,"id":"pci.6","speed":"16","width":"8","bus":"pci.2","addr":"0x3"}' \
 -device '{"driver":"pcie-upstream-port","id":"pci.7","bus":"pci.3","addr":"0x0"}' \
 -device '{"driver":"pcie-downstream-port","port":4,"chassis":8,"id":"pci.8","bus":"pci.2","addr":"0x4"}' \
 -device '{"driver":"pcie-downstream-port","port":5,"chassis":9,"id":"pci.9","bus":"pci.2","addr":"0x5"}' \
