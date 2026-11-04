@@ -369,6 +369,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         if (disk->info.bootIndex != 0)
             virBufferAsprintf(&device, ",bootindex=%u", disk->info.bootIndex);
 
+        if (disk->src->readonly)
+            virBufferAddLit(&device, ",ro");
+
         virBufferAddBuffer(&buf, &device);
     }
 
@@ -391,7 +394,6 @@ bhyveBuildSCSIControllerArgStr(const virDomainDef *def,
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        g_auto(virBuffer) device = VIR_BUFFER_INITIALIZER;
         virDomainDiskDef *disk = def->disks[i];
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)
@@ -518,6 +520,8 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
                               disk->wwn);
         if (controller->opts.nvmeopts.serial)
             virBufferAsprintf(&opt, ",ser=%s", controller->opts.nvmeopts.serial);
+        if (disk->src->readonly)
+            virBufferAddLit(&opt, ",ro");
 
         nvme_opts = virBufferContentAndReset(&opt);
 
@@ -599,6 +603,9 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
 
     if (disk->info.bootIndex != 0)
         virBufferAsprintf(&opts, ",bootindex=%u", disk->info.bootIndex);
+
+    if (disk->src->readonly)
+        virBufferAddLit(&opts, ",ro");
 
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "%d:0,virtio-blk,%s%s",

@@ -1,0 +1,40 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <controller type='nvme' index='0'>
+      <serial>BHYVE-NVME0-01234</serial>
+    </controller>
+    <disk type='file'>
+      <serial>BHYVE-SATA-RO</serial>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/sata-readonly.img'/>
+      <target dev='hda' bus='sata' rotation_rate='7200'/>
+      <readonly/>
+    </disk>
+    <disk type='file'>
+      <serial>BHYVE-SATA-RW</serial>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/sata-writable.img'/>
+      <target dev='hdb' bus='sata' rotation_rate='5400'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/virtio-readonly.img'/>
+      <target dev='vda' bus='virtio'/>
+      <readonly/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw' queues='2' queue_size='256'/>
+      <source file='/tmp/nvme-readonly.img'/>
+      <target dev='nvme0n1' bus='nvme'/>
+      <wwn>01000000efbeadde</wwn>
+      <readonly/>
+    </disk>
+  </devices>
+</domain>

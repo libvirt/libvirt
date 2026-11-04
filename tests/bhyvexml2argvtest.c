@@ -239,6 +239,7 @@ mymain(void)
     DO_TEST_FAILURE("acpiapic");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
+    DO_TEST("disk-readonly");
     DO_TEST("macaddr");
     DO_TEST("serial");
     DO_TEST("console");
