@@ -227,6 +227,8 @@
   <flag name='win-dmp.guest-aware'/>
   <flag name='pcie-upstream-port'/>
   <flag name='pcie-downstream-port'/>
+  <flag name='pcie-root-port.speed'/>
+  <flag name='pcie-root-port.width'/>
   <version>11001050</version>
   <microcodeVersion>43100288</microcodeVersion>
   <package>v11.1.0-3637-gf29ccc287a</package>

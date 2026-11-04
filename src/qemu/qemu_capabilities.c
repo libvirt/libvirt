@@ -778,6 +778,10 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "win-dmp.guest-aware", /* QEMU_CAPS_WIN_DMP_GUEST_AWARE */
               "pcie-upstream-port", /* QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT */
               "pcie-downstream-port", /* QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT */
+
+              /* 505 */
+              "pcie-root-port.speed", /* QEMU_CAPS_PCIE_ROOT_PORT_SPEED */
+              "pcie-root-port.width", /* QEMU_CAPS_PCIE_ROOT_PORT_WIDTH */
     );
 
 
@@ -1542,6 +1546,8 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
     { "hotplug", QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG, NULL },
+    { "speed", QEMU_CAPS_PCIE_ROOT_PORT_SPEED, NULL },
+    { "width", QEMU_CAPS_PCIE_ROOT_PORT_WIDTH, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBHost[] = {

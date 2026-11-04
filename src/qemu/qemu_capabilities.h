@@ -753,6 +753,10 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT, /* -device pcie-upstream-port */
     QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT, /* -device pcie-downstream-port */
 
+    /* 505 */
+    QEMU_CAPS_PCIE_ROOT_PORT_SPEED, /* pcie-root-port.speed */
+    QEMU_CAPS_PCIE_ROOT_PORT_WIDTH, /* pcie-root-port.width */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
