@@ -750,6 +750,8 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_ARM_SMMUV3_CMDQV, /* arm-smmuv3.cmdqv */
     QEMU_CAPS_IOTHREAD_POLL_WEIGHT, /* -object iothread.poll-weight */
     QEMU_CAPS_WIN_DMP_GUEST_AWARE, /* 'win-dmp' is offered only to a guest that can use it */
+    QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT, /* -device pcie-upstream-port */
+    QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT, /* -device pcie-downstream-port */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

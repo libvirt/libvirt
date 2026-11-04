@@ -225,6 +225,8 @@
   <flag name='object-monitor-qmp'/>
   <flag name='iothread.poll-weight'/>
   <flag name='win-dmp.guest-aware'/>
+  <flag name='pcie-upstream-port'/>
+  <flag name='pcie-downstream-port'/>
   <version>11001050</version>
   <microcodeVersion>43100288</microcodeVersion>
   <package>v11.1.0-3637-gf29ccc287a</package>

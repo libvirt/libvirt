@@ -776,6 +776,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "arm-smmuv3.cmdqv", /* QEMU_CAPS_ARM_SMMUV3_CMDQV */
               "iothread.poll-weight", /* QEMU_CAPS_IOTHREAD_POLL_WEIGHT */
               "win-dmp.guest-aware", /* QEMU_CAPS_WIN_DMP_GUEST_AWARE */
+              "pcie-upstream-port", /* QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT */
+              "pcie-downstream-port", /* QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT */
     );
 
 
@@ -1356,6 +1358,8 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ioh3420", QEMU_CAPS_DEVICE_IOH3420 },
     { "x3130-upstream", QEMU_CAPS_DEVICE_X3130_UPSTREAM },
     { "xio3130-downstream", QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM },
+    { "pcie-upstream-port", QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT },
+    { "pcie-downstream-port", QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT },
     { "rtl8139", QEMU_CAPS_DEVICE_RTL8139 },
     { "e1000", QEMU_CAPS_DEVICE_E1000 },
     { "virtio-net-pci", QEMU_CAPS_DEVICE_VIRTIO_NET },
