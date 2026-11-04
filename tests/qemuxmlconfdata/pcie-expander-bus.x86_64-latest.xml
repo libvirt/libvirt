@@ -42,166 +42,166 @@
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </controller>
     <controller type='pci' index='3' model='pcie-switch-upstream-port'>
-      <model name='x3130-upstream'/>
+      <model name='pcie-upstream-port'/>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
     <controller type='pci' index='4' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='4' port='0x0'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </controller>
     <controller type='pci' index='5' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='5' port='0x1'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x01' function='0x0'/>
     </controller>
     <controller type='pci' index='6' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='6' port='0x2'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x02' function='0x0'/>
     </controller>
     <controller type='pci' index='7' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='7' port='0x3'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x03' function='0x0'/>
     </controller>
     <controller type='pci' index='8' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='8' port='0x4'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x04' function='0x0'/>
     </controller>
     <controller type='pci' index='9' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='9' port='0x5'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x05' function='0x0'/>
     </controller>
     <controller type='pci' index='10' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='10' port='0x6'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x06' function='0x0'/>
     </controller>
     <controller type='pci' index='11' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='11' port='0x7'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x07' function='0x0'/>
     </controller>
     <controller type='pci' index='12' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='12' port='0x8'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x08' function='0x0'/>
     </controller>
     <controller type='pci' index='13' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='13' port='0x9'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x09' function='0x0'/>
     </controller>
     <controller type='pci' index='14' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='14' port='0xa'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0a' function='0x0'/>
     </controller>
     <controller type='pci' index='15' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='15' port='0xb'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0b' function='0x0'/>
     </controller>
     <controller type='pci' index='16' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='16' port='0xc'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0c' function='0x0'/>
     </controller>
     <controller type='pci' index='17' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='17' port='0xd'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0d' function='0x0'/>
     </controller>
     <controller type='pci' index='18' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='18' port='0xe'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0e' function='0x0'/>
     </controller>
     <controller type='pci' index='19' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='19' port='0xf'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x0f' function='0x0'/>
     </controller>
     <controller type='pci' index='20' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='20' port='0x10'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x10' function='0x0'/>
     </controller>
     <controller type='pci' index='21' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='21' port='0x11'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x11' function='0x0'/>
     </controller>
     <controller type='pci' index='22' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='22' port='0x12'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x12' function='0x0'/>
     </controller>
     <controller type='pci' index='23' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='23' port='0x13'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x13' function='0x0'/>
     </controller>
     <controller type='pci' index='24' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='24' port='0x14'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x14' function='0x0'/>
     </controller>
     <controller type='pci' index='25' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='25' port='0x15'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x15' function='0x0'/>
     </controller>
     <controller type='pci' index='26' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='26' port='0x16'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x16' function='0x0'/>
     </controller>
     <controller type='pci' index='27' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='27' port='0x17'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x17' function='0x0'/>
     </controller>
     <controller type='pci' index='28' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='28' port='0x18'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x18' function='0x0'/>
     </controller>
     <controller type='pci' index='29' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='29' port='0x19'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x19' function='0x0'/>
     </controller>
     <controller type='pci' index='30' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='30' port='0x1a'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1a' function='0x0'/>
     </controller>
     <controller type='pci' index='31' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='31' port='0x1b'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1b' function='0x0'/>
     </controller>
     <controller type='pci' index='32' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='32' port='0x1c'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1c' function='0x0'/>
     </controller>
     <controller type='pci' index='33' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='33' port='0x1d'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1d' function='0x0'/>
     </controller>
     <controller type='pci' index='34' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='34' port='0x1e'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1e' function='0x0'/>
     </controller>
     <controller type='pci' index='35' model='pcie-switch-downstream-port'>
-      <model name='xio3130-downstream'/>
+      <model name='pcie-downstream-port'/>
       <target chassis='35' port='0x1f'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x1f' function='0x0'/>
     </controller>

@@ -4250,6 +4250,10 @@ virValidateControllerPCIModelNameToQEMUCaps(int modelName)
         return QEMU_CAPS_DEVICE_X3130_UPSTREAM;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM:
         return QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM;
+    case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_UPSTREAM_PORT:
+        return QEMU_CAPS_DEVICE_PCIE_UPSTREAM_PORT;
+    case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_DOWNSTREAM_PORT:
+        return QEMU_CAPS_DEVICE_PCIE_DOWNSTREAM_PORT;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PXB:
         return QEMU_CAPS_DEVICE_PXB;
     case VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PXB_PCIE:
@@ -4432,14 +4436,16 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-        if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_X3130_UPSTREAM) {
+        if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_X3130_UPSTREAM &&
+            pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_UPSTREAM_PORT) {
             virReportControllerInvalidValue(cont, model, modelName, "modelName");
             return -1;
         }
         break;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-        if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM) {
+        if (pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_XIO3130_DOWNSTREAM &&
+            pciopts->modelName != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_DOWNSTREAM_PORT) {
             virReportControllerInvalidValue(cont, model, modelName, "modelName");
             return -1;
         }
@@ -4756,6 +4762,7 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
     default:
         virReportEnumRangeError(virDomainControllerModelPCI, cont->model);
+        return -1;
     }
 
     /* hotplug */

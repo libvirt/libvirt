@@ -2785,7 +2785,13 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("pcie-root-port-too-many");
 
     DO_TEST_CAPS_LATEST("pcie-switch-upstream-port");
+    DO_TEST_CAPS_VER("pcie-switch-upstream-port", "11.1.0");
+    DO_TEST_CAPS_LATEST("pcie-switch-upstream-port-model-generic");
+    DO_TEST_CAPS_VER_PARSE_ERROR("pcie-switch-upstream-port-model-generic", "11.1.0");
     DO_TEST_CAPS_LATEST("pcie-switch-downstream-port");
+    DO_TEST_CAPS_VER("pcie-switch-downstream-port", "11.1.0");
+    DO_TEST_CAPS_LATEST("pcie-switch-downstream-port-model-generic");
+    DO_TEST_CAPS_VER_PARSE_ERROR("pcie-switch-downstream-port-model-generic", "11.1.0");
 
     DO_TEST_CAPS_LATEST("pci-expander-bus");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("pci-expander-bus-bad-node");

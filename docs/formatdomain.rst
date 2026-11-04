@@ -4695,6 +4695,13 @@ hotpluggable pcie port that can accept any standard pci or pcie device (or
 another pcie-switch-upstream-port), i.e. identical in function to a
 pcie-root-port. ( :since:`since 1.2.19` )
 
+By default, QEMU's generic ``pcie-upstream-port`` and ``pcie-downstream-port``
+devices are used for pcie-switch-upstream-port and pcie-switch-downstream-port
+controllers if the QEMU binary supports them; otherwise the ``x3130-upstream``
+and ``xio3130-downstream`` devices (which emulate a TI XIO3130 switch limited
+to a 2.5 GT/s x1 link) are used. Existing domains keep the model recorded in
+their configuration. :since:`Since 12.10.0`
+
 ::
 
    ...
