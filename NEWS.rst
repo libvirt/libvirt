@@ -17,6 +17,22 @@ v12.10.0 (unreleased)
 
 * **New features**
 
+  * qemu: support generic PCIe switch ports
+
+    The ``pcie-switch-upstream-port`` and ``pcie-switch-downstream-port``
+    controllers now use QEMU's generic ``pcie-upstream-port`` and
+    ``pcie-downstream-port`` devices by default, if available, instead of the
+    ``x3130-upstream`` and ``xio3130-downstream`` devices, which are limited to
+    a 2.5 GT/s x1 link. Existing domains are unaffected.
+
+  * qemu: configurable PCIe link speed and width
+
+    The new ``speed`` and ``width`` attributes of the ``<target>`` element of
+    ``pcie-root-port``, ``pcie-switch-upstream-port``, and
+    ``pcie-switch-downstream-port`` controllers set the PCIe link speed and
+    width reported to the guest. This allows the apparent bandwidth of a
+    passed-through device to match the host hardware.
+
 * **Improvements**
 
 * **Bug fixes**
