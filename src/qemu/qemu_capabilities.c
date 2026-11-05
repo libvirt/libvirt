@@ -782,6 +782,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 505 */
               "pcie-root-port.speed", /* QEMU_CAPS_PCIE_ROOT_PORT_SPEED */
               "pcie-root-port.width", /* QEMU_CAPS_PCIE_ROOT_PORT_WIDTH */
+              "vfio-pci.ats", /* QEMU_CAPS_VFIO_PCI_ATS */
     );
 
 
@@ -1565,6 +1566,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVfioPCI[] = {
+    { "ats", QEMU_CAPS_VFIO_PCI_ATS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {

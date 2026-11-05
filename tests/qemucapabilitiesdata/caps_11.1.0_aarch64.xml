@@ -195,6 +195,7 @@
   <flag name='arm-smmuv3.cmdqv'/>
   <flag name='iothread.poll-weight'/>
   <flag name='win-dmp.guest-aware'/>
+  <flag name='vfio-pci.ats'/>
   <version>11001000</version>
   <microcodeVersion>61700287</microcodeVersion>
   <package>v11.1.0</package>

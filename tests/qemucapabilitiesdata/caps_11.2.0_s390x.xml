@@ -150,6 +150,7 @@
   <flag name='object-monitor-qmp'/>
   <flag name='iothread.poll-weight'/>
   <flag name='win-dmp.guest-aware'/>
+  <flag name='vfio-pci.ats'/>
   <version>11001050</version>
   <microcodeVersion>39100288</microcodeVersion>
   <package>v11.1.0-1870-g81ce3a8773</package>
