@@ -227,7 +227,7 @@
   <flag name='win-dmp.guest-aware'/>
   <version>11001050</version>
   <microcodeVersion>43100288</microcodeVersion>
-  <package>v11.1.0-1950-gf7ada39eda</package>
+  <package>v11.1.0-3637-gf29ccc287a</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='avx-ne-convert' type='boolean' value='false'/>
@@ -2337,7 +2337,7 @@
     <property name='kvm-asyncpf' type='boolean' value='false'/>
     <property name='perfctr-core' type='boolean' value='false'/>
     <property name='fs-gs-base-ns' type='boolean' value='false'/>
-    <property name='mpx' type='boolean' value='true' migratable='yes'/>
+    <property name='mpx' type='boolean' value='false'/>
     <property name='auto-ibrs' type='boolean' value='false'/>
     <property name='pbe' type='boolean' value='false'/>
     <property name='avx512cd' type='boolean' value='false'/>
@@ -2369,7 +2369,7 @@
     <property name='srso-user-kernel-no' type='boolean' value='false'/>
     <property name='vmx-exit-load-pat' type='boolean' value='false'/>
     <property name='vmx-intr-exit' type='boolean' value='false'/>
-    <property name='min-level' type='number' value='13'/>
+    <property name='min-level' type='number' value='41'/>
     <property name='vmx-flexpriority' type='boolean' value='false'/>
     <property name='xgetbv1' type='boolean' value='true' migratable='yes'/>
     <property name='cid' type='boolean' value='false'/>
@@ -2486,7 +2486,7 @@
     <property name='avx512dq' type='boolean' value='false'/>
     <property name='svm' type='boolean' value='true' migratable='yes'/>
     <property name='invtsc' type='boolean' value='false'/>
-    <property name='apx-nci-ndd-nf' type='boolean' value='false'/>
+    <property name='apx-nci-ndd-nf' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-monitor-exit' type='boolean' value='false'/>
     <property name='sse2' type='boolean' value='true' migratable='yes'/>
     <property name='ssbd' type='boolean' value='false'/>
@@ -2568,7 +2568,7 @@
     <property name='pmm' type='boolean' value='false'/>
     <property name='vmx-entry-noload-debugctl' type='boolean' value='false'/>
     <property name='vmx-eptad' type='boolean' value='false'/>
-    <property name='apxf' type='boolean' value='false'/>
+    <property name='apxf' type='boolean' value='true' migratable='yes'/>
     <property name='spec-ctrl' type='boolean' value='false'/>
     <property name='vmx-posted-intr' type='boolean' value='false'/>
     <property name='vmx-apicv-register' type='boolean' value='false'/>
@@ -5036,7 +5036,6 @@
     <blocker name='amx-complex'/>
     <blocker name='prefetchiti'/>
     <blocker name='avx10'/>
-    <blocker name='apxf'/>
     <blocker name='intel-psfd'/>
     <blocker name='ipred-ctrl'/>
     <blocker name='rrsba-ctrl'/>
@@ -5046,7 +5045,6 @@
     <blocker name='avx10-128'/>
     <blocker name='avx10-256'/>
     <blocker name='avx10-512'/>
-    <blocker name='apx-nci-ndd-nf'/>
     <blocker name='amx-int8-alias'/>
     <blocker name='amx-bf16-alias'/>
     <blocker name='amx-complex-alias'/>
@@ -5114,7 +5112,6 @@
     <blocker name='amx-complex'/>
     <blocker name='prefetchiti'/>
     <blocker name='avx10'/>
-    <blocker name='apxf'/>
     <blocker name='intel-psfd'/>
     <blocker name='ipred-ctrl'/>
     <blocker name='rrsba-ctrl'/>
@@ -5124,7 +5121,6 @@
     <blocker name='avx10-128'/>
     <blocker name='avx10-256'/>
     <blocker name='avx10-512'/>
-    <blocker name='apx-nci-ndd-nf'/>
     <blocker name='amx-int8-alias'/>
     <blocker name='amx-bf16-alias'/>
     <blocker name='amx-complex-alias'/>
@@ -5192,7 +5188,6 @@
     <blocker name='amx-complex'/>
     <blocker name='prefetchiti'/>
     <blocker name='avx10'/>
-    <blocker name='apxf'/>
     <blocker name='intel-psfd'/>
     <blocker name='ipred-ctrl'/>
     <blocker name='rrsba-ctrl'/>
@@ -5202,7 +5197,6 @@
     <blocker name='avx10-128'/>
     <blocker name='avx10-256'/>
     <blocker name='avx10-512'/>
-    <blocker name='apx-nci-ndd-nf'/>
     <blocker name='amx-int8-alias'/>
     <blocker name='amx-bf16-alias'/>
     <blocker name='amx-complex-alias'/>
