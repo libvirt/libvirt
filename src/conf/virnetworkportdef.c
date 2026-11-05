@@ -231,6 +231,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
             return NULL;
         }
 
+        if (def->plug.hostdevpci.driver.ats != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'ats' is not supported for network port <driver>"));
+            return NULL;
+        }
+
         if (!(addressNode = virXPathNode("./plug/address", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port PCI address"));

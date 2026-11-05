@@ -1379,6 +1379,12 @@ virNetworkForwardDefParseXML(const char *networkName,
             return -1;
     }
 
+    if (def->driver.ats != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'ats' is not supported for network <driver>"));
+        return -1;
+    }
+
     /* bridge and hostdev modes can use a pool of physical interfaces */
     if ((nForwardIfs = virXPathNodeSet("./interface", ctxt, &forwardIfNodes)) < 0)
         return -1;

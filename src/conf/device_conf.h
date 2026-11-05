@@ -48,6 +48,7 @@ struct _virDeviceHostdevPCIDriverInfo {
     virDeviceHostdevPCIDriverName name;
     char *model;
     virTristateBool iommufd;
+    virTristateSwitch ats;
 };
 
 typedef enum {

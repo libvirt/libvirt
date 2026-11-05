@@ -4809,6 +4809,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
                               "B:ramfb", ramfb,
                               "S:iommufd", iommufdId,
                               "S:fd", fdstr,
+                              "S:ats", qemuOnOffAuto(pcisrc->driver.ats),
                               NULL) < 0)
         return NULL;
 

@@ -72,6 +72,10 @@ virDeviceHostdevPCIDriverInfoParseXML(xmlNodePtr node,
                                &driver->iommufd) < 0)
         return -1;
 
+    if (virXMLPropTristateSwitch(node, "ats", VIR_XML_PROP_NONE,
+                                 &driver->ats) < 0)
+        return -1;
+
     driver->model = virXMLPropString(node, "model");
     return 0;
 }
@@ -103,6 +107,10 @@ virDeviceHostdevPCIDriverInfoFormat(virBuffer *buf,
     } else if (driver->iommufd == VIR_TRISTATE_BOOL_NO) {
         virBufferAddLit(&driverAttrBuf, " iommufd='no'");
     }
+
+    if (driver->ats != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(&driverAttrBuf, " ats='%s'",
+                          virTristateSwitchTypeToString(driver->ats));
 
     virXMLFormatElement(buf, "driver", &driverAttrBuf, NULL);
     return 0;

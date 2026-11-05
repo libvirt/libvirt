@@ -2836,6 +2836,13 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
                         return -1;
                     }
                 }
+
+                if (hostdev->source.subsys.u.pci.driver.ats != VIR_TRISTATE_SWITCH_ABSENT &&
+                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VFIO_PCI_ATS)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("ATS control for VFIO PCI devices is not supported by this version of qemu"));
+                    return -1;
+                }
             }
 
             if (hostdev->writeFiltering != VIR_TRISTATE_BOOL_ABSENT) {

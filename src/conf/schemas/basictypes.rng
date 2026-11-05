@@ -709,6 +709,11 @@
           <ref name="virYesNo"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="ats">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
       <empty/>
     </element>
   </define>

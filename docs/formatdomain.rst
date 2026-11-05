@@ -5105,6 +5105,14 @@ or:
    assigned devices. Libvirt will open the /dev/iommu and VFIO device
    cdev and pass associated file descriptors to QEMU.
 
+   :since:`Since 12.10.0 (QEMU and KVM only)`, the ``ats`` attribute
+   can be used to control exposing a device's ATS extended capability
+   in its PCIe config space. ``off`` masks the capability, ``on``
+   requires ATS support and fails to start the guest if the host kernel
+   reports lack of ATS support for the device. If omitted, the
+   capability is exposed unless the host kernel reports ATS as
+   unsupported for the device.
+
    (Note: :since:`Since 1.0.5`, the ``name`` attribute has been
    described to be used to select the type of PCI device assignment
    ("vfio", "kvm", or "xen"), but those values have been mostly
