@@ -111,6 +111,7 @@ mymain(void)
     DO_TEST_DIFFERENT("console");
     DO_TEST_DIFFERENT("console-master-slave-not-specified");
     DO_TEST_DIFFERENT("custom-loader");
+    DO_TEST_DIFFERENT("disk-block");
     DO_TEST_DIFFERENT("disk-cdrom");
     DO_TEST_DIFFERENT("disk-cdrom-grub");
     DO_TEST_DIFFERENT("disk-virtio");

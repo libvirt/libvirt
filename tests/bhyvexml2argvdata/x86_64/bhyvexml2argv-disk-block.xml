@@ -1,0 +1,27 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+    <loader readonly='yes' type='pflash'>/path/to/test.fd</loader>
+  </os>
+  <devices>
+    <disk type='block'>
+      <driver name='file' type='raw'/>
+      <source dev='/dev/zvol/zroot/bhyve-sata'/>
+      <target dev='hda' bus='sata'/>
+    </disk>
+    <disk type='block'>
+      <driver name='file' type='raw'/>
+      <source dev='/dev/zvol/zroot/bhyve-virtio'/>
+      <target dev='vda' bus='virtio'/>
+    </disk>
+    <disk type='block'>
+      <driver name='file' type='raw'/>
+      <source dev='/dev/zvol/zroot/bhyve-nvme'/>
+      <target dev='nvme0n1' bus='nvme'/>
+    </disk>
+  </devices>
+</domain>

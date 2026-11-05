@@ -341,7 +341,8 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 
         VIR_DEBUG("disk %zu controller %d", i, controller->idx);
 
-        if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
+        if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_BLOCK) &&
+            (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
             (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported disk type"));
@@ -609,7 +610,8 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
         return -1;
     }
 
-    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
+    if ((virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_BLOCK) &&
+        (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_FILE) &&
         (virDomainDiskGetType(disk) != VIR_STORAGE_TYPE_VOLUME)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("unsupported disk type"));
@@ -1524,7 +1526,8 @@ virBhyveUsableDisk(virDomainDiskDef *disk)
         return false;
     }
 
-    if ((disk_type != VIR_STORAGE_TYPE_FILE) &&
+    if ((disk_type != VIR_STORAGE_TYPE_BLOCK) &&
+        (disk_type != VIR_STORAGE_TYPE_FILE) &&
         (disk_type != VIR_STORAGE_TYPE_VOLUME) &&
         (disk_type != VIR_STORAGE_TYPE_CTL)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -237,6 +237,7 @@ mymain(void)
     DO_TEST("acpiapic");
     virBhyveCapsClear(driver.bhyvecaps, BHYVE_CAP_ACPI);
     DO_TEST_FAILURE("acpiapic");
+    DO_TEST("disk-block");
     DO_TEST("disk-cdrom");
     DO_TEST("disk-virtio");
     DO_TEST("disk-readonly");

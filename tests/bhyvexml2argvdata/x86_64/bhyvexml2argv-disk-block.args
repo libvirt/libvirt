@@ -1,0 +1,13 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-l bootrom,/path/to/test.fd,fwcfg=qemu \
+-s 1:0,lpc \
+-s 2:0,ahci,hd:/dev/zvol/zroot/bhyve-sata \
+-s 3:0,nvme,/dev/zvol/zroot/bhyve-nvme \
+-s 4:0,virtio-blk,/dev/zvol/zroot/bhyve-virtio \
+bhyve
