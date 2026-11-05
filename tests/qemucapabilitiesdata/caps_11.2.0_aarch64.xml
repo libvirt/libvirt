@@ -197,7 +197,7 @@
   <flag name='win-dmp.guest-aware'/>
   <version>11001050</version>
   <microcodeVersion>61700288</microcodeVersion>
-  <package>v11.1.0-1950-gf7ada39eda</package>
+  <package>v11.1.0-3637-gf29ccc287a</package>
   <arch>aarch64</arch>
   <hostCPU type='kvm' model='host' migratability='no'>
     <property name='sve768' type='boolean' value='false'/>
@@ -294,8 +294,8 @@
   <machine type='kvm' name='stm32vldiscovery' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
   <machine type='kvm' name='orangepi-pc' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='orangepi.ram' acpi='no'/>
   <machine type='kvm' name='quanta-q71l-bmc' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='ram' acpi='no'/>
-  <machine type='kvm' name='imx8mm-evk' maxCpus='4' defaultRAMid='imx8mm-evk.ram' acpi='no'/>
   <machine type='kvm' name='nitro' maxCpus='4096' defaultRAMid='ram' acpi='no'/>
+  <machine type='kvm' name='imx8mm-evk' maxCpus='4' defaultRAMid='imx8mm-evk.ram' acpi='no'/>
   <machine type='kvm' name='virt-10.1' maxCpus='512' defaultRAMid='mach-virt.ram' acpi='yes'/>
   <machine type='kvm' name='xilinx-zynq-a9' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='zynq.ext_ram' acpi='no'/>
   <machine type='kvm' name='xlnx-zcu102' maxCpus='6' defaultRAMid='ddr-ram' acpi='no'/>
@@ -341,6 +341,7 @@
   <machine type='kvm' name='supermicro-x11spi-bmc' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='kvm' name='ast2700a1-evb' maxCpus='4' defaultCPU='cortex-a35-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='kvm' name='microbit' maxCpus='1' acpi='no'/>
+  <machine type='kvm' name='ast1080-evb' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='kvm' name='mps2-an385' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
   <machine type='kvm' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
   <machine type='kvm' name='virt-6.0' maxCpus='512' defaultRAMid='mach-virt.ram' deprecated='yes' acpi='yes'/>
@@ -469,8 +470,8 @@
   <machine type='tcg' name='stm32vldiscovery' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' acpi='no'/>
   <machine type='tcg' name='orangepi-pc' maxCpus='4' defaultCPU='cortex-a7-arm-cpu' defaultRAMid='orangepi.ram' acpi='no'/>
   <machine type='tcg' name='quanta-q71l-bmc' maxCpus='1' defaultCPU='arm926-arm-cpu' defaultRAMid='ram' acpi='no'/>
-  <machine type='tcg' name='imx8mm-evk' maxCpus='4' defaultRAMid='imx8mm-evk.ram' acpi='no'/>
   <machine type='tcg' name='nitro' maxCpus='4096' defaultRAMid='ram' acpi='no'/>
+  <machine type='tcg' name='imx8mm-evk' maxCpus='4' defaultRAMid='imx8mm-evk.ram' acpi='no'/>
   <machine type='tcg' name='virt-10.1' maxCpus='512' defaultRAMid='mach-virt.ram' acpi='yes'/>
   <machine type='tcg' name='xilinx-zynq-a9' maxCpus='2' defaultCPU='cortex-a9-arm-cpu' defaultRAMid='zynq.ext_ram' acpi='no'/>
   <machine type='tcg' name='xlnx-zcu102' maxCpus='6' defaultRAMid='ddr-ram' acpi='no'/>
@@ -516,6 +517,7 @@
   <machine type='tcg' name='supermicro-x11spi-bmc' maxCpus='1' defaultCPU='arm1176-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='tcg' name='ast2700a1-evb' maxCpus='4' defaultCPU='cortex-a35-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='tcg' name='microbit' maxCpus='1' acpi='no'/>
+  <machine type='tcg' name='ast1080-evb' maxCpus='1' defaultCPU='cortex-m4-arm-cpu' defaultRAMid='ram' acpi='no'/>
   <machine type='tcg' name='mps2-an385' maxCpus='1' defaultCPU='cortex-m3-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
   <machine type='tcg' name='mps2-an505' maxCpus='1' defaultCPU='cortex-m33-arm-cpu' defaultRAMid='mps.ram' acpi='no'/>
   <machine type='tcg' name='virt-6.0' maxCpus='512' defaultRAMid='mach-virt.ram' deprecated='yes' acpi='yes'/>
