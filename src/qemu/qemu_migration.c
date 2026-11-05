@@ -7225,7 +7225,6 @@ qemuMigrationSrcToLegacyFile(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
     int pipeFD[2] = { -1, -1 };
-    char *errbuf = NULL;
 
     if (compressor && virPipe(pipeFD) < 0)
         return -1;
@@ -7246,7 +7245,6 @@ qemuMigrationSrcToLegacyFile(virDomainObj *vm,
     } else {
         virCommandSetInputFD(compressor, pipeFD[0]);
         virCommandSetOutputFD(compressor, &fd);
-        virCommandSetErrorBuffer(compressor, &errbuf);
         virCommandDoAsyncIO(compressor);
         if (virSetCloseExec(pipeFD[1]) < 0) {
             virReportSystemError(errno, "%s",
@@ -7268,11 +7266,6 @@ qemuMigrationSrcToLegacyFile(virDomainObj *vm,
  cleanup:
     VIR_FORCE_CLOSE(pipeFD[0]);
     VIR_FORCE_CLOSE(pipeFD[1]);
-
-    if (errbuf) {
-        VIR_DEBUG("Compression binary stderr: %s", NULLSTR(errbuf));
-        VIR_FREE(errbuf);
-    }
 
     return ret;
 }
@@ -7342,6 +7335,7 @@ qemuMigrationSrcToFile(virDomainObj *vm,
     int ret = -1;
     unsigned long saveMigBandwidth = priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
+    g_autofree char *compressor_errbuf = NULL;
 
     if (qemuMigrationSetDBusVMState(vm) < 0)
         return -1;
@@ -7367,10 +7361,12 @@ qemuMigrationSrcToFile(virDomainObj *vm,
     }
 
     if (migParams &&
-        qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM))
+        qemuMigrationParamsCapEnabled(migParams, QEMU_MIGRATION_CAP_MAPPED_RAM)) {
         rc = qemuMigrationSrcToSparseFile(vm, path, fd, bypassCache, asyncJob);
-    else
+    } else {
+        virCommandSetErrorBuffer(compressor, &compressor_errbuf);
         rc = qemuMigrationSrcToLegacyFile(vm, *fd, compressor, asyncJob);
+    }
 
     if (rc < 0)
         goto cleanup;
@@ -7396,6 +7392,9 @@ qemuMigrationSrcToFile(virDomainObj *vm,
  cleanup:
     if (ret < 0 && !orig_err)
         virErrorPreserveLast(&orig_err);
+
+    if (compressor_errbuf)
+        VIR_DEBUG("Compression binary stderr: %s", compressor_errbuf);
 
     /* Remove fdset passed to qemu and restore max migration bandwidth */
     if (qemuDomainObjIsActive(vm)) {
