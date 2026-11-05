@@ -396,10 +396,13 @@ def dump_qom_list_types(conv, dumpprefix):
                 # validate known fields:
                 # 'parent' is ignored below as it causes output churn
                 for k in qomtype:
-                    if k not in ['name', 'parent']:
+                    if k not in ['name', 'parent', 'secure']:
                         raise Exception("Unhandled 'qom-list-types' field '%s'" % k)
 
-                types.append(qomtype['name'])
+                if 'secure' in qomtype.keys():
+                    types.append('%s (secure=%s)' % (qomtype['name'], qomtype['secure']))
+                else:
+                    types.append(qomtype['name'])
 
             c['processed'] = True
 
@@ -433,7 +436,9 @@ def dump_device_and_object_properties(conv, dumpprefix):
 
         for arg in c['rep']['return']:
             for k in arg:
-                if k not in ['name', 'type', 'description', 'default-value']:
+                # qapi-type maps to the internal qemu naming so exposing it to the
+                # user here is pointless and would change across qemu builds
+                if k not in ['name', 'type', 'description', 'default-value', 'qapi-type']:
                     raise Exception("Unhandled 'device-list-properties'/'qom-list-properties' typename '%s' field '%s'" % (c['cmd']['arguments']['typename'], k))
 
             if 'default-value' in arg:
