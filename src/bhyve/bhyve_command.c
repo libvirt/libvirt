@@ -394,8 +394,9 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
     }
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "%d:0,ahci%s",
+    virCommandAddArgFormat(cmd, "%d:%d,ahci%s",
                            controller->info.addr.pci.slot,
+                           controller->info.addr.pci.function,
                            virBufferCurrentContent(&buf));
 
     return 0;
@@ -447,8 +448,9 @@ bhyveBuildSCSIControllerArgStr(const virDomainDef *def,
         }
 
         virCommandAddArg(cmd, "-s");
-        virCommandAddArgFormat(cmd, "%d:0,virtio-scsi,%s",
+        virCommandAddArgFormat(cmd, "%d:%d,virtio-scsi,%s",
                                controller->info.addr.pci.slot,
+                               controller->info.addr.pci.function,
                                virDomainDiskGetSource(disk));
 
         return 0;
@@ -544,8 +546,9 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
         nvme_opts = virBufferContentAndReset(&opt);
 
         virCommandAddArg(cmd, "-s");
-        virCommandAddArgFormat(cmd, "%d:0,nvme,%s%s",
+        virCommandAddArgFormat(cmd, "%d:%d,nvme,%s%s",
                                controller->info.addr.pci.slot,
+                               controller->info.addr.pci.function,
                                disk_source,
                                NULLSTR_EMPTY(nvme_opts));
 
@@ -623,8 +626,9 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
     bhyveBuildCommonDiskOpts(disk, &opts);
 
     virCommandAddArg(cmd, "-s");
-    virCommandAddArgFormat(cmd, "%d:0,virtio-blk,%s%s",
+    virCommandAddArgFormat(cmd, "%d:%d,virtio-blk,%s%s",
                            disk->info.addr.pci.slot,
+                           disk->info.addr.pci.function,
                            disk_source,
                            virBufferCurrentContent(&opts));
 

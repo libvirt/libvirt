@@ -1,0 +1,12 @@
+bhyve \
+-c 1 \
+-m 214 \
+-u \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:1,ahci,hd:/tmp/sata.img \
+-s 3:2,virtio-scsi,/dev/cam/ctl \
+-s 4:3,nvme,/tmp/nvme.img \
+-s 5:4,virtio-blk,/tmp/virtio.img \
+bhyve
