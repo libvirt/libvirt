@@ -463,7 +463,8 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
         virDomainDiskDef *disk = dev->data.disk;
 
         if ((disk->bus == VIR_DOMAIN_DISK_BUS_SATA ||
-             disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO) &&
+             disk->bus == VIR_DOMAIN_DISK_BUS_VIRTIO ||
+             disk->bus == VIR_DOMAIN_DISK_BUS_NVME) &&
             disk->info.bootIndex > INT_MAX) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("boot order '%1$u' is greater than bhyve's maximum of %2$d"),
@@ -491,6 +492,21 @@ bhyveDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                _("Serial number may not contain ',' character"));
                 return -1;
             }
+        }
+
+        if (disk->blockio.physical_block_size > INT_MAX ||
+            disk->blockio.logical_block_size > INT_MAX) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("block size is greater than bhyve's maximum of %1$d"),
+                           INT_MAX);
+            return -1;
+        }
+
+        if (disk->blockio.physical_block_size > 0 &&
+            disk->blockio.logical_block_size == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Setting physical block size without logical block size is not supported"));
+            return -1;
         }
 
         break;

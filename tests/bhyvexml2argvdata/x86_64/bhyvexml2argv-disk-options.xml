@@ -1,0 +1,41 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <controller type='nvme' index='0'>
+      <serial>BHYVE-NVME0-01234</serial>
+    </controller>
+    <disk type='file'>
+      <serial>BHYVE-SATA-IGNORE</serial>
+      <driver name='file' type='raw' discard='ignore'/>
+      <source file='/tmp/sata-ignore.img'/>
+      <target dev='hda' bus='sata' rotation_rate='7200'/>
+      <blockio logical_block_size='512' physical_block_size='4096'/>
+    </disk>
+    <disk type='file'>
+      <serial>BHYVE-SATA-UNMAP</serial>
+      <driver name='file' type='raw' discard='unmap'/>
+      <source file='/tmp/sata-unmap.img'/>
+      <target dev='hdb' bus='sata' rotation_rate='5400'/>
+      <blockio logical_block_size='4096'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw' discard='ignore'/>
+      <source file='/tmp/virtio-ignore.img'/>
+      <target dev='vda' bus='virtio'/>
+      <blockio logical_block_size='512' physical_block_size='4096'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw' discard='ignore' queues='2' queue_size='256'/>
+      <source file='/tmp/nvme-ignore.img'/>
+      <target dev='nvme0n1' bus='nvme'/>
+      <wwn>01000000efbeadde</wwn>
+      <blockio logical_block_size='4096' physical_block_size='4096'/>
+    </disk>
+  </devices>
+</domain>

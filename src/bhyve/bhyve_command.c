@@ -42,6 +42,28 @@
 
 VIR_LOG_INIT("bhyve.bhyve_command");
 
+static void
+bhyveBuildCommonDiskOpts(const virDomainDiskDef *disk,
+                         virBuffer *opt)
+{
+    if (disk->info.bootIndex != 0)
+        virBufferAsprintf(opt, ",bootindex=%u", disk->info.bootIndex);
+
+    if (disk->src->readonly)
+        virBufferAddLit(opt, ",ro");
+
+    if (disk->discard == VIR_DOMAIN_DISK_DISCARD_IGNORE)
+        virBufferAddLit(opt, ",nodelete");
+
+    if (disk->blockio.logical_block_size > 0) {
+        /* sectorsize=logical[/physical] */
+        virBufferAsprintf(opt, ",sectorsize=%u",
+                          disk->blockio.logical_block_size);
+        if (disk->blockio.physical_block_size > 0)
+            virBufferAsprintf(opt, "/%u", disk->blockio.physical_block_size);
+    }
+}
+
 static int
 bhyveBuildNetArgStr(const virDomainDef *def,
                     virDomainNetDef *net,
@@ -366,12 +388,7 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
         if (disk->serial)
             virBufferAsprintf(&device, ",ser=%s", disk->serial);
 
-        if (disk->info.bootIndex != 0)
-            virBufferAsprintf(&device, ",bootindex=%u", disk->info.bootIndex);
-
-        if (disk->src->readonly)
-            virBufferAddLit(&device, ",ro");
-
+        bhyveBuildCommonDiskOpts(disk, &device);
         virBufferAddBuffer(&buf, &device);
     }
 
@@ -520,8 +537,8 @@ bhyveBuildNVMeControllerArgStr(const virDomainDef *def,
                               disk->wwn);
         if (controller->opts.nvmeopts.serial)
             virBufferAsprintf(&opt, ",ser=%s", controller->opts.nvmeopts.serial);
-        if (disk->src->readonly)
-            virBufferAddLit(&opt, ",ro");
+
+        bhyveBuildCommonDiskOpts(disk, &opt);
 
         nvme_opts = virBufferContentAndReset(&opt);
 
@@ -601,11 +618,7 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def G_GNUC_UNUSED,
 
     disk_source = virDomainDiskGetSource(disk);
 
-    if (disk->info.bootIndex != 0)
-        virBufferAsprintf(&opts, ",bootindex=%u", disk->info.bootIndex);
-
-    if (disk->src->readonly)
-        virBufferAddLit(&opts, ",ro");
+    bhyveBuildCommonDiskOpts(disk, &opts);
 
     virCommandAddArg(cmd, "-s");
     virCommandAddArgFormat(cmd, "%d:0,virtio-blk,%s%s",
