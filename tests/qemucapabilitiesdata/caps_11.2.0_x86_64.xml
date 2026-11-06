@@ -235,6 +235,7 @@
   <flag name='intel-iommu.pasid-bits'/>
   <flag name='intel-iommu.svm'/>
   <flag name='virtio-blk.fua'/>
+  <flag name='host_device.accept-read-only-device'/>
   <version>11001050</version>
   <microcodeVersion>43100288</microcodeVersion>
   <package>v11.1.0-3637-gf29ccc287a</package>

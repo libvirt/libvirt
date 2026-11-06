@@ -790,6 +790,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "intel-iommu.pasid-bits", /* QEMU_CAPS_INTEL_IOMMU_PASID_BITS */
               "intel-iommu.svm", /* QEMU_CAPS_INTEL_IOMMU_SVM */
               "virtio-blk.fua", /* QEMU_CAPS_VIRTIO_BLK_FUA */
+              "host_device.accept-read-only-device", /* QEMU_CAPS_HOST_DEVICE_ACCEPT_READ_ONLY */
     );
 
 
@@ -1688,6 +1689,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
+    { "blockdev-add/arg-type/+host_device/accept-read-only-device", QEMU_CAPS_HOST_DEVICE_ACCEPT_READ_ONLY },
     { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
     { "blockdev-add/arg-type/+rbd/encrypt/parent", QEMU_CAPS_RBD_ENCRYPTION_LAYERING },
     { "blockdev-add/arg-type/+rbd/encrypt/format/^luks-any", QEMU_CAPS_RBD_ENCRYPTION_LUKS_ANY },

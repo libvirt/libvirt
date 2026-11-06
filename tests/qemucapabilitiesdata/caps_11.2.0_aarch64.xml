@@ -201,6 +201,7 @@
   <flag name='pcie-root-port.width'/>
   <flag name='vfio-pci.ats'/>
   <flag name='virtio-blk.fua'/>
+  <flag name='host_device.accept-read-only-device'/>
   <version>11001050</version>
   <microcodeVersion>61700288</microcodeVersion>
   <package>v11.1.0-3637-gf29ccc287a</package>

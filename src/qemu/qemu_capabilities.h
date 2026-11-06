@@ -764,6 +764,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_INTEL_IOMMU_PASID_BITS, /* intel-iommu.pasid-bits */
     QEMU_CAPS_INTEL_IOMMU_SVM, /* intel-iommu.svm */
     QEMU_CAPS_VIRTIO_BLK_FUA, /* virtio-blk 'fua' support */
+    QEMU_CAPS_HOST_DEVICE_ACCEPT_READ_ONLY, /* 'host_device' block backend has 'accept-read-only-device' property */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
