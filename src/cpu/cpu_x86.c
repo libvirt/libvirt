@@ -3144,6 +3144,94 @@ virCPUx86Update(virCPUDef *guest,
 }
 
 
+/*
+ * Since kernel commit de572491a975 KVM no longer offers spec-ctrl on AMD
+ * hosts without IBPB_RET. The MSRs it stands for are still available to
+ * the guest through ibpb and any of ibrs, amd-stibp and amd-ssbd.
+ */
+static int
+x86SpecCtrlDroppable(const virCPUDef *cpu G_GNUC_UNUSED,
+                     virCPUx86Map *map,
+                     const virCPUx86Data *enabled)
+{
+    const char *specCtrlMSR[] = { "ibrs", "amd-stibp", "amd-ssbd" };
+    size_t i;
+    int rc;
+
+    if ((rc = x86FeatureInData("ibpb", enabled, map)) <= 0)
+        return rc;
+
+    for (i = 0; i < G_N_ELEMENTS(specCtrlMSR); i++) {
+        if ((rc = x86FeatureInData(specCtrlMSR[i], enabled, map)) != 0)
+            return rc;
+    }
+
+    return 0;
+}
+
+
+/* The @droppable callback decides what should be done with the feature called
+ * @name by returning one of the following values:
+ *    -1 on error
+ *     0 when @name should stay in the CPU definition
+ *     1 if it safe to remove @name from the CPU
+ */
+static const struct {
+    const char *name;
+    int (*droppable)(const virCPUDef *cpu,
+                     virCPUx86Map *map,
+                     const virCPUx86Data *enabled);
+} x86DroppableFeatures[] = {
+    { "spec-ctrl", x86SpecCtrlDroppable },
+};
+
+
+/*
+ * Newer KVM may stop offering a feature a guest started elsewhere already
+ * requires, although the guest loses nothing without it. Disable such
+ * features rather than failing the check.
+ */
+static int
+x86UpdateLiveDroppable(virCPUDef *cpu,
+                       virCPUx86Map *map,
+                       const virCPUx86Data *enabled,
+                       virCPUx86Data *disabled)
+{
+    size_t i;
+
+    for (i = 0; i < G_N_ELEMENTS(x86DroppableFeatures); i++) {
+        const char *name = x86DroppableFeatures[i].name;
+        virCPUFeatureDef *feature;
+        virCPUx86Feature *x86Feature;
+        int rc;
+
+        if (!(feature = virCPUDefFindFeature(cpu, name)) ||
+            feature->policy != VIR_CPU_FEATURE_REQUIRE)
+            continue;
+
+        if ((rc = x86FeatureInData(name, enabled, map)) < 0)
+            return -1;
+
+        if (rc == 1)
+            continue;
+
+        if ((rc = x86DroppableFeatures[i].droppable(cpu, map, enabled)) < 0)
+            return -1;
+
+        if (rc == 0)
+            continue;
+
+        VIR_INFO("Hypervisor does not provide '%s', disabling it in the guest CPU",
+                 name);
+        virCPUDefUpdateFeature(cpu, name, VIR_CPU_FEATURE_DISABLE);
+        if ((x86Feature = x86FeatureFind(map, name)))
+            x86DataSubtract(disabled, &x86Feature->data);
+    }
+
+    return 0;
+}
+
+
 static int
 virCPUx86UpdateLive(virCPUDef *cpu,
                     virCPUData *dataEnabled,
@@ -3165,15 +3253,18 @@ virCPUx86UpdateLive(virCPUDef *cpu,
     if (!(map = virCPUx86GetMap()))
         return -1;
 
-    if (!(model = x86ModelFromCPU(cpu, map, -1)) ||
-        !(modelDisabled = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
-        return -1;
-
     if (dataEnabled)
         x86DataCopy(&enabled, &dataEnabled->data.x86);
 
     if (dataDisabled)
         x86DataCopy(&disabled, &dataDisabled->data.x86);
+
+    if (x86UpdateLiveDroppable(cpu, map, &enabled, &disabled) < 0)
+        return -1;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)) ||
+        !(modelDisabled = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_DISABLE)))
+        return -1;
 
     for (i = 0; i < map->nfeatures; i++) {
         virCPUx86Feature *feature = map->features[i];

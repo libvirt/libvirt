@@ -1124,6 +1124,10 @@ mymain(void)
         } \
     } while (0)
 
+#define DO_TEST_UPDATE_LIVE(arch, host, result) \
+    DO_TEST(arch, cpuTestUpdateLive, host, host, \
+            NULL, NULL, 0, NULL, 0, result)
+
 #define DO_TEST_CPUID_BASELINE(arch, label, cpu1, cpu2) \
     do { \
         const char *cpus[] = {cpu1, cpu2}; \
@@ -1284,6 +1288,8 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-7601-32-Core-ibpb", JSON_MODELS_REQUIRED);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-7502-32-Core", JSON_MODELS);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-7713-64-Core", JSON_MODELS);
+    DO_TEST_UPDATE_LIVE(VIR_ARCH_X86_64, "EPYC-7713-64-Core-no-spec-ctrl", 0);
+    DO_TEST_UPDATE_LIVE(VIR_ARCH_X86_64, "EPYC-7713-64-Core-no-spec-ctrl-no-ibpb", -1);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "EPYC-9334-32-Core", JSON_MODELS);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "FX-8150", JSON_NONE);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Opteron-1352", JSON_NONE);
