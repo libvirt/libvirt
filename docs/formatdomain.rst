@@ -3054,6 +3054,13 @@ paravirtualized driver is specified via the ``disk`` element.
    ``block``
       The ``dev`` attribute specifies the fully-qualified path to the host
       device to serve as the disk. :since:`Since 0.0.3`
+
+      The optional ``accept-read-only-dev`` :since:`(Since 12.10.0)` attribute
+      when set to ``yes`` instructs the hypervisor to avoid checks enforcing
+      that device passed as ``dev`` is writable when the disk is in read-write
+      mode. This is useful for failover scenarios where the storage may be
+      considered read-only by the host kernel but at failover the device will
+      start accepting writes.
    ``dir``
       The ``dir`` attribute specifies the fully-qualified path to the directory
       to use as the disk. :since:`Since 0.7.5`

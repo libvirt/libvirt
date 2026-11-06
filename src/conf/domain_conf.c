@@ -7951,9 +7951,17 @@ virDomainStorageSourceParse(xmlNodePtr node,
         src->path = virXMLPropString(node, "file");
         src->fdgroup = virXMLPropString(node, "fdgroup");
         break;
+
     case VIR_STORAGE_TYPE_BLOCK:
         src->path = virXMLPropString(node, "dev");
+
+        if (virXMLPropTristateBool(node, "accept-read-only-dev",
+                                   VIR_XML_PROP_NONE,
+                                   &src->block_accept_readonly_dev) < 0)
+            return -1;
+
         break;
+
     case VIR_STORAGE_TYPE_DIR:
         src->path = virXMLPropString(node, "dir");
         break;
@@ -24447,6 +24455,11 @@ virDomainDiskSourceFormat(virBuffer *buf,
 
     case VIR_STORAGE_TYPE_BLOCK:
         virBufferEscapeString(&attrBuf, " dev='%s'", src->path);
+
+        if (src->block_accept_readonly_dev != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&attrBuf, " accept-read-only-dev='%s'",
+                              virTristateBoolTypeToString(src->block_accept_readonly_dev));
+
         break;
 
     case VIR_STORAGE_TYPE_DIR:

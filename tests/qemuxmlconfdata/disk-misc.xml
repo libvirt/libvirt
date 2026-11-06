@@ -14,6 +14,16 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/failover1' accept-read-only-dev='yes'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='block' device='lun'>
+      <source dev='/dev/failover2' accept-read-only-dev='yes'/>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='scsi' index='0' model='virtio-scsi'/>
     <memballoon model='virtio'/>

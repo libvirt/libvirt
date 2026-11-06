@@ -284,6 +284,9 @@ struct _virStorageSource {
     virStorageType type;
     char *path;
     char *fdgroup; /* name of group of file descriptors the user wishes to use instead of 'path' */
+    virTristateBool block_accept_readonly_dev; /* hypervisor should open the device in
+                                                  read-write mode even if the kernel considers it
+                                                  read-only */
     virStorageNetProtocol protocol;
     char *snapshot; /* for storage systems supporting internal snapshots */
     char *configFile; /* some storage systems use config file as part of

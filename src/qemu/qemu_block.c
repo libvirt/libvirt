@@ -791,6 +791,7 @@ qemuBlockStorageSourceGetFileProps(virStorageSource *src,
     const char *path = src->path;
     const char *iomode = NULL;
     const char *prManagerAlias = NULL;
+    virTristateBool accept_read_only_device = VIR_TRISTATE_BOOL_ABSENT;
     virJSONValue *ret = NULL;
 
     if (!onlytarget) {
@@ -804,12 +805,15 @@ qemuBlockStorageSourceGetFileProps(virStorageSource *src,
 
         if (srcpriv && srcpriv->fdpass)
             path = qemuFDPassGetPath(srcpriv->fdpass);
+
+        accept_read_only_device = src->block_accept_readonly_dev;
     }
 
     ignore_value(virJSONValueObjectAdd(&ret,
                                        "s:filename", path,
                                        "S:aio", iomode,
                                        "S:pr-manager", prManagerAlias,
+                                       "T:accept-read-only-device", accept_read_only_device,
                                        NULL) < 0);
     return ret;
 }

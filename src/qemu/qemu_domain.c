@@ -4888,6 +4888,14 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         }
     }
 
+    if (src->block_accept_readonly_dev != VIR_TRISTATE_BOOL_ABSENT) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_HOST_DEVICE_ACCEPT_READ_ONLY)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'accept-read-only-dev' option is not supported by this QEMU"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

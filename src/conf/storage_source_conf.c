@@ -822,6 +822,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->timeout = src->timeout;
     def->reconnectDelay = src->reconnectDelay;
     def->metadataCacheMaxSize = src->metadataCacheMaxSize;
+    def->block_accept_readonly_dev = src->block_accept_readonly_dev;
 
     /* storage driver metadata are not copied */
     def->drv = NULL;

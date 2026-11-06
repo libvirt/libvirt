@@ -2046,6 +2046,11 @@
               </choice>
             </attribute>
           </optional>
+          <optional>
+            <attribute name="accept-read-only-dev">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
           <ref name="diskSourceCommon"/>
           <optional>
             <ref name="storageStartupPolicy"/>
