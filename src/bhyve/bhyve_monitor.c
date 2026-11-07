@@ -161,7 +161,7 @@ bhyveMonitorIO(int watch, int kq, int events G_GNUC_UNUSED, void *opaque)
     shutdownBySignal = WIFSIGNALED(status) &&
         WTERMSIG(status) == SIGTERM;
 
-    if (WIFSIGNALED(status) && WCOREDUMP(status)) {
+    if (WIFSIGNALED(status) && !shutdownBySignal) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Guest %1$s got signal %2$d and crashed"),
                        name, WTERMSIG(status));
