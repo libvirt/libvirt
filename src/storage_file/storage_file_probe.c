@@ -671,7 +671,8 @@ qcow2GetImageSpecific(virStorageSource *meta,
     if (buf_size > (QCOWX_HDR_CLUSTER_BITS_OFFSET + 4)) {
         int clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
 
-        if (clusterBits > 0)
+        if (clusterBits > 0 &&
+            clusterBits < sizeof(meta->clusterSize) * 8)
             meta->clusterSize = 1ULL << clusterBits;
     }
 
