@@ -19513,12 +19513,12 @@ virDomainDefParseMemory(virDomainDef *def,
 
         if (n) {
             def->mem.hugepages = g_new0(virDomainHugePage, n);
+            def->mem.nhugepages = n;
 
             for (i = 0; i < n; i++) {
                 if (virDomainHugepagesParseXML(nodes[i], ctxt,
                                                &def->mem.hugepages[i]) < 0)
                     return -1;
-                def->mem.nhugepages++;
             }
 
             VIR_FREE(nodes);
