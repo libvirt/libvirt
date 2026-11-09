@@ -552,7 +552,8 @@ qcow2GetExtensions(virStorageSource *meta,
         }
 
         case QCOW2_HDR_EXTENSION_DATA_FILE_NAME:
-            if (virBitmapIsBitSet(meta->features, VIR_STORAGE_FILE_FEATURE_DATA_FILE))
+            if (!meta->dataFileRaw &&
+                virBitmapIsBitSet(meta->features, VIR_STORAGE_FILE_FEATURE_DATA_FILE))
                 meta->dataFileRaw = g_strndup(buf + offset, len);
             break;
 
