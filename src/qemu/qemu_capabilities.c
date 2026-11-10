@@ -789,6 +789,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 510 */
               "intel-iommu.pasid-bits", /* QEMU_CAPS_INTEL_IOMMU_PASID_BITS */
               "intel-iommu.svm", /* QEMU_CAPS_INTEL_IOMMU_SVM */
+              "virtio-blk.fua", /* QEMU_CAPS_VIRTIO_BLK_FUA */
     );
 
 
@@ -1544,6 +1545,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
     { "iothread-vq-mapping", QEMU_CAPS_VIRTIO_BLK_IOTHREAD_MAPPING, NULL },
     { "stats-intervals", QEMU_CAPS_DISK_TIMED_STATS, NULL },
+    { "fua", QEMU_CAPS_VIRTIO_BLK_FUA, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {

@@ -763,6 +763,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 510 */
     QEMU_CAPS_INTEL_IOMMU_PASID_BITS, /* intel-iommu.pasid-bits */
     QEMU_CAPS_INTEL_IOMMU_SVM, /* intel-iommu.svm */
+    QEMU_CAPS_VIRTIO_BLK_FUA, /* virtio-blk 'fua' support */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
