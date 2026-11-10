@@ -5868,6 +5868,9 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_ret, (char *) &ret) == -1) {
         virNetClientRemoveStream(priv->client, netst);
         virObjectUnref(netst);
+        st->driver = NULL;
+        st->privateData = NULL;
+        st->ff = NULL;
         return -1;
     }
 
@@ -6629,6 +6632,9 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
              (char *) &ret) == -1) {
         virNetClientRemoveStream(priv->client, netst);
         virObjectUnref(netst);
+        st->driver = NULL;
+        st->privateData = NULL;
+        st->ff = NULL;
         goto cleanup;
     }
 

@@ -1904,6 +1904,7 @@ elsif ($mode eq "client") {
             print "        virObjectUnref(netst);\n";
             print "        st->driver = NULL;\n";
             print "        st->privateData = NULL;\n";
+            print "        st->ff = NULL;\n";
         }
 
         print "        goto cleanup;\n";
