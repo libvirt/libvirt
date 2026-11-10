@@ -2699,6 +2699,11 @@
           <ref name="virOnOff"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="fua">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
     </element>
   </define>
   <define name="geometry">

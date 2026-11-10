@@ -613,6 +613,7 @@ struct _virDomainDiskDef {
     virDomainDiskModel model;
     virDomainVirtioOptions *virtio;
     virTristateSwitch dpofua; /* only SCSI disks; control of the DPO/FUA cache setting */
+    virTristateSwitch fua; /* only virtio-blk disks; control of the FUA cache setting */
 
     bool diskElementAuth;
     bool diskElementEnc;

@@ -3467,6 +3467,13 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                            _("queue-size property isn't supported by this QEMU binary"));
             return -1;
         }
+
+        if (disk->fua != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_FUA)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'fua' property isn't supported by this QEMU binary"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:

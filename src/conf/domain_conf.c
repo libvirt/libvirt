@@ -8837,6 +8837,10 @@ virDomainDiskDefParseXML(virDomainXMLOption *xmlopt,
         if (virXMLPropTristateSwitch(targetNode, "dpofua", VIR_XML_PROP_NONE,
                                      &def->dpofua) < 0)
             return NULL;
+
+        if (virXMLPropTristateSwitch(targetNode, "fua", VIR_XML_PROP_NONE,
+                                     &def->fua) < 0)
+            return NULL;
     }
 
     if ((geometryNode = virXPathNode("./geometry", ctxt))) {
@@ -21506,6 +21510,14 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
     }
 
+    if (src->fua != dst->fua) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk 'fua' property %1$s does not match source %2$s"),
+                       virTristateSwitchTypeToString(dst->fua),
+                       virTristateSwitchTypeToString(src->fua));
+        return false;
+    }
+
     if (src->queues != dst->queues) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target disk queue count %1$u does not match source %2$u"),
@@ -24987,6 +24999,9 @@ virDomainDiskDefFormat(virBuffer *buf,
     if (def->dpofua != VIR_TRISTATE_SWITCH_ABSENT)
         virBufferAsprintf(&childBuf, " dpofua='%s'",
                           virTristateSwitchTypeToString(def->dpofua));
+    if (def->fua != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(&childBuf, " fua='%s'",
+                          virTristateSwitchTypeToString(def->fua));
     virBufferAddLit(&childBuf, "/>\n");
 
     virDomainDiskDefFormatIotune(&childBuf, def);

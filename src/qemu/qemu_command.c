@@ -1915,6 +1915,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                               "S:rerror", rpolicy,
                               "A:stats-intervals", &statistics,
                               "T:dpofua", disk->dpofua, /* SCSI-only, ensured by validation */
+                              "T:fua", disk->fua, /* virtio-blk only, ensured by validation */
                               "T:migrate-pr", migrate_pr, /* 'scsi-block' only, ensured by validation */
                               NULL) < 0)
         return NULL;

@@ -1039,6 +1039,13 @@ virDomainDiskDefValidate(const virDomainDef *def,
             return -1;
     }
 
+    if (disk->fua != VIR_TRISTATE_SWITCH_ABSENT &&
+        disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("'fua' option is available only for virtio disks"));
+            return -1;
+    }
+
     return 0;
 }
 
