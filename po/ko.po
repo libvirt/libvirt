@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2026-01-09 09:51+0000\n"
-"PO-Revision-Date: 2026-03-17 16:25+0000\n"
+"PO-Revision-Date: 2026-11-11 05:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.11.1\n"
 
 msgid ""
 "\n"
@@ -12697,13 +12697,13 @@ msgid "Network bandwidth tuning is not available in session mode"
 msgstr "네트워크 밴드폭 튜닝은 세션 모드에서 사용 할 수 없습니다"
 
 msgid "Network config change transaction committed\n"
-msgstr "네트워크 구성 변경 트랜잭션 커밋됨\n"
+msgstr "네트워크 구성 변경 연결이 수행됨\n"
 
 msgid "Network config change transaction rolled back\n"
-msgstr "네트워크 구성 변경 트랜잭션 롤백됨\n"
+msgstr "네트워크 구성 변경 연결이 되돌려짐\n"
 
 msgid "Network config change transaction started\n"
-msgstr "네트워크 구성 변경 트랜잭션 시작됨\n"
+msgstr "네트워크 구성 변경 연결이 시작됨\n"
 
 #, c-format
 msgid "Network config filename '%1$s' does not match network name '%2$s'"
@@ -28241,7 +28241,7 @@ msgstr "인증 콜백을 위한 사용자 응답을 검색하는데 실패함"
 
 #, c-format
 msgid "failed to rollback transaction: %1$s%2$s%3$s"
-msgstr "트랜잭션 롤백 실패: %1$s%2$s%3$s"
+msgstr "연결을 되돌리는 데 실패함: %1$s%2$s%3$s"
 
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser 실행 실패"
@@ -33889,10 +33889,10 @@ msgid "no tls service found, unable to update tls files"
 msgstr "TLS 서비스를 찾을 수 없으며, TLS 파일을 최신화 할 수 없음"
 
 msgid "no transaction running, nothing to be committed."
-msgstr "실행 중인 트랜잭션이 없고 커밋할 항목이 없습니다."
+msgstr "실행 중인 연결이 없고, 수행되는 것이 없습니다."
 
 msgid "no transaction running, nothing to rollback."
-msgstr "실행 중인 트랜잭션이 없고 롤백할 항목이 없습니다."
+msgstr "실행 중인 연결이 없고, 되돌릴 것이 없습니다."
 
 #, c-format
 msgid "no unused %1$s names available"
@@ -37486,7 +37486,7 @@ msgstr ""
 "이 있습니다"
 
 msgid "there is another transaction running."
-msgstr "다른 트랜잭션이 실행 중입니다."
+msgstr "다른 연결이 실행 중입니다."
 
 #, c-format
 msgid "there is no hub at port %1$u in USB address bus: %2$u port: %3$s"
@@ -40635,15 +40635,13 @@ msgid ""
 "virtio-net teaming persistent interface must be <model type='virtio'/>, not "
 "'%1$s'"
 msgstr ""
-"virtio-net 팀 구성 영구 인터페이스는 '%1$s'가 아니라 <model type='virtio'/>여"
-"야 합니다"
+"virtio-net 티밍 영구 연결장치는 <model type='virtio'/>이어야 하고, '%1$s'가 "
+"아닙니다"
 
 #, c-format
 msgid ""
 "virtio-net teaming transient interface must be type='hostdev', not '%1$s'"
-msgstr ""
-"virtio-net 팀 구성 임시 인터페이스는 '%1$s'가 아니라 'hostdev' 유형이어야 합"
-"니다"
+msgstr "virtio-net 티밍 임시 연결장치는 type='hostdev'이어야 하고, '%1$s'가 아닙니다"
 
 msgid "virtio-pmem does not support NUMA nodes"
 msgstr "virtio-pmem은 NUMA 노드를 지원하지 않습니다"
