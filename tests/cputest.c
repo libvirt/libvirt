@@ -857,49 +857,63 @@ cpuTestUpdateLive(const void *arg)
         !(disabledData = virCPUDataParse(disabled)))
         return -1;
 
-    expectedFile = g_strdup_printf("cpuid-%s-json", data->host);
-    if (!(expected = cpuTestLoadXML(data->arch, expectedFile,
-                                    data->existingTestCases))) {
-        return -1;
-    }
-
-    /* In case the host CPU signature does not exactly match any CPU model in
-     * src/cpu_map, the CPU model we detect from CPUID may differ from the one
-     * we compute by asking QEMU. Since this test expands both CPU models and
-     * compares their features, we can try to translate the 'actual' CPU to
-     * use the CPU model from 'expected'.
-     */
-    if (STRNEQ(cpu->model, expected->model)) {
-        virDomainCapsCPUModel *hvModel;
-        char **blockers = NULL;
-        virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
-        int rc;
-
-        if (!(models = virDomainCapsCPUModelsNew(0)))
+    if (data->result == 0) {
+        expectedFile = g_strdup_printf("cpuid-%s-json", data->host);
+        if (!(expected = cpuTestLoadXML(data->arch, expectedFile,
+                                        data->existingTestCases))) {
             return -1;
-
-        rc = cpuTestGetCPUModels(data, &hvModels);
-        if (rc != 0)
-            return rc;
-
-        hvModel = virDomainCapsCPUModelsGet(hvModels, expected->model);
-
-        if (hvModel) {
-            blockers = hvModel->blockers;
-            usable = hvModel->usable;
         }
 
-        virDomainCapsCPUModelsAdd(models, expected->model,
-                                  usable, blockers, false,
-                                  expected->vendor, NULL);
+        /* In case the host CPU signature does not exactly match any CPU model
+         * in src/cpu_map, the CPU model we detect from CPUID may differ from
+         * the one we compute by asking QEMU. Since this test expands both CPU
+         * models and compares their features, we can try to translate the
+         * 'actual' CPU to use the CPU model from 'expected'.
+         */
+        if (STRNEQ(cpu->model, expected->model)) {
+            virDomainCapsCPUModel *hvModel;
+            char **blockers = NULL;
+            virDomainCapsCPUUsable usable = VIR_DOMCAPS_CPU_USABLE_UNKNOWN;
+            int rc;
 
-        cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
-        ignore_value(virCPUTranslate(data->arch, cpu, models));
-        cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+            if (!(models = virDomainCapsCPUModelsNew(0)))
+                return -1;
+
+            rc = cpuTestGetCPUModels(data, &hvModels);
+            if (rc != 0)
+                return rc;
+
+            hvModel = virDomainCapsCPUModelsGet(hvModels, expected->model);
+
+            if (hvModel) {
+                blockers = hvModel->blockers;
+                usable = hvModel->usable;
+            }
+
+            virDomainCapsCPUModelsAdd(models, expected->model,
+                                      usable, blockers, false,
+                                      expected->vendor, NULL);
+
+            cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+            ignore_value(virCPUTranslate(data->arch, cpu, models));
+            cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+        }
     }
 
-    if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0)
+    if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0) {
+        if (data->result < 0) {
+            g_autofree char *msg = virTestLogContentAndReset();
+            VIR_TEST_DEBUG("Got expected error: %s", msg);
+            virResetLastError();
+            return 0;
+        }
         return -1;
+    }
+
+    if (data->result != 0) {
+        VIR_TEST_VERBOSE("virCPUUpdateLive was expected to fail");
+        return -1;
+    }
 
     return cpuTestUpdateLiveCompare(data->arch, cpu, expected);
 }
