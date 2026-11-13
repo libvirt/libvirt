@@ -27,6 +27,7 @@
 #include <unistd.h>
 
 #include "virmock.h"
+#include "virfile.h"
 
 #define USB_SYSFS "/sys/bus/usb"
 #define FAKE_USB_SYSFS "virusbtestdata/sys_bus_usb"
@@ -43,6 +44,7 @@ static int (*real___open_2)(const char *path, int flags);
 #endif
 static DIR *(*real_opendir)(const char *name);
 static int (*real_access)(const char *path, int mode);
+static char *(*real_virFileCanonicalizePath)(const char *path);
 
 static void init_syms(void)
 {
@@ -59,6 +61,7 @@ static void init_syms(void)
 #endif
     VIR_MOCK_REAL_INIT(opendir);
     VIR_MOCK_REAL_INIT(access);
+    VIR_MOCK_REAL_INIT(virFileCanonicalizePath);
 }
 
 static char *get_fake_path(const char *real_path)
@@ -95,7 +98,7 @@ int access(const char *path, int mode)
      * device that is meant to be inaccessible in the current mount namespace
      * (as happens inside a container).  This lets us exercise the code path
      * without shipping empty device-node files. */
-    if (STRPREFIX(path, USB_DEVFS)) {
+    if (STRSKIP(path, USB_DEVFS)) {
         if (STREQ(path, INACCESSIBLE_USB_NODE)) {
             errno = ENOENT;
             return -1;
@@ -104,6 +107,20 @@ int access(const char *path, int mode)
     }
 
     return real_access(path, mode);
+}
+
+char *
+virFileCanonicalizePath(const char *path)
+{
+    init_syms();
+
+    /* Since we pretend any /dev/bus/usb node exists (see access() above) we
+     * must also make sure to return an expected value here. */
+    if (STRPREFIX(path, USB_DEVFS)) {
+        return g_strdup(path);
+    }
+
+    return real_virFileCanonicalizePath(path);
 }
 
 int open(const char *pathname, int flags, ...)
