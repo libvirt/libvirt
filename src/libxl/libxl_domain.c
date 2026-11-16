@@ -547,7 +547,7 @@ libxlDomainShutdownThread(void *opaque)
 
         dom_event = virDomainEventLifecycleNewFromObj(vm,
                                            VIR_DOMAIN_EVENT_STOPPED,
-                                           VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+                                           VIR_DOMAIN_EVENT_STOPPED_REBOOT);
         switch ((virDomainLifecycleAction) vm->def->onReboot) {
         case VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY:
             libxlDomainShutdownHandleDestroy(driver, vm);

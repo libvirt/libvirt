@@ -2076,7 +2076,7 @@ static int testDomainReboot(virDomainPtr domain,
         testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_SHUTDOWN);
         event = virDomainEventLifecycleNewFromObj(privdom,
                                          VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN);
+                                         VIR_DOMAIN_EVENT_STOPPED_REBOOT);
 
         if (!privdom->persistent)
             virDomainObjListRemove(privconn->domains, privdom);
