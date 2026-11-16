@@ -33,6 +33,12 @@ v12.10.0 (unreleased)
     width reported to the guest. This allows the apparent bandwidth of a
     passed-through device to match the host hardware.
 
+  * Introduce ``VIR_DOMAIN_EVENT_STOPPED_REBOOT`` event detail
+
+    A new ``VIR_DOMAIN_EVENT_STOPPED_REBOOT`` detail is now available for use
+    with the ``VIR_DOMAIN_EVENT_STOPPED`` lifecycle event. Drivers may use it
+    to indicate a domain has stopped as part of a reboot request.
+
 * **Improvements**
 
 * **Bug fixes**
