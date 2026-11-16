@@ -5778,6 +5778,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed (Since: 0.5.0) */
     VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded (Since: 0.8.0) */
     VIR_DOMAIN_EVENT_STOPPED_RECREATED = 7,    /* Secure guest recreation (Since: 11.6.0) */
+    VIR_DOMAIN_EVENT_STOPPED_REBOOT = 8,    /* Host or guest requested reboot (Since: 12.10.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_STOPPED_LAST /* (Since: 0.9.10) */

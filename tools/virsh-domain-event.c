@@ -108,7 +108,8 @@ VIR_ENUM_IMPL(virshDomainEventStopped,
               N_("Saved"),
               N_("Failed"),
               N_("Snapshot"),
-              N_("Recreated"));
+              N_("Recreated"),
+              N_("Reboot"));
 
 VIR_ENUM_DECL(virshDomainEventShutdown);
 VIR_ENUM_IMPL(virshDomainEventShutdown,

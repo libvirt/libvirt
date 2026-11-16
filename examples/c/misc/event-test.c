@@ -239,6 +239,9 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_STOPPED_RECREATED:
                 return "Recreated";
 
+            case VIR_DOMAIN_EVENT_STOPPED_REBOOT:
+                return "Reboot";
+
             case VIR_DOMAIN_EVENT_STOPPED_LAST:
                 break;
             }
