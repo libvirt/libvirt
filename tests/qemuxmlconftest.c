@@ -1692,6 +1692,7 @@ mymain(void)
                  ARG_END);
     DO_TEST_CAPS_LATEST("disk-usb-device-model");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-usb-pci");
+    DO_TEST_CAPS_LATEST("disk-misc");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
     DO_TEST_CAPS_LATEST("disk-scsi-disk-split");
