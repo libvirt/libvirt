@@ -6978,6 +6978,14 @@ remoteDispatchNodeAllocPages(virNetServer *server G_GNUC_UNUSED,
     if (!conn)
         goto cleanup;
 
+    if (args->pageSizes.pageSizes_len != args->pageCounts.pageCounts_len) {
+        virReportError(VIR_ERR_RPC,
+                       _("Number of page sizes (%1$u) does not match the number of page counts (%2$u)"),
+                         args->pageSizes.pageSizes_len,
+                         args->pageCounts.pageCounts_len);
+        goto cleanup;
+    }
+
     if ((len = virNodeAllocPages(conn,
                                  args->pageSizes.pageSizes_len,
                                  args->pageSizes.pageSizes_val,
