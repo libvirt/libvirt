@@ -828,7 +828,7 @@ virDomainNumaDefParseXML(virDomainNuma *def,
 {
     g_autofree xmlNodePtr *cell = NULL;
     g_autofree xmlNodePtr *interconnect = NULL;
-
+    g_autoptr(virBitmap) cellsSeen = NULL;
     int n;
     size_t i, j;
 
@@ -848,27 +848,30 @@ virDomainNumaDefParseXML(virDomainNuma *def,
     def->mem_nodes = g_new0(struct _virDomainNumaNode, n);
     def->nmem_nodes = n;
 
+    cellsSeen = virBitmapNew(n);
+
     for (i = 0; i < n; i++) {
         VIR_XPATH_NODE_AUTORESTORE(ctxt)
         g_autofree char *tmp = NULL;
         unsigned int cur_cell;
+        bool thisCellSeen;
 
         if (virXMLPropUIntDefault(cell[i], "id", 10, VIR_XML_PROP_NONE, &cur_cell, i) < 0)
             return -1;
 
         /* cells are in order of parsing or explicitly numbered */
-        if (cur_cell >= n) {
+        if (virBitmapGetBit(cellsSeen, cur_cell, &thisCellSeen) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Exactly one 'cell' element per guest NUMA cell allowed, non-contiguous ranges or ranges not starting from 0 are not allowed"));
             return -1;
-        }
-
-        if (def->mem_nodes[cur_cell].mem) {
+        } else if (thisCellSeen) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Duplicate NUMA cell info for cell id '%1$u'"),
                            cur_cell);
             return -1;
         }
+
+        ignore_value(virBitmapSetBit(cellsSeen, cur_cell));
 
         if ((tmp = virXMLPropString(cell[i], "cpus"))) {
             g_autoptr(virBitmap) cpumask = NULL;
